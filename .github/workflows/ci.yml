@@ -1,0 +1,41 @@
+name: Atlas CI
+
+on: push
+
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    container:
+      image: golang:1.15-alpine
+      env:
+        TEST_PGURI: postgres://postgres:postgres@postgres/atlas_test
+    env:
+      SLACK_WEBHOOK_URL: https://hooks.slack.com/services/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
+    services:
+      postgres:
+        image: postgres:11-alpine
+        env:
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: atlas_test
+    steps:
+      - name: Deps
+        # Names are duplicated as IDs for important steps for use by Notify.
+        id: Deps
+        # Add packages needed to support PIE builds and tests.
+        run: |
+          apk update && apk upgrade
+          apk add --no-cache gcc musl-dev make git
+          go version
+          go env
+      - name: Clone
+        uses: actions/checkout@v2
+      - name: Test
+        id: Test
+        run: make test
+      - name: Notify
+        uses: act10ns/slack@v1
+        with:
+          status: ${{ job.status }}
+          steps: ${{ toJson(steps) }}
+        if: always()
