@@ -7,3 +7,7 @@ services:
     environment:
       - POSTGRES_PASSWORD=postgres
       - POSTGRES_DB=atlas_test
+  mqtt:
+    image: eclipse-mosquitto:1.6
+    ports:
+      - "127.0.0.1:1883:1883"

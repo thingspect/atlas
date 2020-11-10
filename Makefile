@@ -1,7 +1,7 @@
+export GORACE = "halt_on_error=1"
 RFLAG =
 ifneq ($(RACE),)
 RFLAG = -race
-export GORACE = "halt_on_error=1"
 endif
 
 lint:

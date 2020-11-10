@@ -2,6 +2,10 @@
 ## explicit
 # github.com/davecgh/go-spew v1.1.0
 github.com/davecgh/go-spew/spew
+# github.com/eclipse/paho.mqtt.golang v1.2.0
+## explicit
+github.com/eclipse/paho.mqtt.golang
+github.com/eclipse/paho.mqtt.golang/packets
 # github.com/gofrs/uuid v3.3.0+incompatible
 ## explicit
 # github.com/jackc/fake v0.0.0-20150926172116-812a484cc733
@@ -31,6 +35,11 @@ github.com/stretchr/testify/require
 # golang.org/x/crypto v0.0.0-20201016220609-9e8e0b390897
 ## explicit
 golang.org/x/crypto/pbkdf2
+# golang.org/x/net v0.0.0-20201110031124-69a78807bb2b
+## explicit
+golang.org/x/net/internal/socks
+golang.org/x/net/proxy
+golang.org/x/net/websocket
 # golang.org/x/text v0.3.4
 ## explicit
 golang.org/x/text/cases

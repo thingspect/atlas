@@ -22,11 +22,11 @@ func TestString(t *testing.T) {
 			s2 := String(uint(lTest))
 			t.Logf("s1, s2: %v, %v", s1, s2)
 
-			require.Len(t, s1, lTest, "Should be correct length")
-			require.Len(t, s2, lTest, "Should be correct length")
-			// Collisions on 1-character strings are common.
-			if lTest > 1 {
-				require.NotEqual(t, s1, s2, "Should not be equal")
+			require.Len(t, s1, lTest)
+			require.Len(t, s2, lTest)
+			// Collisions on 1- and 2-character strings are common.
+			if lTest > 2 {
+				require.NotEqual(t, s1, s2)
 			}
 		})
 	}

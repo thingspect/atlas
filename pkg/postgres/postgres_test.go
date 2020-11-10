@@ -36,10 +36,9 @@ func TestNew(t *testing.T) {
 			res, err := New(lTest.inp)
 			t.Logf("res, err: %+v, %v", res, err)
 			if lTest.err == "" {
-				require.NotNil(t, res, "Should match result")
+				require.NotNil(t, res)
 			} else {
-				require.Contains(t, err.Error(), lTest.err,
-					"Should match error")
+				require.Contains(t, err.Error(), lTest.err)
 			}
 		})
 	}

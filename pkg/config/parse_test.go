@@ -19,7 +19,7 @@ func TestString(t *testing.T) {
 
 	envKey := random.String(10)
 	envVal := random.String(10)
-	require.NoError(t, os.Setenv(envKey, envVal), "Should set env correctly")
+	require.NoError(t, os.Setenv(envKey, envVal))
 	// Do not unset due to the mechanics of t.Parallel().
 
 	tests := []struct {
@@ -39,7 +39,7 @@ func TestString(t *testing.T) {
 
 			res := String(lTest.inpKey, lTest.inpDef)
 			t.Logf("res: %v", res)
-			require.Equal(t, lTest.res, res, "Should match result")
+			require.Equal(t, lTest.res, res)
 		})
 	}
 }
@@ -50,12 +50,11 @@ func TestStringSlice(t *testing.T) {
 	envKey := random.String(10)
 	envVal := fmt.Sprintf("%s,%s,%s", random.String(10), random.String(10),
 		random.String(10))
-	require.NoError(t, os.Setenv(envKey, envVal), "Should set env correctly")
+	require.NoError(t, os.Setenv(envKey, envVal))
 
 	envKeyNoDelim := random.String(10)
 	envValNoDelim := random.String(10)
-	require.NoError(t, os.Setenv(envKeyNoDelim, envValNoDelim),
-		"Should set env correctly")
+	require.NoError(t, os.Setenv(envKeyNoDelim, envValNoDelim))
 	// Do not unset due to the mechanics of t.Parallel().
 
 	tests := []struct {
@@ -76,7 +75,7 @@ func TestStringSlice(t *testing.T) {
 
 			res := StringSlice(lTest.inpKey, lTest.inpDef)
 			t.Logf("res: %#v", res)
-			require.Equal(t, lTest.res, res, "Should match result")
+			require.Equal(t, lTest.res, res)
 		})
 	}
 }
@@ -86,8 +85,7 @@ func TestInt(t *testing.T) {
 
 	envKey := random.String(10)
 	envVal := random.Intn(999)
-	require.NoError(t, os.Setenv(envKey, strconv.Itoa(envVal)),
-		"Should set env correctly")
+	require.NoError(t, os.Setenv(envKey, strconv.Itoa(envVal)))
 	// Do not unset due to the mechanics of t.Parallel().
 
 	tests := []struct {
@@ -108,7 +106,7 @@ func TestInt(t *testing.T) {
 
 			res := Int(lTest.inpKey, lTest.inpDef)
 			t.Logf("res: %v", res)
-			require.Equal(t, lTest.res, res, "Should match result")
+			require.Equal(t, lTest.res, res)
 		})
 	}
 }
@@ -117,7 +115,7 @@ func TestBool(t *testing.T) {
 	t.Parallel()
 
 	envKey := random.String(10)
-	require.NoError(t, os.Setenv(envKey, "true"), "Should set env correctly")
+	require.NoError(t, os.Setenv(envKey, "true"))
 	// Do not unset due to the mechanics of t.Parallel().
 
 	tests := []struct {
@@ -138,7 +136,7 @@ func TestBool(t *testing.T) {
 
 			res := Bool(lTest.inpKey, lTest.inpDef)
 			t.Logf("res: %v", res)
-			require.Equal(t, lTest.res, res, "Should match result")
+			require.Equal(t, lTest.res, res)
 		})
 	}
 }
@@ -148,8 +146,7 @@ func TestDuration(t *testing.T) {
 
 	envKey := random.String(10)
 	envVal := random.Intn(999)
-	require.NoError(t, os.Setenv(envKey, strconv.Itoa(envVal)+"s"),
-		"Should set env correctly")
+	require.NoError(t, os.Setenv(envKey, strconv.Itoa(envVal)+"s"))
 	// Do not unset due to the mechanics of t.Parallel().
 
 	tests := []struct {
@@ -170,7 +167,7 @@ func TestDuration(t *testing.T) {
 
 			res := Duration(lTest.inpKey, lTest.inpDef)
 			t.Logf("res: %#v", res)
-			require.Equal(t, lTest.res, res, "Should match result")
+			require.Equal(t, lTest.res, res)
 		})
 	}
 }
