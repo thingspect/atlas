@@ -20,8 +20,8 @@ func TestIntn(t *testing.T) {
 
 			n := Intn(99)
 			t.Logf("n: %v", n)
-			require.GreaterOrEqual(t, n, 0, "Should be >= 0")
-			require.Less(t, n, 99, "Should be < 99")
+			require.GreaterOrEqual(t, n, 0)
+			require.Less(t, n, 99)
 		})
 	}
 }
