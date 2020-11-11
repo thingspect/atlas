@@ -3,7 +3,7 @@
 ## Getting Started
 
 ```
-docker-compose up
+docker-compose -f build/docker-compose.yml up
 make test
 ```
 
