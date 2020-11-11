@@ -26,6 +26,11 @@ github.com/jackc/pgx/stdlib
 github.com/pkg/errors
 # github.com/pmezard/go-difflib v1.0.0
 github.com/pmezard/go-difflib/difflib
+# github.com/rs/zerolog v1.20.0
+## explicit
+github.com/rs/zerolog
+github.com/rs/zerolog/internal/cbor
+github.com/rs/zerolog/internal/json
 # github.com/shopspring/decimal v1.2.0
 ## explicit
 # github.com/stretchr/testify v1.6.1
