@@ -1,3 +1,5 @@
+.PHONY: lint test unit_test integration_test
+
 export GORACE = "halt_on_error=1"
 RFLAG =
 ifneq ($(RACE),)

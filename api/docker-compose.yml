@@ -1,0 +1,7 @@
+version: "3"
+services:
+  go:
+    build: ./go
+    command: sh -c "cd go && make"
+    volumes:
+      - .:/api
