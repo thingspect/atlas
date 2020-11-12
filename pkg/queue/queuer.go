@@ -11,14 +11,13 @@ type Messager interface {
 
 // Subber defines the methods provided by a Subscription.
 type Subber interface {
-	Topic() string
 	C() <-chan Messager
+	Unsubscribe() error
 }
 
 // Queuer defines the methods provided by a Queue.
 type Queuer interface {
 	Publish(topic string, payload []byte) error
 	Subscribe(topic string) (Subber, error)
-	Unsubscribe(topic string) error
 	Disconnect()
 }

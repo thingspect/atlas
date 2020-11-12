@@ -79,10 +79,15 @@ func TestSubscribe(t *testing.T) {
 
 	require.NoError(t, mqtt.Publish(topic, payload))
 
-	msg := <-sub.C()
-	t.Logf("msg.Topic, msg.Payload: %v, %x", msg.Topic(), msg.Payload())
-	require.Equal(t, topic, msg.Topic())
-	require.Equal(t, payload, msg.Payload())
+	select {
+	case msg := <-sub.C():
+		msg.Ack()
+		t.Logf("msg.Topic, msg.Payload: %v, %x", msg.Topic(), msg.Payload())
+		require.Equal(t, topic, msg.Topic())
+		require.Equal(t, payload, msg.Payload())
+	case <-time.After(250 * time.Millisecond):
+		t.Error("Message timed out")
+	}
 }
 
 func TestUnubscribe(t *testing.T) {
@@ -100,9 +105,20 @@ func TestUnubscribe(t *testing.T) {
 	t.Logf("sub, err: %+v, %v", sub, err)
 	require.NoError(t, err)
 
-	unsubTopic := sub.Topic()
-	require.Equal(t, topic, unsubTopic)
-	require.NoError(t, mqtt.Unsubscribe(unsubTopic))
+	require.NoError(t, sub.Unsubscribe())
+
+	// Publish again to verify closed channel.
+	require.NoError(t, mqtt.Publish(random.String(10),
+		[]byte(random.String(10))))
+
+	select {
+	case msg, ok := <-sub.C():
+		t.Logf("msg, ok: %#v, %v", msg, ok)
+		require.Nil(t, msg)
+		require.False(t, ok)
+	case <-time.After(250 * time.Millisecond):
+		t.Error("Message timed out")
+	}
 }
 
 func TestDisconnect(t *testing.T) {

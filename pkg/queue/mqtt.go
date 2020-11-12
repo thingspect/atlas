@@ -55,22 +55,36 @@ func (m *MQTT) Publish(topic string, payload []byte) error {
 	return token.Error()
 }
 
-// mqttSubber contains methods read from a subscription and implements the
-// Subber interface.
-type mqttSubber struct {
+// mqttSub contains methods read from a subscription and implements the Subber
+// interface.
+type mqttSub struct {
+	mqtt    *MQTT
 	topic   string
-	msgChan <-chan Messager
+	msgChan chan Messager
 }
 
-// Topic returns the topic that a Subber was subscribed to. This is used
-// primarily for unsubscribing.
-func (ms *mqttSubber) Topic() string {
-	return ms.topic
-}
+// Verify mqttSub implements Subber.
+var _ Subber = &mqttSub{}
 
 // C returns the channel that carries a Subber's messages.
-func (ms *mqttSubber) C() <-chan Messager {
+func (ms *mqttSub) C() <-chan Messager {
 	return ms.msgChan
+}
+
+// Unsubscribe unsubscribes to a topic and returns an error value.
+func (ms *mqttSub) Unsubscribe() error {
+	token := ms.mqtt.client.Unsubscribe(ms.topic)
+	if ok := token.WaitTimeout(ms.mqtt.connectTimeout); !ok {
+		return ErrTimeout
+	}
+
+	if err := token.Error(); err != nil {
+		return err
+	}
+
+	close(ms.msgChan)
+
+	return nil
 }
 
 // Subscribe subscribes to a topic and returns a Subber and an error value.
@@ -85,17 +99,7 @@ func (m *MQTT) Subscribe(topic string) (Subber, error) {
 		return nil, ErrTimeout
 	}
 
-	return &mqttSubber{topic: topic, msgChan: msgs}, token.Error()
-}
-
-// Unsubscribe unsubscribes to a topic and returns an error value.
-func (m *MQTT) Unsubscribe(topic string) error {
-	token := m.client.Unsubscribe(topic)
-	if ok := token.WaitTimeout(m.connectTimeout); !ok {
-		return ErrTimeout
-	}
-
-	return token.Error()
+	return &mqttSub{mqtt: m, topic: topic, msgChan: msgs}, token.Error()
 }
 
 // Disconnect ends the connection to a Queue.
