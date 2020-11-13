@@ -8,6 +8,7 @@ import (
 
 	"github.com/stretchr/testify/require"
 	"github.com/thingspect/atlas/pkg/test/config"
+	"github.com/thingspect/atlas/pkg/test/random"
 )
 
 func TestNew(t *testing.T) {
@@ -25,6 +26,8 @@ func TestNew(t *testing.T) {
 		{fmt.Sprintf("%s_not_exist", testConfig.PostgresURI), "does not exist"},
 		// Wrong port.
 		{"postgres://localhost:5433/db", "connect: connection refused"},
+		// Unknown host.
+		{"postgres://" + random.String(10) + "/postgres", "no such host"},
 	}
 
 	for _, test := range tests {

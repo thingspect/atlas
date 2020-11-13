@@ -7,6 +7,25 @@ services:
     environment:
       - POSTGRES_PASSWORD=postgres
       - POSTGRES_DB=atlas_test
+  nsqlookupd:
+    image: nsqio/nsq:v1.2.0
+    command: /nsqlookupd --log-level=warn
+    ports:
+      - "127.0.0.1:4161:4161"
+  nsqd_nsqadmin:
+    image: nsqio/nsq:v1.2.0
+    # Run nsqd and nsqadmin in the same container to support a broadcast address
+    # outside of Docker.
+    command: >
+      sh -c '/nsqd --lookupd-tcp-address=nsqlookupd:4160
+      --broadcast-address=127.0.0.1 --log-level=warn & /nsqadmin
+      --lookupd-http-address=nsqlookupd:4161 --log-level=warn'
+    stop_grace_period: 1s
+    depends_on:
+      - nsqlookupd
+    ports:
+      - "127.0.0.1:4150:4150"
+      - "127.0.0.1:4171:4171"
   mqtt:
     image: eclipse-mosquitto:1.6
     ports:

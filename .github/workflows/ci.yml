@@ -10,6 +10,8 @@ jobs:
       image: golang:1.15-alpine
       env:
         TEST_PG_URI: postgres://postgres:postgres@postgres/atlas_test
+        TEST_NSQ_PUB_ADDR: nsqd:4150
+        TEST_NSQ_LOOKUP_ADDRS: nsqlookupd:4161
         TEST_MQTT_ADDR: tcp://mqtt:1883
     env:
       SLACK_WEBHOOK_URL: https://hooks.slack.com/services/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
@@ -19,6 +21,15 @@ jobs:
         env:
           POSTGRES_PASSWORD: postgres
           POSTGRES_DB: atlas_test
+      nsqlookupd:
+        image: thingspect/nsqlookupd:v1.2.0
+        env:
+          LOG_LEVEL: warn
+      nsqd:
+        image: thingspect/nsqd:v1.2.0
+        env:
+          LOOKUP_ADDR: nsqlookupd:4160
+          LOG_LEVEL: warn
       mqtt:
         image: eclipse-mosquitto:1.6
     steps:

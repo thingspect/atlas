@@ -1,0 +1,3 @@
+FROM nsqio/nsq:v1.2.0
+
+CMD /nsqlookupd --log-level=${LOG_LEVEL}
