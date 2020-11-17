@@ -54,7 +54,7 @@ func (z *zlog) WithLevel(level string) Logger {
 	return &zlog{zl: z.zl.Level(zlevel)}
 }
 
-// Str creates a derived Logger with a string field.
+// WithStr creates a derived Logger with a string field.
 func (z *zlog) WithStr(key, val string) Logger {
 	return &zlog{zl: z.zl.With().Str(key, val).Logger()}
 }

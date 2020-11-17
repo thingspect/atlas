@@ -8,6 +8,9 @@ github.com/eclipse/paho.mqtt.golang
 github.com/eclipse/paho.mqtt.golang/packets
 # github.com/gofrs/uuid v3.3.0+incompatible
 ## explicit
+# github.com/golang/snappy v0.0.2
+## explicit
+github.com/golang/snappy
 # github.com/jackc/fake v0.0.0-20150926172116-812a484cc733
 ## explicit
 # github.com/jackc/pgx v3.6.2+incompatible
@@ -21,6 +24,9 @@ github.com/jackc/pgx/pgtype
 github.com/jackc/pgx/stdlib
 # github.com/lib/pq v1.8.0
 ## explicit
+# github.com/nsqio/go-nsq v1.0.8
+## explicit
+github.com/nsqio/go-nsq
 # github.com/pkg/errors v0.9.1
 ## explicit
 github.com/pkg/errors
@@ -37,7 +43,7 @@ github.com/rs/zerolog/internal/json
 ## explicit
 github.com/stretchr/testify/assert
 github.com/stretchr/testify/require
-# golang.org/x/crypto v0.0.0-20201016220609-9e8e0b390897
+# golang.org/x/crypto v0.0.0-20201117144127-c1f2f97bffc9
 ## explicit
 golang.org/x/crypto/pbkdf2
 # golang.org/x/net v0.0.0-20201110031124-69a78807bb2b

@@ -2,6 +2,7 @@ package queue
 
 import (
 	"errors"
+	"log"
 	"time"
 
 	mqtt "github.com/eclipse/paho.mqtt.golang"
@@ -14,20 +15,20 @@ const (
 
 var ErrTimeout = errors.New("queue: timed out")
 
-// MQTT contains methods to publish and subscribe to MQTT and implements the
-// Queuer interface.
-type MQTT struct {
+// mqttQueue contains methods to publish and subscribe to MQTT and implements
+// the Queuer interface.
+type mqttQueue struct {
 	client         mqtt.Client
 	connectTimeout time.Duration
 }
 
-// Verify MQTT implements Queuer.
-var _ Queuer = &MQTT{}
+// Verify mqttQueue implements Queuer.
+var _ Queuer = &mqttQueue{}
 
 // NewMQTT builds a new Queue and returns a reference to it and an error value.
 // connectTimeout should usually be set to DefaultMQTTConnectTimeout.
 func NewMQTT(addr, user, pass, clientID string,
-	connectTimeout time.Duration) (*MQTT, error) {
+	connectTimeout time.Duration) (Queuer, error) {
 	// Build client options and assign to a client.
 	opts := mqtt.NewClientOptions().
 		AddBroker(addr).
@@ -42,11 +43,14 @@ func NewMQTT(addr, user, pass, clientID string,
 		return nil, ErrTimeout
 	}
 
-	return &MQTT{client: client, connectTimeout: connectTimeout}, token.Error()
+	return &mqttQueue{
+		client:         client,
+		connectTimeout: connectTimeout,
+	}, token.Error()
 }
 
 // Publish publishes a message to a Queue and returns an error value.
-func (m *MQTT) Publish(topic string, payload []byte) error {
+func (m *mqttQueue) Publish(topic string, payload []byte) error {
 	token := m.client.Publish(topic, 1, false, payload)
 	if ok := token.WaitTimeout(mqttPublishTimeout); !ok {
 		return ErrTimeout
@@ -55,10 +59,10 @@ func (m *MQTT) Publish(topic string, payload []byte) error {
 	return token.Error()
 }
 
-// mqttSub contains methods read from a subscription and implements the Subber
-// interface.
+// mqttSub contains methods to read from a subscription and implements the
+// Subber interface.
 type mqttSub struct {
-	mqtt    *MQTT
+	mqtt    *mqttQueue
 	topic   string
 	msgChan chan Messager
 }
@@ -87,22 +91,40 @@ func (ms *mqttSub) Unsubscribe() error {
 	return nil
 }
 
+// mqttMessage contains methods to read from a message and implements the
+// Messager interface.
+type mqttMessage struct {
+	mqtt.Message
+}
+
+// Verify mqttMessage implements Messager.
+var _ Messager = &mqttMessage{}
+
+// Requeue is not supported.
+func (mm *mqttMessage) Requeue() {
+	log.Fatal("Requeue unsupported")
+}
+
 // Subscribe subscribes to a topic and returns a Subber and an error value.
-func (m *MQTT) Subscribe(topic string) (Subber, error) {
+func (m *mqttQueue) Subscribe(topic string) (Subber, error) {
 	msgs := make(chan Messager)
 
 	token := m.client.Subscribe(topic, 1,
 		func(client mqtt.Client, msg mqtt.Message) {
-			msgs <- msg
+			msgs <- &mqttMessage{Message: msg}
 		})
 	if ok := token.WaitTimeout(m.connectTimeout); !ok {
 		return nil, ErrTimeout
 	}
 
-	return &mqttSub{mqtt: m, topic: topic, msgChan: msgs}, token.Error()
+	return &mqttSub{
+		mqtt:    m,
+		topic:   topic,
+		msgChan: msgs,
+	}, token.Error()
 }
 
 // Disconnect ends the connection to a Queue.
-func (m *MQTT) Disconnect() {
+func (m *mqttQueue) Disconnect() {
 	m.client.Disconnect(uint(m.connectTimeout / time.Millisecond))
 }

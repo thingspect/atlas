@@ -36,8 +36,8 @@ func TestNewMQTT(t *testing.T) {
 		t.Run(fmt.Sprintf("Can connect %+v", lTest), func(t *testing.T) {
 			t.Parallel()
 
-			res, err := NewMQTT(lTest.inpAddr, "", "", random.String(10),
-				lTest.inpTimeout)
+			res, err := NewMQTT(lTest.inpAddr, "", "",
+				"testNewMQTT-"+random.String(10), lTest.inpTimeout)
 			t.Logf("res, err: %+v, %v", res, err)
 			if lTest.err == nil {
 				require.NotNil(t, res)
@@ -47,29 +47,29 @@ func TestNewMQTT(t *testing.T) {
 	}
 }
 
-func TestPublish(t *testing.T) {
+func TestMQTTPublish(t *testing.T) {
 	t.Parallel()
 
 	testConfig := config.New()
 
-	mqtt, err := NewMQTT(testConfig.MQTTAddr, "", "", random.String(10),
-		DefaultMQTTConnectTimeout)
+	mqtt, err := NewMQTT(testConfig.MQTTAddr, "", "",
+		"testMQTTPublish-"+random.String(10), DefaultMQTTConnectTimeout)
 	t.Logf("mqtt, err: %+v, %v", mqtt, err)
 	require.NoError(t, err)
 
-	require.NoError(t, mqtt.Publish(random.String(10),
+	require.NoError(t, mqtt.Publish("testMQTTPublish-"+random.String(10),
 		[]byte(random.String(10))))
 }
 
-func TestSubscribe(t *testing.T) {
+func TestMQTTSubscribe(t *testing.T) {
 	t.Parallel()
 
 	testConfig := config.New()
-	topic := random.String(10)
+	topic := "testMQTTSubscribe-" + random.String(10)
 	payload := []byte(random.String(10))
 
-	mqtt, err := NewMQTT(testConfig.MQTTAddr, "", "", random.String(10),
-		DefaultMQTTConnectTimeout)
+	mqtt, err := NewMQTT(testConfig.MQTTAddr, "", "",
+		"testMQTTSubscribe-"+random.String(10), DefaultMQTTConnectTimeout)
 	t.Logf("mqtt, err: %+v, %v", mqtt, err)
 	require.NoError(t, err)
 
@@ -90,14 +90,14 @@ func TestSubscribe(t *testing.T) {
 	}
 }
 
-func TestUnubscribe(t *testing.T) {
+func TestMQTTUnsubscribe(t *testing.T) {
 	t.Parallel()
 
 	testConfig := config.New()
-	topic := random.String(10)
+	topic := "testMQTTUnsubscribe-" + random.String(10)
 
-	mqtt, err := NewMQTT(testConfig.MQTTAddr, "", "", random.String(10),
-		DefaultMQTTConnectTimeout)
+	mqtt, err := NewMQTT(testConfig.MQTTAddr, "", "",
+		"testMQTTUnsubscribe-"+random.String(10), DefaultMQTTConnectTimeout)
 	t.Logf("mqtt, err: %+v, %v", mqtt, err)
 	require.NoError(t, err)
 
@@ -107,8 +107,8 @@ func TestUnubscribe(t *testing.T) {
 
 	require.NoError(t, sub.Unsubscribe())
 
-	// Publish again to verify closed channel.
-	require.NoError(t, mqtt.Publish(random.String(10),
+	// Publish after unsubscribe to verify closed channel.
+	require.NoError(t, mqtt.Publish("testMQTTUnsubscribe-"+random.String(10),
 		[]byte(random.String(10))))
 
 	select {
@@ -121,13 +121,13 @@ func TestUnubscribe(t *testing.T) {
 	}
 }
 
-func TestDisconnect(t *testing.T) {
+func TestMQTTDisconnect(t *testing.T) {
 	t.Parallel()
 
 	testConfig := config.New()
 
-	mqtt, err := NewMQTT(testConfig.MQTTAddr, "", "", random.String(10),
-		DefaultMQTTConnectTimeout)
+	mqtt, err := NewMQTT(testConfig.MQTTAddr, "", "",
+		"testMQTTDisconnect-"+random.String(10), DefaultMQTTConnectTimeout)
 	t.Logf("mqtt, err: %+v, %v", mqtt, err)
 	require.NoError(t, err)
 
