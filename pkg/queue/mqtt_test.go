@@ -27,7 +27,7 @@ func TestNewMQTT(t *testing.T) {
 		// Wrong port.
 		{"tcp://localhost:1884", 100 * time.Millisecond, ErrTimeout},
 		// Unknown host.
-		{random.String(10), 100 * time.Millisecond, ErrTimeout},
+		{"host-" + random.String(10), 100 * time.Millisecond, ErrTimeout},
 	}
 
 	for _, test := range tests {

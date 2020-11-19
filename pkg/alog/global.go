@@ -30,6 +30,14 @@ func SetGlobal(l Logger) {
 	logger = l
 }
 
+// WithStr creates a derived Logger from the global Logger with a string field.
+func WithStr(key, val string) Logger {
+	loggerMu.Lock()
+	defer loggerMu.Unlock()
+
+	return logger.WithStr(key, val)
+}
+
 // WithFields creates a derived Logger from the global Logger using a map to set
 // fields.
 func WithFields(fields map[string]interface{}) Logger {
@@ -88,6 +96,7 @@ func Errorf(format string, v ...interface{}) {
 }
 
 // Fatal logs a new message with fatal level followed by a call to os.Exit(1).
+//lint:ignore U1001 call to os.Exit(1).
 func Fatal(v ...interface{}) {
 	loggerMu.Lock()
 	defer loggerMu.Unlock()

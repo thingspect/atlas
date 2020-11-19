@@ -24,9 +24,10 @@ type nsqQueue struct {
 // Verify nsqQueue implements Queuer.
 var _ Queuer = &nsqQueue{}
 
-// NewNSQ builds a new Queue and returns a reference to it and an error value.
-// If lookupAddrs is nil, pubAddr is used for subscriptions. requeueDelay should
-// usually be set to DefaultNSQRequeueDelay.
+// NewNSQ builds a new Queuer and returns it and an error value. If lookupAddrs
+// is nil, pubAddr is used for subscriptions. subChannel may be empty for a
+// publish-only Queue. requeueDelay should usually be set to
+// DefaultNSQRequeueDelay.
 func NewNSQ(pubAddr string, lookupAddrs []string, subChannel string,
 	requeueDelay time.Duration) (Queuer,
 	error) {
@@ -70,7 +71,7 @@ func (ns *nsqSub) C() <-chan Messager {
 	return ns.msgChan
 }
 
-// Unsubscribe unsubscribes to a topic and returns an error value.
+// Unsubscribe unsubscribes from a topic and returns an error value.
 func (ns *nsqSub) Unsubscribe() error {
 	ns.consumer.Stop()
 

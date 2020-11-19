@@ -43,18 +43,52 @@ func TestZlogWithLevel(t *testing.T) {
 	}
 }
 
-func TestZlogAllFields(t *testing.T) {
+func TestZlogWithStr(t *testing.T) {
 	t.Parallel()
 
-	log := newZlogJSON().WithStr(random.String(10), random.String(10))
-	t.Logf("log: %#v", log)
-	log.Debug("WithStr")
+	logEntry := newZlogJSON().WithStr(random.String(10), random.String(10))
+	t.Logf("logEntry: %#v", logEntry)
+
+	for i := 0; i < 5; i++ {
+		lTest := i
+
+		t.Run(fmt.Sprintf("Can log %v with string", lTest), func(t *testing.T) {
+			t.Parallel()
+
+			logEntry.Debug("Debug")
+			logEntry.Debugf("Debugf: %v", lTest)
+			logEntry.Info("Info")
+			logEntry.Infof("Infof: %v", lTest)
+			logEntry.Error("Error")
+			logEntry.Errorf("Errorf: %v", lTest)
+			// Do not test Fatal* due to os.Exit.
+		})
+	}
+}
+
+func TestZlogWithFields(t *testing.T) {
+	t.Parallel()
 
 	fields := map[string]interface{}{
 		random.String(10): random.String(10),
 		random.String(10): random.Intn(99),
 	}
-	log = log.WithFields(fields)
-	t.Logf("log: %#v", log)
-	log.Debug("WithStr + WithFields")
+	logEntry := newZlogJSON().WithFields(fields)
+	t.Logf("logEntry: %#v", logEntry)
+
+	for i := 0; i < 5; i++ {
+		lTest := i
+
+		t.Run(fmt.Sprintf("Can log %v with fields", lTest), func(t *testing.T) {
+			t.Parallel()
+
+			logEntry.Debug("Debug")
+			logEntry.Debugf("Debugf: %v", lTest)
+			logEntry.Info("Info")
+			logEntry.Infof("Infof: %v", lTest)
+			logEntry.Error("Error")
+			logEntry.Errorf("Errorf: %v", lTest)
+			// Do not test Fatal* due to os.Exit.
+		})
+	}
 }

@@ -28,7 +28,7 @@ func TestNewNSQ(t *testing.T) {
 		// Wrong port.
 		{"localhost:4152", nil, "connect: connection refused"},
 		// Unknown host.
-		{random.String(10) + ":4150", nil, "no such host"},
+		{"host-" + random.String(10) + ":4150", nil, "no such host"},
 	}
 
 	for _, test := range tests {
@@ -56,6 +56,13 @@ func TestNSQPublish(t *testing.T) {
 
 	nsq, err := NewNSQ(testConfig.NSQPubAddr, testConfig.NSQLookupAddrs,
 		"testNSQPublish-"+random.String(10), DefaultNSQRequeueDelay)
+	t.Logf("nsq, err: %+v, %v", nsq, err)
+	require.NoError(t, err)
+
+	require.NoError(t, nsq.Publish("testNSQPublish-"+random.String(10),
+		[]byte(random.String(10))))
+
+	nsq, err = NewNSQ(testConfig.NSQPubAddr, nil, "", DefaultNSQRequeueDelay)
 	t.Logf("nsq, err: %+v, %v", nsq, err)
 	require.NoError(t, err)
 
