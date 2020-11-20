@@ -25,8 +25,8 @@ type mqttQueue struct {
 // Verify mqttQueue implements Queuer.
 var _ Queuer = &mqttQueue{}
 
-// NewMQTT builds a new Queue and returns a reference to it and an error value.
-// connectTimeout should usually be set to DefaultMQTTConnectTimeout.
+// NewMQTT builds a new Queuer and returns it and an error value. connectTimeout
+// should usually be set to DefaultMQTTConnectTimeout.
 func NewMQTT(addr, user, pass, clientID string,
 	connectTimeout time.Duration) (Queuer, error) {
 	// Build client options and assign to a client.
@@ -75,7 +75,7 @@ func (ms *mqttSub) C() <-chan Messager {
 	return ms.msgChan
 }
 
-// Unsubscribe unsubscribes to a topic and returns an error value.
+// Unsubscribe unsubscribes from a topic and returns an error value.
 func (ms *mqttSub) Unsubscribe() error {
 	token := ms.mqtt.client.Unsubscribe(ms.topic)
 	if ok := token.WaitTimeout(ms.mqtt.connectTimeout); !ok {
@@ -85,7 +85,6 @@ func (ms *mqttSub) Unsubscribe() error {
 	if err := token.Error(); err != nil {
 		return err
 	}
-
 	close(ms.msgChan)
 
 	return nil

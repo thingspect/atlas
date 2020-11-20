@@ -49,6 +49,29 @@ func TestGlobalJSON(t *testing.T) {
 	}
 }
 
+func TestGlobalWithStr(t *testing.T) {
+	t.Parallel()
+
+	logEntry := WithStr(random.String(10), random.String(10))
+	t.Logf("logEntry: %#v", logEntry)
+
+	for i := 0; i < 5; i++ {
+		lTest := i
+
+		t.Run(fmt.Sprintf("Can log %v with string", lTest), func(t *testing.T) {
+			t.Parallel()
+
+			logEntry.Debug("Debug")
+			logEntry.Debugf("Debugf: %v", lTest)
+			logEntry.Info("Info")
+			logEntry.Infof("Infof: %v", lTest)
+			logEntry.Error("Error")
+			logEntry.Errorf("Errorf: %v", lTest)
+			// Do not test Fatal* due to os.Exit.
+		})
+	}
+}
+
 func TestGlobalWithFields(t *testing.T) {
 	t.Parallel()
 
@@ -57,6 +80,7 @@ func TestGlobalWithFields(t *testing.T) {
 		random.String(10): random.Intn(99),
 	}
 	logEntry := WithFields(fields)
+	t.Logf("logEntry: %#v", logEntry)
 
 	for i := 0; i < 5; i++ {
 		lTest := i

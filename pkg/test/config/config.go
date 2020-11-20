@@ -1,5 +1,4 @@
-// Package config provides configuration defaults and environment keys for
-// tests.
+// Package config provides configuration values and defaults for tests.
 package config
 
 import "github.com/thingspect/atlas/pkg/config"

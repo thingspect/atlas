@@ -27,7 +27,7 @@ func TestNew(t *testing.T) {
 		// Wrong port.
 		{"postgres://localhost:5433/db", "connect: connection refused"},
 		// Unknown host.
-		{"postgres://" + random.String(10) + "/postgres", "no such host"},
+		{"postgres://host-" + random.String(10) + "/postgres", "no such host"},
 	}
 
 	for _, test := range tests {
