@@ -6,11 +6,17 @@ ifneq ($(RACE),)
 RFLAG = -race
 endif
 
-install:
-	go install -ldflags="-w" -buildmode=pie ./cmd/mqtt-ingestor
 # Assemble GOBIN until supported: https://github.com/golang/go/issues/23439
-	go build -o $(shell go env GOPATH)/bin/mqtt-ingestor.race -ldflags="-w" \
-	-race ./cmd/mqtt-ingestor
+INSTALLPATH = $(shell go env GOPATH)
+ifneq ($(DOCKER),)
+INSTALLPATH = .
+endif
+
+install:
+	go build -o $(INSTALLPATH)/bin/mqtt-ingestor -ldflags="-w" -buildmode=pie \
+	./cmd/mqtt-ingestor
+	go build -o $(INSTALLPATH)/bin/mqtt-ingestor.race -ldflags="-w" -race \
+	./cmd/mqtt-ingestor
 
 lint:
 	cd /tmp && GO111MODULE=on go get honnef.co/go/tools/cmd/staticcheck && \
