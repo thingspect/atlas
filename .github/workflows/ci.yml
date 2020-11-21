@@ -9,6 +9,7 @@ jobs:
     container:
       image: golang:1.15-alpine
       env:
+        DOCKER: "Y"
         TEST_PG_URI: postgres://postgres:postgres@postgres/atlas_test
         TEST_NSQ_PUB_ADDR: nsqd:4150
         TEST_NSQ_LOOKUP_ADDRS: nsqlookupd:4161
@@ -43,10 +44,21 @@ jobs:
           go version
           go env
       - name: Clone
+        id: Clone
         uses: actions/checkout@v2
-      - name: Test
-        id: Test
+      - name: Build_Test
+        id: Build_Test
         run: make test
+      - name: Push
+        id: Push
+        # GitHub Actions do not currently support builds within a container.
+        run: |
+          apk add --no-cache docker
+          docker version
+          docker login -u thingspect -p ${{ secrets.GHCR_PAT }} ghcr.io
+          TAG=$(git rev-parse --short=8 HEAD)
+          docker build -f build/Dockerfile -t ghcr.io/thingspect/atlas:${TAG} .
+          docker push ghcr.io/thingspect/atlas:${TAG}
       - name: Notify
         uses: act10ns/slack@v1
         with:
