@@ -7,14 +7,23 @@ RFLAG = -race
 endif
 
 # Assemble GOBIN until supported: https://github.com/golang/go/issues/23439
+CGO =
 INSTALLPATH = $(shell go env GOPATH)
 ifneq ($(DOCKER),)
+CGO = CGO_ENABLED=0
 INSTALLPATH = .
 endif
 
+# Native Go (CGO_ENABLED=0) is faster for non-esoteric uses of DNS/user, but is
+# not currently supported in conjunction with PIE on darwin/amd64:
+# https://github.com/golang/go/issues/9918
+# https://github.com/golang/go/issues/42459
 install:
-	go build -o $(INSTALLPATH)/bin/mqtt-ingestor -ldflags="-w" -buildmode=pie \
-	./cmd/mqtt-ingestor
+	$(CGO) go build -o $(INSTALLPATH)/bin/mqtt-ingestor -ldflags="-w" \
+	-buildmode=pie ./cmd/mqtt-ingestor
+
+# Race detector is exclusive of non-cgo and PIE.
+installrace:
 	go build -o $(INSTALLPATH)/bin/mqtt-ingestor.race -ldflags="-w" -race \
 	./cmd/mqtt-ingestor
 
@@ -28,10 +37,10 @@ lint:
 	github.com/golangci/golangci-lint/cmd/golangci-lint && cd $(CURDIR)
 # unused is included in the newer version of staticcheck above
 	golangci-lint run -D staticcheck,unused -E \
-	goconst,godot,goerr113,gosec,prealloc,unconvert,unparam
+	goconst,godot,goerr113,gosec,prealloc,scopelint,unconvert,unparam
 
 # -count 1 is the idiomatic way to disable test caching in package list mode
-test: install lint unit_test integration_test
+test: install installrace lint unit_test integration_test
 unit_test:
 	go test -count=1 -cover -race -cpu 1,4 -tags unit ./...
 integration_test:
