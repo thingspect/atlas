@@ -1,4 +1,4 @@
-# Manual build (-race not supported when cross compiling):
+# Manual build:
 # DOCKER=y GOOS=linux make
 # docker login -u thingspect -p XXX ghcr.io
 # TAG=$(git rev-parse --short=8 HEAD)
