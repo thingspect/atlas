@@ -1,4 +1,4 @@
-.PHONY: install lint test unit_test integration_test
+.PHONY: install installrace lint init_db test unit_test integration_test
 
 export GORACE = "halt_on_error=1"
 RFLAG =
@@ -12,6 +12,10 @@ INSTALLPATH = $(shell go env GOPATH)
 ifneq ($(DOCKER),)
 CGO = CGO_ENABLED=0
 INSTALLPATH = .
+endif
+
+ifeq ($(strip $(TEST_PG_URI)),)
+TEST_PG_URI = postgres://postgres:postgres@localhost/atlas_test
 endif
 
 # Native Go (CGO_ENABLED=0) is faster for non-esoteric uses of DNS/user, but is
@@ -39,9 +43,15 @@ lint:
 	golangci-lint run -D staticcheck,unused -E \
 	goconst,godot,goerr113,gosec,prealloc,scopelint,unconvert,unparam
 
+init_db:
+	cd /tmp && GO111MODULE=on go get -tags postgres \
+	github.com/golang-migrate/migrate/v4/cmd/migrate && cd $(CURDIR)
+	migrate -path /tmp -database $(TEST_PG_URI)?sslmode=disable drop -f
+	migrate -path config/db/atlas -database $(TEST_PG_URI)?sslmode=disable up
+
 # -count 1 is the idiomatic way to disable test caching in package list mode
 test: install installrace lint unit_test integration_test
 unit_test:
 	go test -count=1 -cover -race -cpu 1,4 -tags unit ./...
-integration_test:
+integration_test: init_db
 	go test -count=1 -cover $(RFLAG) -cpu 1,4 -tags integration ./...

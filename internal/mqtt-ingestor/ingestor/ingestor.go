@@ -18,7 +18,7 @@ const (
 	ServiceName = "mqtt-ingestor"
 	sharedPref  = "$share/v1group/"
 	mqttV1Topic = "v1/#"
-	pubTopic    = "MQTTIngestorOut"
+	pubTopic    = "ValidatorIn"
 )
 
 // Ingestor holds references to the message broker connections.

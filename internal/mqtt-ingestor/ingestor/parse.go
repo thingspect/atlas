@@ -50,20 +50,20 @@ func (ing *Ingestor) parseMessages() {
 		}
 		logEntry.Debugf("parseMessages payl: %#v", payl)
 
-		// Build and publish MQTTIngestorOut message.
+		// Build and publish ValidatorIn message.
 		var successCount int
 		for _, point := range payl.Points {
-			mIOut := dataPointToMIOut(traceID, payl.Token, topicParts, point)
+			vIn := dataPointToVIn(traceID, payl.Token, topicParts, point)
 
-			// Marshal MQTTIngestorOut.
-			bMIOut, err := proto.Marshal(mIOut)
+			// Marshal ValidatorIn.
+			bVIn, err := proto.Marshal(vIn)
 			if err != nil {
 				logEntry.Errorf("parseMessages proto.Marshal: %v", err)
 				continue
 			}
 
 			// Publish message.
-			if err = ing.parserPub.Publish(pubTopic, bMIOut); err != nil {
+			if err = ing.parserPub.Publish(pubTopic, bVIn); err != nil {
 				logEntry.Errorf("parseMessages ing.parserPub.Publish: %v", err)
 				continue
 			}
@@ -83,42 +83,42 @@ func (ing *Ingestor) parseMessages() {
 	}
 }
 
-// dataPointToMIOut maps a DataPoint to MQTTIngestorOut.
-func dataPointToMIOut(traceID, token string, topicParts []string,
-	point *mqtt.DataPoint) *message.MQTTIngestorOut {
-	mIOut := &message.MQTTIngestorOut{}
-	mIOut.UniqId = point.UniqId
-	mIOut.Attr = point.Attr
+// dataPointToVIn maps a DataPoint to ValidatorIn.
+func dataPointToVIn(traceID, token string, topicParts []string,
+	point *mqtt.DataPoint) *message.ValidatorIn {
+	vIn := &message.ValidatorIn{}
+	vIn.UniqId = point.UniqId
+	vIn.Attr = point.Attr
 
 	// If none of the types match, it is a map or absent.
 	switch point.ValOneof.(type) {
 	case *mqtt.DataPoint_IntVal:
-		mIOut.ValOneof = &message.MQTTIngestorOut_IntVal{
+		vIn.ValOneof = &message.ValidatorIn_IntVal{
 			IntVal: point.GetIntVal(),
 		}
 	case *mqtt.DataPoint_Fl64Val:
-		mIOut.ValOneof = &message.MQTTIngestorOut_Fl64Val{
+		vIn.ValOneof = &message.ValidatorIn_Fl64Val{
 			Fl64Val: point.GetFl64Val(),
 		}
 	case *mqtt.DataPoint_StrVal:
-		mIOut.ValOneof = &message.MQTTIngestorOut_StrVal{
+		vIn.ValOneof = &message.ValidatorIn_StrVal{
 			StrVal: point.GetStrVal(),
 		}
 	case *mqtt.DataPoint_BoolVal:
-		mIOut.ValOneof = &message.MQTTIngestorOut_BoolVal{
+		vIn.ValOneof = &message.ValidatorIn_BoolVal{
 			BoolVal: point.GetBoolVal(),
 		}
 	}
 
-	mIOut.MapVal = point.MapVal
-	mIOut.Ts = point.Ts
-	mIOut.Token = token
-	mIOut.OrgId = topicParts[1]
-	mIOut.TraceId = traceID
+	vIn.MapVal = point.MapVal
+	vIn.Ts = point.Ts
+	vIn.Token = token
+	vIn.OrgId = topicParts[1]
+	vIn.TraceId = traceID
 
 	// Override UniqID with topic-based ID, if present.
 	if len(topicParts) == 3 {
-		mIOut.UniqId = topicParts[2]
+		vIn.UniqId = topicParts[2]
 	}
-	return mIOut
+	return vIn
 }

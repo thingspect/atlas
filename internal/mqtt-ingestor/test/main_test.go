@@ -4,12 +4,12 @@ package test
 
 import (
 	"fmt"
+	"log"
 	"os"
 	"testing"
 
 	"github.com/thingspect/atlas/internal/mqtt-ingestor/config"
 	"github.com/thingspect/atlas/internal/mqtt-ingestor/ingestor"
-	"github.com/thingspect/atlas/pkg/alog"
 	"github.com/thingspect/atlas/pkg/queue"
 	testconfig "github.com/thingspect/atlas/pkg/test/config"
 	"github.com/thingspect/atlas/pkg/test/random"
@@ -28,7 +28,7 @@ func TestMain(m *testing.M) {
 	// Set up Ingestor.
 	ing, err := ingestor.New(cfg)
 	if err != nil {
-		alog.Fatalf("TestMain ingestor.New: %v", err)
+		log.Fatalf("TestMain ingestor.New: %v", err)
 	}
 
 	// Serve connections.
@@ -42,9 +42,9 @@ func TestMain(m *testing.M) {
 	globalMQTT, err = queue.NewMQTT(cfg.MQTTAddr, cfg.MQTTUser, cfg.MQTTPass,
 		clientID, queue.DefaultMQTTConnectTimeout)
 	if err != nil {
-		alog.Fatalf("TestMain queue.NewMQTT: %v", err)
+		log.Fatalf("TestMain queue.NewMQTT: %v", err)
 	}
-	alog.Infof("TestMain connected as MQTT client: %v", clientID)
+	log.Printf("TestMain connected as MQTT client: %v", clientID)
 
 	// Set up queue to verify published messages. Use a unique channel for each
 	// test run. This prevents failed tests from interfering with the next run,
@@ -53,12 +53,12 @@ func TestMain(m *testing.M) {
 	nsq, err := queue.NewNSQ(cfg.NSQPubAddr, nil, subChannel,
 		queue.DefaultNSQRequeueDelay)
 	if err != nil {
-		alog.Fatalf("TestMain queue.NewNSQ: %v", err)
+		log.Fatalf("TestMain queue.NewNSQ: %v", err)
 	}
 
-	globalParser, err = nsq.Subscribe("MQTTIngestorOut")
+	globalParser, err = nsq.Subscribe("ValidatorIn")
 	if err != nil {
-		alog.Fatalf("TestMain nsq.Subscribe: %v", err)
+		log.Fatalf("TestMain nsq.Subscribe: %v", err)
 	}
 
 	os.Exit(m.Run())
