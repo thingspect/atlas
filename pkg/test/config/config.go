@@ -7,7 +7,7 @@ const pref = "TEST_"
 
 // Config holds settings used by test implementations.
 type Config struct {
-	PostgresURI    string
+	PgURI          string
 	NSQPubAddr     string
 	NSQLookupAddrs []string
 	MQTTAddr       string
@@ -16,8 +16,8 @@ type Config struct {
 // New instantiates a test Config, parses the environment, and returns it.
 func New() *Config {
 	return &Config{
-		PostgresURI: config.String(pref+"PG_URI",
-			"postgres://postgres:postgres@localhost/postgres"),
+		PgURI: config.String(pref+"PG_URI",
+			"postgres://postgres:postgres@localhost/atlas_test"),
 		NSQPubAddr: config.String(pref+"NSQ_PUB_ADDR", "localhost:4150"),
 		NSQLookupAddrs: config.StringSlice(pref+"NSQ_LOOKUP_ADDRS",
 			[]string{"localhost:4161"}),

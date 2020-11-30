@@ -25,9 +25,9 @@ func TestNewMQTT(t *testing.T) {
 		// Success.
 		{testConfig.MQTTAddr, DefaultMQTTConnectTimeout, nil},
 		// Wrong port.
-		{"tcp://localhost:1884", 100 * time.Millisecond, ErrTimeout},
+		{"tcp://localhost:1884", time.Millisecond, ErrTimeout},
 		// Unknown host.
-		{"host-" + random.String(10), 100 * time.Millisecond, ErrTimeout},
+		{"host-" + random.String(10), time.Millisecond, ErrTimeout},
 	}
 
 	for _, test := range tests {
@@ -85,7 +85,7 @@ func TestMQTTSubscribe(t *testing.T) {
 		t.Logf("msg.Topic, msg.Payload: %v, %x", msg.Topic(), msg.Payload())
 		require.Equal(t, topic, msg.Topic())
 		require.Equal(t, payload, msg.Payload())
-	case <-time.After(250 * time.Millisecond):
+	case <-time.After(2 * time.Second):
 		t.Error("Message timed out")
 	}
 }
@@ -116,7 +116,7 @@ func TestMQTTUnsubscribe(t *testing.T) {
 		t.Logf("msg, ok: %#v, %v", msg, ok)
 		require.Nil(t, msg)
 		require.False(t, ok)
-	case <-time.After(250 * time.Millisecond):
+	case <-time.After(2 * time.Second):
 		t.Error("Message timed out")
 	}
 }

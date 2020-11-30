@@ -31,37 +31,37 @@ func TestParseMessages(t *testing.T) {
 	tests := []struct {
 		inpTopic string
 		inpPoint *mqtt.DataPoint
-		res      *message.MQTTIngestorOut
+		res      *message.ValidatorIn
 	}{
 		{fmt.Sprintf("v1/%s/%s", orgID, uniqIDTopic),
 			&mqtt.DataPoint{Attr: "motion",
 				ValOneof: &mqtt.DataPoint_IntVal{IntVal: 123}},
-			&message.MQTTIngestorOut{UniqId: uniqIDTopic, Attr: "motion",
-				ValOneof: &message.MQTTIngestorOut_IntVal{IntVal: 123},
+			&message.ValidatorIn{UniqId: uniqIDTopic, Attr: "motion",
+				ValOneof: &message.ValidatorIn_IntVal{IntVal: 123},
 				Token:    token, OrgId: orgID}},
 		{fmt.Sprintf("v1/%s/json", orgID), &mqtt.DataPoint{UniqId: uniqIDPoint,
 			Attr: "temp", ValOneof: &mqtt.DataPoint_Fl64Val{Fl64Val: 20.3}},
-			&message.MQTTIngestorOut{UniqId: uniqIDPoint, Attr: "temp",
-				ValOneof: &message.MQTTIngestorOut_Fl64Val{Fl64Val: 20.3},
+			&message.ValidatorIn{UniqId: uniqIDPoint, Attr: "temp",
+				ValOneof: &message.ValidatorIn_Fl64Val{Fl64Val: 20.3},
 				Token:    token, OrgId: orgID}},
 		{fmt.Sprintf("v1/%s/%s/json", orgID, uniqIDTopic), &mqtt.DataPoint{
 			Attr: "power", ValOneof: &mqtt.DataPoint_StrVal{StrVal: "batt"},
-			Ts: now}, &message.MQTTIngestorOut{UniqId: uniqIDTopic,
-			Attr: "power", ValOneof: &message.MQTTIngestorOut_StrVal{
-				StrVal: "batt"}, Ts: now, Token: token, OrgId: orgID}},
+			Ts: now}, &message.ValidatorIn{UniqId: uniqIDTopic, Attr: "power",
+			ValOneof: &message.ValidatorIn_StrVal{StrVal: "batt"}, Ts: now,
+			Token: token, OrgId: orgID}},
 		{fmt.Sprintf("v1/%s", orgID), &mqtt.DataPoint{UniqId: uniqIDPoint,
 			Attr: "leak", ValOneof: &mqtt.DataPoint_BoolVal{BoolVal: true}},
-			&message.MQTTIngestorOut{UniqId: uniqIDPoint, Attr: "leak",
-				ValOneof: &message.MQTTIngestorOut_BoolVal{BoolVal: true},
+			&message.ValidatorIn{UniqId: uniqIDPoint, Attr: "leak",
+				ValOneof: &message.ValidatorIn_BoolVal{BoolVal: true},
 				Token:    token, OrgId: orgID}},
 		{fmt.Sprintf("v1/%s/%s", orgID, uniqIDTopic), &mqtt.DataPoint{
 			Attr: "metadata", MapVal: map[string]string{"aaa": "bbb"}, Ts: now},
-			&message.MQTTIngestorOut{UniqId: uniqIDTopic, Attr: "metadata",
+			&message.ValidatorIn{UniqId: uniqIDTopic, Attr: "metadata",
 				MapVal: map[string]string{"aaa": "bbb"}, Ts: now, Token: token,
 				OrgId: orgID}},
 		{fmt.Sprintf("v1/%s/%s/json", orgID, uniqIDTopic), &mqtt.DataPoint{
 			Attr: "metadata", MapVal: map[string]string{"aaa": "bbb"}},
-			&message.MQTTIngestorOut{UniqId: uniqIDTopic, Attr: "metadata",
+			&message.ValidatorIn{UniqId: uniqIDTopic, Attr: "metadata",
 				MapVal: map[string]string{"aaa": "bbb"}, Token: token,
 				OrgId: orgID}},
 	}
@@ -109,18 +109,18 @@ func TestParseMessages(t *testing.T) {
 					msg.Payload())
 				require.Equal(t, pubTopic, msg.Topic())
 
-				mIOut := &message.MQTTIngestorOut{}
-				require.NoError(t, proto.Unmarshal(msg.Payload(), mIOut))
-				t.Logf("mIOut: %#v", mIOut)
+				vIn := &message.ValidatorIn{}
+				require.NoError(t, proto.Unmarshal(msg.Payload(), vIn))
+				t.Logf("vIn: %#v", vIn)
 				// Normalize generated trace ID.
-				lTest.res.TraceId = mIOut.TraceId
+				lTest.res.TraceId = vIn.TraceId
 
 				// Testify does not currently support protobuf equality:
 				// https://github.com/stretchr/testify/issues/758
-				if !proto.Equal(lTest.res, mIOut) {
-					t.Fatalf("Expected, actual: %#v, %#v", lTest.res, mIOut)
+				if !proto.Equal(lTest.res, vIn) {
+					t.Fatalf("Expected, actual: %#v, %#v", lTest.res, vIn)
 				}
-			case <-time.After(250 * time.Millisecond):
+			case <-time.After(2 * time.Second):
 				t.Error("Message timed out")
 			}
 		})
@@ -181,7 +181,7 @@ func TestParseMessagesError(t *testing.T) {
 	}
 }
 
-func TestDataPointToMIOut(t *testing.T) {
+func TestDataPointToVIn(t *testing.T) {
 	t.Parallel()
 
 	orgID := uuid.New().String()
@@ -194,31 +194,31 @@ func TestDataPointToMIOut(t *testing.T) {
 	tests := []struct {
 		inpTopicParts []string
 		inpPoint      *mqtt.DataPoint
-		res           *message.MQTTIngestorOut
+		res           *message.ValidatorIn
 	}{
 		{[]string{"v1", orgID, uniqIDTopic}, &mqtt.DataPoint{Attr: "motion",
 			ValOneof: &mqtt.DataPoint_IntVal{IntVal: 123}},
-			&message.MQTTIngestorOut{UniqId: uniqIDTopic, Attr: "motion",
-				ValOneof: &message.MQTTIngestorOut_IntVal{IntVal: 123},
+			&message.ValidatorIn{UniqId: uniqIDTopic, Attr: "motion",
+				ValOneof: &message.ValidatorIn_IntVal{IntVal: 123},
 				Token:    token, OrgId: orgID, TraceId: traceID}},
 		{[]string{"v1", orgID}, &mqtt.DataPoint{UniqId: uniqIDPoint,
 			Attr: "temp", ValOneof: &mqtt.DataPoint_Fl64Val{Fl64Val: 20.3}},
-			&message.MQTTIngestorOut{UniqId: uniqIDPoint, Attr: "temp",
-				ValOneof: &message.MQTTIngestorOut_Fl64Val{Fl64Val: 20.3},
+			&message.ValidatorIn{UniqId: uniqIDPoint, Attr: "temp",
+				ValOneof: &message.ValidatorIn_Fl64Val{Fl64Val: 20.3},
 				Token:    token, OrgId: orgID, TraceId: traceID}},
 		{[]string{"v1", orgID, uniqIDTopic}, &mqtt.DataPoint{Attr: "power",
 			ValOneof: &mqtt.DataPoint_StrVal{StrVal: "batt"}, Ts: now},
-			&message.MQTTIngestorOut{UniqId: uniqIDTopic, Attr: "power",
-				ValOneof: &message.MQTTIngestorOut_StrVal{StrVal: "batt"},
+			&message.ValidatorIn{UniqId: uniqIDTopic, Attr: "power",
+				ValOneof: &message.ValidatorIn_StrVal{StrVal: "batt"},
 				Ts:       now, Token: token, OrgId: orgID, TraceId: traceID}},
 		{[]string{"v1", orgID}, &mqtt.DataPoint{UniqId: uniqIDPoint,
 			Attr: "leak", ValOneof: &mqtt.DataPoint_BoolVal{BoolVal: true}},
-			&message.MQTTIngestorOut{UniqId: uniqIDPoint, Attr: "leak",
-				ValOneof: &message.MQTTIngestorOut_BoolVal{BoolVal: true},
+			&message.ValidatorIn{UniqId: uniqIDPoint, Attr: "leak",
+				ValOneof: &message.ValidatorIn_BoolVal{BoolVal: true},
 				Token:    token, OrgId: orgID, TraceId: traceID}},
 		{[]string{"v1", orgID, uniqIDTopic}, &mqtt.DataPoint{Attr: "metadata",
 			MapVal: map[string]string{"aaa": "bbb"}, Ts: now},
-			&message.MQTTIngestorOut{UniqId: uniqIDTopic, Attr: "metadata",
+			&message.ValidatorIn{UniqId: uniqIDTopic, Attr: "metadata",
 				MapVal: map[string]string{"aaa": "bbb"}, Ts: now, Token: token,
 				OrgId: orgID, TraceId: traceID}},
 	}
@@ -229,7 +229,7 @@ func TestDataPointToMIOut(t *testing.T) {
 		t.Run(fmt.Sprintf("Can convert %+v", lTest), func(t *testing.T) {
 			t.Parallel()
 
-			res := dataPointToMIOut(traceID, token, lTest.inpTopicParts,
+			res := dataPointToVIn(traceID, token, lTest.inpTopicParts,
 				lTest.inpPoint)
 			t.Logf("res: %#v", res)
 			// Testify does not currently support protobuf equality:

@@ -21,9 +21,9 @@ func TestNew(t *testing.T) {
 		err string
 	}{
 		// Success.
-		{testConfig.PostgresURI, ""},
+		{testConfig.PgURI, ""},
 		// Database does not exist.
-		{fmt.Sprintf("%s_not_exist", testConfig.PostgresURI), "does not exist"},
+		{fmt.Sprintf("%s_not_exist", testConfig.PgURI), "does not exist"},
 		// Wrong port.
 		{"postgres://localhost:5433/db", "connect: connection refused"},
 		// Unknown host.

@@ -41,7 +41,7 @@ func TestFakeSubscribe(t *testing.T) {
 		t.Logf("msg.Topic, msg.Payload: %v, %x", msg.Topic(), msg.Payload())
 		require.Equal(t, topic, msg.Topic())
 		require.Equal(t, payload, msg.Payload())
-	case <-time.After(250 * time.Millisecond):
+	case <-time.After(2 * time.Second):
 		t.Error("Message timed out")
 	}
 }

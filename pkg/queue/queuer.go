@@ -1,4 +1,4 @@
-// Package queue provdes functions to publish and subscribe to queues.
+// Package queue provides functions to publish and subscribe to queues.
 package queue
 
 // Messager defines the methods provided by a Message. Messages are not

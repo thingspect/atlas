@@ -5,8 +5,8 @@ import "google/protobuf/timestamp.proto";
 
 option go_package = "github.com/thingspect/atlas/api/go/message";
 
-message MQTTIngestorOut {
-  // Device unique ID. Will be ignore if provided as part of the topic.
+message ValidatorIn {
+  // Device unique ID. Will be ignored if provided as part of the topic.
   string uniq_id = 1 [json_name = "uniqID"];
 
   // Device attribute.
@@ -33,7 +33,7 @@ message MQTTIngestorOut {
   // Timestamp. If not present, the current time will be used.
   google.protobuf.Timestamp ts = 7;
 
-  // Authentication token.
+  // Authentication token (UUID).
   string token = 8;
 
   // Organization ID (UUID).
