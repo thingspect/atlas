@@ -20,46 +20,54 @@ import (
 
 func TestParseMessages(t *testing.T) {
 	orgID := uuid.New().String()
-	token := uuid.New().String()
+	paylToken := uuid.New().String()
+	pointToken := uuid.New().String()
 	uniqIDTopic := random.String(16)
 	uniqIDPoint := random.String(16)
 	now := timestamppb.Now()
 
 	tests := []struct {
-		inpTopic string
-		inpPoint *mqtt.DataPoint
-		res      *message.ValidatorIn
+		inpTopic     string
+		inpPaylToken string
+		inpPoint     *mqtt.DataPoint
+		res          *message.ValidatorIn
 	}{
-		{fmt.Sprintf("v1/%s/%s", orgID, uniqIDTopic),
+		{fmt.Sprintf("v1/%s/%s", orgID, uniqIDTopic), paylToken,
 			&mqtt.DataPoint{Attr: "motion",
 				ValOneof: &mqtt.DataPoint_IntVal{IntVal: 123}},
 			&message.ValidatorIn{UniqId: uniqIDTopic, Attr: "motion",
 				ValOneof: &message.ValidatorIn_IntVal{IntVal: 123},
-				Token:    token, OrgId: orgID}},
-		{fmt.Sprintf("v1/%s/json", orgID), &mqtt.DataPoint{UniqId: uniqIDPoint,
-			Attr: "temp", ValOneof: &mqtt.DataPoint_Fl64Val{Fl64Val: 20.3}},
+				Token:    paylToken, OrgId: orgID}},
+		{fmt.Sprintf("v1/%s/json", orgID), "",
+			&mqtt.DataPoint{UniqId: uniqIDPoint, Attr: "temp",
+				ValOneof: &mqtt.DataPoint_Fl64Val{Fl64Val: 20.3},
+				Token:    pointToken},
 			&message.ValidatorIn{UniqId: uniqIDPoint, Attr: "temp",
 				ValOneof: &message.ValidatorIn_Fl64Val{Fl64Val: 20.3},
-				Token:    token, OrgId: orgID}},
-		{fmt.Sprintf("v1/%s/%s/json", orgID, uniqIDTopic), &mqtt.DataPoint{
-			Attr: "power", ValOneof: &mqtt.DataPoint_StrVal{StrVal: "batt"},
-			Ts: now}, &message.ValidatorIn{UniqId: uniqIDTopic, Attr: "power",
-			ValOneof: &message.ValidatorIn_StrVal{StrVal: "batt"}, Ts: now,
-			Token: token, OrgId: orgID}},
-		{fmt.Sprintf("v1/%s", orgID), &mqtt.DataPoint{UniqId: uniqIDPoint,
-			Attr: "leak", ValOneof: &mqtt.DataPoint_BoolVal{BoolVal: true}},
+				Token:    pointToken, OrgId: orgID}},
+		{fmt.Sprintf("v1/%s/%s/json", orgID, uniqIDTopic), paylToken,
+			&mqtt.DataPoint{Attr: "power",
+				ValOneof: &mqtt.DataPoint_StrVal{StrVal: "batt"}, Ts: now},
+			&message.ValidatorIn{UniqId: uniqIDTopic, Attr: "power",
+				ValOneof: &message.ValidatorIn_StrVal{StrVal: "batt"}, Ts: now,
+				Token: paylToken, OrgId: orgID}},
+		{fmt.Sprintf("v1/%s", orgID), paylToken,
+			&mqtt.DataPoint{UniqId: uniqIDPoint, Attr: "leak",
+				ValOneof: &mqtt.DataPoint_BoolVal{BoolVal: true}},
 			&message.ValidatorIn{UniqId: uniqIDPoint, Attr: "leak",
 				ValOneof: &message.ValidatorIn_BoolVal{BoolVal: true},
-				Token:    token, OrgId: orgID}},
-		{fmt.Sprintf("v1/%s/%s", orgID, uniqIDTopic), &mqtt.DataPoint{
-			Attr: "metadata", MapVal: map[string]string{"aaa": "bbb"}, Ts: now},
+				Token:    paylToken, OrgId: orgID}},
+		{fmt.Sprintf("v1/%s/%s", orgID, uniqIDTopic), paylToken,
+			&mqtt.DataPoint{Attr: "metadata",
+				MapVal: map[string]string{"aaa": "bbb"}, Ts: now},
 			&message.ValidatorIn{UniqId: uniqIDTopic, Attr: "metadata",
-				MapVal: map[string]string{"aaa": "bbb"}, Ts: now, Token: token,
-				OrgId: orgID}},
-		{fmt.Sprintf("v1/%s/%s/json", orgID, uniqIDTopic), &mqtt.DataPoint{
-			Attr: "metadata", MapVal: map[string]string{"aaa": "bbb"}},
+				MapVal: map[string]string{"aaa": "bbb"}, Ts: now,
+				Token: paylToken, OrgId: orgID}},
+		{fmt.Sprintf("v1/%s/%s/json", orgID, uniqIDTopic), paylToken,
+			&mqtt.DataPoint{Attr: "metadata",
+				MapVal: map[string]string{"aaa": "bbb"}},
 			&message.ValidatorIn{UniqId: uniqIDTopic, Attr: "metadata",
-				MapVal: map[string]string{"aaa": "bbb"}, Token: token,
+				MapVal: map[string]string{"aaa": "bbb"}, Token: paylToken,
 				OrgId: orgID}},
 	}
 
@@ -70,7 +78,7 @@ func TestParseMessages(t *testing.T) {
 			var bPayl []byte
 			var err error
 			payl := &mqtt.Payload{Points: []*mqtt.DataPoint{lTest.inpPoint},
-				Token: token}
+				Token: lTest.inpPaylToken}
 
 			if strings.HasSuffix(lTest.inpTopic, "json") {
 				bPayl, err = protojson.Marshal(payl)
@@ -92,15 +100,22 @@ func TestParseMessages(t *testing.T) {
 				vIn := &message.ValidatorIn{}
 				require.NoError(t, proto.Unmarshal(msg.Payload(), vIn))
 				t.Logf("vIn: %#v", vIn)
+
 				// Normalize generated trace ID.
 				lTest.res.TraceId = vIn.TraceId
+				// Normalize timestamps.
+				if lTest.inpPoint.Ts == nil {
+					require.WithinDuration(t, time.Now(), vIn.Ts.AsTime(),
+						5*time.Second)
+					lTest.res.Ts = vIn.Ts
+				}
 
 				// Testify does not currently support protobuf equality:
 				// https://github.com/stretchr/testify/issues/758
 				if !proto.Equal(lTest.res, vIn) {
 					t.Fatalf("Expected, actual: %#v, %#v", lTest.res, vIn)
 				}
-			case <-time.After(2 * time.Second):
+			case <-time.After(5 * time.Second):
 				t.Error("Message timed out")
 			}
 		})
