@@ -9,6 +9,7 @@ import (
 	"github.com/thingspect/atlas/pkg/alog"
 	"google.golang.org/protobuf/encoding/protojson"
 	"google.golang.org/protobuf/proto"
+	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 // parseMessages parses MQTT messages and builds messages for publishing.
@@ -84,10 +85,17 @@ func (ing *Ingestor) parseMessages() {
 }
 
 // dataPointToVIn maps a DataPoint to ValidatorIn.
-func dataPointToVIn(traceID, token string, topicParts []string,
+func dataPointToVIn(traceID, paylToken string, topicParts []string,
 	point *mqtt.DataPoint) *message.ValidatorIn {
 	vIn := &message.ValidatorIn{}
-	vIn.UniqId = point.UniqId
+
+	// Override UniqID with topic-based ID, if present.
+	if len(topicParts) == 3 {
+		vIn.UniqId = topicParts[2]
+	} else {
+		vIn.UniqId = point.UniqId
+	}
+
 	vIn.Attr = point.Attr
 
 	// If none of the types match, it is a map or absent.
@@ -111,14 +119,22 @@ func dataPointToVIn(traceID, token string, topicParts []string,
 	}
 
 	vIn.MapVal = point.MapVal
-	vIn.Ts = point.Ts
-	vIn.Token = token
+
+	// Default to current timestamp if not provided.
+	if point.Ts != nil {
+		vIn.Ts = point.Ts
+	} else {
+		vIn.Ts = timestamppb.Now()
+	}
+
+	// Override Token with payload-based Token, if present.
+	if paylToken != "" {
+		vIn.Token = paylToken
+	} else {
+		vIn.Token = point.Token
+	}
+
 	vIn.OrgId = topicParts[1]
 	vIn.TraceId = traceID
-
-	// Override UniqID with topic-based ID, if present.
-	if len(topicParts) == 3 {
-		vIn.UniqId = topicParts[2]
-	}
 	return vIn
 }

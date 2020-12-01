@@ -6,8 +6,8 @@ import "google/protobuf/timestamp.proto";
 option go_package = "github.com/thingspect/atlas/api/go/message";
 
 message ValidatorIn {
-  // Device unique ID. Will be ignored if provided as part of the topic.
-  string uniq_id = 1 [json_name = "uniqID"];
+  // Device unique ID.
+  string uniq_id = 1;
 
   // Device attribute.
   string attr = 2;
@@ -30,7 +30,7 @@ message ValidatorIn {
   // Attribute map value. Will be ignored if another value is present.
   map<string, string> map_val = 16;
 
-  // Timestamp. If not present, the current time will be used.
+  // Timestamp.
   google.protobuf.Timestamp ts = 7;
 
   // Authentication token (UUID).
