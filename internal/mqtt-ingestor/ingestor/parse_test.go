@@ -62,16 +62,16 @@ func TestParseMessages(t *testing.T) {
 				Token:    paylToken, OrgId: orgID}},
 		{fmt.Sprintf("v1/%s/%s", orgID, uniqIDTopic), paylToken,
 			&mqtt.DataPoint{Attr: "metadata",
-				MapVal: map[string]string{"aaa": "bbb"}, Ts: now},
+				MapVal: map[string]string{"ing-aaa": "ing-bbb"}, Ts: now},
 			&message.ValidatorIn{UniqId: uniqIDTopic, Attr: "metadata",
-				MapVal: map[string]string{"aaa": "bbb"}, Ts: now,
+				MapVal: map[string]string{"ing-aaa": "ing-bbb"}, Ts: now,
 				Token: paylToken, OrgId: orgID}},
 		{fmt.Sprintf("v1/%s/%s/json", orgID, uniqIDTopic), paylToken,
 			&mqtt.DataPoint{Attr: "metadata",
-				MapVal: map[string]string{"aaa": "bbb"}},
+				MapVal: map[string]string{"ing-aaa": "ing-bbb"}},
 			&message.ValidatorIn{UniqId: uniqIDTopic, Attr: "metadata",
-				MapVal: map[string]string{"aaa": "bbb"}, Token: paylToken,
-				OrgId: orgID}},
+				MapVal: map[string]string{"ing-aaa": "ing-bbb"},
+				Token:  paylToken, OrgId: orgID}},
 	}
 
 	for _, test := range tests {
@@ -87,10 +87,12 @@ func TestParseMessages(t *testing.T) {
 			parserQueue := queue.NewFake()
 			parserSub, err := parserQueue.Subscribe("")
 			require.NoError(t, err)
+			parserPubTopic := "topic-" + random.String(10)
 
 			ing := Ingestor{
-				mqttSub:   mqttSub,
-				parserPub: parserQueue,
+				mqttSub:        mqttSub,
+				parserQueue:    parserQueue,
+				parserPubTopic: parserPubTopic,
 			}
 			go func() {
 				ing.parseMessages()
@@ -105,8 +107,8 @@ func TestParseMessages(t *testing.T) {
 			} else {
 				bPayl, err = proto.Marshal(payl)
 			}
-			t.Logf("bPayl: %s", bPayl)
 			require.NoError(t, err)
+			t.Logf("bPayl: %s", bPayl)
 
 			require.NoError(t, mqttQueue.Publish(lTest.inpTopic, bPayl))
 
@@ -115,7 +117,7 @@ func TestParseMessages(t *testing.T) {
 				msg.Ack()
 				t.Logf("msg.Topic, msg.Payload: %v, %s", msg.Topic(),
 					msg.Payload())
-				require.Equal(t, pubTopic, msg.Topic())
+				require.Equal(t, parserPubTopic, msg.Topic())
 
 				vIn := &message.ValidatorIn{}
 				require.NoError(t, proto.Unmarshal(msg.Payload(), vIn))
@@ -154,11 +156,11 @@ func TestParseMessagesError(t *testing.T) {
 	}{
 		// Bad topic.
 		{"v1", nil},
-		{fmt.Sprintf("v1/%s/%s/json/aaa", orgID, uniqID), nil},
+		{fmt.Sprintf("v1/%s/%s/json/ing-aaa", orgID, uniqID), nil},
 		{fmt.Sprintf("v2/%s/%s", orgID, uniqID), nil},
 		// Bad payload.
-		{fmt.Sprintf("v1/%s/%s", orgID, uniqID), []byte("aaa")},
-		{fmt.Sprintf("v1/%s/%s/json", orgID, uniqID), []byte("aaa")},
+		{fmt.Sprintf("v1/%s/%s", orgID, uniqID), []byte("ing-aaa")},
+		{fmt.Sprintf("v1/%s/%s/json", orgID, uniqID), []byte("ing-aaa")},
 	}
 
 	for _, test := range tests {
@@ -176,8 +178,9 @@ func TestParseMessagesError(t *testing.T) {
 			require.NoError(t, err)
 
 			ing := Ingestor{
-				mqttSub:   mqttSub,
-				parserPub: parserQueue,
+				mqttSub:        mqttSub,
+				parserQueue:    parserQueue,
+				parserPubTopic: "topic-" + random.String(10),
 			}
 			go func() {
 				ing.parseMessages()
@@ -241,9 +244,9 @@ func TestDataPointToVIn(t *testing.T) {
 				Token:    paylToken, OrgId: orgID, TraceId: traceID}},
 		{[]string{"v1", orgID, uniqIDTopic}, paylToken,
 			&mqtt.DataPoint{Attr: "metadata",
-				MapVal: map[string]string{"aaa": "bbb"}, Ts: now},
+				MapVal: map[string]string{"ing-aaa": "ing-bbb"}, Ts: now},
 			&message.ValidatorIn{UniqId: uniqIDTopic, Attr: "metadata",
-				MapVal: map[string]string{"aaa": "bbb"}, Ts: now,
+				MapVal: map[string]string{"ing-aaa": "ing-bbb"}, Ts: now,
 				Token: paylToken, OrgId: orgID, TraceId: traceID}},
 	}
 

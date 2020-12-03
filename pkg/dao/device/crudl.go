@@ -8,8 +8,8 @@ import (
 )
 
 const createDevice = `
-INSERT INTO devices (org_id, uniq_id, created_at, updated_at)
-VALUES ($1, $2, $3, $4)
+INSERT INTO devices (org_id, uniq_id, is_disabled, created_at, updated_at)
+VALUES ($1, $2, $3, $4, $5)
 RETURNING id, token
 `
 
@@ -20,7 +20,7 @@ func (d *DAO) Create(ctx context.Context, dev Device) (*Device, error) {
 	dev.UpdatedAt = time.Now().UTC().Truncate(time.Microsecond)
 
 	if err := d.pg.QueryRowContext(ctx, createDevice, dev.OrgID, dev.UniqID,
-		dev.CreatedAt, dev.UpdatedAt).Scan(&dev.ID,
+		dev.Disabled, dev.CreatedAt, dev.UpdatedAt).Scan(&dev.ID,
 		&dev.Token); err != nil {
 		return nil, err
 	}
@@ -28,7 +28,7 @@ func (d *DAO) Create(ctx context.Context, dev Device) (*Device, error) {
 }
 
 const readDevice = `
-SELECT id, org_id, uniq_id, token, created_at, updated_at
+SELECT id, org_id, uniq_id, is_disabled, token, created_at, updated_at
 FROM devices
 WHERE id = $1
 AND org_id = $2
@@ -39,8 +39,31 @@ func (d *DAO) Read(ctx context.Context, devID, orgID string) (*Device, error) {
 	var dev Device
 
 	if err := d.pg.QueryRowContext(ctx, readDevice, devID, orgID).Scan(&dev.ID,
-		&dev.OrgID, &dev.UniqID, &dev.Token, &dev.CreatedAt,
+		&dev.OrgID, &dev.UniqID, &dev.Disabled, &dev.Token, &dev.CreatedAt,
 		&dev.UpdatedAt); err != nil {
+		return nil, err
+	}
+
+	dev.CreatedAt = dev.CreatedAt.In(time.UTC)
+	dev.UpdatedAt = dev.UpdatedAt.In(time.UTC)
+	return &dev, nil
+}
+
+const readDeviceByUniqID = `
+SELECT id, org_id, uniq_id, is_disabled, token, created_at, updated_at
+FROM devices
+WHERE uniq_id = $1
+`
+
+// ReadByUniqID retrieves a device by UniqID. This method does not limit by org
+// ID and should only be used in the service layer.
+func (d *DAO) ReadByUniqID(ctx context.Context, uniqID string) (*Device,
+	error) {
+	var dev Device
+
+	if err := d.pg.QueryRowContext(ctx, readDeviceByUniqID, uniqID).Scan(
+		&dev.ID, &dev.OrgID, &dev.UniqID, &dev.Disabled, &dev.Token,
+		&dev.CreatedAt, &dev.UpdatedAt); err != nil {
 		return nil, err
 	}
 
@@ -51,9 +74,9 @@ func (d *DAO) Read(ctx context.Context, devID, orgID string) (*Device, error) {
 
 const updateDevice = `
 UPDATE devices
-SET uniq_id = $1, token = $2, updated_at = $3
-WHERE id = $4
-AND org_id = $5
+SET uniq_id = $1, is_disabled = $2, token = $3, updated_at = $4
+WHERE id = $5
+AND org_id = $6
 RETURNING org_id, created_at
 `
 
@@ -62,8 +85,8 @@ RETURNING org_id, created_at
 func (d *DAO) Update(ctx context.Context, dev Device) (*Device, error) {
 	dev.UpdatedAt = time.Now().UTC().Truncate(time.Microsecond)
 
-	if err := d.pg.QueryRowContext(ctx, updateDevice, dev.UniqID, dev.Token,
-		dev.UpdatedAt, dev.ID, dev.OrgID).Scan(&dev.OrgID,
+	if err := d.pg.QueryRowContext(ctx, updateDevice, dev.UniqID, dev.Disabled,
+		dev.Token, dev.UpdatedAt, dev.ID, dev.OrgID).Scan(&dev.OrgID,
 		&dev.CreatedAt); err != nil {
 		return nil, err
 	}
@@ -90,7 +113,7 @@ func (d *DAO) Delete(ctx context.Context, devID, orgID string) error {
 }
 
 const listDevices = `
-SELECT id, org_id, uniq_id, token, created_at, updated_at
+SELECT id, org_id, uniq_id, is_disabled, token, created_at, updated_at
 FROM devices
 WHERE org_id = $1
 `
@@ -111,8 +134,8 @@ func (d *DAO) List(ctx context.Context, orgID string) ([]*Device, error) {
 
 	for rows.Next() {
 		var dev Device
-		if err = rows.Scan(&dev.ID, &dev.OrgID, &dev.UniqID, &dev.Token,
-			&dev.CreatedAt, &dev.UpdatedAt); err != nil {
+		if err = rows.Scan(&dev.ID, &dev.OrgID, &dev.UniqID, &dev.Disabled,
+			&dev.Token, &dev.CreatedAt, &dev.UpdatedAt); err != nil {
 			return nil, err
 		}
 

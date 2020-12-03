@@ -7,4 +7,4 @@ deps:
 
 message:
 	protoc -I=../protobuf --go_out=. --go_opt=paths=source_relative \
-	message/message.proto
+	message/validator_in.proto message/validator_out.proto

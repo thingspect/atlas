@@ -1,4 +1,6 @@
-# Thingspect Atlas
+# Atlas
+
+### Thingspect IoT platform. It's state-of-the-art.
 
 ## Getting Started
 

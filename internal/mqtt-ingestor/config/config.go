@@ -15,8 +15,9 @@ type Config struct {
 	MQTTPass   string
 	MQTTShared bool
 
-	NSQPubAddr        string
-	ParserConcurrency int
+	NSQPubAddr  string
+	NSQPubTopic string
+	Concurrency int
 }
 
 // New instantiates a service Config, parses the environment, and returns it.
@@ -24,12 +25,13 @@ func New() *Config {
 	return &Config{
 		LogLevel: config.String(pref+"LOG_LEVEL", "DEBUG"),
 
-		MQTTAddr:   config.String(pref+"MQTT_ADDR", "tcp://localhost:1883"),
+		MQTTAddr:   config.String(pref+"MQTT_ADDR", "tcp://127.0.0.1:1883"),
 		MQTTUser:   config.String(pref+"MQTT_USER", "mqtt-ingestor"),
 		MQTTPass:   config.String(pref+"MQTT_PASS", "notasecurepassword"),
 		MQTTShared: config.Bool(pref+"MQTT_SHARED", true),
 
-		NSQPubAddr:        config.String(pref+"NSQ_PUB_ADDR", "localhost:4150"),
-		ParserConcurrency: config.Int(pref+"PARSER_CONCURRENCY", 5),
+		NSQPubAddr:  config.String(pref+"NSQ_PUB_ADDR", "127.0.0.1:4150"),
+		NSQPubTopic: config.String(pref+"NSQ_PUB_TOPIC", "ValidatorIn"),
+		Concurrency: config.Int(pref+"CONCURRENCY", 5),
 	}
 }

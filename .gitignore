@@ -21,3 +21,4 @@
 ### Thingspect ###
 /bin
 /mqtt-ingestor
+/validator

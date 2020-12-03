@@ -18,13 +18,13 @@ const (
 	ServiceName = "mqtt-ingestor"
 	sharedPref  = "$share/v1group/"
 	mqttV1Topic = "v1/#"
-	pubTopic    = "ValidatorIn"
 )
 
 // Ingestor holds references to the message broker connections.
 type Ingestor struct {
-	mqttSub   queue.Subber
-	parserPub queue.Queuer
+	mqttSub        queue.Subber
+	parserQueue    queue.Queuer
+	parserPubTopic string
 }
 
 // New builds a new Ingestor and returns a reference to it and an error value.
@@ -60,8 +60,9 @@ func New(cfg *config.Config) (*Ingestor, error) {
 	}
 
 	return &Ingestor{
-		mqttSub:   mqttSub,
-		parserPub: nsq,
+		mqttSub:        mqttSub,
+		parserQueue:    nsq,
+		parserPubTopic: cfg.NSQPubTopic,
 	}, nil
 }
 
@@ -80,5 +81,5 @@ func (ing *Ingestor) Serve(concurrency int) {
 	if err := ing.mqttSub.Unsubscribe(); err != nil {
 		alog.Errorf("Serve ing.mqttSub.Unsubscribe: %v", err)
 	}
-	ing.parserPub.Disconnect()
+	ing.parserQueue.Disconnect()
 }

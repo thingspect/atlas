@@ -59,15 +59,15 @@ func TestParseMessages(t *testing.T) {
 				Token:    paylToken, OrgId: orgID}},
 		{fmt.Sprintf("v1/%s/%s", orgID, uniqIDTopic), paylToken,
 			&mqtt.DataPoint{Attr: "metadata",
-				MapVal: map[string]string{"aaa": "bbb"}, Ts: now},
+				MapVal: map[string]string{"ing-aaa": "ing-bbb"}, Ts: now},
 			&message.ValidatorIn{UniqId: uniqIDTopic, Attr: "metadata",
-				MapVal: map[string]string{"aaa": "bbb"}, Ts: now,
+				MapVal: map[string]string{"ing-aaa": "ing-bbb"}, Ts: now,
 				Token: paylToken, OrgId: orgID}},
 		{fmt.Sprintf("v1/%s/%s/json", orgID, uniqIDTopic), paylToken,
 			&mqtt.DataPoint{Attr: "metadata",
-				MapVal: map[string]string{"aaa": "bbb"}},
+				MapVal: map[string]string{"ing-aaa": "ing-bbb"}},
 			&message.ValidatorIn{UniqId: uniqIDTopic, Attr: "metadata",
-				MapVal: map[string]string{"aaa": "bbb"}, Token: paylToken,
+				MapVal: map[string]string{"ing-aaa": "ing-bbb"}, Token: paylToken,
 				OrgId: orgID}},
 	}
 
@@ -85,17 +85,17 @@ func TestParseMessages(t *testing.T) {
 			} else {
 				bPayl, err = proto.Marshal(payl)
 			}
-			t.Logf("bPayl: %s", bPayl)
 			require.NoError(t, err)
+			t.Logf("bPayl: %s", bPayl)
 
-			require.NoError(t, globalMQTT.Publish(lTest.inpTopic, bPayl))
+			require.NoError(t, globalMQTTQueue.Publish(lTest.inpTopic, bPayl))
 
 			select {
-			case msg := <-globalParser.C():
+			case msg := <-globalParserSub.C():
 				msg.Ack()
 				t.Logf("msg.Topic, msg.Payload: %v, %s", msg.Topic(),
 					msg.Payload())
-				require.Equal(t, "ValidatorIn", msg.Topic())
+				require.Equal(t, globalParserPubTopic, msg.Topic())
 
 				vIn := &message.ValidatorIn{}
 				require.NoError(t, proto.Unmarshal(msg.Payload(), vIn))
@@ -132,11 +132,11 @@ func TestParseMessagesError(t *testing.T) {
 	}{
 		// Bad topic.
 		{"v1", nil},
-		{fmt.Sprintf("v1/%s/%s/json/aaa", orgID, uniqID), nil},
+		{fmt.Sprintf("v1/%s/%s/json/ing-aaa", orgID, uniqID), nil},
 		{fmt.Sprintf("v2/%s/%s", orgID, uniqID), nil},
 		// Bad payload.
-		{fmt.Sprintf("v1/%s/%s", orgID, uniqID), []byte("aaa")},
-		{fmt.Sprintf("v1/%s/%s/json", orgID, uniqID), []byte("aaa")},
+		{fmt.Sprintf("v1/%s/%s", orgID, uniqID), []byte("ing-aaa")},
+		{fmt.Sprintf("v1/%s/%s/json", orgID, uniqID), []byte("ing-aaa")},
 	}
 
 	for _, test := range tests {
@@ -145,11 +145,11 @@ func TestParseMessagesError(t *testing.T) {
 		t.Run(fmt.Sprintf("Cannot parse %+v", lTest), func(t *testing.T) {
 			t.Parallel()
 
-			require.NoError(t, globalMQTT.Publish(lTest.inpTopic,
+			require.NoError(t, globalMQTTQueue.Publish(lTest.inpTopic,
 				lTest.inpPayl))
 
 			select {
-			case msg := <-globalParser.C():
+			case msg := <-globalParserSub.C():
 				t.Errorf("Received unexpected msg.Topic, msg.Payload: %v, %s",
 					msg.Topic(), msg.Payload())
 			case <-time.After(500 * time.Millisecond):

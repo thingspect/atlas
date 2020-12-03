@@ -53,10 +53,10 @@ github.com/stretchr/testify/require
 # github.com/thingspect/api/go v0.0.0-20201130170213-43f819e3f4db
 ## explicit
 github.com/thingspect/api/go/mqtt
-# golang.org/x/crypto v0.0.0-20201124201722-c8d3bf9c5392
+# golang.org/x/crypto v0.0.0-20201203163018-be400aefbc4c
 ## explicit
 golang.org/x/crypto/pbkdf2
-# golang.org/x/net v0.0.0-20201201195509-5d6afe98e0b7
+# golang.org/x/net v0.0.0-20201202161906-c7110b5ffcbb
 ## explicit
 golang.org/x/net/internal/socks
 golang.org/x/net/proxy
