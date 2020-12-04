@@ -13,11 +13,11 @@ func main() {
 		ingestor.ServiceName))
 
 	// Build Ingestor.
-	ingestor, err := ingestor.New(cfg)
+	ing, err := ingestor.New(cfg)
 	if err != nil {
 		alog.Fatalf("main ingestor.New: %v", err)
 	}
 
 	// Serve connections.
-	ingestor.Serve(cfg.ParserConcurrency)
+	ing.Serve(cfg.Concurrency)
 }

@@ -12,6 +12,6 @@ RUN apk update && apk upgrade
 RUN apk add --no-cache ca-certificates tzdata
 
 # Add build files
-COPY bin/mqtt-ingestor* /bin/
+COPY bin/* /bin/
 
 USER nobody

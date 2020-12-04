@@ -51,7 +51,7 @@ func (ing *Ingestor) parseMessages() {
 		}
 		logEntry.Debugf("parseMessages payl: %#v", payl)
 
-		// Build and publish ValidatorIn message.
+		// Build and publish ValidatorIn messages.
 		var successCount int
 		for _, point := range payl.Points {
 			vIn := dataPointToVIn(traceID, payl.Token, topicParts, point)
@@ -64,7 +64,8 @@ func (ing *Ingestor) parseMessages() {
 			}
 
 			// Publish message.
-			if err = ing.parserPub.Publish(pubTopic, bVIn); err != nil {
+			if err = ing.parserQueue.Publish(ing.parserPubTopic,
+				bVIn); err != nil {
 				logEntry.Errorf("parseMessages ing.parserPub.Publish: %v", err)
 				continue
 			}

@@ -9,6 +9,7 @@ type Device struct {
 	ID        string    // id
 	OrgID     string    // org_id
 	UniqID    string    // uniq_id
+	Disabled  bool      // is_disabled
 	Token     string    // token
 	CreatedAt time.Time // created_at
 	UpdatedAt time.Time // updated_at

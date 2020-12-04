@@ -12,20 +12,22 @@ import (
 	"github.com/thingspect/atlas/pkg/test/config"
 )
 
-var globalDAO *DAO
-var globalOrgDAO *org.DAO
+var (
+	globalOrgDAO *org.DAO
+	globalDevDAO *DAO
+)
 
 func TestMain(m *testing.M) {
 	// Set up Config.
 	testConfig := config.New()
 
-	// Set up database connections.
+	// Set up database connection.
 	pg, err := postgres.New(testConfig.PgURI)
 	if err != nil {
 		log.Fatalf("TestMain postgres.New: %v", err)
 	}
-	globalDAO = NewDAO(pg)
 	globalOrgDAO = org.NewDAO(pg)
+	globalDevDAO = NewDAO(pg)
 
 	os.Exit(m.Run())
 }

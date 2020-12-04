@@ -15,7 +15,7 @@ INSTALLPATH = .
 endif
 
 ifeq ($(strip $(TEST_PG_URI)),)
-TEST_PG_URI = postgres://postgres:postgres@localhost/atlas_test
+TEST_PG_URI = postgres://postgres:postgres@127.0.0.1/atlas_test
 endif
 
 # Native Go (CGO_ENABLED=0) is faster for non-esoteric uses of DNS/user, but is
@@ -23,13 +23,13 @@ endif
 # https://github.com/golang/go/issues/9918
 # https://github.com/golang/go/issues/42459
 install:
-	$(CGO) go build -o $(INSTALLPATH)/bin/mqtt-ingestor -ldflags="-w" \
-	-buildmode=pie ./cmd/mqtt-ingestor
+	for cmd in $(shell ls cmd); do $(CGO) go build -o \
+	$(INSTALLPATH)/bin/$${cmd} -ldflags="-w" -buildmode=pie ./cmd/$${cmd}; done
 
 # Race detector is exclusive of non-cgo and PIE.
 installrace:
-	go build -o $(INSTALLPATH)/bin/mqtt-ingestor.race -ldflags="-w" -race \
-	./cmd/mqtt-ingestor
+	for cmd in $(shell ls cmd); do go build -o $(INSTALLPATH)/bin/$${cmd}.race \
+	-ldflags="-w" -race ./cmd/$${cmd}; done
 
 lint:
 	cd /tmp && GO111MODULE=on go get honnef.co/go/tools/cmd/staticcheck && \
