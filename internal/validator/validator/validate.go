@@ -117,6 +117,10 @@ func vInToVOut(vIn *message.ValidatorIn, devID string) *message.ValidatorOut {
 		vOut.ValOneof = &message.ValidatorOut_BoolVal{
 			BoolVal: vIn.GetBoolVal(),
 		}
+	case *message.ValidatorIn_BytesVal:
+		vOut.ValOneof = &message.ValidatorOut_BytesVal{
+			BytesVal: vIn.GetBytesVal(),
+		}
 	}
 
 	vOut.MapVal = vIn.MapVal

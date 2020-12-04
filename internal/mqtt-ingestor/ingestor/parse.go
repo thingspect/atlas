@@ -117,6 +117,10 @@ func dataPointToVIn(traceID, paylToken string, topicParts []string,
 		vIn.ValOneof = &message.ValidatorIn_BoolVal{
 			BoolVal: point.GetBoolVal(),
 		}
+	case *mqtt.DataPoint_BytesVal:
+		vIn.ValOneof = &message.ValidatorIn_BytesVal{
+			BytesVal: point.GetBytesVal(),
+		}
 	}
 
 	vIn.MapVal = point.MapVal
