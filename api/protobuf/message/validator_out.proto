@@ -25,10 +25,13 @@ message ValidatorOut {
 
     // Boolean value.
     bool bool_val = 6;
+
+    // Bytes value.
+    bytes bytes_val = 16;
   }
 
   // Attribute map value. Will be ignored if another value is present.
-  map<string, string> map_val = 16;
+  map<string, string> map_val = 17;
 
   // Timestamp.
   google.protobuf.Timestamp ts = 7;
