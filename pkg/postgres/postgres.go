@@ -8,7 +8,7 @@ import (
 	"time"
 
 	// pgx/stdlib imported for database/sql.
-	_ "github.com/jackc/pgx/stdlib"
+	_ "github.com/jackc/pgx/v4/stdlib"
 )
 
 // New creates a new database/sql DB using the pgx driver.
