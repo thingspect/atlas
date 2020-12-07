@@ -1,5 +1,9 @@
 .PHONY: generate
 
+# To avoid use of Git submodules, Atlas and API must be placed at the same
+# filesystem depth
 generate:
+	cp -Rf ../../api/protobuf/common protobuf/
 	docker-compose build --no-cache --pull
 	docker-compose up --remove-orphans
+	rm -rf protobuf/common

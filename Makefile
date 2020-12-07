@@ -26,7 +26,7 @@ install:
 	for cmd in $(shell ls cmd); do $(CGO) go build -o \
 	$(INSTALLPATH)/bin/$${cmd} -ldflags="-w" -buildmode=pie ./cmd/$${cmd}; done
 
-# Race detector is exclusive of non-cgo and PIE.
+# Race detector is exclusive of non-cgo and PIE
 installrace:
 	for cmd in $(shell ls cmd); do go build -o $(INSTALLPATH)/bin/$${cmd}.race \
 	-ldflags="-w" -race ./cmd/$${cmd}; done
