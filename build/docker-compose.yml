@@ -15,7 +15,7 @@ services:
   nsqd_nsqadmin:
     image: nsqio/nsq:v1.2.0
     # Run nsqd and nsqadmin in the same container to support a broadcast address
-    # outside of Docker.
+    # outside of Docker
     command: >
       sh -c '/nsqadmin --lookupd-http-address=nsqlookupd:4161 --log-level=warn &
       /nsqd --lookupd-tcp-address=nsqlookupd:4160 --broadcast-address=127.0.0.1

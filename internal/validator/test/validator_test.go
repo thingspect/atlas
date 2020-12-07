@@ -10,6 +10,7 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/require"
+	"github.com/thingspect/api/go/common"
 	"github.com/thingspect/atlas/api/go/message"
 	"github.com/thingspect/atlas/pkg/dao/device"
 	"github.com/thingspect/atlas/pkg/dao/org"
@@ -40,44 +41,31 @@ func TestValidateMessages(t *testing.T) {
 		inpVIn *message.ValidatorIn
 		res    *message.ValidatorOut
 	}{
-		{&message.ValidatorIn{UniqId: uniqID, Attr: "motion",
-			ValOneof: &message.ValidatorIn_IntVal{IntVal: 123}, Ts: now,
-			Token: createDev.Token, OrgId: createOrg.ID, TraceId: traceID},
-			&message.ValidatorOut{UniqId: uniqID, Attr: "motion",
-				ValOneof: &message.ValidatorOut_IntVal{IntVal: 123}, Ts: now,
-				DevId: createDev.ID, OrgId: createOrg.ID, TraceId: traceID}},
-		{&message.ValidatorIn{UniqId: uniqID, Attr: "temp",
-			ValOneof: &message.ValidatorIn_Fl64Val{Fl64Val: 20.3}, Ts: now,
-			Token: createDev.Token, OrgId: createOrg.ID, TraceId: traceID},
-			&message.ValidatorOut{UniqId: uniqID, Attr: "temp",
-				ValOneof: &message.ValidatorOut_Fl64Val{Fl64Val: 20.3}, Ts: now,
-				DevId: createDev.ID, OrgId: createOrg.ID, TraceId: traceID}},
-		{&message.ValidatorIn{UniqId: uniqID, Attr: "power",
-			ValOneof: &message.ValidatorIn_StrVal{StrVal: "batt"}, Ts: now,
-			Token: createDev.Token, OrgId: createOrg.ID, TraceId: traceID},
-			&message.ValidatorOut{UniqId: uniqID, Attr: "power",
-				ValOneof: &message.ValidatorOut_StrVal{StrVal: "batt"}, Ts: now,
-				DevId: createDev.ID, OrgId: createOrg.ID, TraceId: traceID}},
-		{&message.ValidatorIn{UniqId: uniqID, Attr: "leak",
-			ValOneof: &message.ValidatorIn_BoolVal{BoolVal: true}, Ts: now,
-			Token: createDev.Token, OrgId: createOrg.ID, TraceId: traceID},
-			&message.ValidatorOut{UniqId: uniqID, Attr: "leak",
-				ValOneof: &message.ValidatorOut_BoolVal{BoolVal: true}, Ts: now,
-				DevId: createDev.ID, OrgId: createOrg.ID, TraceId: traceID}},
-		{&message.ValidatorIn{UniqId: uniqID, Attr: "raw",
-			ValOneof: &message.ValidatorIn_BytesVal{BytesVal: []byte{0x00}},
-			Ts:       now, Token: createDev.Token, OrgId: createOrg.ID,
+		{&message.ValidatorIn{Point: &common.DataPoint{UniqId: uniqID,
+			Attr: "motion", ValOneof: &common.DataPoint_IntVal{IntVal: 123},
+			Ts: now, Token: createDev.Token}, OrgId: createOrg.ID,
 			TraceId: traceID},
-			&message.ValidatorOut{UniqId: uniqID, Attr: "raw",
-				ValOneof: &message.ValidatorOut_BytesVal{
-					BytesVal: []byte{0x00}}, Ts: now, DevId: createDev.ID,
-				OrgId: createOrg.ID, TraceId: traceID}},
-		{&message.ValidatorIn{UniqId: uniqID, Attr: "metadata",
-			MapVal: map[string]string{"val-aaa": "val-bbb"}, Ts: now,
-			Token: createDev.Token, OrgId: createOrg.ID, TraceId: traceID},
-			&message.ValidatorOut{UniqId: uniqID, Attr: "metadata",
+			&message.ValidatorOut{Point: &common.DataPoint{UniqId: uniqID,
+				Attr: "motion", ValOneof: &common.DataPoint_IntVal{IntVal: 123},
+				Ts: now, Token: createDev.Token}, OrgId: createOrg.ID,
+				TraceId: traceID, DevId: createDev.ID}},
+		{&message.ValidatorIn{Point: &common.DataPoint{UniqId: uniqID,
+			Attr: "temp", ValOneof: &common.DataPoint_Fl64Val{Fl64Val: 9.3},
+			Ts: now, Token: createDev.Token}, OrgId: createOrg.ID,
+			TraceId: traceID},
+			&message.ValidatorOut{Point: &common.DataPoint{UniqId: uniqID,
+				Attr: "temp", ValOneof: &common.DataPoint_Fl64Val{Fl64Val: 9.3},
+				Ts: now, Token: createDev.Token}, OrgId: createOrg.ID,
+				TraceId: traceID, DevId: createDev.ID}},
+		{&message.ValidatorIn{Point: &common.DataPoint{UniqId: uniqID,
+			Attr: "metadata", MapVal: map[string]string{"val-aaa": "val-bbb"},
+			Ts: now, Token: createDev.Token}, OrgId: createOrg.ID,
+			TraceId: traceID},
+			&message.ValidatorOut{Point: &common.DataPoint{UniqId: uniqID,
+				Attr:   "metadata",
 				MapVal: map[string]string{"val-aaa": "val-bbb"}, Ts: now,
-				DevId: createDev.ID, OrgId: createOrg.ID, TraceId: traceID}},
+				Token: createDev.Token}, OrgId: createOrg.ID, TraceId: traceID,
+				DevId: createDev.ID}},
 	}
 
 	for _, test := range tests {
@@ -142,14 +130,17 @@ func TestValidateMessagesError(t *testing.T) {
 		// Bad payload.
 		{nil},
 		// Device not found.
-		{&message.ValidatorIn{UniqId: random.String(16)}},
+		{&message.ValidatorIn{Point: &common.DataPoint{
+			UniqId: random.String(16)}}},
 		// Invalid org ID.
-		{&message.ValidatorIn{UniqId: uniqID, OrgId: "val-aaa"}},
+		{&message.ValidatorIn{Point: &common.DataPoint{UniqId: uniqID},
+			OrgId: "val-aaa"}},
 		// Device disabled.
-		{&message.ValidatorIn{UniqId: disabledUniqID, OrgId: createOrg.ID}},
-		// Invalid token.
-		{&message.ValidatorIn{UniqId: uniqID, Token: "val-aaa",
+		{&message.ValidatorIn{Point: &common.DataPoint{UniqId: disabledUniqID},
 			OrgId: createOrg.ID}},
+		// Invalid token.
+		{&message.ValidatorIn{Point: &common.DataPoint{UniqId: uniqID,
+			Token: "val-aaa"}, OrgId: createOrg.ID}},
 	}
 
 	for _, test := range tests {

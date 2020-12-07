@@ -4,6 +4,7 @@ import (
 	"strings"
 
 	"github.com/google/uuid"
+	"github.com/thingspect/api/go/common"
 	"github.com/thingspect/api/go/mqtt"
 	"github.com/thingspect/atlas/api/go/message"
 	"github.com/thingspect/atlas/pkg/alog"
@@ -56,14 +57,12 @@ func (ing *Ingestor) parseMessages() {
 		for _, point := range payl.Points {
 			vIn := dataPointToVIn(traceID, payl.Token, topicParts, point)
 
-			// Marshal ValidatorIn.
 			bVIn, err := proto.Marshal(vIn)
 			if err != nil {
 				logEntry.Errorf("parseMessages proto.Marshal: %v", err)
 				continue
 			}
 
-			// Publish message.
 			if err = ing.parserQueue.Publish(ing.parserPubTopic,
 				bVIn); err != nil {
 				logEntry.Errorf("parseMessages ing.parserPub.Publish: %v", err)
@@ -85,61 +84,30 @@ func (ing *Ingestor) parseMessages() {
 	}
 }
 
-// dataPointToVIn maps a DataPoint to ValidatorIn.
+// dataPointToVIn maps a DataPoint to ValidatorIn. The DataPoint is embedded in
+// ValidatorIn to avoid copying or use of Clone/reflection. Tests should take
+// this into account.
 func dataPointToVIn(traceID, paylToken string, topicParts []string,
-	point *mqtt.DataPoint) *message.ValidatorIn {
-	vIn := &message.ValidatorIn{}
+	point *common.DataPoint) *message.ValidatorIn {
+	vIn := &message.ValidatorIn{
+		Point:   point,
+		OrgId:   topicParts[1],
+		TraceId: traceID,
+	}
 
 	// Override UniqID with topic-based ID, if present.
 	if len(topicParts) == 3 {
-		vIn.UniqId = topicParts[2]
-	} else {
-		vIn.UniqId = point.UniqId
+		vIn.Point.UniqId = topicParts[2]
 	}
-
-	vIn.Attr = point.Attr
-
-	// If none of the types match, it is a map or absent.
-	switch point.ValOneof.(type) {
-	case *mqtt.DataPoint_IntVal:
-		vIn.ValOneof = &message.ValidatorIn_IntVal{
-			IntVal: point.GetIntVal(),
-		}
-	case *mqtt.DataPoint_Fl64Val:
-		vIn.ValOneof = &message.ValidatorIn_Fl64Val{
-			Fl64Val: point.GetFl64Val(),
-		}
-	case *mqtt.DataPoint_StrVal:
-		vIn.ValOneof = &message.ValidatorIn_StrVal{
-			StrVal: point.GetStrVal(),
-		}
-	case *mqtt.DataPoint_BoolVal:
-		vIn.ValOneof = &message.ValidatorIn_BoolVal{
-			BoolVal: point.GetBoolVal(),
-		}
-	case *mqtt.DataPoint_BytesVal:
-		vIn.ValOneof = &message.ValidatorIn_BytesVal{
-			BytesVal: point.GetBytesVal(),
-		}
-	}
-
-	vIn.MapVal = point.MapVal
 
 	// Default to current timestamp if not provided.
-	if point.Ts != nil {
-		vIn.Ts = point.Ts
-	} else {
-		vIn.Ts = timestamppb.Now()
+	if vIn.Point.Ts == nil {
+		vIn.Point.Ts = timestamppb.Now()
 	}
 
 	// Override Token with payload-based Token, if present.
 	if paylToken != "" {
-		vIn.Token = paylToken
-	} else {
-		vIn.Token = point.Token
+		vIn.Point.Token = paylToken
 	}
-
-	vIn.OrgId = topicParts[1]
-	vIn.TraceId = traceID
 	return vIn
 }

@@ -1,47 +1,17 @@
 syntax = "proto3";
 package message;
 
-import "google/protobuf/timestamp.proto";
+import "common/datapoint.proto";
 
 option go_package = "github.com/thingspect/atlas/api/go/message";
 
 message ValidatorIn {
-  // Device unique ID.
-  string uniq_id = 1;
-
-  // Device attribute.
-  string attr = 2;
-
-  // Attribute value.
-  oneof val_oneof {
-    // Integer value, 64-bit.
-    sint64 int_val = 3;
-
-    // Float value, 64-bit.
-    double fl64_val = 4;
-
-    // String value.
-    string str_val = 5;
-
-    // Boolean value.
-    bool bool_val = 6;
-
-    // Bytes value.
-    bytes bytes_val = 16;
-  }
-
-  // Attribute map value. Will be ignored if another value is present.
-  map<string, string> map_val = 17;
-
-  // Timestamp.
-  google.protobuf.Timestamp ts = 7;
-
-  // Authentication token (UUID).
-  string token = 8;
+  // Data point.
+  common.DataPoint point = 1;
 
   // Organization ID (UUID).
-  string org_id = 9;
+  string org_id = 2;
 
   // Trace ID (UUID).
-  string trace_id = 10;
+  string trace_id = 3;
 }
