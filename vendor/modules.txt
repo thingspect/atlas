@@ -1,6 +1,4 @@
-# github.com/cockroachdb/apd v1.1.0
-## explicit
-# github.com/davecgh/go-spew v1.1.0
+# github.com/davecgh/go-spew v1.1.1
 github.com/davecgh/go-spew/spew
 # github.com/eclipse/paho.mqtt.golang v1.2.0
 ## explicit
@@ -18,17 +16,27 @@ github.com/golang/snappy
 # github.com/google/uuid v1.1.2
 ## explicit
 github.com/google/uuid
-# github.com/jackc/fake v0.0.0-20150926172116-812a484cc733
+# github.com/jackc/chunkreader/v2 v2.0.1
+github.com/jackc/chunkreader/v2
+# github.com/jackc/pgconn v1.8.0
+github.com/jackc/pgconn
+github.com/jackc/pgconn/internal/ctxwatch
+github.com/jackc/pgconn/stmtcache
+# github.com/jackc/pgio v1.0.0
+github.com/jackc/pgio
+# github.com/jackc/pgpassfile v1.0.0
+github.com/jackc/pgpassfile
+# github.com/jackc/pgproto3/v2 v2.0.6
+github.com/jackc/pgproto3/v2
+# github.com/jackc/pgservicefile v0.0.0-20200714003250-2b9c44734f2b
+github.com/jackc/pgservicefile
+# github.com/jackc/pgtype v1.6.2
+github.com/jackc/pgtype
+# github.com/jackc/pgx/v4 v4.10.0
 ## explicit
-# github.com/jackc/pgx v3.6.2+incompatible
-## explicit
-github.com/jackc/pgx
-github.com/jackc/pgx/chunkreader
-github.com/jackc/pgx/internal/sanitize
-github.com/jackc/pgx/pgio
-github.com/jackc/pgx/pgproto3
-github.com/jackc/pgx/pgtype
-github.com/jackc/pgx/stdlib
+github.com/jackc/pgx/v4
+github.com/jackc/pgx/v4/internal/sanitize
+github.com/jackc/pgx/v4/stdlib
 # github.com/lib/pq v1.8.0
 ## explicit
 # github.com/nsqio/go-nsq v1.0.8
@@ -36,7 +44,6 @@ github.com/jackc/pgx/stdlib
 github.com/nsqio/go-nsq
 # github.com/pkg/errors v0.9.1
 ## explicit
-github.com/pkg/errors
 # github.com/pmezard/go-difflib v1.0.0
 github.com/pmezard/go-difflib/difflib
 # github.com/rs/zerolog v1.20.0
@@ -77,6 +84,10 @@ golang.org/x/text/transform
 golang.org/x/text/unicode/bidi
 golang.org/x/text/unicode/norm
 golang.org/x/text/width
+# golang.org/x/xerrors v0.0.0-20200804184101-5ec99f83aff1
+## explicit
+golang.org/x/xerrors
+golang.org/x/xerrors/internal
 # google.golang.org/protobuf v1.25.0
 ## explicit
 google.golang.org/protobuf/encoding/protojson
