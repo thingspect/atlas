@@ -20,14 +20,16 @@ func TestNewMQTT(t *testing.T) {
 	tests := []struct {
 		inpAddr    string
 		inpTimeout time.Duration
-		err        error
+		err        string
 	}{
 		// Success.
-		{testConfig.MQTTAddr, DefaultMQTTConnectTimeout, nil},
+		{testConfig.MQTTAddr, DefaultMQTTConnectTimeout, ""},
 		// Wrong port.
-		{"tcp://127.0.0.1:1884", time.Millisecond, ErrTimeout},
+		{"tcp://127.0.0.1:1884", DefaultMQTTConnectTimeout,
+			"connect: connection refused"},
 		// Unknown host.
-		{"host-" + random.String(10), time.Millisecond, ErrTimeout},
+		{"host-" + random.String(10) + ":1883", time.Millisecond,
+			ErrTimeout.Error()},
 	}
 
 	for _, test := range tests {
@@ -39,10 +41,11 @@ func TestNewMQTT(t *testing.T) {
 			res, err := NewMQTT(lTest.inpAddr, "", "",
 				"testNewMQTT-"+random.String(10), lTest.inpTimeout)
 			t.Logf("res, err: %+v, %v", res, err)
-			if lTest.err == nil {
+			if lTest.err == "" {
 				require.NotNil(t, res)
+			} else {
+				require.Contains(t, err.Error(), lTest.err)
 			}
-			require.Equal(t, lTest.err, err)
 		})
 	}
 }

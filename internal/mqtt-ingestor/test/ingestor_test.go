@@ -34,25 +34,27 @@ func TestParseMessages(t *testing.T) {
 		res           *message.ValidatorIn
 	}{
 		{[]string{"v1", orgID, "json"}, "",
-			&common.DataPoint{UniqId: uniqIDPoint, Attr: "motion",
+			&common.DataPoint{UniqId: uniqIDPoint, Attr: "ing-motion",
 				ValOneof: &common.DataPoint_IntVal{IntVal: 123}, Ts: now,
 				Token: pointToken},
 			&message.ValidatorIn{Point: &common.DataPoint{UniqId: uniqIDPoint,
-				Attr: "motion", ValOneof: &common.DataPoint_IntVal{IntVal: 123},
-				Ts: now, Token: pointToken}, OrgId: orgID}},
+				Attr:     "ing-motion",
+				ValOneof: &common.DataPoint_IntVal{IntVal: 123}, Ts: now,
+				Token: pointToken}, OrgId: orgID}},
 		{[]string{"v1", orgID, uniqIDTopic}, paylToken,
-			&common.DataPoint{Attr: "temp",
+			&common.DataPoint{Attr: "ing-temp",
 				ValOneof: &common.DataPoint_Fl64Val{Fl64Val: 9.3}},
 			&message.ValidatorIn{Point: &common.DataPoint{UniqId: uniqIDTopic,
-				Attr: "temp", ValOneof: &common.DataPoint_Fl64Val{Fl64Val: 9.3},
-				Token: paylToken}, OrgId: orgID}},
+				Attr:     "ing-temp",
+				ValOneof: &common.DataPoint_Fl64Val{Fl64Val: 9.3},
+				Token:    paylToken}, OrgId: orgID}},
 		{[]string{"v1", orgID, uniqIDTopic, "json"}, paylToken,
-			&common.DataPoint{Attr: "metadata",
-				MapVal: map[string]string{"ing-aaa": "ing-bbb"}},
+			&common.DataPoint{Attr: "ing-power",
+				ValOneof: &common.DataPoint_StrVal{StrVal: "batt"}},
 			&message.ValidatorIn{Point: &common.DataPoint{UniqId: uniqIDTopic,
-				Attr:   "metadata",
-				MapVal: map[string]string{"ing-aaa": "ing-bbb"},
-				Token:  paylToken}, OrgId: orgID}},
+				Attr:     "ing-power",
+				ValOneof: &common.DataPoint_StrVal{StrVal: "batt"},
+				Token:    paylToken}, OrgId: orgID}},
 	}
 
 	for _, test := range tests {
@@ -87,7 +89,7 @@ func TestParseMessages(t *testing.T) {
 				t.Logf("vIn: %#v", vIn)
 
 				// Normalize generated trace ID.
-				lTest.res.TraceId = vIn.TraceId
+				lTest.res.Point.TraceId = vIn.Point.TraceId
 				// Normalize timestamps.
 				if lTest.inpPoint.Ts == nil {
 					require.WithinDuration(t, time.Now(), vIn.Point.Ts.AsTime(),

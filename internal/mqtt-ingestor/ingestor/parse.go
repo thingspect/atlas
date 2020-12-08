@@ -90,10 +90,12 @@ func (ing *Ingestor) parseMessages() {
 func dataPointToVIn(traceID, paylToken string, topicParts []string,
 	point *common.DataPoint) *message.ValidatorIn {
 	vIn := &message.ValidatorIn{
-		Point:   point,
-		OrgId:   topicParts[1],
-		TraceId: traceID,
+		Point: point,
+		OrgId: topicParts[1],
 	}
+
+	// Override trace ID.
+	vIn.Point.TraceId = traceID
 
 	// Override UniqID with topic-based ID, if present.
 	if len(topicParts) == 3 {
