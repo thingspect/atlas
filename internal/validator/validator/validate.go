@@ -30,7 +30,7 @@ func (val *Validator) validateMessages() {
 
 		// Set up logging fields.
 		logFields := map[string]interface{}{
-			"traceID": vIn.TraceId,
+			"traceID": vIn.Point.TraceId,
 			"orgID":   vIn.OrgId,
 			"uniqID":  vIn.Point.UniqId,
 		}
@@ -69,10 +69,9 @@ func (val *Validator) validateMessages() {
 
 		// Build and publish ValidatorOut message.
 		vOut := &message.ValidatorOut{
-			Point:   vIn.Point,
-			OrgId:   vIn.OrgId,
-			TraceId: vIn.TraceId,
-			DevId:   dev.ID,
+			Point: vIn.Point,
+			OrgId: vIn.OrgId,
+			DevId: dev.ID,
 		}
 
 		bVOut, err := proto.Marshal(vOut)

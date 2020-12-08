@@ -50,12 +50,12 @@ func TestParseMessages(t *testing.T) {
 				Attr: "temp", ValOneof: &common.DataPoint_Fl64Val{Fl64Val: 9.3},
 				Token: paylToken}, OrgId: orgID}},
 		{[]string{"v1", orgID, uniqIDTopic, "json"}, paylToken,
-			&common.DataPoint{Attr: "metadata",
-				MapVal: map[string]string{"ing-aaa": "ing-bbb"}},
+			&common.DataPoint{Attr: "power",
+				ValOneof: &common.DataPoint_StrVal{StrVal: "batt"}},
 			&message.ValidatorIn{Point: &common.DataPoint{UniqId: uniqIDTopic,
-				Attr:   "metadata",
-				MapVal: map[string]string{"ing-aaa": "ing-bbb"},
-				Token:  paylToken}, OrgId: orgID}},
+				Attr:     "power",
+				ValOneof: &common.DataPoint_StrVal{StrVal: "batt"},
+				Token:    paylToken}, OrgId: orgID}},
 	}
 
 	for _, test := range tests {
@@ -109,7 +109,7 @@ func TestParseMessages(t *testing.T) {
 				t.Logf("vIn: %+v", vIn)
 
 				// Normalize generated trace ID.
-				lTest.res.TraceId = vIn.TraceId
+				lTest.res.Point.TraceId = vIn.Point.TraceId
 				// Normalize timestamps.
 				if lTest.inpPoint.Ts == nil {
 					require.WithinDuration(t, time.Now(), vIn.Point.Ts.AsTime(),
@@ -208,20 +208,20 @@ func TestDataPointToVIn(t *testing.T) {
 				Token: pointToken},
 			&message.ValidatorIn{Point: &common.DataPoint{UniqId: uniqIDPoint,
 				Attr: "motion", ValOneof: &common.DataPoint_IntVal{IntVal: 123},
-				Ts: now, Token: pointToken}, OrgId: orgID, TraceId: traceID}},
+				Ts: now, Token: pointToken, TraceId: traceID}, OrgId: orgID}},
 		{[]string{"v1", orgID, uniqIDTopic}, paylToken,
 			&common.DataPoint{Attr: "temp",
 				ValOneof: &common.DataPoint_Fl64Val{Fl64Val: 9.3}},
 			&message.ValidatorIn{Point: &common.DataPoint{UniqId: uniqIDTopic,
 				Attr: "temp", ValOneof: &common.DataPoint_Fl64Val{Fl64Val: 9.3},
-				Token: paylToken}, OrgId: orgID, TraceId: traceID}},
+				Token: paylToken, TraceId: traceID}, OrgId: orgID}},
 		{[]string{"v1", orgID, uniqIDTopic}, paylToken,
-			&common.DataPoint{Attr: "metadata",
-				MapVal: map[string]string{"ing-aaa": "ing-bbb"}},
+			&common.DataPoint{Attr: "power",
+				ValOneof: &common.DataPoint_StrVal{StrVal: "batt"}},
 			&message.ValidatorIn{Point: &common.DataPoint{UniqId: uniqIDTopic,
-				Attr:   "metadata",
-				MapVal: map[string]string{"ing-aaa": "ing-bbb"},
-				Token:  paylToken}, OrgId: orgID, TraceId: traceID}},
+				Attr:     "power",
+				ValOneof: &common.DataPoint_StrVal{StrVal: "batt"},
+				Token:    paylToken, TraceId: traceID}, OrgId: orgID}},
 	}
 
 	for _, test := range tests {

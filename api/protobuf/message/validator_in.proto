@@ -11,7 +11,4 @@ message ValidatorIn {
 
   // Organization ID (UUID).
   string org_id = 2;
-
-  // Trace ID (UUID).
-  string trace_id = 3;
 }

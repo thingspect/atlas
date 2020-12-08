@@ -1,6 +1,6 @@
 # github.com/davecgh/go-spew v1.1.1
 github.com/davecgh/go-spew/spew
-# github.com/eclipse/paho.mqtt.golang v1.2.0
+# github.com/eclipse/paho.mqtt.golang v1.3.0
 ## explicit
 github.com/eclipse/paho.mqtt.golang
 github.com/eclipse/paho.mqtt.golang/packets
@@ -16,6 +16,8 @@ github.com/golang/snappy
 # github.com/google/uuid v1.1.2
 ## explicit
 github.com/google/uuid
+# github.com/gorilla/websocket v1.4.2
+github.com/gorilla/websocket
 # github.com/jackc/chunkreader/v2 v2.0.1
 github.com/jackc/chunkreader/v2
 # github.com/jackc/pgconn v1.8.0
@@ -57,18 +59,17 @@ github.com/rs/zerolog/internal/json
 ## explicit
 github.com/stretchr/testify/assert
 github.com/stretchr/testify/require
-# github.com/thingspect/api/go v0.0.0-20201207135942-daf583b94c94
+# github.com/thingspect/api/go v0.0.0-20201208033745-19824523b926
 ## explicit
 github.com/thingspect/api/go/common
 github.com/thingspect/api/go/mqtt
 # golang.org/x/crypto v0.0.0-20201203163018-be400aefbc4c
 ## explicit
 golang.org/x/crypto/pbkdf2
-# golang.org/x/net v0.0.0-20201202161906-c7110b5ffcbb
+# golang.org/x/net v0.0.0-20201207224615-747e23833adb
 ## explicit
 golang.org/x/net/internal/socks
 golang.org/x/net/proxy
-golang.org/x/net/websocket
 # golang.org/x/text v0.3.4
 ## explicit
 golang.org/x/text/cases
