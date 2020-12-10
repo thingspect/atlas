@@ -21,7 +21,7 @@ const (
 
 // datapointer defines the methods provided by a datapoint.DAO.
 type datapointer interface {
-	Create(ctx context.Context, dp *common.DataPoint, orgID string) error
+	Create(ctx context.Context, point *common.DataPoint, orgID string) error
 }
 
 // Accumulator holds references to the database and message broker connections.

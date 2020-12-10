@@ -3,39 +3,26 @@
 package accumulator
 
 import (
-	"context"
 	"errors"
 	"fmt"
+	"sync"
 	"testing"
 	"time"
 
+	"github.com/golang/mock/gomock"
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/require"
 	"github.com/thingspect/api/go/common"
 	"github.com/thingspect/atlas/api/go/message"
 	"github.com/thingspect/atlas/pkg/dao/datapoint"
 	"github.com/thingspect/atlas/pkg/queue"
+	"github.com/thingspect/atlas/pkg/test/matcher"
 	"github.com/thingspect/atlas/pkg/test/random"
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 var errTestProc = errors.New("accumulator: test processor error")
-
-type fakeDataPointer struct {
-	fCreate func() error
-}
-
-func newFakeDataPointer() *fakeDataPointer {
-	return &fakeDataPointer{
-		fCreate: func() error { return nil },
-	}
-}
-
-func (fp *fakeDataPointer) Create(ctx context.Context, dp *common.DataPoint,
-	orgID string) error {
-	return fp.fCreate()
-}
 
 func TestAccumulateMessages(t *testing.T) {
 	t.Parallel()
@@ -73,8 +60,23 @@ func TestAccumulateMessages(t *testing.T) {
 			vOutSub, err := vOutQueue.Subscribe("")
 			require.NoError(t, err)
 
+			ctrl := gomock.NewController(t)
+			defer ctrl.Finish()
+
+			var wg sync.WaitGroup
+			wg.Add(1)
+
+			datapointer := NewMockdatapointer(ctrl)
+			datapointer.EXPECT().
+				Create(gomock.Any(), matcher.NewProtoMatcher(lTest.inp.Point),
+					lTest.inp.OrgId).
+				DoAndReturn(func(_ ...interface{}) error {
+					defer wg.Done()
+					return nil
+				}).Times(1)
+
 			acc := Accumulator{
-				dpDAO:     newFakeDataPointer(),
+				dpDAO:     datapointer,
 				vOutQueue: vOutQueue,
 				vOutSub:   vOutSub,
 			}
@@ -87,6 +89,7 @@ func TestAccumulateMessages(t *testing.T) {
 			t.Logf("bVOut: %s", bVOut)
 
 			require.NoError(t, vOutQueue.Publish("", bVOut))
+			wg.Wait()
 		})
 	}
 }
@@ -94,27 +97,20 @@ func TestAccumulateMessages(t *testing.T) {
 func TestAccumulateMessagesError(t *testing.T) {
 	t.Parallel()
 
-	duplicateDataPointer := newFakeDataPointer()
-	duplicateDataPointer.fCreate = func() error {
-		return datapoint.ErrDuplicate
-	}
-
-	errDataPointer := newFakeDataPointer()
-	errDataPointer.fCreate = func() error {
-		return errTestProc
-	}
-
 	tests := []struct {
-		inpDataPointer *fakeDataPointer
-		inpVOut        *message.ValidatorOut
+		inpVOut  *message.ValidatorOut
+		inpErr   error
+		inpTimes int
 	}{
 		// Bad payload.
-		{newFakeDataPointer(), nil},
+		{nil, nil, 0},
+		// Missing data point.
+		{&message.ValidatorOut{}, nil, 0},
 		// Duplicate data point.
-		{duplicateDataPointer,
-			&message.ValidatorOut{Point: &common.DataPoint{}}},
+		{&message.ValidatorOut{Point: &common.DataPoint{}},
+			datapoint.ErrDuplicate, 1},
 		// DataPointer error.
-		{errDataPointer, &message.ValidatorOut{Point: &common.DataPoint{}}},
+		{&message.ValidatorOut{Point: &common.DataPoint{}}, errTestProc, 1},
 	}
 
 	for _, test := range tests {
@@ -127,8 +123,22 @@ func TestAccumulateMessagesError(t *testing.T) {
 			vOutSub, err := vOutQueue.Subscribe("")
 			require.NoError(t, err)
 
+			ctrl := gomock.NewController(t)
+			defer ctrl.Finish()
+
+			var wg sync.WaitGroup
+			wg.Add(1)
+
+			datapointer := NewMockdatapointer(ctrl)
+			datapointer.EXPECT().
+				Create(gomock.Any(), gomock.Any(), "").
+				DoAndReturn(func(_ ...interface{}) error {
+					defer wg.Done()
+					return lTest.inpErr
+				}).Times(lTest.inpTimes)
+
 			acc := Accumulator{
-				dpDAO:     lTest.inpDataPointer,
+				dpDAO:     datapointer,
 				vOutQueue: vOutQueue,
 				vOutSub:   vOutSub,
 			}
@@ -145,6 +155,11 @@ func TestAccumulateMessagesError(t *testing.T) {
 			}
 
 			require.NoError(t, vOutQueue.Publish("", bVOut))
+			if lTest.inpTimes > 0 {
+				wg.Wait()
+			} else {
+				time.Sleep(100 * time.Millisecond)
+			}
 		})
 	}
 }

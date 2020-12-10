@@ -3,13 +3,13 @@
 package validator
 
 import (
-	"context"
 	"database/sql"
 	"errors"
 	"fmt"
 	"testing"
 	"time"
 
+	"github.com/golang/mock/gomock"
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/require"
 	"github.com/thingspect/api/go/common"
@@ -22,25 +22,6 @@ import (
 )
 
 var errTestProc = errors.New("validator: test processor error")
-
-type fakeDevicer struct {
-	fReadByUniqID func() (*device.Device, error)
-}
-
-func newFakeDevicer(id, orgID string, disabled bool,
-	token string) *fakeDevicer {
-	return &fakeDevicer{
-		fReadByUniqID: func() (*device.Device, error) {
-			return &device.Device{ID: id, OrgID: orgID, Disabled: disabled,
-				Token: token}, nil
-		},
-	}
-}
-
-func (fp *fakeDevicer) ReadByUniqID(ctx context.Context,
-	uniqID string) (*device.Device, error) {
-	return fp.fReadByUniqID()
-}
 
 func TestValidateMessages(t *testing.T) {
 	t.Parallel()
@@ -94,8 +75,17 @@ func TestValidateMessages(t *testing.T) {
 			require.NoError(t, err)
 			vOutPubTopic := "topic-" + random.String(10)
 
+			ctrl := gomock.NewController(t)
+			defer ctrl.Finish()
+
+			devicer := NewMockdevicer(ctrl)
+			devicer.EXPECT().
+				ReadByUniqID(gomock.Any(), lTest.inpVIn.Point.UniqId).
+				Return(&device.Device{ID: devID, OrgID: orgID, Disabled: false,
+					Token: token}, nil).Times(1)
+
 			val := Validator{
-				devDAO:       newFakeDevicer(devID, orgID, false, token),
+				devDAO:       devicer,
 				vInSub:       vInSub,
 				vOutQueue:    vOutQueue,
 				vOutPubTopic: vOutPubTopic,
@@ -140,42 +130,35 @@ func TestValidateMessagesError(t *testing.T) {
 	orgID := uuid.New().String()
 	token := uuid.New().String()
 
-	noRowsDevicer := newFakeDevicer(devID, orgID, false, token)
-	noRowsDevicer.fReadByUniqID = func() (*device.Device, error) {
-		return nil, sql.ErrNoRows
-	}
-
-	errDevicer := newFakeDevicer(devID, orgID, false, token)
-	errDevicer.fReadByUniqID = func() (*device.Device, error) {
-		return nil, errTestProc
-	}
-
 	tests := []struct {
-		inpDevicer *fakeDevicer
-		inpVIn     *message.ValidatorIn
+		inpVIn      *message.ValidatorIn
+		inpDisabled bool
+		inpErr      error
+		inpTimes    int
 	}{
 		// Bad payload.
-		{newFakeDevicer(devID, orgID, false, token), nil},
+		{nil, false, nil, 0},
+		// Missing data point.
+		{&message.ValidatorIn{}, false, nil, 0},
 		// Device not found.
-		{noRowsDevicer, &message.ValidatorIn{Point: &common.DataPoint{}}},
+		{&message.ValidatorIn{Point: &common.DataPoint{}}, false, sql.ErrNoRows,
+			1},
 		// Devicer error.
-		{errDevicer, &message.ValidatorIn{Point: &common.DataPoint{}}},
+		{&message.ValidatorIn{Point: &common.DataPoint{}}, false, errTestProc,
+			1},
 		// Missing value.
-		{newFakeDevicer(devID, orgID, false, token),
-			&message.ValidatorIn{Point: &common.DataPoint{}}},
+		{&message.ValidatorIn{Point: &common.DataPoint{}}, false, nil, 1},
 		// Invalid org ID.
-		{newFakeDevicer(devID, orgID, false, token),
-			&message.ValidatorIn{Point: &common.DataPoint{
-				ValOneof: &common.DataPoint_IntVal{}}, OrgId: "val-aaa"}},
+		{&message.ValidatorIn{Point: &common.DataPoint{
+			ValOneof: &common.DataPoint_IntVal{}}, OrgId: "val-aaa"}, false,
+			nil, 1},
 		// Device disabled.
-		{newFakeDevicer(devID, orgID, true, token),
-			&message.ValidatorIn{Point: &common.DataPoint{
-				ValOneof: &common.DataPoint_IntVal{}}, OrgId: orgID}},
+		{&message.ValidatorIn{Point: &common.DataPoint{
+			ValOneof: &common.DataPoint_IntVal{}}, OrgId: orgID}, true, nil, 1},
 		// Invalid token.
-		{newFakeDevicer(devID, orgID, false, token),
-			&message.ValidatorIn{Point: &common.DataPoint{
-				ValOneof: &common.DataPoint_IntVal{}, Token: "val-aaa"},
-				OrgId: orgID}},
+		{&message.ValidatorIn{Point: &common.DataPoint{
+			ValOneof: &common.DataPoint_IntVal{}, Token: "val-aaa"},
+			OrgId: orgID}, false, nil, 1},
 	}
 
 	for _, test := range tests {
@@ -192,8 +175,18 @@ func TestValidateMessagesError(t *testing.T) {
 			vOutSub, err := vOutQueue.Subscribe("")
 			require.NoError(t, err)
 
+			ctrl := gomock.NewController(t)
+			defer ctrl.Finish()
+
+			devicer := NewMockdevicer(ctrl)
+			devicer.EXPECT().
+				ReadByUniqID(gomock.Any(), gomock.Any()).
+				Return(&device.Device{ID: devID, OrgID: orgID,
+					Disabled: lTest.inpDisabled, Token: token}, lTest.inpErr).
+				Times(lTest.inpTimes)
+
 			val := Validator{
-				devDAO:       lTest.inpDevicer,
+				devDAO:       devicer,
 				vInSub:       vInSub,
 				vOutQueue:    vOutQueue,
 				vOutPubTopic: "topic-" + random.String(10),
