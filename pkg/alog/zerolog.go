@@ -71,7 +71,7 @@ func (z *zlog) Debug(v ...interface{}) {
 
 // Debugf logs a new formatted message with debug level.
 func (z *zlog) Debugf(format string, v ...interface{}) {
-	z.zl.Debug().Msgf(format, fmt.Sprint(v...))
+	z.zl.Debug().Msgf(format, v...)
 }
 
 // Info logs a new message with info level.
@@ -81,7 +81,7 @@ func (z *zlog) Info(v ...interface{}) {
 
 // Infof logs a new formatted message with info level.
 func (z *zlog) Infof(format string, v ...interface{}) {
-	z.zl.Info().Msgf(format, fmt.Sprint(v...))
+	z.zl.Info().Msgf(format, v...)
 }
 
 // Error logs a new message with error level.
@@ -91,7 +91,7 @@ func (z *zlog) Error(v ...interface{}) {
 
 // Errorf logs a new formatted message with error level.
 func (z *zlog) Errorf(format string, v ...interface{}) {
-	z.zl.Error().Msgf(format, fmt.Sprint(v...))
+	z.zl.Error().Msgf(format, v...)
 }
 
 // Fatal logs a new message with fatal level followed by a call to os.Exit(1).
@@ -102,5 +102,5 @@ func (z *zlog) Fatal(v ...interface{}) {
 // Fatalf logs a new formatted message with fatal level followed by a call to
 // os.Exit(1).
 func (z *zlog) Fatalf(format string, v ...interface{}) {
-	z.zl.Fatal().Msgf(format, fmt.Sprint(v...))
+	z.zl.Fatal().Msgf(format, v...)
 }

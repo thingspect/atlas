@@ -35,4 +35,4 @@ To tag as an integration test:
 To find test files that are missing build tags, the following command can be
 run:
 
-`find . -type f -name *_test.go|xargs grep -L '// +build'`
+`find . -type f -name \*_test.go|xargs grep -L '// +build'`
