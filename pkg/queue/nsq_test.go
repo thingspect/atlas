@@ -96,7 +96,7 @@ func TestNSQSubscribeLookup(t *testing.T) {
 		require.Equal(t, topic, msg.Topic())
 		require.Equal(t, payload, msg.Payload())
 	case <-time.After(5 * time.Second):
-		t.Error("Message timed out")
+		t.Fatal("Message timed out")
 	}
 }
 
@@ -125,7 +125,7 @@ func TestNSQSubscribePub(t *testing.T) {
 		require.Equal(t, topic, msg.Topic())
 		require.Equal(t, payload, msg.Payload())
 	case <-time.After(5 * time.Second):
-		t.Error("Message timed out")
+		t.Fatal("Message timed out")
 	}
 }
 
@@ -156,7 +156,7 @@ func TestNSQUnsubscribe(t *testing.T) {
 		require.Nil(t, msg)
 		require.False(t, ok)
 	case <-time.After(5 * time.Second):
-		t.Error("Message timed out")
+		t.Fatal("Message timed out")
 	}
 }
 
@@ -187,7 +187,7 @@ func TestNSQRequeue(t *testing.T) {
 		require.Equal(t, topic, msg.Topic())
 		require.Equal(t, payload, msg.Payload())
 	case <-time.After(5 * time.Second):
-		t.Error("Requeue message timed out")
+		t.Fatal("Requeue message timed out")
 	}
 
 	select {
@@ -197,7 +197,7 @@ func TestNSQRequeue(t *testing.T) {
 		require.Equal(t, topic, msg.Topic())
 		require.Equal(t, payload, msg.Payload())
 	case <-time.After(10 * time.Second):
-		t.Error("Ack message timed out")
+		t.Fatal("Ack message timed out")
 	}
 }
 

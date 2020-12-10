@@ -53,6 +53,10 @@ func (val *Validator) validateMessages() {
 		logEntry = logEntry.WithStr("devID", dev.ID)
 
 		switch {
+		case vIn.Point.ValOneof == nil:
+			logEntry.Debugf("validateMessages missing value: %+v", vIn)
+			msg.Ack()
+			continue
 		case vIn.OrgId != dev.OrgID:
 			logEntry.Debugf("validateMessages invalid org ID: %+v", vIn)
 			msg.Ack()
@@ -87,7 +91,7 @@ func (val *Validator) validateMessages() {
 			continue
 		}
 		msg.Ack()
-		logEntry.Debugf("validateMessages published: %#v", vOut)
+		logEntry.Debugf("validateMessages published: %+v", vOut)
 
 		processCount++
 		if processCount%100 == 0 {

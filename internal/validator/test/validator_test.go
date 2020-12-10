@@ -89,15 +89,15 @@ func TestValidateMessages(t *testing.T) {
 
 				vOut := &message.ValidatorOut{}
 				require.NoError(t, proto.Unmarshal(msg.Payload(), vOut))
-				t.Logf("vOut: %#v", vOut)
+				t.Logf("vOut: %+v", vOut)
 
 				// Testify does not currently support protobuf equality:
 				// https://github.com/stretchr/testify/issues/758
 				if !proto.Equal(lTest.res, vOut) {
-					t.Fatalf("Expected, actual: %#v, %#v", lTest.res, vOut)
+					t.Fatalf("\nExpect: %+v\nActual: %+v", lTest.res, vOut)
 				}
 			case <-time.After(5 * time.Second):
-				t.Error("Message timed out")
+				t.Fatal("Message timed out")
 			}
 		})
 	}
@@ -134,15 +134,18 @@ func TestValidateMessagesError(t *testing.T) {
 		// Device not found.
 		{&message.ValidatorIn{Point: &common.DataPoint{
 			UniqId: random.String(16)}}},
+		// Missing value.
+		{&message.ValidatorIn{Point: &common.DataPoint{UniqId: uniqID}}},
 		// Invalid org ID.
-		{&message.ValidatorIn{Point: &common.DataPoint{UniqId: uniqID},
-			OrgId: "val-aaa"}},
+		{&message.ValidatorIn{Point: &common.DataPoint{UniqId: uniqID,
+			ValOneof: &common.DataPoint_IntVal{}}, OrgId: "val-aaa"}},
 		// Device disabled.
-		{&message.ValidatorIn{Point: &common.DataPoint{UniqId: disabledUniqID},
-			OrgId: createOrg.ID}},
+		{&message.ValidatorIn{Point: &common.DataPoint{UniqId: disabledUniqID,
+			ValOneof: &common.DataPoint_IntVal{}}, OrgId: createOrg.ID}},
 		// Invalid token.
 		{&message.ValidatorIn{Point: &common.DataPoint{UniqId: uniqID,
-			Token: "val-aaa"}, OrgId: createOrg.ID}},
+			ValOneof: &common.DataPoint_IntVal{}, Token: "val-aaa"},
+			OrgId: createOrg.ID}},
 	}
 
 	for _, test := range tests {
@@ -163,7 +166,7 @@ func TestValidateMessagesError(t *testing.T) {
 
 			select {
 			case msg := <-globalVOutSub.C():
-				t.Errorf("Received unexpected msg.Topic, msg.Payload: %v, %s",
+				t.Fatalf("Received unexpected msg.Topic, msg.Payload: %v, %s",
 					msg.Topic(), msg.Payload())
 			case <-time.After(500 * time.Millisecond):
 				// Successful timeout without publish (normally 0.25s).

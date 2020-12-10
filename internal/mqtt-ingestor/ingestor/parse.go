@@ -50,7 +50,7 @@ func (ing *Ingestor) parseMessages() {
 			logEntry.Errorf("parseMessages proto.Unmarshal: %v", err)
 			continue
 		}
-		logEntry.Debugf("parseMessages payl: %#v", payl)
+		logEntry.Debugf("parseMessages payl: %+v", payl)
 
 		// Build and publish ValidatorIn messages.
 		var successCount int
@@ -68,7 +68,9 @@ func (ing *Ingestor) parseMessages() {
 				logEntry.Errorf("parseMessages ing.parserPub.Publish: %v", err)
 				continue
 			}
+
 			successCount++
+			logEntry.Debugf("parseMessages published: %+v", vIn)
 		}
 
 		// Do not ack on errors, as publish may retry successfully.

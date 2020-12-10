@@ -37,7 +37,7 @@ func TestNew(t *testing.T) {
 			t.Parallel()
 
 			res, err := New(lTest.inp)
-			t.Logf("res, err: %+v, %v", res, err)
+			t.Logf("res, err: %+v, %#v", res, err)
 			if lTest.err == "" {
 				require.NotNil(t, res)
 			} else {
