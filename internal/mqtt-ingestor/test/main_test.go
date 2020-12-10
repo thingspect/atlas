@@ -31,6 +31,7 @@ func TestMain(m *testing.M) {
 	cfg.NSQPubAddr = testConfig.NSQPubAddr
 	cfg.NSQPubTopic += "-test-" + random.String(10)
 	globalParserPubTopic = cfg.NSQPubTopic
+	log.Printf("TestMain cfg.NSQPubTopic: %v", cfg.NSQPubTopic)
 
 	// Set up MQTT client connection to publish test payloads.
 	var err error

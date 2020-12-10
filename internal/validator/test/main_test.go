@@ -37,6 +37,7 @@ func TestMain(m *testing.M) {
 	cfg.NSQLookupAddrs = testConfig.NSQLookupAddrs
 	cfg.NSQSubTopic += "-test-" + random.String(10)
 	globalVInSubTopic = cfg.NSQSubTopic
+	log.Printf("TestMain cfg.NSQSubTopic: %v", cfg.NSQSubTopic)
 	// Use a unique channel for each test run. This prevents failed tests from
 	// interfering with the next run, but does require eventual cleaning.
 	cfg.NSQSubChannel = "validator-test-" + random.String(10)
@@ -44,6 +45,7 @@ func TestMain(m *testing.M) {
 	cfg.NSQPubAddr = testConfig.NSQPubAddr
 	cfg.NSQPubTopic += "-test-" + random.String(10)
 	globalVOutPubTopic = cfg.NSQPubTopic
+	log.Printf("TestMain cfg.NSQPubTopic: %v", cfg.NSQPubTopic)
 
 	// Set up NSQ queue to publish test payloads.
 	var err error

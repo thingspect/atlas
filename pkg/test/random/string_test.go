@@ -12,7 +12,7 @@ import (
 func TestString(t *testing.T) {
 	t.Parallel()
 
-	for i := 0; i < 10; i++ {
+	for i := 5; i < 15; i++ {
 		lTest := i
 
 		t.Run(fmt.Sprintf("Can generate %v", lTest), func(t *testing.T) {
@@ -24,10 +24,7 @@ func TestString(t *testing.T) {
 
 			require.Len(t, s1, lTest)
 			require.Len(t, s2, lTest)
-			// Collisions on 1- and 2-character strings are common.
-			if lTest > 2 {
-				require.NotEqual(t, s1, s2)
-			}
+			require.NotEqual(t, s1, s2)
 		})
 	}
 }

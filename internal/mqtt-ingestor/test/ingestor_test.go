@@ -21,11 +21,11 @@ import (
 
 func TestParseMessages(t *testing.T) {
 	orgID := uuid.New().String()
-	paylToken := uuid.New().String()
-	pointToken := uuid.New().String()
-	uniqIDTopic := random.String(16)
 	uniqIDPoint := random.String(16)
 	now := timestamppb.New(time.Now().Add(-15 * time.Minute))
+	pointToken := uuid.New().String()
+	uniqIDTopic := random.String(16)
+	paylToken := uuid.New().String()
 
 	tests := []struct {
 		inpTopicParts []string
@@ -86,7 +86,7 @@ func TestParseMessages(t *testing.T) {
 
 				vIn := &message.ValidatorIn{}
 				require.NoError(t, proto.Unmarshal(msg.Payload(), vIn))
-				t.Logf("vIn: %#v", vIn)
+				t.Logf("vIn: %+v", vIn)
 
 				// Normalize generated trace ID.
 				lTest.res.Point.TraceId = vIn.Point.TraceId
@@ -100,10 +100,10 @@ func TestParseMessages(t *testing.T) {
 				// Testify does not currently support protobuf equality:
 				// https://github.com/stretchr/testify/issues/758
 				if !proto.Equal(lTest.res, vIn) {
-					t.Fatalf("Expected, actual: %#v, %#v", lTest.res, vIn)
+					t.Fatalf("\nExpect: %+v\nActual: %+v", lTest.res, vIn)
 				}
 			case <-time.After(5 * time.Second):
-				t.Error("Message timed out")
+				t.Fatal("Message timed out")
 			}
 		})
 	}
@@ -137,7 +137,7 @@ func TestParseMessagesError(t *testing.T) {
 
 			select {
 			case msg := <-globalParserSub.C():
-				t.Errorf("Received unexpected msg.Topic, msg.Payload: %v, %s",
+				t.Fatalf("Received unexpected msg.Topic, msg.Payload: %v, %s",
 					msg.Topic(), msg.Payload())
 			case <-time.After(500 * time.Millisecond):
 				// Successful timeout without publish (normally 0.25s).

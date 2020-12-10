@@ -89,7 +89,7 @@ func TestMQTTSubscribe(t *testing.T) {
 		require.Equal(t, topic, msg.Topic())
 		require.Equal(t, payload, msg.Payload())
 	case <-time.After(5 * time.Second):
-		t.Error("Message timed out")
+		t.Fatal("Message timed out")
 	}
 }
 
@@ -120,7 +120,7 @@ func TestMQTTUnsubscribe(t *testing.T) {
 		require.Nil(t, msg)
 		require.False(t, ok)
 	case <-time.After(5 * time.Second):
-		t.Error("Message timed out")
+		t.Fatal("Message timed out")
 	}
 }
 

@@ -48,9 +48,9 @@ func TestValidateMessages(t *testing.T) {
 	uniqID := random.String(16)
 	now := timestamppb.New(time.Now().Add(-15 * time.Minute))
 	token := uuid.New().String()
-	devID := uuid.New().String()
-	orgID := uuid.New().String()
 	traceID := uuid.New().String()
+	orgID := uuid.New().String()
+	devID := uuid.New().String()
 
 	tests := []struct {
 		inpVIn *message.ValidatorIn
@@ -119,15 +119,15 @@ func TestValidateMessages(t *testing.T) {
 
 				vOut := &message.ValidatorOut{}
 				require.NoError(t, proto.Unmarshal(msg.Payload(), vOut))
-				t.Logf("vOut: %#v", vOut)
+				t.Logf("vOut: %+v", vOut)
 
 				// Testify does not currently support protobuf equality:
 				// https://github.com/stretchr/testify/issues/758
 				if !proto.Equal(lTest.res, vOut) {
-					t.Fatalf("Expected, actual: %#v, %#v", lTest.res, vOut)
+					t.Fatalf("\nExpect: %+v\nActual: %+v", lTest.res, vOut)
 				}
 			case <-time.After(2 * time.Second):
-				t.Error("Message timed out")
+				t.Fatal("Message timed out")
 			}
 		})
 	}
@@ -136,9 +136,9 @@ func TestValidateMessages(t *testing.T) {
 func TestValidateMessagesError(t *testing.T) {
 	t.Parallel()
 
-	token := uuid.New().String()
 	devID := uuid.New().String()
 	orgID := uuid.New().String()
+	token := uuid.New().String()
 
 	noRowsDevicer := newFakeDevicer(devID, orgID, false, token)
 	noRowsDevicer.fReadByUniqID = func() (*device.Device, error) {
@@ -160,15 +160,21 @@ func TestValidateMessagesError(t *testing.T) {
 		{noRowsDevicer, &message.ValidatorIn{Point: &common.DataPoint{}}},
 		// Devicer error.
 		{errDevicer, &message.ValidatorIn{Point: &common.DataPoint{}}},
+		// Missing value.
+		{newFakeDevicer(devID, orgID, false, token),
+			&message.ValidatorIn{Point: &common.DataPoint{}}},
 		// Invalid org ID.
 		{newFakeDevicer(devID, orgID, false, token),
-			&message.ValidatorIn{Point: &common.DataPoint{}, OrgId: "val-aaa"}},
+			&message.ValidatorIn{Point: &common.DataPoint{
+				ValOneof: &common.DataPoint_IntVal{}}, OrgId: "val-aaa"}},
 		// Device disabled.
 		{newFakeDevicer(devID, orgID, true, token),
-			&message.ValidatorIn{Point: &common.DataPoint{}, OrgId: orgID}},
+			&message.ValidatorIn{Point: &common.DataPoint{
+				ValOneof: &common.DataPoint_IntVal{}}, OrgId: orgID}},
 		// Invalid token.
 		{newFakeDevicer(devID, orgID, false, token),
-			&message.ValidatorIn{Point: &common.DataPoint{Token: "val-aaa"},
+			&message.ValidatorIn{Point: &common.DataPoint{
+				ValOneof: &common.DataPoint_IntVal{}, Token: "val-aaa"},
 				OrgId: orgID}},
 	}
 
@@ -208,7 +214,7 @@ func TestValidateMessagesError(t *testing.T) {
 
 			select {
 			case msg := <-vOutSub.C():
-				t.Errorf("Received unexpected msg.Topic, msg.Payload: %v, %s",
+				t.Fatalf("Received unexpected msg.Topic, msg.Payload: %v, %s",
 					msg.Topic(), msg.Payload())
 			case <-time.After(100 * time.Millisecond):
 				// Successful timeout without publish (normally 0.02s).
