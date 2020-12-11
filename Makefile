@@ -20,13 +20,13 @@ endif
 
 # Native Go (CGO_ENABLED=0) is faster for non-esoteric uses of DNS/user, but is
 # not currently supported in conjunction with PIE on darwin/amd64:
-# https://github.com/golang/go/issues/9918
 # https://github.com/golang/go/issues/42459
 install:
 	for cmd in $(shell ls cmd); do $(CGO) go build -o \
 	$(INSTALLPATH)/bin/$${cmd} -ldflags="-w" -buildmode=pie ./cmd/$${cmd}; done
 
 # Race detector is exclusive of non-cgo and PIE
+# https://github.com/golang/go/issues/9918
 installrace:
 	for cmd in $(shell ls cmd); do go build -o $(INSTALLPATH)/bin/$${cmd}.race \
 	-ldflags="-w" -race ./cmd/$${cmd}; done
@@ -35,8 +35,7 @@ lint:
 	cd /tmp && GO111MODULE=on go get honnef.co/go/tools/cmd/staticcheck && \
 	cd $(CURDIR)
 # staticcheck defaults are all,-ST1000,-ST1003,-ST1016,-ST1020,-ST1021,-ST1022
-# protobuf ST1000: https://github.com/dominikh/go-tools/issues/429
-	staticcheck -checks all,-ST1000 -unused.whole-program ./...
+	staticcheck -checks all -unused.whole-program ./...
 	cd /tmp && GO111MODULE=on go get \
 	github.com/golangci/golangci-lint/cmd/golangci-lint && cd $(CURDIR)
 # unused is included in the newer version of staticcheck above
