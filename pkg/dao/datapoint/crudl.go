@@ -4,12 +4,12 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"log"
 	"strings"
 	"time"
 
 	"github.com/jackc/pgconn"
 	"github.com/thingspect/api/go/common"
+	"github.com/thingspect/atlas/pkg/alog"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
@@ -90,7 +90,7 @@ func (d *DAO) List(ctx context.Context, orgID, uniqID string, start,
 	}
 	defer func() {
 		if err = rows.Close(); err != nil {
-			log.Printf("List rows.Close: %v", err)
+			alog.Errorf("List rows.Close: %v", err)
 		}
 	}()
 
