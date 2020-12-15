@@ -2,9 +2,10 @@ package device
 
 import (
 	"context"
-	"log"
 	"strings"
 	"time"
+
+	"github.com/thingspect/atlas/pkg/alog"
 )
 
 const createDevice = `
@@ -128,7 +129,7 @@ func (d *DAO) List(ctx context.Context, orgID string) ([]*Device, error) {
 	}
 	defer func() {
 		if err = rows.Close(); err != nil {
-			log.Printf("List rows.Close: %v", err)
+			alog.Errorf("List rows.Close: %v", err)
 		}
 	}()
 

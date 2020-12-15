@@ -63,7 +63,7 @@ github.com/rs/zerolog/internal/json
 ## explicit
 github.com/stretchr/testify/assert
 github.com/stretchr/testify/require
-# github.com/thingspect/api/go v0.0.0-20201208033745-19824523b926
+# github.com/thingspect/api/go v0.0.0-20201211174633-084b324dd9a2
 ## explicit
 github.com/thingspect/api/go/common
 github.com/thingspect/api/go/mqtt
