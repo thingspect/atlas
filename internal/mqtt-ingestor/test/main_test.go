@@ -27,6 +27,8 @@ func TestMain(m *testing.M) {
 	testConfig := testconfig.New()
 	cfg := config.New()
 	cfg.MQTTAddr = testConfig.MQTTAddr
+	cfg.MQTTUser = testConfig.MQTTUser
+	cfg.MQTTPass = testConfig.MQTTPass
 
 	cfg.NSQPubAddr = testConfig.NSQPubAddr
 	cfg.NSQPubTopic += "-test-" + random.String(10)
