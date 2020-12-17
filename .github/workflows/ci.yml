@@ -32,12 +32,15 @@ jobs:
           LOOKUP_ADDR: nsqlookupd:4160
           LOG_LEVEL: warn
       mqtt:
-        image: eclipse-mosquitto:1.6
+        image: eclipse-mosquitto:2.0
+        volumes:
+          - ${{ github.workspace }}/build/volume/mosquitto:/mosquitto/config
+        options: --name mqtt
     steps:
       - name: Deps
-        # Names are duplicated as IDs for important steps for use by Notify.
+        # Names are duplicated as IDs for important steps for use by Notify
         id: Deps
-        # Add packages needed to support PIE builds and tests.
+        # Add packages needed to support PIE builds and tests
         run: |
           apk update && apk upgrade
           apk add --no-cache make gcc musl-dev git
@@ -46,12 +49,18 @@ jobs:
       - name: Clone
         id: Clone
         uses: actions/checkout@v2
+      - name: Restart_MQTT
+        id: Restart_MQTT
+        # Restart MQTT after volumes have been checked out
+        uses: docker://docker
+        with:
+          args: docker restart mqtt
       - name: Build_and_Test
         id: Build_and_Test
         run: make test
       - name: Push
         id: Push
-        # GitHub Actions do not currently support builds within a container.
+        # GitHub Actions do not currently support builds within a container
         run: |
           apk add --no-cache docker
           docker version

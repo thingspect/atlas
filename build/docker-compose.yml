@@ -27,6 +27,8 @@ services:
       - "127.0.0.1:4150:4150"
       - "127.0.0.1:4171:4171"
   mqtt:
-    image: eclipse-mosquitto:1.6
+    image: eclipse-mosquitto:2.0
     ports:
       - "127.0.0.1:1883:1883"
+    volumes:
+      - ./volume/mosquitto:/mosquitto/config

@@ -38,11 +38,13 @@ func TestNewMQTT(t *testing.T) {
 		t.Run(fmt.Sprintf("Can connect %+v", lTest), func(t *testing.T) {
 			t.Parallel()
 
-			res, err := NewMQTT(lTest.inpAddr, "", "",
-				"testNewMQTT-"+random.String(10), lTest.inpTimeout)
+			res, err := NewMQTT(lTest.inpAddr, testConfig.MQTTUser,
+				testConfig.MQTTPass, "testNewMQTT-"+random.String(10),
+				lTest.inpTimeout)
 			t.Logf("res, err: %+v, %v", res, err)
 			if lTest.err == "" {
 				require.NotNil(t, res)
+				require.NoError(t, err)
 			} else {
 				require.Contains(t, err.Error(), lTest.err)
 			}
@@ -55,8 +57,9 @@ func TestMQTTPublish(t *testing.T) {
 
 	testConfig := config.New()
 
-	mqtt, err := NewMQTT(testConfig.MQTTAddr, "", "",
-		"testMQTTPublish-"+random.String(10), DefaultMQTTConnectTimeout)
+	mqtt, err := NewMQTT(testConfig.MQTTAddr, testConfig.MQTTUser,
+		testConfig.MQTTPass, "testMQTTPublish-"+random.String(10),
+		DefaultMQTTConnectTimeout)
 	t.Logf("mqtt, err: %+v, %v", mqtt, err)
 	require.NoError(t, err)
 
@@ -71,8 +74,9 @@ func TestMQTTSubscribe(t *testing.T) {
 	topic := "testMQTTSubscribe-" + random.String(10)
 	payload := []byte(random.String(10))
 
-	mqtt, err := NewMQTT(testConfig.MQTTAddr, "", "",
-		"testMQTTSubscribe-"+random.String(10), DefaultMQTTConnectTimeout)
+	mqtt, err := NewMQTT(testConfig.MQTTAddr, testConfig.MQTTUser,
+		testConfig.MQTTPass, "testMQTTSubscribe-"+random.String(10),
+		DefaultMQTTConnectTimeout)
 	t.Logf("mqtt, err: %+v, %v", mqtt, err)
 	require.NoError(t, err)
 
@@ -99,8 +103,9 @@ func TestMQTTUnsubscribe(t *testing.T) {
 	testConfig := config.New()
 	topic := "testMQTTUnsubscribe-" + random.String(10)
 
-	mqtt, err := NewMQTT(testConfig.MQTTAddr, "", "",
-		"testMQTTUnsubscribe-"+random.String(10), DefaultMQTTConnectTimeout)
+	mqtt, err := NewMQTT(testConfig.MQTTAddr, testConfig.MQTTUser,
+		testConfig.MQTTPass, "testMQTTUnsubscribe-"+random.String(10),
+		DefaultMQTTConnectTimeout)
 	t.Logf("mqtt, err: %+v, %v", mqtt, err)
 	require.NoError(t, err)
 
@@ -129,8 +134,9 @@ func TestMQTTDisconnect(t *testing.T) {
 
 	testConfig := config.New()
 
-	mqtt, err := NewMQTT(testConfig.MQTTAddr, "", "",
-		"testMQTTDisconnect-"+random.String(10), DefaultMQTTConnectTimeout)
+	mqtt, err := NewMQTT(testConfig.MQTTAddr, testConfig.MQTTUser,
+		testConfig.MQTTPass, "testMQTTDisconnect-"+random.String(10),
+		DefaultMQTTConnectTimeout)
 	t.Logf("mqtt, err: %+v, %v", mqtt, err)
 	require.NoError(t, err)
 

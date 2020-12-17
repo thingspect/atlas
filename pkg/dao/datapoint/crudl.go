@@ -57,9 +57,9 @@ func (d *DAO) Create(ctx context.Context, point *common.DataPoint,
 		if errors.As(err, &pgErr) {
 			switch pgErr.Code {
 			case "23505":
-				return fmt.Errorf("%w: %#v", ErrDuplicate, pgErr)
+				return fmt.Errorf("%w: %+v", ErrDuplicate, pgErr)
 			case "22001", "23514":
-				return fmt.Errorf("%w: %#v", ErrBadFormat, pgErr)
+				return fmt.Errorf("%w: %+v", ErrBadFormat, pgErr)
 			}
 		}
 		return err
