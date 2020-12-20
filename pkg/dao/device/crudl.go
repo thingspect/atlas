@@ -78,16 +78,16 @@ UPDATE devices
 SET uniq_id = $1, is_disabled = $2, token = $3, updated_at = $4
 WHERE id = $5
 AND org_id = $6
-RETURNING org_id, created_at
+RETURNING created_at
 `
 
-// Update updates a device in the database. OrgID and CreatedAt should not
-// update, so it is safe to override them at the DAO level.
+// Update updates a device in the database. CreatedAt should not update, so it
+// is safe to override it at the DAO level.
 func (d *DAO) Update(ctx context.Context, dev Device) (*Device, error) {
 	dev.UpdatedAt = time.Now().UTC().Truncate(time.Microsecond)
 
 	if err := d.pg.QueryRowContext(ctx, updateDevice, dev.UniqID, dev.Disabled,
-		dev.Token, dev.UpdatedAt, dev.ID, dev.OrgID).Scan(&dev.OrgID,
+		dev.Token, dev.UpdatedAt, dev.ID, dev.OrgID).Scan(
 		&dev.CreatedAt); err != nil {
 		return nil, err
 	}

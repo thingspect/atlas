@@ -24,7 +24,8 @@ bool_val, bytes_val, created_at, trace_id)
 VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
 `
 
-// Create creates a data point in the database.
+// Create creates a data point in the database. Data points are retrieved in
+// bulk, so only an error value is returned.
 func (d *DAO) Create(ctx context.Context, point *common.DataPoint,
 	orgID string) error {
 	// Truncate timestamp to milliseconds for deduplication.

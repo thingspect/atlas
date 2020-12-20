@@ -18,3 +18,8 @@ func String(n uint) string {
 
 	return hex.EncodeToString(b)[:n]
 }
+
+// Email generates a random email at thingspect.com.
+func Email() string {
+	return String(10) + "@thingspect.com"
+}

@@ -1,10 +1,11 @@
-package device
+// Package user provides functions to query and modify users in the database.
+package user
 
 import (
 	"database/sql"
 )
 
-// DAO contains functions to query and modify devices in the database.
+// DAO contains functions to query and modify users in the database.
 type DAO struct {
 	pg *sql.DB
 }

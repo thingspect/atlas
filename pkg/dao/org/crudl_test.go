@@ -27,6 +27,10 @@ func TestCreate(t *testing.T) {
 		t.Logf("createOrg, err: %+v, %v", createOrg, err)
 		require.NoError(t, err)
 		require.Equal(t, org.Name, createOrg.Name)
+		require.WithinDuration(t, time.Now(), createOrg.CreatedAt,
+			2*time.Second)
+		require.WithinDuration(t, time.Now(), createOrg.UpdatedAt,
+			2*time.Second)
 	})
 
 	t.Run("Create invalid org", func(t *testing.T) {
@@ -182,6 +186,7 @@ func TestDeleteOrg(t *testing.T) {
 
 			readOrg, err := globalOrgDAO.Read(ctx, createOrg.ID)
 			t.Logf("readOrg, err: %+v, %v", readOrg, err)
+			require.Nil(t, readOrg)
 			require.Equal(t, sql.ErrNoRows, err)
 		})
 	})

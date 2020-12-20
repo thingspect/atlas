@@ -40,6 +40,10 @@ func TestCreate(t *testing.T) {
 		require.Equal(t, dev.OrgID, createDev.OrgID)
 		require.Equal(t, dev.UniqID, createDev.UniqID)
 		require.Equal(t, dev.Disabled, createDev.Disabled)
+		require.WithinDuration(t, time.Now(), createDev.CreatedAt,
+			2*time.Second)
+		require.WithinDuration(t, time.Now(), createDev.UpdatedAt,
+			2*time.Second)
 	})
 
 	t.Run("Create valid device with uppercase UniqID", func(t *testing.T) {
@@ -57,6 +61,10 @@ func TestCreate(t *testing.T) {
 		require.Equal(t, dev.OrgID, createDev.OrgID)
 		require.Equal(t, strings.ToLower(dev.UniqID), createDev.UniqID)
 		require.Equal(t, dev.Disabled, createDev.Disabled)
+		require.WithinDuration(t, time.Now(), createDev.CreatedAt,
+			2*time.Second)
+		require.WithinDuration(t, time.Now(), createDev.UpdatedAt,
+			2*time.Second)
 	})
 
 	t.Run("Create invalid device", func(t *testing.T) {
@@ -315,6 +323,7 @@ func TestDeleteDevice(t *testing.T) {
 
 			readDevice, err := globalDevDAO.Read(ctx, createDev.ID, createOrg.ID)
 			t.Logf("readDevice, err: %+v, %v", readDevice, err)
+			require.Nil(t, readDevice)
 			require.Equal(t, sql.ErrNoRows, err)
 		})
 	})
