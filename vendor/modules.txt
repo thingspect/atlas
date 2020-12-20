@@ -38,7 +38,7 @@ github.com/jackc/pgproto3/v2
 github.com/jackc/pgservicefile
 # github.com/jackc/pgtype v1.6.2
 github.com/jackc/pgtype
-# github.com/jackc/pgx/v4 v4.10.0
+# github.com/jackc/pgx/v4 v4.10.1
 ## explicit
 github.com/jackc/pgx/v4
 github.com/jackc/pgx/v4/internal/sanitize
@@ -63,14 +63,17 @@ github.com/rs/zerolog/internal/json
 ## explicit
 github.com/stretchr/testify/assert
 github.com/stretchr/testify/require
-# github.com/thingspect/api/go v0.0.0-20201211174633-084b324dd9a2
+# github.com/thingspect/api/go v0.0.0-20201218163643-41255f4b0b2b
 ## explicit
+github.com/thingspect/api/go/api
 github.com/thingspect/api/go/common
 github.com/thingspect/api/go/mqtt
-# golang.org/x/crypto v0.0.0-20201208171446-5f87f3452ae9
+# golang.org/x/crypto v0.0.0-20201217014255-9d1352758620
 ## explicit
+golang.org/x/crypto/bcrypt
+golang.org/x/crypto/blowfish
 golang.org/x/crypto/pbkdf2
-# golang.org/x/net v0.0.0-20201209123823-ac852fbbde11
+# golang.org/x/net v0.0.0-20201216054612-986b41b23924
 ## explicit
 golang.org/x/net/internal/socks
 golang.org/x/net/proxy
