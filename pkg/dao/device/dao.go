@@ -1,3 +1,5 @@
+// Package device provides functions to query and modify devices in the
+// database.
 package device
 
 import (

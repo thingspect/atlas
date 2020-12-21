@@ -11,6 +11,7 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/require"
+	"github.com/thingspect/api/go/api"
 	"github.com/thingspect/atlas/pkg/dao/org"
 	"github.com/thingspect/atlas/pkg/test/random"
 )
@@ -32,38 +33,38 @@ func TestCreate(t *testing.T) {
 		ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
 		defer cancel()
 
-		dev := Device{OrgID: createOrg.ID, UniqID: random.String(16),
-			Disabled: []bool{true, false}[random.Intn(2)]}
+		dev := &api.Device{OrgId: createOrg.ID, UniqId: random.String(16),
+			IsDisabled: []bool{true, false}[random.Intn(2)]}
 		createDev, err := globalDevDAO.Create(ctx, dev)
 		t.Logf("createDev, err: %+v, %v", createDev, err)
 		require.NoError(t, err)
-		require.Equal(t, dev.OrgID, createDev.OrgID)
-		require.Equal(t, dev.UniqID, createDev.UniqID)
-		require.Equal(t, dev.Disabled, createDev.Disabled)
-		require.WithinDuration(t, time.Now(), createDev.CreatedAt,
+		require.Equal(t, dev.OrgId, createDev.OrgId)
+		require.Equal(t, dev.UniqId, createDev.UniqId)
+		require.Equal(t, dev.IsDisabled, createDev.IsDisabled)
+		require.WithinDuration(t, time.Now(), createDev.CreatedAt.AsTime(),
 			2*time.Second)
-		require.WithinDuration(t, time.Now(), createDev.UpdatedAt,
+		require.WithinDuration(t, time.Now(), createDev.UpdatedAt.AsTime(),
 			2*time.Second)
 	})
 
-	t.Run("Create valid device with uppercase UniqID", func(t *testing.T) {
+	t.Run("Create valid device with uppercase UniqId", func(t *testing.T) {
 		t.Parallel()
 
 		ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
 		defer cancel()
 
-		dev := Device{OrgID: createOrg.ID,
-			UniqID:   strings.ToUpper(random.String(16)),
-			Disabled: []bool{true, false}[random.Intn(2)]}
+		dev := &api.Device{OrgId: createOrg.ID,
+			UniqId:     strings.ToUpper(random.String(16)),
+			IsDisabled: []bool{true, false}[random.Intn(2)]}
 		createDev, err := globalDevDAO.Create(ctx, dev)
 		t.Logf("createDev, err: %+v, %v", createDev, err)
 		require.NoError(t, err)
-		require.Equal(t, dev.OrgID, createDev.OrgID)
-		require.Equal(t, strings.ToLower(dev.UniqID), createDev.UniqID)
-		require.Equal(t, dev.Disabled, createDev.Disabled)
-		require.WithinDuration(t, time.Now(), createDev.CreatedAt,
+		require.Equal(t, dev.OrgId, createDev.OrgId)
+		require.Equal(t, strings.ToLower(dev.UniqId), createDev.UniqId)
+		require.Equal(t, dev.IsDisabled, createDev.IsDisabled)
+		require.WithinDuration(t, time.Now(), createDev.CreatedAt.AsTime(),
 			2*time.Second)
-		require.WithinDuration(t, time.Now(), createDev.UpdatedAt,
+		require.WithinDuration(t, time.Now(), createDev.UpdatedAt.AsTime(),
 			2*time.Second)
 	})
 
@@ -73,7 +74,7 @@ func TestCreate(t *testing.T) {
 		ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
 		defer cancel()
 
-		dev := Device{OrgID: createOrg.ID, UniqID: random.String(41)}
+		dev := &api.Device{OrgId: createOrg.ID, UniqId: random.String(41)}
 		createDev, err := globalDevDAO.Create(ctx, dev)
 		t.Logf("createDev, err: %+v, %v", createDev, err)
 		require.Nil(t, createDev)
@@ -93,8 +94,8 @@ func TestRead(t *testing.T) {
 	t.Logf("createOrg, err: %+v, %v", createOrg, err)
 	require.NoError(t, err)
 
-	dev := Device{OrgID: createOrg.ID, UniqID: random.String(16),
-		Disabled: []bool{true, false}[random.Intn(2)]}
+	dev := &api.Device{OrgId: createOrg.ID, UniqId: random.String(16),
+		IsDisabled: []bool{true, false}[random.Intn(2)]}
 	createDev, err := globalDevDAO.Create(ctx, dev)
 	t.Logf("createDev, err: %+v, %v", createDev, err)
 	require.NoError(t, err)
@@ -105,7 +106,7 @@ func TestRead(t *testing.T) {
 		ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
 		defer cancel()
 
-		readDevice, err := globalDevDAO.Read(ctx, createDev.ID, createDev.OrgID)
+		readDevice, err := globalDevDAO.Read(ctx, createDev.Id, createDev.OrgId)
 		t.Logf("readDevice, err: %+v, %v", readDevice, err)
 		require.NoError(t, err)
 		require.Equal(t, createDev, readDevice)
@@ -130,7 +131,7 @@ func TestRead(t *testing.T) {
 		ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
 		defer cancel()
 
-		readDevice, err := globalDevDAO.Read(ctx, createDev.ID,
+		readDevice, err := globalDevDAO.Read(ctx, createDev.Id,
 			uuid.New().String())
 		t.Logf("readDevice, err: %+v, %v", readDevice, err)
 		require.Nil(t, readDevice)
@@ -144,7 +145,7 @@ func TestRead(t *testing.T) {
 		defer cancel()
 
 		readDevice, err := globalDevDAO.Read(ctx, random.String(10),
-			createDev.OrgID)
+			createDev.OrgId)
 		t.Logf("readDevice, err: %+v, %v", readDevice, err)
 		require.Nil(t, readDevice)
 		require.Contains(t, err.Error(),
@@ -163,8 +164,8 @@ func TestReadByUniqID(t *testing.T) {
 	t.Logf("createOrg, err: %+v, %v", createOrg, err)
 	require.NoError(t, err)
 
-	dev := Device{OrgID: createOrg.ID, UniqID: random.String(16),
-		Disabled: []bool{true, false}[random.Intn(2)]}
+	dev := &api.Device{OrgId: createOrg.ID, UniqId: random.String(16),
+		IsDisabled: []bool{true, false}[random.Intn(2)]}
 	createDev, err := globalDevDAO.Create(ctx, dev)
 	t.Logf("createDev, err: %+v, %v", createDev, err)
 	require.NoError(t, err)
@@ -175,7 +176,7 @@ func TestReadByUniqID(t *testing.T) {
 		ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
 		defer cancel()
 
-		readDevice, err := globalDevDAO.ReadByUniqID(ctx, createDev.UniqID)
+		readDevice, err := globalDevDAO.ReadByUniqID(ctx, createDev.UniqId)
 		t.Logf("readDevice, err: %+v, %v", readDevice, err)
 		require.NoError(t, err)
 		require.Equal(t, createDev, readDevice)
@@ -211,24 +212,25 @@ func TestUpdateDevice(t *testing.T) {
 		ctx, cancel := context.WithTimeout(context.Background(), 4*time.Second)
 		defer cancel()
 
-		dev := Device{OrgID: createOrg.ID, UniqID: random.String(16)}
+		dev := &api.Device{OrgId: createOrg.ID, UniqId: random.String(16)}
 		createDev, err := globalDevDAO.Create(ctx, dev)
 		t.Logf("createDev, err: %+v, %v", createDev, err)
 		require.NoError(t, err)
 
 		// Update device fields.
-		createDev.UniqID = random.String(16)
-		createDev.Disabled = []bool{true, false}[random.Intn(2)]
+		createDev.UniqId = random.String(16)
+		createDev.IsDisabled = []bool{true, false}[random.Intn(2)]
 
-		updateDev, err := globalDevDAO.Update(ctx, *createDev)
+		updateDev, err := globalDevDAO.Update(ctx, createDev)
 		t.Logf("updateDev, err: %+v, %v", updateDev, err)
 		require.NoError(t, err)
-		require.Equal(t, createDev.UniqID, updateDev.UniqID)
-		require.Equal(t, createDev.Disabled, updateDev.Disabled)
+		require.Equal(t, createDev.UniqId, updateDev.UniqId)
+		require.Equal(t, createDev.IsDisabled, updateDev.IsDisabled)
 		require.Equal(t, createDev.CreatedAt, updateDev.CreatedAt)
-		require.True(t, updateDev.UpdatedAt.After(updateDev.CreatedAt))
-		require.WithinDuration(t, createDev.CreatedAt, updateDev.UpdatedAt,
-			2*time.Second)
+		require.True(t, updateDev.UpdatedAt.AsTime().After(
+			updateDev.CreatedAt.AsTime()))
+		require.WithinDuration(t, createDev.CreatedAt.AsTime(),
+			updateDev.UpdatedAt.AsTime(), 2*time.Second)
 	})
 
 	t.Run("Update unknown device", func(t *testing.T) {
@@ -237,8 +239,9 @@ func TestUpdateDevice(t *testing.T) {
 		ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
 		defer cancel()
 
-		unknownDevice := Device{ID: uuid.New().String(), OrgID: createOrg.ID,
-			UniqID: random.String(16), Token: uuid.New().String()}
+		unknownDevice := &api.Device{Id: uuid.New().String(),
+			OrgId: createOrg.ID, UniqId: random.String(16),
+			Token: uuid.New().String()}
 		updateDev, err := globalDevDAO.Update(ctx, unknownDevice)
 		t.Logf("updateDev, err: %+v, %v", updateDev, err)
 		require.Nil(t, updateDev)
@@ -251,16 +254,16 @@ func TestUpdateDevice(t *testing.T) {
 		ctx, cancel := context.WithTimeout(context.Background(), 4*time.Second)
 		defer cancel()
 
-		dev := Device{OrgID: createOrg.ID, UniqID: random.String(16)}
+		dev := &api.Device{OrgId: createOrg.ID, UniqId: random.String(16)}
 		createDev, err := globalDevDAO.Create(ctx, dev)
 		t.Logf("createDev, err: %+v, %v", createDev, err)
 		require.NoError(t, err)
 
 		// Update device fields.
-		createDev.OrgID = uuid.New().String()
-		createDev.UniqID = random.String(16)
+		createDev.OrgId = uuid.New().String()
+		createDev.UniqId = random.String(16)
 
-		updateDev, err := globalDevDAO.Update(ctx, *createDev)
+		updateDev, err := globalDevDAO.Update(ctx, createDev)
 		t.Logf("updateDev, err: %+v, %v", updateDev, err)
 		require.Nil(t, updateDev)
 		require.Equal(t, sql.ErrNoRows, err)
@@ -272,15 +275,15 @@ func TestUpdateDevice(t *testing.T) {
 		ctx, cancel := context.WithTimeout(context.Background(), 4*time.Second)
 		defer cancel()
 
-		dev := Device{OrgID: createOrg.ID, UniqID: random.String(16)}
+		dev := &api.Device{OrgId: createOrg.ID, UniqId: random.String(16)}
 		createDev, err := globalDevDAO.Create(ctx, dev)
 		t.Logf("createDev, err: %+v, %v", createDev, err)
 		require.NoError(t, err)
 
 		// Update device fields.
-		createDev.UniqID = random.String(41)
+		createDev.UniqId = random.String(41)
 
-		updateDev, err := globalDevDAO.Update(ctx, *createDev)
+		updateDev, err := globalDevDAO.Update(ctx, createDev)
 		t.Logf("updateDev, err: %+v, %v", updateDev, err)
 		require.Nil(t, updateDev)
 		require.EqualError(t, err, "ERROR: value too long for type character "+
@@ -305,12 +308,12 @@ func TestDeleteDevice(t *testing.T) {
 		ctx, cancel := context.WithTimeout(context.Background(), 4*time.Second)
 		defer cancel()
 
-		dev := Device{OrgID: createOrg.ID, UniqID: random.String(16)}
+		dev := &api.Device{OrgId: createOrg.ID, UniqId: random.String(16)}
 		createDev, err := globalDevDAO.Create(ctx, dev)
 		t.Logf("createDev, err: %+v, %v", createDev, err)
 		require.NoError(t, err)
 
-		err = globalDevDAO.Delete(ctx, createDev.ID, createOrg.ID)
+		err = globalDevDAO.Delete(ctx, createDev.Id, createOrg.ID)
 		t.Logf("err: %v", err)
 		require.NoError(t, err)
 
@@ -321,7 +324,8 @@ func TestDeleteDevice(t *testing.T) {
 				2*time.Second)
 			defer cancel()
 
-			readDevice, err := globalDevDAO.Read(ctx, createDev.ID, createOrg.ID)
+			readDevice, err := globalDevDAO.Read(ctx, createDev.Id,
+				createOrg.ID)
 			t.Logf("readDevice, err: %+v, %v", readDevice, err)
 			require.Nil(t, readDevice)
 			require.Equal(t, sql.ErrNoRows, err)
@@ -345,12 +349,12 @@ func TestDeleteDevice(t *testing.T) {
 		ctx, cancel := context.WithTimeout(context.Background(), 4*time.Second)
 		defer cancel()
 
-		dev := Device{OrgID: createOrg.ID, UniqID: random.String(16)}
+		dev := &api.Device{OrgId: createOrg.ID, UniqId: random.String(16)}
 		createDev, err := globalDevDAO.Create(ctx, dev)
 		t.Logf("createDev, err: %+v, %v", createDev, err)
 		require.NoError(t, err)
 
-		err = globalDevDAO.Delete(ctx, createDev.ID, uuid.New().String())
+		err = globalDevDAO.Delete(ctx, createDev.Id, uuid.New().String())
 		t.Logf("err: %v", err)
 		require.Equal(t, sql.ErrNoRows, err)
 	})
@@ -370,13 +374,13 @@ func TestListDevices(t *testing.T) {
 	var lastDeviceID string
 	var lastDeviceDisabled bool
 	for i := 0; i < 3; i++ {
-		dev := Device{OrgID: createOrg.ID, UniqID: random.String(16),
-			Disabled: []bool{true, false}[random.Intn(2)]}
+		dev := &api.Device{OrgId: createOrg.ID, UniqId: random.String(16),
+			IsDisabled: []bool{true, false}[random.Intn(2)]}
 		createDev, err := globalDevDAO.Create(ctx, dev)
 		t.Logf("createDev, err: %+v, %v", createDev, err)
 		require.NoError(t, err)
-		lastDeviceID = createDev.ID
-		lastDeviceDisabled = createDev.Disabled
+		lastDeviceID = createDev.Id
+		lastDeviceDisabled = createDev.IsDisabled
 	}
 
 	t.Run("List devices by valid org ID", func(t *testing.T) {
@@ -392,7 +396,7 @@ func TestListDevices(t *testing.T) {
 
 		var found bool
 		for _, dev := range listDevs {
-			if dev.ID == lastDeviceID && dev.Disabled == lastDeviceDisabled {
+			if dev.Id == lastDeviceID && dev.IsDisabled == lastDeviceDisabled {
 				found = true
 			}
 		}

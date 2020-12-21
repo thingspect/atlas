@@ -10,7 +10,7 @@ package validator
 import (
 	context "context"
 	gomock "github.com/golang/mock/gomock"
-	device "github.com/thingspect/atlas/pkg/dao/device"
+	api "github.com/thingspect/api/go/api"
 	reflect "reflect"
 )
 
@@ -38,10 +38,10 @@ func (m *Mockdevicer) EXPECT() *MockdevicerMockRecorder {
 }
 
 // ReadByUniqID mocks base method
-func (m *Mockdevicer) ReadByUniqID(ctx context.Context, uniqID string) (*device.Device, error) {
+func (m *Mockdevicer) ReadByUniqID(ctx context.Context, uniqID string) (*api.Device, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "ReadByUniqID", ctx, uniqID)
-	ret0, _ := ret[0].(*device.Device)
+	ret0, _ := ret[0].(*api.Device)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }

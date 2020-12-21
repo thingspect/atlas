@@ -5,7 +5,9 @@ import (
 	"strings"
 	"time"
 
+	"github.com/thingspect/api/go/api"
 	"github.com/thingspect/atlas/pkg/alog"
+	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 const createDevice = `
@@ -15,17 +17,20 @@ RETURNING id, token
 `
 
 // Create creates a device in the database.
-func (d *DAO) Create(ctx context.Context, dev Device) (*Device, error) {
-	dev.UniqID = strings.ToLower(dev.UniqID)
-	dev.CreatedAt = time.Now().UTC().Truncate(time.Microsecond)
-	dev.UpdatedAt = time.Now().UTC().Truncate(time.Microsecond)
+func (d *DAO) Create(ctx context.Context, dev *api.Device) (*api.Device,
+	error) {
+	dev.UniqId = strings.ToLower(dev.UniqId)
+	createdAt := time.Now().UTC().Truncate(time.Microsecond)
+	dev.CreatedAt = timestamppb.New(createdAt)
+	updatedAt := time.Now().UTC().Truncate(time.Microsecond)
+	dev.UpdatedAt = timestamppb.New(updatedAt)
 
-	if err := d.pg.QueryRowContext(ctx, createDevice, dev.OrgID, dev.UniqID,
-		dev.Disabled, dev.CreatedAt, dev.UpdatedAt).Scan(&dev.ID,
+	if err := d.pg.QueryRowContext(ctx, createDevice, dev.OrgId, dev.UniqId,
+		dev.IsDisabled, createdAt, updatedAt).Scan(&dev.Id,
 		&dev.Token); err != nil {
 		return nil, err
 	}
-	return &dev, nil
+	return dev, nil
 }
 
 const readDevice = `
@@ -36,18 +41,20 @@ AND org_id = $2
 `
 
 // Read retrieves a device by ID and org ID.
-func (d *DAO) Read(ctx context.Context, devID, orgID string) (*Device, error) {
-	var dev Device
+func (d *DAO) Read(ctx context.Context, devID, orgID string) (*api.Device,
+	error) {
+	dev := &api.Device{}
+	var createdAt, updatedAt time.Time
 
-	if err := d.pg.QueryRowContext(ctx, readDevice, devID, orgID).Scan(&dev.ID,
-		&dev.OrgID, &dev.UniqID, &dev.Disabled, &dev.Token, &dev.CreatedAt,
-		&dev.UpdatedAt); err != nil {
+	if err := d.pg.QueryRowContext(ctx, readDevice, devID, orgID).Scan(&dev.Id,
+		&dev.OrgId, &dev.UniqId, &dev.IsDisabled, &dev.Token, &createdAt,
+		&updatedAt); err != nil {
 		return nil, err
 	}
 
-	dev.CreatedAt = dev.CreatedAt.In(time.UTC)
-	dev.UpdatedAt = dev.UpdatedAt.In(time.UTC)
-	return &dev, nil
+	dev.CreatedAt = timestamppb.New(createdAt)
+	dev.UpdatedAt = timestamppb.New(updatedAt)
+	return dev, nil
 }
 
 const readDeviceByUniqID = `
@@ -58,19 +65,20 @@ WHERE uniq_id = $1
 
 // ReadByUniqID retrieves a device by UniqID. This method does not limit by org
 // ID and should only be used in the service layer.
-func (d *DAO) ReadByUniqID(ctx context.Context, uniqID string) (*Device,
+func (d *DAO) ReadByUniqID(ctx context.Context, uniqID string) (*api.Device,
 	error) {
-	var dev Device
+	dev := &api.Device{}
+	var createdAt, updatedAt time.Time
 
 	if err := d.pg.QueryRowContext(ctx, readDeviceByUniqID, uniqID).Scan(
-		&dev.ID, &dev.OrgID, &dev.UniqID, &dev.Disabled, &dev.Token,
-		&dev.CreatedAt, &dev.UpdatedAt); err != nil {
+		&dev.Id, &dev.OrgId, &dev.UniqId, &dev.IsDisabled, &dev.Token,
+		&createdAt, &updatedAt); err != nil {
 		return nil, err
 	}
 
-	dev.CreatedAt = dev.CreatedAt.In(time.UTC)
-	dev.UpdatedAt = dev.UpdatedAt.In(time.UTC)
-	return &dev, nil
+	dev.CreatedAt = timestamppb.New(createdAt)
+	dev.UpdatedAt = timestamppb.New(updatedAt)
+	return dev, nil
 }
 
 const updateDevice = `
@@ -83,17 +91,20 @@ RETURNING created_at
 
 // Update updates a device in the database. CreatedAt should not update, so it
 // is safe to override it at the DAO level.
-func (d *DAO) Update(ctx context.Context, dev Device) (*Device, error) {
-	dev.UpdatedAt = time.Now().UTC().Truncate(time.Microsecond)
+func (d *DAO) Update(ctx context.Context, dev *api.Device) (*api.Device,
+	error) {
+	var createdAt time.Time
+	updatedAt := time.Now().UTC().Truncate(time.Microsecond)
+	dev.UpdatedAt = timestamppb.New(updatedAt)
 
-	if err := d.pg.QueryRowContext(ctx, updateDevice, dev.UniqID, dev.Disabled,
-		dev.Token, dev.UpdatedAt, dev.ID, dev.OrgID).Scan(
-		&dev.CreatedAt); err != nil {
+	if err := d.pg.QueryRowContext(ctx, updateDevice, dev.UniqId,
+		dev.IsDisabled, dev.Token, updatedAt, dev.Id, dev.OrgId).Scan(
+		&createdAt); err != nil {
 		return nil, err
 	}
 
-	dev.CreatedAt = dev.CreatedAt.In(time.UTC)
-	return &dev, nil
+	dev.CreatedAt = timestamppb.New(createdAt)
+	return dev, nil
 }
 
 const deleteDevice = `
@@ -120,8 +131,8 @@ WHERE org_id = $1
 `
 
 // List retrieves all devices by org ID.
-func (d *DAO) List(ctx context.Context, orgID string) ([]*Device, error) {
-	var devs []*Device
+func (d *DAO) List(ctx context.Context, orgID string) ([]*api.Device, error) {
+	var devs []*api.Device
 
 	rows, err := d.pg.QueryContext(ctx, listDevices, orgID)
 	if err != nil {
@@ -134,15 +145,17 @@ func (d *DAO) List(ctx context.Context, orgID string) ([]*Device, error) {
 	}()
 
 	for rows.Next() {
-		var dev Device
-		if err = rows.Scan(&dev.ID, &dev.OrgID, &dev.UniqID, &dev.Disabled,
-			&dev.Token, &dev.CreatedAt, &dev.UpdatedAt); err != nil {
+		dev := &api.Device{}
+		var createdAt, updatedAt time.Time
+
+		if err = rows.Scan(&dev.Id, &dev.OrgId, &dev.UniqId, &dev.IsDisabled,
+			&dev.Token, &createdAt, &updatedAt); err != nil {
 			return nil, err
 		}
 
-		dev.CreatedAt = dev.CreatedAt.In(time.UTC)
-		dev.UpdatedAt = dev.UpdatedAt.In(time.UTC)
-		devs = append(devs, &dev)
+		dev.CreatedAt = timestamppb.New(createdAt)
+		dev.UpdatedAt = timestamppb.New(updatedAt)
+		devs = append(devs, dev)
 	}
 
 	if err = rows.Close(); err != nil {
