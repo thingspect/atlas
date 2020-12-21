@@ -10,9 +10,9 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/require"
+	"github.com/thingspect/api/go/api"
 	"github.com/thingspect/api/go/common"
 	"github.com/thingspect/atlas/api/go/message"
-	"github.com/thingspect/atlas/pkg/dao/device"
 	"github.com/thingspect/atlas/pkg/dao/org"
 	"github.com/thingspect/atlas/pkg/test/random"
 	"google.golang.org/protobuf/proto"
@@ -32,7 +32,7 @@ func TestValidateMessages(t *testing.T) {
 	t.Logf("createOrg, err: %+v, %v", createOrg, err)
 	require.NoError(t, err)
 
-	dev := device.Device{OrgID: createOrg.ID, UniqID: uniqID}
+	dev := &api.Device{OrgId: createOrg.ID, UniqId: uniqID}
 	createDev, err := globalDevDAO.Create(ctx, dev)
 	t.Logf("createDev, err: %+v, %v", createDev, err)
 	require.NoError(t, err)
@@ -49,7 +49,7 @@ func TestValidateMessages(t *testing.T) {
 				Attr:     "val-motion",
 				ValOneof: &common.DataPoint_IntVal{IntVal: 123}, Ts: now,
 				Token: createDev.Token, TraceId: traceID}, OrgId: createOrg.ID,
-				DevId: createDev.ID}},
+				DevId: createDev.Id}},
 		{&message.ValidatorIn{Point: &common.DataPoint{UniqId: uniqID,
 			Attr: "val-temp", ValOneof: &common.DataPoint_Fl64Val{Fl64Val: 9.3},
 			Ts: now, Token: createDev.Token, TraceId: traceID},
@@ -58,7 +58,7 @@ func TestValidateMessages(t *testing.T) {
 				Attr:     "val-temp",
 				ValOneof: &common.DataPoint_Fl64Val{Fl64Val: 9.3}, Ts: now,
 				Token: createDev.Token, TraceId: traceID}, OrgId: createOrg.ID,
-				DevId: createDev.ID}},
+				DevId: createDev.Id}},
 		{&message.ValidatorIn{Point: &common.DataPoint{UniqId: uniqID,
 			Attr:     "val-power",
 			ValOneof: &common.DataPoint_StrVal{StrVal: "batt"}, Ts: now,
@@ -67,7 +67,7 @@ func TestValidateMessages(t *testing.T) {
 				Attr:     "val-power",
 				ValOneof: &common.DataPoint_StrVal{StrVal: "batt"}, Ts: now,
 				Token: createDev.Token, TraceId: traceID}, OrgId: createOrg.ID,
-				DevId: createDev.ID}},
+				DevId: createDev.Id}},
 	}
 
 	for _, test := range tests {
@@ -115,13 +115,13 @@ func TestValidateMessagesError(t *testing.T) {
 	t.Logf("createOrg, err: %+v, %v", createOrg, err)
 	require.NoError(t, err)
 
-	dev := device.Device{OrgID: createOrg.ID, UniqID: uniqID}
+	dev := &api.Device{OrgId: createOrg.ID, UniqId: uniqID}
 	createDev, err := globalDevDAO.Create(ctx, dev)
 	t.Logf("createDev, err: %+v, %v", createDev, err)
 	require.NoError(t, err)
 
-	disabledDev := device.Device{OrgID: createOrg.ID, UniqID: disabledUniqID,
-		Disabled: true}
+	disabledDev := &api.Device{OrgId: createOrg.ID, UniqId: disabledUniqID,
+		IsDisabled: true}
 	createDisabledDev, err := globalDevDAO.Create(ctx, disabledDev)
 	t.Logf("createDisabledDev, err: %+v, %v", createDisabledDev, err)
 	require.NoError(t, err)

@@ -17,7 +17,7 @@ require (
 	github.com/rs/zerolog v1.20.0
 	github.com/shopspring/decimal v1.2.0 // indirect
 	github.com/stretchr/testify v1.6.1
-	github.com/thingspect/api/go v0.0.0-20201218163643-41255f4b0b2b
+	github.com/thingspect/api/go v0.0.0-20201221015649-845bc9169e5a
 	golang.org/x/crypto v0.0.0-20201217014255-9d1352758620
 	golang.org/x/net v0.0.0-20201216054612-986b41b23924 // indirect
 	golang.org/x/text v0.3.4 // indirect

@@ -12,9 +12,9 @@ import (
 	"github.com/golang/mock/gomock"
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/require"
+	"github.com/thingspect/api/go/api"
 	"github.com/thingspect/api/go/common"
 	"github.com/thingspect/atlas/api/go/message"
-	"github.com/thingspect/atlas/pkg/dao/device"
 	"github.com/thingspect/atlas/pkg/queue"
 	"github.com/thingspect/atlas/pkg/test/random"
 	"google.golang.org/protobuf/proto"
@@ -81,7 +81,7 @@ func TestValidateMessages(t *testing.T) {
 			devicer := NewMockdevicer(ctrl)
 			devicer.EXPECT().
 				ReadByUniqID(gomock.Any(), lTest.inpVIn.Point.UniqId).
-				Return(&device.Device{ID: devID, OrgID: orgID, Disabled: false,
+				Return(&api.Device{Id: devID, OrgId: orgID, IsDisabled: false,
 					Token: token}, nil).Times(1)
 
 			val := Validator{
@@ -181,8 +181,8 @@ func TestValidateMessagesError(t *testing.T) {
 			devicer := NewMockdevicer(ctrl)
 			devicer.EXPECT().
 				ReadByUniqID(gomock.Any(), gomock.Any()).
-				Return(&device.Device{ID: devID, OrgID: orgID,
-					Disabled: lTest.inpDisabled, Token: token}, lTest.inpErr).
+				Return(&api.Device{Id: devID, OrgId: orgID,
+					IsDisabled: lTest.inpDisabled, Token: token}, lTest.inpErr).
 				Times(lTest.inpTimes)
 
 			val := Validator{

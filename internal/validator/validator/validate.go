@@ -50,18 +50,18 @@ func (val *Validator) validateMessages() {
 			msg.Requeue()
 			continue
 		}
-		logEntry = logEntry.WithStr("devID", dev.ID)
+		logEntry = logEntry.WithStr("devID", dev.Id)
 
 		switch {
 		case vIn.Point.ValOneof == nil:
 			logEntry.Debugf("validateMessages missing value: %+v", vIn)
 			msg.Ack()
 			continue
-		case vIn.OrgId != dev.OrgID:
+		case vIn.OrgId != dev.OrgId:
 			logEntry.Debugf("validateMessages invalid org ID: %+v", vIn)
 			msg.Ack()
 			continue
-		case dev.Disabled:
+		case dev.IsDisabled:
 			logEntry.Debugf("validateMessages device disabled: %+v", vIn)
 			msg.Ack()
 			continue
@@ -75,7 +75,7 @@ func (val *Validator) validateMessages() {
 		vOut := &message.ValidatorOut{
 			Point: vIn.Point,
 			OrgId: vIn.OrgId,
-			DevId: dev.ID,
+			DevId: dev.Id,
 		}
 
 		bVOut, err := proto.Marshal(vOut)
