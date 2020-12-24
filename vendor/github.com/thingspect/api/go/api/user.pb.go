@@ -26,6 +26,7 @@ const (
 // of the legacy proto package is being used.
 const _ = proto.ProtoPackageIsVersion4
 
+// User represents a user as stored in the database.
 type User struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache

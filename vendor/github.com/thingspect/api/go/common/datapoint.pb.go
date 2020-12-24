@@ -26,6 +26,7 @@ const (
 // of the legacy proto package is being used.
 const _ = proto.ProtoPackageIsVersion4
 
+// DataPoint represents a data point as stored in the database.
 type DataPoint struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache

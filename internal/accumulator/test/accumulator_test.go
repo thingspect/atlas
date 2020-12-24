@@ -24,19 +24,19 @@ func TestAccumulateMessages(t *testing.T) {
 		inp *message.ValidatorOut
 	}{
 		{&message.ValidatorOut{Point: &common.DataPoint{
-			UniqId: random.String(16), Attr: "motion",
+			UniqId: "acc-" + random.String(16), Attr: "acc-motion",
 			ValOneof: &common.DataPoint_IntVal{IntVal: 123},
 			Ts:       timestamppb.New(time.Now().Add(-15 * time.Minute)),
 			Token:    uuid.New().String(), TraceId: uuid.New().String()},
 			OrgId: uuid.New().String()}},
 		{&message.ValidatorOut{Point: &common.DataPoint{
-			UniqId: random.String(16), Attr: "temp",
+			UniqId: "acc-" + random.String(16), Attr: "acc-temp",
 			ValOneof: &common.DataPoint_Fl64Val{Fl64Val: 9.3},
 			Ts:       timestamppb.New(time.Now().Add(-15 * time.Minute)),
 			Token:    uuid.New().String(), TraceId: uuid.New().String()},
 			OrgId: uuid.New().String()}},
 		{&message.ValidatorOut{Point: &common.DataPoint{
-			UniqId: random.String(16), Attr: "power",
+			UniqId: "acc-" + random.String(16), Attr: "acc-power",
 			ValOneof: &common.DataPoint_StrVal{StrVal: "batt"},
 			Ts:       timestamppb.New(time.Now().Add(-15 * time.Minute)),
 			Token:    uuid.New().String(), TraceId: uuid.New().String()},
@@ -91,7 +91,7 @@ func TestAccumulateMessagesDuplicate(t *testing.T) {
 	defer cancel()
 
 	duplicateVOut := &message.ValidatorOut{Point: &common.DataPoint{
-		UniqId: random.String(16), Attr: "motion",
+		UniqId: "acc-" + random.String(16), Attr: "acc-motion",
 		ValOneof: &common.DataPoint_IntVal{IntVal: 123},
 		Ts:       timestamppb.New(time.Now().Add(-15 * time.Minute)),
 		Token:    uuid.New().String(), TraceId: uuid.New().String()},

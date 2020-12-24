@@ -1,6 +1,8 @@
 // Package validator provides functions used to run the Validator service.
 package validator
 
+//go:generate mockgen -source validator.go -destination mock_devicer_test.go -package validator
+
 import (
 	"context"
 	"os"

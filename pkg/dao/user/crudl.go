@@ -6,6 +6,7 @@ import (
 
 	"github.com/thingspect/api/go/api"
 	"github.com/thingspect/atlas/pkg/alog"
+	"github.com/thingspect/atlas/pkg/dao"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
@@ -19,15 +20,13 @@ RETURNING id
 // Create creates a user in the database.
 func (d *DAO) Create(ctx context.Context, user *api.User,
 	passHash []byte) (*api.User, error) {
-	createdAt := time.Now().UTC().Truncate(time.Microsecond)
-	user.CreatedAt = timestamppb.New(createdAt)
-	updatedAt := time.Now().UTC().Truncate(time.Microsecond)
-	user.UpdatedAt = timestamppb.New(updatedAt)
+	now := time.Now().UTC().Truncate(time.Microsecond)
+	user.CreatedAt = timestamppb.New(now)
+	user.UpdatedAt = timestamppb.New(now)
 
 	if err := d.pg.QueryRowContext(ctx, createUser, user.OrgId, user.Email,
-		passHash, user.IsDisabled, createdAt, updatedAt).Scan(
-		&user.Id); err != nil {
-		return nil, err
+		passHash, user.IsDisabled, now, now).Scan(&user.Id); err != nil {
+		return nil, dao.DBToSentinel(err)
 	}
 	return user, nil
 }
@@ -49,7 +48,7 @@ func (d *DAO) Read(ctx context.Context, userID, orgID string) (*api.User,
 	if err := d.pg.QueryRowContext(ctx, readUser, userID, orgID).Scan(&user.Id,
 		&user.OrgId, &user.Email, &passHash, &user.IsDisabled, &createdAt,
 		&updatedAt); err != nil {
-		return nil, nil, err
+		return nil, nil, dao.DBToSentinel(err)
 	}
 
 	user.CreatedAt = timestamppb.New(createdAt)
@@ -76,7 +75,7 @@ func (d *DAO) Update(ctx context.Context, user *api.User,
 	if err := d.pg.QueryRowContext(ctx, updateUser, user.Email, passHash,
 		user.IsDisabled, updatedAt, user.Id, user.OrgId).Scan(
 		&createdAt); err != nil {
-		return nil, err
+		return nil, dao.DBToSentinel(err)
 	}
 
 	user.CreatedAt = timestamppb.New(createdAt)
@@ -91,13 +90,14 @@ AND org_id = $2
 
 // Delete deletes a user by ID and org ID.
 func (d *DAO) Delete(ctx context.Context, userID, orgID string) error {
-	// Verify a org exists before attempting to delete it.
+	// Verify a user exists before attempting to delete it. Do not remap the
+	// error.
 	if _, _, err := d.Read(ctx, userID, orgID); err != nil {
 		return err
 	}
 
 	_, err := d.pg.ExecContext(ctx, deleteUser, userID, orgID)
-	return err
+	return dao.DBToSentinel(err)
 }
 
 const listUsers = `
@@ -113,7 +113,7 @@ func (d *DAO) List(ctx context.Context, orgID string) ([]*api.User, error) {
 
 	rows, err := d.pg.QueryContext(ctx, listUsers, orgID)
 	if err != nil {
-		return nil, err
+		return nil, dao.DBToSentinel(err)
 	}
 	defer func() {
 		if err = rows.Close(); err != nil {
@@ -127,7 +127,7 @@ func (d *DAO) List(ctx context.Context, orgID string) ([]*api.User, error) {
 
 		if err = rows.Scan(&user.Id, &user.OrgId, &user.Email, &user.IsDisabled,
 			&createdAt, &updatedAt); err != nil {
-			return nil, err
+			return nil, dao.DBToSentinel(err)
 		}
 
 		user.CreatedAt = timestamppb.New(createdAt)
@@ -136,10 +136,10 @@ func (d *DAO) List(ctx context.Context, orgID string) ([]*api.User, error) {
 	}
 
 	if err = rows.Close(); err != nil {
-		return nil, err
+		return nil, dao.DBToSentinel(err)
 	}
 	if err = rows.Err(); err != nil {
-		return nil, err
+		return nil, dao.DBToSentinel(err)
 	}
 	return users, nil
 }

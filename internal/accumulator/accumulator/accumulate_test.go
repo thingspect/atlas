@@ -14,7 +14,7 @@ import (
 	"github.com/stretchr/testify/require"
 	"github.com/thingspect/api/go/common"
 	"github.com/thingspect/atlas/api/go/message"
-	"github.com/thingspect/atlas/pkg/dao/datapoint"
+	"github.com/thingspect/atlas/pkg/dao"
 	"github.com/thingspect/atlas/pkg/queue"
 	"github.com/thingspect/atlas/pkg/test/matcher"
 	"github.com/thingspect/atlas/pkg/test/random"
@@ -108,7 +108,7 @@ func TestAccumulateMessagesError(t *testing.T) {
 		{&message.ValidatorOut{}, nil, 0},
 		// Duplicate data point.
 		{&message.ValidatorOut{Point: &common.DataPoint{}},
-			datapoint.ErrDuplicate, 1},
+			dao.ErrAlreadyExists, 1},
 		// DataPointer error.
 		{&message.ValidatorOut{Point: &common.DataPoint{}}, errTestProc, 1},
 	}

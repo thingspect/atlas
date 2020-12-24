@@ -7,6 +7,7 @@ import (
 
 	"github.com/thingspect/api/go/api"
 	"github.com/thingspect/atlas/pkg/alog"
+	"github.com/thingspect/atlas/pkg/dao"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
@@ -20,15 +21,13 @@ RETURNING id, token
 func (d *DAO) Create(ctx context.Context, dev *api.Device) (*api.Device,
 	error) {
 	dev.UniqId = strings.ToLower(dev.UniqId)
-	createdAt := time.Now().UTC().Truncate(time.Microsecond)
-	dev.CreatedAt = timestamppb.New(createdAt)
-	updatedAt := time.Now().UTC().Truncate(time.Microsecond)
-	dev.UpdatedAt = timestamppb.New(updatedAt)
+	now := time.Now().UTC().Truncate(time.Microsecond)
+	dev.CreatedAt = timestamppb.New(now)
+	dev.UpdatedAt = timestamppb.New(now)
 
 	if err := d.pg.QueryRowContext(ctx, createDevice, dev.OrgId, dev.UniqId,
-		dev.IsDisabled, createdAt, updatedAt).Scan(&dev.Id,
-		&dev.Token); err != nil {
-		return nil, err
+		dev.IsDisabled, now, now).Scan(&dev.Id, &dev.Token); err != nil {
+		return nil, dao.DBToSentinel(err)
 	}
 	return dev, nil
 }
@@ -49,7 +48,7 @@ func (d *DAO) Read(ctx context.Context, devID, orgID string) (*api.Device,
 	if err := d.pg.QueryRowContext(ctx, readDevice, devID, orgID).Scan(&dev.Id,
 		&dev.OrgId, &dev.UniqId, &dev.IsDisabled, &dev.Token, &createdAt,
 		&updatedAt); err != nil {
-		return nil, err
+		return nil, dao.DBToSentinel(err)
 	}
 
 	dev.CreatedAt = timestamppb.New(createdAt)
@@ -73,7 +72,7 @@ func (d *DAO) ReadByUniqID(ctx context.Context, uniqID string) (*api.Device,
 	if err := d.pg.QueryRowContext(ctx, readDeviceByUniqID, uniqID).Scan(
 		&dev.Id, &dev.OrgId, &dev.UniqId, &dev.IsDisabled, &dev.Token,
 		&createdAt, &updatedAt); err != nil {
-		return nil, err
+		return nil, dao.DBToSentinel(err)
 	}
 
 	dev.CreatedAt = timestamppb.New(createdAt)
@@ -100,7 +99,7 @@ func (d *DAO) Update(ctx context.Context, dev *api.Device) (*api.Device,
 	if err := d.pg.QueryRowContext(ctx, updateDevice, dev.UniqId,
 		dev.IsDisabled, dev.Token, updatedAt, dev.Id, dev.OrgId).Scan(
 		&createdAt); err != nil {
-		return nil, err
+		return nil, dao.DBToSentinel(err)
 	}
 
 	dev.CreatedAt = timestamppb.New(createdAt)
@@ -115,13 +114,14 @@ AND org_id = $2
 
 // Delete deletes a device by ID and org ID.
 func (d *DAO) Delete(ctx context.Context, devID, orgID string) error {
-	// Verify a org exists before attempting to delete it.
+	// Verify a device exists before attempting to delete it. Do not remap the
+	// error.
 	if _, err := d.Read(ctx, devID, orgID); err != nil {
 		return err
 	}
 
 	_, err := d.pg.ExecContext(ctx, deleteDevice, devID, orgID)
-	return err
+	return dao.DBToSentinel(err)
 }
 
 const listDevices = `
@@ -136,7 +136,7 @@ func (d *DAO) List(ctx context.Context, orgID string) ([]*api.Device, error) {
 
 	rows, err := d.pg.QueryContext(ctx, listDevices, orgID)
 	if err != nil {
-		return nil, err
+		return nil, dao.DBToSentinel(err)
 	}
 	defer func() {
 		if err = rows.Close(); err != nil {
@@ -150,7 +150,7 @@ func (d *DAO) List(ctx context.Context, orgID string) ([]*api.Device, error) {
 
 		if err = rows.Scan(&dev.Id, &dev.OrgId, &dev.UniqId, &dev.IsDisabled,
 			&dev.Token, &createdAt, &updatedAt); err != nil {
-			return nil, err
+			return nil, dao.DBToSentinel(err)
 		}
 
 		dev.CreatedAt = timestamppb.New(createdAt)
@@ -159,10 +159,10 @@ func (d *DAO) List(ctx context.Context, orgID string) ([]*api.Device, error) {
 	}
 
 	if err = rows.Close(); err != nil {
-		return nil, err
+		return nil, dao.DBToSentinel(err)
 	}
 	if err = rows.Err(); err != nil {
-		return nil, err
+		return nil, dao.DBToSentinel(err)
 	}
 	return devs, nil
 }

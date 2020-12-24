@@ -3,7 +3,7 @@
 generate: deps message
 
 deps:
-	GO111MODULE=on go get github.com/golang/protobuf/protoc-gen-go
+	GO111MODULE=on go get google.golang.org/protobuf/cmd/protoc-gen-go
 
 message:
 	protoc -I=../protobuf --go_out=. --go_opt=paths=source_relative \

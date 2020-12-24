@@ -2,12 +2,12 @@ package validator
 
 import (
 	"context"
-	"database/sql"
 	"errors"
 	"time"
 
 	"github.com/thingspect/atlas/api/go/message"
 	"github.com/thingspect/atlas/pkg/alog"
+	"github.com/thingspect/atlas/pkg/dao"
 	"google.golang.org/protobuf/proto"
 )
 
@@ -40,7 +40,7 @@ func (val *Validator) validateMessages() {
 		ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 		dev, err := val.devDAO.ReadByUniqID(ctx, vIn.Point.UniqId)
 		cancel()
-		if errors.Is(err, sql.ErrNoRows) {
+		if errors.Is(err, dao.ErrNotFound) {
 			logEntry.Debugf("validateMessages device not found: %+v", vIn)
 			msg.Ack()
 			continue
