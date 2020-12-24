@@ -1,6 +1,8 @@
 // Package accumulator provides functions used to run the Accumulator service.
 package accumulator
 
+//go:generate mockgen -source accumulator.go -destination mock_datapointer_test.go -package accumulator
+
 import (
 	"context"
 	"os"

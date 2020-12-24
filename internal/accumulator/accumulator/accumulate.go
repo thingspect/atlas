@@ -7,7 +7,7 @@ import (
 
 	"github.com/thingspect/atlas/api/go/message"
 	"github.com/thingspect/atlas/pkg/alog"
-	"github.com/thingspect/atlas/pkg/dao/datapoint"
+	"github.com/thingspect/atlas/pkg/dao"
 	"google.golang.org/protobuf/proto"
 )
 
@@ -40,8 +40,8 @@ func (acc *Accumulator) accumulateMessages() {
 		ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 		err = acc.dpDAO.Create(ctx, vOut.Point, vOut.OrgId)
 		cancel()
-		if errors.Is(err, datapoint.ErrDuplicate) ||
-			errors.Is(err, datapoint.ErrBadFormat) {
+		if errors.Is(err, dao.ErrAlreadyExists) ||
+			errors.Is(err, dao.ErrInvalidFormat) {
 			logEntry.Errorf("accumulateMessages discard acc.dpDAO.Create: %v",
 				err)
 			msg.Ack()

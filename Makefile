@@ -1,4 +1,5 @@
-.PHONY: install installrace lint init_db test unit_test integration_test
+.PHONY: install installrace lint init_db test unit_test integration_test \
+generate
 
 export GORACE = "halt_on_error=1"
 
@@ -53,3 +54,8 @@ unit_test:
 	go test -count=1 -cover -race -cpu 1,4 -tags unit ./...
 integration_test: init_db
 	go test -count=1 -cover -race -cpu 1,4 -tags integration ./...
+
+generate:
+	cd /tmp && GO111MODULE=on go get github.com/golang/mock/mockgen && \
+	cd $(CURDIR)
+	go generate -x ./...

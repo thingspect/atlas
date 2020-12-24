@@ -26,6 +26,8 @@ const (
 // of the legacy proto package is being used.
 const _ = proto.ProtoPackageIsVersion4
 
+// Payload represents an array of one or more data points and an authentication
+// token.
 type Payload struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache

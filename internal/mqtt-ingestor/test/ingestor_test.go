@@ -21,10 +21,10 @@ import (
 
 func TestParseMessages(t *testing.T) {
 	orgID := uuid.New().String()
-	uniqIDPoint := random.String(16)
+	uniqIDPoint := "ing-" + random.String(16)
 	now := timestamppb.New(time.Now().Add(-15 * time.Minute))
 	pointToken := uuid.New().String()
-	uniqIDTopic := random.String(16)
+	uniqIDTopic := "ing-" + random.String(16)
 	paylToken := uuid.New().String()
 
 	tests := []struct {
@@ -111,7 +111,7 @@ func TestParseMessages(t *testing.T) {
 
 func TestParseMessagesError(t *testing.T) {
 	orgID := uuid.New().String()
-	uniqID := random.String(16)
+	uniqID := "ing-" + random.String(16)
 
 	tests := []struct {
 		inpTopic string

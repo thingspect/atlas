@@ -27,7 +27,7 @@ func New() *Config {
 		LogLevel: config.String(pref+"LOG_LEVEL", "DEBUG"),
 
 		PgURI: config.String(pref+"PG_URI",
-			"postgres://postgres:postgres@127.0.0.1/atlas"),
+			"postgres://postgres:postgres@127.0.0.1/atlas_test"),
 
 		NSQLookupAddrs: config.StringSlice(pref+"NSQ_LOOKUP_ADDRS",
 			[]string{"127.0.0.1:4161"}),

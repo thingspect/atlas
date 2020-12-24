@@ -3,7 +3,6 @@
 package validator
 
 import (
-	"database/sql"
 	"errors"
 	"fmt"
 	"testing"
@@ -15,6 +14,7 @@ import (
 	"github.com/thingspect/api/go/api"
 	"github.com/thingspect/api/go/common"
 	"github.com/thingspect/atlas/api/go/message"
+	"github.com/thingspect/atlas/pkg/dao"
 	"github.com/thingspect/atlas/pkg/queue"
 	"github.com/thingspect/atlas/pkg/test/random"
 	"google.golang.org/protobuf/proto"
@@ -141,8 +141,8 @@ func TestValidateMessagesError(t *testing.T) {
 		// Missing data point.
 		{&message.ValidatorIn{}, false, nil, 0},
 		// Device not found.
-		{&message.ValidatorIn{Point: &common.DataPoint{}}, false, sql.ErrNoRows,
-			1},
+		{&message.ValidatorIn{Point: &common.DataPoint{}}, false,
+			dao.ErrNotFound, 1},
 		// Devicer error.
 		{&message.ValidatorIn{Point: &common.DataPoint{}}, false, errTestProc,
 			1},

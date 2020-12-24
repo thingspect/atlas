@@ -20,14 +20,14 @@ import (
 )
 
 func TestValidateMessages(t *testing.T) {
-	uniqID := random.String(16)
+	uniqID := "val-" + random.String(16)
 	now := timestamppb.New(time.Now().Add(-15 * time.Minute))
 	traceID := uuid.New().String()
 
 	ctx, cancel := context.WithTimeout(context.Background(), 4*time.Second)
 	defer cancel()
 
-	org := org.Org{Name: random.String(10)}
+	org := org.Org{Name: "val-" + random.String(10)}
 	createOrg, err := globalOrgDAO.Create(ctx, org)
 	t.Logf("createOrg, err: %+v, %v", createOrg, err)
 	require.NoError(t, err)
@@ -104,13 +104,13 @@ func TestValidateMessages(t *testing.T) {
 }
 
 func TestValidateMessagesError(t *testing.T) {
-	uniqID := random.String(16)
-	disabledUniqID := random.String(16)
+	uniqID := "val-" + random.String(16)
+	disabledUniqID := "val-" + random.String(16)
 
 	ctx, cancel := context.WithTimeout(context.Background(), 6*time.Second)
 	defer cancel()
 
-	org := org.Org{Name: random.String(10)}
+	org := org.Org{Name: "val-" + random.String(10)}
 	createOrg, err := globalOrgDAO.Create(ctx, org)
 	t.Logf("createOrg, err: %+v, %v", createOrg, err)
 	require.NoError(t, err)

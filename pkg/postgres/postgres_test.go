@@ -40,6 +40,7 @@ func TestNew(t *testing.T) {
 			t.Logf("res, err: %+v, %#v", res, err)
 			if lTest.err == "" {
 				require.NotNil(t, res)
+				require.NoError(t, err)
 			} else {
 				require.Contains(t, err.Error(), lTest.err)
 			}

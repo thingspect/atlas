@@ -2,20 +2,13 @@ package datapoint
 
 import (
 	"context"
-	"errors"
-	"fmt"
 	"strings"
 	"time"
 
-	"github.com/jackc/pgconn"
 	"github.com/thingspect/api/go/common"
 	"github.com/thingspect/atlas/pkg/alog"
+	"github.com/thingspect/atlas/pkg/dao"
 	"google.golang.org/protobuf/types/known/timestamppb"
-)
-
-var (
-	ErrDuplicate = errors.New("datapoint: duplicate")
-	ErrBadFormat = errors.New("datapoint: bad format")
 )
 
 const createDataPoint = `
@@ -53,19 +46,7 @@ func (d *DAO) Create(ctx context.Context, point *common.DataPoint,
 	_, err := d.pg.ExecContext(ctx, createDataPoint, orgID,
 		strings.ToLower(point.UniqId), point.Attr, intVal, fl64Val, strVal,
 		boolVal, bytesVal, createdAt, point.TraceId)
-	if err != nil {
-		var pgErr *pgconn.PgError
-		if errors.As(err, &pgErr) {
-			switch pgErr.Code {
-			case "23505":
-				return fmt.Errorf("%w: %+v", ErrDuplicate, pgErr)
-			case "22001", "23514":
-				return fmt.Errorf("%w: %+v", ErrBadFormat, pgErr)
-			}
-		}
-		return err
-	}
-	return nil
+	return dao.DBToSentinel(err)
 }
 
 const listDataPoints = `
@@ -87,7 +68,7 @@ func (d *DAO) List(ctx context.Context, orgID, uniqID string, start,
 	rows, err := d.pg.QueryContext(ctx, listDataPoints, orgID, uniqID,
 		start.Truncate(time.Millisecond), end.Truncate(time.Millisecond))
 	if err != nil {
-		return nil, err
+		return nil, dao.DBToSentinel(err)
 	}
 	defer func() {
 		if err = rows.Close(); err != nil {
@@ -107,7 +88,7 @@ func (d *DAO) List(ctx context.Context, orgID, uniqID string, start,
 		if err = rows.Scan(&point.UniqId, &point.Attr, &intVal, &fl64Val,
 			&strVal, &boolVal, &bytesVal, &createdAt,
 			&point.TraceId); err != nil {
-			return nil, err
+			return nil, dao.DBToSentinel(err)
 		}
 
 		switch {
@@ -128,10 +109,10 @@ func (d *DAO) List(ctx context.Context, orgID, uniqID string, start,
 	}
 
 	if err = rows.Close(); err != nil {
-		return nil, err
+		return nil, dao.DBToSentinel(err)
 	}
 	if err = rows.Err(); err != nil {
-		return nil, err
+		return nil, dao.DBToSentinel(err)
 	}
 	return points, nil
 }

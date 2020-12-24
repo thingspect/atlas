@@ -4,12 +4,12 @@ package org
 
 import (
 	"context"
-	"database/sql"
 	"testing"
 	"time"
 
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/require"
+	"github.com/thingspect/atlas/pkg/dao"
 	"github.com/thingspect/atlas/pkg/test/random"
 )
 
@@ -22,7 +22,7 @@ func TestCreate(t *testing.T) {
 		ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
 		defer cancel()
 
-		org := Org{Name: random.String(10)}
+		org := Org{Name: "dao-org-" + random.String(10)}
 		createOrg, err := globalOrgDAO.Create(ctx, org)
 		t.Logf("createOrg, err: %+v, %v", createOrg, err)
 		require.NoError(t, err)
@@ -39,12 +39,11 @@ func TestCreate(t *testing.T) {
 		ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
 		defer cancel()
 
-		org := Org{Name: random.String(41)}
+		org := Org{Name: "dao-org-" + random.String(40)}
 		createOrg, err := globalOrgDAO.Create(ctx, org)
 		t.Logf("createOrg, err: %+v, %v", createOrg, err)
 		require.Nil(t, createOrg)
-		require.EqualError(t, err, "ERROR: value too long for type character "+
-			"varying(40) (SQLSTATE 22001)")
+		require.Equal(t, dao.ErrInvalidFormat, err)
 	})
 }
 
@@ -54,7 +53,7 @@ func TestRead(t *testing.T) {
 	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
 	defer cancel()
 
-	org := Org{Name: random.String(10)}
+	org := Org{Name: "dao-org-" + random.String(10)}
 	createOrg, err := globalOrgDAO.Create(ctx, org)
 	t.Logf("createOrg, err: %+v, %v", createOrg, err)
 	require.NoError(t, err)
@@ -80,7 +79,7 @@ func TestRead(t *testing.T) {
 		readOrg, err := globalOrgDAO.Read(ctx, uuid.New().String())
 		t.Logf("readOrg, err: %+v, %v", readOrg, err)
 		require.Nil(t, readOrg)
-		require.Equal(t, sql.ErrNoRows, err)
+		require.Equal(t, dao.ErrNotFound, err)
 	})
 
 	t.Run("Read org by invalid ID", func(t *testing.T) {
@@ -92,8 +91,7 @@ func TestRead(t *testing.T) {
 		readOrg, err := globalOrgDAO.Read(ctx, random.String(10))
 		t.Logf("readOrg, err: %+v, %v", readOrg, err)
 		require.Nil(t, readOrg)
-		require.Contains(t, err.Error(),
-			"ERROR: invalid input syntax for type uuid")
+		require.Equal(t, dao.ErrInvalidFormat, err)
 	})
 }
 
@@ -106,13 +104,13 @@ func TestUpdateOrg(t *testing.T) {
 		ctx, cancel := context.WithTimeout(context.Background(), 4*time.Second)
 		defer cancel()
 
-		org := Org{Name: random.String(10)}
+		org := Org{Name: "dao-org-" + random.String(10)}
 		createOrg, err := globalOrgDAO.Create(ctx, org)
 		t.Logf("createOrg, err: %+v, %v", createOrg, err)
 		require.NoError(t, err)
 
 		// Update org fields.
-		createOrg.Name = random.String(10)
+		createOrg.Name = "dao-org-" + random.String(10)
 
 		updateOrg, err := globalOrgDAO.Update(ctx, *createOrg)
 		t.Logf("updateOrg, err: %+v, %v", updateOrg, err)
@@ -134,7 +132,7 @@ func TestUpdateOrg(t *testing.T) {
 		updateOrg, err := globalOrgDAO.Update(ctx, unknownOrg)
 		t.Logf("updateOrg, err: %+v, %v", updateOrg, err)
 		require.Nil(t, updateOrg)
-		require.Equal(t, sql.ErrNoRows, err)
+		require.Equal(t, dao.ErrNotFound, err)
 	})
 
 	t.Run("Update org by invalid org", func(t *testing.T) {
@@ -143,19 +141,18 @@ func TestUpdateOrg(t *testing.T) {
 		ctx, cancel := context.WithTimeout(context.Background(), 4*time.Second)
 		defer cancel()
 
-		org := Org{Name: random.String(10)}
+		org := Org{Name: "dao-org-" + random.String(10)}
 		createOrg, err := globalOrgDAO.Create(ctx, org)
 		t.Logf("createOrg, err: %+v, %v", createOrg, err)
 		require.NoError(t, err)
 
 		// Update org fields.
-		createOrg.Name = random.String(41)
+		createOrg.Name = "dao-org-" + random.String(40)
 
 		updateOrg, err := globalOrgDAO.Update(ctx, *createOrg)
 		t.Logf("updateOrg, err: %+v, %v", updateOrg, err)
 		require.Nil(t, updateOrg)
-		require.EqualError(t, err, "ERROR: value too long for type character "+
-			"varying(40) (SQLSTATE 22001)")
+		require.Equal(t, dao.ErrInvalidFormat, err)
 	})
 }
 
@@ -168,7 +165,7 @@ func TestDeleteOrg(t *testing.T) {
 		ctx, cancel := context.WithTimeout(context.Background(), 4*time.Second)
 		defer cancel()
 
-		org := Org{Name: random.String(10)}
+		org := Org{Name: "dao-org-" + random.String(10)}
 		createOrg, err := globalOrgDAO.Create(ctx, org)
 		t.Logf("createOrg, err: %+v, %v", createOrg, err)
 		require.NoError(t, err)
@@ -187,7 +184,7 @@ func TestDeleteOrg(t *testing.T) {
 			readOrg, err := globalOrgDAO.Read(ctx, createOrg.ID)
 			t.Logf("readOrg, err: %+v, %v", readOrg, err)
 			require.Nil(t, readOrg)
-			require.Equal(t, sql.ErrNoRows, err)
+			require.Equal(t, dao.ErrNotFound, err)
 		})
 	})
 
@@ -199,7 +196,7 @@ func TestDeleteOrg(t *testing.T) {
 
 		err := globalOrgDAO.Delete(ctx, uuid.New().String())
 		t.Logf("err: %v", err)
-		require.Equal(t, sql.ErrNoRows, err)
+		require.Equal(t, dao.ErrNotFound, err)
 	})
 }
 
@@ -211,7 +208,7 @@ func TestListOrgs(t *testing.T) {
 
 	var lastOrgID string
 	for i := 0; i < 3; i++ {
-		org := Org{Name: random.String(10)}
+		org := Org{Name: "dao-org-" + random.String(10)}
 		createOrg, err := globalOrgDAO.Create(ctx, org)
 		t.Logf("createOrg, err: %+v, %v", createOrg, err)
 		require.NoError(t, err)

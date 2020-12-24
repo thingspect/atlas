@@ -17,8 +17,8 @@ RACE=y make test
 
 ## Use of Build Tags In Tests
 
-All test files should have build tags, including `main_test.go`. Due to
-limitations of some developer tools and plugins, negated tags are used.
+All non-generated test files should have build tags, including `main_test.go`.
+Due to limitations of developer tools and extensions, negated tags are used.
 
 For example, to tag a file as a unit test:
 
@@ -26,7 +26,7 @@ For example, to tag a file as a unit test:
 // +build !integration
 ```
 
-To tag as an integration test:
+To tag a file as an integration test:
 
 ```
 // +build !unit
@@ -35,4 +35,4 @@ To tag as an integration test:
 To find test files that are missing build tags, the following command can be
 run:
 
-`find . -type f -name \*_test.go|xargs grep -L '// +build'`
+`find . -type f -name \*_test.go|grep -v /mock_|xargs grep -L '// +build'`
