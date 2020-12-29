@@ -18,15 +18,15 @@ const _ = grpc.SupportPackageIsVersion7
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type DeviceServiceClient interface {
-	// Create creates a device.
+	// Create a device.
 	Create(ctx context.Context, in *CreateDeviceRequest, opts ...grpc.CallOption) (*CreateDeviceResponse, error)
-	// Read retrieves a device by ID.
+	// Read a device by ID.
 	Read(ctx context.Context, in *ReadDeviceRequest, opts ...grpc.CallOption) (*ReadDeviceResponse, error)
-	// Update updates a device.
+	// Update a device.
 	Update(ctx context.Context, in *UpdateDeviceRequest, opts ...grpc.CallOption) (*UpdateDeviceResponse, error)
-	// Delete deletes a device by ID.
+	// Delete a device by ID.
 	Delete(ctx context.Context, in *DeleteDeviceRequest, opts ...grpc.CallOption) (*empty.Empty, error)
-	// List retrieves all devices.
+	// List all devices.
 	List(ctx context.Context, in *ListDeviceRequest, opts ...grpc.CallOption) (*ListDeviceResponse, error)
 }
 
@@ -87,15 +87,15 @@ func (c *deviceServiceClient) List(ctx context.Context, in *ListDeviceRequest, o
 // All implementations must embed UnimplementedDeviceServiceServer
 // for forward compatibility
 type DeviceServiceServer interface {
-	// Create creates a device.
+	// Create a device.
 	Create(context.Context, *CreateDeviceRequest) (*CreateDeviceResponse, error)
-	// Read retrieves a device by ID.
+	// Read a device by ID.
 	Read(context.Context, *ReadDeviceRequest) (*ReadDeviceResponse, error)
-	// Update updates a device.
+	// Update a device.
 	Update(context.Context, *UpdateDeviceRequest) (*UpdateDeviceResponse, error)
-	// Delete deletes a device by ID.
+	// Delete a device by ID.
 	Delete(context.Context, *DeleteDeviceRequest) (*empty.Empty, error)
-	// List retrieves all devices.
+	// List all devices.
 	List(context.Context, *ListDeviceRequest) (*ListDeviceResponse, error)
 	mustEmbedUnimplementedDeviceServiceServer()
 }
@@ -128,7 +128,7 @@ type UnsafeDeviceServiceServer interface {
 	mustEmbedUnimplementedDeviceServiceServer()
 }
 
-func RegisterDeviceServiceServer(s grpc.ServiceRegistrar, srv DeviceServiceServer) {
+func RegisterDeviceServiceServer(s *grpc.Server, srv DeviceServiceServer) {
 	s.RegisterService(&_DeviceService_serviceDesc, srv)
 }
 
