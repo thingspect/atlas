@@ -1,15 +1,15 @@
-# Thingspect API (Internal)
+# API (Internal)
 
-This repository contains the
+This directory contains the
 [Protobuf](https://developers.google.com/protocol-buffers/) internal definitions
-for the [Thingspect](http://thingspect.com) Atlas platform.
+for the [Thingspect](https://www.thingspect.com/) Atlas platform.
 
 ## Getting Started
 
 ### Go
 
 ```
-go get -u github.com/thingspect/atlas/api/go
+import "github.com/thingspect/atlas/api/go/message"
 ```
 
 ## Building
