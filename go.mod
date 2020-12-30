@@ -3,7 +3,7 @@ module github.com/thingspect/atlas
 go 1.15
 
 require (
-	github.com/eclipse/paho.mqtt.golang v1.3.0
+	github.com/eclipse/paho.mqtt.golang v1.3.1
 	github.com/gofrs/uuid v3.3.0+incompatible // indirect
 	github.com/golang/mock v1.4.4
 	github.com/golang/protobuf v1.4.3

@@ -1,6 +1,6 @@
 # github.com/davecgh/go-spew v1.1.1
 github.com/davecgh/go-spew/spew
-# github.com/eclipse/paho.mqtt.golang v1.3.0
+# github.com/eclipse/paho.mqtt.golang v1.3.1
 ## explicit
 github.com/eclipse/paho.mqtt.golang
 github.com/eclipse/paho.mqtt.golang/packets

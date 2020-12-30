@@ -1,0 +1,18 @@
+syntax = "proto3";
+package common;
+
+import "google/protobuf/timestamp.proto";
+
+option go_package = "github.com/thingspect/atlas/api/go/pwt";
+
+// Claim represents a web token.
+message Claim {
+  // User ID (UUID).
+  bytes user_id = 1;
+
+  // Organization ID (UUID).
+  bytes org_id = 2;
+
+  // Expiration timestamp. Nanos should be zeroed for compactness.
+  google.protobuf.Timestamp expires_at = 3;
+}
