@@ -10,7 +10,6 @@ import (
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/require"
 	"github.com/thingspect/api/go/api"
-	"github.com/thingspect/atlas/pkg/crypto"
 	"github.com/thingspect/atlas/pkg/dao"
 	"github.com/thingspect/atlas/pkg/dao/org"
 	"github.com/thingspect/atlas/pkg/test/random"
@@ -30,16 +29,12 @@ func TestCreate(t *testing.T) {
 	t.Run("Create valid user", func(t *testing.T) {
 		t.Parallel()
 
-		hash, err := crypto.HashPass(random.String(10))
-		t.Logf("hash, err: %s, %v", hash, err)
-		require.NoError(t, err)
-
 		ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
 		defer cancel()
 
 		user := &api.User{OrgId: createOrg.ID, Email: "dao-user-" +
 			random.Email(), IsDisabled: []bool{true, false}[random.Intn(2)]}
-		createUser, err := globalUserDAO.Create(ctx, user, hash)
+		createUser, err := globalUserDAO.Create(ctx, user, globalHash)
 		t.Logf("createUser, err: %+v, %v", createUser, err)
 		require.NoError(t, err)
 		require.Equal(t, user.OrgId, createUser.OrgId)
@@ -70,10 +65,6 @@ func TestCreate(t *testing.T) {
 func TestRead(t *testing.T) {
 	t.Parallel()
 
-	hash, err := crypto.HashPass(random.String(10))
-	t.Logf("hash, err: %s, %v", hash, err)
-	require.NoError(t, err)
-
 	ctx, cancel := context.WithTimeout(context.Background(), 4*time.Second)
 	defer cancel()
 
@@ -84,7 +75,7 @@ func TestRead(t *testing.T) {
 
 	user := &api.User{OrgId: createOrg.ID, Email: "dao-user-" + random.Email(),
 		IsDisabled: []bool{true, false}[random.Intn(2)]}
-	createUser, err := globalUserDAO.Create(ctx, user, hash)
+	createUser, err := globalUserDAO.Create(ctx, user, globalHash)
 	t.Logf("createUser, err: %+v, %v", createUser, err)
 	require.NoError(t, err)
 
@@ -98,7 +89,7 @@ func TestRead(t *testing.T) {
 			createUser.OrgId)
 		t.Logf("readUser, readHash, err: %+v, %s, %v", readUser, readHash, err)
 		require.NoError(t, err)
-		require.Equal(t, hash, readHash)
+		require.Equal(t, globalHash, readHash)
 		require.Equal(t, createUser, readUser)
 	})
 
@@ -148,10 +139,6 @@ func TestRead(t *testing.T) {
 func TestUpdateUser(t *testing.T) {
 	t.Parallel()
 
-	hash, err := crypto.HashPass(random.String(10))
-	t.Logf("hash, err: %s, %v", hash, err)
-	require.NoError(t, err)
-
 	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
 	defer cancel()
 
@@ -168,7 +155,7 @@ func TestUpdateUser(t *testing.T) {
 
 		user := &api.User{OrgId: createOrg.ID, Email: "dao-user-" +
 			random.Email(), IsDisabled: []bool{true, false}[random.Intn(2)]}
-		createUser, err := globalUserDAO.Create(ctx, user, hash)
+		createUser, err := globalUserDAO.Create(ctx, user, globalHash)
 		t.Logf("createUser, err: %+v, %v", createUser, err)
 		require.NoError(t, err)
 
@@ -176,7 +163,7 @@ func TestUpdateUser(t *testing.T) {
 		createUser.Email = "dao-user-" + random.Email()
 		createUser.IsDisabled = []bool{true, false}[random.Intn(2)]
 
-		updateUser, err := globalUserDAO.Update(ctx, createUser, hash)
+		updateUser, err := globalUserDAO.Update(ctx, createUser, globalHash)
 		t.Logf("updateUser, err: %+v, %v", updateUser, err)
 		require.NoError(t, err)
 		require.Equal(t, createUser.Email, updateUser.Email)
@@ -197,7 +184,7 @@ func TestUpdateUser(t *testing.T) {
 		unknownUser := &api.User{Id: uuid.New().String(), OrgId: createOrg.ID,
 			Email:      "dao-user-" + random.Email(),
 			IsDisabled: []bool{true, false}[random.Intn(2)]}
-		updateUser, err := globalUserDAO.Update(ctx, unknownUser, hash)
+		updateUser, err := globalUserDAO.Update(ctx, unknownUser, globalHash)
 		t.Logf("updateUser, err: %+v, %v", updateUser, err)
 		require.Nil(t, updateUser)
 		require.Equal(t, dao.ErrNotFound, err)
@@ -211,7 +198,7 @@ func TestUpdateUser(t *testing.T) {
 
 		user := &api.User{OrgId: createOrg.ID, Email: "dao-user-" +
 			random.Email(), IsDisabled: []bool{true, false}[random.Intn(2)]}
-		createUser, err := globalUserDAO.Create(ctx, user, hash)
+		createUser, err := globalUserDAO.Create(ctx, user, globalHash)
 		t.Logf("createUser, err: %+v, %v", createUser, err)
 		require.NoError(t, err)
 
@@ -219,7 +206,7 @@ func TestUpdateUser(t *testing.T) {
 		createUser.OrgId = uuid.New().String()
 		createUser.Email = "dao-user-" + random.Email()
 
-		updateUser, err := globalUserDAO.Update(ctx, createUser, hash)
+		updateUser, err := globalUserDAO.Update(ctx, createUser, globalHash)
 		t.Logf("updateUser, err: %+v, %v", updateUser, err)
 		require.Nil(t, updateUser)
 		require.Equal(t, dao.ErrNotFound, err)
@@ -233,7 +220,7 @@ func TestUpdateUser(t *testing.T) {
 
 		user := &api.User{OrgId: createOrg.ID, Email: "dao-user-" +
 			random.Email(), IsDisabled: []bool{true, false}[random.Intn(2)]}
-		createUser, err := globalUserDAO.Create(ctx, user, hash)
+		createUser, err := globalUserDAO.Create(ctx, user, globalHash)
 		t.Logf("createUser, err: %+v, %v", createUser, err)
 		require.NoError(t, err)
 
@@ -252,10 +239,6 @@ func TestUpdateUser(t *testing.T) {
 func TestDeleteUser(t *testing.T) {
 	t.Parallel()
 
-	hash, err := crypto.HashPass(random.String(10))
-	t.Logf("hash, err: %s, %v", hash, err)
-	require.NoError(t, err)
-
 	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
 	defer cancel()
 
@@ -272,7 +255,7 @@ func TestDeleteUser(t *testing.T) {
 
 		user := &api.User{OrgId: createOrg.ID, Email: "dao-user-" +
 			random.Email(), IsDisabled: []bool{true, false}[random.Intn(2)]}
-		createUser, err := globalUserDAO.Create(ctx, user, hash)
+		createUser, err := globalUserDAO.Create(ctx, user, globalHash)
 		t.Logf("createUser, err: %+v, %v", createUser, err)
 		require.NoError(t, err)
 
@@ -316,7 +299,7 @@ func TestDeleteUser(t *testing.T) {
 
 		user := &api.User{OrgId: createOrg.ID, Email: "dao-user-" +
 			random.Email(), IsDisabled: []bool{true, false}[random.Intn(2)]}
-		createUser, err := globalUserDAO.Create(ctx, user, hash)
+		createUser, err := globalUserDAO.Create(ctx, user, globalHash)
 		t.Logf("createUser, err: %+v, %v", createUser, err)
 		require.NoError(t, err)
 
@@ -328,10 +311,6 @@ func TestDeleteUser(t *testing.T) {
 
 func TestListUsers(t *testing.T) {
 	t.Parallel()
-
-	hash, err := crypto.HashPass(random.String(10))
-	t.Logf("hash, err: %s, %v", hash, err)
-	require.NoError(t, err)
 
 	ctx, cancel := context.WithTimeout(context.Background(), 8*time.Second)
 	defer cancel()
@@ -346,7 +325,7 @@ func TestListUsers(t *testing.T) {
 	for i := 0; i < 3; i++ {
 		user := &api.User{OrgId: createOrg.ID, Email: "dao-user-" +
 			random.Email(), IsDisabled: []bool{true, false}[random.Intn(2)]}
-		createUser, err := globalUserDAO.Create(ctx, user, hash)
+		createUser, err := globalUserDAO.Create(ctx, user, globalHash)
 		t.Logf("createUser, err: %+v, %v", createUser, err)
 		require.NoError(t, err)
 		lastUserID = createUser.Id

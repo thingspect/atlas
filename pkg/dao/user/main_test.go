@@ -7,14 +7,17 @@ import (
 	"os"
 	"testing"
 
+	"github.com/thingspect/atlas/pkg/crypto"
 	"github.com/thingspect/atlas/pkg/dao/org"
 	"github.com/thingspect/atlas/pkg/postgres"
 	"github.com/thingspect/atlas/pkg/test/config"
+	"github.com/thingspect/atlas/pkg/test/random"
 )
 
 var (
 	globalOrgDAO  *org.DAO
 	globalUserDAO *DAO
+	globalHash    []byte
 )
 
 func TestMain(m *testing.M) {
@@ -28,6 +31,12 @@ func TestMain(m *testing.M) {
 	}
 	globalOrgDAO = org.NewDAO(pg)
 	globalUserDAO = NewDAO(pg)
+
+	globalHash, err = crypto.HashPass(random.String(10))
+	if err != nil {
+		log.Fatalf("TestMain crypto.HashPass: %v", err)
+	}
+	log.Printf("globalHash: %s", globalHash)
 
 	os.Exit(m.Run())
 }

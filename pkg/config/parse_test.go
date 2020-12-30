@@ -3,6 +3,8 @@
 package config
 
 import (
+	"crypto/rand"
+	"encoding/base64"
 	"fmt"
 	"os"
 	"strconv"
@@ -167,6 +169,41 @@ func TestDuration(t *testing.T) {
 
 			res := Duration(lTest.inpKey, lTest.inpDef)
 			t.Logf("res: %#v", res)
+			require.Equal(t, lTest.res, res)
+		})
+	}
+}
+
+func TestByteSlice(t *testing.T) {
+	t.Parallel()
+
+	key := make([]byte, 10)
+	_, err := rand.Read(key)
+	require.NoError(t, err)
+	t.Logf("key: %x", key)
+
+	envKey := random.String(10)
+	envVal := base64.StdEncoding.EncodeToString(key)
+	require.NoError(t, os.Setenv(envKey, envVal))
+	// Do not unset due to the mechanics of t.Parallel().
+
+	tests := []struct {
+		inp string
+		res []byte
+	}{
+		{envKey, key},
+		// Do not test missing key or conversion failure from env due to use of
+		// log.Fatalf().
+	}
+
+	for _, test := range tests {
+		lTest := test
+
+		t.Run(fmt.Sprintf("Can parse %+v", lTest), func(t *testing.T) {
+			t.Parallel()
+
+			res := ByteSlice(lTest.inp)
+			t.Logf("res: %x", res)
 			require.Equal(t, lTest.res, res)
 		})
 	}

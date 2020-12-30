@@ -13,12 +13,14 @@ import (
 func TestHashPass(t *testing.T) {
 	t.Parallel()
 
-	h1, err := HashPass(random.String(10))
+	pass := random.String(10)
+
+	h1, err := HashPass(pass)
 	t.Logf("h1, err: %s, %v", h1, err)
 	require.NoError(t, err)
 	require.Len(t, h1, 60)
 
-	h2, err := HashPass(random.String(10))
+	h2, err := HashPass(pass)
 	t.Logf("h2, err: %s, %v", h2, err)
 	require.NoError(t, err)
 	require.Len(t, h2, 60)
