@@ -4,6 +4,7 @@ package org
 
 import (
 	"context"
+	"strings"
 	"testing"
 	"time"
 
@@ -27,6 +28,23 @@ func TestCreate(t *testing.T) {
 		t.Logf("createOrg, err: %+v, %v", createOrg, err)
 		require.NoError(t, err)
 		require.Equal(t, org.Name, createOrg.Name)
+		require.WithinDuration(t, time.Now(), createOrg.CreatedAt,
+			2*time.Second)
+		require.WithinDuration(t, time.Now(), createOrg.UpdatedAt,
+			2*time.Second)
+	})
+
+	t.Run("Create valid org with uppercase name", func(t *testing.T) {
+		t.Parallel()
+
+		ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
+		defer cancel()
+
+		org := Org{Name: strings.ToUpper("dao-org-" + random.String(10))}
+		createOrg, err := globalOrgDAO.Create(ctx, org)
+		t.Logf("createOrg, err: %+v, %v", createOrg, err)
+		require.NoError(t, err)
+		require.Equal(t, strings.ToLower(org.Name), createOrg.Name)
 		require.WithinDuration(t, time.Now(), createOrg.CreatedAt,
 			2*time.Second)
 		require.WithinDuration(t, time.Now(), createOrg.UpdatedAt,

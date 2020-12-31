@@ -2,6 +2,7 @@ package org
 
 import (
 	"context"
+	"strings"
 	"time"
 
 	"github.com/thingspect/atlas/pkg/alog"
@@ -16,6 +17,7 @@ RETURNING id
 
 // Create creates an organization in the database.
 func (d *DAO) Create(ctx context.Context, org Org) (*Org, error) {
+	org.Name = strings.ToLower(org.Name)
 	now := time.Now().UTC().Truncate(time.Microsecond)
 	org.CreatedAt = now
 	org.UpdatedAt = now
@@ -57,6 +59,7 @@ RETURNING created_at
 // Update updates an organization in the database. CreatedAt should not
 // update, so it is safe to override it at the DAO level.
 func (d *DAO) Update(ctx context.Context, org Org) (*Org, error) {
+	org.Name = strings.ToLower(org.Name)
 	org.UpdatedAt = time.Now().UTC().Truncate(time.Microsecond)
 
 	if err := d.pg.QueryRowContext(ctx, updateOrg, org.Name, org.UpdatedAt,

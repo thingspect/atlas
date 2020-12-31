@@ -36,7 +36,7 @@ type Claim struct {
 	UserId []byte `protobuf:"bytes,1,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`
 	// Organization ID (UUID).
 	OrgId []byte `protobuf:"bytes,2,opt,name=org_id,json=orgId,proto3" json:"org_id,omitempty"`
-	// Expiration timestamp. Nanos should be zeroed for compactness.
+	// Claim expiration timestamp. Nanos should be zeroed for compactness.
 	ExpiresAt *timestamp.Timestamp `protobuf:"bytes,3,opt,name=expires_at,json=expiresAt,proto3" json:"expires_at,omitempty"`
 }
 

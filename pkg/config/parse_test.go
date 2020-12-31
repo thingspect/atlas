@@ -192,8 +192,8 @@ func TestByteSlice(t *testing.T) {
 		res []byte
 	}{
 		{envKey, key},
-		// Do not test missing key or conversion failure from env due to use of
-		// log.Fatalf().
+		{random.String(10), []byte{}},
+		// Do not test conversion failure from env due to use of log.Fatalf().
 	}
 
 	for _, test := range tests {

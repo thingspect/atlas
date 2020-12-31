@@ -10,7 +10,8 @@ const pref = "API_"
 type Config struct {
 	LogLevel string
 
-	PgURI string
+	PgURI  string
+	PWTKey []byte
 }
 
 // New instantiates a service Config, parses the environment, and returns it.
@@ -20,5 +21,6 @@ func New() *Config {
 
 		PgURI: config.String(pref+"PG_URI",
 			"postgres://postgres:postgres@127.0.0.1/atlas_test"),
+		PWTKey: config.ByteSlice(pref + "PWT_KEY"),
 	}
 }

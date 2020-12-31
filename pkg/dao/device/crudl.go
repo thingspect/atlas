@@ -92,6 +92,7 @@ RETURNING created_at
 // is safe to override it at the DAO level.
 func (d *DAO) Update(ctx context.Context, dev *api.Device) (*api.Device,
 	error) {
+	dev.UniqId = strings.ToLower(dev.UniqId)
 	var createdAt time.Time
 	updatedAt := time.Now().UTC().Truncate(time.Microsecond)
 	dev.UpdatedAt = timestamppb.New(updatedAt)

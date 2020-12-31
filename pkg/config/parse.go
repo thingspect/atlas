@@ -79,12 +79,13 @@ func Duration(key string, defVal time.Duration) time.Duration {
 
 // ByteSlice retrieves the environment variable by its key, using standard
 // (padded) base64 encoding. If the variable is present, it is returned as a
-// byte slice. Due to use by encryption keys, no default value is offered, and
-// the program exits if the key is not present.
+// byte slice. Due to use by encryption keys, no default argument is offered,
+// and an empty slice (which will be rejected by length checks) is returned if
+// the key is not present.
 func ByteSlice(key string) []byte {
 	val, ok := os.LookupEnv(key)
 	if !ok {
-		log.Fatalf("ByteSlice os.LookupEnv key missing: %v", key)
+		return []byte{}
 	}
 
 	valByte, err := base64.StdEncoding.DecodeString(val)

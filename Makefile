@@ -1,7 +1,11 @@
 .PHONY: install installrace lint init_db test unit_test integration_test \
 mod generate
 
+RFLAG =
+ifneq ($(RACE),)
+RFLAG = -race
 export GORACE = "halt_on_error=1"
+endif
 
 # Assemble GOBIN until supported: https://github.com/golang/go/issues/23439
 CGO =
@@ -49,12 +53,9 @@ init_db:
 test: install installrace lint unit_test integration_test
 # -count 1 is the idiomatic way to disable test caching in package list mode
 unit_test:
-# Run a single fast pass on unit tests, followed by multiple -race passes on all
-# except the most onerous, excluded packages
-	go test -count=1 -cover -tags unit ./...
-	go test -count=1 -cover -race -cpu 1,4 -tags unit ./...
+	go test -count=1 -cover $(RFLAG) -cpu 1,4 -tags unit ./...
 integration_test: init_db
-	go test -count=1 -cover -race -cpu 1,4 -tags integration ./...
+	go test -count=1 -cover $(RFLAG) -cpu 1,4 -tags integration ./...
 
 mod:
 	go get -t -u ./...
