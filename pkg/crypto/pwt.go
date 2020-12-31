@@ -11,8 +11,8 @@ import (
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
-// tokenExp represents the lifetime of a token in seconds.
-const tokenExp = 10 * 60
+// TokenExp represents the lifetime of a token in seconds.
+const TokenExp = 10 * 60
 
 var ErrTokenExp = errors.New("crypto: token expired")
 
@@ -33,7 +33,7 @@ func GenerateToken(key []byte, userID, orgID string) (string,
 
 	// Calculate expiration. Set exp.Nanos to zero for compactness.
 	exp := timestamppb.Now()
-	exp.Seconds += tokenExp
+	exp.Seconds += TokenExp
 	exp.Nanos = 0
 
 	// Build unencrypted PWT.

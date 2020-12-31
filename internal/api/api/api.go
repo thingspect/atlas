@@ -3,6 +3,7 @@ package api
 
 import (
 	"context"
+	"errors"
 	"net"
 	"net/http"
 	"os"
@@ -15,16 +16,19 @@ import (
 	"github.com/thingspect/atlas/internal/api/service"
 	"github.com/thingspect/atlas/pkg/alog"
 	"github.com/thingspect/atlas/pkg/dao/device"
+	"github.com/thingspect/atlas/pkg/dao/user"
 	"github.com/thingspect/atlas/pkg/postgres"
 	"google.golang.org/grpc"
 )
 
 const (
 	ServiceName = "api"
-	grpcHost    = "127.0.0.1"
-	grpcPort    = ":50051"
+	GRPCHost    = "127.0.0.1"
+	GRPCPort    = ":50051"
 	httpPort    = ":8000"
 )
+
+var ErrPWTLength = errors.New("pwt key must be 32 bytes")
 
 // API holds references to the gRPC and HTTP servers.
 type API struct {
@@ -35,6 +39,11 @@ type API struct {
 
 // New builds a new API and returns a reference to it and an error value.
 func New(cfg *config.Config) (*API, error) {
+	// Validate Config.
+	if len(cfg.PWTKey) != 32 {
+		return nil, ErrPWTLength
+	}
+
 	// Set up database connection.
 	pg, err := postgres.New(cfg.PgURI)
 	if err != nil {
@@ -44,6 +53,8 @@ func New(cfg *config.Config) (*API, error) {
 	// Register gRPC services.
 	srv := grpc.NewServer()
 	api.RegisterDeviceServiceServer(srv, service.NewDevice(device.NewDAO(pg)))
+	api.RegisterSessionServiceServer(srv, service.NewSession(user.NewDAO(pg),
+		cfg.PWTKey))
 
 	// Register gRPC-Gateway handlers.
 	ctx, cancel := context.WithCancel(context.Background())
@@ -54,7 +65,14 @@ func New(cfg *config.Config) (*API, error) {
 
 	// Device.
 	if err := api.RegisterDeviceServiceHandlerFromEndpoint(ctx, gwMux,
-		grpcHost+grpcPort, opts); err != nil {
+		GRPCHost+GRPCPort, opts); err != nil {
+		cancel()
+		return nil, err
+	}
+
+	// Session.
+	if err := api.RegisterSessionServiceHandlerFromEndpoint(ctx, gwMux,
+		GRPCHost+GRPCPort, opts); err != nil {
 		cancel()
 		return nil, err
 	}
@@ -77,14 +95,14 @@ func New(cfg *config.Config) (*API, error) {
 // Serve starts the listener.
 func (api *API) Serve() {
 	// #nosec G102 - service should listen on all interfaces
-	lis, err := net.Listen("tcp", grpcPort)
+	lis, err := net.Listen("tcp", GRPCPort)
 	if err != nil {
 		alog.Fatalf("Serve net.Listen: %v", err)
 	}
 
 	// Serve gRPC.
 	go func() {
-		alog.Infof("Listening on %v", grpcPort)
+		alog.Infof("Listening on %v", GRPCPort)
 		if err := api.grpcSrv.Serve(lis); err != nil {
 			alog.Fatalf("Serve api.grpcSrv.Serve: %v", err)
 		}

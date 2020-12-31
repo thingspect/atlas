@@ -13,6 +13,6 @@ message Claim {
   // Organization ID (UUID).
   bytes org_id = 2;
 
-  // Expiration timestamp. Nanos should be zeroed for compactness.
+  // Claim expiration timestamp. Nanos should be zeroed for compactness.
   google.protobuf.Timestamp expires_at = 3;
 }

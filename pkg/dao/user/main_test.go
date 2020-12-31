@@ -17,7 +17,8 @@ import (
 var (
 	globalOrgDAO  *org.DAO
 	globalUserDAO *DAO
-	globalHash    []byte
+	// globalHash is stored globally for test performance under -race.
+	globalHash []byte
 )
 
 func TestMain(m *testing.M) {

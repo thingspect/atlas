@@ -205,6 +205,39 @@
           "DeviceService"
         ]
       }
+    },
+    "/v1/sessions/login": {
+      "post": {
+        "summary": "Log in a user.",
+        "operationId": "SessionService_Login",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/apiLoginResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/apiLoginRequest"
+            }
+          }
+        ],
+        "tags": [
+          "SessionService"
+        ]
+      }
     }
   },
   "definitions": {
@@ -280,6 +313,39 @@
           "description": "Device array."
         }
       }
+    },
+    "apiLoginRequest": {
+      "type": "object",
+      "properties": {
+        "email": {
+          "type": "string",
+          "description": "Email of the user to log in."
+        },
+        "orgName": {
+          "type": "string",
+          "description": "Organization name of the user to log in."
+        },
+        "password": {
+          "type": "string",
+          "description": "Password of the user to log in."
+        }
+      },
+      "description": "LoginRequest is sent to log in a user."
+    },
+    "apiLoginResponse": {
+      "type": "object",
+      "properties": {
+        "token": {
+          "type": "string",
+          "description": "Token to be used for subsequent non-login service calls."
+        },
+        "expiresAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Token expiration timestamp."
+        }
+      },
+      "description": "LoginResponse is sent in response to a user login."
     },
     "apiReadDeviceResponse": {
       "type": "object",

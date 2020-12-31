@@ -51,7 +51,7 @@ func TestGenerateToken(t *testing.T) {
 			t.Logf("res, exp, err: %v, %+v, %#v", res, exp, err)
 			require.GreaterOrEqual(t, len(res), lTest.resMinLen)
 			if exp != nil {
-				require.WithinDuration(t, time.Now().Add(tokenExp*time.Second),
+				require.WithinDuration(t, time.Now().Add(TokenExp*time.Second),
 					exp.AsTime(), 2*time.Second)
 			}
 			if lTest.err == "" {
@@ -74,7 +74,7 @@ func TestValidateToken(t *testing.T) {
 	require.NoError(t, err)
 
 	oldToken := &pwt.Claim{ExpiresAt: timestamppb.New(time.Now().Add(-2 *
-		tokenExp * time.Second))}
+		TokenExp * time.Second))}
 	bOldToken, err := proto.Marshal(oldToken)
 	require.NoError(t, err)
 	eOldToken, err := Encrypt(key, bOldToken)
@@ -113,7 +113,7 @@ func TestValidateToken(t *testing.T) {
 			}
 			t.Logf("resVal, err: %+v, %v", resVal, err)
 			if resVal != nil {
-				require.WithinDuration(t, time.Now().Add(tokenExp*time.Second),
+				require.WithinDuration(t, time.Now().Add(TokenExp*time.Second),
 					resVal.ExpiresAt.AsTime(), 2*time.Second)
 			}
 			if lTest.err == "" {

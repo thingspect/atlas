@@ -136,6 +136,66 @@ func TestRead(t *testing.T) {
 	})
 }
 
+func TestReadByEmail(t *testing.T) {
+	t.Parallel()
+
+	ctx, cancel := context.WithTimeout(context.Background(), 4*time.Second)
+	defer cancel()
+
+	org := org.Org{Name: "dao-user-" + random.String(10)}
+	createOrg, err := globalOrgDAO.Create(ctx, org)
+	t.Logf("createOrg, err: %+v, %v", createOrg, err)
+	require.NoError(t, err)
+
+	user := &api.User{OrgId: createOrg.ID, Email: "dao-user-" + random.Email(),
+		IsDisabled: []bool{true, false}[random.Intn(2)]}
+	createUser, err := globalUserDAO.Create(ctx, user, globalHash)
+	t.Logf("createUser, err: %+v, %v", createUser, err)
+	require.NoError(t, err)
+
+	t.Run("Read user by valid email", func(t *testing.T) {
+		t.Parallel()
+
+		ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
+		defer cancel()
+
+		readUser, readHash, err := globalUserDAO.ReadByEmail(ctx,
+			createUser.Email, createOrg.Name)
+		t.Logf("readUser, readHash, err: %+v, %s, %v", readUser, readHash, err)
+		require.NoError(t, err)
+		require.Equal(t, globalHash, readHash)
+		require.Equal(t, createUser, readUser)
+	})
+
+	t.Run("Read user by unknown email", func(t *testing.T) {
+		t.Parallel()
+
+		ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
+		defer cancel()
+
+		readUser, readHash, err := globalUserDAO.ReadByEmail(ctx,
+			random.Email(), random.String(10))
+		t.Logf("readUser, readHash, err: %+v, %s, %v", readUser, readHash, err)
+		require.Nil(t, readUser)
+		require.Nil(t, readHash)
+		require.Equal(t, dao.ErrNotFound, err)
+	})
+
+	t.Run("Reads are isolated by org name", func(t *testing.T) {
+		t.Parallel()
+
+		ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
+		defer cancel()
+
+		readUser, readHash, err := globalUserDAO.ReadByEmail(ctx,
+			createUser.Email, random.String(10))
+		t.Logf("readUser, readHash, err: %+v, %s, %v", readUser, readHash, err)
+		require.Nil(t, readUser)
+		require.Nil(t, readHash)
+		require.Equal(t, dao.ErrNotFound, err)
+	})
+}
+
 func TestUpdateUser(t *testing.T) {
 	t.Parallel()
 

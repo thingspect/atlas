@@ -56,6 +56,33 @@ func (d *DAO) Read(ctx context.Context, userID, orgID string) (*api.User,
 	return user, passHash, nil
 }
 
+const readUserByEmail = `
+SELECT u.id, u.org_id, u.email, u.password_hash, u.is_disabled, u.created_at,
+u.updated_at
+FROM users u
+INNER JOIN orgs o ON u.org_id = o.id
+WHERE u.email = $1
+AND o.name = $2
+`
+
+// ReadByEmail retrieves a user and password hash by email and org name.
+func (d *DAO) ReadByEmail(ctx context.Context, email,
+	orgName string) (*api.User, []byte, error) {
+	user := &api.User{}
+	var passHash []byte
+	var createdAt, updatedAt time.Time
+
+	if err := d.pg.QueryRowContext(ctx, readUserByEmail, email, orgName).Scan(
+		&user.Id, &user.OrgId, &user.Email, &passHash, &user.IsDisabled,
+		&createdAt, &updatedAt); err != nil {
+		return nil, nil, dao.DBToSentinel(err)
+	}
+
+	user.CreatedAt = timestamppb.New(createdAt)
+	user.UpdatedAt = timestamppb.New(updatedAt)
+	return user, passHash, nil
+}
+
 const updateUser = `
 UPDATE users
 SET email = $1, password_hash = $2, is_disabled = $3, updated_at = $4
