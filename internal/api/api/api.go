@@ -13,6 +13,7 @@ import (
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
 	"github.com/thingspect/api/go/api"
 	"github.com/thingspect/atlas/internal/api/config"
+	"github.com/thingspect/atlas/internal/api/interceptor"
 	"github.com/thingspect/atlas/internal/api/service"
 	"github.com/thingspect/atlas/pkg/alog"
 	"github.com/thingspect/atlas/pkg/dao/device"
@@ -28,7 +29,7 @@ const (
 	httpPort    = ":8000"
 )
 
-var ErrPWTLength = errors.New("pwt key must be 32 bytes")
+var errPWTLength = errors.New("pwt key must be 32 bytes")
 
 // API holds references to the gRPC and HTTP servers.
 type API struct {
@@ -41,7 +42,7 @@ type API struct {
 func New(cfg *config.Config) (*API, error) {
 	// Validate Config.
 	if len(cfg.PWTKey) != 32 {
-		return nil, ErrPWTLength
+		return nil, errPWTLength
 	}
 
 	// Set up database connection.
@@ -51,7 +52,7 @@ func New(cfg *config.Config) (*API, error) {
 	}
 
 	// Register gRPC services.
-	srv := grpc.NewServer()
+	srv := grpc.NewServer(grpc.ChainUnaryInterceptor(interceptor.Log(nil)))
 	api.RegisterDeviceServiceServer(srv, service.NewDevice(device.NewDAO(pg)))
 	api.RegisterSessionServiceServer(srv, service.NewSession(user.NewDAO(pg),
 		cfg.PWTKey))

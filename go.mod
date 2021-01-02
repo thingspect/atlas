@@ -20,6 +20,7 @@ require (
 	github.com/stretchr/testify v1.6.1
 	github.com/thingspect/api/go v0.0.0-20201230042102-b5ac23189037
 	golang.org/x/crypto v0.0.0-20201221181555-eec23a3978ad
+	golang.org/x/sys v0.0.0-20201231184435-2d18734c6014 // indirect
 	google.golang.org/grpc v1.34.0
 	google.golang.org/protobuf v1.25.0
 	gopkg.in/yaml.v3 v3.0.0-20200615113413-eeeca48fe776 // indirect
