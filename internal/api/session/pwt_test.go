@@ -1,6 +1,6 @@
 // +build !integration
 
-package crypto
+package session
 
 import (
 	"crypto/rand"
@@ -12,6 +12,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/require"
 	"github.com/thingspect/atlas/api/go/pwt"
+	"github.com/thingspect/atlas/pkg/crypto"
 	"github.com/thingspect/atlas/pkg/test/random"
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/known/timestamppb"
@@ -37,7 +38,7 @@ func TestGenerateToken(t *testing.T) {
 		{key, uuid.New().String(), random.String(10), 0,
 			"invalid UUID length: 10"},
 		{[]byte{}, uuid.New().String(), uuid.New().String(), 0,
-			ErrKeyLength.Error()},
+			crypto.ErrKeyLength.Error()},
 	}
 
 	for _, test := range tests {
@@ -70,14 +71,14 @@ func TestValidateToken(t *testing.T) {
 	_, err := rand.Read(key)
 	require.NoError(t, err)
 
-	badCipher, err := Encrypt(key, []byte("aaa"))
+	badCipher, err := crypto.Encrypt(key, []byte("aaa"))
 	require.NoError(t, err)
 
 	oldToken := &pwt.Claim{ExpiresAt: timestamppb.New(time.Now().Add(-2 *
 		TokenExp * time.Second))}
 	bOldToken, err := proto.Marshal(oldToken)
 	require.NoError(t, err)
-	eOldToken, err := Encrypt(key, bOldToken)
+	eOldToken, err := crypto.Encrypt(key, bOldToken)
 	require.NoError(t, err)
 
 	tests := []struct {
@@ -100,12 +101,14 @@ func TestValidateToken(t *testing.T) {
 		t.Run(fmt.Sprintf("Can validate %+v", lTest), func(t *testing.T) {
 			t.Parallel()
 
-			resGen, exp, err := GenerateToken(lTest.inpKey, uuid.New().String(),
-				uuid.New().String())
+			userID := uuid.New().String()
+			orgID := uuid.New().String()
+
+			resGen, exp, err := GenerateToken(lTest.inpKey, userID, orgID)
 			t.Logf("resGen, exp, err: %v, %v, %v", resGen, exp, err)
 			require.NoError(t, err)
 
-			var resVal *pwt.Claim
+			var resVal *Session
 			if lTest.inpCiphertoken == "" {
 				resVal, err = ValidateToken(lTest.inpKey, resGen)
 			} else {
@@ -113,8 +116,8 @@ func TestValidateToken(t *testing.T) {
 			}
 			t.Logf("resVal, err: %+v, %v", resVal, err)
 			if resVal != nil {
-				require.WithinDuration(t, time.Now().Add(TokenExp*time.Second),
-					resVal.ExpiresAt.AsTime(), 2*time.Second)
+				require.Equal(t, userID, resVal.UserID)
+				require.Equal(t, orgID, resVal.OrgID)
 			}
 			if lTest.err == "" {
 				require.NoError(t, err)

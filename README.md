@@ -7,11 +7,6 @@
 ```
 docker-compose -f build/docker-compose.yml up
 make test
-```
-
-Optional:
-
-```
 RACE=y make test
 ```
 

@@ -9,7 +9,7 @@ import (
 
 	"github.com/stretchr/testify/require"
 	"github.com/thingspect/api/go/api"
-	"github.com/thingspect/atlas/pkg/crypto"
+	"github.com/thingspect/atlas/internal/api/session"
 	"github.com/thingspect/atlas/pkg/dao/org"
 	"github.com/thingspect/atlas/pkg/test/random"
 )
@@ -43,14 +43,14 @@ func TestLogin(t *testing.T) {
 		ctx, cancel := context.WithTimeout(context.Background(), 6*time.Second)
 		defer cancel()
 
-		sessCli := api.NewSessionServiceClient(globalGRPCConn)
+		sessCli := api.NewSessionServiceClient(globalNoAuthGRPCConn)
 		loginResp, err := sessCli.Login(ctx, &api.LoginRequest{
 			Email: createUser.Email, OrgName: createOrg.Name,
 			Password: globalPass})
 		t.Logf("loginResp, err: %+v, %v", loginResp, err)
 		require.NoError(t, err)
 		require.GreaterOrEqual(t, len(loginResp.Token), 90)
-		require.WithinDuration(t, time.Now().Add(crypto.TokenExp*time.Second),
+		require.WithinDuration(t, time.Now().Add(session.TokenExp*time.Second),
 			loginResp.ExpiresAt.AsTime(), 2*time.Second)
 	})
 
@@ -60,7 +60,7 @@ func TestLogin(t *testing.T) {
 		ctx, cancel := context.WithTimeout(context.Background(), 6*time.Second)
 		defer cancel()
 
-		sessCli := api.NewSessionServiceClient(globalGRPCConn)
+		sessCli := api.NewSessionServiceClient(globalNoAuthGRPCConn)
 		loginResp, err := sessCli.Login(ctx, &api.LoginRequest{
 			Email: random.Email(), OrgName: random.String(10),
 			Password: random.String(10)})
@@ -76,7 +76,7 @@ func TestLogin(t *testing.T) {
 		ctx, cancel := context.WithTimeout(context.Background(), 6*time.Second)
 		defer cancel()
 
-		sessCli := api.NewSessionServiceClient(globalGRPCConn)
+		sessCli := api.NewSessionServiceClient(globalNoAuthGRPCConn)
 		loginResp, err := sessCli.Login(ctx, &api.LoginRequest{
 			Email: createUser.Email, OrgName: createOrg.Name,
 			Password: random.String(10)})
@@ -92,7 +92,7 @@ func TestLogin(t *testing.T) {
 		ctx, cancel := context.WithTimeout(context.Background(), 6*time.Second)
 		defer cancel()
 
-		sessCli := api.NewSessionServiceClient(globalGRPCConn)
+		sessCli := api.NewSessionServiceClient(globalNoAuthGRPCConn)
 		loginResp, err := sessCli.Login(ctx, &api.LoginRequest{
 			Email: createDisUser.Email, OrgName: createOrg.Name,
 			Password: globalPass})

@@ -1,8 +1,13 @@
 {
   "swagger": "2.0",
   "info": {
-    "title": "api/device.proto",
-    "version": "version not set"
+    "title": "Atlas",
+    "version": "1.0",
+    "contact": {
+      "name": "Thingspect",
+      "url": "https://www.thingspect.com/",
+      "email": "info@thingspect.com"
+    }
   },
   "consumes": [
     "application/json"
@@ -236,7 +241,8 @@
         ],
         "tags": [
           "SessionService"
-        ]
+        ],
+        "security": []
       }
     }
   },
@@ -407,5 +413,18 @@
         }
       }
     }
-  }
+  },
+  "securityDefinitions": {
+    "TokenAuth": {
+      "type": "apiKey",
+      "description": "Enter your token (/v1/sessions/login) in the format **Bearer \u0026lt;token\u0026gt;**",
+      "name": "Authorization",
+      "in": "header"
+    }
+  },
+  "security": [
+    {
+      "TokenAuth": []
+    }
+  ]
 }

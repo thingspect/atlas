@@ -12,7 +12,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/require"
 	"github.com/thingspect/api/go/api"
-	"github.com/thingspect/atlas/pkg/crypto"
+	"github.com/thingspect/atlas/internal/api/session"
 	"github.com/thingspect/atlas/pkg/dao"
 	"github.com/thingspect/atlas/pkg/test/random"
 	"google.golang.org/grpc/codes"
@@ -49,7 +49,7 @@ func TestLogin(t *testing.T) {
 		t.Logf("loginResp, err: %+v, %v", loginResp, err)
 		require.NoError(t, err)
 		require.GreaterOrEqual(t, len(loginResp.Token), 90)
-		require.WithinDuration(t, time.Now().Add(crypto.TokenExp*time.Second),
+		require.WithinDuration(t, time.Now().Add(session.TokenExp*time.Second),
 			loginResp.ExpiresAt.AsTime(), 2*time.Second)
 	})
 

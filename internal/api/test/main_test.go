@@ -27,7 +27,8 @@ var (
 	// globalHash is stored globally for test performance under -race.
 	globalHash []byte
 
-	globalGRPCConn *grpc.ClientConn
+	globalNoAuthGRPCConn *grpc.ClientConn
+	globalAuthGRPCConn   *grpc.ClientConn
 )
 
 func TestMain(m *testing.M) {
@@ -69,14 +70,20 @@ func TestMain(m *testing.M) {
 	}
 	log.Printf("globalPass, globalHash: %v, %s", globalPass, globalHash)
 
-	// Build gRPC connection.
+	// Build unauthenticated gRPC connection.
 	opts := []grpc.DialOption{
 		grpc.WithBlock(),
 		grpc.WithInsecure(),
 	}
-	globalGRPCConn, err = grpc.Dial(api.GRPCHost+api.GRPCPort, opts...)
+	globalNoAuthGRPCConn, err = grpc.Dial(api.GRPCHost+api.GRPCPort, opts...)
 	if err != nil {
 		log.Fatalf("TestMain grpc.Dial: %v", err)
+	}
+
+	// Build authenticated gRPC connection.
+	globalAuthGRPCConn, err = authGRPCConn(api.GRPCHost + api.GRPCPort)
+	if err != nil {
+		log.Fatalf("TestMain authGRPCConn: %v", err)
 	}
 
 	os.Exit(m.Run())

@@ -36,7 +36,7 @@ func TestCreate(t *testing.T) {
 		ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
 		defer cancel()
 
-		devCli := api.NewDeviceServiceClient(globalGRPCConn)
+		devCli := api.NewDeviceServiceClient(globalAuthGRPCConn)
 		createDev, err := devCli.Create(ctx, &api.CreateDeviceRequest{
 			Device: dev})
 		t.Logf("createDev, err: %+v, %v", createDev, err)
@@ -61,7 +61,7 @@ func TestCreate(t *testing.T) {
 		ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
 		defer cancel()
 
-		devCli := api.NewDeviceServiceClient(globalGRPCConn)
+		devCli := api.NewDeviceServiceClient(globalAuthGRPCConn)
 		createDev, err := devCli.Create(ctx, &api.CreateDeviceRequest{
 			Device: dev})
 		t.Logf("createDev, err: %+v, %v", createDev, err)
@@ -82,7 +82,7 @@ func TestCreate(t *testing.T) {
 		ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
 		defer cancel()
 
-		devCli := api.NewDeviceServiceClient(globalGRPCConn)
+		devCli := api.NewDeviceServiceClient(globalAuthGRPCConn)
 		createDev, err := devCli.Create(ctx, &api.CreateDeviceRequest{
 			Device: nil})
 		t.Logf("createDev, err: %+v, %v", createDev, err)
@@ -100,7 +100,7 @@ func TestCreate(t *testing.T) {
 		ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
 		defer cancel()
 
-		devCli := api.NewDeviceServiceClient(globalGRPCConn)
+		devCli := api.NewDeviceServiceClient(globalAuthGRPCConn)
 		createDev, err := devCli.Create(ctx, &api.CreateDeviceRequest{
 			Device: dev})
 		t.Logf("createDev, err: %+v, %v", createDev, err)
@@ -124,7 +124,7 @@ func TestRead(t *testing.T) {
 	dev := &api.Device{OrgId: createOrg.ID, UniqId: "api-device-" +
 		random.String(16), IsDisabled: []bool{true, false}[random.Intn(2)]}
 
-	devCli := api.NewDeviceServiceClient(globalGRPCConn)
+	devCli := api.NewDeviceServiceClient(globalAuthGRPCConn)
 	createDev, err := devCli.Create(ctx, &api.CreateDeviceRequest{Device: dev})
 	t.Logf("createDev, err: %+v, %v", createDev, err)
 	require.NoError(t, err)
@@ -135,7 +135,7 @@ func TestRead(t *testing.T) {
 		ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
 		defer cancel()
 
-		devCli := api.NewDeviceServiceClient(globalGRPCConn)
+		devCli := api.NewDeviceServiceClient(globalAuthGRPCConn)
 		readDev, err := devCli.Read(ctx, &api.ReadDeviceRequest{
 			Id: createDev.Device.Id, OrgId: createDev.Device.OrgId})
 		t.Logf("readDev, err: %+v, %v", readDev, err)
@@ -156,7 +156,7 @@ func TestRead(t *testing.T) {
 		ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
 		defer cancel()
 
-		devCli := api.NewDeviceServiceClient(globalGRPCConn)
+		devCli := api.NewDeviceServiceClient(globalAuthGRPCConn)
 		readDev, err := devCli.Read(ctx, &api.ReadDeviceRequest{
 			Id: uuid.New().String(), OrgId: createOrg.ID})
 		t.Logf("readDev, err: %+v, %v", readDev, err)
@@ -171,7 +171,7 @@ func TestRead(t *testing.T) {
 		ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
 		defer cancel()
 
-		devCli := api.NewDeviceServiceClient(globalGRPCConn)
+		devCli := api.NewDeviceServiceClient(globalAuthGRPCConn)
 		readDev, err := devCli.Read(ctx, &api.ReadDeviceRequest{
 			Id: createDev.Device.Id, OrgId: uuid.New().String()})
 		t.Logf("readDev, err: %+v, %v", readDev, err)
@@ -186,7 +186,7 @@ func TestRead(t *testing.T) {
 		ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
 		defer cancel()
 
-		devCli := api.NewDeviceServiceClient(globalGRPCConn)
+		devCli := api.NewDeviceServiceClient(globalAuthGRPCConn)
 		readDev, err := devCli.Read(ctx, &api.ReadDeviceRequest{
 			Id: random.String(10), OrgId: createOrg.ID})
 		t.Logf("readDev, err: %+v, %v", readDev, err)
@@ -216,7 +216,7 @@ func TestUpdate(t *testing.T) {
 		dev := &api.Device{OrgId: createOrg.ID, UniqId: "api-device-" +
 			random.String(16), IsDisabled: []bool{true, false}[random.Intn(2)]}
 
-		devCli := api.NewDeviceServiceClient(globalGRPCConn)
+		devCli := api.NewDeviceServiceClient(globalAuthGRPCConn)
 		createDev, err := devCli.Create(ctx, &api.CreateDeviceRequest{
 			Device: dev})
 		t.Logf("createDev, err: %+v, %v", createDev, err)
@@ -247,7 +247,7 @@ func TestUpdate(t *testing.T) {
 		ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
 		defer cancel()
 
-		devCli := api.NewDeviceServiceClient(globalGRPCConn)
+		devCli := api.NewDeviceServiceClient(globalAuthGRPCConn)
 		updateDev, err := devCli.Update(ctx, &api.UpdateDeviceRequest{
 			Device: nil})
 		t.Logf("updateDev, err: %+v, %v", updateDev, err)
@@ -266,7 +266,7 @@ func TestUpdate(t *testing.T) {
 			OrgId: createOrg.ID, UniqId: "api-device-" + random.String(16),
 			Token: uuid.New().String()}
 
-		devCli := api.NewDeviceServiceClient(globalGRPCConn)
+		devCli := api.NewDeviceServiceClient(globalAuthGRPCConn)
 		updateDev, err := devCli.Update(ctx, &api.UpdateDeviceRequest{
 			Device: unknownDevice})
 		t.Logf("updateDev, err: %+v, %v", updateDev, err)
@@ -284,7 +284,7 @@ func TestUpdate(t *testing.T) {
 		dev := &api.Device{OrgId: createOrg.ID, UniqId: "api-device-" +
 			random.String(16), IsDisabled: []bool{true, false}[random.Intn(2)]}
 
-		devCli := api.NewDeviceServiceClient(globalGRPCConn)
+		devCli := api.NewDeviceServiceClient(globalAuthGRPCConn)
 		createDev, err := devCli.Create(ctx, &api.CreateDeviceRequest{
 			Device: dev})
 		t.Logf("createDev, err: %+v, %v", createDev, err)
@@ -311,7 +311,7 @@ func TestUpdate(t *testing.T) {
 		dev := &api.Device{OrgId: createOrg.ID, UniqId: "api-device-" +
 			random.String(16), IsDisabled: []bool{true, false}[random.Intn(2)]}
 
-		devCli := api.NewDeviceServiceClient(globalGRPCConn)
+		devCli := api.NewDeviceServiceClient(globalAuthGRPCConn)
 		createDev, err := devCli.Create(ctx, &api.CreateDeviceRequest{
 			Device: dev})
 		t.Logf("createDev, err: %+v, %v", createDev, err)
@@ -349,7 +349,7 @@ func TestDelete(t *testing.T) {
 		dev := &api.Device{OrgId: createOrg.ID, UniqId: "api-device-" +
 			random.String(16), IsDisabled: []bool{true, false}[random.Intn(2)]}
 
-		devCli := api.NewDeviceServiceClient(globalGRPCConn)
+		devCli := api.NewDeviceServiceClient(globalAuthGRPCConn)
 		createDev, err := devCli.Create(ctx, &api.CreateDeviceRequest{
 			Device: dev})
 		t.Logf("createDev, err: %+v, %v", createDev, err)
@@ -367,7 +367,7 @@ func TestDelete(t *testing.T) {
 				2*time.Second)
 			defer cancel()
 
-			devCli := api.NewDeviceServiceClient(globalGRPCConn)
+			devCli := api.NewDeviceServiceClient(globalAuthGRPCConn)
 			readDev, err := devCli.Read(ctx, &api.ReadDeviceRequest{
 				Id: createDev.Device.Id, OrgId: createDev.Device.OrgId})
 			t.Logf("readDev, err: %+v, %v", readDev, err)
@@ -383,7 +383,7 @@ func TestDelete(t *testing.T) {
 		ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
 		defer cancel()
 
-		devCli := api.NewDeviceServiceClient(globalGRPCConn)
+		devCli := api.NewDeviceServiceClient(globalAuthGRPCConn)
 		_, err = devCli.Delete(ctx, &api.DeleteDeviceRequest{
 			Id: uuid.New().String(), OrgId: createOrg.ID})
 		t.Logf("err: %v", err)
@@ -400,7 +400,7 @@ func TestDelete(t *testing.T) {
 		dev := &api.Device{OrgId: createOrg.ID, UniqId: "api-device-" +
 			random.String(16), IsDisabled: []bool{true, false}[random.Intn(2)]}
 
-		devCli := api.NewDeviceServiceClient(globalGRPCConn)
+		devCli := api.NewDeviceServiceClient(globalAuthGRPCConn)
 		createDev, err := devCli.Create(ctx, &api.CreateDeviceRequest{
 			Device: dev})
 		t.Logf("createDev, err: %+v, %v", createDev, err)
@@ -431,7 +431,7 @@ func TestList(t *testing.T) {
 		dev := &api.Device{OrgId: createOrg.ID, UniqId: "api-device-" +
 			random.String(16), IsDisabled: []bool{true, false}[random.Intn(2)]}
 
-		devCli := api.NewDeviceServiceClient(globalGRPCConn)
+		devCli := api.NewDeviceServiceClient(globalAuthGRPCConn)
 		createDev, err := devCli.Create(ctx, &api.CreateDeviceRequest{
 			Device: dev})
 		t.Logf("createDev, err: %+v, %v", createDev, err)
@@ -446,7 +446,7 @@ func TestList(t *testing.T) {
 		ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
 		defer cancel()
 
-		devCli := api.NewDeviceServiceClient(globalGRPCConn)
+		devCli := api.NewDeviceServiceClient(globalAuthGRPCConn)
 		listDevs, err := devCli.List(ctx, &api.ListDeviceRequest{
 			OrgId: createOrg.ID})
 		t.Logf("listDevs, err: %+v, %v", listDevs, err)
@@ -468,7 +468,7 @@ func TestList(t *testing.T) {
 		ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
 		defer cancel()
 
-		devCli := api.NewDeviceServiceClient(globalGRPCConn)
+		devCli := api.NewDeviceServiceClient(globalAuthGRPCConn)
 		listDevs, err := devCli.List(ctx, &api.ListDeviceRequest{
 			OrgId: uuid.New().String()})
 		t.Logf("listDevs, err: %+v, %v", listDevs, err)
@@ -482,7 +482,7 @@ func TestList(t *testing.T) {
 		ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
 		defer cancel()
 
-		devCli := api.NewDeviceServiceClient(globalGRPCConn)
+		devCli := api.NewDeviceServiceClient(globalAuthGRPCConn)
 		listDevs, err := devCli.List(ctx, &api.ListDeviceRequest{
 			OrgId: random.String(10)})
 		t.Logf("listDevs, err: %+v, %v", listDevs, err)

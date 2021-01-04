@@ -6,6 +6,7 @@ import (
 	"context"
 
 	"github.com/thingspect/api/go/api"
+	"github.com/thingspect/atlas/internal/api/session"
 	"github.com/thingspect/atlas/pkg/alog"
 	"github.com/thingspect/atlas/pkg/crypto"
 	"google.golang.org/grpc/codes"
@@ -38,7 +39,7 @@ func NewSession(userDAO Userer, pwtKey []byte) *Session {
 func (s *Session) Login(ctx context.Context,
 	req *api.LoginRequest) (*api.LoginResponse, error) {
 	user, hash, err := s.userDAO.ReadByEmail(ctx, req.Email, req.OrgName)
-	// Hash provided password if an error is returned to prevent account
+	// Hash the provided password if an error is returned to prevent account
 	// enumeration attacks.
 	if err != nil {
 		_, hashErr := crypto.HashPass(req.Password)
@@ -55,7 +56,7 @@ func (s *Session) Login(ctx context.Context,
 		return nil, status.Error(codes.Unauthenticated, "unauthorized")
 	}
 
-	token, exp, err := crypto.GenerateToken(s.pwtKey, user.Id, user.OrgId)
+	token, exp, err := session.GenerateToken(s.pwtKey, user.Id, user.OrgId)
 	if err != nil {
 		alog.Errorf("Login crypto.GenerateToken Email, OrgName, err: %v, %v, "+
 			"%v", req.Email, req.OrgName, err)
