@@ -1,4 +1,4 @@
-package crypto
+package session
 
 import (
 	"encoding/base64"
@@ -7,6 +7,7 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/thingspect/atlas/api/go/pwt"
+	"github.com/thingspect/atlas/pkg/crypto"
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
@@ -49,7 +50,7 @@ func GenerateToken(key []byte, userID, orgID string) (string,
 	}
 
 	// Encrypt and encode PWT.
-	eToken, err := Encrypt(key, bToken)
+	eToken, err := crypto.Encrypt(key, bToken)
 	if err != nil {
 		return "", nil, err
 	}
@@ -58,14 +59,14 @@ func GenerateToken(key []byte, userID, orgID string) (string,
 
 // ValidateToken validates a protobuf web token in raw (no padding) base64
 // format. A nil error as part of the return indicates success.
-func ValidateToken(key []byte, ciphertoken string) (*pwt.Claim, error) {
+func ValidateToken(key []byte, ciphertoken string) (*Session, error) {
 	// Decode and decrypt PWT.
 	eToken, err := base64.RawStdEncoding.DecodeString(ciphertoken)
 	if err != nil {
 		return nil, err
 	}
 
-	bToken, err := Decrypt(key, eToken)
+	bToken, err := crypto.Decrypt(key, eToken)
 	if err != nil {
 		return nil, err
 	}
@@ -80,5 +81,16 @@ func ValidateToken(key []byte, ciphertoken string) (*pwt.Claim, error) {
 	if token.ExpiresAt == nil || token.ExpiresAt.AsTime().Before(time.Now()) {
 		return nil, ErrTokenExp
 	}
-	return token, nil
+
+	// Build Session to return.
+	var userUUID uuid.UUID
+	copy(userUUID[:], token.UserId)
+
+	var orgUUID uuid.UUID
+	copy(orgUUID[:], token.OrgId)
+
+	return &Session{
+		UserID: userUUID.String(),
+		OrgID:  orgUUID.String(),
+	}, nil
 }

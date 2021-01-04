@@ -22,7 +22,6 @@ func Log(skipPaths map[string]struct{}) grpc.UnaryServerInterceptor {
 		error) {
 		start := time.Now()
 		resp, err := handler(ctx, req)
-		dur := fmt.Sprintf("%d", time.Since(start)/time.Millisecond)
 
 		if _, ok := skipPaths[info.FullMethod]; ok {
 			return resp, err
@@ -31,7 +30,7 @@ func Log(skipPaths map[string]struct{}) grpc.UnaryServerInterceptor {
 		// Set up logging fields.
 		logFields := map[string]interface{}{
 			"path":  info.FullMethod,
-			"durms": dur,
+			"durms": fmt.Sprintf("%d", time.Since(start)/time.Millisecond),
 			"code":  status.Code(err).String(),
 		}
 		logEntry := alog.WithFields(logFields)

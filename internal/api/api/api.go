@@ -52,7 +52,14 @@ func New(cfg *config.Config) (*API, error) {
 	}
 
 	// Register gRPC services.
-	srv := grpc.NewServer(grpc.ChainUnaryInterceptor(interceptor.Log(nil)))
+	skipAuth := map[string]struct{}{
+		"/api.SessionService/Login": {},
+	}
+
+	srv := grpc.NewServer(grpc.ChainUnaryInterceptor(
+		interceptor.Log(nil),
+		interceptor.Auth(skipAuth, cfg.PWTKey),
+	))
 	api.RegisterDeviceServiceServer(srv, service.NewDevice(device.NewDAO(pg)))
 	api.RegisterSessionServiceServer(srv, service.NewSession(user.NewDAO(pg),
 		cfg.PWTKey))
