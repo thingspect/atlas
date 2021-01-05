@@ -2,6 +2,8 @@
 package service
 
 import (
+	"errors"
+
 	"github.com/thingspect/atlas/pkg/alog"
 	"github.com/thingspect/atlas/pkg/dao"
 	"google.golang.org/grpc/codes"
@@ -23,11 +25,12 @@ func errToStatus(err error) error {
 		return err
 	}
 
-	code, ok := errToCode[err]
-	if !ok {
-		code = codes.Unknown
-		alog.Errorf("errToStatus unmatched error: %#v", err)
+	for daoErr, code := range errToCode {
+		if errors.Is(err, daoErr) {
+			return status.Error(code, err.Error())
+		}
 	}
+	alog.Errorf("errToStatus unmatched error: %#v", err)
 
-	return status.Error(code, err.Error())
+	return status.Error(codes.Unknown, err.Error())
 }

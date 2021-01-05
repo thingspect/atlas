@@ -106,7 +106,7 @@ func TestCreate(t *testing.T) {
 		t.Logf("createDev, err: %+v, %v", createDev, err)
 		require.Nil(t, createDev)
 		require.EqualError(t, err, "rpc error: code = InvalidArgument desc = "+
-			"invalid format")
+			"invalid format: value too long")
 	})
 }
 
@@ -192,7 +192,7 @@ func TestRead(t *testing.T) {
 		t.Logf("readDev, err: %+v, %v", readDev, err)
 		require.Nil(t, readDev)
 		require.EqualError(t, err, "rpc error: code = InvalidArgument desc = "+
-			"invalid format")
+			"invalid format: UUID")
 	})
 }
 
@@ -325,7 +325,7 @@ func TestUpdate(t *testing.T) {
 		t.Logf("updateDev, err: %+v, %v", updateDev, err)
 		require.Nil(t, updateDev)
 		require.EqualError(t, err, "rpc error: code = InvalidArgument desc = "+
-			"invalid format")
+			"invalid format: value too long")
 	})
 }
 
@@ -488,6 +488,6 @@ func TestList(t *testing.T) {
 		t.Logf("listDevs, err: %+v, %v", listDevs, err)
 		require.Nil(t, listDevs)
 		require.EqualError(t, err, "rpc error: code = InvalidArgument desc = "+
-			"invalid format")
+			"invalid format: UUID")
 	})
 }
