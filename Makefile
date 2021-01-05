@@ -23,14 +23,17 @@ endif
 # not currently supported in conjunction with PIE on darwin/amd64:
 # https://github.com/golang/go/issues/42459
 install:
-	for cmd in $(shell ls cmd); do $(CGO) go build -o \
-	$(INSTALLPATH)/bin/$${cmd} -ldflags="-w" -buildmode=pie ./cmd/$${cmd}; done
+	for x in $(shell find cmd -mindepth 1 -type d); do $(CGO) go build -o \
+	$(INSTALLPATH)/bin/$${x#cmd/} -ldflags="-w" -buildmode=pie ./$${x}; done
+
+	for x in $(shell find tool -mindepth 1 -type d); do $(CGO) go build -o \
+	$(INSTALLPATH)/bin/$${x#tool/} -ldflags="-w" -buildmode=pie ./$${x}; done
 
 # Race detector is exclusive of non-cgo and PIE
 # https://github.com/golang/go/issues/9918
 installrace:
-	for cmd in $(shell ls cmd); do go build -o $(INSTALLPATH)/bin/$${cmd}.race \
-	-ldflags="-w" -race ./cmd/$${cmd}; done
+	for x in $(shell find cmd -mindepth 1 -type d); do go build -o \
+	$(INSTALLPATH)/bin/$${x#cmd/}.race -ldflags="-w" -race ./$${x}; done
 
 lint:
 	cd /tmp && GO111MODULE=on go get honnef.co/go/tools/cmd/staticcheck && \
