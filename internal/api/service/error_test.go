@@ -26,6 +26,8 @@ func TestErrToStatus(t *testing.T) {
 		{io.EOF, "rpc error: code = Unknown desc = EOF"},
 		{dao.ErrAlreadyExists, "rpc error: code = AlreadyExists desc = " +
 			"object already exists"},
+		{fmt.Errorf("%w: UUID", dao.ErrInvalidFormat),
+			"rpc error: code = InvalidArgument desc = invalid format: UUID"},
 	}
 
 	for _, test := range tests {

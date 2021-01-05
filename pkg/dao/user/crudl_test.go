@@ -58,7 +58,7 @@ func TestCreate(t *testing.T) {
 			[]byte(random.String(61)))
 		t.Logf("createUser, err: %+v, %v", createUser, err)
 		require.Nil(t, createUser)
-		require.Equal(t, dao.ErrInvalidFormat, err)
+		require.EqualError(t, err, "invalid format: users_password_hash_check")
 	})
 }
 
@@ -132,7 +132,7 @@ func TestRead(t *testing.T) {
 		t.Logf("readUser, readHash, err: %+v, %s, %v", readUser, readHash, err)
 		require.Nil(t, readUser)
 		require.Nil(t, readHash)
-		require.Equal(t, dao.ErrInvalidFormat, err)
+		require.EqualError(t, err, "invalid format: UUID")
 	})
 }
 
@@ -292,7 +292,7 @@ func TestUpdateUser(t *testing.T) {
 			[]byte(random.String(61)))
 		t.Logf("updateUser, err: %+v, %v", updateUser, err)
 		require.Nil(t, updateUser)
-		require.Equal(t, dao.ErrInvalidFormat, err)
+		require.EqualError(t, err, "invalid format: users_password_hash_check")
 	})
 }
 
@@ -433,6 +433,6 @@ func TestListUsers(t *testing.T) {
 		listUsers, err := globalUserDAO.List(ctx, random.String(10))
 		t.Logf("listUsers, err: %+v, %v", listUsers, err)
 		require.Nil(t, listUsers)
-		require.Equal(t, dao.ErrInvalidFormat, err)
+		require.EqualError(t, err, "invalid format: UUID")
 	})
 }

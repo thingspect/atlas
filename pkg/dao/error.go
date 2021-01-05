@@ -5,6 +5,8 @@ package dao
 import (
 	"database/sql"
 	"errors"
+	"fmt"
+	"strings"
 
 	"github.com/jackc/pgconn"
 	"github.com/thingspect/atlas/pkg/alog"
@@ -34,10 +36,21 @@ func DBToSentinel(err error) error {
 		// unique_violation
 		case "23505":
 			return ErrAlreadyExists
-		// string_data_right_truncation, check_violation,
-		// invalid_text_representation
-		case "22001", "23514", "22P02":
+		// string_data_right_truncation
+		case "22001":
+			if strings.Contains(pgErr.Message, "value too long") {
+				return fmt.Errorf("%w: value too long", ErrInvalidFormat)
+			}
 			return ErrInvalidFormat
+		// invalid_text_representation
+		case "22P02":
+			if pgErr.File == "uuid.c" {
+				return fmt.Errorf("%w: UUID", ErrInvalidFormat)
+			}
+			return ErrInvalidFormat
+		// check_violation
+		case "23514":
+			return fmt.Errorf("%w: %s", ErrInvalidFormat, pgErr.ConstraintName)
 		default:
 			alog.Errorf("DBToSentinel unmatched PgError: %#v", pgErr)
 			return err

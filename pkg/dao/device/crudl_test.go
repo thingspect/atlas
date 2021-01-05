@@ -79,7 +79,7 @@ func TestCreate(t *testing.T) {
 		createDev, err := globalDevDAO.Create(ctx, dev)
 		t.Logf("createDev, err: %+v, %v", createDev, err)
 		require.Nil(t, createDev)
-		require.Equal(t, dao.ErrInvalidFormat, err)
+		require.EqualError(t, err, "invalid format: value too long")
 	})
 }
 
@@ -148,7 +148,7 @@ func TestRead(t *testing.T) {
 			createDev.OrgId)
 		t.Logf("readDev, err: %+v, %v", readDev, err)
 		require.Nil(t, readDev)
-		require.Equal(t, dao.ErrInvalidFormat, err)
+		require.EqualError(t, err, "invalid format: UUID")
 	})
 }
 
@@ -288,7 +288,7 @@ func TestUpdateDevice(t *testing.T) {
 		updateDev, err := globalDevDAO.Update(ctx, createDev)
 		t.Logf("updateDev, err: %+v, %v", updateDev, err)
 		require.Nil(t, updateDev)
-		require.Equal(t, dao.ErrInvalidFormat, err)
+		require.EqualError(t, err, "invalid format: value too long")
 	})
 }
 
@@ -427,6 +427,6 @@ func TestListDevices(t *testing.T) {
 		listDevs, err := globalDevDAO.List(ctx, random.String(10))
 		t.Logf("listDevs, err: %+v, %v", listDevs, err)
 		require.Nil(t, listDevs)
-		require.Equal(t, dao.ErrInvalidFormat, err)
+		require.EqualError(t, err, "invalid format: UUID")
 	})
 }
