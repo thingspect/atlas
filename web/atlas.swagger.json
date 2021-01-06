@@ -50,13 +50,6 @@
             "required": false,
             "type": "integer",
             "format": "int32"
-          },
-          {
-            "name": "orgID",
-            "description": "Organization ID (UUID). Temporary pending authentication.",
-            "in": "query",
-            "required": false,
-            "type": "string"
           }
         ],
         "tags": [
@@ -160,13 +153,6 @@
             "in": "path",
             "required": true,
             "type": "string"
-          },
-          {
-            "name": "orgID",
-            "description": "Organization ID (UUID). Temporary pending authentication.",
-            "in": "query",
-            "required": false,
-            "type": "string"
           }
         ],
         "tags": [
@@ -196,13 +182,6 @@
             "description": "Device ID (UUID) to delete.",
             "in": "path",
             "required": true,
-            "type": "string"
-          },
-          {
-            "name": "orgID",
-            "description": "Organization ID (UUID). Temporary pending authentication.",
-            "in": "query",
-            "required": false,
             "type": "string"
           }
         ],
