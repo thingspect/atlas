@@ -27,21 +27,21 @@ func (c *credential) RequireTransportSecurity() bool {
 	return false
 }
 
-func authGRPCConn(grpcAddr string) (*grpc.ClientConn, error) {
+func authGRPCConn(grpcAddr string) (string, *grpc.ClientConn, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
 	org := org.Org{Name: "api-helper-" + random.String(10)}
 	createOrg, err := globalOrgDAO.Create(ctx, org)
 	if err != nil {
-		return nil, err
+		return "", nil, err
 	}
 
 	user := &api.User{OrgId: createOrg.ID, Email: "api-helper-" +
 		random.Email()}
 	createUser, err := globalUserDAO.Create(ctx, user, globalHash)
 	if err != nil {
-		return nil, err
+		return "", nil, err
 	}
 
 	sessCli := api.NewSessionServiceClient(globalNoAuthGRPCConn)
@@ -49,7 +49,7 @@ func authGRPCConn(grpcAddr string) (*grpc.ClientConn, error) {
 		Email: createUser.Email, OrgName: createOrg.Name,
 		Password: globalPass})
 	if err != nil {
-		return nil, err
+		return "", nil, err
 	}
 
 	opts := []grpc.DialOption{
@@ -59,7 +59,7 @@ func authGRPCConn(grpcAddr string) (*grpc.ClientConn, error) {
 	}
 	conn, err := grpc.Dial(grpcAddr, opts...)
 	if err != nil {
-		return nil, err
+		return "", nil, err
 	}
-	return conn, nil
+	return createOrg.ID, conn, nil
 }

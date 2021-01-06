@@ -77,7 +77,7 @@ github.com/rs/zerolog/internal/json
 ## explicit
 github.com/stretchr/testify/assert
 github.com/stretchr/testify/require
-# github.com/thingspect/api/go v0.0.0-20210104051601-ad49d292d246
+# github.com/thingspect/api/go v0.0.0-20210106172248-4f0d86fdbcef
 ## explicit
 github.com/thingspect/api/go/api
 github.com/thingspect/api/go/common
@@ -96,8 +96,7 @@ golang.org/x/net/internal/socks
 golang.org/x/net/internal/timeseries
 golang.org/x/net/proxy
 golang.org/x/net/trace
-# golang.org/x/sys v0.0.0-20210104204734-6f8348627aad
-## explicit
+# golang.org/x/sys v0.0.0-20210105210732-16f7687f5001
 golang.org/x/sys/internal/unsafeheader
 golang.org/x/sys/unix
 # golang.org/x/text v0.3.4
@@ -117,7 +116,7 @@ golang.org/x/text/width
 # golang.org/x/xerrors v0.0.0-20200804184101-5ec99f83aff1
 golang.org/x/xerrors
 golang.org/x/xerrors/internal
-# google.golang.org/genproto v0.0.0-20201214200347-8c77b98c765d
+# google.golang.org/genproto v0.0.0-20210106152847-07624b53cd92
 google.golang.org/genproto/googleapis/api/annotations
 google.golang.org/genproto/googleapis/api/httpbody
 google.golang.org/genproto/googleapis/rpc/status
@@ -205,6 +204,6 @@ google.golang.org/protobuf/types/known/fieldmaskpb
 google.golang.org/protobuf/types/known/structpb
 google.golang.org/protobuf/types/known/timestamppb
 google.golang.org/protobuf/types/known/wrapperspb
-# gopkg.in/yaml.v3 v3.0.0-20200615113413-eeeca48fe776
+# gopkg.in/yaml.v3 v3.0.0-20210106163657-3778e1100753
 ## explicit
 gopkg.in/yaml.v3

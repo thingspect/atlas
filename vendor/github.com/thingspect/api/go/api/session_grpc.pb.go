@@ -63,7 +63,7 @@ type UnsafeSessionServiceServer interface {
 	mustEmbedUnimplementedSessionServiceServer()
 }
 
-func RegisterSessionServiceServer(s *grpc.Server, srv SessionServiceServer) {
+func RegisterSessionServiceServer(s grpc.ServiceRegistrar, srv SessionServiceServer) {
 	s.RegisterService(&_SessionService_serviceDesc, srv)
 }
 

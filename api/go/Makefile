@@ -3,6 +3,7 @@
 generate: deps message pwt
 
 deps:
+# Force GO111MODULE on in the absence of a go.mod file
 	GO111MODULE=on go get google.golang.org/protobuf/cmd/protoc-gen-go
 
 message:

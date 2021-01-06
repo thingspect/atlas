@@ -11,7 +11,6 @@ import (
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/require"
 	"github.com/thingspect/api/go/api"
-	"github.com/thingspect/atlas/pkg/dao/org"
 	"github.com/thingspect/atlas/pkg/test/random"
 	"google.golang.org/protobuf/proto"
 )
@@ -19,43 +18,10 @@ import (
 func TestCreate(t *testing.T) {
 	t.Parallel()
 
-	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
-	defer cancel()
-
-	org := org.Org{Name: "api-device-" + random.String(10)}
-	createOrg, err := globalOrgDAO.Create(ctx, org)
-	t.Logf("createOrg, err: %+v, %v", createOrg, err)
-	require.NoError(t, err)
-
 	t.Run("Create valid device", func(t *testing.T) {
 		t.Parallel()
 
-		dev := &api.Device{OrgId: createOrg.ID, UniqId: "api-device-" +
-			random.String(16), IsDisabled: []bool{true, false}[random.Intn(2)]}
-
-		ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
-		defer cancel()
-
-		devCli := api.NewDeviceServiceClient(globalAuthGRPCConn)
-		createDev, err := devCli.Create(ctx, &api.CreateDeviceRequest{
-			Device: dev})
-		t.Logf("createDev, err: %+v, %v", createDev, err)
-		require.NoError(t, err)
-		require.NotNil(t, createDev.Device)
-		require.Equal(t, dev.OrgId, createDev.Device.OrgId)
-		require.Equal(t, dev.UniqId, createDev.Device.UniqId)
-		require.Equal(t, dev.IsDisabled, createDev.Device.IsDisabled)
-		require.WithinDuration(t, time.Now(),
-			createDev.Device.CreatedAt.AsTime(), 2*time.Second)
-		require.WithinDuration(t, time.Now(),
-			createDev.Device.UpdatedAt.AsTime(), 2*time.Second)
-	})
-
-	t.Run("Create valid device with uppercase UniqId", func(t *testing.T) {
-		t.Parallel()
-
-		dev := &api.Device{OrgId: createOrg.ID,
-			UniqId:     strings.ToUpper("api-device-" + random.String(16)),
+		dev := &api.Device{UniqId: "api-device-" + random.String(16),
 			IsDisabled: []bool{true, false}[random.Intn(2)]}
 
 		ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
@@ -67,7 +33,31 @@ func TestCreate(t *testing.T) {
 		t.Logf("createDev, err: %+v, %v", createDev, err)
 		require.NoError(t, err)
 		require.NotNil(t, createDev.Device)
-		require.Equal(t, dev.OrgId, createDev.Device.OrgId)
+		require.Equal(t, globalAuthOrgID, createDev.Device.OrgId)
+		require.Equal(t, dev.UniqId, createDev.Device.UniqId)
+		require.Equal(t, dev.IsDisabled, createDev.Device.IsDisabled)
+		require.WithinDuration(t, time.Now(),
+			createDev.Device.CreatedAt.AsTime(), 2*time.Second)
+		require.WithinDuration(t, time.Now(),
+			createDev.Device.UpdatedAt.AsTime(), 2*time.Second)
+	})
+
+	t.Run("Create valid device with uppercase UniqId", func(t *testing.T) {
+		t.Parallel()
+
+		dev := &api.Device{UniqId: strings.ToUpper("api-device-" +
+			random.String(16)), IsDisabled: []bool{true, false}[random.Intn(2)]}
+
+		ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
+		defer cancel()
+
+		devCli := api.NewDeviceServiceClient(globalAuthGRPCConn)
+		createDev, err := devCli.Create(ctx, &api.CreateDeviceRequest{
+			Device: dev})
+		t.Logf("createDev, err: %+v, %v", createDev, err)
+		require.NoError(t, err)
+		require.NotNil(t, createDev.Device)
+		require.Equal(t, globalAuthOrgID, createDev.Device.OrgId)
 		require.Equal(t, strings.ToLower(dev.UniqId), createDev.Device.UniqId)
 		require.Equal(t, dev.IsDisabled, createDev.Device.IsDisabled)
 		require.WithinDuration(t, time.Now(),
@@ -94,8 +84,8 @@ func TestCreate(t *testing.T) {
 	t.Run("Create invalid device", func(t *testing.T) {
 		t.Parallel()
 
-		dev := &api.Device{OrgId: createOrg.ID, UniqId: "api-device-" +
-			random.String(40), IsDisabled: []bool{true, false}[random.Intn(2)]}
+		dev := &api.Device{UniqId: "api-device-" + random.String(40),
+			IsDisabled: []bool{true, false}[random.Intn(2)]}
 
 		ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
 		defer cancel()
@@ -113,16 +103,11 @@ func TestCreate(t *testing.T) {
 func TestRead(t *testing.T) {
 	t.Parallel()
 
-	ctx, cancel := context.WithTimeout(context.Background(), 4*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
 	defer cancel()
 
-	org := org.Org{Name: "api-device-" + random.String(10)}
-	createOrg, err := globalOrgDAO.Create(ctx, org)
-	t.Logf("createOrg, err: %+v, %v", createOrg, err)
-	require.NoError(t, err)
-
-	dev := &api.Device{OrgId: createOrg.ID, UniqId: "api-device-" +
-		random.String(16), IsDisabled: []bool{true, false}[random.Intn(2)]}
+	dev := &api.Device{UniqId: "api-device-" + random.String(16),
+		IsDisabled: []bool{true, false}[random.Intn(2)]}
 
 	devCli := api.NewDeviceServiceClient(globalAuthGRPCConn)
 	createDev, err := devCli.Create(ctx, &api.CreateDeviceRequest{Device: dev})
@@ -137,7 +122,7 @@ func TestRead(t *testing.T) {
 
 		devCli := api.NewDeviceServiceClient(globalAuthGRPCConn)
 		readDev, err := devCli.Read(ctx, &api.ReadDeviceRequest{
-			Id: createDev.Device.Id, OrgId: createDev.Device.OrgId})
+			Id: createDev.Device.Id})
 		t.Logf("readDev, err: %+v, %v", readDev, err)
 		require.NoError(t, err)
 
@@ -158,7 +143,7 @@ func TestRead(t *testing.T) {
 
 		devCli := api.NewDeviceServiceClient(globalAuthGRPCConn)
 		readDev, err := devCli.Read(ctx, &api.ReadDeviceRequest{
-			Id: uuid.New().String(), OrgId: createOrg.ID})
+			Id: uuid.New().String()})
 		t.Logf("readDev, err: %+v, %v", readDev, err)
 		require.Nil(t, readDev)
 		require.EqualError(t, err, "rpc error: code = NotFound desc = object "+
@@ -171,9 +156,9 @@ func TestRead(t *testing.T) {
 		ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
 		defer cancel()
 
-		devCli := api.NewDeviceServiceClient(globalAuthGRPCConn)
-		readDev, err := devCli.Read(ctx, &api.ReadDeviceRequest{
-			Id: createDev.Device.Id, OrgId: uuid.New().String()})
+		secCli := api.NewDeviceServiceClient(secondaryAuthGRPCConn)
+		readDev, err := secCli.Read(ctx, &api.ReadDeviceRequest{
+			Id: createDev.Device.Id})
 		t.Logf("readDev, err: %+v, %v", readDev, err)
 		require.Nil(t, readDev)
 		require.EqualError(t, err, "rpc error: code = NotFound desc = object "+
@@ -188,7 +173,7 @@ func TestRead(t *testing.T) {
 
 		devCli := api.NewDeviceServiceClient(globalAuthGRPCConn)
 		readDev, err := devCli.Read(ctx, &api.ReadDeviceRequest{
-			Id: random.String(10), OrgId: createOrg.ID})
+			Id: random.String(10)})
 		t.Logf("readDev, err: %+v, %v", readDev, err)
 		require.Nil(t, readDev)
 		require.EqualError(t, err, "rpc error: code = InvalidArgument desc = "+
@@ -199,22 +184,14 @@ func TestRead(t *testing.T) {
 func TestUpdate(t *testing.T) {
 	t.Parallel()
 
-	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
-	defer cancel()
-
-	org := org.Org{Name: "api-device-" + random.String(10)}
-	createOrg, err := globalOrgDAO.Create(ctx, org)
-	t.Logf("createOrg, err: %+v, %v", createOrg, err)
-	require.NoError(t, err)
-
 	t.Run("Update device by valid device", func(t *testing.T) {
 		t.Parallel()
 
 		ctx, cancel := context.WithTimeout(context.Background(), 4*time.Second)
 		defer cancel()
 
-		dev := &api.Device{OrgId: createOrg.ID, UniqId: "api-device-" +
-			random.String(16), IsDisabled: []bool{true, false}[random.Intn(2)]}
+		dev := &api.Device{UniqId: "api-device-" + random.String(16),
+			IsDisabled: []bool{true, false}[random.Intn(2)]}
 
 		devCli := api.NewDeviceServiceClient(globalAuthGRPCConn)
 		createDev, err := devCli.Create(ctx, &api.CreateDeviceRequest{
@@ -263,8 +240,8 @@ func TestUpdate(t *testing.T) {
 		defer cancel()
 
 		unknownDevice := &api.Device{Id: uuid.New().String(),
-			OrgId: createOrg.ID, UniqId: "api-device-" + random.String(16),
-			Token: uuid.New().String()}
+			UniqId: "api-device-" + random.String(16),
+			Token:  uuid.New().String()}
 
 		devCli := api.NewDeviceServiceClient(globalAuthGRPCConn)
 		updateDev, err := devCli.Update(ctx, &api.UpdateDeviceRequest{
@@ -281,8 +258,8 @@ func TestUpdate(t *testing.T) {
 		ctx, cancel := context.WithTimeout(context.Background(), 4*time.Second)
 		defer cancel()
 
-		dev := &api.Device{OrgId: createOrg.ID, UniqId: "api-device-" +
-			random.String(16), IsDisabled: []bool{true, false}[random.Intn(2)]}
+		dev := &api.Device{UniqId: "api-device-" + random.String(16),
+			IsDisabled: []bool{true, false}[random.Intn(2)]}
 
 		devCli := api.NewDeviceServiceClient(globalAuthGRPCConn)
 		createDev, err := devCli.Create(ctx, &api.CreateDeviceRequest{
@@ -294,7 +271,8 @@ func TestUpdate(t *testing.T) {
 		createDev.Device.OrgId = uuid.New().String()
 		createDev.Device.UniqId = "api-device-" + random.String(16)
 
-		updateDev, err := devCli.Update(ctx, &api.UpdateDeviceRequest{
+		secCli := api.NewDeviceServiceClient(secondaryAuthGRPCConn)
+		updateDev, err := secCli.Update(ctx, &api.UpdateDeviceRequest{
 			Device: createDev.Device})
 		t.Logf("updateDev, err: %+v, %v", updateDev, err)
 		require.Nil(t, updateDev)
@@ -308,8 +286,8 @@ func TestUpdate(t *testing.T) {
 		ctx, cancel := context.WithTimeout(context.Background(), 4*time.Second)
 		defer cancel()
 
-		dev := &api.Device{OrgId: createOrg.ID, UniqId: "api-device-" +
-			random.String(16), IsDisabled: []bool{true, false}[random.Intn(2)]}
+		dev := &api.Device{UniqId: "api-device-" + random.String(16),
+			IsDisabled: []bool{true, false}[random.Intn(2)]}
 
 		devCli := api.NewDeviceServiceClient(globalAuthGRPCConn)
 		createDev, err := devCli.Create(ctx, &api.CreateDeviceRequest{
@@ -332,22 +310,14 @@ func TestUpdate(t *testing.T) {
 func TestDelete(t *testing.T) {
 	t.Parallel()
 
-	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
-	defer cancel()
-
-	org := org.Org{Name: "api-device-" + random.String(10)}
-	createOrg, err := globalOrgDAO.Create(ctx, org)
-	t.Logf("createOrg, err: %+v, %v", createOrg, err)
-	require.NoError(t, err)
-
 	t.Run("Delete device by valid ID", func(t *testing.T) {
 		t.Parallel()
 
 		ctx, cancel := context.WithTimeout(context.Background(), 4*time.Second)
 		defer cancel()
 
-		dev := &api.Device{OrgId: createOrg.ID, UniqId: "api-device-" +
-			random.String(16), IsDisabled: []bool{true, false}[random.Intn(2)]}
+		dev := &api.Device{UniqId: "api-device-" + random.String(16),
+			IsDisabled: []bool{true, false}[random.Intn(2)]}
 
 		devCli := api.NewDeviceServiceClient(globalAuthGRPCConn)
 		createDev, err := devCli.Create(ctx, &api.CreateDeviceRequest{
@@ -356,7 +326,7 @@ func TestDelete(t *testing.T) {
 		require.NoError(t, err)
 
 		_, err = devCli.Delete(ctx, &api.DeleteDeviceRequest{
-			Id: createDev.Device.Id, OrgId: createDev.Device.OrgId})
+			Id: createDev.Device.Id})
 		t.Logf("err: %v", err)
 		require.NoError(t, err)
 
@@ -369,7 +339,7 @@ func TestDelete(t *testing.T) {
 
 			devCli := api.NewDeviceServiceClient(globalAuthGRPCConn)
 			readDev, err := devCli.Read(ctx, &api.ReadDeviceRequest{
-				Id: createDev.Device.Id, OrgId: createDev.Device.OrgId})
+				Id: createDev.Device.Id})
 			t.Logf("readDev, err: %+v, %v", readDev, err)
 			require.Nil(t, readDev)
 			require.EqualError(t, err, "rpc error: code = NotFound desc = "+
@@ -384,8 +354,8 @@ func TestDelete(t *testing.T) {
 		defer cancel()
 
 		devCli := api.NewDeviceServiceClient(globalAuthGRPCConn)
-		_, err = devCli.Delete(ctx, &api.DeleteDeviceRequest{
-			Id: uuid.New().String(), OrgId: createOrg.ID})
+		_, err := devCli.Delete(ctx, &api.DeleteDeviceRequest{
+			Id: uuid.New().String()})
 		t.Logf("err: %v", err)
 		require.EqualError(t, err, "rpc error: code = NotFound desc = object "+
 			"not found")
@@ -397,8 +367,8 @@ func TestDelete(t *testing.T) {
 		ctx, cancel := context.WithTimeout(context.Background(), 4*time.Second)
 		defer cancel()
 
-		dev := &api.Device{OrgId: createOrg.ID, UniqId: "api-device-" +
-			random.String(16), IsDisabled: []bool{true, false}[random.Intn(2)]}
+		dev := &api.Device{UniqId: "api-device-" + random.String(16),
+			IsDisabled: []bool{true, false}[random.Intn(2)]}
 
 		devCli := api.NewDeviceServiceClient(globalAuthGRPCConn)
 		createDev, err := devCli.Create(ctx, &api.CreateDeviceRequest{
@@ -406,8 +376,9 @@ func TestDelete(t *testing.T) {
 		t.Logf("createDev, err: %+v, %v", createDev, err)
 		require.NoError(t, err)
 
-		_, err = devCli.Delete(ctx, &api.DeleteDeviceRequest{
-			Id: createDev.Device.Id, OrgId: uuid.New().String()})
+		secCli := api.NewDeviceServiceClient(secondaryAuthGRPCConn)
+		_, err = secCli.Delete(ctx, &api.DeleteDeviceRequest{
+			Id: createDev.Device.Id})
 		t.Logf("err: %v", err)
 		require.EqualError(t, err, "rpc error: code = NotFound desc = object "+
 			"not found")
@@ -417,19 +388,14 @@ func TestDelete(t *testing.T) {
 func TestList(t *testing.T) {
 	t.Parallel()
 
-	ctx, cancel := context.WithTimeout(context.Background(), 8*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), 6*time.Second)
 	defer cancel()
-
-	org := org.Org{Name: "api-device-" + random.String(10)}
-	createOrg, err := globalOrgDAO.Create(ctx, org)
-	t.Logf("createOrg, err: %+v, %v", createOrg, err)
-	require.NoError(t, err)
 
 	var lastDeviceID string
 	var lastDeviceDisabled bool
 	for i := 0; i < 3; i++ {
-		dev := &api.Device{OrgId: createOrg.ID, UniqId: "api-device-" +
-			random.String(16), IsDisabled: []bool{true, false}[random.Intn(2)]}
+		dev := &api.Device{UniqId: "api-device-" + random.String(16),
+			IsDisabled: []bool{true, false}[random.Intn(2)]}
 
 		devCli := api.NewDeviceServiceClient(globalAuthGRPCConn)
 		createDev, err := devCli.Create(ctx, &api.CreateDeviceRequest{
@@ -447,11 +413,10 @@ func TestList(t *testing.T) {
 		defer cancel()
 
 		devCli := api.NewDeviceServiceClient(globalAuthGRPCConn)
-		listDevs, err := devCli.List(ctx, &api.ListDeviceRequest{
-			OrgId: createOrg.ID})
+		listDevs, err := devCli.List(ctx, &api.ListDeviceRequest{})
 		t.Logf("listDevs, err: %+v, %v", listDevs, err)
 		require.NoError(t, err)
-		require.Len(t, listDevs.Devices, 3)
+		require.GreaterOrEqual(t, len(listDevs.Devices), 3)
 
 		var found bool
 		for _, dev := range listDevs.Devices {
@@ -468,26 +433,23 @@ func TestList(t *testing.T) {
 		ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
 		defer cancel()
 
-		devCli := api.NewDeviceServiceClient(globalAuthGRPCConn)
-		listDevs, err := devCli.List(ctx, &api.ListDeviceRequest{
-			OrgId: uuid.New().String()})
+		secCli := api.NewDeviceServiceClient(secondaryAuthGRPCConn)
+		listDevs, err := secCli.List(ctx, &api.ListDeviceRequest{})
 		t.Logf("listDevs, err: %+v, %v", listDevs, err)
 		require.NoError(t, err)
 		require.Len(t, listDevs.Devices, 0)
 	})
 
-	t.Run("Lists device by invalid org ID", func(t *testing.T) {
-		t.Parallel()
+	// t.Run("List devices by invalid cursor", func(t *testing.T) {
+	// 	t.Parallel()
 
-		ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
-		defer cancel()
+	// 	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
+	// 	defer cancel()
 
-		devCli := api.NewDeviceServiceClient(globalAuthGRPCConn)
-		listDevs, err := devCli.List(ctx, &api.ListDeviceRequest{
-			OrgId: random.String(10)})
-		t.Logf("listDevs, err: %+v, %v", listDevs, err)
-		require.Nil(t, listDevs)
-		require.EqualError(t, err, "rpc error: code = InvalidArgument desc = "+
-			"invalid format: UUID")
-	})
+	// 	devCli := api.NewDeviceServiceClient(globalAuthGRPCConn)
+	// 	listDevs, err := devCli.List(ctx, &api.ListDeviceRequest{})
+	// 	t.Logf("listDevs, err: %+v, %v", listDevs, err)
+	// 	require.Nil(t, listDevs)
+	// 	require.EqualError(t, err, "invalid cursor")
+	// })
 }
