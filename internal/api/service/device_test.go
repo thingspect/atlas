@@ -79,29 +79,6 @@ func TestCreate(t *testing.T) {
 			"permission denied"), err)
 	})
 
-	t.Run("Create nil device", func(t *testing.T) {
-		t.Parallel()
-
-		ctrl := gomock.NewController(t)
-		defer ctrl.Finish()
-
-		devicer := NewMockDevicer(ctrl)
-		devicer.EXPECT().Create(gomock.Any(), gomock.Any()).Times(0)
-
-		ctx, cancel := context.WithTimeout(session.NewContext(
-			context.Background(), &session.Session{OrgID: uuid.New().String()}),
-			2*time.Second)
-		defer cancel()
-
-		devSvc := NewDevice(devicer)
-		createDev, err := devSvc.Create(ctx, &api.CreateDeviceRequest{
-			Device: nil})
-		t.Logf("createDev, err: %+v, %v", createDev, err)
-		require.Nil(t, createDev)
-		require.Equal(t, status.Error(codes.InvalidArgument,
-			"device must not be nil"), err)
-	})
-
 	t.Run("Create invalid device", func(t *testing.T) {
 		t.Parallel()
 
@@ -326,7 +303,7 @@ func TestUpdate(t *testing.T) {
 		t.Logf("updateDev, err: %+v, %v", updateDev, err)
 		require.Nil(t, updateDev)
 		require.Equal(t, status.Error(codes.InvalidArgument,
-			"device must not be nil"), err)
+			"invalid UpdateDeviceRequest.Device: value is required"), err)
 	})
 
 	t.Run("Partial update invalid field mask", func(t *testing.T) {
@@ -387,12 +364,42 @@ func TestUpdate(t *testing.T) {
 		require.Equal(t, status.Error(codes.NotFound, "object not found"), err)
 	})
 
-	t.Run("Update device by invalid device", func(t *testing.T) {
+	t.Run("Update device validation failure", func(t *testing.T) {
 		t.Parallel()
 
 		dev := &api.Device{Id: uuid.New().String(), OrgId: uuid.New().String(),
 			UniqId: random.String(41), Status: []common.Status{
 				common.Status_ACTIVE, common.Status_DISABLED}[random.Intn(2)]}
+
+		ctrl := gomock.NewController(t)
+		defer ctrl.Finish()
+
+		devicer := NewMockDevicer(ctrl)
+		devicer.EXPECT().Update(gomock.Any(), gomock.Any()).Times(0)
+
+		ctx, cancel := context.WithTimeout(session.NewContext(
+			context.Background(), &session.Session{OrgID: dev.OrgId}),
+			2*time.Second)
+		defer cancel()
+
+		devSvc := NewDevice(devicer)
+		updateDev, err := devSvc.Update(ctx, &api.UpdateDeviceRequest{
+			Device: dev})
+		t.Logf("updateDev, err: %+v, %v", updateDev, err)
+		require.Nil(t, updateDev)
+		require.Equal(t, status.Error(codes.InvalidArgument,
+			"invalid UpdateDeviceRequest.Device: embedded message failed "+
+				"validation | caused by: invalid Device.UniqId: value length "+
+				"must be between 5 and 40 runes, inclusive"), err)
+	})
+
+	t.Run("Update device by invalid device", func(t *testing.T) {
+		t.Parallel()
+
+		dev := &api.Device{Id: uuid.New().String(), OrgId: uuid.New().String(),
+			UniqId: random.String(16), Status: []common.Status{
+				common.Status_ACTIVE, common.Status_DISABLED}[random.Intn(2)],
+			Token: random.String(10)}
 
 		ctrl := gomock.NewController(t)
 		defer ctrl.Finish()

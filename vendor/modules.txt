@@ -4,6 +4,8 @@ github.com/davecgh/go-spew/spew
 ## explicit
 github.com/eclipse/paho.mqtt.golang
 github.com/eclipse/paho.mqtt.golang/packets
+# github.com/envoyproxy/protoc-gen-validate v0.4.1
+github.com/envoyproxy/protoc-gen-validate/validate
 # github.com/gofrs/uuid v3.3.0+incompatible
 ## explicit
 # github.com/golang/mock v1.4.4
@@ -80,7 +82,7 @@ github.com/rs/zerolog/internal/json
 ## explicit
 github.com/stretchr/testify/assert
 github.com/stretchr/testify/require
-# github.com/thingspect/api/go v0.0.0-20210107144314-990dab3f5e69
+# github.com/thingspect/api/go v0.0.0-20210107165204-531b33bff1ef
 ## explicit
 github.com/thingspect/api/go/api
 github.com/thingspect/api/go/common
@@ -207,6 +209,6 @@ google.golang.org/protobuf/types/known/fieldmaskpb
 google.golang.org/protobuf/types/known/structpb
 google.golang.org/protobuf/types/known/timestamppb
 google.golang.org/protobuf/types/known/wrapperspb
-# gopkg.in/yaml.v3 v3.0.0-20210106172901-c476de37821d
+# gopkg.in/yaml.v3 v3.0.0-20210107192922-496545a6307b
 ## explicit
 gopkg.in/yaml.v3

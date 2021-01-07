@@ -7,7 +7,8 @@ deps:
 	GO111MODULE=on go get google.golang.org/protobuf/cmd/protoc-gen-go
 
 message:
-	protoc -I=../protobuf --go_out=. --go_opt=paths=source_relative \
+	protoc -I=../protobuf -I=/tmp/googleapis -I=/tmp/pgv \
+	--go_out=. --go_opt=paths=source_relative \
 	message/validator_in.proto \
 	message/validator_out.proto
 
