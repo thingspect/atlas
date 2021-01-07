@@ -9,6 +9,14 @@
       "email": "info@thingspect.com"
     }
   },
+  "tags": [
+    {
+      "name": "DeviceService"
+    },
+    {
+      "name": "SessionService"
+    }
+  ],
   "consumes": [
     "application/json"
   ],
@@ -120,7 +128,10 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/apiDevice"
+              "$ref": "#/definitions/apiDevice",
+              "required": [
+                "device"
+              ]
             }
           },
           {
@@ -128,11 +139,7 @@
             "description": "Fields to update. Automatically populated by a PATCH request. If not present, a full resource update is performed.",
             "in": "query",
             "required": false,
-            "type": "array",
-            "items": {
-              "type": "string"
-            },
-            "collectionFormat": "multi"
+            "type": "string"
           }
         ],
         "tags": [
@@ -170,7 +177,10 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/apiDevice"
+              "$ref": "#/definitions/apiDevice",
+              "required": [
+                "device"
+              ]
             }
           },
           {
@@ -178,11 +188,7 @@
             "description": "Fields to update. Automatically populated by a PATCH request. If not present, a full resource update is performed.",
             "in": "query",
             "required": false,
-            "type": "array",
-            "items": {
-              "type": "string"
-            },
-            "collectionFormat": "multi"
+            "type": "string"
           }
         ],
         "tags": [
@@ -293,10 +299,16 @@
       "properties": {
         "device": {
           "$ref": "#/definitions/apiDevice",
-          "description": "Device message to create."
+          "description": "Device message to create.",
+          "required": [
+            "device"
+          ]
         }
       },
-      "description": "CreateDeviceRequest is sent to create a device."
+      "description": "CreateDeviceRequest is sent to create a device.",
+      "required": [
+        "device"
+      ]
     },
     "apiCreateDeviceResponse": {
       "type": "object",
@@ -313,19 +325,27 @@
       "properties": {
         "id": {
           "type": "string",
-          "description": "Device ID (UUID)."
+          "description": "Device ID (UUID).",
+          "readOnly": true
         },
         "orgID": {
           "type": "string",
-          "description": "Organization ID (UUID)."
+          "description": "Organization ID (UUID).",
+          "readOnly": true
         },
         "uniqID": {
           "type": "string",
-          "description": "Device unique ID."
+          "description": "Device unique ID.",
+          "required": [
+            "uniq_id"
+          ]
         },
         "status": {
           "$ref": "#/definitions/commonStatus",
-          "description": "Device status."
+          "description": "Device status.",
+          "required": [
+            "status"
+          ]
         },
         "token": {
           "type": "string",
@@ -334,15 +354,21 @@
         "createdAt": {
           "type": "string",
           "format": "date-time",
-          "description": "Device creation timestamp."
+          "description": "Device creation timestamp.",
+          "readOnly": true
         },
         "updatedAt": {
           "type": "string",
           "format": "date-time",
-          "description": "Device modification timestamp."
+          "description": "Device modification timestamp.",
+          "readOnly": true
         }
       },
-      "description": "Device represents a device as stored in the database."
+      "description": "Device represents a device as stored in the database.",
+      "required": [
+        "uniqID",
+        "status"
+      ]
     },
     "apiListDeviceResponse": {
       "type": "object",
@@ -366,18 +392,32 @@
       "properties": {
         "email": {
           "type": "string",
-          "description": "Email of the user to log in."
+          "description": "Email of the user to log in.",
+          "required": [
+            "email"
+          ]
         },
         "orgName": {
           "type": "string",
-          "description": "Organization name of the user to log in."
+          "description": "Organization name of the user to log in.",
+          "required": [
+            "org_name"
+          ]
         },
         "password": {
           "type": "string",
-          "description": "Password of the user to log in."
+          "description": "Password of the user to log in.",
+          "required": [
+            "password"
+          ]
         }
       },
-      "description": "LoginRequest is sent to log in a user."
+      "description": "LoginRequest is sent to log in a user.",
+      "required": [
+        "email",
+        "orgName",
+        "password"
+      ]
     },
     "apiLoginResponse": {
       "type": "object",
