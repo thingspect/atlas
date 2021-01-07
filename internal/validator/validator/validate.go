@@ -5,6 +5,7 @@ import (
 	"errors"
 	"time"
 
+	"github.com/thingspect/api/go/common"
 	"github.com/thingspect/atlas/api/go/message"
 	"github.com/thingspect/atlas/pkg/alog"
 	"github.com/thingspect/atlas/pkg/dao"
@@ -61,7 +62,7 @@ func (val *Validator) validateMessages() {
 			logEntry.Debugf("validateMessages invalid org ID: %+v", vIn)
 			msg.Ack()
 			continue
-		case dev.IsDisabled:
+		case dev.Status != common.Status_ACTIVE:
 			logEntry.Debugf("validateMessages device disabled: %+v", vIn)
 			msg.Ack()
 			continue

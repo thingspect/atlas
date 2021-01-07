@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/thingspect/api/go/api"
+	"github.com/thingspect/api/go/common"
 	"github.com/thingspect/atlas/pkg/crypto"
 	"github.com/thingspect/atlas/pkg/dao/org"
 	"github.com/thingspect/atlas/pkg/dao/user"
@@ -68,7 +69,8 @@ func main() {
 		ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
 		defer cancel()
 
-		user := &api.User{OrgId: orgID, Email: flag.Arg(2)}
+		user := &api.User{OrgId: orgID, Email: flag.Arg(2),
+			Status: common.Status_ACTIVE}
 		createUser, err := userDAO.Create(ctx, user, hash)
 		checkErr(err)
 		fmt.Fprintf(os.Stdout, "User: %+v\n", createUser)

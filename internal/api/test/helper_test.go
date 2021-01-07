@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/thingspect/api/go/api"
+	"github.com/thingspect/api/go/common"
 	"github.com/thingspect/atlas/pkg/dao/org"
 	"github.com/thingspect/atlas/pkg/test/random"
 	"google.golang.org/grpc"
@@ -38,7 +39,7 @@ func authGRPCConn(grpcAddr string) (string, *grpc.ClientConn, error) {
 	}
 
 	user := &api.User{OrgId: createOrg.ID, Email: "api-helper-" +
-		random.Email()}
+		random.Email(), Status: common.Status_ACTIVE}
 	createUser, err := globalUserDAO.Create(ctx, user, globalHash)
 	if err != nil {
 		return "", nil, err

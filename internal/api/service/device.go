@@ -6,10 +6,12 @@ import (
 	"context"
 
 	"github.com/golang/protobuf/ptypes/empty"
+	"github.com/mennanov/fmutils"
 	"github.com/thingspect/api/go/api"
 	"github.com/thingspect/atlas/internal/api/session"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+	"google.golang.org/protobuf/proto"
 )
 
 // Devicer defines the methods provided by a device.DAO.
@@ -86,6 +88,25 @@ func (d *Device) Update(ctx context.Context,
 			"device must not be nil")
 	}
 	req.Device.OrgId = sess.OrgID
+
+	// Perform partial update if directed.
+	if req.UpdateMask != nil && len(req.UpdateMask.Paths) > 0 {
+		// Normalize and validate field mask.
+		req.UpdateMask.Normalize()
+		if !req.UpdateMask.IsValid(req.Device) {
+			return nil, status.Error(codes.InvalidArgument,
+				"invalid field mask")
+		}
+
+		dev, err := d.devDAO.Read(ctx, req.Device.Id, sess.OrgID)
+		if err != nil {
+			return nil, errToStatus(err)
+		}
+
+		fmutils.Filter(req.Device, req.UpdateMask.Paths)
+		proto.Merge(dev, req.Device)
+		req.Device = dev
+	}
 
 	dev, err := d.devDAO.Update(ctx, req.Device)
 	if err != nil {

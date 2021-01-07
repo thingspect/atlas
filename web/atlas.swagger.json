@@ -30,7 +30,7 @@
           "default": {
             "description": "An unexpected error response.",
             "schema": {
-              "$ref": "#/definitions/rpcStatus"
+              "$ref": "#/definitions/googlerpcStatus"
             }
           }
         },
@@ -69,7 +69,7 @@
           "default": {
             "description": "An unexpected error response.",
             "schema": {
-              "$ref": "#/definitions/rpcStatus"
+              "$ref": "#/definitions/googlerpcStatus"
             }
           }
         },
@@ -102,7 +102,7 @@
           "default": {
             "description": "An unexpected error response.",
             "schema": {
-              "$ref": "#/definitions/rpcStatus"
+              "$ref": "#/definitions/googlerpcStatus"
             }
           }
         },
@@ -116,11 +116,73 @@
           },
           {
             "name": "body",
+            "description": "Device message to update.",
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/apiUpdateDeviceRequest"
+              "$ref": "#/definitions/apiDevice"
             }
+          },
+          {
+            "name": "updateMask",
+            "description": "Fields to update. Automatically populated by a PATCH request. If not present, a full resource update is performed.",
+            "in": "query",
+            "required": false,
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "collectionFormat": "multi"
+          }
+        ],
+        "tags": [
+          "DeviceService"
+        ]
+      },
+      "patch": {
+        "summary": "Update a device.",
+        "operationId": "DeviceService_Update2",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/apiUpdateDeviceResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "device.id",
+            "description": "Device ID (UUID).",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "description": "Device message to update.",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/apiDevice"
+            }
+          },
+          {
+            "name": "updateMask",
+            "description": "Fields to update. Automatically populated by a PATCH request. If not present, a full resource update is performed.",
+            "in": "query",
+            "required": false,
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "collectionFormat": "multi"
           }
         ],
         "tags": [
@@ -142,7 +204,7 @@
           "default": {
             "description": "An unexpected error response.",
             "schema": {
-              "$ref": "#/definitions/rpcStatus"
+              "$ref": "#/definitions/googlerpcStatus"
             }
           }
         },
@@ -172,7 +234,7 @@
           "default": {
             "description": "An unexpected error response.",
             "schema": {
-              "$ref": "#/definitions/rpcStatus"
+              "$ref": "#/definitions/googlerpcStatus"
             }
           }
         },
@@ -204,7 +266,7 @@
           "default": {
             "description": "An unexpected error response.",
             "schema": {
-              "$ref": "#/definitions/rpcStatus"
+              "$ref": "#/definitions/googlerpcStatus"
             }
           }
         },
@@ -261,9 +323,9 @@
           "type": "string",
           "description": "Device unique ID."
         },
-        "isDisabled": {
-          "type": "boolean",
-          "description": "Set to true to disable the device."
+        "status": {
+          "$ref": "#/definitions/commonStatus",
+          "description": "Device status."
         },
         "token": {
           "type": "string",
@@ -342,16 +404,6 @@
       },
       "description": "ReadDeviceResponse is sent in response to a device read."
     },
-    "apiUpdateDeviceRequest": {
-      "type": "object",
-      "properties": {
-        "device": {
-          "$ref": "#/definitions/apiDevice",
-          "description": "Device message to update."
-        }
-      },
-      "description": "UpdateDeviceRequest is sent to update a device."
-    },
     "apiUpdateDeviceResponse": {
       "type": "object",
       "properties": {
@@ -362,19 +414,17 @@
       },
       "description": "UpdateDeviceResponse is sent in response to a device update."
     },
-    "protobufAny": {
-      "type": "object",
-      "properties": {
-        "typeUrl": {
-          "type": "string"
-        },
-        "value": {
-          "type": "string",
-          "format": "byte"
-        }
-      }
+    "commonStatus": {
+      "type": "string",
+      "enum": [
+        "STATUS_UNSPECIFIED",
+        "ACTIVE",
+        "DISABLED"
+      ],
+      "default": "STATUS_UNSPECIFIED",
+      "description": "Status represents the status of a message.\n\n - STATUS_UNSPECIFIED: Status is not specified.\n - ACTIVE: Message subject is active.\n - DISABLED: Message subject is disabled."
     },
-    "rpcStatus": {
+    "googlerpcStatus": {
       "type": "object",
       "properties": {
         "code": {
@@ -389,6 +439,18 @@
           "items": {
             "$ref": "#/definitions/protobufAny"
           }
+        }
+      }
+    },
+    "protobufAny": {
+      "type": "object",
+      "properties": {
+        "typeUrl": {
+          "type": "string"
+        },
+        "value": {
+          "type": "string",
+          "format": "byte"
         }
       }
     }

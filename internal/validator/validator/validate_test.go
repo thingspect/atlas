@@ -81,8 +81,8 @@ func TestValidateMessages(t *testing.T) {
 			devicer := NewMockdevicer(ctrl)
 			devicer.EXPECT().
 				ReadByUniqID(gomock.Any(), lTest.inpVIn.Point.UniqId).
-				Return(&api.Device{Id: devID, OrgId: orgID, IsDisabled: false,
-					Token: token}, nil).Times(1)
+				Return(&api.Device{Id: devID, OrgId: orgID,
+					Status: common.Status_ACTIVE, Token: token}, nil).Times(1)
 
 			val := Validator{
 				devDAO:       devicer,
@@ -131,34 +131,36 @@ func TestValidateMessagesError(t *testing.T) {
 	token := uuid.New().String()
 
 	tests := []struct {
-		inpVIn      *message.ValidatorIn
-		inpDisabled bool
-		inpErr      error
-		inpTimes    int
+		inpVIn    *message.ValidatorIn
+		inpStatus common.Status
+		inpErr    error
+		inpTimes  int
 	}{
 		// Bad payload.
-		{nil, false, nil, 0},
+		{nil, common.Status_ACTIVE, nil, 0},
 		// Missing data point.
-		{&message.ValidatorIn{}, false, nil, 0},
+		{&message.ValidatorIn{}, common.Status_ACTIVE, nil, 0},
 		// Device not found.
-		{&message.ValidatorIn{Point: &common.DataPoint{}}, false,
+		{&message.ValidatorIn{Point: &common.DataPoint{}}, common.Status_ACTIVE,
 			dao.ErrNotFound, 1},
 		// Devicer error.
-		{&message.ValidatorIn{Point: &common.DataPoint{}}, false, errTestProc,
-			1},
+		{&message.ValidatorIn{Point: &common.DataPoint{}}, common.Status_ACTIVE,
+			errTestProc, 1},
 		// Missing value.
-		{&message.ValidatorIn{Point: &common.DataPoint{}}, false, nil, 1},
+		{&message.ValidatorIn{Point: &common.DataPoint{}}, common.Status_ACTIVE,
+			nil, 1},
 		// Invalid org ID.
 		{&message.ValidatorIn{Point: &common.DataPoint{
-			ValOneof: &common.DataPoint_IntVal{}}, OrgId: "val-aaa"}, false,
-			nil, 1},
-		// Device disabled.
+			ValOneof: &common.DataPoint_IntVal{}}, OrgId: "val-aaa"},
+			common.Status_ACTIVE, nil, 1},
+		// Device status.
 		{&message.ValidatorIn{Point: &common.DataPoint{
-			ValOneof: &common.DataPoint_IntVal{}}, OrgId: orgID}, true, nil, 1},
+			ValOneof: &common.DataPoint_IntVal{}}, OrgId: orgID},
+			common.Status_DISABLED, nil, 1},
 		// Invalid token.
 		{&message.ValidatorIn{Point: &common.DataPoint{
 			ValOneof: &common.DataPoint_IntVal{}, Token: "val-aaa"},
-			OrgId: orgID}, false, nil, 1},
+			OrgId: orgID}, common.Status_ACTIVE, nil, 1},
 	}
 
 	for _, test := range tests {
@@ -182,7 +184,7 @@ func TestValidateMessagesError(t *testing.T) {
 			devicer.EXPECT().
 				ReadByUniqID(gomock.Any(), gomock.Any()).
 				Return(&api.Device{Id: devID, OrgId: orgID,
-					IsDisabled: lTest.inpDisabled, Token: token}, lTest.inpErr).
+					Status: lTest.inpStatus, Token: token}, lTest.inpErr).
 				Times(lTest.inpTimes)
 
 			val := Validator{

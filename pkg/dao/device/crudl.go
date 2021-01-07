@@ -6,13 +6,14 @@ import (
 	"time"
 
 	"github.com/thingspect/api/go/api"
+	"github.com/thingspect/api/go/common"
 	"github.com/thingspect/atlas/pkg/alog"
 	"github.com/thingspect/atlas/pkg/dao"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 const createDevice = `
-INSERT INTO devices (org_id, uniq_id, is_disabled, created_at, updated_at)
+INSERT INTO devices (org_id, uniq_id, status, created_at, updated_at)
 VALUES ($1, $2, $3, $4, $5)
 RETURNING id, token
 `
@@ -26,14 +27,14 @@ func (d *DAO) Create(ctx context.Context, dev *api.Device) (*api.Device,
 	dev.UpdatedAt = timestamppb.New(now)
 
 	if err := d.pg.QueryRowContext(ctx, createDevice, dev.OrgId, dev.UniqId,
-		dev.IsDisabled, now, now).Scan(&dev.Id, &dev.Token); err != nil {
+		dev.Status.String(), now, now).Scan(&dev.Id, &dev.Token); err != nil {
 		return nil, dao.DBToSentinel(err)
 	}
 	return dev, nil
 }
 
 const readDevice = `
-SELECT id, org_id, uniq_id, is_disabled, token, created_at, updated_at
+SELECT id, org_id, uniq_id, status, token, created_at, updated_at
 FROM devices
 WHERE id = $1
 AND org_id = $2
@@ -43,21 +44,23 @@ AND org_id = $2
 func (d *DAO) Read(ctx context.Context, devID, orgID string) (*api.Device,
 	error) {
 	dev := &api.Device{}
+	var status string
 	var createdAt, updatedAt time.Time
 
 	if err := d.pg.QueryRowContext(ctx, readDevice, devID, orgID).Scan(&dev.Id,
-		&dev.OrgId, &dev.UniqId, &dev.IsDisabled, &dev.Token, &createdAt,
+		&dev.OrgId, &dev.UniqId, &status, &dev.Token, &createdAt,
 		&updatedAt); err != nil {
 		return nil, dao.DBToSentinel(err)
 	}
 
+	dev.Status = common.Status(common.Status_value[status])
 	dev.CreatedAt = timestamppb.New(createdAt)
 	dev.UpdatedAt = timestamppb.New(updatedAt)
 	return dev, nil
 }
 
 const readDeviceByUniqID = `
-SELECT id, org_id, uniq_id, is_disabled, token, created_at, updated_at
+SELECT id, org_id, uniq_id, status, token, created_at, updated_at
 FROM devices
 WHERE uniq_id = $1
 `
@@ -67,14 +70,16 @@ WHERE uniq_id = $1
 func (d *DAO) ReadByUniqID(ctx context.Context, uniqID string) (*api.Device,
 	error) {
 	dev := &api.Device{}
+	var status string
 	var createdAt, updatedAt time.Time
 
 	if err := d.pg.QueryRowContext(ctx, readDeviceByUniqID, uniqID).Scan(
-		&dev.Id, &dev.OrgId, &dev.UniqId, &dev.IsDisabled, &dev.Token,
-		&createdAt, &updatedAt); err != nil {
+		&dev.Id, &dev.OrgId, &dev.UniqId, &status, &dev.Token, &createdAt,
+		&updatedAt); err != nil {
 		return nil, dao.DBToSentinel(err)
 	}
 
+	dev.Status = common.Status(common.Status_value[status])
 	dev.CreatedAt = timestamppb.New(createdAt)
 	dev.UpdatedAt = timestamppb.New(updatedAt)
 	return dev, nil
@@ -82,7 +87,7 @@ func (d *DAO) ReadByUniqID(ctx context.Context, uniqID string) (*api.Device,
 
 const updateDevice = `
 UPDATE devices
-SET uniq_id = $1, is_disabled = $2, token = $3, updated_at = $4
+SET uniq_id = $1, status = $2, token = $3, updated_at = $4
 WHERE id = $5
 AND org_id = $6
 RETURNING created_at
@@ -98,7 +103,7 @@ func (d *DAO) Update(ctx context.Context, dev *api.Device) (*api.Device,
 	dev.UpdatedAt = timestamppb.New(updatedAt)
 
 	if err := d.pg.QueryRowContext(ctx, updateDevice, dev.UniqId,
-		dev.IsDisabled, dev.Token, updatedAt, dev.Id, dev.OrgId).Scan(
+		dev.Status.String(), dev.Token, updatedAt, dev.Id, dev.OrgId).Scan(
 		&createdAt); err != nil {
 		return nil, dao.DBToSentinel(err)
 	}
@@ -126,7 +131,7 @@ func (d *DAO) Delete(ctx context.Context, devID, orgID string) error {
 }
 
 const listDevices = `
-SELECT id, org_id, uniq_id, is_disabled, token, created_at, updated_at
+SELECT id, org_id, uniq_id, status, token, created_at, updated_at
 FROM devices
 WHERE org_id = $1
 `
@@ -147,13 +152,15 @@ func (d *DAO) List(ctx context.Context, orgID string) ([]*api.Device, error) {
 
 	for rows.Next() {
 		dev := &api.Device{}
+		var status string
 		var createdAt, updatedAt time.Time
 
-		if err = rows.Scan(&dev.Id, &dev.OrgId, &dev.UniqId, &dev.IsDisabled,
+		if err = rows.Scan(&dev.Id, &dev.OrgId, &dev.UniqId, &status,
 			&dev.Token, &createdAt, &updatedAt); err != nil {
 			return nil, dao.DBToSentinel(err)
 		}
 
+		dev.Status = common.Status(common.Status_value[status])
 		dev.CreatedAt = timestamppb.New(createdAt)
 		dev.UpdatedAt = timestamppb.New(updatedAt)
 		devs = append(devs, dev)

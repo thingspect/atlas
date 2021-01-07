@@ -11,6 +11,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/require"
 	"github.com/thingspect/api/go/api"
+	"github.com/thingspect/api/go/common"
 	"github.com/thingspect/atlas/internal/api/session"
 	"github.com/thingspect/atlas/pkg/dao"
 	"github.com/thingspect/atlas/pkg/test/matcher"
@@ -18,6 +19,7 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/proto"
+	"google.golang.org/protobuf/types/known/fieldmaskpb"
 )
 
 func TestCreate(t *testing.T) {
@@ -27,8 +29,8 @@ func TestCreate(t *testing.T) {
 		t.Parallel()
 
 		dev := &api.Device{OrgId: uuid.New().String(),
-			UniqId:     random.String(16),
-			IsDisabled: []bool{true, false}[random.Intn(2)]}
+			UniqId: random.String(16), Status: []common.Status{
+				common.Status_ACTIVE, common.Status_DISABLED}[random.Intn(2)]}
 
 		ctrl := gomock.NewController(t)
 		defer ctrl.Finish()
@@ -104,8 +106,8 @@ func TestCreate(t *testing.T) {
 		t.Parallel()
 
 		dev := &api.Device{OrgId: uuid.New().String(),
-			UniqId:     random.String(41),
-			IsDisabled: []bool{true, false}[random.Intn(2)]}
+			UniqId: random.String(41), Status: []common.Status{
+				common.Status_ACTIVE, common.Status_DISABLED}[random.Intn(2)]}
 
 		ctrl := gomock.NewController(t)
 		defer ctrl.Finish()
@@ -136,8 +138,8 @@ func TestRead(t *testing.T) {
 		t.Parallel()
 
 		dev := &api.Device{Id: uuid.New().String(), OrgId: uuid.New().String(),
-			UniqId:     random.String(16),
-			IsDisabled: []bool{true, false}[random.Intn(2)]}
+			UniqId: random.String(16), Status: []common.Status{
+				common.Status_ACTIVE, common.Status_DISABLED}[random.Intn(2)]}
 
 		ctrl := gomock.NewController(t)
 		defer ctrl.Finish()
@@ -216,8 +218,8 @@ func TestUpdate(t *testing.T) {
 		t.Parallel()
 
 		dev := &api.Device{Id: uuid.New().String(), OrgId: uuid.New().String(),
-			UniqId:     random.String(16),
-			IsDisabled: []bool{true, false}[random.Intn(2)]}
+			UniqId: random.String(16), Status: []common.Status{
+				common.Status_ACTIVE, common.Status_DISABLED}[random.Intn(2)]}
 
 		ctrl := gomock.NewController(t)
 		defer ctrl.Finish()
@@ -242,6 +244,44 @@ func TestUpdate(t *testing.T) {
 		if !proto.Equal(&api.UpdateDeviceResponse{Device: dev}, updateDev) {
 			t.Fatalf("\nExpect: %+v\nActual: %+v",
 				&api.UpdateDeviceResponse{Device: dev}, updateDev)
+		}
+	})
+
+	t.Run("Partial update device by valid device", func(t *testing.T) {
+		t.Parallel()
+
+		dev := &api.Device{Id: uuid.New().String(), OrgId: uuid.New().String(),
+			UniqId: random.String(16)}
+		part := &api.Device{Id: dev.Id, Status: common.Status_ACTIVE}
+		merged := &api.Device{Id: dev.Id, OrgId: dev.OrgId, UniqId: dev.UniqId,
+			Status: common.Status_ACTIVE}
+
+		ctrl := gomock.NewController(t)
+		defer ctrl.Finish()
+
+		devicer := NewMockDevicer(ctrl)
+		devicer.EXPECT().Read(gomock.Any(), dev.Id, dev.OrgId).Return(dev, nil).
+			Times(1)
+		devicer.EXPECT().Update(gomock.Any(), matcher.NewProtoMatcher(merged)).
+			Return(merged, nil).Times(1)
+
+		ctx, cancel := context.WithTimeout(session.NewContext(
+			context.Background(), &session.Session{OrgID: dev.OrgId}),
+			2*time.Second)
+		defer cancel()
+
+		devSvc := NewDevice(devicer)
+		updateDev, err := devSvc.Update(ctx, &api.UpdateDeviceRequest{
+			Device: part, UpdateMask: &fieldmaskpb.FieldMask{
+				Paths: []string{"status"}}})
+		t.Logf("updateDev, err: %+v, %v", updateDev, err)
+		require.NoError(t, err)
+
+		// Testify does not currently support protobuf equality:
+		// https://github.com/stretchr/testify/issues/758
+		if !proto.Equal(&api.UpdateDeviceResponse{Device: merged}, updateDev) {
+			t.Fatalf("\nExpect: %+v\nActual: %+v",
+				&api.UpdateDeviceResponse{Device: merged}, updateDev)
 		}
 	})
 
@@ -289,12 +329,70 @@ func TestUpdate(t *testing.T) {
 			"device must not be nil"), err)
 	})
 
+	t.Run("Partial update invalid field mask", func(t *testing.T) {
+		t.Parallel()
+
+		dev := &api.Device{Id: uuid.New().String(), OrgId: uuid.New().String(),
+			UniqId: random.String(16), Status: []common.Status{
+				common.Status_ACTIVE, common.Status_DISABLED}[random.Intn(2)]}
+
+		ctrl := gomock.NewController(t)
+		defer ctrl.Finish()
+
+		devicer := NewMockDevicer(ctrl)
+		devicer.EXPECT().Read(gomock.Any(), gomock.Any(), gomock.Any()).Times(0)
+		devicer.EXPECT().Update(gomock.Any(), gomock.Any()).Times(0)
+
+		ctx, cancel := context.WithTimeout(session.NewContext(
+			context.Background(), &session.Session{OrgID: uuid.New().String()}),
+			2*time.Second)
+		defer cancel()
+
+		devSvc := NewDevice(devicer)
+		updateDev, err := devSvc.Update(ctx, &api.UpdateDeviceRequest{
+			Device: dev, UpdateMask: &fieldmaskpb.FieldMask{
+				Paths: []string{"aaa"}}})
+		t.Logf("updateDev, err: %+v, %v", updateDev, err)
+		require.Nil(t, updateDev)
+		require.Equal(t, status.Error(codes.InvalidArgument,
+			"invalid field mask"), err)
+	})
+
+	t.Run("Partial update device by unknown device", func(t *testing.T) {
+		t.Parallel()
+
+		OrgID := uuid.New().String()
+		part := &api.Device{Id: uuid.New().String(),
+			Status: common.Status_ACTIVE}
+
+		ctrl := gomock.NewController(t)
+		defer ctrl.Finish()
+
+		devicer := NewMockDevicer(ctrl)
+		devicer.EXPECT().Read(gomock.Any(), part.Id, OrgID).
+			Return(nil, dao.ErrNotFound).Times(1)
+		devicer.EXPECT().Update(gomock.Any(), gomock.Any()).Times(0)
+
+		ctx, cancel := context.WithTimeout(session.NewContext(
+			context.Background(), &session.Session{OrgID: OrgID}),
+			2*time.Second)
+		defer cancel()
+
+		devSvc := NewDevice(devicer)
+		updateDev, err := devSvc.Update(ctx, &api.UpdateDeviceRequest{
+			Device: part, UpdateMask: &fieldmaskpb.FieldMask{
+				Paths: []string{"status"}}})
+		t.Logf("updateDev, err: %+v, %v", updateDev, err)
+		require.Nil(t, updateDev)
+		require.Equal(t, status.Error(codes.NotFound, "object not found"), err)
+	})
+
 	t.Run("Update device by invalid device", func(t *testing.T) {
 		t.Parallel()
 
 		dev := &api.Device{Id: uuid.New().String(), OrgId: uuid.New().String(),
-			UniqId:     random.String(41),
-			IsDisabled: []bool{true, false}[random.Intn(2)]}
+			UniqId: random.String(41), Status: []common.Status{
+				common.Status_ACTIVE, common.Status_DISABLED}[random.Intn(2)]}
 
 		ctrl := gomock.NewController(t)
 		defer ctrl.Finish()
@@ -397,11 +495,14 @@ func TestList(t *testing.T) {
 
 		devs := []*api.Device{
 			{Id: uuid.New().String(), OrgId: orgID, UniqId: random.String(16),
-				IsDisabled: []bool{true, false}[random.Intn(2)]},
+				Status: []common.Status{common.Status_ACTIVE,
+					common.Status_DISABLED}[random.Intn(2)]},
 			{Id: uuid.New().String(), OrgId: orgID, UniqId: random.String(16),
-				IsDisabled: []bool{true, false}[random.Intn(2)]},
+				Status: []common.Status{common.Status_ACTIVE,
+					common.Status_DISABLED}[random.Intn(2)]},
 			{Id: uuid.New().String(), OrgId: orgID, UniqId: random.String(16),
-				IsDisabled: []bool{true, false}[random.Intn(2)]},
+				Status: []common.Status{common.Status_ACTIVE,
+					common.Status_DISABLED}[random.Intn(2)]},
 		}
 
 		ctrl := gomock.NewController(t)
