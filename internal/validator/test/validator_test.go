@@ -32,7 +32,8 @@ func TestValidateMessages(t *testing.T) {
 	t.Logf("createOrg, err: %+v, %v", createOrg, err)
 	require.NoError(t, err)
 
-	dev := &api.Device{OrgId: createOrg.ID, UniqId: uniqID}
+	dev := &api.Device{OrgId: createOrg.ID, UniqId: uniqID,
+		Status: common.Status_ACTIVE}
 	createDev, err := globalDevDAO.Create(ctx, dev)
 	t.Logf("createDev, err: %+v, %v", createDev, err)
 	require.NoError(t, err)
@@ -105,7 +106,7 @@ func TestValidateMessages(t *testing.T) {
 
 func TestValidateMessagesError(t *testing.T) {
 	uniqID := "val-" + random.String(16)
-	disabledUniqID := "val-" + random.String(16)
+	disUniqID := "val-" + random.String(16)
 
 	ctx, cancel := context.WithTimeout(context.Background(), 6*time.Second)
 	defer cancel()
@@ -115,15 +116,16 @@ func TestValidateMessagesError(t *testing.T) {
 	t.Logf("createOrg, err: %+v, %v", createOrg, err)
 	require.NoError(t, err)
 
-	dev := &api.Device{OrgId: createOrg.ID, UniqId: uniqID}
+	dev := &api.Device{OrgId: createOrg.ID, UniqId: uniqID,
+		Status: common.Status_ACTIVE}
 	createDev, err := globalDevDAO.Create(ctx, dev)
 	t.Logf("createDev, err: %+v, %v", createDev, err)
 	require.NoError(t, err)
 
-	disabledDev := &api.Device{OrgId: createOrg.ID, UniqId: disabledUniqID,
-		IsDisabled: true}
-	createDisabledDev, err := globalDevDAO.Create(ctx, disabledDev)
-	t.Logf("createDisabledDev, err: %+v, %v", createDisabledDev, err)
+	disDev := &api.Device{OrgId: createOrg.ID, UniqId: disUniqID,
+		Status: common.Status_DISABLED}
+	createDisDev, err := globalDevDAO.Create(ctx, disDev)
+	t.Logf("createDisDev, err: %+v, %v", createDisDev, err)
 	require.NoError(t, err)
 
 	tests := []struct {
@@ -140,7 +142,7 @@ func TestValidateMessagesError(t *testing.T) {
 		{&message.ValidatorIn{Point: &common.DataPoint{UniqId: uniqID,
 			ValOneof: &common.DataPoint_IntVal{}}, OrgId: "val-aaa"}},
 		// Device disabled.
-		{&message.ValidatorIn{Point: &common.DataPoint{UniqId: disabledUniqID,
+		{&message.ValidatorIn{Point: &common.DataPoint{UniqId: disUniqID,
 			ValOneof: &common.DataPoint_IntVal{}}, OrgId: createOrg.ID}},
 		// Invalid token.
 		{&message.ValidatorIn{Point: &common.DataPoint{UniqId: uniqID,

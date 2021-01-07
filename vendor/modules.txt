@@ -59,6 +59,9 @@ github.com/jackc/pgx/v4/internal/sanitize
 github.com/jackc/pgx/v4/stdlib
 # github.com/lib/pq v1.8.0
 ## explicit
+# github.com/mennanov/fmutils v0.0.3
+## explicit
+github.com/mennanov/fmutils
 # github.com/nsqio/go-nsq v1.0.8
 ## explicit
 github.com/nsqio/go-nsq
@@ -77,7 +80,7 @@ github.com/rs/zerolog/internal/json
 ## explicit
 github.com/stretchr/testify/assert
 github.com/stretchr/testify/require
-# github.com/thingspect/api/go v0.0.0-20210106172248-4f0d86fdbcef
+# github.com/thingspect/api/go v0.0.0-20210107045538-f49e5b61c6e9
 ## explicit
 github.com/thingspect/api/go/api
 github.com/thingspect/api/go/common
@@ -204,6 +207,6 @@ google.golang.org/protobuf/types/known/fieldmaskpb
 google.golang.org/protobuf/types/known/structpb
 google.golang.org/protobuf/types/known/timestamppb
 google.golang.org/protobuf/types/known/wrapperspb
-# gopkg.in/yaml.v3 v3.0.0-20210106163657-3778e1100753
+# gopkg.in/yaml.v3 v3.0.0-20210106172901-c476de37821d
 ## explicit
 gopkg.in/yaml.v3

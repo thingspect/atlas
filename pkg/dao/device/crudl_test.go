@@ -11,6 +11,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/require"
 	"github.com/thingspect/api/go/api"
+	"github.com/thingspect/api/go/common"
 	"github.com/thingspect/atlas/pkg/dao"
 	"github.com/thingspect/atlas/pkg/dao/org"
 	"github.com/thingspect/atlas/pkg/test/random"
@@ -34,13 +35,14 @@ func TestCreate(t *testing.T) {
 		defer cancel()
 
 		dev := &api.Device{OrgId: createOrg.ID, UniqId: "dao-device-" +
-			random.String(16), IsDisabled: []bool{true, false}[random.Intn(2)]}
+			random.String(16), Status: []common.Status{common.Status_ACTIVE,
+			common.Status_DISABLED}[random.Intn(2)]}
 		createDev, err := globalDevDAO.Create(ctx, dev)
 		t.Logf("createDev, err: %+v, %v", createDev, err)
 		require.NoError(t, err)
 		require.Equal(t, dev.OrgId, createDev.OrgId)
 		require.Equal(t, dev.UniqId, createDev.UniqId)
-		require.Equal(t, dev.IsDisabled, createDev.IsDisabled)
+		require.Equal(t, dev.Status, createDev.Status)
 		require.WithinDuration(t, time.Now(), createDev.CreatedAt.AsTime(),
 			2*time.Second)
 		require.WithinDuration(t, time.Now(), createDev.UpdatedAt.AsTime(),
@@ -54,14 +56,15 @@ func TestCreate(t *testing.T) {
 		defer cancel()
 
 		dev := &api.Device{OrgId: createOrg.ID,
-			UniqId:     strings.ToUpper("dao-device-" + random.String(16)),
-			IsDisabled: []bool{true, false}[random.Intn(2)]}
+			UniqId: strings.ToUpper("dao-device-" + random.String(16)),
+			Status: []common.Status{common.Status_ACTIVE,
+				common.Status_DISABLED}[random.Intn(2)]}
 		createDev, err := globalDevDAO.Create(ctx, dev)
 		t.Logf("createDev, err: %+v, %v", createDev, err)
 		require.NoError(t, err)
 		require.Equal(t, dev.OrgId, createDev.OrgId)
 		require.Equal(t, strings.ToLower(dev.UniqId), createDev.UniqId)
-		require.Equal(t, dev.IsDisabled, createDev.IsDisabled)
+		require.Equal(t, dev.Status, createDev.Status)
 		require.WithinDuration(t, time.Now(), createDev.CreatedAt.AsTime(),
 			2*time.Second)
 		require.WithinDuration(t, time.Now(), createDev.UpdatedAt.AsTime(),
@@ -95,7 +98,8 @@ func TestRead(t *testing.T) {
 	require.NoError(t, err)
 
 	dev := &api.Device{OrgId: createOrg.ID, UniqId: "dao-device-" +
-		random.String(16), IsDisabled: []bool{true, false}[random.Intn(2)]}
+		random.String(16), Status: []common.Status{common.Status_ACTIVE,
+		common.Status_DISABLED}[random.Intn(2)]}
 	createDev, err := globalDevDAO.Create(ctx, dev)
 	t.Logf("createDev, err: %+v, %v", createDev, err)
 	require.NoError(t, err)
@@ -164,7 +168,8 @@ func TestReadByUniqID(t *testing.T) {
 	require.NoError(t, err)
 
 	dev := &api.Device{OrgId: createOrg.ID, UniqId: "dao-device-" +
-		random.String(16), IsDisabled: []bool{true, false}[random.Intn(2)]}
+		random.String(16), Status: []common.Status{common.Status_ACTIVE,
+		common.Status_DISABLED}[random.Intn(2)]}
 	createDev, err := globalDevDAO.Create(ctx, dev)
 	t.Logf("createDev, err: %+v, %v", createDev, err)
 	require.NoError(t, err)
@@ -219,13 +224,14 @@ func TestUpdateDevice(t *testing.T) {
 
 		// Update device fields.
 		createDev.UniqId = "dao-device-" + random.String(16)
-		createDev.IsDisabled = []bool{true, false}[random.Intn(2)]
+		createDev.Status = []common.Status{common.Status_ACTIVE,
+			common.Status_DISABLED}[random.Intn(2)]
 
 		updateDev, err := globalDevDAO.Update(ctx, createDev)
 		t.Logf("updateDev, err: %+v, %v", updateDev, err)
 		require.NoError(t, err)
 		require.Equal(t, createDev.UniqId, updateDev.UniqId)
-		require.Equal(t, createDev.IsDisabled, updateDev.IsDisabled)
+		require.Equal(t, createDev.Status, updateDev.Status)
 		require.Equal(t, createDev.CreatedAt, updateDev.CreatedAt)
 		require.True(t, updateDev.UpdatedAt.AsTime().After(
 			updateDev.CreatedAt.AsTime()))
@@ -254,8 +260,9 @@ func TestUpdateDevice(t *testing.T) {
 		ctx, cancel := context.WithTimeout(context.Background(), 4*time.Second)
 		defer cancel()
 
-		dev := &api.Device{OrgId: createOrg.ID,
-			UniqId: "dao-device-" + random.String(16)}
+		dev := &api.Device{OrgId: createOrg.ID, UniqId: "dao-device-" +
+			random.String(16), Status: []common.Status{common.Status_ACTIVE,
+			common.Status_DISABLED}[random.Intn(2)]}
 		createDev, err := globalDevDAO.Create(ctx, dev)
 		t.Logf("createDev, err: %+v, %v", createDev, err)
 		require.NoError(t, err)
@@ -276,8 +283,9 @@ func TestUpdateDevice(t *testing.T) {
 		ctx, cancel := context.WithTimeout(context.Background(), 4*time.Second)
 		defer cancel()
 
-		dev := &api.Device{OrgId: createOrg.ID,
-			UniqId: "dao-device-" + random.String(16)}
+		dev := &api.Device{OrgId: createOrg.ID, UniqId: "dao-device-" +
+			random.String(16), Status: []common.Status{common.Status_ACTIVE,
+			common.Status_DISABLED}[random.Intn(2)]}
 		createDev, err := globalDevDAO.Create(ctx, dev)
 		t.Logf("createDev, err: %+v, %v", createDev, err)
 		require.NoError(t, err)
@@ -309,8 +317,9 @@ func TestDeleteDevice(t *testing.T) {
 		ctx, cancel := context.WithTimeout(context.Background(), 4*time.Second)
 		defer cancel()
 
-		dev := &api.Device{OrgId: createOrg.ID,
-			UniqId: "dao-device-" + random.String(16)}
+		dev := &api.Device{OrgId: createOrg.ID, UniqId: "dao-device-" +
+			random.String(16), Status: []common.Status{common.Status_ACTIVE,
+			common.Status_DISABLED}[random.Intn(2)]}
 		createDev, err := globalDevDAO.Create(ctx, dev)
 		t.Logf("createDev, err: %+v, %v", createDev, err)
 		require.NoError(t, err)
@@ -352,7 +361,8 @@ func TestDeleteDevice(t *testing.T) {
 		defer cancel()
 
 		dev := &api.Device{OrgId: createOrg.ID,
-			UniqId: "dao-device-" + random.String(16)}
+			UniqId: "dao-device-" + random.String(16), Status: []common.Status{
+				common.Status_ACTIVE, common.Status_DISABLED}[random.Intn(2)]}
 		createDev, err := globalDevDAO.Create(ctx, dev)
 		t.Logf("createDev, err: %+v, %v", createDev, err)
 		require.NoError(t, err)
@@ -375,15 +385,16 @@ func TestListDevices(t *testing.T) {
 	require.NoError(t, err)
 
 	var lastDeviceID string
-	var lastDeviceDisabled bool
+	var lastDeviceStatus common.Status
 	for i := 0; i < 3; i++ {
 		dev := &api.Device{OrgId: createOrg.ID, UniqId: "dao-device-" +
-			random.String(16), IsDisabled: []bool{true, false}[random.Intn(2)]}
+			random.String(16), Status: []common.Status{common.Status_ACTIVE,
+			common.Status_DISABLED}[random.Intn(2)]}
 		createDev, err := globalDevDAO.Create(ctx, dev)
 		t.Logf("createDev, err: %+v, %v", createDev, err)
 		require.NoError(t, err)
 		lastDeviceID = createDev.Id
-		lastDeviceDisabled = createDev.IsDisabled
+		lastDeviceStatus = createDev.Status
 	}
 
 	t.Run("List devices by valid org ID", func(t *testing.T) {
@@ -399,7 +410,7 @@ func TestListDevices(t *testing.T) {
 
 		var found bool
 		for _, dev := range listDevs {
-			if dev.Id == lastDeviceID && dev.IsDisabled == lastDeviceDisabled {
+			if dev.Id == lastDeviceID && dev.Status == lastDeviceStatus {
 				found = true
 			}
 		}

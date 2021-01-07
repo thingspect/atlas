@@ -5,13 +5,14 @@ import (
 	"time"
 
 	"github.com/thingspect/api/go/api"
+	"github.com/thingspect/api/go/common"
 	"github.com/thingspect/atlas/pkg/alog"
 	"github.com/thingspect/atlas/pkg/dao"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 const createUser = `
-INSERT INTO users (org_id, email, password_hash, is_disabled, created_at,
+INSERT INTO users (org_id, email, password_hash, status, created_at,
 updated_at)
 VALUES ($1, $2, $3, $4, $5, $6)
 RETURNING id
@@ -25,14 +26,14 @@ func (d *DAO) Create(ctx context.Context, user *api.User,
 	user.UpdatedAt = timestamppb.New(now)
 
 	if err := d.pg.QueryRowContext(ctx, createUser, user.OrgId, user.Email,
-		passHash, user.IsDisabled, now, now).Scan(&user.Id); err != nil {
+		passHash, user.Status.String(), now, now).Scan(&user.Id); err != nil {
 		return nil, dao.DBToSentinel(err)
 	}
 	return user, nil
 }
 
 const readUser = `
-SELECT id, org_id, email, password_hash, is_disabled, created_at, updated_at
+SELECT id, org_id, email, password_hash, status, created_at, updated_at
 FROM users
 WHERE id = $1
 AND org_id = $2
@@ -43,21 +44,23 @@ func (d *DAO) Read(ctx context.Context, userID, orgID string) (*api.User,
 	[]byte, error) {
 	user := &api.User{}
 	var passHash []byte
+	var status string
 	var createdAt, updatedAt time.Time
 
 	if err := d.pg.QueryRowContext(ctx, readUser, userID, orgID).Scan(&user.Id,
-		&user.OrgId, &user.Email, &passHash, &user.IsDisabled, &createdAt,
+		&user.OrgId, &user.Email, &passHash, &status, &createdAt,
 		&updatedAt); err != nil {
 		return nil, nil, dao.DBToSentinel(err)
 	}
 
+	user.Status = common.Status(common.Status_value[status])
 	user.CreatedAt = timestamppb.New(createdAt)
 	user.UpdatedAt = timestamppb.New(updatedAt)
 	return user, passHash, nil
 }
 
 const readUserByEmail = `
-SELECT u.id, u.org_id, u.email, u.password_hash, u.is_disabled, u.created_at,
+SELECT u.id, u.org_id, u.email, u.password_hash, u.status, u.created_at,
 u.updated_at
 FROM users u
 INNER JOIN orgs o ON u.org_id = o.id
@@ -70,14 +73,16 @@ func (d *DAO) ReadByEmail(ctx context.Context, email,
 	orgName string) (*api.User, []byte, error) {
 	user := &api.User{}
 	var passHash []byte
+	var status string
 	var createdAt, updatedAt time.Time
 
 	if err := d.pg.QueryRowContext(ctx, readUserByEmail, email, orgName).Scan(
-		&user.Id, &user.OrgId, &user.Email, &passHash, &user.IsDisabled,
-		&createdAt, &updatedAt); err != nil {
+		&user.Id, &user.OrgId, &user.Email, &passHash, &status, &createdAt,
+		&updatedAt); err != nil {
 		return nil, nil, dao.DBToSentinel(err)
 	}
 
+	user.Status = common.Status(common.Status_value[status])
 	user.CreatedAt = timestamppb.New(createdAt)
 	user.UpdatedAt = timestamppb.New(updatedAt)
 	return user, passHash, nil
@@ -85,7 +90,7 @@ func (d *DAO) ReadByEmail(ctx context.Context, email,
 
 const updateUser = `
 UPDATE users
-SET email = $1, password_hash = $2, is_disabled = $3, updated_at = $4
+SET email = $1, password_hash = $2, status = $3, updated_at = $4
 WHERE id = $5
 AND org_id = $6
 RETURNING created_at
@@ -100,7 +105,7 @@ func (d *DAO) Update(ctx context.Context, user *api.User,
 	user.UpdatedAt = timestamppb.New(updatedAt)
 
 	if err := d.pg.QueryRowContext(ctx, updateUser, user.Email, passHash,
-		user.IsDisabled, updatedAt, user.Id, user.OrgId).Scan(
+		user.Status.String(), updatedAt, user.Id, user.OrgId).Scan(
 		&createdAt); err != nil {
 		return nil, dao.DBToSentinel(err)
 	}
@@ -128,7 +133,7 @@ func (d *DAO) Delete(ctx context.Context, userID, orgID string) error {
 }
 
 const listUsers = `
-SELECT id, org_id, email, is_disabled, created_at, updated_at
+SELECT id, org_id, email, status, created_at, updated_at
 FROM users
 WHERE org_id = $1
 `
@@ -150,13 +155,15 @@ func (d *DAO) List(ctx context.Context, orgID string) ([]*api.User, error) {
 
 	for rows.Next() {
 		user := &api.User{}
+		var status string
 		var createdAt, updatedAt time.Time
 
-		if err = rows.Scan(&user.Id, &user.OrgId, &user.Email, &user.IsDisabled,
+		if err = rows.Scan(&user.Id, &user.OrgId, &user.Email, &status,
 			&createdAt, &updatedAt); err != nil {
 			return nil, dao.DBToSentinel(err)
 		}
 
+		user.Status = common.Status(common.Status_value[status])
 		user.CreatedAt = timestamppb.New(createdAt)
 		user.UpdatedAt = timestamppb.New(updatedAt)
 		users = append(users, user)

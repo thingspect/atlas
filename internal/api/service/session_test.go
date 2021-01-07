@@ -12,6 +12,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/require"
 	"github.com/thingspect/api/go/api"
+	"github.com/thingspect/api/go/common"
 	"github.com/thingspect/atlas/internal/api/session"
 	"github.com/thingspect/atlas/pkg/dao"
 	"github.com/thingspect/atlas/pkg/test/random"
@@ -27,7 +28,7 @@ func TestLogin(t *testing.T) {
 
 		orgName := random.String(10)
 		user := &api.User{Id: uuid.New().String(), OrgId: uuid.New().String(),
-			Email: random.Email()}
+			Email: random.Email(), Status: common.Status_ACTIVE}
 
 		ctrl := gomock.NewController(t)
 		defer ctrl.Finish()
@@ -118,7 +119,7 @@ func TestLogin(t *testing.T) {
 
 		orgName := random.String(10)
 		user := &api.User{Id: uuid.New().String(), OrgId: uuid.New().String(),
-			Email: random.Email(), IsDisabled: true}
+			Email: random.Email(), Status: common.Status_DISABLED}
 
 		ctrl := gomock.NewController(t)
 		defer ctrl.Finish()

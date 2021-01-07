@@ -14,14 +14,15 @@ require (
 	github.com/jackc/pgproto3/v2 v2.0.7 // indirect
 	github.com/jackc/pgx/v4 v4.10.1
 	github.com/lib/pq v1.8.0 // indirect
+	github.com/mennanov/fmutils v0.0.3
 	github.com/nsqio/go-nsq v1.0.8
 	github.com/pkg/errors v0.9.1 // indirect
 	github.com/rs/zerolog v1.20.0
 	github.com/shopspring/decimal v1.2.0 // indirect
 	github.com/stretchr/testify v1.6.1
-	github.com/thingspect/api/go v0.0.0-20210106172248-4f0d86fdbcef
+	github.com/thingspect/api/go v0.0.0-20210107045538-f49e5b61c6e9
 	golang.org/x/crypto v0.0.0-20201221181555-eec23a3978ad
 	google.golang.org/grpc v1.34.0
 	google.golang.org/protobuf v1.25.0
-	gopkg.in/yaml.v3 v3.0.0-20210106163657-3778e1100753 // indirect
+	gopkg.in/yaml.v3 v3.0.0-20210106172901-c476de37821d // indirect
 )
