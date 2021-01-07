@@ -70,21 +70,6 @@ func TestCreate(t *testing.T) {
 			createDev.Device.UpdatedAt.AsTime(), 2*time.Second)
 	})
 
-	t.Run("Create nil device", func(t *testing.T) {
-		t.Parallel()
-
-		ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
-		defer cancel()
-
-		devCli := api.NewDeviceServiceClient(globalAuthGRPCConn)
-		createDev, err := devCli.Create(ctx, &api.CreateDeviceRequest{
-			Device: nil})
-		t.Logf("createDev, err: %+v, %v", createDev, err)
-		require.Nil(t, createDev)
-		require.EqualError(t, err, "rpc error: code = InvalidArgument desc = "+
-			"device must not be nil")
-	})
-
 	t.Run("Create invalid device", func(t *testing.T) {
 		t.Parallel()
 
@@ -101,7 +86,9 @@ func TestCreate(t *testing.T) {
 		t.Logf("createDev, err: %+v, %v", createDev, err)
 		require.Nil(t, createDev)
 		require.EqualError(t, err, "rpc error: code = InvalidArgument desc = "+
-			"invalid format: value too long")
+			"invalid CreateDeviceRequest.Device: embedded message failed "+
+			"validation | caused by: invalid Device.UniqId: value length must "+
+			"be between 5 and 40 runes, inclusive")
 	})
 }
 
@@ -169,21 +156,6 @@ func TestRead(t *testing.T) {
 		require.Nil(t, readDev)
 		require.EqualError(t, err, "rpc error: code = NotFound desc = object "+
 			"not found")
-	})
-
-	t.Run("Read device by invalid ID", func(t *testing.T) {
-		t.Parallel()
-
-		ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
-		defer cancel()
-
-		devCli := api.NewDeviceServiceClient(globalAuthGRPCConn)
-		readDev, err := devCli.Read(ctx, &api.ReadDeviceRequest{
-			Id: random.String(10)})
-		t.Logf("readDev, err: %+v, %v", readDev, err)
-		require.Nil(t, readDev)
-		require.EqualError(t, err, "rpc error: code = InvalidArgument desc = "+
-			"invalid format: UUID")
 	})
 }
 
@@ -273,7 +245,7 @@ func TestUpdate(t *testing.T) {
 		t.Logf("updateDev, err: %+v, %v", updateDev, err)
 		require.Nil(t, updateDev)
 		require.EqualError(t, err, "rpc error: code = InvalidArgument desc = "+
-			"device must not be nil")
+			"invalid UpdateDeviceRequest.Device: value is required")
 	})
 
 	t.Run("Partial update invalid field mask", func(t *testing.T) {
@@ -323,8 +295,9 @@ func TestUpdate(t *testing.T) {
 		defer cancel()
 
 		unknownDevice := &api.Device{Id: uuid.New().String(),
-			UniqId: "api-device-" + random.String(16),
-			Token:  uuid.New().String()}
+			UniqId: "api-device-" + random.String(16), Status: []common.Status{
+				common.Status_ACTIVE, common.Status_DISABLED}[random.Intn(2)],
+			Token: uuid.New().String()}
 
 		devCli := api.NewDeviceServiceClient(globalAuthGRPCConn)
 		updateDev, err := devCli.Update(ctx, &api.UpdateDeviceRequest{
@@ -364,7 +337,7 @@ func TestUpdate(t *testing.T) {
 			"not found")
 	})
 
-	t.Run("Update device by invalid device", func(t *testing.T) {
+	t.Run("Update device validation failure", func(t *testing.T) {
 		t.Parallel()
 
 		ctx, cancel := context.WithTimeout(context.Background(), 4*time.Second)
@@ -388,7 +361,36 @@ func TestUpdate(t *testing.T) {
 		t.Logf("updateDev, err: %+v, %v", updateDev, err)
 		require.Nil(t, updateDev)
 		require.EqualError(t, err, "rpc error: code = InvalidArgument desc = "+
-			"invalid format: value too long")
+			"invalid UpdateDeviceRequest.Device: embedded message failed "+
+			"validation | caused by: invalid Device.UniqId: value length must "+
+			"be between 5 and 40 runes, inclusive")
+	})
+
+	t.Run("Update device by invalid device", func(t *testing.T) {
+		t.Parallel()
+
+		ctx, cancel := context.WithTimeout(context.Background(), 4*time.Second)
+		defer cancel()
+
+		dev := &api.Device{UniqId: "api-device-" + random.String(16),
+			Status: []common.Status{common.Status_ACTIVE,
+				common.Status_DISABLED}[random.Intn(2)]}
+
+		devCli := api.NewDeviceServiceClient(globalAuthGRPCConn)
+		createDev, err := devCli.Create(ctx, &api.CreateDeviceRequest{
+			Device: dev})
+		t.Logf("createDev, err: %+v, %v", createDev, err)
+		require.NoError(t, err)
+
+		// Update device fields.
+		createDev.Device.Token = random.String(10)
+
+		updateDev, err := devCli.Update(ctx, &api.UpdateDeviceRequest{
+			Device: createDev.Device})
+		t.Logf("updateDev, err: %+v, %v", updateDev, err)
+		require.Nil(t, updateDev)
+		require.EqualError(t, err, "rpc error: code = InvalidArgument desc = "+
+			"invalid format: UUID")
 	})
 }
 

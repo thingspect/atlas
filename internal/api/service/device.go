@@ -45,10 +45,6 @@ func (d *Device) Create(ctx context.Context,
 		return nil, status.Error(codes.PermissionDenied, "permission denied")
 	}
 
-	if req.Device == nil {
-		return nil, status.Error(codes.InvalidArgument,
-			"device must not be nil")
-	}
 	req.Device.OrgId = sess.OrgID
 
 	dev, err := d.devDAO.Create(ctx, req.Device)
@@ -84,8 +80,7 @@ func (d *Device) Update(ctx context.Context,
 	}
 
 	if req.Device == nil {
-		return nil, status.Error(codes.InvalidArgument,
-			"device must not be nil")
+		return nil, status.Error(codes.InvalidArgument, req.Validate().Error())
 	}
 	req.Device.OrgId = sess.OrgID
 
@@ -106,6 +101,11 @@ func (d *Device) Update(ctx context.Context,
 		fmutils.Filter(req.Device, req.UpdateMask.Paths)
 		proto.Merge(dev, req.Device)
 		req.Device = dev
+	}
+
+	// Validate after merge to support partial updates.
+	if err := req.Validate(); err != nil {
+		return nil, status.Error(codes.InvalidArgument, err.Error())
 	}
 
 	dev, err := d.devDAO.Update(ctx, req.Device)

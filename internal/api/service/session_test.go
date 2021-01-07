@@ -149,7 +149,7 @@ func TestLogin(t *testing.T) {
 
 		orgName := random.String(10)
 		user := &api.User{Id: uuid.New().String(), OrgId: uuid.New().String(),
-			Email: random.Email()}
+			Email: random.Email(), Status: common.Status_ACTIVE}
 
 		ctrl := gomock.NewController(t)
 		defer ctrl.Finish()

@@ -55,10 +55,15 @@ func New(cfg *config.Config) (*API, error) {
 	skipAuth := map[string]struct{}{
 		"/api.SessionService/Login": {},
 	}
+	skipValidate := map[string]struct{}{
+		// Update actions validate after merge to support partial updates.
+		"/api.DeviceService/Update": {},
+	}
 
 	srv := grpc.NewServer(grpc.ChainUnaryInterceptor(
 		interceptor.Log(nil),
 		interceptor.Auth(skipAuth, cfg.PWTKey),
+		interceptor.Validate(skipValidate),
 	))
 	api.RegisterDeviceServiceServer(srv, service.NewDevice(device.NewDAO(pg)))
 	api.RegisterSessionServiceServer(srv, service.NewSession(user.NewDAO(pg),
