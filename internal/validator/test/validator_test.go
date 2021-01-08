@@ -137,17 +137,20 @@ func TestValidateMessagesError(t *testing.T) {
 		{&message.ValidatorIn{Point: &common.DataPoint{
 			UniqId: random.String(16)}}},
 		// Missing value.
-		{&message.ValidatorIn{Point: &common.DataPoint{UniqId: uniqID}}},
+		{&message.ValidatorIn{Point: &common.DataPoint{UniqId: uniqID,
+			Attr: random.String(10)}}},
 		// Invalid org ID.
 		{&message.ValidatorIn{Point: &common.DataPoint{UniqId: uniqID,
-			ValOneof: &common.DataPoint_IntVal{}}, OrgId: "val-aaa"}},
+			Attr: random.String(10), ValOneof: &common.DataPoint_IntVal{}},
+			OrgId: "val-aaa"}},
 		// Device disabled.
 		{&message.ValidatorIn{Point: &common.DataPoint{UniqId: disUniqID,
-			ValOneof: &common.DataPoint_IntVal{}}, OrgId: createOrg.ID}},
+			Attr: random.String(10), ValOneof: &common.DataPoint_IntVal{}},
+			OrgId: createOrg.ID}},
 		// Invalid token.
 		{&message.ValidatorIn{Point: &common.DataPoint{UniqId: uniqID,
-			ValOneof: &common.DataPoint_IntVal{}, Token: "val-aaa"},
-			OrgId: createOrg.ID}},
+			Attr: random.String(10), ValOneof: &common.DataPoint_IntVal{},
+			Token: "val-aaa"}, OrgId: createOrg.ID}},
 	}
 
 	for _, test := range tests {

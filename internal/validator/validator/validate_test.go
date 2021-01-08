@@ -126,9 +126,7 @@ func TestValidateMessages(t *testing.T) {
 func TestValidateMessagesError(t *testing.T) {
 	t.Parallel()
 
-	devID := uuid.New().String()
 	orgID := uuid.New().String()
-	token := uuid.New().String()
 
 	tests := []struct {
 		inpVIn    *message.ValidatorIn
@@ -151,14 +149,17 @@ func TestValidateMessagesError(t *testing.T) {
 			nil, 1},
 		// Invalid org ID.
 		{&message.ValidatorIn{Point: &common.DataPoint{
+			UniqId: random.String(16), Attr: random.String(10),
 			ValOneof: &common.DataPoint_IntVal{}}, OrgId: "val-aaa"},
 			common.Status_ACTIVE, nil, 1},
 		// Device status.
 		{&message.ValidatorIn{Point: &common.DataPoint{
+			UniqId: random.String(16), Attr: random.String(10),
 			ValOneof: &common.DataPoint_IntVal{}}, OrgId: orgID},
 			common.Status_DISABLED, nil, 1},
 		// Invalid token.
 		{&message.ValidatorIn{Point: &common.DataPoint{
+			UniqId: random.String(16), Attr: random.String(10),
 			ValOneof: &common.DataPoint_IntVal{}, Token: "val-aaa"},
 			OrgId: orgID}, common.Status_ACTIVE, nil, 1},
 	}
@@ -183,9 +184,9 @@ func TestValidateMessagesError(t *testing.T) {
 			devicer := NewMockdevicer(ctrl)
 			devicer.EXPECT().
 				ReadByUniqID(gomock.Any(), gomock.Any()).
-				Return(&api.Device{Id: devID, OrgId: orgID,
-					Status: lTest.inpStatus, Token: token}, lTest.inpErr).
-				Times(lTest.inpTimes)
+				Return(&api.Device{Id: uuid.New().String(), OrgId: orgID,
+					Status: lTest.inpStatus, Token: uuid.New().String()},
+					lTest.inpErr).Times(lTest.inpTimes)
 
 			val := Validator{
 				devDAO:       devicer,
