@@ -37,7 +37,7 @@ func (val *Validator) validateMessages() {
 		}
 		logEntry := alog.WithFields(logFields)
 
-		// Retrieve device and begin validation.
+		// Retrieve device.
 		ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 		dev, err := val.devDAO.ReadByUniqID(ctx, vIn.Point.UniqId)
 		cancel()
@@ -53,13 +53,15 @@ func (val *Validator) validateMessages() {
 		}
 		logEntry = logEntry.WithStr("devID", dev.Id)
 
-		switch {
-		case vIn.Point.ValOneof == nil:
-			logEntry.Debugf("validateMessages missing value: %+v", vIn)
+		// Perform validation.
+		switch err := vIn.Point.Validate(); {
+		case err != nil:
+			logEntry.Debugf("validateMessages vIn.Point.Validate: %v", err)
 			msg.Ack()
 			continue
 		case vIn.OrgId != dev.OrgId:
-			logEntry.Debugf("validateMessages invalid org ID: %+v", vIn)
+			logEntry.Errorf("validateMessages incorrect org ID, expected: %v, "+
+				"actual: %v", dev.OrgId, vIn.OrgId)
 			msg.Ack()
 			continue
 		case dev.Status != common.Status_ACTIVE:
