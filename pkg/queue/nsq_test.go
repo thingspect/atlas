@@ -27,8 +27,6 @@ func TestNewNSQ(t *testing.T) {
 		{testConfig.NSQPubAddr, testConfig.NSQLookupAddrs, ""},
 		// Wrong port.
 		{"127.0.0.1:4152", nil, "connect: connection refused"},
-		// Unknown host.
-		{"host-" + random.String(10) + ":4150", nil, "no such host"},
 	}
 
 	for _, test := range tests {
