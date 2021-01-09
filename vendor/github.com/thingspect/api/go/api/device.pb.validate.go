@@ -732,9 +732,14 @@ func (m *ListDeviceRequest) Validate() error {
 		return nil
 	}
 
-	// no validation rules for Limit
+	if val := m.GetPageSize(); val < 0 || val > 250 {
+		return ListDeviceRequestValidationError{
+			field:  "PageSize",
+			reason: "value must be inside range [0, 250]",
+		}
+	}
 
-	// no validation rules for Offset
+	// no validation rules for PageToken
 
 	return nil
 }
@@ -803,8 +808,6 @@ func (m *ListDeviceResponse) Validate() error {
 		return nil
 	}
 
-	// no validation rules for Total
-
 	for idx, item := range m.GetDevices() {
 		_, _ = idx, item
 
@@ -819,6 +822,12 @@ func (m *ListDeviceResponse) Validate() error {
 		}
 
 	}
+
+	// no validation rules for NextPageToken
+
+	// no validation rules for PrevPageToken
+
+	// no validation rules for TotalSize
 
 	return nil
 }

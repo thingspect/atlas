@@ -64,6 +64,9 @@ mod:
 	go get -t -u ./...
 	go mod tidy -v
 	go mod vendor
+# Update atlas.swagger.json at the same time as github.com/thingspect/api
+	if [ -f ../api/openapi/atlas.swagger.json ]; then cp -f -v \
+	../api/openapi/atlas.swagger.json web/; fi
 
 generate:
 	cd /tmp && GO111MODULE=on go get github.com/golang/mock/mockgen && \

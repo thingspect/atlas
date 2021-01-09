@@ -26,7 +26,7 @@ func TestAuth(t *testing.T) {
 	_, err := rand.Read(key)
 	require.NoError(t, err)
 
-	token, _, err := session.GenerateToken(key, uuid.New().String(),
+	token, _, err := session.GenerateWebToken(key, uuid.New().String(),
 		uuid.New().String())
 	t.Logf("token, err: %v, %v", token, err)
 	require.NoError(t, err)

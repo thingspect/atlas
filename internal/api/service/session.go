@@ -14,6 +14,8 @@ import (
 	"google.golang.org/grpc/status"
 )
 
+const defaultPageSize = 100
+
 // Userer defines the methods provided by a user.DAO.
 type Userer interface {
 	ReadByEmail(ctx context.Context, email, orgName string) (*api.User, []byte,
@@ -57,7 +59,7 @@ func (s *Session) Login(ctx context.Context,
 		return nil, status.Error(codes.Unauthenticated, "unauthorized")
 	}
 
-	token, exp, err := session.GenerateToken(s.pwtKey, user.Id, user.OrgId)
+	token, exp, err := session.GenerateWebToken(s.pwtKey, user.Id, user.OrgId)
 	if err != nil {
 		alog.Errorf("Login crypto.GenerateToken Email, OrgName, err: %v, %v, "+
 			"%v", req.Email, req.OrgName, err)

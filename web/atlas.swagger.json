@@ -44,20 +44,19 @@
         },
         "parameters": [
           {
-            "name": "limit",
-            "description": "Number of devices to return.",
+            "name": "pageSize",
+            "description": "Number of devices to retrieve in a single page. Defaults to 100 if not specified.",
             "in": "query",
             "required": false,
             "type": "integer",
             "format": "int32"
           },
           {
-            "name": "offset",
-            "description": "Offset to start the results.",
+            "name": "pageToken",
+            "description": "Token of the page to retrieve. If not specified, the first page of results will be returned. To request the next page of results, use next_page_token from the previous response.",
             "in": "query",
             "required": false,
-            "type": "integer",
-            "format": "int32"
+            "type": "string"
           }
         ],
         "tags": [
@@ -84,10 +83,14 @@
         "parameters": [
           {
             "name": "body",
+            "description": "Device message to create.",
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/apiCreateDeviceRequest"
+              "$ref": "#/definitions/apiDevice",
+              "required": [
+                "device"
+              ]
             }
           }
         ],
@@ -294,22 +297,6 @@
     }
   },
   "definitions": {
-    "apiCreateDeviceRequest": {
-      "type": "object",
-      "properties": {
-        "device": {
-          "$ref": "#/definitions/apiDevice",
-          "description": "Device message to create.",
-          "required": [
-            "device"
-          ]
-        }
-      },
-      "description": "CreateDeviceRequest is sent to create a device.",
-      "required": [
-        "device"
-      ]
-    },
     "apiCreateDeviceResponse": {
       "type": "object",
       "properties": {
@@ -373,17 +360,25 @@
     "apiListDeviceResponse": {
       "type": "object",
       "properties": {
-        "total": {
-          "type": "integer",
-          "format": "int32",
-          "description": "Total number of devices."
-        },
         "devices": {
           "type": "array",
           "items": {
             "$ref": "#/definitions/apiDevice"
           },
           "description": "Device array."
+        },
+        "nextPageToken": {
+          "type": "string",
+          "description": "Pagination token used to retrieve the next page of results. Not returned for the last page."
+        },
+        "prevPageToken": {
+          "type": "string",
+          "description": "Pagination token used to retrieve the previous page of results. Not returned for the first page."
+        },
+        "totalSize": {
+          "type": "integer",
+          "format": "int32",
+          "description": "Total number of devices available."
         }
       }
     },

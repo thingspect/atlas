@@ -18,4 +18,4 @@ CREATE TABLE devices (
   updated_at timestamptz NOT NULL
 );
 
-CREATE INDEX devices_org_id_idx ON devices (org_id);
+CREATE INDEX devices_read_and_paginate_idx ON devices (org_id, created_at, id);

@@ -1,0 +1,15 @@
+syntax = "proto3";
+package token;
+
+import "google/protobuf/timestamp.proto";
+
+option go_package = "github.com/thingspect/atlas/api/go/token";
+
+// Page represents a pagination token.
+message Page {
+  // Lower bound timestamp. Can represent any timestamp, but primarily used for created_at.
+  google.protobuf.Timestamp lbound_ts = 1;
+
+  // Previous ID (UUID). Can represent any UUID-based identifier.
+  bytes prev_id = 2;
+}

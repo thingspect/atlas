@@ -11,7 +11,7 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/require"
-	"github.com/thingspect/atlas/api/go/pwt"
+	"github.com/thingspect/atlas/api/go/token"
 	"github.com/thingspect/atlas/pkg/crypto"
 	"github.com/thingspect/atlas/pkg/test/random"
 	"google.golang.org/protobuf/proto"
@@ -47,13 +47,13 @@ func TestGenerateToken(t *testing.T) {
 		t.Run(fmt.Sprintf("Can generate %+v", lTest), func(t *testing.T) {
 			t.Parallel()
 
-			res, exp, err := GenerateToken(lTest.inpKey, lTest.inpUserID,
+			res, exp, err := GenerateWebToken(lTest.inpKey, lTest.inpUserID,
 				lTest.inpOrgID)
 			t.Logf("res, exp, err: %v, %+v, %#v", res, exp, err)
 			require.GreaterOrEqual(t, len(res), lTest.resMinLen)
 			if exp != nil {
-				require.WithinDuration(t, time.Now().Add(TokenExp*time.Second),
-					exp.AsTime(), 2*time.Second)
+				require.WithinDuration(t, time.Now().Add(
+					WebTokenExp*time.Second), exp.AsTime(), 2*time.Second)
 			}
 			if lTest.err == "" {
 				require.NoError(t, err)
@@ -74,8 +74,8 @@ func TestValidateToken(t *testing.T) {
 	badCipher, err := crypto.Encrypt(key, []byte("aaa"))
 	require.NoError(t, err)
 
-	oldToken := &pwt.Claim{ExpiresAt: timestamppb.New(time.Now().Add(-2 *
-		TokenExp * time.Second))}
+	oldToken := &token.Web{ExpiresAt: timestamppb.New(time.Now().Add(-2 *
+		WebTokenExp * time.Second))}
 	bOldToken, err := proto.Marshal(oldToken)
 	require.NoError(t, err)
 	eOldToken, err := crypto.Encrypt(key, bOldToken)
@@ -92,7 +92,7 @@ func TestValidateToken(t *testing.T) {
 		{key, base64.RawStdEncoding.EncodeToString(badCipher),
 			"unexpected EOF"},
 		{key, base64.RawStdEncoding.EncodeToString(eOldToken),
-			ErrTokenExp.Error()},
+			errWebTokenExp.Error()},
 	}
 
 	for _, test := range tests {
@@ -104,15 +104,16 @@ func TestValidateToken(t *testing.T) {
 			userID := uuid.New().String()
 			orgID := uuid.New().String()
 
-			resGen, exp, err := GenerateToken(lTest.inpKey, userID, orgID)
+			resGen, exp, err := GenerateWebToken(lTest.inpKey, userID, orgID)
 			t.Logf("resGen, exp, err: %v, %v, %v", resGen, exp, err)
 			require.NoError(t, err)
 
 			var resVal *Session
 			if lTest.inpCiphertoken == "" {
-				resVal, err = ValidateToken(lTest.inpKey, resGen)
+				resVal, err = ValidateWebToken(lTest.inpKey, resGen)
 			} else {
-				resVal, err = ValidateToken(lTest.inpKey, lTest.inpCiphertoken)
+				resVal, err = ValidateWebToken(lTest.inpKey,
+					lTest.inpCiphertoken)
 			}
 			t.Logf("resVal, err: %+v, %v", resVal, err)
 			if resVal != nil {

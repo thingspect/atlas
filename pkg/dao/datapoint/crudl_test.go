@@ -181,7 +181,7 @@ func TestListDevices(t *testing.T) {
 
 				listPoints, err := globalDPDAO.List(ctx, lTest.inpOrgID,
 					lTest.inpPoint.UniqId, lTest.inpPoint.Ts.AsTime(),
-					lTest.inpPoint.Ts.AsTime())
+					lTest.inpPoint.Ts.AsTime().Add(time.Millisecond))
 				t.Logf("listPoints, err: %+v, %v", listPoints, err)
 				require.NoError(t, err)
 				require.Len(t, listPoints, 1)

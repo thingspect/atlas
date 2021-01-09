@@ -9,6 +9,7 @@ import (
 	gomock "github.com/golang/mock/gomock"
 	api "github.com/thingspect/api/go/api"
 	reflect "reflect"
+	time "time"
 )
 
 // MockDevicer is a mock of Devicer interface
@@ -94,16 +95,17 @@ func (mr *MockDevicerMockRecorder) Delete(ctx, devID, orgID interface{}) *gomock
 }
 
 // List mocks base method
-func (m *MockDevicer) List(ctx context.Context, orgID string) ([]*api.Device, error) {
+func (m *MockDevicer) List(ctx context.Context, orgID string, lboundTS time.Time, prevID string, limit int32) ([]*api.Device, int32, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "List", ctx, orgID)
+	ret := m.ctrl.Call(m, "List", ctx, orgID, lboundTS, prevID, limit)
 	ret0, _ := ret[0].([]*api.Device)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
+	ret1, _ := ret[1].(int32)
+	ret2, _ := ret[2].(error)
+	return ret0, ret1, ret2
 }
 
 // List indicates an expected call of List
-func (mr *MockDevicerMockRecorder) List(ctx, orgID interface{}) *gomock.Call {
+func (mr *MockDevicerMockRecorder) List(ctx, orgID, lboundTS, prevID, limit interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "List", reflect.TypeOf((*MockDevicer)(nil).List), ctx, orgID)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "List", reflect.TypeOf((*MockDevicer)(nil).List), ctx, orgID, lboundTS, prevID, limit)
 }
