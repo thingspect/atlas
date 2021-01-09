@@ -53,14 +53,12 @@ const listDataPoints = `
 SELECT uniq_id, attr, int_val, fl64_val, str_val, bool_val, bytes_val,
 created_at, trace_id
 FROM data_points
-WHERE org_id = $1
-AND uniq_id = $2
+WHERE (org_id, uniq_id) = ($1, $2)
 AND created_at >= $3
-AND created_at <= $4
+AND created_at < $4
 `
 
-// List retrieves all data points by org ID, UniqID, and start and end times
-// (inclusive).
+// List retrieves all data points by org ID, UniqID, and [start, end) times.
 func (d *DAO) List(ctx context.Context, orgID, uniqID string, start,
 	end time.Time) ([]*common.DataPoint, error) {
 	var points []*common.DataPoint

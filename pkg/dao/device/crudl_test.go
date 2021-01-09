@@ -384,8 +384,9 @@ func TestListDevices(t *testing.T) {
 	t.Logf("createOrg, err: %+v, %v", createOrg, err)
 	require.NoError(t, err)
 
-	var lastDeviceID string
-	var lastDeviceStatus common.Status
+	devIDs := []string{}
+	devStatuses := []common.Status{}
+	devTSes := []time.Time{}
 	for i := 0; i < 3; i++ {
 		dev := &api.Device{OrgId: createOrg.ID, UniqId: "dao-device-" +
 			random.String(16), Status: []common.Status{common.Status_ACTIVE,
@@ -393,51 +394,96 @@ func TestListDevices(t *testing.T) {
 		createDev, err := globalDevDAO.Create(ctx, dev)
 		t.Logf("createDev, err: %+v, %v", createDev, err)
 		require.NoError(t, err)
-		lastDeviceID = createDev.Id
-		lastDeviceStatus = createDev.Status
+		devIDs = append(devIDs, createDev.Id)
+		devStatuses = append(devStatuses, createDev.Status)
+		devTSes = append(devTSes, createDev.CreatedAt.AsTime())
 	}
 
 	t.Run("List devices by valid org ID", func(t *testing.T) {
 		t.Parallel()
 
-		ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
+		ctx, cancel := context.WithTimeout(context.Background(), 4*time.Second)
 		defer cancel()
 
-		listDevs, err := globalDevDAO.List(ctx, createOrg.ID)
+		listDevs, listCount, err := globalDevDAO.List(ctx, createOrg.ID,
+			time.Time{}, "", 0)
 		t.Logf("listDevs, err: %+v, %v", listDevs, err)
 		require.NoError(t, err)
 		require.Len(t, listDevs, 3)
+		require.Equal(t, int32(3), listCount)
 
 		var found bool
 		for _, dev := range listDevs {
-			if dev.Id == lastDeviceID && dev.Status == lastDeviceStatus {
+			if dev.Id == devIDs[len(devIDs)-1] &&
+				dev.Status == devStatuses[len(devIDs)-1] {
 				found = true
 			}
 		}
 		require.True(t, found)
 	})
 
+	t.Run("List devices by valid org ID with pagination", func(t *testing.T) {
+		t.Parallel()
+
+		ctx, cancel := context.WithTimeout(context.Background(), 4*time.Second)
+		defer cancel()
+
+		listDevs, listCount, err := globalDevDAO.List(ctx, createOrg.ID,
+			devTSes[0], devIDs[0], 5)
+		t.Logf("listDevs, err: %+v, %v", listDevs, err)
+		require.NoError(t, err)
+		require.Len(t, listDevs, 2)
+		require.Equal(t, int32(3), listCount)
+
+		var found bool
+		for _, dev := range listDevs {
+			if dev.Id == devIDs[len(devIDs)-1] &&
+				dev.Status == devStatuses[len(devIDs)-1] {
+				found = true
+			}
+		}
+		require.True(t, found)
+	})
+
+	t.Run("List devices by valid org ID with limit", func(t *testing.T) {
+		t.Parallel()
+
+		ctx, cancel := context.WithTimeout(context.Background(), 4*time.Second)
+		defer cancel()
+
+		listDevs, listCount, err := globalDevDAO.List(ctx, createOrg.ID,
+			time.Time{}, "", 1)
+		t.Logf("listDevs, err: %+v, %v", listDevs, err)
+		require.NoError(t, err)
+		require.Len(t, listDevs, 1)
+		require.Equal(t, int32(3), listCount)
+	})
+
 	t.Run("Lists are isolated by org ID", func(t *testing.T) {
 		t.Parallel()
 
-		ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
+		ctx, cancel := context.WithTimeout(context.Background(), 4*time.Second)
 		defer cancel()
 
-		listDevs, err := globalDevDAO.List(ctx, uuid.New().String())
+		listDevs, listCount, err := globalDevDAO.List(ctx, uuid.New().String(),
+			time.Time{}, "", 0)
 		t.Logf("listDevs, err: %+v, %v", listDevs, err)
 		require.NoError(t, err)
 		require.Len(t, listDevs, 0)
+		require.Equal(t, int32(0), listCount)
 	})
 
 	t.Run("List devices by invalid org ID", func(t *testing.T) {
 		t.Parallel()
 
-		ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
+		ctx, cancel := context.WithTimeout(context.Background(), 4*time.Second)
 		defer cancel()
 
-		listDevs, err := globalDevDAO.List(ctx, random.String(10))
+		listDevs, listCount, err := globalDevDAO.List(ctx, random.String(10),
+			time.Time{}, "", 0)
 		t.Logf("listDevs, err: %+v, %v", listDevs, err)
 		require.Nil(t, listDevs)
+		require.Equal(t, int32(0), listCount)
 		require.EqualError(t, err, "invalid format: UUID")
 	})
 }

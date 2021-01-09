@@ -1,6 +1,6 @@
-.PHONY: generate deps message pwt
+.PHONY: generate deps message token
 
-generate: deps message pwt
+generate: deps message token
 
 deps:
 # Force GO111MODULE on in the absence of a go.mod file
@@ -12,6 +12,7 @@ message:
 	message/validator_in.proto \
 	message/validator_out.proto
 
-pwt:
+token:
 	protoc -I=../protobuf --go_out=. --go_opt=paths=source_relative \
-	pwt/claim.proto
+	token/web.proto \
+	token/page.proto

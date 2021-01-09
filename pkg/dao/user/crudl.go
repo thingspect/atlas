@@ -35,8 +35,7 @@ func (d *DAO) Create(ctx context.Context, user *api.User,
 const readUser = `
 SELECT id, org_id, email, password_hash, status, created_at, updated_at
 FROM users
-WHERE id = $1
-AND org_id = $2
+WHERE (id, org_id) = ($1, $2)
 `
 
 // Read retrieves a user and password hash by ID and org ID.
@@ -64,8 +63,7 @@ SELECT u.id, u.org_id, u.email, u.password_hash, u.status, u.created_at,
 u.updated_at
 FROM users u
 INNER JOIN orgs o ON u.org_id = o.id
-WHERE u.email = $1
-AND o.name = $2
+WHERE (u.email, o.name) = ($1, $2)
 `
 
 // ReadByEmail retrieves a user and password hash by email and org name.
@@ -91,8 +89,7 @@ func (d *DAO) ReadByEmail(ctx context.Context, email,
 const updateUser = `
 UPDATE users
 SET email = $1, password_hash = $2, status = $3, updated_at = $4
-WHERE id = $5
-AND org_id = $6
+WHERE (id, org_id) = ($5, $6)
 RETURNING created_at
 `
 
@@ -116,8 +113,7 @@ func (d *DAO) Update(ctx context.Context, user *api.User,
 
 const deleteUser = `
 DELETE FROM users
-WHERE id = $1
-AND org_id = $2
+WHERE (id, org_id) = ($1, $2)
 `
 
 // Delete deletes a user by ID and org ID.

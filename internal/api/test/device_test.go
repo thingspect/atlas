@@ -480,8 +480,8 @@ func TestList(t *testing.T) {
 	ctx, cancel := context.WithTimeout(context.Background(), 6*time.Second)
 	defer cancel()
 
-	var lastDeviceID string
-	var lastDeviceStatus common.Status
+	devIDs := []string{}
+	devStatuses := []common.Status{}
 	for i := 0; i < 3; i++ {
 		dev := &api.Device{UniqId: "api-device-" + random.String(16),
 			Status: []common.Status{common.Status_ACTIVE,
@@ -492,14 +492,14 @@ func TestList(t *testing.T) {
 			Device: dev})
 		t.Logf("createDev, err: %+v, %v", createDev, err)
 		require.NoError(t, err)
-		lastDeviceID = createDev.Device.Id
-		lastDeviceStatus = createDev.Device.Status
+		devIDs = append(devIDs, createDev.Device.Id)
+		devStatuses = append(devStatuses, createDev.Device.Status)
 	}
 
 	t.Run("List devices by valid org ID", func(t *testing.T) {
 		t.Parallel()
 
-		ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
+		ctx, cancel := context.WithTimeout(context.Background(), 4*time.Second)
 		defer cancel()
 
 		devCli := api.NewDeviceServiceClient(globalAuthGRPCConn)
@@ -507,20 +507,46 @@ func TestList(t *testing.T) {
 		t.Logf("listDevs, err: %+v, %v", listDevs, err)
 		require.NoError(t, err)
 		require.GreaterOrEqual(t, len(listDevs.Devices), 3)
+		require.GreaterOrEqual(t, listDevs.TotalSize, int32(3))
 
 		var found bool
 		for _, dev := range listDevs.Devices {
-			if dev.Id == lastDeviceID && dev.Status == lastDeviceStatus {
+			if dev.Id == devIDs[len(devIDs)-1] &&
+				dev.Status == devStatuses[len(devIDs)-1] {
 				found = true
 			}
 		}
 		require.True(t, found)
 	})
 
+	t.Run("List devices by valid org ID with next page", func(t *testing.T) {
+		t.Parallel()
+
+		ctx, cancel := context.WithTimeout(context.Background(), 8*time.Second)
+		defer cancel()
+
+		devCli := api.NewDeviceServiceClient(globalAuthGRPCConn)
+		listDevs, err := devCli.List(ctx, &api.ListDeviceRequest{PageSize: 2})
+		t.Logf("listDevs, err: %+v, %v", listDevs, err)
+		require.NoError(t, err)
+		require.Len(t, listDevs.Devices, 2)
+		require.Empty(t, listDevs.PrevPageToken)
+		require.NotEmpty(t, listDevs.NextPageToken)
+		require.GreaterOrEqual(t, listDevs.TotalSize, int32(3))
+
+		listDevs, err = devCli.List(ctx, &api.ListDeviceRequest{PageSize: 2,
+			PageToken: listDevs.NextPageToken})
+		t.Logf("listDevs, err: %+v, %v", listDevs, err)
+		require.NoError(t, err)
+		require.GreaterOrEqual(t, len(listDevs.Devices), 1)
+		require.NotEmpty(t, listDevs.PrevPageToken)
+		require.GreaterOrEqual(t, listDevs.TotalSize, int32(3))
+	})
+
 	t.Run("Lists are isolated by org ID", func(t *testing.T) {
 		t.Parallel()
 
-		ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
+		ctx, cancel := context.WithTimeout(context.Background(), 4*time.Second)
 		defer cancel()
 
 		secCli := api.NewDeviceServiceClient(secondaryAuthGRPCConn)
@@ -528,18 +554,21 @@ func TestList(t *testing.T) {
 		t.Logf("listDevs, err: %+v, %v", listDevs, err)
 		require.NoError(t, err)
 		require.Len(t, listDevs.Devices, 0)
+		require.Equal(t, int32(0), listDevs.TotalSize)
 	})
 
-	// t.Run("List devices by invalid cursor", func(t *testing.T) {
-	// 	t.Parallel()
+	t.Run("List devices by invalid page token", func(t *testing.T) {
+		t.Parallel()
 
-	// 	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
-	// 	defer cancel()
+		ctx, cancel := context.WithTimeout(context.Background(), 4*time.Second)
+		defer cancel()
 
-	// 	devCli := api.NewDeviceServiceClient(globalAuthGRPCConn)
-	// 	listDevs, err := devCli.List(ctx, &api.ListDeviceRequest{})
-	// 	t.Logf("listDevs, err: %+v, %v", listDevs, err)
-	// 	require.Nil(t, listDevs)
-	// 	require.EqualError(t, err, "invalid cursor")
-	// })
+		devCli := api.NewDeviceServiceClient(globalAuthGRPCConn)
+		listDevs, err := devCli.List(ctx, &api.ListDeviceRequest{
+			PageToken: "..."})
+		t.Logf("listDevs, err: %+v, %v", listDevs, err)
+		require.Nil(t, listDevs)
+		require.EqualError(t, err, "rpc error: code = InvalidArgument desc = "+
+			"invalid page token")
+	})
 }

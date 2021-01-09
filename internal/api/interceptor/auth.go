@@ -39,7 +39,7 @@ func Auth(skipPaths map[string]struct{},
 
 		// Validate token.
 		token := strings.TrimPrefix(auth[0], "Bearer ")
-		sess, err := session.ValidateToken(key, token)
+		sess, err := session.ValidateWebToken(key, token)
 		if err != nil {
 			return nil, status.Error(codes.Unauthenticated, "unauthorized")
 		}

@@ -2,6 +2,7 @@ package device
 
 import (
 	"context"
+	"fmt"
 	"strings"
 	"time"
 
@@ -36,8 +37,7 @@ func (d *DAO) Create(ctx context.Context, dev *api.Device) (*api.Device,
 const readDevice = `
 SELECT id, org_id, uniq_id, status, token, created_at, updated_at
 FROM devices
-WHERE id = $1
-AND org_id = $2
+WHERE (id, org_id) = ($1, $2)
 `
 
 // Read retrieves a device by ID and org ID.
@@ -88,8 +88,7 @@ func (d *DAO) ReadByUniqID(ctx context.Context, uniqID string) (*api.Device,
 const updateDevice = `
 UPDATE devices
 SET uniq_id = $1, status = $2, token = $3, updated_at = $4
-WHERE id = $5
-AND org_id = $6
+WHERE (id, org_id) = ($5, $6)
 RETURNING created_at
 `
 
@@ -114,8 +113,7 @@ func (d *DAO) Update(ctx context.Context, dev *api.Device) (*api.Device,
 
 const deleteDevice = `
 DELETE FROM devices
-WHERE id = $1
-AND org_id = $2
+WHERE (id, org_id) = ($1, $2)
 `
 
 // Delete deletes a device by ID and org ID.
@@ -130,19 +128,60 @@ func (d *DAO) Delete(ctx context.Context, devID, orgID string) error {
 	return dao.DBToSentinel(err)
 }
 
+const countDevices = `
+SELECT count(*)
+FROM devices
+WHERE org_id = $1
+`
+
 const listDevices = `
 SELECT id, org_id, uniq_id, status, token, created_at, updated_at
 FROM devices
 WHERE org_id = $1
 `
 
-// List retrieves all devices by org ID.
-func (d *DAO) List(ctx context.Context, orgID string) ([]*api.Device, error) {
-	var devs []*api.Device
+const listDevicesTSAndID = `
+AND (created_at > $2
+OR (created_at = $2
+AND id > $3
+))
+ORDER BY created_at ASC, id ASC
+`
 
-	rows, err := d.pg.QueryContext(ctx, listDevices, orgID)
+const listDevicesOrder = `
+LIMIT %d
+`
+
+// List retrieves all devices by org ID. If lastID and lastTS are zero values,
+// the first page of results is returned. Limits of 0 or less do not apply a
+// limit. It returns a slice of devices, a total count, and an error value.
+func (d *DAO) List(ctx context.Context, orgID string, lboundTS time.Time,
+	prevID string, limit int32) ([]*api.Device, int32, error) {
+	// Run count query.
+	var count int32
+	if err := d.pg.QueryRowContext(ctx, countDevices, orgID).Scan(
+		&count); err != nil {
+		return nil, 0, dao.DBToSentinel(err)
+	}
+
+	// Build list query.
+	query := listDevices
+	args := []interface{}{orgID}
+
+	if prevID != "" && !lboundTS.IsZero() {
+		query += listDevicesTSAndID
+		args = append(args, lboundTS, prevID)
+	}
+
+	if limit > 0 {
+		query += fmt.Sprintf(listDevicesOrder, limit)
+	}
+
+	// Run list query.
+	var devs []*api.Device
+	rows, err := d.pg.QueryContext(ctx, query, args...)
 	if err != nil {
-		return nil, dao.DBToSentinel(err)
+		return nil, 0, dao.DBToSentinel(err)
 	}
 	defer func() {
 		if err = rows.Close(); err != nil {
@@ -157,7 +196,7 @@ func (d *DAO) List(ctx context.Context, orgID string) ([]*api.Device, error) {
 
 		if err = rows.Scan(&dev.Id, &dev.OrgId, &dev.UniqId, &status,
 			&dev.Token, &createdAt, &updatedAt); err != nil {
-			return nil, dao.DBToSentinel(err)
+			return nil, 0, dao.DBToSentinel(err)
 		}
 
 		dev.Status = common.Status(common.Status_value[status])
@@ -167,10 +206,10 @@ func (d *DAO) List(ctx context.Context, orgID string) ([]*api.Device, error) {
 	}
 
 	if err = rows.Close(); err != nil {
-		return nil, dao.DBToSentinel(err)
+		return nil, 0, dao.DBToSentinel(err)
 	}
 	if err = rows.Err(); err != nil {
-		return nil, dao.DBToSentinel(err)
+		return nil, 0, dao.DBToSentinel(err)
 	}
-	return devs, nil
+	return devs, count, nil
 }

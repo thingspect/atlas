@@ -1,4 +1,4 @@
-.PHONY: generate
+.PHONY: generate clean
 
 # To avoid use of Git submodules, Atlas and API must be placed at the same
 # filesystem depth
@@ -8,3 +8,6 @@ generate:
 	docker-compose up --remove-orphans
 	rm -rf protobuf/common
 	cp -f ../../api/openapi/atlas.swagger.json ../web/
+
+clean:
+	find . -name '*.pb*.go' -type f|xargs rm -v

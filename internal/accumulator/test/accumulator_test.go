@@ -63,7 +63,7 @@ func TestAccumulateMessages(t *testing.T) {
 
 			listPoints, err := globalDPDAO.List(ctx, lTest.inp.OrgId,
 				lTest.inp.Point.UniqId, lTest.inp.Point.Ts.AsTime(),
-				lTest.inp.Point.Ts.AsTime())
+				lTest.inp.Point.Ts.AsTime().Add(time.Millisecond))
 			t.Logf("listPoints, err: %+v, %v", listPoints, err)
 			require.NoError(t, err)
 			require.Len(t, listPoints, 1)
@@ -111,7 +111,7 @@ func TestAccumulateMessagesDuplicate(t *testing.T) {
 
 	listPoints, err := globalDPDAO.List(ctx, duplicateVOut.OrgId,
 		duplicateVOut.Point.UniqId, duplicateVOut.Point.Ts.AsTime(),
-		duplicateVOut.Point.Ts.AsTime())
+		duplicateVOut.Point.Ts.AsTime().Add(time.Millisecond))
 	t.Logf("listPoints, err: %+v, %v", listPoints, err)
 	require.NoError(t, err)
 	require.Len(t, listPoints, 1)

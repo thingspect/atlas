@@ -20,6 +20,7 @@ import (
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/known/fieldmaskpb"
+	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 func TestCreate(t *testing.T) {
@@ -516,7 +517,8 @@ func TestList(t *testing.T) {
 		defer ctrl.Finish()
 
 		devicer := NewMockDevicer(ctrl)
-		devicer.EXPECT().List(gomock.Any(), orgID).Return(devs, nil).Times(1)
+		devicer.EXPECT().List(gomock.Any(), orgID, time.Time{}, "", int32(101)).
+			Return(devs, int32(3), nil).Times(1)
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
 			context.Background(), &session.Session{OrgID: orgID}),
@@ -527,12 +529,66 @@ func TestList(t *testing.T) {
 		listDevs, err := devSvc.List(ctx, &api.ListDeviceRequest{})
 		t.Logf("listDevs, err: %+v, %v", listDevs, err)
 		require.NoError(t, err)
+		require.Equal(t, int32(3), listDevs.TotalSize)
 
 		// Testify does not currently support protobuf equality:
 		// https://github.com/stretchr/testify/issues/758
-		if !proto.Equal(&api.ListDeviceResponse{Devices: devs}, listDevs) {
+		if !proto.Equal(&api.ListDeviceResponse{Devices: devs, TotalSize: 3},
+			listDevs) {
 			t.Fatalf("\nExpect: %+v\nActual: %+v",
-				&api.ListDeviceResponse{Devices: devs}, listDevs)
+				&api.ListDeviceResponse{Devices: devs, TotalSize: 3}, listDevs)
+		}
+	})
+
+	t.Run("List devices by valid org ID with next page", func(t *testing.T) {
+		t.Parallel()
+
+		orgID := uuid.New().String()
+
+		devs := []*api.Device{
+			{Id: uuid.New().String(), OrgId: orgID, UniqId: random.String(16),
+				Status: []common.Status{common.Status_ACTIVE,
+					common.Status_DISABLED}[random.Intn(2)],
+				CreatedAt: timestamppb.Now()},
+			{Id: uuid.New().String(), OrgId: orgID, UniqId: random.String(16),
+				Status: []common.Status{common.Status_ACTIVE,
+					common.Status_DISABLED}[random.Intn(2)],
+				CreatedAt: timestamppb.Now()},
+			{Id: uuid.New().String(), OrgId: orgID, UniqId: random.String(16),
+				Status: []common.Status{common.Status_ACTIVE,
+					common.Status_DISABLED}[random.Intn(2)],
+				CreatedAt: timestamppb.Now()},
+		}
+
+		next, err := session.GeneratePageToken(devs[1].CreatedAt.AsTime(),
+			devs[1].Id)
+		require.NoError(t, err)
+
+		ctrl := gomock.NewController(t)
+		defer ctrl.Finish()
+
+		devicer := NewMockDevicer(ctrl)
+		devicer.EXPECT().List(gomock.Any(), orgID, time.Time{}, "", int32(3)).
+			Return(devs, int32(3), nil).Times(1)
+
+		ctx, cancel := context.WithTimeout(session.NewContext(
+			context.Background(), &session.Session{OrgID: orgID}),
+			2*time.Second)
+		defer cancel()
+
+		devSvc := NewDevice(devicer)
+		listDevs, err := devSvc.List(ctx, &api.ListDeviceRequest{PageSize: 2})
+		t.Logf("listDevs, err: %+v, %v", listDevs, err)
+		require.NoError(t, err)
+		require.Equal(t, int32(3), listDevs.TotalSize)
+
+		// Testify does not currently support protobuf equality:
+		// https://github.com/stretchr/testify/issues/758
+		if !proto.Equal(&api.ListDeviceResponse{Devices: devs[:2],
+			NextPageToken: next, TotalSize: 3}, listDevs) {
+			t.Fatalf("\nExpect: %+v\nActual: %+v",
+				&api.ListDeviceResponse{Devices: devs[:2], NextPageToken: next,
+					TotalSize: 3}, listDevs)
 		}
 	})
 
@@ -543,7 +599,8 @@ func TestList(t *testing.T) {
 		defer ctrl.Finish()
 
 		devicer := NewMockDevicer(ctrl)
-		devicer.EXPECT().List(gomock.Any(), gomock.Any()).Times(0)
+		devicer.EXPECT().List(gomock.Any(), gomock.Any(), gomock.Any(),
+			gomock.Any(), gomock.Any()).Times(0)
 
 		ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
 		defer cancel()
@@ -557,18 +614,42 @@ func TestList(t *testing.T) {
 			err)
 	})
 
-	t.Run("List devices by invalid cursor", func(t *testing.T) {
+	t.Run("List devices by invalid page token", func(t *testing.T) {
 		t.Parallel()
 
 		ctrl := gomock.NewController(t)
 		defer ctrl.Finish()
 
 		devicer := NewMockDevicer(ctrl)
-		devicer.EXPECT().List(gomock.Any(), gomock.Any()).
-			Return(nil, dao.ErrInvalidFormat).Times(1)
+		devicer.EXPECT().List(gomock.Any(), gomock.Any(), gomock.Any(),
+			gomock.Any(), gomock.Any()).Times(0)
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
 			context.Background(), &session.Session{OrgID: uuid.New().String()}),
+			2*time.Second)
+		defer cancel()
+
+		devSvc := NewDevice(devicer)
+		listDevs, err := devSvc.List(ctx, &api.ListDeviceRequest{
+			PageToken: "..."})
+		t.Logf("listDevs, err: %+v, %v", listDevs, err)
+		require.Nil(t, listDevs)
+		require.Equal(t, status.Error(codes.InvalidArgument,
+			"invalid page token"), err)
+	})
+
+	t.Run("List devices by invalid orgID", func(t *testing.T) {
+		t.Parallel()
+
+		ctrl := gomock.NewController(t)
+		defer ctrl.Finish()
+
+		devicer := NewMockDevicer(ctrl)
+		devicer.EXPECT().List(gomock.Any(), "aaa", gomock.Any(), gomock.Any(),
+			gomock.Any()).Return(nil, int32(0), dao.ErrInvalidFormat).Times(1)
+
+		ctx, cancel := context.WithTimeout(session.NewContext(
+			context.Background(), &session.Session{OrgID: "aaa"}),
 			2*time.Second)
 		defer cancel()
 
@@ -578,5 +659,53 @@ func TestList(t *testing.T) {
 		require.Nil(t, listDevs)
 		require.Equal(t, status.Error(codes.InvalidArgument, "invalid format"),
 			err)
+	})
+
+	t.Run("List devices with generation failure", func(t *testing.T) {
+		t.Parallel()
+
+		orgID := uuid.New().String()
+
+		devs := []*api.Device{
+			{Id: uuid.New().String(), OrgId: orgID, UniqId: random.String(16),
+				Status: []common.Status{common.Status_ACTIVE,
+					common.Status_DISABLED}[random.Intn(2)],
+				CreatedAt: timestamppb.Now()},
+			{Id: "...", OrgId: orgID, UniqId: random.String(16),
+				Status: []common.Status{common.Status_ACTIVE,
+					common.Status_DISABLED}[random.Intn(2)],
+				CreatedAt: timestamppb.Now()},
+			{Id: uuid.New().String(), OrgId: orgID, UniqId: random.String(16),
+				Status: []common.Status{common.Status_ACTIVE,
+					common.Status_DISABLED}[random.Intn(2)],
+				CreatedAt: timestamppb.Now()},
+		}
+
+		ctrl := gomock.NewController(t)
+		defer ctrl.Finish()
+
+		devicer := NewMockDevicer(ctrl)
+		devicer.EXPECT().List(gomock.Any(), orgID, time.Time{}, "", int32(3)).
+			Return(devs, int32(3), nil).Times(1)
+
+		ctx, cancel := context.WithTimeout(session.NewContext(
+			context.Background(), &session.Session{OrgID: orgID}),
+			2*time.Second)
+		defer cancel()
+
+		devSvc := NewDevice(devicer)
+		listDevs, err := devSvc.List(ctx, &api.ListDeviceRequest{PageSize: 2})
+		t.Logf("listDevs, err: %+v, %v", listDevs, err)
+		require.NoError(t, err)
+		require.Equal(t, int32(3), listDevs.TotalSize)
+
+		// Testify does not currently support protobuf equality:
+		// https://github.com/stretchr/testify/issues/758
+		if !proto.Equal(&api.ListDeviceResponse{Devices: devs[:2],
+			TotalSize: 3}, listDevs) {
+			t.Fatalf("\nExpect: %+v\nActual: %+v",
+				&api.ListDeviceResponse{Devices: devs[:2], TotalSize: 3},
+				listDevs)
+		}
 	})
 }

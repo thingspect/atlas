@@ -4,11 +4,13 @@ package service
 
 import (
 	"context"
+	"time"
 
 	"github.com/golang/protobuf/ptypes/empty"
 	"github.com/mennanov/fmutils"
 	"github.com/thingspect/api/go/api"
 	"github.com/thingspect/atlas/internal/api/session"
+	"github.com/thingspect/atlas/pkg/alog"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/proto"
@@ -20,7 +22,8 @@ type Devicer interface {
 	Read(ctx context.Context, devID, orgID string) (*api.Device, error)
 	Update(ctx context.Context, dev *api.Device) (*api.Device, error)
 	Delete(ctx context.Context, devID, orgID string) error
-	List(ctx context.Context, orgID string) ([]*api.Device, error)
+	List(ctx context.Context, orgID string, lboundTS time.Time, prevID string,
+		limit int32) ([]*api.Device, int32, error)
 }
 
 // Device service contains functions to query and modify devices.
@@ -139,10 +142,41 @@ func (d *Device) List(ctx context.Context,
 		return nil, status.Error(codes.PermissionDenied, "permission denied")
 	}
 
-	devs, err := d.devDAO.List(ctx, sess.OrgID)
+	if req.PageSize == 0 {
+		req.PageSize = defaultPageSize
+	}
+
+	lboundTS, prevID, err := session.ParsePageToken(req.PageToken)
+	if err != nil {
+		return nil, status.Error(codes.InvalidArgument, "invalid page token")
+	}
+
+	// Retrieve PageSize+1 entries to find last page.
+	devs, count, err := d.devDAO.List(ctx, sess.OrgID, lboundTS, prevID,
+		req.PageSize+1)
 	if err != nil {
 		return nil, errToStatus(err)
 	}
 
-	return &api.ListDeviceResponse{Devices: devs}, nil
+	resp := &api.ListDeviceResponse{
+		Devices:       devs,
+		PrevPageToken: req.PageToken,
+		TotalSize:     count,
+	}
+
+	// Populate next page token.
+	if len(devs) == int(req.PageSize+1) {
+		resp.Devices = devs[:len(devs)-1]
+
+		if resp.NextPageToken, err = session.GeneratePageToken(
+			devs[len(devs)-2].CreatedAt.AsTime(),
+			devs[len(devs)-2].Id); err != nil {
+			// GeneratePageToken should not error based on a DB-derived UUID.
+			// Log the error and include the usable empty token.
+			alog.Errorf("Device.List session.GeneratePageToken dev, err: %+v, "+
+				"%v", devs[len(devs)-2], err)
+		}
+	}
+
+	return resp, nil
 }
