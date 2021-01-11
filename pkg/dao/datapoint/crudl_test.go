@@ -130,7 +130,7 @@ func TestCreate(t *testing.T) {
 	})
 }
 
-func TestListDevices(t *testing.T) {
+func TestList(t *testing.T) {
 	t.Parallel()
 
 	t.Run("List data points by valid org ID", func(t *testing.T) {

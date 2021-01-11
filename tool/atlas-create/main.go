@@ -7,6 +7,7 @@ import (
 	"os"
 	"time"
 
+	"github.com/google/uuid"
 	"github.com/thingspect/api/go/api"
 	"github.com/thingspect/api/go/common"
 	"github.com/thingspect/atlas/pkg/crypto"
@@ -16,6 +17,7 @@ import (
 )
 
 const usage = `Usage:
+%[1]s uuid
 %[1]s org <org name> <admin email> <admin password>
 %[1]s user <org ID> <user email> <user password>
 `
@@ -30,7 +32,8 @@ func main() {
 		"postgres://postgres:postgres@127.0.0.1/atlas_test", "PostgreSQL URI")
 	flag.Parse()
 
-	if flag.NArg() != 4 || (flag.Arg(0) != "org" && flag.Arg(0) != "user") {
+	if _, ok := map[string]struct{}{"uuid": {}, "org": {},
+		"user": {}}[flag.Arg(0)]; !ok {
 		flag.Usage()
 		os.Exit(2)
 	}
@@ -40,6 +43,12 @@ func main() {
 			fmt.Fprintln(os.Stderr, err)
 			os.Exit(1)
 		}
+	}
+
+	// Generate UUID and return.
+	if flag.Arg(0) == "uuid" {
+		fmt.Fprintln(os.Stdout, uuid.New().String())
+		return
 	}
 
 	// Set up database connection.
@@ -66,13 +75,15 @@ func main() {
 		hash, err := crypto.HashPass(flag.Arg(3))
 		checkErr(err)
 
-		ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
+		ctx, cancel := context.WithTimeout(context.Background(), 6*time.Second)
 		defer cancel()
 
 		user := &api.User{OrgId: orgID, Email: flag.Arg(2),
 			Status: common.Status_ACTIVE}
-		createUser, err := userDAO.Create(ctx, user, hash)
+		createUser, err := userDAO.Create(ctx, user)
 		checkErr(err)
+
+		checkErr(userDAO.UpdatePassword(ctx, user.Id, orgID, hash))
 		fmt.Fprintf(os.Stdout, "User: %+v\n", createUser)
 	}
 }

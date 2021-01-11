@@ -40,5 +40,6 @@ func TestCompareHashPass(t *testing.T) {
 	require.NoError(t, CompareHashPass(hash, pass))
 	require.Equal(t, bcrypt.ErrMismatchedHashAndPassword,
 		CompareHashPass(hash, random.String(10)))
+	require.Equal(t, bcrypt.ErrHashTooShort, CompareHashPass([]byte{}, pass))
 	require.Equal(t, bcrypt.ErrHashTooShort, CompareHashPass(nil, pass))
 }

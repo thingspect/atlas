@@ -14,6 +14,7 @@ import (
 	"github.com/thingspect/atlas/pkg/dao"
 	"github.com/thingspect/atlas/pkg/dao/org"
 	"github.com/thingspect/atlas/pkg/test/random"
+	"google.golang.org/protobuf/proto"
 )
 
 func TestCreate(t *testing.T) {
@@ -36,7 +37,7 @@ func TestCreate(t *testing.T) {
 		user := &api.User{OrgId: createOrg.ID, Email: "dao-user-" +
 			random.Email(), Status: []common.Status{common.Status_ACTIVE,
 			common.Status_DISABLED}[random.Intn(2)]}
-		createUser, err := globalUserDAO.Create(ctx, user, globalHash)
+		createUser, err := globalUserDAO.Create(ctx, user)
 		t.Logf("createUser, err: %+v, %v", createUser, err)
 		require.NoError(t, err)
 		require.Equal(t, user.OrgId, createUser.OrgId)
@@ -55,13 +56,12 @@ func TestCreate(t *testing.T) {
 		defer cancel()
 
 		user := &api.User{OrgId: createOrg.ID, Email: "dao-user-" +
-			random.Email(), Status: []common.Status{common.Status_ACTIVE,
+			random.String(80), Status: []common.Status{common.Status_ACTIVE,
 			common.Status_DISABLED}[random.Intn(2)]}
-		createUser, err := globalUserDAO.Create(ctx, user,
-			[]byte(random.String(61)))
+		createUser, err := globalUserDAO.Create(ctx, user)
 		t.Logf("createUser, err: %+v, %v", createUser, err)
 		require.Nil(t, createUser)
-		require.EqualError(t, err, "invalid format: users_password_hash_check")
+		require.EqualError(t, err, "invalid format: value too long")
 	})
 }
 
@@ -79,7 +79,7 @@ func TestRead(t *testing.T) {
 	user := &api.User{OrgId: createOrg.ID, Email: "dao-user-" + random.Email(),
 		Status: []common.Status{common.Status_ACTIVE,
 			common.Status_DISABLED}[random.Intn(2)]}
-	createUser, err := globalUserDAO.Create(ctx, user, globalHash)
+	createUser, err := globalUserDAO.Create(ctx, user)
 	t.Logf("createUser, err: %+v, %v", createUser, err)
 	require.NoError(t, err)
 
@@ -89,11 +89,10 @@ func TestRead(t *testing.T) {
 		ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
 		defer cancel()
 
-		readUser, readHash, err := globalUserDAO.Read(ctx, createUser.Id,
+		readUser, err := globalUserDAO.Read(ctx, createUser.Id,
 			createUser.OrgId)
-		t.Logf("readUser, readHash, err: %+v, %s, %v", readUser, readHash, err)
+		t.Logf("readUser, err: %+v, %v", readUser, err)
 		require.NoError(t, err)
-		require.Equal(t, globalHash, readHash)
 		require.Equal(t, createUser, readUser)
 	})
 
@@ -103,11 +102,10 @@ func TestRead(t *testing.T) {
 		ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
 		defer cancel()
 
-		readUser, readHash, err := globalUserDAO.Read(ctx, uuid.New().String(),
+		readUser, err := globalUserDAO.Read(ctx, uuid.New().String(),
 			uuid.New().String())
-		t.Logf("readUser, readHash, err: %+v, %s, %v", readUser, readHash, err)
+		t.Logf("readUser, err: %+v, %v", readUser, err)
 		require.Nil(t, readUser)
-		require.Nil(t, readHash)
 		require.Equal(t, dao.ErrNotFound, err)
 	})
 
@@ -117,11 +115,10 @@ func TestRead(t *testing.T) {
 		ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
 		defer cancel()
 
-		readUser, readHash, err := globalUserDAO.Read(ctx, createUser.Id,
+		readUser, err := globalUserDAO.Read(ctx, createUser.Id,
 			uuid.New().String())
-		t.Logf("readUser, readHash, err: %+v, %s, %v", readUser, readHash, err)
+		t.Logf("readUser, err: %+v, %v", readUser, err)
 		require.Nil(t, readUser)
-		require.Nil(t, readHash)
 		require.Equal(t, dao.ErrNotFound, err)
 	})
 
@@ -131,11 +128,10 @@ func TestRead(t *testing.T) {
 		ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
 		defer cancel()
 
-		readUser, readHash, err := globalUserDAO.Read(ctx, random.String(10),
+		readUser, err := globalUserDAO.Read(ctx, random.String(10),
 			createUser.OrgId)
-		t.Logf("readUser, readHash, err: %+v, %s, %v", readUser, readHash, err)
+		t.Logf("readUser, err: %+v, %v", readUser, err)
 		require.Nil(t, readUser)
-		require.Nil(t, readHash)
 		require.EqualError(t, err, "invalid format: UUID")
 	})
 }
@@ -143,7 +139,7 @@ func TestRead(t *testing.T) {
 func TestReadByEmail(t *testing.T) {
 	t.Parallel()
 
-	ctx, cancel := context.WithTimeout(context.Background(), 4*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), 6*time.Second)
 	defer cancel()
 
 	org := org.Org{Name: "dao-user-" + random.String(10)}
@@ -154,8 +150,13 @@ func TestReadByEmail(t *testing.T) {
 	user := &api.User{OrgId: createOrg.ID, Email: "dao-user-" + random.Email(),
 		Status: []common.Status{common.Status_ACTIVE,
 			common.Status_DISABLED}[random.Intn(2)]}
-	createUser, err := globalUserDAO.Create(ctx, user, globalHash)
+	createUser, err := globalUserDAO.Create(ctx, user)
 	t.Logf("createUser, err: %+v, %v", createUser, err)
+	require.NoError(t, err)
+
+	err = globalUserDAO.UpdatePassword(ctx, createUser.Id, createOrg.ID,
+		globalHash)
+	t.Logf("err: %v", err)
 	require.NoError(t, err)
 
 	t.Run("Read user by valid email", func(t *testing.T) {
@@ -169,7 +170,19 @@ func TestReadByEmail(t *testing.T) {
 		t.Logf("readUser, readHash, err: %+v, %s, %v", readUser, readHash, err)
 		require.NoError(t, err)
 		require.Equal(t, globalHash, readHash)
-		require.Equal(t, createUser, readUser)
+
+		// Normalize timestamps.
+		require.True(t, readUser.UpdatedAt.AsTime().After(
+			createUser.CreatedAt.AsTime()))
+		require.WithinDuration(t, readUser.UpdatedAt.AsTime(),
+			createUser.UpdatedAt.AsTime(), 2*time.Second)
+		createUser.UpdatedAt = readUser.UpdatedAt
+
+		// Testify does not currently support protobuf equality:
+		// https://github.com/stretchr/testify/issues/758
+		if !proto.Equal(createUser, readUser) {
+			t.Fatalf("\nExpect: %+v\nActual: %+v", createUser, readUser)
+		}
 	})
 
 	t.Run("Read user by unknown email", func(t *testing.T) {
@@ -201,7 +214,7 @@ func TestReadByEmail(t *testing.T) {
 	})
 }
 
-func TestUpdateUser(t *testing.T) {
+func TestUpdate(t *testing.T) {
 	t.Parallel()
 
 	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
@@ -221,7 +234,7 @@ func TestUpdateUser(t *testing.T) {
 		user := &api.User{OrgId: createOrg.ID, Email: "dao-user-" +
 			random.Email(), Status: []common.Status{common.Status_ACTIVE,
 			common.Status_DISABLED}[random.Intn(2)]}
-		createUser, err := globalUserDAO.Create(ctx, user, globalHash)
+		createUser, err := globalUserDAO.Create(ctx, user)
 		t.Logf("createUser, err: %+v, %v", createUser, err)
 		require.NoError(t, err)
 
@@ -230,7 +243,7 @@ func TestUpdateUser(t *testing.T) {
 		createUser.Status = []common.Status{common.Status_ACTIVE,
 			common.Status_DISABLED}[random.Intn(2)]
 
-		updateUser, err := globalUserDAO.Update(ctx, createUser, globalHash)
+		updateUser, err := globalUserDAO.Update(ctx, createUser)
 		t.Logf("updateUser, err: %+v, %v", updateUser, err)
 		require.NoError(t, err)
 		require.Equal(t, createUser.Email, updateUser.Email)
@@ -251,7 +264,7 @@ func TestUpdateUser(t *testing.T) {
 		unknownUser := &api.User{Id: uuid.New().String(), OrgId: createOrg.ID,
 			Email: "dao-user-" + random.Email(), Status: []common.Status{
 				common.Status_ACTIVE, common.Status_DISABLED}[random.Intn(2)]}
-		updateUser, err := globalUserDAO.Update(ctx, unknownUser, globalHash)
+		updateUser, err := globalUserDAO.Update(ctx, unknownUser)
 		t.Logf("updateUser, err: %+v, %v", updateUser, err)
 		require.Nil(t, updateUser)
 		require.Equal(t, dao.ErrNotFound, err)
@@ -266,7 +279,7 @@ func TestUpdateUser(t *testing.T) {
 		user := &api.User{OrgId: createOrg.ID, Email: "dao-user-" +
 			random.Email(), Status: []common.Status{common.Status_ACTIVE,
 			common.Status_DISABLED}[random.Intn(2)]}
-		createUser, err := globalUserDAO.Create(ctx, user, globalHash)
+		createUser, err := globalUserDAO.Create(ctx, user)
 		t.Logf("createUser, err: %+v, %v", createUser, err)
 		require.NoError(t, err)
 
@@ -274,7 +287,7 @@ func TestUpdateUser(t *testing.T) {
 		createUser.OrgId = uuid.New().String()
 		createUser.Email = "dao-user-" + random.Email()
 
-		updateUser, err := globalUserDAO.Update(ctx, createUser, globalHash)
+		updateUser, err := globalUserDAO.Update(ctx, createUser)
 		t.Logf("updateUser, err: %+v, %v", updateUser, err)
 		require.Nil(t, updateUser)
 		require.Equal(t, dao.ErrNotFound, err)
@@ -289,24 +302,85 @@ func TestUpdateUser(t *testing.T) {
 		user := &api.User{OrgId: createOrg.ID, Email: "dao-user-" +
 			random.Email(), Status: []common.Status{common.Status_ACTIVE,
 			common.Status_DISABLED}[random.Intn(2)]}
-		createUser, err := globalUserDAO.Create(ctx, user, globalHash)
+		createUser, err := globalUserDAO.Create(ctx, user)
 		t.Logf("createUser, err: %+v, %v", createUser, err)
 		require.NoError(t, err)
 
 		// Update user fields.
-		createUser.Email = "dao-user-" + random.Email()
+		createUser.Email = "dao-user-" + random.String(80)
 		createUser.Status = []common.Status{common.Status_ACTIVE,
 			common.Status_DISABLED}[random.Intn(2)]
 
-		updateUser, err := globalUserDAO.Update(ctx, createUser,
-			[]byte(random.String(61)))
+		updateUser, err := globalUserDAO.Update(ctx, createUser)
 		t.Logf("updateUser, err: %+v, %v", updateUser, err)
 		require.Nil(t, updateUser)
-		require.EqualError(t, err, "invalid format: users_password_hash_check")
+		require.EqualError(t, err, "invalid format: value too long")
 	})
 }
 
-func TestDeleteUser(t *testing.T) {
+func TestUpdatePassword(t *testing.T) {
+	t.Parallel()
+
+	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
+	defer cancel()
+
+	org := org.Org{Name: "dao-user-" + random.String(10)}
+	createOrg, err := globalOrgDAO.Create(ctx, org)
+	t.Logf("createOrg, err: %+v, %v", createOrg, err)
+	require.NoError(t, err)
+
+	t.Run("Update user password by valid ID", func(t *testing.T) {
+		t.Parallel()
+
+		ctx, cancel := context.WithTimeout(context.Background(), 4*time.Second)
+		defer cancel()
+
+		user := &api.User{OrgId: createOrg.ID, Email: "dao-user-" +
+			random.Email(), Status: []common.Status{common.Status_ACTIVE,
+			common.Status_DISABLED}[random.Intn(2)]}
+		createUser, err := globalUserDAO.Create(ctx, user)
+		t.Logf("createUser, err: %+v, %v", createUser, err)
+		require.NoError(t, err)
+
+		err = globalUserDAO.UpdatePassword(ctx, createUser.Id, createOrg.ID,
+			globalHash)
+		t.Logf("err: %v", err)
+		require.NoError(t, err)
+	})
+
+	t.Run("Update user password by unknown ID", func(t *testing.T) {
+		t.Parallel()
+
+		ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
+		defer cancel()
+
+		err := globalUserDAO.UpdatePassword(ctx, uuid.New().String(),
+			createOrg.ID, globalHash)
+		t.Logf("err: %v", err)
+		require.Equal(t, dao.ErrNotFound, err)
+	})
+
+	t.Run("Password updates are isolated by org ID", func(t *testing.T) {
+		t.Parallel()
+
+		ctx, cancel := context.WithTimeout(context.Background(), 4*time.Second)
+		defer cancel()
+
+		user := &api.User{OrgId: createOrg.ID, Email: "dao-user-" +
+			random.Email(), Status: []common.Status{common.Status_ACTIVE,
+			common.Status_DISABLED}[random.Intn(2)]}
+		createUser, err := globalUserDAO.Create(ctx, user)
+		t.Logf("createUser, err: %+v, %v", createUser, err)
+		require.NoError(t, err)
+
+		err = globalUserDAO.UpdatePassword(ctx, createUser.Id,
+			uuid.New().String(), globalHash)
+		t.Logf("err: %v", err)
+		require.Equal(t, dao.ErrNotFound, err)
+	})
+}
+
+func TestDelete(t *testing.T) {
 	t.Parallel()
 
 	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
@@ -326,7 +400,7 @@ func TestDeleteUser(t *testing.T) {
 		user := &api.User{OrgId: createOrg.ID, Email: "dao-user-" +
 			random.Email(), Status: []common.Status{common.Status_ACTIVE,
 			common.Status_DISABLED}[random.Intn(2)]}
-		createUser, err := globalUserDAO.Create(ctx, user, globalHash)
+		createUser, err := globalUserDAO.Create(ctx, user)
 		t.Logf("createUser, err: %+v, %v", createUser, err)
 		require.NoError(t, err)
 
@@ -341,12 +415,10 @@ func TestDeleteUser(t *testing.T) {
 				2*time.Second)
 			defer cancel()
 
-			readUser, readHash, err := globalUserDAO.Read(ctx, createUser.Id,
+			readUser, err := globalUserDAO.Read(ctx, createUser.Id,
 				createOrg.ID)
-			t.Logf("readUser, readHash, err: %+v, %s, %v", readUser, readHash,
-				err)
+			t.Logf("readUser, err: %+v, %v", readUser, err)
 			require.Nil(t, readUser)
-			require.Nil(t, readHash)
 			require.Equal(t, dao.ErrNotFound, err)
 		})
 	})
@@ -371,7 +443,7 @@ func TestDeleteUser(t *testing.T) {
 		user := &api.User{OrgId: createOrg.ID, Email: "dao-user-" +
 			random.Email(), Status: []common.Status{common.Status_ACTIVE,
 			common.Status_DISABLED}[random.Intn(2)]}
-		createUser, err := globalUserDAO.Create(ctx, user, globalHash)
+		createUser, err := globalUserDAO.Create(ctx, user)
 		t.Logf("createUser, err: %+v, %v", createUser, err)
 		require.NoError(t, err)
 
@@ -381,7 +453,7 @@ func TestDeleteUser(t *testing.T) {
 	})
 }
 
-func TestListUsers(t *testing.T) {
+func TestList(t *testing.T) {
 	t.Parallel()
 
 	ctx, cancel := context.WithTimeout(context.Background(), 8*time.Second)
@@ -392,60 +464,106 @@ func TestListUsers(t *testing.T) {
 	t.Logf("createOrg, err: %+v, %v", createOrg, err)
 	require.NoError(t, err)
 
-	var lastUserID string
-	var lastUserStatus common.Status
+	userIDs := []string{}
+	userStatuses := []common.Status{}
+	userTSes := []time.Time{}
 	for i := 0; i < 3; i++ {
 		user := &api.User{OrgId: createOrg.ID, Email: "dao-user-" +
 			random.Email(), Status: []common.Status{common.Status_ACTIVE,
 			common.Status_DISABLED}[random.Intn(2)]}
-		createUser, err := globalUserDAO.Create(ctx, user, globalHash)
+		createUser, err := globalUserDAO.Create(ctx, user)
 		t.Logf("createUser, err: %+v, %v", createUser, err)
 		require.NoError(t, err)
-		lastUserID = createUser.Id
-		lastUserStatus = createUser.Status
+		userIDs = append(userIDs, createUser.Id)
+		userStatuses = append(userStatuses, createUser.Status)
+		userTSes = append(userTSes, createUser.CreatedAt.AsTime())
 	}
 
 	t.Run("List users by valid org ID", func(t *testing.T) {
 		t.Parallel()
 
-		ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
+		ctx, cancel := context.WithTimeout(context.Background(), 4*time.Second)
 		defer cancel()
 
-		listUsers, err := globalUserDAO.List(ctx, createOrg.ID)
+		listUsers, listCount, err := globalUserDAO.List(ctx, createOrg.ID,
+			time.Time{}, "", 0)
 		t.Logf("listUsers, err: %+v, %v", listUsers, err)
 		require.NoError(t, err)
 		require.Len(t, listUsers, 3)
+		require.Equal(t, int32(3), listCount)
 
 		var found bool
 		for _, user := range listUsers {
-			if user.Id == lastUserID && user.Status == lastUserStatus {
+			if user.Id == userIDs[len(userIDs)-1] &&
+				user.Status == userStatuses[len(userIDs)-1] {
 				found = true
 			}
 		}
 		require.True(t, found)
 	})
 
+	t.Run("List users by valid org ID with pagination", func(t *testing.T) {
+		t.Parallel()
+
+		ctx, cancel := context.WithTimeout(context.Background(), 4*time.Second)
+		defer cancel()
+
+		listUsers, listCount, err := globalUserDAO.List(ctx, createOrg.ID,
+			userTSes[0], userIDs[0], 5)
+		t.Logf("listUsers, err: %+v, %v", listUsers, err)
+		require.NoError(t, err)
+		require.Len(t, listUsers, 2)
+		require.Equal(t, int32(3), listCount)
+
+		var found bool
+		for _, user := range listUsers {
+			if user.Id == userIDs[len(userIDs)-1] &&
+				user.Status == userStatuses[len(userIDs)-1] {
+				found = true
+			}
+		}
+		require.True(t, found)
+	})
+
+	t.Run("List users by valid org ID with limit", func(t *testing.T) {
+		t.Parallel()
+
+		ctx, cancel := context.WithTimeout(context.Background(), 4*time.Second)
+		defer cancel()
+
+		listUsers, listCount, err := globalUserDAO.List(ctx, createOrg.ID,
+			time.Time{}, "", 1)
+		t.Logf("listUsers, err: %+v, %v", listUsers, err)
+		require.NoError(t, err)
+		require.Len(t, listUsers, 1)
+		require.Equal(t, int32(3), listCount)
+	})
+
 	t.Run("Lists are isolated by org ID", func(t *testing.T) {
 		t.Parallel()
 
-		ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
+		ctx, cancel := context.WithTimeout(context.Background(), 4*time.Second)
 		defer cancel()
 
-		listUsers, err := globalUserDAO.List(ctx, uuid.New().String())
+		listUsers, listCount, err := globalUserDAO.List(ctx,
+			uuid.New().String(), time.Time{}, "", 0)
 		t.Logf("listUsers, err: %+v, %v", listUsers, err)
 		require.NoError(t, err)
 		require.Len(t, listUsers, 0)
+		require.Equal(t, int32(0), listCount)
 	})
 
 	t.Run("List users by invalid org ID", func(t *testing.T) {
 		t.Parallel()
 
-		ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
+		ctx, cancel := context.WithTimeout(context.Background(), 4*time.Second)
 		defer cancel()
 
-		listUsers, err := globalUserDAO.List(ctx, random.String(10))
+		listUsers, listCount, err := globalUserDAO.List(ctx, random.String(10),
+			time.Time{}, "", 0)
 		t.Logf("listUsers, err: %+v, %v", listUsers, err)
 		require.Nil(t, listUsers)
+		require.Equal(t, int32(0), listCount)
 		require.EqualError(t, err, "invalid format: UUID")
 	})
 }

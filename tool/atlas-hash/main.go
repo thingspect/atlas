@@ -12,7 +12,7 @@ import (
 
 const usage = `Usage:
 %[1]s pass <password>
-%[1]s pwt <key, base64> <token>
+%[1]s pwt <base64 key> <token>
 `
 
 func main() {

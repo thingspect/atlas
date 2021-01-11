@@ -29,7 +29,7 @@ func (c *credential) RequireTransportSecurity() bool {
 }
 
 func authGRPCConn(grpcAddr string) (string, *grpc.ClientConn, error) {
-	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), 14*time.Second)
 	defer cancel()
 
 	org := org.Org{Name: "api-helper-" + random.String(10)}
@@ -40,8 +40,13 @@ func authGRPCConn(grpcAddr string) (string, *grpc.ClientConn, error) {
 
 	user := &api.User{OrgId: createOrg.ID, Email: "api-helper-" +
 		random.Email(), Status: common.Status_ACTIVE}
-	createUser, err := globalUserDAO.Create(ctx, user, globalHash)
+	createUser, err := globalUserDAO.Create(ctx, user)
 	if err != nil {
+		return "", nil, err
+	}
+
+	if err = globalUserDAO.UpdatePassword(ctx, user.Id, createOrg.ID,
+		globalHash); err != nil {
 		return "", nil, err
 	}
 

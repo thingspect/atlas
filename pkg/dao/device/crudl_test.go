@@ -199,7 +199,7 @@ func TestReadByUniqID(t *testing.T) {
 	})
 }
 
-func TestUpdateDevice(t *testing.T) {
+func TestUpdate(t *testing.T) {
 	t.Parallel()
 
 	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
@@ -300,7 +300,7 @@ func TestUpdateDevice(t *testing.T) {
 	})
 }
 
-func TestDeleteDevice(t *testing.T) {
+func TestDelete(t *testing.T) {
 	t.Parallel()
 
 	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
@@ -373,7 +373,7 @@ func TestDeleteDevice(t *testing.T) {
 	})
 }
 
-func TestListDevices(t *testing.T) {
+func TestList(t *testing.T) {
 	t.Parallel()
 
 	ctx, cancel := context.WithTimeout(context.Background(), 8*time.Second)
