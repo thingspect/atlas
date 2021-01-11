@@ -113,7 +113,7 @@ func TestRead(t *testing.T) {
 	})
 }
 
-func TestUpdateOrg(t *testing.T) {
+func TestUpdate(t *testing.T) {
 	t.Parallel()
 
 	t.Run("Update org by valid org", func(t *testing.T) {
@@ -174,7 +174,7 @@ func TestUpdateOrg(t *testing.T) {
 	})
 }
 
-func TestDeleteOrg(t *testing.T) {
+func TestDelete(t *testing.T) {
 	t.Parallel()
 
 	t.Run("Delete org by valid ID", func(t *testing.T) {
@@ -218,7 +218,7 @@ func TestDeleteOrg(t *testing.T) {
 	})
 }
 
-func TestListOrgs(t *testing.T) {
+func TestList(t *testing.T) {
 	t.Parallel()
 
 	ctx, cancel := context.WithTimeout(context.Background(), 8*time.Second)

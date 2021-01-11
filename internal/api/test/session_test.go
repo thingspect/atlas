@@ -18,7 +18,7 @@ import (
 func TestLogin(t *testing.T) {
 	t.Parallel()
 
-	ctx, cancel := context.WithTimeout(context.Background(), 4*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), 8*time.Second)
 	defer cancel()
 
 	org := org.Org{Name: "api-session-" + random.String(10)}
@@ -28,13 +28,18 @@ func TestLogin(t *testing.T) {
 
 	user := &api.User{OrgId: createOrg.ID, Email: "api-session-" +
 		random.Email(), Status: common.Status_ACTIVE}
-	createUser, err := globalUserDAO.Create(ctx, user, globalHash)
+	createUser, err := globalUserDAO.Create(ctx, user)
 	t.Logf("createUser, err: %+v, %v", createUser, err)
+	require.NoError(t, err)
+
+	err = globalUserDAO.UpdatePassword(ctx, createUser.Id, createOrg.ID,
+		globalHash)
+	t.Logf("err: %v", err)
 	require.NoError(t, err)
 
 	disUser := &api.User{OrgId: createOrg.ID, Email: "api-session-" +
 		random.Email(), Status: common.Status_DISABLED}
-	createDisUser, err := globalUserDAO.Create(ctx, disUser, globalHash)
+	createDisUser, err := globalUserDAO.Create(ctx, disUser)
 	t.Logf("createDisUser, err: %+v, %v", createDisUser, err)
 	require.NoError(t, err)
 

@@ -148,13 +148,13 @@ AND id > $3
 ORDER BY created_at ASC, id ASC
 `
 
-const listDevicesOrder = `
+const listDevicesLimit = `
 LIMIT %d
 `
 
-// List retrieves all devices by org ID. If lastID and lastTS are zero values,
+// List retrieves all devices by org ID. If lboundTS and prevID are zero values,
 // the first page of results is returned. Limits of 0 or less do not apply a
-// limit. It returns a slice of devices, a total count, and an error value.
+// limit. List returns a slice of devices, a total count, and an error value.
 func (d *DAO) List(ctx context.Context, orgID string, lboundTS time.Time,
 	prevID string, limit int32) ([]*api.Device, int32, error) {
 	// Run count query.
@@ -174,7 +174,7 @@ func (d *DAO) List(ctx context.Context, orgID string, lboundTS time.Time,
 	}
 
 	if limit > 0 {
-		query += fmt.Sprintf(listDevicesOrder, limit)
+		query += fmt.Sprintf(listDevicesLimit, limit)
 	}
 
 	// Run list query.
