@@ -20,10 +20,8 @@ require (
 	github.com/rs/zerolog v1.20.0
 	github.com/shopspring/decimal v1.2.0 // indirect
 	github.com/stretchr/testify v1.6.1
-	github.com/thingspect/api/go v0.0.0-20210108220941-f36b33f85974
+	github.com/thingspect/api/go v0.0.0-20210112183005-78274e442c08
 	golang.org/x/crypto v0.0.0-20201221181555-eec23a3978ad
-	golang.org/x/sys v0.0.0-20210110051926-789bb1bd4061 // indirect
-	google.golang.org/genproto v0.0.0-20210111173611-c7d5778d165c // indirect
 	google.golang.org/grpc v1.34.1
 	google.golang.org/protobuf v1.25.0
 	gopkg.in/yaml.v3 v3.0.0-20210107192922-496545a6307b // indirect

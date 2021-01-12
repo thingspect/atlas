@@ -173,8 +173,9 @@ func (d *Device) List(ctx context.Context,
 			devs[len(devs)-2].Id); err != nil {
 			// GeneratePageToken should not error based on a DB-derived UUID.
 			// Log the error and include the usable empty token.
-			alog.Errorf("Device.List session.GeneratePageToken dev, err: %+v, "+
-				"%v", devs[len(devs)-2], err)
+			alog.WithStr("userID", sess.UserID).WithStr("orgID", sess.OrgID).
+				Errorf("Device.List session.GeneratePageToken dev, err: %+v, "+
+					"%v", devs[len(devs)-2], err)
 		}
 	}
 

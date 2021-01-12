@@ -3,12 +3,39 @@
 package crypto
 
 import (
+	"fmt"
 	"testing"
 
 	"github.com/stretchr/testify/require"
 	"github.com/thingspect/atlas/pkg/test/random"
 	"golang.org/x/crypto/bcrypt"
 )
+
+func TestCheckPass(t *testing.T) {
+	t.Parallel()
+
+	tests := []struct {
+		inp string
+		err error
+	}{
+		{random.String(20), nil},
+		{random.String(5), ErrWeakPass},
+		{"Thingsp3ct", ErrWeakPass},
+		{"1234567890", ErrWeakPass},
+	}
+
+	for _, test := range tests {
+		lTest := test
+
+		t.Run(fmt.Sprintf("Can check %+v", lTest), func(t *testing.T) {
+			t.Parallel()
+
+			err := CheckPass(lTest.inp)
+			t.Logf("err: %v", err)
+			require.Equal(t, lTest.err, err)
+		})
+	}
+}
 
 func TestHashPass(t *testing.T) {
 	t.Parallel()

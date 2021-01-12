@@ -15,6 +15,9 @@
     },
     {
       "name": "SessionService"
+    },
+    {
+      "name": "UserService"
     }
   ],
   "consumes": [
@@ -294,6 +297,283 @@
         ],
         "security": []
       }
+    },
+    "/v1/users": {
+      "get": {
+        "summary": "List all users.",
+        "operationId": "UserService_List",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/apiListUserResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "pageSize",
+            "description": "Number of users to retrieve in a single page. Defaults to 100 if not specified.",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
+          },
+          {
+            "name": "pageToken",
+            "description": "Token of the page to retrieve. If not specified, the first page of results will be returned. To request the next page of results, use next_page_token from the previous response.",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "UserService"
+        ]
+      },
+      "post": {
+        "summary": "Create a user.",
+        "operationId": "UserService_Create",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/apiCreateUserResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "description": "User message to create.",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/apiUser",
+              "required": [
+                "user"
+              ]
+            }
+          }
+        ],
+        "tags": [
+          "UserService"
+        ]
+      }
+    },
+    "/v1/users/{id}": {
+      "get": {
+        "summary": "Read a user by ID.",
+        "operationId": "UserService_Read",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/apiReadUserResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "description": "User ID (UUID) to read.",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "UserService"
+        ]
+      },
+      "delete": {
+        "summary": "Delete a user by ID.",
+        "operationId": "UserService_Delete",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "properties": {}
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "description": "User ID (UUID) to delete.",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "UserService"
+        ]
+      }
+    },
+    "/v1/users/{id}/password": {
+      "put": {
+        "summary": "Update a user's password.",
+        "operationId": "UserService_UpdatePassword",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "properties": {}
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "description": "User ID (UUID) to update password.",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/apiUpdateUserPasswordRequest"
+            }
+          }
+        ],
+        "tags": [
+          "UserService"
+        ]
+      }
+    },
+    "/v1/users/{user.id}": {
+      "put": {
+        "summary": "Update a user.",
+        "operationId": "UserService_Update",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/apiUpdateUserResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "user.id",
+            "description": "User ID (UUID).",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "description": "User message to update.",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/apiUser",
+              "required": [
+                "user"
+              ]
+            }
+          },
+          {
+            "name": "updateMask",
+            "description": "Fields to update. Automatically populated by a PATCH request. If not present, a full resource update is performed.",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "UserService"
+        ]
+      },
+      "patch": {
+        "summary": "Update a user.",
+        "operationId": "UserService_Update2",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/apiUpdateUserResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "user.id",
+            "description": "User ID (UUID).",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "description": "User message to update.",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/apiUser",
+              "required": [
+                "user"
+              ]
+            }
+          },
+          {
+            "name": "updateMask",
+            "description": "Fields to update. Automatically populated by a PATCH request. If not present, a full resource update is performed.",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "UserService"
+        ]
+      }
     }
   },
   "definitions": {
@@ -306,6 +586,16 @@
         }
       },
       "description": "CreateDeviceResponse is sent in response to a device creation."
+    },
+    "apiCreateUserResponse": {
+      "type": "object",
+      "properties": {
+        "user": {
+          "$ref": "#/definitions/apiUser",
+          "description": "Created user message."
+        }
+      },
+      "description": "CreateUserResponse is sent in response to a user creation."
     },
     "apiDevice": {
       "type": "object",
@@ -382,6 +672,31 @@
         }
       }
     },
+    "apiListUserResponse": {
+      "type": "object",
+      "properties": {
+        "users": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/apiUser"
+          },
+          "description": "User array."
+        },
+        "nextPageToken": {
+          "type": "string",
+          "description": "Pagination token used to retrieve the next page of results. Not returned for the last page."
+        },
+        "prevPageToken": {
+          "type": "string",
+          "description": "Pagination token used to retrieve the previous page of results. Not returned for the first page."
+        },
+        "totalSize": {
+          "type": "integer",
+          "format": "int32",
+          "description": "Total number of users available."
+        }
+      }
+    },
     "apiLoginRequest": {
       "type": "object",
       "properties": {
@@ -439,6 +754,16 @@
       },
       "description": "ReadDeviceResponse is sent in response to a device read."
     },
+    "apiReadUserResponse": {
+      "type": "object",
+      "properties": {
+        "user": {
+          "$ref": "#/definitions/apiUser",
+          "description": "Read user message."
+        }
+      },
+      "description": "ReadUserResponse is sent in response to a user read."
+    },
     "apiUpdateDeviceResponse": {
       "type": "object",
       "properties": {
@@ -448,6 +773,83 @@
         }
       },
       "description": "UpdateDeviceResponse is sent in response to a device update."
+    },
+    "apiUpdateUserPasswordRequest": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "User ID (UUID) to update password.",
+          "readOnly": true
+        },
+        "password": {
+          "type": "string",
+          "description": "User password to update.",
+          "required": [
+            "password"
+          ]
+        }
+      },
+      "description": "UpdateUserPasswordRequest is sent to update a user's password.",
+      "required": [
+        "password"
+      ]
+    },
+    "apiUpdateUserResponse": {
+      "type": "object",
+      "properties": {
+        "user": {
+          "$ref": "#/definitions/apiUser",
+          "description": "Updated user message."
+        }
+      },
+      "description": "UpdateUserResponse is sent in response to a user update."
+    },
+    "apiUser": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "User ID (UUID).",
+          "readOnly": true
+        },
+        "orgID": {
+          "type": "string",
+          "description": "Organization ID (UUID).",
+          "readOnly": true
+        },
+        "email": {
+          "type": "string",
+          "description": "User email.",
+          "required": [
+            "email"
+          ]
+        },
+        "status": {
+          "$ref": "#/definitions/commonStatus",
+          "description": "User status.",
+          "required": [
+            "status"
+          ]
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "User creation timestamp.",
+          "readOnly": true
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "User modification timestamp.",
+          "readOnly": true
+        }
+      },
+      "description": "User represents a user as stored in the database.",
+      "required": [
+        "email",
+        "status"
+      ]
     },
     "commonStatus": {
       "type": "string",

@@ -145,10 +145,10 @@ AND (created_at > $2
 OR (created_at = $2
 AND id > $3
 ))
-ORDER BY created_at ASC, id ASC
 `
 
 const listDevicesLimit = `
+ORDER BY created_at ASC, id ASC
 LIMIT %d
 `
 
@@ -173,6 +173,8 @@ func (d *DAO) List(ctx context.Context, orgID string, lboundTS time.Time,
 		args = append(args, lboundTS, prevID)
 	}
 
+	// Ordering is applied with the limit, which will always be present for API
+	// usage, whereas lboundTS and prevID will not for first pages.
 	if limit > 0 {
 		query += fmt.Sprintf(listDevicesLimit, limit)
 	}
