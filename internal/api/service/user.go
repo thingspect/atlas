@@ -182,8 +182,6 @@ func (u *User) List(ctx context.Context,
 	if err != nil {
 		return nil, status.Error(codes.InvalidArgument, "invalid page token")
 	}
-	// TODO: rm.
-	alog.Debugf("lboundTS, prevID, err: %v, %v, %v", lboundTS, prevID, err)
 
 	// Retrieve PageSize+1 entries to find last page.
 	users, count, err := u.userDAO.List(ctx, sess.OrgID, lboundTS, prevID,
