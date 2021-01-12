@@ -23,7 +23,7 @@ import (
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
-func TestCreate(t *testing.T) {
+func TestCreateDevice(t *testing.T) {
 	t.Parallel()
 
 	t.Run("Create valid device", func(t *testing.T) {
@@ -109,7 +109,7 @@ func TestCreate(t *testing.T) {
 	})
 }
 
-func TestRead(t *testing.T) {
+func TestReadDevice(t *testing.T) {
 	t.Parallel()
 
 	t.Run("Read device by valid ID", func(t *testing.T) {
@@ -189,7 +189,7 @@ func TestRead(t *testing.T) {
 	})
 }
 
-func TestUpdate(t *testing.T) {
+func TestUpdateDevice(t *testing.T) {
 	t.Parallel()
 
 	t.Run("Update device by valid device", func(t *testing.T) {
@@ -424,7 +424,7 @@ func TestUpdate(t *testing.T) {
 	})
 }
 
-func TestDelete(t *testing.T) {
+func TestDeleteDevice(t *testing.T) {
 	t.Parallel()
 
 	t.Run("Delete device by valid ID", func(t *testing.T) {
@@ -493,7 +493,7 @@ func TestDelete(t *testing.T) {
 	})
 }
 
-func TestList(t *testing.T) {
+func TestListDevices(t *testing.T) {
 	t.Parallel()
 
 	t.Run("List devices by valid org ID", func(t *testing.T) {

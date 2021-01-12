@@ -58,6 +58,7 @@ func New(cfg *config.Config) (*API, error) {
 	skipValidate := map[string]struct{}{
 		// Update actions validate after merge to support partial updates.
 		"/api.DeviceService/Update": {},
+		"/api.UserService/Update":   {},
 	}
 
 	srv := grpc.NewServer(grpc.ChainUnaryInterceptor(
@@ -68,6 +69,7 @@ func New(cfg *config.Config) (*API, error) {
 	api.RegisterDeviceServiceServer(srv, service.NewDevice(device.NewDAO(pg)))
 	api.RegisterSessionServiceServer(srv, service.NewSession(user.NewDAO(pg),
 		cfg.PWTKey))
+	api.RegisterUserServiceServer(srv, service.NewUser(user.NewDAO(pg)))
 
 	// Register gRPC-Gateway handlers.
 	ctx, cancel := context.WithCancel(context.Background())
@@ -90,6 +92,13 @@ func New(cfg *config.Config) (*API, error) {
 		return nil, err
 	}
 
+	// User.
+	if err := api.RegisterUserServiceHandlerFromEndpoint(ctx, gwMux,
+		GRPCHost+GRPCPort, opts); err != nil {
+		cancel()
+		return nil, err
+	}
+
 	// OpenAPI.
 	mux := http.NewServeMux()
 	mux.Handle("/v1/", gwMux)
@@ -107,7 +116,7 @@ func New(cfg *config.Config) (*API, error) {
 
 // Serve starts the listener.
 func (api *API) Serve() {
-	// #nosec G102 - service should listen on all interfaces
+	//#nosec G102 // service should listen on all interfaces
 	lis, err := net.Listen("tcp", GRPCPort)
 	if err != nil {
 		alog.Fatalf("Serve net.Listen: %v", err)

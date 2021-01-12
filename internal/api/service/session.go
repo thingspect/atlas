@@ -1,7 +1,5 @@
 package service
 
-//go:generate mockgen -source session.go -destination mock_userer_test.go -package service
-
 import (
 	"context"
 
@@ -15,12 +13,6 @@ import (
 )
 
 const defaultPageSize = 100
-
-// Userer defines the methods provided by a user.DAO.
-type Userer interface {
-	ReadByEmail(ctx context.Context, email, orgName string) (*api.User, []byte,
-		error)
-}
 
 // Session service contains functions to create sessions and keys.
 type Session struct {
@@ -53,16 +45,18 @@ func (s *Session) Login(ctx context.Context,
 
 	if err := crypto.CompareHashPass(hash, req.Password); err != nil ||
 		user.Status != common.Status_ACTIVE {
-		alog.Debugf("Login crypto.CompareHashPass Email, OrgName, err, "+
-			"user.Status: %v, %v, %v, %s", req.Email, req.OrgName, err,
+		alog.WithStr("userID", user.Id).WithStr("orgID", user.OrgId).Debugf(
+			"Login crypto.CompareHashPass Email, OrgName, err, user.Status: "+
+				"%v, %v, %v, %s", req.Email, req.OrgName, err,
 			user.Status)
 		return nil, status.Error(codes.Unauthenticated, "unauthorized")
 	}
 
 	token, exp, err := session.GenerateWebToken(s.pwtKey, user.Id, user.OrgId)
 	if err != nil {
-		alog.Errorf("Login crypto.GenerateToken Email, OrgName, err: %v, %v, "+
-			"%v", req.Email, req.OrgName, err)
+		alog.WithStr("userID", user.Id).WithStr("orgID", user.OrgId).Errorf(
+			"Login crypto.GenerateToken Email, OrgName, err: %v, %v, %v",
+			req.Email, req.OrgName, err)
 		return nil, status.Error(codes.Unauthenticated, "unauthorized")
 	}
 

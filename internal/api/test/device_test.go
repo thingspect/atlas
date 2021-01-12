@@ -17,7 +17,7 @@ import (
 	"google.golang.org/protobuf/types/known/fieldmaskpb"
 )
 
-func TestCreate(t *testing.T) {
+func TestCreateDevice(t *testing.T) {
 	t.Parallel()
 
 	t.Run("Create valid device", func(t *testing.T) {
@@ -92,7 +92,7 @@ func TestCreate(t *testing.T) {
 	})
 }
 
-func TestRead(t *testing.T) {
+func TestReadDevice(t *testing.T) {
 	t.Parallel()
 
 	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
@@ -159,7 +159,7 @@ func TestRead(t *testing.T) {
 	})
 }
 
-func TestUpdate(t *testing.T) {
+func TestUpdateDevice(t *testing.T) {
 	t.Parallel()
 
 	t.Run("Update device by valid device", func(t *testing.T) {
@@ -394,7 +394,7 @@ func TestUpdate(t *testing.T) {
 	})
 }
 
-func TestDelete(t *testing.T) {
+func TestDeleteDevice(t *testing.T) {
 	t.Parallel()
 
 	t.Run("Delete device by valid ID", func(t *testing.T) {
@@ -474,7 +474,7 @@ func TestDelete(t *testing.T) {
 	})
 }
 
-func TestList(t *testing.T) {
+func TestListDevices(t *testing.T) {
 	t.Parallel()
 
 	ctx, cancel := context.WithTimeout(context.Background(), 6*time.Second)
@@ -534,13 +534,13 @@ func TestList(t *testing.T) {
 		require.NotEmpty(t, listDevs.NextPageToken)
 		require.GreaterOrEqual(t, listDevs.TotalSize, int32(3))
 
-		listDevs, err = devCli.List(ctx, &api.ListDeviceRequest{PageSize: 2,
+		nextDevs, err := devCli.List(ctx, &api.ListDeviceRequest{PageSize: 2,
 			PageToken: listDevs.NextPageToken})
-		t.Logf("listDevs, err: %+v, %v", listDevs, err)
+		t.Logf("nextDevs, err: %+v, %v", nextDevs, err)
 		require.NoError(t, err)
-		require.GreaterOrEqual(t, len(listDevs.Devices), 1)
-		require.NotEmpty(t, listDevs.PrevPageToken)
-		require.GreaterOrEqual(t, listDevs.TotalSize, int32(3))
+		require.GreaterOrEqual(t, len(nextDevs.Devices), 1)
+		require.NotEmpty(t, nextDevs.PrevPageToken)
+		require.GreaterOrEqual(t, nextDevs.TotalSize, int32(3))
 	})
 
 	t.Run("Lists are isolated by org ID", func(t *testing.T) {

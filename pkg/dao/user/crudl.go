@@ -107,7 +107,7 @@ func (d *DAO) Update(ctx context.Context, user *api.User) (*api.User, error) {
 	return user, nil
 }
 
-// #nosec G101 - false positive for hardcoded credentials
+//#nosec G101 // false positive for hardcoded credentials
 const updateUserPassword = `
 UPDATE users
 SET password_hash = $1, updated_at = $2
@@ -117,7 +117,7 @@ WHERE (id, org_id) = ($3, $4)
 // UpdatePassword updates a user's password by ID and org ID.
 func (d *DAO) UpdatePassword(ctx context.Context, userID, orgID string,
 	passHash []byte) error {
-	// Verify a user exists before attempting to delete it. Do not remap the
+	// Verify a user exists before attempting to update it. Do not remap the
 	// error.
 	if _, err := d.Read(ctx, userID, orgID); err != nil {
 		return err
@@ -162,10 +162,10 @@ AND (created_at > $2
 OR (created_at = $2
 AND id > $3
 ))
-ORDER BY created_at ASC, id ASC
 `
 
 const listUsersLimit = `
+ORDER BY created_at ASC, id ASC
 LIMIT %d
 `
 
@@ -190,6 +190,8 @@ func (d *DAO) List(ctx context.Context, orgID string, lboundTS time.Time,
 		args = append(args, lboundTS, prevID)
 	}
 
+	// Ordering is applied with the limit, which will always be present for API
+	// usage, whereas lboundTS and prevID will not for first pages.
 	if limit > 0 {
 		query += fmt.Sprintf(listUsersLimit, limit)
 	}
