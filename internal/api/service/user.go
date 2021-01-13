@@ -127,6 +127,7 @@ func (u *User) Update(ctx context.Context,
 // UpdatePassword updates a user's password by ID.
 func (u *User) UpdatePassword(ctx context.Context,
 	req *api.UpdateUserPasswordRequest) (*empty.Empty, error) {
+	logger := alog.FromContext(ctx)
 	sess, ok := session.FromContext(ctx)
 	if !ok {
 		return nil, status.Error(codes.PermissionDenied, "permission denied")
@@ -138,8 +139,7 @@ func (u *User) UpdatePassword(ctx context.Context,
 
 	hash, err := crypto.HashPass(req.Password)
 	if err != nil {
-		alog.WithStr("userID", sess.UserID).WithStr("orgID", sess.OrgID).Errorf(
-			"User.UpdatePassword crypto.HashPass: %v", err)
+		logger.Errorf("User.UpdatePassword crypto.HashPass: %v", err)
 		return nil, errToStatus(crypto.ErrWeakPass)
 	}
 
@@ -169,6 +169,7 @@ func (u *User) Delete(ctx context.Context,
 // List retrieves all users.
 func (u *User) List(ctx context.Context,
 	req *api.ListUserRequest) (*api.ListUserResponse, error) {
+	logger := alog.FromContext(ctx)
 	sess, ok := session.FromContext(ctx)
 	if !ok {
 		return nil, status.Error(codes.PermissionDenied, "permission denied")
@@ -205,9 +206,8 @@ func (u *User) List(ctx context.Context,
 			users[len(users)-2].Id); err != nil {
 			// GeneratePageToken should not error based on a DB-derived UUID.
 			// Log the error and include the usable empty token.
-			alog.WithStr("userID", sess.UserID).WithStr("orgID", sess.OrgID).
-				Errorf("User.List session.GeneratePageToken user, err: %+v, %v",
-					users[len(users)-2], err)
+			logger.Errorf("User.List session.GeneratePageToken user, err: "+
+				"%+v, %v", users[len(users)-2], err)
 		}
 	}
 

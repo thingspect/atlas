@@ -34,7 +34,7 @@ func (acc *Accumulator) accumulateMessages() {
 			"uniqID":  vOut.Point.UniqId,
 			"devID":   vOut.DevId,
 		}
-		logEntry := alog.WithFields(logFields)
+		logger := alog.WithFields(logFields)
 
 		// Create data point.
 		ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
@@ -42,20 +42,20 @@ func (acc *Accumulator) accumulateMessages() {
 		cancel()
 		if errors.Is(err, dao.ErrAlreadyExists) ||
 			errors.Is(err, dao.ErrInvalidFormat) {
-			logEntry.Errorf("accumulateMessages discard acc.dpDAO.Create: %v",
+			logger.Errorf("accumulateMessages discard acc.dpDAO.Create: %v",
 				err)
 			msg.Ack()
 			continue
 		}
 		if err != nil {
-			logEntry.Errorf("accumulateMessages requeue acc.dpDAO.Create: %v",
+			logger.Errorf("accumulateMessages requeue acc.dpDAO.Create: %v",
 				err)
 			msg.Requeue()
 			continue
 		}
 
 		msg.Ack()
-		logEntry.Debugf("accumulateMessages created: %+v", vOut)
+		logger.Debugf("accumulateMessages created: %+v", vOut)
 
 		processCount++
 		if processCount%100 == 0 {

@@ -21,36 +21,36 @@ func (ing *Ingestor) parseMessages() {
 	for msg := range ing.mqttSub.C() {
 		// Set up logging fields.
 		traceID := uuid.New().String()
-		logEntry := alog.WithStr("traceID", traceID)
+		logger := alog.WithStr("traceID", traceID)
 
 		// Parse and validate topic in format: 'v1/:orgID[/:uniqID][/json]'.
 		topic := msg.Topic()
 		topicParts := strings.Split(topic, "/")
 		if len(topicParts) < 2 || len(topicParts) > 4 || topicParts[0] != "v1" {
 			msg.Ack()
-			logEntry.Errorf("parseMessages malformed topic: %v", topic)
+			logger.Errorf("parseMessages malformed topic: %v", topic)
 			continue
 		}
-		logEntry = logEntry.WithStr("orgID", topicParts[1])
+		logger = logger.WithStr("orgID", topicParts[1])
 
 		// Unmarshal payload based on topic and format.
 		payl := &mqtt.Payload{}
 		var err error
 
 		if topicParts[len(topicParts)-1] == "json" {
-			logEntry = logEntry.WithStr("paylType", "json")
+			logger = logger.WithStr("paylType", "json")
 			topicParts = topicParts[:len(topicParts)-1]
 			err = protojson.Unmarshal(msg.Payload(), payl)
 		} else {
-			logEntry = logEntry.WithStr("paylType", "proto")
+			logger = logger.WithStr("paylType", "proto")
 			err = proto.Unmarshal(msg.Payload(), payl)
 		}
 		if err != nil {
 			msg.Ack()
-			logEntry.Errorf("parseMessages proto.Unmarshal: %v", err)
+			logger.Errorf("parseMessages proto.Unmarshal: %v", err)
 			continue
 		}
-		logEntry.Debugf("parseMessages payl: %+v", payl)
+		logger.Debugf("parseMessages payl: %+v", payl)
 
 		// Build and publish ValidatorIn messages.
 		var successCount int
@@ -59,18 +59,18 @@ func (ing *Ingestor) parseMessages() {
 
 			bVIn, err := proto.Marshal(vIn)
 			if err != nil {
-				logEntry.Errorf("parseMessages proto.Marshal: %v", err)
+				logger.Errorf("parseMessages proto.Marshal: %v", err)
 				continue
 			}
 
 			if err = ing.parserQueue.Publish(ing.parserPubTopic,
 				bVIn); err != nil {
-				logEntry.Errorf("parseMessages ing.parserPub.Publish: %v", err)
+				logger.Errorf("parseMessages ing.parserPub.Publish: %v", err)
 				continue
 			}
 
 			successCount++
-			logEntry.Debugf("parseMessages published: %+v", vIn)
+			logger.Debugf("parseMessages published: %+v", vIn)
 		}
 
 		// Do not ack on errors, as publish may retry successfully.

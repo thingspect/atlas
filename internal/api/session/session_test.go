@@ -21,8 +21,8 @@ func TestNewFromContext(t *testing.T) {
 	defer cancel()
 
 	ctx = NewContext(ctx, sess)
-	fromSess, ok := FromContext(ctx)
-	t.Logf("fromSess, ok: %+v, %v", fromSess, ok)
+	ctxSess, ok := FromContext(ctx)
+	t.Logf("ctxSess, ok: %+v, %v", ctxSess, ok)
 	require.True(t, ok)
-	require.Equal(t, sess, fromSess)
+	require.Equal(t, sess, ctxSess)
 }
