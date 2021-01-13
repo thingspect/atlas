@@ -204,7 +204,8 @@ func (d *DAO) List(ctx context.Context, orgID string, lboundTS time.Time,
 	}
 	defer func() {
 		if err = rows.Close(); err != nil {
-			alog.Errorf("List rows.Close: %v", err)
+			logger := alog.FromContext(ctx)
+			logger.Errorf("List rows.Close: %v", err)
 		}
 	}()
 

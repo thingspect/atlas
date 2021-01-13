@@ -103,7 +103,8 @@ func (d *DAO) List(ctx context.Context) ([]*Org, error) {
 	}
 	defer func() {
 		if err = rows.Close(); err != nil {
-			alog.Errorf("List rows.Close: %v", err)
+			logger := alog.FromContext(ctx)
+			logger.Errorf("List rows.Close: %v", err)
 		}
 	}()
 

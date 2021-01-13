@@ -18,7 +18,7 @@ type zlog struct {
 // Verify zerolog implements z.zl.
 var _ Logger = &zlog{}
 
-// newZlogConsole creates a new Logger with console formatting at the debug
+// newZlogConsole returns a new Logger with console formatting at the debug
 // level.
 func newZlogConsole() Logger {
 	cw := zerolog.ConsoleWriter{
@@ -35,7 +35,7 @@ func newZlogConsole() Logger {
 	}
 }
 
-// newZlogJSON creates a new Logger with JSON formatting at the debug level.
+// newZlogJSON returns a new Logger with JSON formatting at the debug level.
 func newZlogJSON() Logger {
 	return &zlog{
 		zl: zerolog.New(os.Stderr).With().Timestamp().Logger().
@@ -43,7 +43,7 @@ func newZlogJSON() Logger {
 	}
 }
 
-// WithLevel creates a derived Logger with the level set to level.
+// WithLevel returns a derived Logger with the level set to level.
 func (z *zlog) WithLevel(level string) Logger {
 	zlevel, err := zerolog.ParseLevel(strings.ToLower(level))
 	if err != nil {
@@ -54,12 +54,12 @@ func (z *zlog) WithLevel(level string) Logger {
 	return &zlog{zl: z.zl.Level(zlevel)}
 }
 
-// WithStr creates a derived Logger with a string field.
+// WithStr returns a derived Logger with a string field.
 func (z *zlog) WithStr(key, val string) Logger {
 	return &zlog{zl: z.zl.With().Str(key, val).Logger()}
 }
 
-// WithFields creates a derived Logger using a map to set fields.
+// WithFields returns a derived Logger using a map to set fields.
 func (z *zlog) WithFields(fields map[string]interface{}) Logger {
 	return &zlog{zl: z.zl.With().Fields(fields).Logger()}
 }

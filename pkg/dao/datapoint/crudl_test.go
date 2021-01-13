@@ -76,19 +76,17 @@ func TestCreate(t *testing.T) {
 
 		tests := []struct {
 			inpPoint *common.DataPoint
-			err      string
+			err      error
 		}{
 			{&common.DataPoint{UniqId: "dao-point-" + random.String(40),
 				Attr: "motion", ValOneof: &common.DataPoint_IntVal{IntVal: 123},
 				Ts: timestamppb.Now(), Token: uuid.New().String(),
-				TraceId: uuid.New().String()},
-				"invalid format: value too long"},
+				TraceId: uuid.New().String()}, dao.ErrInvalidFormat},
 			{&common.DataPoint{UniqId: "dao-point-" + random.String(16),
 				Attr: "raw", ValOneof: &common.DataPoint_BytesVal{
 					BytesVal: []byte(random.String(256))},
 				Ts: timestamppb.Now(), Token: uuid.New().String(),
-				TraceId: uuid.New().String()},
-				"invalid format: data_points_bytes_val_check"},
+				TraceId: uuid.New().String()}, dao.ErrInvalidFormat},
 		}
 
 		for _, test := range tests {
@@ -103,7 +101,7 @@ func TestCreate(t *testing.T) {
 
 				err := globalDPDAO.Create(ctx, lTest.inpPoint, orgID)
 				t.Logf("err: %#v", err)
-				require.EqualError(t, err, lTest.err)
+				require.ErrorIs(t, err, lTest.err)
 			})
 		}
 	})
@@ -235,6 +233,6 @@ func TestList(t *testing.T) {
 			uuid.New().String(), time.Now(), time.Now())
 		t.Logf("listPoints, err: %+v, %v", listPoints, err)
 		require.Nil(t, listPoints)
-		require.EqualError(t, err, "invalid format: UUID")
+		require.ErrorIs(t, err, dao.ErrInvalidFormat)
 	})
 }

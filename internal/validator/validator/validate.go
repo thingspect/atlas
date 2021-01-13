@@ -35,41 +35,41 @@ func (val *Validator) validateMessages() {
 			"orgID":   vIn.OrgId,
 			"uniqID":  vIn.Point.UniqId,
 		}
-		logEntry := alog.WithFields(logFields)
+		logger := alog.WithFields(logFields)
 
 		// Retrieve device.
 		ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 		dev, err := val.devDAO.ReadByUniqID(ctx, vIn.Point.UniqId)
 		cancel()
 		if errors.Is(err, dao.ErrNotFound) {
-			logEntry.Debugf("validateMessages device not found: %+v", vIn)
+			logger.Debugf("validateMessages device not found: %+v", vIn)
 			msg.Ack()
 			continue
 		}
 		if err != nil {
-			logEntry.Errorf("validateMessages val.devDAO.ReadByUniqID: %v", err)
+			logger.Errorf("validateMessages val.devDAO.ReadByUniqID: %v", err)
 			msg.Requeue()
 			continue
 		}
-		logEntry = logEntry.WithStr("devID", dev.Id)
+		logger = logger.WithStr("devID", dev.Id)
 
 		// Perform validation.
 		switch err := vIn.Point.Validate(); {
 		case err != nil:
-			logEntry.Debugf("validateMessages vIn.Point.Validate: %v", err)
+			logger.Debugf("validateMessages vIn.Point.Validate: %v", err)
 			msg.Ack()
 			continue
 		case vIn.OrgId != dev.OrgId:
-			logEntry.Errorf("validateMessages incorrect org ID, expected: %v, "+
+			logger.Errorf("validateMessages incorrect org ID, expected: %v, "+
 				"actual: %v", dev.OrgId, vIn.OrgId)
 			msg.Ack()
 			continue
 		case dev.Status != common.Status_ACTIVE:
-			logEntry.Debugf("validateMessages device disabled: %+v", vIn)
+			logger.Debugf("validateMessages device disabled: %+v", vIn)
 			msg.Ack()
 			continue
 		case vIn.Point.Token != dev.Token:
-			logEntry.Debugf("validateMessages invalid token: %+v", vIn)
+			logger.Debugf("validateMessages invalid token: %+v", vIn)
 			msg.Ack()
 			continue
 		}
@@ -83,18 +83,18 @@ func (val *Validator) validateMessages() {
 
 		bVOut, err := proto.Marshal(vOut)
 		if err != nil {
-			logEntry.Errorf("validateMessages proto.Marshal: %v", err)
+			logger.Errorf("validateMessages proto.Marshal: %v", err)
 			msg.Ack()
 			continue
 		}
 
 		if err = val.vOutQueue.Publish(val.vOutPubTopic, bVOut); err != nil {
-			logEntry.Errorf("validateMessages val.pub.Publish: %v", err)
+			logger.Errorf("validateMessages val.pub.Publish: %v", err)
 			msg.Requeue()
 			continue
 		}
 		msg.Ack()
-		logEntry.Debugf("validateMessages published: %+v", vOut)
+		logger.Debugf("validateMessages published: %+v", vOut)
 
 		processCount++
 		if processCount%100 == 0 {

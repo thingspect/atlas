@@ -33,30 +33,31 @@ func NewSession(userDAO Userer, pwtKey []byte) *Session {
 // Login logs in a user.
 func (s *Session) Login(ctx context.Context,
 	req *api.LoginRequest) (*api.LoginResponse, error) {
+	logger := alog.FromContext(ctx)
+
 	user, hash, err := s.userDAO.ReadByEmail(ctx, req.Email, req.OrgName)
 	// Hash the provided password if an error is returned to prevent account
 	// enumeration attacks.
 	if err != nil {
 		_, hashErr := crypto.HashPass(req.Password)
-		alog.Debugf("Login s.userDAO.ReadByEmail Email, OrgName, err, "+
+		logger.Debugf("Login s.userDAO.ReadByEmail Email, OrgName, err, "+
 			"hashErr: %v, %v, %v, %v", req.Email, req.OrgName, err, hashErr)
 		return nil, status.Error(codes.Unauthenticated, "unauthorized")
 	}
 
+	logger.Logger = logger.WithStr("userID", user.Id).WithStr("orgID",
+		user.OrgId)
+
 	if err := crypto.CompareHashPass(hash, req.Password); err != nil ||
 		user.Status != common.Status_ACTIVE {
-		alog.WithStr("userID", user.Id).WithStr("orgID", user.OrgId).Debugf(
-			"Login crypto.CompareHashPass Email, OrgName, err, user.Status: "+
-				"%v, %v, %v, %s", req.Email, req.OrgName, err,
-			user.Status)
+		logger.Debugf("Login crypto.CompareHashPass err, user.Status: %v, %s",
+			err, user.Status)
 		return nil, status.Error(codes.Unauthenticated, "unauthorized")
 	}
 
 	token, exp, err := session.GenerateWebToken(s.pwtKey, user.Id, user.OrgId)
 	if err != nil {
-		alog.WithStr("userID", user.Id).WithStr("orgID", user.OrgId).Errorf(
-			"Login crypto.GenerateToken Email, OrgName, err: %v, %v, %v",
-			req.Email, req.OrgName, err)
+		logger.Errorf("Login crypto.GenerateToken: %v", err)
 		return nil, status.Error(codes.Unauthenticated, "unauthorized")
 	}
 

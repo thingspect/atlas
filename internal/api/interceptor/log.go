@@ -20,6 +20,10 @@ func Log(skipPaths map[string]struct{}) grpc.UnaryServerInterceptor {
 	return func(ctx context.Context, req interface{},
 		info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (interface{},
 		error) {
+		// Set up logging fields and context.
+		logger := &alog.CtxLogger{Logger: alog.WithStr("path", info.FullMethod)}
+		ctx = alog.NewContext(ctx, logger)
+
 		start := time.Now()
 		resp, err := handler(ctx, req)
 
@@ -27,33 +31,33 @@ func Log(skipPaths map[string]struct{}) grpc.UnaryServerInterceptor {
 			return resp, err
 		}
 
-		// Set up logging fields.
+		// Add additional logging fields.
 		logFields := map[string]interface{}{
-			"path":  info.FullMethod,
 			"durms": fmt.Sprintf("%d", time.Since(start)/time.Millisecond),
 			"code":  status.Code(err).String(),
 		}
-		logEntry := alog.WithFields(logFields)
+		logger.Logger = logger.WithFields(logFields)
 
 		// Populate additional fields with metadata.
 		if md, ok := metadata.FromIncomingContext(ctx); ok {
 			for k, v := range md {
-				if len(v) > 0 {
-					logEntry = logEntry.WithStr(k, strings.Join(v, ","))
+				if !strings.Contains(k, "authorization") {
+					logger.Logger = logger.WithStr(k, strings.Join(v, ","))
 				}
 			}
 		}
 
 		if err != nil {
-			logEntry.Info(err)
+			logger.Info(err)
 		} else {
 			respOut := fmt.Sprintf("%+v", resp)
-			if len(respOut) > 100 {
-				respOut = fmt.Sprintf("%v...", respOut[:97])
+			if len(respOut) > 80 {
+				respOut = fmt.Sprintf("%v...", respOut[:77])
 			}
 
-			logEntry.Info(respOut)
+			logger.Info(respOut)
 		}
+
 		return resp, err
 	}
 }

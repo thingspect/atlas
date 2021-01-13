@@ -61,7 +61,7 @@ func TestCreate(t *testing.T) {
 		createOrg, err := globalOrgDAO.Create(ctx, org)
 		t.Logf("createOrg, err: %+v, %v", createOrg, err)
 		require.Nil(t, createOrg)
-		require.EqualError(t, err, "invalid format: value too long")
+		require.ErrorIs(t, err, dao.ErrInvalidFormat)
 	})
 }
 
@@ -109,7 +109,7 @@ func TestRead(t *testing.T) {
 		readOrg, err := globalOrgDAO.Read(ctx, random.String(10))
 		t.Logf("readOrg, err: %+v, %v", readOrg, err)
 		require.Nil(t, readOrg)
-		require.EqualError(t, err, "invalid format: UUID")
+		require.ErrorIs(t, err, dao.ErrInvalidFormat)
 	})
 }
 
@@ -170,7 +170,7 @@ func TestUpdate(t *testing.T) {
 		updateOrg, err := globalOrgDAO.Update(ctx, *createOrg)
 		t.Logf("updateOrg, err: %+v, %v", updateOrg, err)
 		require.Nil(t, updateOrg)
-		require.EqualError(t, err, "invalid format: value too long")
+		require.ErrorIs(t, err, dao.ErrInvalidFormat)
 	})
 }
 

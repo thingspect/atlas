@@ -137,6 +137,7 @@ func (d *Device) Delete(ctx context.Context,
 // List retrieves all devices.
 func (d *Device) List(ctx context.Context,
 	req *api.ListDeviceRequest) (*api.ListDeviceResponse, error) {
+	logger := alog.FromContext(ctx)
 	sess, ok := session.FromContext(ctx)
 	if !ok {
 		return nil, status.Error(codes.PermissionDenied, "permission denied")
@@ -173,9 +174,8 @@ func (d *Device) List(ctx context.Context,
 			devs[len(devs)-2].Id); err != nil {
 			// GeneratePageToken should not error based on a DB-derived UUID.
 			// Log the error and include the usable empty token.
-			alog.WithStr("userID", sess.UserID).WithStr("orgID", sess.OrgID).
-				Errorf("Device.List session.GeneratePageToken dev, err: %+v, "+
-					"%v", devs[len(devs)-2], err)
+			logger.Errorf("Device.List session.GeneratePageToken dev, err: "+
+				"%+v, %v", devs[len(devs)-2], err)
 		}
 	}
 

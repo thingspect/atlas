@@ -5,6 +5,7 @@ import (
 	"strings"
 
 	"github.com/thingspect/atlas/internal/api/session"
+	"github.com/thingspect/atlas/pkg/alog"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
@@ -43,6 +44,11 @@ func Auth(skipPaths map[string]struct{},
 		if err != nil {
 			return nil, status.Error(codes.Unauthenticated, "unauthorized")
 		}
+
+		// Add logging fields.
+		logger := alog.FromContext(ctx)
+		logger.Logger = logger.WithStr("userID", sess.UserID).WithStr("orgID",
+			sess.OrgID)
 
 		ctx = session.NewContext(ctx, sess)
 		return handler(ctx, req)
