@@ -32,6 +32,8 @@ func TestValidateMessages(t *testing.T) {
 	traceID := uuid.New().String()
 	orgID := uuid.New().String()
 	devID := uuid.New().String()
+	boolVal := &common.DataPoint_BoolVal{BoolVal: []bool{true,
+		false}[random.Intn(2)]}
 
 	tests := []struct {
 		inpVIn *message.ValidatorIn
@@ -55,9 +57,15 @@ func TestValidateMessages(t *testing.T) {
 			Attr: "power", ValOneof: &common.DataPoint_StrVal{StrVal: "batt"},
 			Ts: now, Token: token, TraceId: traceID}, OrgId: orgID},
 			&message.ValidatorOut{Point: &common.DataPoint{UniqId: uniqID,
-				Attr:     "power",
-				ValOneof: &common.DataPoint_StrVal{StrVal: "batt"}, Ts: now,
-				Token: token, TraceId: traceID}, OrgId: orgID, DevId: devID}},
+				Attr: "power", ValOneof: &common.DataPoint_StrVal{
+					StrVal: "batt"}, Ts: now, Token: token, TraceId: traceID},
+				OrgId: orgID, DevId: devID}},
+		{&message.ValidatorIn{Point: &common.DataPoint{UniqId: uniqID,
+			Attr: "leak", ValOneof: boolVal, Ts: now, TraceId: traceID},
+			OrgId: orgID, SkipToken: true},
+			&message.ValidatorOut{Point: &common.DataPoint{UniqId: uniqID,
+				Attr: "leak", ValOneof: boolVal, Ts: now, TraceId: traceID},
+				OrgId: orgID, DevId: devID}},
 	}
 
 	for _, test := range tests {

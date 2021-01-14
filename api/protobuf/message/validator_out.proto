@@ -5,8 +5,7 @@ import "common/datapoint.proto";
 
 option go_package = "github.com/thingspect/atlas/api/go/message";
 
-// ValidatorOut represents a data point and associated metadata as used in
-// message queues.
+// ValidatorOut represents a data point and associated metadata as used in message queues.
 message ValidatorOut {
   // Data point.
   common.DataPoint point = 1;
