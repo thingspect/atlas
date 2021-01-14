@@ -1,4 +1,4 @@
-DROP INDEX IF EXISTS org_id_idx;
+DROP INDEX IF EXISTS devices_read_and_paginate_idx;
 DROP TABLE IF EXISTS devices;
 DROP TABLE IF EXISTS orgs;
 DROP TYPE IF EXISTS status;

@@ -486,6 +486,7 @@ func (x *DeleteDeviceRequest) GetId() string {
 	return ""
 }
 
+// ListDeviceRequest is sent to list devices.
 type ListDeviceRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -543,6 +544,7 @@ func (x *ListDeviceRequest) GetPageToken() string {
 	return ""
 }
 
+// ListDeviceResponse is sent in response to a device list.
 type ListDeviceResponse struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache

@@ -535,6 +535,7 @@ func (x *DeleteUserRequest) GetId() string {
 	return ""
 }
 
+// ListUserRequest is sent to list users.
 type ListUserRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -592,6 +593,7 @@ func (x *ListUserRequest) GetPageToken() string {
 	return ""
 }
 
+// ListUserResponse is sent in response to a user list.
 type ListUserResponse struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache

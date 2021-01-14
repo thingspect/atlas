@@ -1,2 +1,3 @@
-DROP INDEX IF EXISTS users_org_id_email_idx;
+DROP INDEX IF EXISTS users_read_and_paginate_idx;
+DROP INDEX IF EXISTS users_read_and_email_idx;
 DROP TABLE IF EXISTS users;

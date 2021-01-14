@@ -25,7 +25,7 @@ github.com/golang/protobuf/ptypes/wrappers
 # github.com/golang/snappy v0.0.2
 ## explicit
 github.com/golang/snappy
-# github.com/google/uuid v1.1.4
+# github.com/google/uuid v1.1.5
 ## explicit
 github.com/google/uuid
 # github.com/gorilla/websocket v1.4.2
@@ -82,7 +82,7 @@ github.com/rs/zerolog/internal/json
 ## explicit
 github.com/stretchr/testify/assert
 github.com/stretchr/testify/require
-# github.com/thingspect/api/go v0.0.0-20210113184523-442e0b6f68ec
+# github.com/thingspect/api/go v0.0.0-20210114155249-d9fd3cfac54f
 ## explicit
 github.com/thingspect/api/go/api
 github.com/thingspect/api/go/common
@@ -121,7 +121,7 @@ golang.org/x/text/width
 # golang.org/x/xerrors v0.0.0-20200804184101-5ec99f83aff1
 golang.org/x/xerrors
 golang.org/x/xerrors/internal
-# google.golang.org/genproto v0.0.0-20210113195801-ae06605f4595
+# google.golang.org/genproto v0.0.0-20210114201628-6edceaf6022f
 ## explicit
 google.golang.org/genproto/googleapis/api/annotations
 google.golang.org/genproto/googleapis/api/httpbody

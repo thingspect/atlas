@@ -16,6 +16,7 @@ import (
 	"github.com/thingspect/atlas/internal/api/interceptor"
 	"github.com/thingspect/atlas/internal/api/service"
 	"github.com/thingspect/atlas/pkg/alog"
+	"github.com/thingspect/atlas/pkg/dao/datapoint"
 	"github.com/thingspect/atlas/pkg/dao/device"
 	"github.com/thingspect/atlas/pkg/dao/user"
 	"github.com/thingspect/atlas/pkg/postgres"
@@ -75,7 +76,7 @@ func New(cfg *config.Config) (*API, error) {
 		interceptor.Validate(skipValidate),
 	))
 	api.RegisterDataPointServiceServer(srv, service.NewDataPoint(nsq,
-		cfg.NSQPubTopic))
+		cfg.NSQPubTopic, datapoint.NewDAO(pg)))
 	api.RegisterDeviceServiceServer(srv, service.NewDevice(device.NewDAO(pg)))
 	api.RegisterSessionServiceServer(srv, service.NewSession(user.NewDAO(pg),
 		cfg.PWTKey))

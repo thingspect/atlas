@@ -124,3 +124,168 @@ var _ interface {
 	Cause() error
 	ErrorName() string
 } = PublishDataPointRequestValidationError{}
+
+// Validate checks the field values on LatestDataPointRequest with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, an error is returned.
+func (m *LatestDataPointRequest) Validate() error {
+	if m == nil {
+		return nil
+	}
+
+	switch m.IdOneof.(type) {
+
+	case *LatestDataPointRequest_UniqId:
+		// no validation rules for UniqId
+
+	case *LatestDataPointRequest_DevId:
+		// no validation rules for DevId
+
+	default:
+		return LatestDataPointRequestValidationError{
+			field:  "IdOneof",
+			reason: "value is required",
+		}
+
+	}
+
+	return nil
+}
+
+// LatestDataPointRequestValidationError is the validation error returned by
+// LatestDataPointRequest.Validate if the designated constraints aren't met.
+type LatestDataPointRequestValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e LatestDataPointRequestValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e LatestDataPointRequestValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e LatestDataPointRequestValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e LatestDataPointRequestValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e LatestDataPointRequestValidationError) ErrorName() string {
+	return "LatestDataPointRequestValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e LatestDataPointRequestValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sLatestDataPointRequest.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = LatestDataPointRequestValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = LatestDataPointRequestValidationError{}
+
+// Validate checks the field values on LatestDataPointResponse with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, an error is returned.
+func (m *LatestDataPointResponse) Validate() error {
+	if m == nil {
+		return nil
+	}
+
+	for idx, item := range m.GetPoints() {
+		_, _ = idx, item
+
+		if v, ok := interface{}(item).(interface{ Validate() error }); ok {
+			if err := v.Validate(); err != nil {
+				return LatestDataPointResponseValidationError{
+					field:  fmt.Sprintf("Points[%v]", idx),
+					reason: "embedded message failed validation",
+					cause:  err,
+				}
+			}
+		}
+
+	}
+
+	return nil
+}
+
+// LatestDataPointResponseValidationError is the validation error returned by
+// LatestDataPointResponse.Validate if the designated constraints aren't met.
+type LatestDataPointResponseValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e LatestDataPointResponseValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e LatestDataPointResponseValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e LatestDataPointResponseValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e LatestDataPointResponseValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e LatestDataPointResponseValidationError) ErrorName() string {
+	return "LatestDataPointResponseValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e LatestDataPointResponseValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sLatestDataPointResponse.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = LatestDataPointResponseValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = LatestDataPointResponseValidationError{}
