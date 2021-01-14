@@ -44,18 +44,17 @@ func TestParseMessages(t *testing.T) {
 				Attr: "motion", ValOneof: &common.DataPoint_IntVal{IntVal: 123},
 				Ts: now, Token: pointToken}, OrgId: orgID}},
 		{[]string{"v1", orgID, uniqIDTopic}, paylToken,
-			&common.DataPoint{Attr: "temp",
-				ValOneof: &common.DataPoint_Fl64Val{Fl64Val: 9.3}},
+			&common.DataPoint{Attr: "temp", ValOneof: &common.DataPoint_Fl64Val{
+				Fl64Val: 9.3}},
 			&message.ValidatorIn{Point: &common.DataPoint{UniqId: uniqIDTopic,
 				Attr: "temp", ValOneof: &common.DataPoint_Fl64Val{Fl64Val: 9.3},
 				Token: paylToken}, OrgId: orgID}},
 		{[]string{"v1", orgID, uniqIDTopic, "json"}, paylToken,
-			&common.DataPoint{Attr: "power",
-				ValOneof: &common.DataPoint_StrVal{StrVal: "batt"}},
+			&common.DataPoint{Attr: "power", ValOneof: &common.DataPoint_StrVal{
+				StrVal: "batt"}},
 			&message.ValidatorIn{Point: &common.DataPoint{UniqId: uniqIDTopic,
-				Attr:     "power",
-				ValOneof: &common.DataPoint_StrVal{StrVal: "batt"},
-				Token:    paylToken}, OrgId: orgID}},
+				Attr: "power", ValOneof: &common.DataPoint_StrVal{
+					StrVal: "batt"}, Token: paylToken}, OrgId: orgID}},
 	}
 
 	for _, test := range tests {

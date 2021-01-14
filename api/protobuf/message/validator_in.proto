@@ -5,12 +5,14 @@ import "common/datapoint.proto";
 
 option go_package = "github.com/thingspect/atlas/api/go/message";
 
-// ValidatorIn represents a data point and associated metadata as used in
-// message queues.
+// ValidatorIn represents a data point and associated metadata as used in message queues.
 message ValidatorIn {
   // Data point.
   common.DataPoint point = 1;
 
   // Organization ID (UUID).
   string org_id = 2;
+
+  // Authentication has already taken place (API, LoRaWAN, etc.) and token validation can be skipped.
+  bool skip_token = 3;
 }

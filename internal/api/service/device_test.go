@@ -339,7 +339,7 @@ func TestUpdateDevice(t *testing.T) {
 	t.Run("Partial update device by unknown device", func(t *testing.T) {
 		t.Parallel()
 
-		OrgID := uuid.New().String()
+		orgID := uuid.New().String()
 		part := &api.Device{Id: uuid.New().String(),
 			Status: common.Status_ACTIVE}
 
@@ -347,12 +347,12 @@ func TestUpdateDevice(t *testing.T) {
 		defer ctrl.Finish()
 
 		devicer := NewMockDevicer(ctrl)
-		devicer.EXPECT().Read(gomock.Any(), part.Id, OrgID).
+		devicer.EXPECT().Read(gomock.Any(), part.Id, orgID).
 			Return(nil, dao.ErrNotFound).Times(1)
 		devicer.EXPECT().Update(gomock.Any(), gomock.Any()).Times(0)
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
-			context.Background(), &session.Session{OrgID: OrgID}),
+			context.Background(), &session.Session{OrgID: orgID}),
 			2*time.Second)
 		defer cancel()
 

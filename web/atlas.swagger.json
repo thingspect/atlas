@@ -14,6 +14,9 @@
       "name": "DeviceService"
     },
     {
+      "name": "DataPointService"
+    },
+    {
       "name": "SessionService"
     },
     {
@@ -27,6 +30,39 @@
     "application/json"
   ],
   "paths": {
+    "/v1/datapoints": {
+      "post": {
+        "summary": "Publish data points.",
+        "operationId": "DataPointService_Publish",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "properties": {}
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/apiPublishDataPointRequest"
+            }
+          }
+        ],
+        "tags": [
+          "DataPointService"
+        ]
+      }
+    },
     "/v1/devices": {
       "get": {
         "summary": "List all devices.",
@@ -744,6 +780,25 @@
       },
       "description": "LoginResponse is sent in response to a user login."
     },
+    "apiPublishDataPointRequest": {
+      "type": "object",
+      "properties": {
+        "points": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/commonDataPoint"
+          },
+          "description": "Data point array to publish.",
+          "required": [
+            "points"
+          ]
+        }
+      },
+      "description": "PublishDataPointRequest is sent to publish data points.",
+      "required": [
+        "points"
+      ]
+    },
     "apiReadDeviceResponse": {
       "type": "object",
       "properties": {
@@ -849,6 +904,68 @@
       "required": [
         "email",
         "status"
+      ]
+    },
+    "commonDataPoint": {
+      "type": "object",
+      "properties": {
+        "uniqID": {
+          "type": "string",
+          "description": "Device unique ID. Will be ignored during MQTT ingest if provided as part of the topic. Required for API publish.",
+          "required": [
+            "uniq_id"
+          ]
+        },
+        "attr": {
+          "type": "string",
+          "description": "Device attribute.",
+          "required": [
+            "attr"
+          ]
+        },
+        "intVal": {
+          "type": "string",
+          "format": "int64",
+          "description": "Integer value, 64-bit."
+        },
+        "fl64Val": {
+          "type": "number",
+          "format": "double",
+          "description": "Float value, 64-bit."
+        },
+        "strVal": {
+          "type": "string",
+          "description": "String value."
+        },
+        "boolVal": {
+          "type": "boolean",
+          "description": "Boolean value."
+        },
+        "bytesVal": {
+          "type": "string",
+          "format": "byte",
+          "description": "Bytes value."
+        },
+        "ts": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Timestamp. If not present during MQTT ingest or API publish, the current time will be used."
+        },
+        "token": {
+          "type": "string",
+          "description": "Authentication token (UUID). Only used during MQTT ingest. Will be ignored if provided as part of the Payload message.",
+          "readOnly": true
+        },
+        "traceId": {
+          "type": "string",
+          "description": "Trace ID (UUID). Assigned by the platform, will be ignored if provided during MQTT ingest or API publish.",
+          "readOnly": true
+        }
+      },
+      "description": "DataPoint represents a data point as stored in the database.",
+      "required": [
+        "uniqID",
+        "attr"
       ]
     },
     "commonStatus": {

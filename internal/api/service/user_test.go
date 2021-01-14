@@ -340,7 +340,7 @@ func TestUpdateUser(t *testing.T) {
 	t.Run("Partial update user by unknown user", func(t *testing.T) {
 		t.Parallel()
 
-		OrgID := uuid.New().String()
+		orgID := uuid.New().String()
 		part := &api.User{Id: uuid.New().String(),
 			Status: common.Status_ACTIVE}
 
@@ -348,12 +348,12 @@ func TestUpdateUser(t *testing.T) {
 		defer ctrl.Finish()
 
 		userr := NewMockUserer(ctrl)
-		userr.EXPECT().Read(gomock.Any(), part.Id, OrgID).
+		userr.EXPECT().Read(gomock.Any(), part.Id, orgID).
 			Return(nil, dao.ErrNotFound).Times(1)
 		userr.EXPECT().Update(gomock.Any(), gomock.Any()).Times(0)
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
-			context.Background(), &session.Session{OrgID: OrgID}),
+			context.Background(), &session.Session{OrgID: orgID}),
 			2*time.Second)
 		defer cancel()
 

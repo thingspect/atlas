@@ -19,6 +19,7 @@ import (
 	"github.com/thingspect/atlas/pkg/dao/device"
 	"github.com/thingspect/atlas/pkg/dao/user"
 	"github.com/thingspect/atlas/pkg/postgres"
+	"github.com/thingspect/atlas/pkg/queue"
 	"google.golang.org/grpc"
 )
 
@@ -51,6 +52,13 @@ func New(cfg *config.Config) (*API, error) {
 		return nil, err
 	}
 
+	// Build the NSQ connection for publishing.
+	nsq, err := queue.NewNSQ(cfg.NSQPubAddr, nil, "",
+		queue.DefaultNSQRequeueDelay)
+	if err != nil {
+		return nil, err
+	}
+
 	// Register gRPC services.
 	skipAuth := map[string]struct{}{
 		"/api.SessionService/Login": {},
@@ -66,6 +74,8 @@ func New(cfg *config.Config) (*API, error) {
 		interceptor.Auth(skipAuth, cfg.PWTKey),
 		interceptor.Validate(skipValidate),
 	))
+	api.RegisterDataPointServiceServer(srv, service.NewDataPoint(nsq,
+		cfg.NSQPubTopic))
 	api.RegisterDeviceServiceServer(srv, service.NewDevice(device.NewDAO(pg)))
 	api.RegisterSessionServiceServer(srv, service.NewSession(user.NewDAO(pg),
 		cfg.PWTKey))
@@ -76,6 +86,13 @@ func New(cfg *config.Config) (*API, error) {
 	gwMux := runtime.NewServeMux()
 	opts := []grpc.DialOption{
 		grpc.WithInsecure(),
+	}
+
+	// DataPoint.
+	if err := api.RegisterDataPointServiceHandlerFromEndpoint(ctx, gwMux,
+		GRPCHost+GRPCPort, opts); err != nil {
+		cancel()
+		return nil, err
 	}
 
 	// Device.

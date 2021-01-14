@@ -68,7 +68,7 @@ func (val *Validator) validateMessages() {
 			logger.Debugf("validateMessages device disabled: %+v", vIn)
 			msg.Ack()
 			continue
-		case vIn.Point.Token != dev.Token:
+		case !vIn.SkipToken && vIn.Point.Token != dev.Token:
 			logger.Debugf("validateMessages invalid token: %+v", vIn)
 			msg.Ack()
 			continue

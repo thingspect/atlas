@@ -26,8 +26,7 @@ const (
 // of the legacy proto package is being used.
 const _ = proto.ProtoPackageIsVersion4
 
-// ValidatorOut represents a data point and associated metadata as used in
-// message queues.
+// ValidatorOut represents a data point and associated metadata as used in message queues.
 type ValidatorOut struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache

@@ -12,6 +12,9 @@ type Config struct {
 
 	PgURI  string
 	PWTKey []byte
+
+	NSQPubAddr  string
+	NSQPubTopic string
 }
 
 // New instantiates a service Config, parses the environment, and returns it.
@@ -22,5 +25,8 @@ func New() *Config {
 		PgURI: config.String(pref+"PG_URI",
 			"postgres://postgres:postgres@127.0.0.1/atlas_test"),
 		PWTKey: config.ByteSlice(pref + "PWT_KEY"),
+
+		NSQPubAddr:  config.String(pref+"NSQ_PUB_ADDR", "127.0.0.1:4150"),
+		NSQPubTopic: config.String(pref+"NSQ_PUB_TOPIC", "ValidatorIn"),
 	}
 }

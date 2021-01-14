@@ -26,8 +26,7 @@ const (
 // of the legacy proto package is being used.
 const _ = proto.ProtoPackageIsVersion4
 
-// Payload represents an array of one or more data points and an authentication
-// token.
+// Payload represents an array of one or more data points and an authentication token.
 type Payload struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -35,8 +34,7 @@ type Payload struct {
 
 	// Data point array.
 	Points []*common.DataPoint `protobuf:"bytes,1,rep,name=points,proto3" json:"points,omitempty"`
-	// Authentication token (UUID). If all data points pertain to the same UniqID,
-	// the token can be provided a single time here.
+	// Authentication token (UUID). If all data points pertain to the same UniqID, the token can be provided a single time here.
 	Token string `protobuf:"bytes,2,opt,name=token,proto3" json:"token,omitempty"`
 }
 

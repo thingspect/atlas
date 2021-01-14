@@ -14,6 +14,7 @@ import (
 	"github.com/thingspect/atlas/pkg/dao/org"
 	"github.com/thingspect/atlas/pkg/dao/user"
 	"github.com/thingspect/atlas/pkg/postgres"
+	"github.com/thingspect/atlas/pkg/queue"
 	testconfig "github.com/thingspect/atlas/pkg/test/config"
 	"github.com/thingspect/atlas/pkg/test/random"
 	"google.golang.org/grpc"
@@ -31,6 +32,9 @@ var (
 	globalAuthGRPCConn    *grpc.ClientConn
 	globalAuthOrgID       string
 	secondaryAuthGRPCConn *grpc.ClientConn
+
+	globalPubTopic string
+	globalPubSub   queue.Subber
 )
 
 func TestMain(m *testing.M) {
@@ -45,6 +49,11 @@ func TestMain(m *testing.M) {
 	cfg := config.New()
 	cfg.PgURI = testConfig.PgURI
 	cfg.PWTKey = key
+
+	cfg.NSQPubAddr = testConfig.NSQPubAddr
+	cfg.NSQPubTopic += "-test-" + random.String(10)
+	globalPubTopic = cfg.NSQPubTopic
+	log.Printf("TestMain cfg.NSQPubTopic: %v", cfg.NSQPubTopic)
 
 	// Set up API.
 	a, err := api.New(cfg)
@@ -94,6 +103,22 @@ func TestMain(m *testing.M) {
 	if err != nil {
 		log.Fatalf("TestMain secondaryAuthGRPCConn authGRPCConn: %v", err)
 	}
+
+	// Set up NSQ subscription to verify published messages. Use a unique
+	// channel for each test run. This prevents failed tests from interfering
+	// with the next run, but does require eventual cleaning.
+	subChannel := api.ServiceName + "-test-" + random.String(10)
+	nsq, err := queue.NewNSQ(cfg.NSQPubAddr, nil, subChannel,
+		queue.DefaultNSQRequeueDelay)
+	if err != nil {
+		log.Fatalf("TestMain queue.NewNSQ: %v", err)
+	}
+
+	globalPubSub, err = nsq.Subscribe(cfg.NSQPubTopic)
+	if err != nil {
+		log.Fatalf("TestMain nsq.Subscribe: %v", err)
+	}
+	log.Printf("TestMain connected as NSQ sub channel: %v", subChannel)
 
 	os.Exit(m.Run())
 }
