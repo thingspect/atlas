@@ -38,8 +38,7 @@ func TestCreateUser(t *testing.T) {
 		defer ctrl.Finish()
 
 		userr := NewMockUserer(ctrl)
-		userr.EXPECT().Create(gomock.Any(), matcher.NewProtoMatcher(user)).
-			Return(user, nil).Times(1)
+		userr.EXPECT().Create(gomock.Any(), user).Return(user, nil).Times(1)
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
 			context.Background(), &session.Session{OrgID: user.OrgId}),
@@ -92,8 +91,8 @@ func TestCreateUser(t *testing.T) {
 		defer ctrl.Finish()
 
 		userr := NewMockUserer(ctrl)
-		userr.EXPECT().Create(gomock.Any(), matcher.NewProtoMatcher(user)).
-			Return(nil, dao.ErrInvalidFormat).Times(1)
+		userr.EXPECT().Create(gomock.Any(), user).Return(nil,
+			dao.ErrInvalidFormat).Times(1)
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
 			context.Background(), &session.Session{OrgID: user.OrgId}),
@@ -204,8 +203,7 @@ func TestUpdateUser(t *testing.T) {
 		defer ctrl.Finish()
 
 		userr := NewMockUserer(ctrl)
-		userr.EXPECT().Update(gomock.Any(), matcher.NewProtoMatcher(user)).
-			Return(user, nil).Times(1)
+		userr.EXPECT().Update(gomock.Any(), user).Return(user, nil).Times(1)
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
 			context.Background(), &session.Session{OrgID: user.OrgId}),
@@ -239,8 +237,8 @@ func TestUpdateUser(t *testing.T) {
 		defer ctrl.Finish()
 
 		userr := NewMockUserer(ctrl)
-		userr.EXPECT().Read(gomock.Any(), user.Id, user.OrgId).Return(user, nil).
-			Times(1)
+		userr.EXPECT().Read(gomock.Any(), user.Id, user.OrgId).Return(user,
+			nil).Times(1)
 		userr.EXPECT().Update(gomock.Any(), matcher.NewProtoMatcher(merged)).
 			Return(merged, nil).Times(1)
 
@@ -406,8 +404,8 @@ func TestUpdateUser(t *testing.T) {
 		defer ctrl.Finish()
 
 		userr := NewMockUserer(ctrl)
-		userr.EXPECT().Update(gomock.Any(), matcher.NewProtoMatcher(user)).
-			Return(nil, dao.ErrInvalidFormat).Times(1)
+		userr.EXPECT().Update(gomock.Any(), user).Return(nil,
+			dao.ErrInvalidFormat).Times(1)
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
 			context.Background(), &session.Session{OrgID: user.OrgId}),
@@ -730,7 +728,7 @@ func TestListUsers(t *testing.T) {
 			"invalid page token"), err)
 	})
 
-	t.Run("List users by invalid orgID", func(t *testing.T) {
+	t.Run("List users by invalid org ID", func(t *testing.T) {
 		t.Parallel()
 
 		ctrl := gomock.NewController(t)

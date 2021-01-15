@@ -63,6 +63,45 @@
         ]
       }
     },
+    "/v1/datapoints/latest": {
+      "get": {
+        "summary": "List latest data point for each of a device's attributes.",
+        "operationId": "DataPointService_Latest",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/apiLatestDataPointResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "uniqID",
+            "description": "Device unique ID.",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "devID",
+            "description": "Device ID (UUID).",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "DataPointService"
+        ]
+      }
+    },
     "/v1/devices": {
       "get": {
         "summary": "List all devices.",
@@ -683,6 +722,19 @@
         "status"
       ]
     },
+    "apiLatestDataPointResponse": {
+      "type": "object",
+      "properties": {
+        "points": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/commonDataPoint"
+          },
+          "description": "Data point array."
+        }
+      },
+      "description": "LatestDataPointResponse is sent in response to a device latest list."
+    },
     "apiListDeviceResponse": {
       "type": "object",
       "properties": {
@@ -706,7 +758,8 @@
           "format": "int32",
           "description": "Total number of devices available."
         }
-      }
+      },
+      "description": "ListDeviceResponse is sent in response to a device list."
     },
     "apiListUserResponse": {
       "type": "object",
@@ -731,7 +784,8 @@
           "format": "int32",
           "description": "Total number of users available."
         }
-      }
+      },
+      "description": "ListUserResponse is sent in response to a user list."
     },
     "apiLoginRequest": {
       "type": "object",

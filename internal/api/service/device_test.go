@@ -37,8 +37,7 @@ func TestCreateDevice(t *testing.T) {
 		defer ctrl.Finish()
 
 		devicer := NewMockDevicer(ctrl)
-		devicer.EXPECT().Create(gomock.Any(), matcher.NewProtoMatcher(dev)).
-			Return(dev, nil).Times(1)
+		devicer.EXPECT().Create(gomock.Any(), dev).Return(dev, nil).Times(1)
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
 			context.Background(), &session.Session{OrgID: dev.OrgId}),
@@ -91,8 +90,8 @@ func TestCreateDevice(t *testing.T) {
 		defer ctrl.Finish()
 
 		devicer := NewMockDevicer(ctrl)
-		devicer.EXPECT().Create(gomock.Any(), matcher.NewProtoMatcher(dev)).
-			Return(nil, dao.ErrInvalidFormat).Times(1)
+		devicer.EXPECT().Create(gomock.Any(), dev).Return(nil,
+			dao.ErrInvalidFormat).Times(1)
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
 			context.Background(), &session.Session{OrgID: dev.OrgId}),
@@ -203,8 +202,7 @@ func TestUpdateDevice(t *testing.T) {
 		defer ctrl.Finish()
 
 		devicer := NewMockDevicer(ctrl)
-		devicer.EXPECT().Update(gomock.Any(), matcher.NewProtoMatcher(dev)).
-			Return(dev, nil).Times(1)
+		devicer.EXPECT().Update(gomock.Any(), dev).Return(dev, nil).Times(1)
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
 			context.Background(), &session.Session{OrgID: dev.OrgId}),
@@ -406,8 +404,8 @@ func TestUpdateDevice(t *testing.T) {
 		defer ctrl.Finish()
 
 		devicer := NewMockDevicer(ctrl)
-		devicer.EXPECT().Update(gomock.Any(), matcher.NewProtoMatcher(dev)).
-			Return(nil, dao.ErrInvalidFormat).Times(1)
+		devicer.EXPECT().Update(gomock.Any(), dev).Return(nil,
+			dao.ErrInvalidFormat).Times(1)
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
 			context.Background(), &session.Session{OrgID: dev.OrgId}),
@@ -638,7 +636,7 @@ func TestListDevices(t *testing.T) {
 			"invalid page token"), err)
 	})
 
-	t.Run("List devices by invalid orgID", func(t *testing.T) {
+	t.Run("List devices by invalid org ID", func(t *testing.T) {
 		t.Parallel()
 
 		ctrl := gomock.NewController(t)

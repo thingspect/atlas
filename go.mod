@@ -8,7 +8,7 @@ require (
 	github.com/golang/mock v1.4.4
 	github.com/golang/protobuf v1.4.3
 	github.com/golang/snappy v0.0.2 // indirect
-	github.com/google/uuid v1.1.4
+	github.com/google/uuid v1.1.5
 	github.com/grpc-ecosystem/grpc-gateway/v2 v2.1.0
 	github.com/jackc/pgconn v1.8.0
 	github.com/jackc/pgproto3/v2 v2.0.7 // indirect
@@ -20,9 +20,9 @@ require (
 	github.com/rs/zerolog v1.20.0
 	github.com/shopspring/decimal v1.2.0 // indirect
 	github.com/stretchr/testify v1.7.0
-	github.com/thingspect/api/go v0.0.0-20210113184523-442e0b6f68ec
+	github.com/thingspect/api/go v0.0.0-20210114155249-d9fd3cfac54f
 	golang.org/x/crypto v0.0.0-20201221181555-eec23a3978ad
-	google.golang.org/genproto v0.0.0-20210113195801-ae06605f4595 // indirect
+	google.golang.org/genproto v0.0.0-20210114201628-6edceaf6022f // indirect
 	google.golang.org/grpc v1.35.0
 	google.golang.org/protobuf v1.25.0
 	gopkg.in/yaml.v3 v3.0.0-20210107192922-496545a6307b // indirect

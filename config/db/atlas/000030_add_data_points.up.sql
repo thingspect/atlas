@@ -12,3 +12,5 @@ CREATE TABLE data_points (
   PRIMARY KEY (org_id, uniq_id, attr, created_at),
   CHECK (num_nonnulls(int_val, fl64_val, str_val, bool_val, bytes_val) = 1)
 );
+
+CREATE INDEX data_points_list_and_latest_idx ON data_points (org_id, uniq_id, attr, created_at DESC);

@@ -8,4 +8,5 @@ CREATE TABLE users (
   updated_at timestamptz NOT NULL
 );
 
-CREATE UNIQUE INDEX users_read_email_idx ON users (org_id, email);
+CREATE UNIQUE INDEX users_read_and_email_idx ON users (org_id, email);
+CREATE INDEX users_read_and_paginate_idx ON users (org_id, created_at, id);
