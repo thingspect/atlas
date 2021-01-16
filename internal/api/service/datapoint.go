@@ -13,7 +13,9 @@ import (
 	"github.com/thingspect/atlas/internal/api/session"
 	"github.com/thingspect/atlas/pkg/alog"
 	"github.com/thingspect/atlas/pkg/queue"
+	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/known/timestamppb"
@@ -89,6 +91,10 @@ func (d *DataPoint) Publish(ctx context.Context,
 		logger.Debugf("DataPoint.Publish published: %+v", vIn)
 	}
 
+	if err := grpc.SetHeader(ctx, metadata.Pairs("atlas-status-code",
+		"202")); err != nil {
+		logger.Errorf("DataPoint.Publish grpc.SetHeader: %v", err)
+	}
 	return &empty.Empty{}, nil
 }
 

@@ -84,7 +84,7 @@ func New(cfg *config.Config) (*API, error) {
 
 	// Register gRPC-Gateway handlers.
 	ctx, cancel := context.WithCancel(context.Background())
-	gwMux := runtime.NewServeMux()
+	gwMux := runtime.NewServeMux(runtime.WithForwardResponseOption(statusCode))
 	opts := []grpc.DialOption{
 		grpc.WithInsecure(),
 	}

@@ -11,7 +11,9 @@ import (
 	"github.com/thingspect/api/go/api"
 	"github.com/thingspect/atlas/internal/api/session"
 	"github.com/thingspect/atlas/pkg/alog"
+	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/proto"
 )
@@ -43,6 +45,7 @@ func NewDevice(devDAO Devicer) *Device {
 // Create creates a device.
 func (d *Device) Create(ctx context.Context,
 	req *api.CreateDeviceRequest) (*api.CreateDeviceResponse, error) {
+	logger := alog.FromContext(ctx)
 	sess, ok := session.FromContext(ctx)
 	if !ok {
 		return nil, status.Error(codes.PermissionDenied, "permission denied")
@@ -55,6 +58,10 @@ func (d *Device) Create(ctx context.Context,
 		return nil, errToStatus(err)
 	}
 
+	if err := grpc.SetHeader(ctx, metadata.Pairs("atlas-status-code",
+		"201")); err != nil {
+		logger.Errorf("Device.Create grpc.SetHeader: %v", err)
+	}
 	return &api.CreateDeviceResponse{Device: dev}, nil
 }
 
@@ -122,6 +129,7 @@ func (d *Device) Update(ctx context.Context,
 // Delete deletes a device by ID.
 func (d *Device) Delete(ctx context.Context,
 	req *api.DeleteDeviceRequest) (*empty.Empty, error) {
+	logger := alog.FromContext(ctx)
 	sess, ok := session.FromContext(ctx)
 	if !ok {
 		return nil, status.Error(codes.PermissionDenied, "permission denied")
@@ -131,6 +139,10 @@ func (d *Device) Delete(ctx context.Context,
 		return nil, errToStatus(err)
 	}
 
+	if err := grpc.SetHeader(ctx, metadata.Pairs("atlas-status-code",
+		"204")); err != nil {
+		logger.Errorf("Device.Delete grpc.SetHeader: %v", err)
+	}
 	return &empty.Empty{}, nil
 }
 

@@ -11,6 +11,7 @@ github.com/envoyproxy/protoc-gen-validate/validate
 # github.com/golang/mock v1.4.4
 ## explicit
 github.com/golang/mock/gomock
+github.com/golang/mock/mockgen/model
 # github.com/golang/protobuf v1.4.3
 ## explicit
 github.com/golang/protobuf/proto
@@ -82,7 +83,7 @@ github.com/rs/zerolog/internal/json
 ## explicit
 github.com/stretchr/testify/assert
 github.com/stretchr/testify/require
-# github.com/thingspect/api/go v0.0.0-20210114155249-d9fd3cfac54f
+# github.com/thingspect/api/go v0.0.0-20210116025050-5f13d51895d8
 ## explicit
 github.com/thingspect/api/go/api
 github.com/thingspect/api/go/common
@@ -122,7 +123,6 @@ golang.org/x/text/width
 golang.org/x/xerrors
 golang.org/x/xerrors/internal
 # google.golang.org/genproto v0.0.0-20210114201628-6edceaf6022f
-## explicit
 google.golang.org/genproto/googleapis/api/annotations
 google.golang.org/genproto/googleapis/api/httpbody
 google.golang.org/genproto/googleapis/rpc/status

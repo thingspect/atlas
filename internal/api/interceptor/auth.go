@@ -29,8 +29,8 @@ func Auth(skipPaths map[string]struct{},
 			return nil, status.Error(codes.Unauthenticated, "unauthorized")
 		}
 
-		auth, ok := md["authorization"]
-		if !ok || len(auth) == 0 {
+		auth := md["authorization"]
+		if len(auth) < 1 {
 			return nil, status.Error(codes.Unauthenticated, "unauthorized")
 		}
 
