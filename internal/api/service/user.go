@@ -12,7 +12,9 @@ import (
 	"github.com/thingspect/atlas/internal/api/session"
 	"github.com/thingspect/atlas/pkg/alog"
 	"github.com/thingspect/atlas/pkg/crypto"
+	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/proto"
 )
@@ -48,6 +50,7 @@ func NewUser(userDAO Userer) *User {
 // Create creates a user.
 func (u *User) Create(ctx context.Context,
 	req *api.CreateUserRequest) (*api.CreateUserResponse, error) {
+	logger := alog.FromContext(ctx)
 	sess, ok := session.FromContext(ctx)
 	if !ok {
 		return nil, status.Error(codes.PermissionDenied, "permission denied")
@@ -60,6 +63,10 @@ func (u *User) Create(ctx context.Context,
 		return nil, errToStatus(err)
 	}
 
+	if err := grpc.SetHeader(ctx, metadata.Pairs("atlas-status-code",
+		"201")); err != nil {
+		logger.Errorf("User.Create grpc.SetHeader: %v", err)
+	}
 	return &api.CreateUserResponse{User: user}, nil
 }
 
@@ -154,6 +161,7 @@ func (u *User) UpdatePassword(ctx context.Context,
 // Delete deletes a user by ID.
 func (u *User) Delete(ctx context.Context,
 	req *api.DeleteUserRequest) (*empty.Empty, error) {
+	logger := alog.FromContext(ctx)
 	sess, ok := session.FromContext(ctx)
 	if !ok {
 		return nil, status.Error(codes.PermissionDenied, "permission denied")
@@ -163,6 +171,10 @@ func (u *User) Delete(ctx context.Context,
 		return nil, errToStatus(err)
 	}
 
+	if err := grpc.SetHeader(ctx, metadata.Pairs("atlas-status-code",
+		"204")); err != nil {
+		logger.Errorf("User.Create grpc.SetHeader: %v", err)
+	}
 	return &empty.Empty{}, nil
 }
 

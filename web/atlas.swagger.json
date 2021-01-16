@@ -41,6 +41,10 @@
               "properties": {}
             }
           },
+          "202": {
+            "description": "A successful response.",
+            "schema": {}
+          },
           "default": {
             "description": "An unexpected error response.",
             "schema": {
@@ -146,6 +150,12 @@
         "operationId": "DeviceService_Create",
         "responses": {
           "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/apiCreateDeviceResponse"
+            }
+          },
+          "201": {
             "description": "A successful response.",
             "schema": {
               "$ref": "#/definitions/apiCreateDeviceResponse"
@@ -318,6 +328,10 @@
               "properties": {}
             }
           },
+          "204": {
+            "description": "A successful response.",
+            "schema": {}
+          },
           "default": {
             "description": "An unexpected error response.",
             "schema": {
@@ -422,6 +436,12 @@
               "$ref": "#/definitions/apiCreateUserResponse"
             }
           },
+          "201": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/apiCreateUserResponse"
+            }
+          },
           "default": {
             "description": "An unexpected error response.",
             "schema": {
@@ -488,6 +508,10 @@
             "schema": {
               "properties": {}
             }
+          },
+          "204": {
+            "description": "A successful response.",
+            "schema": {}
           },
           "default": {
             "description": "An unexpected error response.",

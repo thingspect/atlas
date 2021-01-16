@@ -5,6 +5,9 @@ import (
 	"fmt"
 
 	"github.com/golang/mock/gomock"
+
+	// mock/mockgen/model imported for reflection-based mockgen with vendoring.
+	_ "github.com/golang/mock/mockgen/model"
 	"google.golang.org/protobuf/proto"
 )
 

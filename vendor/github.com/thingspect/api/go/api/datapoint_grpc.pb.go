@@ -12,6 +12,7 @@ import (
 
 // This is a compile-time assertion to ensure that this generated file
 // is compatible with the grpc package it is being compiled against.
+// Requires gRPC-Go v1.32.0 or later.
 const _ = grpc.SupportPackageIsVersion7
 
 // DataPointServiceClient is the client API for DataPointService service.
@@ -81,7 +82,7 @@ type UnsafeDataPointServiceServer interface {
 }
 
 func RegisterDataPointServiceServer(s grpc.ServiceRegistrar, srv DataPointServiceServer) {
-	s.RegisterService(&_DataPointService_serviceDesc, srv)
+	s.RegisterService(&DataPointService_ServiceDesc, srv)
 }
 
 func _DataPointService_Publish_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
@@ -120,7 +121,10 @@ func _DataPointService_Latest_Handler(srv interface{}, ctx context.Context, dec 
 	return interceptor(ctx, in, info, handler)
 }
 
-var _DataPointService_serviceDesc = grpc.ServiceDesc{
+// DataPointService_ServiceDesc is the grpc.ServiceDesc for DataPointService service.
+// It's only intended for direct use with grpc.RegisterService,
+// and not to be introspected or modified (even as a copy)
+var DataPointService_ServiceDesc = grpc.ServiceDesc{
 	ServiceName: "api.DataPointService",
 	HandlerType: (*DataPointServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
