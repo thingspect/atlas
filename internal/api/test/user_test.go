@@ -31,18 +31,18 @@ func TestCreateUser(t *testing.T) {
 		defer cancel()
 
 		userCli := api.NewUserServiceClient(globalAuthGRPCConn)
-		createUser, err := userCli.Create(ctx, &api.CreateUserRequest{
+		createUser, err := userCli.CreateUser(ctx, &api.CreateUserRequest{
 			User: user})
 		t.Logf("createUser, err: %+v, %v", createUser, err)
 		require.NoError(t, err)
-		require.NotNil(t, createUser.User)
-		require.Equal(t, globalAuthOrgID, createUser.User.OrgId)
-		require.Equal(t, user.Email, createUser.User.Email)
-		require.Equal(t, user.Status, createUser.User.Status)
-		require.WithinDuration(t, time.Now(),
-			createUser.User.CreatedAt.AsTime(), 2*time.Second)
-		require.WithinDuration(t, time.Now(),
-			createUser.User.UpdatedAt.AsTime(), 2*time.Second)
+		require.NotNil(t, createUser)
+		require.Equal(t, globalAuthOrgID, createUser.OrgId)
+		require.Equal(t, user.Email, createUser.Email)
+		require.Equal(t, user.Status, createUser.Status)
+		require.WithinDuration(t, time.Now(), createUser.CreatedAt.AsTime(),
+			2*time.Second)
+		require.WithinDuration(t, time.Now(), createUser.UpdatedAt.AsTime(),
+			2*time.Second)
 	})
 
 	t.Run("Create invalid user", func(t *testing.T) {
@@ -56,7 +56,7 @@ func TestCreateUser(t *testing.T) {
 		defer cancel()
 
 		userCli := api.NewUserServiceClient(globalAuthGRPCConn)
-		createUser, err := userCli.Create(ctx, &api.CreateUserRequest{
+		createUser, err := userCli.CreateUser(ctx, &api.CreateUserRequest{
 			User: user})
 		t.Logf("createUser, err: %+v, %v", createUser, err)
 		require.Nil(t, createUser)
@@ -78,7 +78,8 @@ func TestReadUser(t *testing.T) {
 			common.Status_DISABLED}[random.Intn(2)]}
 
 	userCli := api.NewUserServiceClient(globalAuthGRPCConn)
-	createUser, err := userCli.Create(ctx, &api.CreateUserRequest{User: user})
+	createUser, err := userCli.CreateUser(ctx, &api.CreateUserRequest{
+		User: user})
 	t.Logf("createUser, err: %+v, %v", createUser, err)
 	require.NoError(t, err)
 
@@ -89,17 +90,15 @@ func TestReadUser(t *testing.T) {
 		defer cancel()
 
 		userCli := api.NewUserServiceClient(globalAuthGRPCConn)
-		readUser, err := userCli.Read(ctx, &api.ReadUserRequest{
-			Id: createUser.User.Id})
+		readUser, err := userCli.GetUser(ctx, &api.GetUserRequest{
+			Id: createUser.Id})
 		t.Logf("readUser, err: %+v, %v", readUser, err)
 		require.NoError(t, err)
 
 		// Testify does not currently support protobuf equality:
 		// https://github.com/stretchr/testify/issues/758
-		if !proto.Equal(&api.ReadUserResponse{User: createUser.User},
-			readUser) {
-			t.Fatalf("\nExpect: %+v\nActual: %+v",
-				&api.ReadUserResponse{User: createUser.User}, readUser)
+		if !proto.Equal(createUser, readUser) {
+			t.Fatalf("\nExpect: %+v\nActual: %+v", createUser, readUser)
 		}
 	})
 
@@ -110,7 +109,7 @@ func TestReadUser(t *testing.T) {
 		defer cancel()
 
 		userCli := api.NewUserServiceClient(globalAuthGRPCConn)
-		readUser, err := userCli.Read(ctx, &api.ReadUserRequest{
+		readUser, err := userCli.GetUser(ctx, &api.GetUserRequest{
 			Id: uuid.New().String()})
 		t.Logf("readUser, err: %+v, %v", readUser, err)
 		require.Nil(t, readUser)
@@ -125,8 +124,8 @@ func TestReadUser(t *testing.T) {
 		defer cancel()
 
 		secCli := api.NewUserServiceClient(secondaryAuthGRPCConn)
-		readUser, err := secCli.Read(ctx, &api.ReadUserRequest{
-			Id: createUser.User.Id})
+		readUser, err := secCli.GetUser(ctx, &api.GetUserRequest{
+			Id: createUser.Id})
 		t.Logf("readUser, err: %+v, %v", readUser, err)
 		require.Nil(t, readUser)
 		require.EqualError(t, err, "rpc error: code = NotFound desc = object "+
@@ -148,28 +147,28 @@ func TestUpdateUser(t *testing.T) {
 				common.Status_DISABLED}[random.Intn(2)]}
 
 		userCli := api.NewUserServiceClient(globalAuthGRPCConn)
-		createUser, err := userCli.Create(ctx, &api.CreateUserRequest{
+		createUser, err := userCli.CreateUser(ctx, &api.CreateUserRequest{
 			User: user})
 		t.Logf("createUser, err: %+v, %v", createUser, err)
 		require.NoError(t, err)
 
 		// Update user fields.
-		createUser.User.Email = "api-user-" + random.Email()
-		createUser.User.Status = []common.Status{common.Status_ACTIVE,
+		createUser.Email = "api-user-" + random.Email()
+		createUser.Status = []common.Status{common.Status_ACTIVE,
 			common.Status_DISABLED}[random.Intn(2)]
 
-		updateUser, err := userCli.Update(ctx, &api.UpdateUserRequest{
-			User: createUser.User})
+		updateUser, err := userCli.UpdateUser(ctx, &api.UpdateUserRequest{
+			User: createUser})
 		t.Logf("updateUser, err: %+v, %v", updateUser, err)
 		require.NoError(t, err)
-		require.Equal(t, createUser.User.Email, updateUser.User.Email)
-		require.Equal(t, createUser.User.Status, updateUser.User.Status)
-		require.Equal(t, createUser.User.CreatedAt.AsTime(),
-			updateUser.User.CreatedAt.AsTime())
-		require.True(t, updateUser.User.UpdatedAt.AsTime().After(
-			updateUser.User.CreatedAt.AsTime()))
-		require.WithinDuration(t, createUser.User.CreatedAt.AsTime(),
-			updateUser.User.UpdatedAt.AsTime(), 2*time.Second)
+		require.Equal(t, createUser.Email, updateUser.Email)
+		require.Equal(t, createUser.Status, updateUser.Status)
+		require.Equal(t, createUser.CreatedAt.AsTime(),
+			updateUser.CreatedAt.AsTime())
+		require.True(t, updateUser.UpdatedAt.AsTime().After(
+			updateUser.CreatedAt.AsTime()))
+		require.WithinDuration(t, createUser.CreatedAt.AsTime(),
+			updateUser.UpdatedAt.AsTime(), 2*time.Second)
 	})
 
 	t.Run("Partial update user by valid user", func(t *testing.T) {
@@ -183,29 +182,29 @@ func TestUpdateUser(t *testing.T) {
 				common.Status_DISABLED}[random.Intn(2)]}
 
 		userCli := api.NewUserServiceClient(globalAuthGRPCConn)
-		createUser, err := userCli.Create(ctx, &api.CreateUserRequest{
+		createUser, err := userCli.CreateUser(ctx, &api.CreateUserRequest{
 			User: user})
 		t.Logf("createUser, err: %+v, %v", createUser, err)
 		require.NoError(t, err)
 
 		// Update user fields.
-		part := &api.User{Id: createUser.User.Id, Email: "api-user-" +
+		part := &api.User{Id: createUser.Id, Email: "api-user-" +
 			random.Email(), Status: []common.Status{common.Status_ACTIVE,
 			common.Status_DISABLED}[random.Intn(2)]}
 
-		updateUser, err := userCli.Update(ctx, &api.UpdateUserRequest{
+		updateUser, err := userCli.UpdateUser(ctx, &api.UpdateUserRequest{
 			User: part, UpdateMask: &fieldmaskpb.FieldMask{
 				Paths: []string{"email", "status"}}})
 		t.Logf("updateUser, err: %+v, %v", updateUser, err)
 		require.NoError(t, err)
-		require.Equal(t, part.Email, updateUser.User.Email)
-		require.Equal(t, part.Status, updateUser.User.Status)
-		require.Equal(t, createUser.User.CreatedAt.AsTime(),
-			updateUser.User.CreatedAt.AsTime())
-		require.True(t, updateUser.User.UpdatedAt.AsTime().After(
-			updateUser.User.CreatedAt.AsTime()))
-		require.WithinDuration(t, createUser.User.CreatedAt.AsTime(),
-			updateUser.User.UpdatedAt.AsTime(), 2*time.Second)
+		require.Equal(t, part.Email, updateUser.Email)
+		require.Equal(t, part.Status, updateUser.Status)
+		require.Equal(t, createUser.CreatedAt.AsTime(),
+			updateUser.CreatedAt.AsTime())
+		require.True(t, updateUser.UpdatedAt.AsTime().After(
+			updateUser.CreatedAt.AsTime()))
+		require.WithinDuration(t, createUser.CreatedAt.AsTime(),
+			updateUser.UpdatedAt.AsTime(), 2*time.Second)
 	})
 
 	t.Run("Update nil user", func(t *testing.T) {
@@ -215,7 +214,7 @@ func TestUpdateUser(t *testing.T) {
 		defer cancel()
 
 		userCli := api.NewUserServiceClient(globalAuthGRPCConn)
-		updateUser, err := userCli.Update(ctx, &api.UpdateUserRequest{
+		updateUser, err := userCli.UpdateUser(ctx, &api.UpdateUserRequest{
 			User: nil})
 		t.Logf("updateUser, err: %+v, %v", updateUser, err)
 		require.Nil(t, updateUser)
@@ -233,7 +232,7 @@ func TestUpdateUser(t *testing.T) {
 			random.Email()}
 
 		userCli := api.NewUserServiceClient(globalAuthGRPCConn)
-		updateUser, err := userCli.Update(ctx, &api.UpdateUserRequest{
+		updateUser, err := userCli.UpdateUser(ctx, &api.UpdateUserRequest{
 			User: unknownUser, UpdateMask: &fieldmaskpb.FieldMask{
 				Paths: []string{"aaa"}}})
 		t.Logf("updateUser, err: %+v, %v", updateUser, err)
@@ -252,7 +251,7 @@ func TestUpdateUser(t *testing.T) {
 			random.Email()}
 
 		userCli := api.NewUserServiceClient(globalAuthGRPCConn)
-		updateUser, err := userCli.Update(ctx, &api.UpdateUserRequest{
+		updateUser, err := userCli.UpdateUser(ctx, &api.UpdateUserRequest{
 			User: unknownUser, UpdateMask: &fieldmaskpb.FieldMask{
 				Paths: []string{"email"}}})
 		t.Logf("updateUser, err: %+v, %v", updateUser, err)
@@ -272,7 +271,7 @@ func TestUpdateUser(t *testing.T) {
 				common.Status_ACTIVE, common.Status_DISABLED}[random.Intn(2)]}
 
 		userCli := api.NewUserServiceClient(globalAuthGRPCConn)
-		updateUser, err := userCli.Update(ctx, &api.UpdateUserRequest{
+		updateUser, err := userCli.UpdateUser(ctx, &api.UpdateUserRequest{
 			User: unknownUser})
 		t.Logf("updateUser, err: %+v, %v", updateUser, err)
 		require.Nil(t, updateUser)
@@ -291,18 +290,18 @@ func TestUpdateUser(t *testing.T) {
 				common.Status_DISABLED}[random.Intn(2)]}
 
 		userCli := api.NewUserServiceClient(globalAuthGRPCConn)
-		createUser, err := userCli.Create(ctx, &api.CreateUserRequest{
+		createUser, err := userCli.CreateUser(ctx, &api.CreateUserRequest{
 			User: user})
 		t.Logf("createUser, err: %+v, %v", createUser, err)
 		require.NoError(t, err)
 
 		// Update user fields.
-		createUser.User.OrgId = uuid.New().String()
-		createUser.User.Email = "api-user-" + random.Email()
+		createUser.OrgId = uuid.New().String()
+		createUser.Email = "api-user-" + random.Email()
 
 		secCli := api.NewUserServiceClient(secondaryAuthGRPCConn)
-		updateUser, err := secCli.Update(ctx, &api.UpdateUserRequest{
-			User: createUser.User})
+		updateUser, err := secCli.UpdateUser(ctx, &api.UpdateUserRequest{
+			User: createUser})
 		t.Logf("updateUser, err: %+v, %v", updateUser, err)
 		require.Nil(t, updateUser)
 		require.EqualError(t, err, "rpc error: code = NotFound desc = object "+
@@ -320,16 +319,16 @@ func TestUpdateUser(t *testing.T) {
 				common.Status_DISABLED}[random.Intn(2)]}
 
 		userCli := api.NewUserServiceClient(globalAuthGRPCConn)
-		createUser, err := userCli.Create(ctx, &api.CreateUserRequest{
+		createUser, err := userCli.CreateUser(ctx, &api.CreateUserRequest{
 			User: user})
 		t.Logf("createUser, err: %+v, %v", createUser, err)
 		require.NoError(t, err)
 
 		// Update user fields.
-		createUser.User.Email = "api-user-" + random.String(10)
+		createUser.Email = "api-user-" + random.String(10)
 
-		updateUser, err := userCli.Update(ctx, &api.UpdateUserRequest{
-			User: createUser.User})
+		updateUser, err := userCli.UpdateUser(ctx, &api.UpdateUserRequest{
+			User: createUser})
 		t.Logf("updateUser, err: %+v, %v", updateUser, err)
 		require.Nil(t, updateUser)
 		require.EqualError(t, err, "rpc error: code = InvalidArgument desc = "+
@@ -349,17 +348,17 @@ func TestUpdateUser(t *testing.T) {
 				common.Status_DISABLED}[random.Intn(2)]}
 
 		userCli := api.NewUserServiceClient(globalAuthGRPCConn)
-		createUser, err := userCli.Create(ctx, &api.CreateUserRequest{
+		createUser, err := userCli.CreateUser(ctx, &api.CreateUserRequest{
 			User: user})
 		t.Logf("createUser, err: %+v, %v", createUser, err)
 		require.NoError(t, err)
 
 		// Update user fields.
-		createUser.User.Email = fmt.Sprintf("%s@%s.com", random.String(64),
+		createUser.Email = fmt.Sprintf("%s@%s.com", random.String(64),
 			random.String(15))
 
-		updateUser, err := userCli.Update(ctx, &api.UpdateUserRequest{
-			User: createUser.User})
+		updateUser, err := userCli.UpdateUser(ctx, &api.UpdateUserRequest{
+			User: createUser})
 		t.Logf("updateUser, err: %+v, %v", updateUser, err)
 		require.Nil(t, updateUser)
 		require.EqualError(t, err, "rpc error: code = InvalidArgument desc = "+
@@ -381,13 +380,13 @@ func TestUpdateUserPassword(t *testing.T) {
 				common.Status_DISABLED}[random.Intn(2)]}
 
 		userCli := api.NewUserServiceClient(globalAuthGRPCConn)
-		createUser, err := userCli.Create(ctx, &api.CreateUserRequest{
+		createUser, err := userCli.CreateUser(ctx, &api.CreateUserRequest{
 			User: user})
 		t.Logf("createUser, err: %+v, %v", createUser, err)
 		require.NoError(t, err)
 
-		_, err = userCli.UpdatePassword(ctx, &api.UpdateUserPasswordRequest{
-			Id: createUser.User.Id, Password: random.String(20)})
+		_, err = userCli.UpdateUserPassword(ctx, &api.UpdateUserPasswordRequest{
+			Id: createUser.Id, Password: random.String(20)})
 		t.Logf("err: %v", err)
 		require.NoError(t, err)
 	})
@@ -403,13 +402,13 @@ func TestUpdateUserPassword(t *testing.T) {
 				common.Status_DISABLED}[random.Intn(2)]}
 
 		userCli := api.NewUserServiceClient(globalAuthGRPCConn)
-		createUser, err := userCli.Create(ctx, &api.CreateUserRequest{
+		createUser, err := userCli.CreateUser(ctx, &api.CreateUserRequest{
 			User: user})
 		t.Logf("createUser, err: %+v, %v", createUser, err)
 		require.NoError(t, err)
 
-		_, err = userCli.UpdatePassword(ctx, &api.UpdateUserPasswordRequest{
-			Id: createUser.User.Id, Password: "1234567890"})
+		_, err = userCli.UpdateUserPassword(ctx, &api.UpdateUserPasswordRequest{
+			Id: createUser.Id, Password: "1234567890"})
 		t.Logf("err: %v", err)
 		require.EqualError(t, err, "rpc error: code = InvalidArgument desc = "+
 			"weak password, see NIST password guidelines")
@@ -422,8 +421,9 @@ func TestUpdateUserPassword(t *testing.T) {
 		defer cancel()
 
 		userCli := api.NewUserServiceClient(globalAuthGRPCConn)
-		_, err := userCli.UpdatePassword(ctx, &api.UpdateUserPasswordRequest{
-			Id: uuid.New().String(), Password: random.String(20)})
+		_, err := userCli.UpdateUserPassword(ctx,
+			&api.UpdateUserPasswordRequest{Id: uuid.New().String(),
+				Password: random.String(20)})
 		t.Logf("err: %v", err)
 		require.EqualError(t, err, "rpc error: code = NotFound desc = object "+
 			"not found")
@@ -440,14 +440,14 @@ func TestUpdateUserPassword(t *testing.T) {
 				common.Status_DISABLED}[random.Intn(2)]}
 
 		userCli := api.NewUserServiceClient(globalAuthGRPCConn)
-		createUser, err := userCli.Create(ctx, &api.CreateUserRequest{
+		createUser, err := userCli.CreateUser(ctx, &api.CreateUserRequest{
 			User: user})
 		t.Logf("createUser, err: %+v, %v", createUser, err)
 		require.NoError(t, err)
 
 		secCli := api.NewUserServiceClient(secondaryAuthGRPCConn)
-		_, err = secCli.UpdatePassword(ctx, &api.UpdateUserPasswordRequest{
-			Id: createUser.User.Id, Password: random.String(20)})
+		_, err = secCli.UpdateUserPassword(ctx, &api.UpdateUserPasswordRequest{
+			Id: createUser.Id, Password: random.String(20)})
 		t.Logf("err: %v", err)
 		require.EqualError(t, err, "rpc error: code = NotFound desc = object "+
 			"not found")
@@ -468,13 +468,13 @@ func TestDeleteUser(t *testing.T) {
 				common.Status_DISABLED}[random.Intn(2)]}
 
 		userCli := api.NewUserServiceClient(globalAuthGRPCConn)
-		createUser, err := userCli.Create(ctx, &api.CreateUserRequest{
+		createUser, err := userCli.CreateUser(ctx, &api.CreateUserRequest{
 			User: user})
 		t.Logf("createUser, err: %+v, %v", createUser, err)
 		require.NoError(t, err)
 
-		_, err = userCli.Delete(ctx, &api.DeleteUserRequest{
-			Id: createUser.User.Id})
+		_, err = userCli.DeleteUser(ctx, &api.DeleteUserRequest{
+			Id: createUser.Id})
 		t.Logf("err: %v", err)
 		require.NoError(t, err)
 
@@ -486,8 +486,8 @@ func TestDeleteUser(t *testing.T) {
 			defer cancel()
 
 			userCli := api.NewUserServiceClient(globalAuthGRPCConn)
-			readUser, err := userCli.Read(ctx, &api.ReadUserRequest{
-				Id: createUser.User.Id})
+			readUser, err := userCli.GetUser(ctx, &api.GetUserRequest{
+				Id: createUser.Id})
 			t.Logf("readUser, err: %+v, %v", readUser, err)
 			require.Nil(t, readUser)
 			require.EqualError(t, err, "rpc error: code = NotFound desc = "+
@@ -502,7 +502,7 @@ func TestDeleteUser(t *testing.T) {
 		defer cancel()
 
 		userCli := api.NewUserServiceClient(globalAuthGRPCConn)
-		_, err := userCli.Delete(ctx, &api.DeleteUserRequest{
+		_, err := userCli.DeleteUser(ctx, &api.DeleteUserRequest{
 			Id: uuid.New().String()})
 		t.Logf("err: %v", err)
 		require.EqualError(t, err, "rpc error: code = NotFound desc = object "+
@@ -520,14 +520,14 @@ func TestDeleteUser(t *testing.T) {
 				common.Status_DISABLED}[random.Intn(2)]}
 
 		userCli := api.NewUserServiceClient(globalAuthGRPCConn)
-		createUser, err := userCli.Create(ctx, &api.CreateUserRequest{
+		createUser, err := userCli.CreateUser(ctx, &api.CreateUserRequest{
 			User: user})
 		t.Logf("createUser, err: %+v, %v", createUser, err)
 		require.NoError(t, err)
 
 		secCli := api.NewUserServiceClient(secondaryAuthGRPCConn)
-		_, err = secCli.Delete(ctx, &api.DeleteUserRequest{
-			Id: createUser.User.Id})
+		_, err = secCli.DeleteUser(ctx, &api.DeleteUserRequest{
+			Id: createUser.Id})
 		t.Logf("err: %v", err)
 		require.EqualError(t, err, "rpc error: code = NotFound desc = object "+
 			"not found")
@@ -548,12 +548,12 @@ func TestListUsers(t *testing.T) {
 				common.Status_DISABLED}[random.Intn(2)]}
 
 		userCli := api.NewUserServiceClient(globalAuthGRPCConn)
-		createUser, err := userCli.Create(ctx, &api.CreateUserRequest{
+		createUser, err := userCli.CreateUser(ctx, &api.CreateUserRequest{
 			User: user})
 		t.Logf("createUser, err: %+v, %v", createUser, err)
 		require.NoError(t, err)
-		userIDs = append(userIDs, createUser.User.Id)
-		userStatuses = append(userStatuses, createUser.User.Status)
+		userIDs = append(userIDs, createUser.Id)
+		userStatuses = append(userStatuses, createUser.Status)
 	}
 
 	t.Run("List users by valid org ID", func(t *testing.T) {
@@ -563,7 +563,7 @@ func TestListUsers(t *testing.T) {
 		defer cancel()
 
 		userCli := api.NewUserServiceClient(globalAuthGRPCConn)
-		listUsers, err := userCli.List(ctx, &api.ListUserRequest{})
+		listUsers, err := userCli.ListUsers(ctx, &api.ListUsersRequest{})
 		t.Logf("listUsers, err: %+v, %v", listUsers, err)
 		require.NoError(t, err)
 		require.GreaterOrEqual(t, len(listUsers.Users), 3)
@@ -586,7 +586,8 @@ func TestListUsers(t *testing.T) {
 		defer cancel()
 
 		userCli := api.NewUserServiceClient(globalAuthGRPCConn)
-		listUsers, err := userCli.List(ctx, &api.ListUserRequest{PageSize: 2})
+		listUsers, err := userCli.ListUsers(ctx, &api.ListUsersRequest{
+			PageSize: 2})
 		t.Logf("listUsers, err: %+v, %v", listUsers, err)
 		require.NoError(t, err)
 		require.Len(t, listUsers.Users, 2)
@@ -594,8 +595,8 @@ func TestListUsers(t *testing.T) {
 		require.NotEmpty(t, listUsers.NextPageToken)
 		require.GreaterOrEqual(t, listUsers.TotalSize, int32(3))
 
-		nextUsers, err := userCli.List(ctx, &api.ListUserRequest{PageSize: 2,
-			PageToken: listUsers.NextPageToken})
+		nextUsers, err := userCli.ListUsers(ctx, &api.ListUsersRequest{
+			PageSize: 2, PageToken: listUsers.NextPageToken})
 		t.Logf("nextUsers, err: %+v, %v", nextUsers, err)
 		require.NoError(t, err)
 		require.GreaterOrEqual(t, len(nextUsers.Users), 1)
@@ -610,7 +611,7 @@ func TestListUsers(t *testing.T) {
 		defer cancel()
 
 		secCli := api.NewUserServiceClient(secondaryAuthGRPCConn)
-		listUsers, err := secCli.List(ctx, &api.ListUserRequest{})
+		listUsers, err := secCli.ListUsers(ctx, &api.ListUsersRequest{})
 		t.Logf("listUsers, err: %+v, %v", listUsers, err)
 		require.NoError(t, err)
 		require.Len(t, listUsers.Users, 1)
@@ -624,7 +625,7 @@ func TestListUsers(t *testing.T) {
 		defer cancel()
 
 		userCli := api.NewUserServiceClient(globalAuthGRPCConn)
-		listUsers, err := userCli.List(ctx, &api.ListUserRequest{
+		listUsers, err := userCli.ListUsers(ctx, &api.ListUsersRequest{
 			PageToken: "..."})
 		t.Logf("listUsers, err: %+v, %v", listUsers, err)
 		require.Nil(t, listUsers)

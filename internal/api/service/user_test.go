@@ -46,16 +46,15 @@ func TestCreateUser(t *testing.T) {
 		defer cancel()
 
 		userSvc := NewUser(userr)
-		createUser, err := userSvc.Create(ctx, &api.CreateUserRequest{
+		createUser, err := userSvc.CreateUser(ctx, &api.CreateUserRequest{
 			User: user})
 		t.Logf("createUser, err: %+v, %v", createUser, err)
 		require.NoError(t, err)
 
 		// Testify does not currently support protobuf equality:
 		// https://github.com/stretchr/testify/issues/758
-		if !proto.Equal(&api.CreateUserResponse{User: user}, createUser) {
-			t.Fatalf("\nExpect: %+v\nActual: %+v",
-				&api.CreateUserResponse{User: user}, createUser)
+		if !proto.Equal(user, createUser) {
+			t.Fatalf("\nExpect: %+v\nActual: %+v", user, createUser)
 		}
 	})
 
@@ -72,7 +71,7 @@ func TestCreateUser(t *testing.T) {
 		defer cancel()
 
 		userSvc := NewUser(userr)
-		createUser, err := userSvc.Create(ctx, &api.CreateUserRequest{
+		createUser, err := userSvc.CreateUser(ctx, &api.CreateUserRequest{
 			User: nil})
 		t.Logf("createUser, err: %+v, %v", createUser, err)
 		require.Nil(t, createUser)
@@ -100,7 +99,7 @@ func TestCreateUser(t *testing.T) {
 		defer cancel()
 
 		userSvc := NewUser(userr)
-		createUser, err := userSvc.Create(ctx, &api.CreateUserRequest{
+		createUser, err := userSvc.CreateUser(ctx, &api.CreateUserRequest{
 			User: user})
 		t.Logf("createUser, err: %+v, %v", createUser, err)
 		require.Nil(t, createUser)
@@ -132,15 +131,14 @@ func TestReadUser(t *testing.T) {
 		defer cancel()
 
 		userSvc := NewUser(userr)
-		readUser, err := userSvc.Read(ctx, &api.ReadUserRequest{Id: user.Id})
+		readUser, err := userSvc.GetUser(ctx, &api.GetUserRequest{Id: user.Id})
 		t.Logf("readUser, err: %+v, %v", readUser, err)
 		require.NoError(t, err)
 
 		// Testify does not currently support protobuf equality:
 		// https://github.com/stretchr/testify/issues/758
-		if !proto.Equal(&api.ReadUserResponse{User: user}, readUser) {
-			t.Fatalf("\nExpect: %+v\nActual: %+v",
-				&api.ReadUserResponse{User: user}, readUser)
+		if !proto.Equal(user, readUser) {
+			t.Fatalf("\nExpect: %+v\nActual: %+v", user, readUser)
 		}
 	})
 
@@ -157,7 +155,7 @@ func TestReadUser(t *testing.T) {
 		defer cancel()
 
 		userSvc := NewUser(userr)
-		readUser, err := userSvc.Read(ctx, &api.ReadUserRequest{
+		readUser, err := userSvc.GetUser(ctx, &api.GetUserRequest{
 			Id: uuid.New().String()})
 		t.Logf("readUser, err: %+v, %v", readUser, err)
 		require.Nil(t, readUser)
@@ -181,7 +179,7 @@ func TestReadUser(t *testing.T) {
 		defer cancel()
 
 		userSvc := NewUser(userr)
-		readUser, err := userSvc.Read(ctx, &api.ReadUserRequest{
+		readUser, err := userSvc.GetUser(ctx, &api.GetUserRequest{
 			Id: uuid.New().String()})
 		t.Logf("readUser, err: %+v, %v", readUser, err)
 		require.Nil(t, readUser)
@@ -211,16 +209,15 @@ func TestUpdateUser(t *testing.T) {
 		defer cancel()
 
 		userSvc := NewUser(userr)
-		updateUser, err := userSvc.Update(ctx, &api.UpdateUserRequest{
+		updateUser, err := userSvc.UpdateUser(ctx, &api.UpdateUserRequest{
 			User: user})
 		t.Logf("updateUser, err: %+v, %v", updateUser, err)
 		require.NoError(t, err)
 
 		// Testify does not currently support protobuf equality:
 		// https://github.com/stretchr/testify/issues/758
-		if !proto.Equal(&api.UpdateUserResponse{User: user}, updateUser) {
-			t.Fatalf("\nExpect: %+v\nActual: %+v",
-				&api.UpdateUserResponse{User: user}, updateUser)
+		if !proto.Equal(user, updateUser) {
+			t.Fatalf("\nExpect: %+v\nActual: %+v", user, updateUser)
 		}
 	})
 
@@ -248,7 +245,7 @@ func TestUpdateUser(t *testing.T) {
 		defer cancel()
 
 		userSvc := NewUser(userr)
-		updateUser, err := userSvc.Update(ctx, &api.UpdateUserRequest{
+		updateUser, err := userSvc.UpdateUser(ctx, &api.UpdateUserRequest{
 			User: part, UpdateMask: &fieldmaskpb.FieldMask{
 				Paths: []string{"status"}}})
 		t.Logf("updateUser, err: %+v, %v", updateUser, err)
@@ -256,9 +253,8 @@ func TestUpdateUser(t *testing.T) {
 
 		// Testify does not currently support protobuf equality:
 		// https://github.com/stretchr/testify/issues/758
-		if !proto.Equal(&api.UpdateUserResponse{User: merged}, updateUser) {
-			t.Fatalf("\nExpect: %+v\nActual: %+v",
-				&api.UpdateUserResponse{User: merged}, updateUser)
+		if !proto.Equal(merged, updateUser) {
+			t.Fatalf("\nExpect: %+v\nActual: %+v", merged, updateUser)
 		}
 	})
 
@@ -275,7 +271,7 @@ func TestUpdateUser(t *testing.T) {
 		defer cancel()
 
 		userSvc := NewUser(userr)
-		updateUser, err := userSvc.Update(ctx, &api.UpdateUserRequest{
+		updateUser, err := userSvc.UpdateUser(ctx, &api.UpdateUserRequest{
 			User: nil})
 		t.Logf("updateUser, err: %+v, %v", updateUser, err)
 		require.Nil(t, updateUser)
@@ -298,7 +294,7 @@ func TestUpdateUser(t *testing.T) {
 		defer cancel()
 
 		userSvc := NewUser(userr)
-		updateUser, err := userSvc.Update(ctx, &api.UpdateUserRequest{
+		updateUser, err := userSvc.UpdateUser(ctx, &api.UpdateUserRequest{
 			User: nil})
 		t.Logf("updateUser, err: %+v, %v", updateUser, err)
 		require.Nil(t, updateUser)
@@ -326,7 +322,7 @@ func TestUpdateUser(t *testing.T) {
 		defer cancel()
 
 		userSvc := NewUser(userr)
-		updateUser, err := userSvc.Update(ctx, &api.UpdateUserRequest{
+		updateUser, err := userSvc.UpdateUser(ctx, &api.UpdateUserRequest{
 			User: user, UpdateMask: &fieldmaskpb.FieldMask{
 				Paths: []string{"aaa"}}})
 		t.Logf("updateUser, err: %+v, %v", updateUser, err)
@@ -356,7 +352,7 @@ func TestUpdateUser(t *testing.T) {
 		defer cancel()
 
 		userSvc := NewUser(userr)
-		updateUser, err := userSvc.Update(ctx, &api.UpdateUserRequest{
+		updateUser, err := userSvc.UpdateUser(ctx, &api.UpdateUserRequest{
 			User: part, UpdateMask: &fieldmaskpb.FieldMask{
 				Paths: []string{"status"}}})
 		t.Logf("updateUser, err: %+v, %v", updateUser, err)
@@ -383,7 +379,7 @@ func TestUpdateUser(t *testing.T) {
 		defer cancel()
 
 		userSvc := NewUser(userr)
-		updateUser, err := userSvc.Update(ctx, &api.UpdateUserRequest{
+		updateUser, err := userSvc.UpdateUser(ctx, &api.UpdateUserRequest{
 			User: user})
 		t.Logf("updateUser, err: %+v, %v", updateUser, err)
 		require.Nil(t, updateUser)
@@ -413,7 +409,7 @@ func TestUpdateUser(t *testing.T) {
 		defer cancel()
 
 		userSvc := NewUser(userr)
-		updateUser, err := userSvc.Update(ctx, &api.UpdateUserRequest{
+		updateUser, err := userSvc.UpdateUser(ctx, &api.UpdateUserRequest{
 			User: user})
 		t.Logf("updateUser, err: %+v, %v", updateUser, err)
 		require.Nil(t, updateUser)
@@ -441,8 +437,9 @@ func TestUpdateUserPassword(t *testing.T) {
 		defer cancel()
 
 		userSvc := NewUser(userr)
-		_, err := userSvc.UpdatePassword(ctx, &api.UpdateUserPasswordRequest{
-			Id: uuid.New().String(), Password: random.String(20)})
+		_, err := userSvc.UpdateUserPassword(ctx,
+			&api.UpdateUserPasswordRequest{Id: uuid.New().String(),
+				Password: random.String(20)})
 		t.Logf("err: %v", err)
 		require.NoError(t, err)
 	})
@@ -461,8 +458,9 @@ func TestUpdateUserPassword(t *testing.T) {
 		defer cancel()
 
 		userSvc := NewUser(userr)
-		_, err := userSvc.UpdatePassword(ctx, &api.UpdateUserPasswordRequest{
-			Id: uuid.New().String(), Password: random.String(20)})
+		_, err := userSvc.UpdateUserPassword(ctx,
+			&api.UpdateUserPasswordRequest{Id: uuid.New().String(),
+				Password: random.String(20)})
 		t.Logf("err: %v", err)
 		require.Equal(t, status.Error(codes.PermissionDenied,
 			"permission denied"), err)
@@ -484,8 +482,9 @@ func TestUpdateUserPassword(t *testing.T) {
 		defer cancel()
 
 		userSvc := NewUser(userr)
-		_, err := userSvc.UpdatePassword(ctx, &api.UpdateUserPasswordRequest{
-			Id: uuid.New().String(), Password: "1234567890"})
+		_, err := userSvc.UpdateUserPassword(ctx,
+			&api.UpdateUserPasswordRequest{Id: uuid.New().String(),
+				Password: "1234567890"})
 		t.Logf("err: %v", err)
 		require.Equal(t, status.Error(codes.InvalidArgument,
 			crypto.ErrWeakPass.Error()), err)
@@ -507,8 +506,9 @@ func TestUpdateUserPassword(t *testing.T) {
 		defer cancel()
 
 		userSvc := NewUser(userr)
-		_, err := userSvc.UpdatePassword(ctx, &api.UpdateUserPasswordRequest{
-			Id: uuid.New().String(), Password: random.String(20)})
+		_, err := userSvc.UpdateUserPassword(ctx,
+			&api.UpdateUserPasswordRequest{Id: uuid.New().String(),
+				Password: random.String(20)})
 		t.Logf("err: %v", err)
 		require.Equal(t, status.Error(codes.NotFound, "object not found"), err)
 	})
@@ -533,7 +533,7 @@ func TestDeleteUser(t *testing.T) {
 		defer cancel()
 
 		userSvc := NewUser(userr)
-		_, err := userSvc.Delete(ctx, &api.DeleteUserRequest{
+		_, err := userSvc.DeleteUser(ctx, &api.DeleteUserRequest{
 			Id: uuid.New().String()})
 		t.Logf("err: %v", err)
 		require.NoError(t, err)
@@ -553,7 +553,7 @@ func TestDeleteUser(t *testing.T) {
 		defer cancel()
 
 		userSvc := NewUser(userr)
-		_, err := userSvc.Delete(ctx, &api.DeleteUserRequest{
+		_, err := userSvc.DeleteUser(ctx, &api.DeleteUserRequest{
 			Id: uuid.New().String()})
 		t.Logf("err: %v", err)
 		require.Equal(t, status.Error(codes.PermissionDenied,
@@ -576,7 +576,7 @@ func TestDeleteUser(t *testing.T) {
 		defer cancel()
 
 		userSvc := NewUser(userr)
-		_, err := userSvc.Delete(ctx, &api.DeleteUserRequest{
+		_, err := userSvc.DeleteUser(ctx, &api.DeleteUserRequest{
 			Id: uuid.New().String()})
 		t.Logf("err: %v", err)
 		require.Equal(t, status.Error(codes.NotFound, "object not found"), err)
@@ -607,7 +607,7 @@ func TestListUsers(t *testing.T) {
 		defer ctrl.Finish()
 
 		userr := NewMockUserer(ctrl)
-		userr.EXPECT().List(gomock.Any(), orgID, time.Time{}, "", int32(101)).
+		userr.EXPECT().List(gomock.Any(), orgID, time.Time{}, "", int32(51)).
 			Return(users, int32(3), nil).Times(1)
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
@@ -616,17 +616,17 @@ func TestListUsers(t *testing.T) {
 		defer cancel()
 
 		userSvc := NewUser(userr)
-		listUsers, err := userSvc.List(ctx, &api.ListUserRequest{})
+		listUsers, err := userSvc.ListUsers(ctx, &api.ListUsersRequest{})
 		t.Logf("listUsers, err: %+v, %v", listUsers, err)
 		require.NoError(t, err)
 		require.Equal(t, int32(3), listUsers.TotalSize)
 
 		// Testify does not currently support protobuf equality:
 		// https://github.com/stretchr/testify/issues/758
-		if !proto.Equal(&api.ListUserResponse{Users: users, TotalSize: 3},
+		if !proto.Equal(&api.ListUsersResponse{Users: users, TotalSize: 3},
 			listUsers) {
 			t.Fatalf("\nExpect: %+v\nActual: %+v",
-				&api.ListUserResponse{Users: users, TotalSize: 3}, listUsers)
+				&api.ListUsersResponse{Users: users, TotalSize: 3}, listUsers)
 		}
 	})
 
@@ -667,17 +667,18 @@ func TestListUsers(t *testing.T) {
 		defer cancel()
 
 		userSvc := NewUser(userr)
-		listUsers, err := userSvc.List(ctx, &api.ListUserRequest{PageSize: 2})
+		listUsers, err := userSvc.ListUsers(ctx, &api.ListUsersRequest{
+			PageSize: 2})
 		t.Logf("listUsers, err: %+v, %v", listUsers, err)
 		require.NoError(t, err)
 		require.Equal(t, int32(3), listUsers.TotalSize)
 
 		// Testify does not currently support protobuf equality:
 		// https://github.com/stretchr/testify/issues/758
-		if !proto.Equal(&api.ListUserResponse{Users: users[:2],
+		if !proto.Equal(&api.ListUsersResponse{Users: users[:2],
 			NextPageToken: next, TotalSize: 3}, listUsers) {
 			t.Fatalf("\nExpect: %+v\nActual: %+v",
-				&api.ListUserResponse{Users: users[:2], NextPageToken: next,
+				&api.ListUsersResponse{Users: users[:2], NextPageToken: next,
 					TotalSize: 3}, listUsers)
 		}
 	})
@@ -696,7 +697,7 @@ func TestListUsers(t *testing.T) {
 		defer cancel()
 
 		userSvc := NewUser(userr)
-		listUsers, err := userSvc.List(ctx, &api.ListUserRequest{})
+		listUsers, err := userSvc.ListUsers(ctx, &api.ListUsersRequest{})
 		t.Logf("listUsers, err: %+v, %v", listUsers, err)
 		require.Nil(t, listUsers)
 		require.Equal(t, status.Error(codes.PermissionDenied,
@@ -720,7 +721,7 @@ func TestListUsers(t *testing.T) {
 		defer cancel()
 
 		userSvc := NewUser(userr)
-		listUsers, err := userSvc.List(ctx, &api.ListUserRequest{
+		listUsers, err := userSvc.ListUsers(ctx, &api.ListUsersRequest{
 			PageToken: "..."})
 		t.Logf("listUsers, err: %+v, %v", listUsers, err)
 		require.Nil(t, listUsers)
@@ -744,7 +745,7 @@ func TestListUsers(t *testing.T) {
 		defer cancel()
 
 		userSvc := NewUser(userr)
-		listUsers, err := userSvc.List(ctx, &api.ListUserRequest{})
+		listUsers, err := userSvc.ListUsers(ctx, &api.ListUsersRequest{})
 		t.Logf("listUsers, err: %+v, %v", listUsers, err)
 		require.Nil(t, listUsers)
 		require.Equal(t, status.Error(codes.InvalidArgument, "invalid format"),
@@ -784,17 +785,18 @@ func TestListUsers(t *testing.T) {
 		defer cancel()
 
 		userSvc := NewUser(userr)
-		listUsers, err := userSvc.List(ctx, &api.ListUserRequest{PageSize: 2})
+		listUsers, err := userSvc.ListUsers(ctx, &api.ListUsersRequest{
+			PageSize: 2})
 		t.Logf("listUsers, err: %+v, %v", listUsers, err)
 		require.NoError(t, err)
 		require.Equal(t, int32(3), listUsers.TotalSize)
 
 		// Testify does not currently support protobuf equality:
 		// https://github.com/stretchr/testify/issues/758
-		if !proto.Equal(&api.ListUserResponse{Users: users[:2],
+		if !proto.Equal(&api.ListUsersResponse{Users: users[:2],
 			TotalSize: 3}, listUsers) {
 			t.Fatalf("\nExpect: %+v\nActual: %+v",
-				&api.ListUserResponse{Users: users[:2], TotalSize: 3},
+				&api.ListUsersResponse{Users: users[:2], TotalSize: 3},
 				listUsers)
 		}
 	})

@@ -61,7 +61,7 @@ integration_test: init_db
 	go test -count=1 -cover $(RFLAG) -cpu 1,4 -tags integration ./...
 
 mod:
-	go get -t -u ./...
+	go get -t -u ./... || true
 	go mod tidy -v
 	go mod vendor
 # Update atlas.swagger.json at the same time as github.com/thingspect/api

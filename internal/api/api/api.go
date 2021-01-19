@@ -66,8 +66,8 @@ func New(cfg *config.Config) (*API, error) {
 	}
 	skipValidate := map[string]struct{}{
 		// Update actions validate after merge to support partial updates.
-		"/api.DeviceService/Update": {},
-		"/api.UserService/Update":   {},
+		"/api.DeviceService/UpdateDevice": {},
+		"/api.UserService/UpdateUser":     {},
 	}
 
 	srv := grpc.NewServer(grpc.ChainUnaryInterceptor(

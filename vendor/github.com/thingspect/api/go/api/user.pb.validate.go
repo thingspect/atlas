@@ -282,93 +282,16 @@ var _ interface {
 	ErrorName() string
 } = CreateUserRequestValidationError{}
 
-// Validate checks the field values on CreateUserResponse with the rules
-// defined in the proto definition for this message. If any rules are
-// violated, an error is returned.
-func (m *CreateUserResponse) Validate() error {
-	if m == nil {
-		return nil
-	}
-
-	if v, ok := interface{}(m.GetUser()).(interface{ Validate() error }); ok {
-		if err := v.Validate(); err != nil {
-			return CreateUserResponseValidationError{
-				field:  "User",
-				reason: "embedded message failed validation",
-				cause:  err,
-			}
-		}
-	}
-
-	return nil
-}
-
-// CreateUserResponseValidationError is the validation error returned by
-// CreateUserResponse.Validate if the designated constraints aren't met.
-type CreateUserResponseValidationError struct {
-	field  string
-	reason string
-	cause  error
-	key    bool
-}
-
-// Field function returns field value.
-func (e CreateUserResponseValidationError) Field() string { return e.field }
-
-// Reason function returns reason value.
-func (e CreateUserResponseValidationError) Reason() string { return e.reason }
-
-// Cause function returns cause value.
-func (e CreateUserResponseValidationError) Cause() error { return e.cause }
-
-// Key function returns key value.
-func (e CreateUserResponseValidationError) Key() bool { return e.key }
-
-// ErrorName returns error name.
-func (e CreateUserResponseValidationError) ErrorName() string {
-	return "CreateUserResponseValidationError"
-}
-
-// Error satisfies the builtin error interface
-func (e CreateUserResponseValidationError) Error() string {
-	cause := ""
-	if e.cause != nil {
-		cause = fmt.Sprintf(" | caused by: %v", e.cause)
-	}
-
-	key := ""
-	if e.key {
-		key = "key for "
-	}
-
-	return fmt.Sprintf(
-		"invalid %sCreateUserResponse.%s: %s%s",
-		key,
-		e.field,
-		e.reason,
-		cause)
-}
-
-var _ error = CreateUserResponseValidationError{}
-
-var _ interface {
-	Field() string
-	Reason() string
-	Key() bool
-	Cause() error
-	ErrorName() string
-} = CreateUserResponseValidationError{}
-
-// Validate checks the field values on ReadUserRequest with the rules defined
-// in the proto definition for this message. If any rules are violated, an
-// error is returned.
-func (m *ReadUserRequest) Validate() error {
+// Validate checks the field values on GetUserRequest with the rules defined in
+// the proto definition for this message. If any rules are violated, an error
+// is returned.
+func (m *GetUserRequest) Validate() error {
 	if m == nil {
 		return nil
 	}
 
 	if err := m._validateUuid(m.GetId()); err != nil {
-		return ReadUserRequestValidationError{
+		return GetUserRequestValidationError{
 			field:  "Id",
 			reason: "value must be a valid UUID",
 			cause:  err,
@@ -378,7 +301,7 @@ func (m *ReadUserRequest) Validate() error {
 	return nil
 }
 
-func (m *ReadUserRequest) _validateUuid(uuid string) error {
+func (m *GetUserRequest) _validateUuid(uuid string) error {
 	if matched := _user_uuidPattern.MatchString(uuid); !matched {
 		return errors.New("invalid uuid format")
 	}
@@ -386,9 +309,9 @@ func (m *ReadUserRequest) _validateUuid(uuid string) error {
 	return nil
 }
 
-// ReadUserRequestValidationError is the validation error returned by
-// ReadUserRequest.Validate if the designated constraints aren't met.
-type ReadUserRequestValidationError struct {
+// GetUserRequestValidationError is the validation error returned by
+// GetUserRequest.Validate if the designated constraints aren't met.
+type GetUserRequestValidationError struct {
 	field  string
 	reason string
 	cause  error
@@ -396,22 +319,22 @@ type ReadUserRequestValidationError struct {
 }
 
 // Field function returns field value.
-func (e ReadUserRequestValidationError) Field() string { return e.field }
+func (e GetUserRequestValidationError) Field() string { return e.field }
 
 // Reason function returns reason value.
-func (e ReadUserRequestValidationError) Reason() string { return e.reason }
+func (e GetUserRequestValidationError) Reason() string { return e.reason }
 
 // Cause function returns cause value.
-func (e ReadUserRequestValidationError) Cause() error { return e.cause }
+func (e GetUserRequestValidationError) Cause() error { return e.cause }
 
 // Key function returns key value.
-func (e ReadUserRequestValidationError) Key() bool { return e.key }
+func (e GetUserRequestValidationError) Key() bool { return e.key }
 
 // ErrorName returns error name.
-func (e ReadUserRequestValidationError) ErrorName() string { return "ReadUserRequestValidationError" }
+func (e GetUserRequestValidationError) ErrorName() string { return "GetUserRequestValidationError" }
 
 // Error satisfies the builtin error interface
-func (e ReadUserRequestValidationError) Error() string {
+func (e GetUserRequestValidationError) Error() string {
 	cause := ""
 	if e.cause != nil {
 		cause = fmt.Sprintf(" | caused by: %v", e.cause)
@@ -423,14 +346,14 @@ func (e ReadUserRequestValidationError) Error() string {
 	}
 
 	return fmt.Sprintf(
-		"invalid %sReadUserRequest.%s: %s%s",
+		"invalid %sGetUserRequest.%s: %s%s",
 		key,
 		e.field,
 		e.reason,
 		cause)
 }
 
-var _ error = ReadUserRequestValidationError{}
+var _ error = GetUserRequestValidationError{}
 
 var _ interface {
 	Field() string
@@ -438,82 +361,7 @@ var _ interface {
 	Key() bool
 	Cause() error
 	ErrorName() string
-} = ReadUserRequestValidationError{}
-
-// Validate checks the field values on ReadUserResponse with the rules defined
-// in the proto definition for this message. If any rules are violated, an
-// error is returned.
-func (m *ReadUserResponse) Validate() error {
-	if m == nil {
-		return nil
-	}
-
-	if v, ok := interface{}(m.GetUser()).(interface{ Validate() error }); ok {
-		if err := v.Validate(); err != nil {
-			return ReadUserResponseValidationError{
-				field:  "User",
-				reason: "embedded message failed validation",
-				cause:  err,
-			}
-		}
-	}
-
-	return nil
-}
-
-// ReadUserResponseValidationError is the validation error returned by
-// ReadUserResponse.Validate if the designated constraints aren't met.
-type ReadUserResponseValidationError struct {
-	field  string
-	reason string
-	cause  error
-	key    bool
-}
-
-// Field function returns field value.
-func (e ReadUserResponseValidationError) Field() string { return e.field }
-
-// Reason function returns reason value.
-func (e ReadUserResponseValidationError) Reason() string { return e.reason }
-
-// Cause function returns cause value.
-func (e ReadUserResponseValidationError) Cause() error { return e.cause }
-
-// Key function returns key value.
-func (e ReadUserResponseValidationError) Key() bool { return e.key }
-
-// ErrorName returns error name.
-func (e ReadUserResponseValidationError) ErrorName() string { return "ReadUserResponseValidationError" }
-
-// Error satisfies the builtin error interface
-func (e ReadUserResponseValidationError) Error() string {
-	cause := ""
-	if e.cause != nil {
-		cause = fmt.Sprintf(" | caused by: %v", e.cause)
-	}
-
-	key := ""
-	if e.key {
-		key = "key for "
-	}
-
-	return fmt.Sprintf(
-		"invalid %sReadUserResponse.%s: %s%s",
-		key,
-		e.field,
-		e.reason,
-		cause)
-}
-
-var _ error = ReadUserResponseValidationError{}
-
-var _ interface {
-	Field() string
-	Reason() string
-	Key() bool
-	Cause() error
-	ErrorName() string
-} = ReadUserResponseValidationError{}
+} = GetUserRequestValidationError{}
 
 // Validate checks the field values on UpdateUserRequest with the rules defined
 // in the proto definition for this message. If any rules are violated, an
@@ -608,83 +456,6 @@ var _ interface {
 	Cause() error
 	ErrorName() string
 } = UpdateUserRequestValidationError{}
-
-// Validate checks the field values on UpdateUserResponse with the rules
-// defined in the proto definition for this message. If any rules are
-// violated, an error is returned.
-func (m *UpdateUserResponse) Validate() error {
-	if m == nil {
-		return nil
-	}
-
-	if v, ok := interface{}(m.GetUser()).(interface{ Validate() error }); ok {
-		if err := v.Validate(); err != nil {
-			return UpdateUserResponseValidationError{
-				field:  "User",
-				reason: "embedded message failed validation",
-				cause:  err,
-			}
-		}
-	}
-
-	return nil
-}
-
-// UpdateUserResponseValidationError is the validation error returned by
-// UpdateUserResponse.Validate if the designated constraints aren't met.
-type UpdateUserResponseValidationError struct {
-	field  string
-	reason string
-	cause  error
-	key    bool
-}
-
-// Field function returns field value.
-func (e UpdateUserResponseValidationError) Field() string { return e.field }
-
-// Reason function returns reason value.
-func (e UpdateUserResponseValidationError) Reason() string { return e.reason }
-
-// Cause function returns cause value.
-func (e UpdateUserResponseValidationError) Cause() error { return e.cause }
-
-// Key function returns key value.
-func (e UpdateUserResponseValidationError) Key() bool { return e.key }
-
-// ErrorName returns error name.
-func (e UpdateUserResponseValidationError) ErrorName() string {
-	return "UpdateUserResponseValidationError"
-}
-
-// Error satisfies the builtin error interface
-func (e UpdateUserResponseValidationError) Error() string {
-	cause := ""
-	if e.cause != nil {
-		cause = fmt.Sprintf(" | caused by: %v", e.cause)
-	}
-
-	key := ""
-	if e.key {
-		key = "key for "
-	}
-
-	return fmt.Sprintf(
-		"invalid %sUpdateUserResponse.%s: %s%s",
-		key,
-		e.field,
-		e.reason,
-		cause)
-}
-
-var _ error = UpdateUserResponseValidationError{}
-
-var _ interface {
-	Field() string
-	Reason() string
-	Key() bool
-	Cause() error
-	ErrorName() string
-} = UpdateUserResponseValidationError{}
 
 // Validate checks the field values on UpdateUserPasswordRequest with the rules
 // defined in the proto definition for this message. If any rules are
@@ -859,16 +630,16 @@ var _ interface {
 	ErrorName() string
 } = DeleteUserRequestValidationError{}
 
-// Validate checks the field values on ListUserRequest with the rules defined
+// Validate checks the field values on ListUsersRequest with the rules defined
 // in the proto definition for this message. If any rules are violated, an
 // error is returned.
-func (m *ListUserRequest) Validate() error {
+func (m *ListUsersRequest) Validate() error {
 	if m == nil {
 		return nil
 	}
 
 	if val := m.GetPageSize(); val < 0 || val > 250 {
-		return ListUserRequestValidationError{
+		return ListUsersRequestValidationError{
 			field:  "PageSize",
 			reason: "value must be inside range [0, 250]",
 		}
@@ -879,9 +650,9 @@ func (m *ListUserRequest) Validate() error {
 	return nil
 }
 
-// ListUserRequestValidationError is the validation error returned by
-// ListUserRequest.Validate if the designated constraints aren't met.
-type ListUserRequestValidationError struct {
+// ListUsersRequestValidationError is the validation error returned by
+// ListUsersRequest.Validate if the designated constraints aren't met.
+type ListUsersRequestValidationError struct {
 	field  string
 	reason string
 	cause  error
@@ -889,22 +660,22 @@ type ListUserRequestValidationError struct {
 }
 
 // Field function returns field value.
-func (e ListUserRequestValidationError) Field() string { return e.field }
+func (e ListUsersRequestValidationError) Field() string { return e.field }
 
 // Reason function returns reason value.
-func (e ListUserRequestValidationError) Reason() string { return e.reason }
+func (e ListUsersRequestValidationError) Reason() string { return e.reason }
 
 // Cause function returns cause value.
-func (e ListUserRequestValidationError) Cause() error { return e.cause }
+func (e ListUsersRequestValidationError) Cause() error { return e.cause }
 
 // Key function returns key value.
-func (e ListUserRequestValidationError) Key() bool { return e.key }
+func (e ListUsersRequestValidationError) Key() bool { return e.key }
 
 // ErrorName returns error name.
-func (e ListUserRequestValidationError) ErrorName() string { return "ListUserRequestValidationError" }
+func (e ListUsersRequestValidationError) ErrorName() string { return "ListUsersRequestValidationError" }
 
 // Error satisfies the builtin error interface
-func (e ListUserRequestValidationError) Error() string {
+func (e ListUsersRequestValidationError) Error() string {
 	cause := ""
 	if e.cause != nil {
 		cause = fmt.Sprintf(" | caused by: %v", e.cause)
@@ -916,14 +687,14 @@ func (e ListUserRequestValidationError) Error() string {
 	}
 
 	return fmt.Sprintf(
-		"invalid %sListUserRequest.%s: %s%s",
+		"invalid %sListUsersRequest.%s: %s%s",
 		key,
 		e.field,
 		e.reason,
 		cause)
 }
 
-var _ error = ListUserRequestValidationError{}
+var _ error = ListUsersRequestValidationError{}
 
 var _ interface {
 	Field() string
@@ -931,12 +702,12 @@ var _ interface {
 	Key() bool
 	Cause() error
 	ErrorName() string
-} = ListUserRequestValidationError{}
+} = ListUsersRequestValidationError{}
 
-// Validate checks the field values on ListUserResponse with the rules defined
+// Validate checks the field values on ListUsersResponse with the rules defined
 // in the proto definition for this message. If any rules are violated, an
 // error is returned.
-func (m *ListUserResponse) Validate() error {
+func (m *ListUsersResponse) Validate() error {
 	if m == nil {
 		return nil
 	}
@@ -946,7 +717,7 @@ func (m *ListUserResponse) Validate() error {
 
 		if v, ok := interface{}(item).(interface{ Validate() error }); ok {
 			if err := v.Validate(); err != nil {
-				return ListUserResponseValidationError{
+				return ListUsersResponseValidationError{
 					field:  fmt.Sprintf("Users[%v]", idx),
 					reason: "embedded message failed validation",
 					cause:  err,
@@ -965,9 +736,9 @@ func (m *ListUserResponse) Validate() error {
 	return nil
 }
 
-// ListUserResponseValidationError is the validation error returned by
-// ListUserResponse.Validate if the designated constraints aren't met.
-type ListUserResponseValidationError struct {
+// ListUsersResponseValidationError is the validation error returned by
+// ListUsersResponse.Validate if the designated constraints aren't met.
+type ListUsersResponseValidationError struct {
 	field  string
 	reason string
 	cause  error
@@ -975,22 +746,24 @@ type ListUserResponseValidationError struct {
 }
 
 // Field function returns field value.
-func (e ListUserResponseValidationError) Field() string { return e.field }
+func (e ListUsersResponseValidationError) Field() string { return e.field }
 
 // Reason function returns reason value.
-func (e ListUserResponseValidationError) Reason() string { return e.reason }
+func (e ListUsersResponseValidationError) Reason() string { return e.reason }
 
 // Cause function returns cause value.
-func (e ListUserResponseValidationError) Cause() error { return e.cause }
+func (e ListUsersResponseValidationError) Cause() error { return e.cause }
 
 // Key function returns key value.
-func (e ListUserResponseValidationError) Key() bool { return e.key }
+func (e ListUsersResponseValidationError) Key() bool { return e.key }
 
 // ErrorName returns error name.
-func (e ListUserResponseValidationError) ErrorName() string { return "ListUserResponseValidationError" }
+func (e ListUsersResponseValidationError) ErrorName() string {
+	return "ListUsersResponseValidationError"
+}
 
 // Error satisfies the builtin error interface
-func (e ListUserResponseValidationError) Error() string {
+func (e ListUsersResponseValidationError) Error() string {
 	cause := ""
 	if e.cause != nil {
 		cause = fmt.Sprintf(" | caused by: %v", e.cause)
@@ -1002,14 +775,14 @@ func (e ListUserResponseValidationError) Error() string {
 	}
 
 	return fmt.Sprintf(
-		"invalid %sListUserResponse.%s: %s%s",
+		"invalid %sListUsersResponse.%s: %s%s",
 		key,
 		e.field,
 		e.reason,
 		cause)
 }
 
-var _ error = ListUserResponseValidationError{}
+var _ error = ListUsersResponseValidationError{}
 
 var _ interface {
 	Field() string
@@ -1017,4 +790,4 @@ var _ interface {
 	Key() bool
 	Cause() error
 	ErrorName() string
-} = ListUserResponseValidationError{}
+} = ListUsersResponseValidationError{}

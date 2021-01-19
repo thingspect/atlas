@@ -45,16 +45,15 @@ func TestCreateDevice(t *testing.T) {
 		defer cancel()
 
 		devSvc := NewDevice(devicer)
-		createDev, err := devSvc.Create(ctx, &api.CreateDeviceRequest{
+		createDev, err := devSvc.CreateDevice(ctx, &api.CreateDeviceRequest{
 			Device: dev})
 		t.Logf("createDev, err: %+v, %v", createDev, err)
 		require.NoError(t, err)
 
 		// Testify does not currently support protobuf equality:
 		// https://github.com/stretchr/testify/issues/758
-		if !proto.Equal(&api.CreateDeviceResponse{Device: dev}, createDev) {
-			t.Fatalf("\nExpect: %+v\nActual: %+v",
-				&api.CreateDeviceResponse{Device: dev}, createDev)
+		if !proto.Equal(dev, createDev) {
+			t.Fatalf("\nExpect: %+v\nActual: %+v", dev, createDev)
 		}
 	})
 
@@ -71,7 +70,7 @@ func TestCreateDevice(t *testing.T) {
 		defer cancel()
 
 		devSvc := NewDevice(devicer)
-		createDev, err := devSvc.Create(ctx, &api.CreateDeviceRequest{
+		createDev, err := devSvc.CreateDevice(ctx, &api.CreateDeviceRequest{
 			Device: nil})
 		t.Logf("createDev, err: %+v, %v", createDev, err)
 		require.Nil(t, createDev)
@@ -99,7 +98,7 @@ func TestCreateDevice(t *testing.T) {
 		defer cancel()
 
 		devSvc := NewDevice(devicer)
-		createDev, err := devSvc.Create(ctx, &api.CreateDeviceRequest{
+		createDev, err := devSvc.CreateDevice(ctx, &api.CreateDeviceRequest{
 			Device: dev})
 		t.Logf("createDev, err: %+v, %v", createDev, err)
 		require.Nil(t, createDev)
@@ -131,15 +130,14 @@ func TestReadDevice(t *testing.T) {
 		defer cancel()
 
 		devSvc := NewDevice(devicer)
-		readDev, err := devSvc.Read(ctx, &api.ReadDeviceRequest{Id: dev.Id})
+		readDev, err := devSvc.GetDevice(ctx, &api.GetDeviceRequest{Id: dev.Id})
 		t.Logf("readDev, err: %+v, %v", readDev, err)
 		require.NoError(t, err)
 
 		// Testify does not currently support protobuf equality:
 		// https://github.com/stretchr/testify/issues/758
-		if !proto.Equal(&api.ReadDeviceResponse{Device: dev}, readDev) {
-			t.Fatalf("\nExpect: %+v\nActual: %+v",
-				&api.ReadDeviceResponse{Device: dev}, readDev)
+		if !proto.Equal(dev, readDev) {
+			t.Fatalf("\nExpect: %+v\nActual: %+v", dev, readDev)
 		}
 	})
 
@@ -156,7 +154,7 @@ func TestReadDevice(t *testing.T) {
 		defer cancel()
 
 		devSvc := NewDevice(devicer)
-		readDev, err := devSvc.Read(ctx, &api.ReadDeviceRequest{
+		readDev, err := devSvc.GetDevice(ctx, &api.GetDeviceRequest{
 			Id: uuid.New().String()})
 		t.Logf("readDev, err: %+v, %v", readDev, err)
 		require.Nil(t, readDev)
@@ -180,7 +178,7 @@ func TestReadDevice(t *testing.T) {
 		defer cancel()
 
 		devSvc := NewDevice(devicer)
-		readDev, err := devSvc.Read(ctx, &api.ReadDeviceRequest{
+		readDev, err := devSvc.GetDevice(ctx, &api.GetDeviceRequest{
 			Id: uuid.New().String()})
 		t.Logf("readDev, err: %+v, %v", readDev, err)
 		require.Nil(t, readDev)
@@ -210,16 +208,15 @@ func TestUpdateDevice(t *testing.T) {
 		defer cancel()
 
 		devSvc := NewDevice(devicer)
-		updateDev, err := devSvc.Update(ctx, &api.UpdateDeviceRequest{
+		updateDev, err := devSvc.UpdateDevice(ctx, &api.UpdateDeviceRequest{
 			Device: dev})
 		t.Logf("updateDev, err: %+v, %v", updateDev, err)
 		require.NoError(t, err)
 
 		// Testify does not currently support protobuf equality:
 		// https://github.com/stretchr/testify/issues/758
-		if !proto.Equal(&api.UpdateDeviceResponse{Device: dev}, updateDev) {
-			t.Fatalf("\nExpect: %+v\nActual: %+v",
-				&api.UpdateDeviceResponse{Device: dev}, updateDev)
+		if !proto.Equal(dev, updateDev) {
+			t.Fatalf("\nExpect: %+v\nActual: %+v", dev, updateDev)
 		}
 	})
 
@@ -247,7 +244,7 @@ func TestUpdateDevice(t *testing.T) {
 		defer cancel()
 
 		devSvc := NewDevice(devicer)
-		updateDev, err := devSvc.Update(ctx, &api.UpdateDeviceRequest{
+		updateDev, err := devSvc.UpdateDevice(ctx, &api.UpdateDeviceRequest{
 			Device: part, UpdateMask: &fieldmaskpb.FieldMask{
 				Paths: []string{"status"}}})
 		t.Logf("updateDev, err: %+v, %v", updateDev, err)
@@ -255,9 +252,8 @@ func TestUpdateDevice(t *testing.T) {
 
 		// Testify does not currently support protobuf equality:
 		// https://github.com/stretchr/testify/issues/758
-		if !proto.Equal(&api.UpdateDeviceResponse{Device: merged}, updateDev) {
-			t.Fatalf("\nExpect: %+v\nActual: %+v",
-				&api.UpdateDeviceResponse{Device: merged}, updateDev)
+		if !proto.Equal(merged, updateDev) {
+			t.Fatalf("\nExpect: %+v\nActual: %+v", merged, updateDev)
 		}
 	})
 
@@ -274,7 +270,7 @@ func TestUpdateDevice(t *testing.T) {
 		defer cancel()
 
 		devSvc := NewDevice(devicer)
-		updateDev, err := devSvc.Update(ctx, &api.UpdateDeviceRequest{
+		updateDev, err := devSvc.UpdateDevice(ctx, &api.UpdateDeviceRequest{
 			Device: nil})
 		t.Logf("updateDev, err: %+v, %v", updateDev, err)
 		require.Nil(t, updateDev)
@@ -297,7 +293,7 @@ func TestUpdateDevice(t *testing.T) {
 		defer cancel()
 
 		devSvc := NewDevice(devicer)
-		updateDev, err := devSvc.Update(ctx, &api.UpdateDeviceRequest{
+		updateDev, err := devSvc.UpdateDevice(ctx, &api.UpdateDeviceRequest{
 			Device: nil})
 		t.Logf("updateDev, err: %+v, %v", updateDev, err)
 		require.Nil(t, updateDev)
@@ -325,7 +321,7 @@ func TestUpdateDevice(t *testing.T) {
 		defer cancel()
 
 		devSvc := NewDevice(devicer)
-		updateDev, err := devSvc.Update(ctx, &api.UpdateDeviceRequest{
+		updateDev, err := devSvc.UpdateDevice(ctx, &api.UpdateDeviceRequest{
 			Device: dev, UpdateMask: &fieldmaskpb.FieldMask{
 				Paths: []string{"aaa"}}})
 		t.Logf("updateDev, err: %+v, %v", updateDev, err)
@@ -355,7 +351,7 @@ func TestUpdateDevice(t *testing.T) {
 		defer cancel()
 
 		devSvc := NewDevice(devicer)
-		updateDev, err := devSvc.Update(ctx, &api.UpdateDeviceRequest{
+		updateDev, err := devSvc.UpdateDevice(ctx, &api.UpdateDeviceRequest{
 			Device: part, UpdateMask: &fieldmaskpb.FieldMask{
 				Paths: []string{"status"}}})
 		t.Logf("updateDev, err: %+v, %v", updateDev, err)
@@ -382,7 +378,7 @@ func TestUpdateDevice(t *testing.T) {
 		defer cancel()
 
 		devSvc := NewDevice(devicer)
-		updateDev, err := devSvc.Update(ctx, &api.UpdateDeviceRequest{
+		updateDev, err := devSvc.UpdateDevice(ctx, &api.UpdateDeviceRequest{
 			Device: dev})
 		t.Logf("updateDev, err: %+v, %v", updateDev, err)
 		require.Nil(t, updateDev)
@@ -413,7 +409,7 @@ func TestUpdateDevice(t *testing.T) {
 		defer cancel()
 
 		devSvc := NewDevice(devicer)
-		updateDev, err := devSvc.Update(ctx, &api.UpdateDeviceRequest{
+		updateDev, err := devSvc.UpdateDevice(ctx, &api.UpdateDeviceRequest{
 			Device: dev})
 		t.Logf("updateDev, err: %+v, %v", updateDev, err)
 		require.Nil(t, updateDev)
@@ -441,7 +437,7 @@ func TestDeleteDevice(t *testing.T) {
 		defer cancel()
 
 		devSvc := NewDevice(devicer)
-		_, err := devSvc.Delete(ctx, &api.DeleteDeviceRequest{
+		_, err := devSvc.DeleteDevice(ctx, &api.DeleteDeviceRequest{
 			Id: uuid.New().String()})
 		t.Logf("err: %v", err)
 		require.NoError(t, err)
@@ -461,7 +457,7 @@ func TestDeleteDevice(t *testing.T) {
 		defer cancel()
 
 		devSvc := NewDevice(devicer)
-		_, err := devSvc.Delete(ctx, &api.DeleteDeviceRequest{
+		_, err := devSvc.DeleteDevice(ctx, &api.DeleteDeviceRequest{
 			Id: uuid.New().String()})
 		t.Logf("err: %v", err)
 		require.Equal(t, status.Error(codes.PermissionDenied,
@@ -484,7 +480,7 @@ func TestDeleteDevice(t *testing.T) {
 		defer cancel()
 
 		devSvc := NewDevice(devicer)
-		_, err := devSvc.Delete(ctx, &api.DeleteDeviceRequest{
+		_, err := devSvc.DeleteDevice(ctx, &api.DeleteDeviceRequest{
 			Id: uuid.New().String()})
 		t.Logf("err: %v", err)
 		require.Equal(t, status.Error(codes.NotFound, "object not found"), err)
@@ -515,7 +511,7 @@ func TestListDevices(t *testing.T) {
 		defer ctrl.Finish()
 
 		devicer := NewMockDevicer(ctrl)
-		devicer.EXPECT().List(gomock.Any(), orgID, time.Time{}, "", int32(101)).
+		devicer.EXPECT().List(gomock.Any(), orgID, time.Time{}, "", int32(51)).
 			Return(devs, int32(3), nil).Times(1)
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
@@ -524,17 +520,17 @@ func TestListDevices(t *testing.T) {
 		defer cancel()
 
 		devSvc := NewDevice(devicer)
-		listDevs, err := devSvc.List(ctx, &api.ListDeviceRequest{})
+		listDevs, err := devSvc.ListDevices(ctx, &api.ListDevicesRequest{})
 		t.Logf("listDevs, err: %+v, %v", listDevs, err)
 		require.NoError(t, err)
 		require.Equal(t, int32(3), listDevs.TotalSize)
 
 		// Testify does not currently support protobuf equality:
 		// https://github.com/stretchr/testify/issues/758
-		if !proto.Equal(&api.ListDeviceResponse{Devices: devs, TotalSize: 3},
+		if !proto.Equal(&api.ListDevicesResponse{Devices: devs, TotalSize: 3},
 			listDevs) {
 			t.Fatalf("\nExpect: %+v\nActual: %+v",
-				&api.ListDeviceResponse{Devices: devs, TotalSize: 3}, listDevs)
+				&api.ListDevicesResponse{Devices: devs, TotalSize: 3}, listDevs)
 		}
 	})
 
@@ -575,17 +571,18 @@ func TestListDevices(t *testing.T) {
 		defer cancel()
 
 		devSvc := NewDevice(devicer)
-		listDevs, err := devSvc.List(ctx, &api.ListDeviceRequest{PageSize: 2})
+		listDevs, err := devSvc.ListDevices(ctx, &api.ListDevicesRequest{
+			PageSize: 2})
 		t.Logf("listDevs, err: %+v, %v", listDevs, err)
 		require.NoError(t, err)
 		require.Equal(t, int32(3), listDevs.TotalSize)
 
 		// Testify does not currently support protobuf equality:
 		// https://github.com/stretchr/testify/issues/758
-		if !proto.Equal(&api.ListDeviceResponse{Devices: devs[:2],
+		if !proto.Equal(&api.ListDevicesResponse{Devices: devs[:2],
 			NextPageToken: next, TotalSize: 3}, listDevs) {
 			t.Fatalf("\nExpect: %+v\nActual: %+v",
-				&api.ListDeviceResponse{Devices: devs[:2], NextPageToken: next,
+				&api.ListDevicesResponse{Devices: devs[:2], NextPageToken: next,
 					TotalSize: 3}, listDevs)
 		}
 	})
@@ -604,7 +601,7 @@ func TestListDevices(t *testing.T) {
 		defer cancel()
 
 		devSvc := NewDevice(devicer)
-		listDevs, err := devSvc.List(ctx, &api.ListDeviceRequest{})
+		listDevs, err := devSvc.ListDevices(ctx, &api.ListDevicesRequest{})
 		t.Logf("listDevs, err: %+v, %v", listDevs, err)
 		require.Nil(t, listDevs)
 		require.Equal(t, status.Error(codes.PermissionDenied,
@@ -628,7 +625,7 @@ func TestListDevices(t *testing.T) {
 		defer cancel()
 
 		devSvc := NewDevice(devicer)
-		listDevs, err := devSvc.List(ctx, &api.ListDeviceRequest{
+		listDevs, err := devSvc.ListDevices(ctx, &api.ListDevicesRequest{
 			PageToken: "..."})
 		t.Logf("listDevs, err: %+v, %v", listDevs, err)
 		require.Nil(t, listDevs)
@@ -652,7 +649,7 @@ func TestListDevices(t *testing.T) {
 		defer cancel()
 
 		devSvc := NewDevice(devicer)
-		listDevs, err := devSvc.List(ctx, &api.ListDeviceRequest{})
+		listDevs, err := devSvc.ListDevices(ctx, &api.ListDevicesRequest{})
 		t.Logf("listDevs, err: %+v, %v", listDevs, err)
 		require.Nil(t, listDevs)
 		require.Equal(t, status.Error(codes.InvalidArgument, "invalid format"),
@@ -692,17 +689,18 @@ func TestListDevices(t *testing.T) {
 		defer cancel()
 
 		devSvc := NewDevice(devicer)
-		listDevs, err := devSvc.List(ctx, &api.ListDeviceRequest{PageSize: 2})
+		listDevs, err := devSvc.ListDevices(ctx, &api.ListDevicesRequest{
+			PageSize: 2})
 		t.Logf("listDevs, err: %+v, %v", listDevs, err)
 		require.NoError(t, err)
 		require.Equal(t, int32(3), listDevs.TotalSize)
 
 		// Testify does not currently support protobuf equality:
 		// https://github.com/stretchr/testify/issues/758
-		if !proto.Equal(&api.ListDeviceResponse{Devices: devs[:2],
+		if !proto.Equal(&api.ListDevicesResponse{Devices: devs[:2],
 			TotalSize: 3}, listDevs) {
 			t.Fatalf("\nExpect: %+v\nActual: %+v",
-				&api.ListDeviceResponse{Devices: devs[:2], TotalSize: 3},
+				&api.ListDevicesResponse{Devices: devs[:2], TotalSize: 3},
 				listDevs)
 		}
 	})

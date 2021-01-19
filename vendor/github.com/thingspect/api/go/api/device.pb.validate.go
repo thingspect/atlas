@@ -233,93 +233,16 @@ var _ interface {
 	ErrorName() string
 } = CreateDeviceRequestValidationError{}
 
-// Validate checks the field values on CreateDeviceResponse with the rules
-// defined in the proto definition for this message. If any rules are
-// violated, an error is returned.
-func (m *CreateDeviceResponse) Validate() error {
-	if m == nil {
-		return nil
-	}
-
-	if v, ok := interface{}(m.GetDevice()).(interface{ Validate() error }); ok {
-		if err := v.Validate(); err != nil {
-			return CreateDeviceResponseValidationError{
-				field:  "Device",
-				reason: "embedded message failed validation",
-				cause:  err,
-			}
-		}
-	}
-
-	return nil
-}
-
-// CreateDeviceResponseValidationError is the validation error returned by
-// CreateDeviceResponse.Validate if the designated constraints aren't met.
-type CreateDeviceResponseValidationError struct {
-	field  string
-	reason string
-	cause  error
-	key    bool
-}
-
-// Field function returns field value.
-func (e CreateDeviceResponseValidationError) Field() string { return e.field }
-
-// Reason function returns reason value.
-func (e CreateDeviceResponseValidationError) Reason() string { return e.reason }
-
-// Cause function returns cause value.
-func (e CreateDeviceResponseValidationError) Cause() error { return e.cause }
-
-// Key function returns key value.
-func (e CreateDeviceResponseValidationError) Key() bool { return e.key }
-
-// ErrorName returns error name.
-func (e CreateDeviceResponseValidationError) ErrorName() string {
-	return "CreateDeviceResponseValidationError"
-}
-
-// Error satisfies the builtin error interface
-func (e CreateDeviceResponseValidationError) Error() string {
-	cause := ""
-	if e.cause != nil {
-		cause = fmt.Sprintf(" | caused by: %v", e.cause)
-	}
-
-	key := ""
-	if e.key {
-		key = "key for "
-	}
-
-	return fmt.Sprintf(
-		"invalid %sCreateDeviceResponse.%s: %s%s",
-		key,
-		e.field,
-		e.reason,
-		cause)
-}
-
-var _ error = CreateDeviceResponseValidationError{}
-
-var _ interface {
-	Field() string
-	Reason() string
-	Key() bool
-	Cause() error
-	ErrorName() string
-} = CreateDeviceResponseValidationError{}
-
-// Validate checks the field values on ReadDeviceRequest with the rules defined
+// Validate checks the field values on GetDeviceRequest with the rules defined
 // in the proto definition for this message. If any rules are violated, an
 // error is returned.
-func (m *ReadDeviceRequest) Validate() error {
+func (m *GetDeviceRequest) Validate() error {
 	if m == nil {
 		return nil
 	}
 
 	if err := m._validateUuid(m.GetId()); err != nil {
-		return ReadDeviceRequestValidationError{
+		return GetDeviceRequestValidationError{
 			field:  "Id",
 			reason: "value must be a valid UUID",
 			cause:  err,
@@ -329,7 +252,7 @@ func (m *ReadDeviceRequest) Validate() error {
 	return nil
 }
 
-func (m *ReadDeviceRequest) _validateUuid(uuid string) error {
+func (m *GetDeviceRequest) _validateUuid(uuid string) error {
 	if matched := _device_uuidPattern.MatchString(uuid); !matched {
 		return errors.New("invalid uuid format")
 	}
@@ -337,9 +260,9 @@ func (m *ReadDeviceRequest) _validateUuid(uuid string) error {
 	return nil
 }
 
-// ReadDeviceRequestValidationError is the validation error returned by
-// ReadDeviceRequest.Validate if the designated constraints aren't met.
-type ReadDeviceRequestValidationError struct {
+// GetDeviceRequestValidationError is the validation error returned by
+// GetDeviceRequest.Validate if the designated constraints aren't met.
+type GetDeviceRequestValidationError struct {
 	field  string
 	reason string
 	cause  error
@@ -347,24 +270,22 @@ type ReadDeviceRequestValidationError struct {
 }
 
 // Field function returns field value.
-func (e ReadDeviceRequestValidationError) Field() string { return e.field }
+func (e GetDeviceRequestValidationError) Field() string { return e.field }
 
 // Reason function returns reason value.
-func (e ReadDeviceRequestValidationError) Reason() string { return e.reason }
+func (e GetDeviceRequestValidationError) Reason() string { return e.reason }
 
 // Cause function returns cause value.
-func (e ReadDeviceRequestValidationError) Cause() error { return e.cause }
+func (e GetDeviceRequestValidationError) Cause() error { return e.cause }
 
 // Key function returns key value.
-func (e ReadDeviceRequestValidationError) Key() bool { return e.key }
+func (e GetDeviceRequestValidationError) Key() bool { return e.key }
 
 // ErrorName returns error name.
-func (e ReadDeviceRequestValidationError) ErrorName() string {
-	return "ReadDeviceRequestValidationError"
-}
+func (e GetDeviceRequestValidationError) ErrorName() string { return "GetDeviceRequestValidationError" }
 
 // Error satisfies the builtin error interface
-func (e ReadDeviceRequestValidationError) Error() string {
+func (e GetDeviceRequestValidationError) Error() string {
 	cause := ""
 	if e.cause != nil {
 		cause = fmt.Sprintf(" | caused by: %v", e.cause)
@@ -376,14 +297,14 @@ func (e ReadDeviceRequestValidationError) Error() string {
 	}
 
 	return fmt.Sprintf(
-		"invalid %sReadDeviceRequest.%s: %s%s",
+		"invalid %sGetDeviceRequest.%s: %s%s",
 		key,
 		e.field,
 		e.reason,
 		cause)
 }
 
-var _ error = ReadDeviceRequestValidationError{}
+var _ error = GetDeviceRequestValidationError{}
 
 var _ interface {
 	Field() string
@@ -391,84 +312,7 @@ var _ interface {
 	Key() bool
 	Cause() error
 	ErrorName() string
-} = ReadDeviceRequestValidationError{}
-
-// Validate checks the field values on ReadDeviceResponse with the rules
-// defined in the proto definition for this message. If any rules are
-// violated, an error is returned.
-func (m *ReadDeviceResponse) Validate() error {
-	if m == nil {
-		return nil
-	}
-
-	if v, ok := interface{}(m.GetDevice()).(interface{ Validate() error }); ok {
-		if err := v.Validate(); err != nil {
-			return ReadDeviceResponseValidationError{
-				field:  "Device",
-				reason: "embedded message failed validation",
-				cause:  err,
-			}
-		}
-	}
-
-	return nil
-}
-
-// ReadDeviceResponseValidationError is the validation error returned by
-// ReadDeviceResponse.Validate if the designated constraints aren't met.
-type ReadDeviceResponseValidationError struct {
-	field  string
-	reason string
-	cause  error
-	key    bool
-}
-
-// Field function returns field value.
-func (e ReadDeviceResponseValidationError) Field() string { return e.field }
-
-// Reason function returns reason value.
-func (e ReadDeviceResponseValidationError) Reason() string { return e.reason }
-
-// Cause function returns cause value.
-func (e ReadDeviceResponseValidationError) Cause() error { return e.cause }
-
-// Key function returns key value.
-func (e ReadDeviceResponseValidationError) Key() bool { return e.key }
-
-// ErrorName returns error name.
-func (e ReadDeviceResponseValidationError) ErrorName() string {
-	return "ReadDeviceResponseValidationError"
-}
-
-// Error satisfies the builtin error interface
-func (e ReadDeviceResponseValidationError) Error() string {
-	cause := ""
-	if e.cause != nil {
-		cause = fmt.Sprintf(" | caused by: %v", e.cause)
-	}
-
-	key := ""
-	if e.key {
-		key = "key for "
-	}
-
-	return fmt.Sprintf(
-		"invalid %sReadDeviceResponse.%s: %s%s",
-		key,
-		e.field,
-		e.reason,
-		cause)
-}
-
-var _ error = ReadDeviceResponseValidationError{}
-
-var _ interface {
-	Field() string
-	Reason() string
-	Key() bool
-	Cause() error
-	ErrorName() string
-} = ReadDeviceResponseValidationError{}
+} = GetDeviceRequestValidationError{}
 
 // Validate checks the field values on UpdateDeviceRequest with the rules
 // defined in the proto definition for this message. If any rules are
@@ -564,83 +408,6 @@ var _ interface {
 	ErrorName() string
 } = UpdateDeviceRequestValidationError{}
 
-// Validate checks the field values on UpdateDeviceResponse with the rules
-// defined in the proto definition for this message. If any rules are
-// violated, an error is returned.
-func (m *UpdateDeviceResponse) Validate() error {
-	if m == nil {
-		return nil
-	}
-
-	if v, ok := interface{}(m.GetDevice()).(interface{ Validate() error }); ok {
-		if err := v.Validate(); err != nil {
-			return UpdateDeviceResponseValidationError{
-				field:  "Device",
-				reason: "embedded message failed validation",
-				cause:  err,
-			}
-		}
-	}
-
-	return nil
-}
-
-// UpdateDeviceResponseValidationError is the validation error returned by
-// UpdateDeviceResponse.Validate if the designated constraints aren't met.
-type UpdateDeviceResponseValidationError struct {
-	field  string
-	reason string
-	cause  error
-	key    bool
-}
-
-// Field function returns field value.
-func (e UpdateDeviceResponseValidationError) Field() string { return e.field }
-
-// Reason function returns reason value.
-func (e UpdateDeviceResponseValidationError) Reason() string { return e.reason }
-
-// Cause function returns cause value.
-func (e UpdateDeviceResponseValidationError) Cause() error { return e.cause }
-
-// Key function returns key value.
-func (e UpdateDeviceResponseValidationError) Key() bool { return e.key }
-
-// ErrorName returns error name.
-func (e UpdateDeviceResponseValidationError) ErrorName() string {
-	return "UpdateDeviceResponseValidationError"
-}
-
-// Error satisfies the builtin error interface
-func (e UpdateDeviceResponseValidationError) Error() string {
-	cause := ""
-	if e.cause != nil {
-		cause = fmt.Sprintf(" | caused by: %v", e.cause)
-	}
-
-	key := ""
-	if e.key {
-		key = "key for "
-	}
-
-	return fmt.Sprintf(
-		"invalid %sUpdateDeviceResponse.%s: %s%s",
-		key,
-		e.field,
-		e.reason,
-		cause)
-}
-
-var _ error = UpdateDeviceResponseValidationError{}
-
-var _ interface {
-	Field() string
-	Reason() string
-	Key() bool
-	Cause() error
-	ErrorName() string
-} = UpdateDeviceResponseValidationError{}
-
 // Validate checks the field values on DeleteDeviceRequest with the rules
 // defined in the proto definition for this message. If any rules are
 // violated, an error is returned.
@@ -724,16 +491,16 @@ var _ interface {
 	ErrorName() string
 } = DeleteDeviceRequestValidationError{}
 
-// Validate checks the field values on ListDeviceRequest with the rules defined
-// in the proto definition for this message. If any rules are violated, an
-// error is returned.
-func (m *ListDeviceRequest) Validate() error {
+// Validate checks the field values on ListDevicesRequest with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, an error is returned.
+func (m *ListDevicesRequest) Validate() error {
 	if m == nil {
 		return nil
 	}
 
 	if val := m.GetPageSize(); val < 0 || val > 250 {
-		return ListDeviceRequestValidationError{
+		return ListDevicesRequestValidationError{
 			field:  "PageSize",
 			reason: "value must be inside range [0, 250]",
 		}
@@ -744,9 +511,9 @@ func (m *ListDeviceRequest) Validate() error {
 	return nil
 }
 
-// ListDeviceRequestValidationError is the validation error returned by
-// ListDeviceRequest.Validate if the designated constraints aren't met.
-type ListDeviceRequestValidationError struct {
+// ListDevicesRequestValidationError is the validation error returned by
+// ListDevicesRequest.Validate if the designated constraints aren't met.
+type ListDevicesRequestValidationError struct {
 	field  string
 	reason string
 	cause  error
@@ -754,24 +521,24 @@ type ListDeviceRequestValidationError struct {
 }
 
 // Field function returns field value.
-func (e ListDeviceRequestValidationError) Field() string { return e.field }
+func (e ListDevicesRequestValidationError) Field() string { return e.field }
 
 // Reason function returns reason value.
-func (e ListDeviceRequestValidationError) Reason() string { return e.reason }
+func (e ListDevicesRequestValidationError) Reason() string { return e.reason }
 
 // Cause function returns cause value.
-func (e ListDeviceRequestValidationError) Cause() error { return e.cause }
+func (e ListDevicesRequestValidationError) Cause() error { return e.cause }
 
 // Key function returns key value.
-func (e ListDeviceRequestValidationError) Key() bool { return e.key }
+func (e ListDevicesRequestValidationError) Key() bool { return e.key }
 
 // ErrorName returns error name.
-func (e ListDeviceRequestValidationError) ErrorName() string {
-	return "ListDeviceRequestValidationError"
+func (e ListDevicesRequestValidationError) ErrorName() string {
+	return "ListDevicesRequestValidationError"
 }
 
 // Error satisfies the builtin error interface
-func (e ListDeviceRequestValidationError) Error() string {
+func (e ListDevicesRequestValidationError) Error() string {
 	cause := ""
 	if e.cause != nil {
 		cause = fmt.Sprintf(" | caused by: %v", e.cause)
@@ -783,14 +550,14 @@ func (e ListDeviceRequestValidationError) Error() string {
 	}
 
 	return fmt.Sprintf(
-		"invalid %sListDeviceRequest.%s: %s%s",
+		"invalid %sListDevicesRequest.%s: %s%s",
 		key,
 		e.field,
 		e.reason,
 		cause)
 }
 
-var _ error = ListDeviceRequestValidationError{}
+var _ error = ListDevicesRequestValidationError{}
 
 var _ interface {
 	Field() string
@@ -798,12 +565,12 @@ var _ interface {
 	Key() bool
 	Cause() error
 	ErrorName() string
-} = ListDeviceRequestValidationError{}
+} = ListDevicesRequestValidationError{}
 
-// Validate checks the field values on ListDeviceResponse with the rules
+// Validate checks the field values on ListDevicesResponse with the rules
 // defined in the proto definition for this message. If any rules are
 // violated, an error is returned.
-func (m *ListDeviceResponse) Validate() error {
+func (m *ListDevicesResponse) Validate() error {
 	if m == nil {
 		return nil
 	}
@@ -813,7 +580,7 @@ func (m *ListDeviceResponse) Validate() error {
 
 		if v, ok := interface{}(item).(interface{ Validate() error }); ok {
 			if err := v.Validate(); err != nil {
-				return ListDeviceResponseValidationError{
+				return ListDevicesResponseValidationError{
 					field:  fmt.Sprintf("Devices[%v]", idx),
 					reason: "embedded message failed validation",
 					cause:  err,
@@ -832,9 +599,9 @@ func (m *ListDeviceResponse) Validate() error {
 	return nil
 }
 
-// ListDeviceResponseValidationError is the validation error returned by
-// ListDeviceResponse.Validate if the designated constraints aren't met.
-type ListDeviceResponseValidationError struct {
+// ListDevicesResponseValidationError is the validation error returned by
+// ListDevicesResponse.Validate if the designated constraints aren't met.
+type ListDevicesResponseValidationError struct {
 	field  string
 	reason string
 	cause  error
@@ -842,24 +609,24 @@ type ListDeviceResponseValidationError struct {
 }
 
 // Field function returns field value.
-func (e ListDeviceResponseValidationError) Field() string { return e.field }
+func (e ListDevicesResponseValidationError) Field() string { return e.field }
 
 // Reason function returns reason value.
-func (e ListDeviceResponseValidationError) Reason() string { return e.reason }
+func (e ListDevicesResponseValidationError) Reason() string { return e.reason }
 
 // Cause function returns cause value.
-func (e ListDeviceResponseValidationError) Cause() error { return e.cause }
+func (e ListDevicesResponseValidationError) Cause() error { return e.cause }
 
 // Key function returns key value.
-func (e ListDeviceResponseValidationError) Key() bool { return e.key }
+func (e ListDevicesResponseValidationError) Key() bool { return e.key }
 
 // ErrorName returns error name.
-func (e ListDeviceResponseValidationError) ErrorName() string {
-	return "ListDeviceResponseValidationError"
+func (e ListDevicesResponseValidationError) ErrorName() string {
+	return "ListDevicesResponseValidationError"
 }
 
 // Error satisfies the builtin error interface
-func (e ListDeviceResponseValidationError) Error() string {
+func (e ListDevicesResponseValidationError) Error() string {
 	cause := ""
 	if e.cause != nil {
 		cause = fmt.Sprintf(" | caused by: %v", e.cause)
@@ -871,14 +638,14 @@ func (e ListDeviceResponseValidationError) Error() string {
 	}
 
 	return fmt.Sprintf(
-		"invalid %sListDeviceResponse.%s: %s%s",
+		"invalid %sListDevicesResponse.%s: %s%s",
 		key,
 		e.field,
 		e.reason,
 		cause)
 }
 
-var _ error = ListDeviceResponseValidationError{}
+var _ error = ListDevicesResponseValidationError{}
 
 var _ interface {
 	Field() string
@@ -886,4 +653,4 @@ var _ interface {
 	Key() bool
 	Cause() error
 	ErrorName() string
-} = ListDeviceResponseValidationError{}
+} = ListDevicesResponseValidationError{}

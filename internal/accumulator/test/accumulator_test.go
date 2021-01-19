@@ -55,7 +55,7 @@ func TestAccumulateMessages(t *testing.T) {
 
 			require.NoError(t, globalVOutQueue.Publish(globalVOutSubTopic,
 				bVOut))
-			time.Sleep(time.Second)
+			time.Sleep(2 * time.Second)
 
 			ctx, cancel := context.WithTimeout(context.Background(),
 				2*time.Second)
@@ -104,7 +104,7 @@ func TestAccumulateMessagesDuplicate(t *testing.T) {
 	t.Logf("bVOut: %s", bVOut)
 
 	require.NoError(t, globalVOutQueue.Publish(globalVOutSubTopic, bVOut))
-	time.Sleep(time.Second)
+	time.Sleep(2 * time.Second)
 
 	ctx, cancel = context.WithTimeout(context.Background(), 2*time.Second)
 	defer cancel()

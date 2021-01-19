@@ -42,9 +42,9 @@ func NewDevice(devDAO Devicer) *Device {
 	}
 }
 
-// Create creates a device.
-func (d *Device) Create(ctx context.Context,
-	req *api.CreateDeviceRequest) (*api.CreateDeviceResponse, error) {
+// CreateDevice creates a device.
+func (d *Device) CreateDevice(ctx context.Context,
+	req *api.CreateDeviceRequest) (*api.Device, error) {
 	logger := alog.FromContext(ctx)
 	sess, ok := session.FromContext(ctx)
 	if !ok {
@@ -60,14 +60,14 @@ func (d *Device) Create(ctx context.Context,
 
 	if err := grpc.SetHeader(ctx, metadata.Pairs("atlas-status-code",
 		"201")); err != nil {
-		logger.Errorf("Device.Create grpc.SetHeader: %v", err)
+		logger.Errorf("CreateDevice grpc.SetHeader: %v", err)
 	}
-	return &api.CreateDeviceResponse{Device: dev}, nil
+	return dev, nil
 }
 
-// Read retrieves a device by ID.
-func (d *Device) Read(ctx context.Context,
-	req *api.ReadDeviceRequest) (*api.ReadDeviceResponse, error) {
+// GetDevice retrieves a device by ID.
+func (d *Device) GetDevice(ctx context.Context,
+	req *api.GetDeviceRequest) (*api.Device, error) {
 	sess, ok := session.FromContext(ctx)
 	if !ok {
 		return nil, status.Error(codes.PermissionDenied, "permission denied")
@@ -78,12 +78,12 @@ func (d *Device) Read(ctx context.Context,
 		return nil, errToStatus(err)
 	}
 
-	return &api.ReadDeviceResponse{Device: dev}, nil
+	return dev, nil
 }
 
-// Update updates a device.
-func (d *Device) Update(ctx context.Context,
-	req *api.UpdateDeviceRequest) (*api.UpdateDeviceResponse, error) {
+// UpdateDevice updates a device.
+func (d *Device) UpdateDevice(ctx context.Context,
+	req *api.UpdateDeviceRequest) (*api.Device, error) {
 	sess, ok := session.FromContext(ctx)
 	if !ok {
 		return nil, status.Error(codes.PermissionDenied, "permission denied")
@@ -123,11 +123,11 @@ func (d *Device) Update(ctx context.Context,
 		return nil, errToStatus(err)
 	}
 
-	return &api.UpdateDeviceResponse{Device: dev}, nil
+	return dev, nil
 }
 
-// Delete deletes a device by ID.
-func (d *Device) Delete(ctx context.Context,
+// DeleteDevice deletes a device by ID.
+func (d *Device) DeleteDevice(ctx context.Context,
 	req *api.DeleteDeviceRequest) (*empty.Empty, error) {
 	logger := alog.FromContext(ctx)
 	sess, ok := session.FromContext(ctx)
@@ -141,14 +141,14 @@ func (d *Device) Delete(ctx context.Context,
 
 	if err := grpc.SetHeader(ctx, metadata.Pairs("atlas-status-code",
 		"204")); err != nil {
-		logger.Errorf("Device.Delete grpc.SetHeader: %v", err)
+		logger.Errorf("DeleteDevice grpc.SetHeader: %v", err)
 	}
 	return &empty.Empty{}, nil
 }
 
-// List retrieves all devices.
-func (d *Device) List(ctx context.Context,
-	req *api.ListDeviceRequest) (*api.ListDeviceResponse, error) {
+// ListDevices retrieves all devices.
+func (d *Device) ListDevices(ctx context.Context,
+	req *api.ListDevicesRequest) (*api.ListDevicesResponse, error) {
 	logger := alog.FromContext(ctx)
 	sess, ok := session.FromContext(ctx)
 	if !ok {
@@ -171,7 +171,7 @@ func (d *Device) List(ctx context.Context,
 		return nil, errToStatus(err)
 	}
 
-	resp := &api.ListDeviceResponse{
+	resp := &api.ListDevicesResponse{
 		Devices:       devs,
 		PrevPageToken: req.PageToken,
 		TotalSize:     count,
@@ -186,7 +186,7 @@ func (d *Device) List(ctx context.Context,
 			devs[len(devs)-2].Id); err != nil {
 			// GeneratePageToken should not error based on a DB-derived UUID.
 			// Log the error and include the usable empty token.
-			logger.Errorf("Device.List session.GeneratePageToken dev, err: "+
+			logger.Errorf("ListDevices session.GeneratePageToken dev, err: "+
 				"%+v, %v", devs[len(devs)-2], err)
 		}
 	}

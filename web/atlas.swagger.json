@@ -33,7 +33,7 @@
     "/v1/datapoints": {
       "post": {
         "summary": "Publish data points.",
-        "operationId": "DataPointService_Publish",
+        "operationId": "DataPointService_PublishDataPoints",
         "responses": {
           "200": {
             "description": "A successful response.",
@@ -58,7 +58,7 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/apiPublishDataPointRequest"
+              "$ref": "#/definitions/apiPublishDataPointsRequest"
             }
           }
         ],
@@ -70,12 +70,12 @@
     "/v1/datapoints/latest": {
       "get": {
         "summary": "List latest data point for each of a device's attributes.",
-        "operationId": "DataPointService_Latest",
+        "operationId": "DataPointService_LatestDataPoints",
         "responses": {
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/apiLatestDataPointResponse"
+              "$ref": "#/definitions/apiLatestDataPointsResponse"
             }
           },
           "default": {
@@ -109,12 +109,12 @@
     "/v1/devices": {
       "get": {
         "summary": "List all devices.",
-        "operationId": "DeviceService_List",
+        "operationId": "DeviceService_ListDevices",
         "responses": {
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/apiListDeviceResponse"
+              "$ref": "#/definitions/apiListDevicesResponse"
             }
           },
           "default": {
@@ -127,7 +127,7 @@
         "parameters": [
           {
             "name": "pageSize",
-            "description": "Number of devices to retrieve in a single page. Defaults to 100 if not specified.",
+            "description": "Number of devices to retrieve in a single page. Defaults to 50 if not specified.",
             "in": "query",
             "required": false,
             "type": "integer",
@@ -147,18 +147,18 @@
       },
       "post": {
         "summary": "Create a device.",
-        "operationId": "DeviceService_Create",
+        "operationId": "DeviceService_CreateDevice",
         "responses": {
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/apiCreateDeviceResponse"
+              "$ref": "#/definitions/apiDevice"
             }
           },
           "201": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/apiCreateDeviceResponse"
+              "$ref": "#/definitions/apiDevice"
             }
           },
           "default": {
@@ -190,12 +190,12 @@
     "/v1/devices/{device.id}": {
       "put": {
         "summary": "Update a device.",
-        "operationId": "DeviceService_Update",
+        "operationId": "DeviceService_UpdateDevice",
         "responses": {
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/apiUpdateDeviceResponse"
+              "$ref": "#/definitions/apiDevice"
             }
           },
           "default": {
@@ -239,12 +239,12 @@
       },
       "patch": {
         "summary": "Update a device.",
-        "operationId": "DeviceService_Update2",
+        "operationId": "DeviceService_UpdateDevice2",
         "responses": {
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/apiUpdateDeviceResponse"
+              "$ref": "#/definitions/apiDevice"
             }
           },
           "default": {
@@ -289,13 +289,13 @@
     },
     "/v1/devices/{id}": {
       "get": {
-        "summary": "Read a device by ID.",
-        "operationId": "DeviceService_Read",
+        "summary": "Get a device by ID.",
+        "operationId": "DeviceService_GetDevice",
         "responses": {
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/apiReadDeviceResponse"
+              "$ref": "#/definitions/apiDevice"
             }
           },
           "default": {
@@ -308,7 +308,7 @@
         "parameters": [
           {
             "name": "id",
-            "description": "Device ID (UUID) to read.",
+            "description": "Device ID (UUID) to get.",
             "in": "path",
             "required": true,
             "type": "string"
@@ -320,7 +320,7 @@
       },
       "delete": {
         "summary": "Delete a device by ID.",
-        "operationId": "DeviceService_Delete",
+        "operationId": "DeviceService_DeleteDevice",
         "responses": {
           "200": {
             "description": "A successful response.",
@@ -390,12 +390,12 @@
     "/v1/users": {
       "get": {
         "summary": "List all users.",
-        "operationId": "UserService_List",
+        "operationId": "UserService_ListUsers",
         "responses": {
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/apiListUserResponse"
+              "$ref": "#/definitions/apiListUsersResponse"
             }
           },
           "default": {
@@ -408,7 +408,7 @@
         "parameters": [
           {
             "name": "pageSize",
-            "description": "Number of users to retrieve in a single page. Defaults to 100 if not specified.",
+            "description": "Number of users to retrieve in a single page. Defaults to 50 if not specified.",
             "in": "query",
             "required": false,
             "type": "integer",
@@ -428,18 +428,18 @@
       },
       "post": {
         "summary": "Create a user.",
-        "operationId": "UserService_Create",
+        "operationId": "UserService_CreateUser",
         "responses": {
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/apiCreateUserResponse"
+              "$ref": "#/definitions/apiUser"
             }
           },
           "201": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/apiCreateUserResponse"
+              "$ref": "#/definitions/apiUser"
             }
           },
           "default": {
@@ -470,13 +470,13 @@
     },
     "/v1/users/{id}": {
       "get": {
-        "summary": "Read a user by ID.",
-        "operationId": "UserService_Read",
+        "summary": "Get a user by ID.",
+        "operationId": "UserService_GetUser",
         "responses": {
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/apiReadUserResponse"
+              "$ref": "#/definitions/apiUser"
             }
           },
           "default": {
@@ -489,7 +489,7 @@
         "parameters": [
           {
             "name": "id",
-            "description": "User ID (UUID) to read.",
+            "description": "User ID (UUID) to get.",
             "in": "path",
             "required": true,
             "type": "string"
@@ -501,7 +501,7 @@
       },
       "delete": {
         "summary": "Delete a user by ID.",
-        "operationId": "UserService_Delete",
+        "operationId": "UserService_DeleteUser",
         "responses": {
           "200": {
             "description": "A successful response.",
@@ -537,7 +537,7 @@
     "/v1/users/{id}/password": {
       "put": {
         "summary": "Update a user's password.",
-        "operationId": "UserService_UpdatePassword",
+        "operationId": "UserService_UpdateUserPassword",
         "responses": {
           "200": {
             "description": "A successful response.",
@@ -577,12 +577,12 @@
     "/v1/users/{user.id}": {
       "put": {
         "summary": "Update a user.",
-        "operationId": "UserService_Update",
+        "operationId": "UserService_UpdateUser",
         "responses": {
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/apiUpdateUserResponse"
+              "$ref": "#/definitions/apiUser"
             }
           },
           "default": {
@@ -626,12 +626,12 @@
       },
       "patch": {
         "summary": "Update a user.",
-        "operationId": "UserService_Update2",
+        "operationId": "UserService_UpdateUser2",
         "responses": {
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/apiUpdateUserResponse"
+              "$ref": "#/definitions/apiUser"
             }
           },
           "default": {
@@ -676,26 +676,6 @@
     }
   },
   "definitions": {
-    "apiCreateDeviceResponse": {
-      "type": "object",
-      "properties": {
-        "device": {
-          "$ref": "#/definitions/apiDevice",
-          "description": "Created device message."
-        }
-      },
-      "description": "CreateDeviceResponse is sent in response to a device creation."
-    },
-    "apiCreateUserResponse": {
-      "type": "object",
-      "properties": {
-        "user": {
-          "$ref": "#/definitions/apiUser",
-          "description": "Created user message."
-        }
-      },
-      "description": "CreateUserResponse is sent in response to a user creation."
-    },
     "apiDevice": {
       "type": "object",
       "properties": {
@@ -746,7 +726,7 @@
         "status"
       ]
     },
-    "apiLatestDataPointResponse": {
+    "apiLatestDataPointsResponse": {
       "type": "object",
       "properties": {
         "points": {
@@ -757,9 +737,9 @@
           "description": "Data point array."
         }
       },
-      "description": "LatestDataPointResponse is sent in response to a device latest list."
+      "description": "LatestDataPointsResponse is sent in response to a device latest list."
     },
-    "apiListDeviceResponse": {
+    "apiListDevicesResponse": {
       "type": "object",
       "properties": {
         "devices": {
@@ -783,9 +763,9 @@
           "description": "Total number of devices available."
         }
       },
-      "description": "ListDeviceResponse is sent in response to a device list."
+      "description": "ListDevicesResponse is sent in response to a device list."
     },
-    "apiListUserResponse": {
+    "apiListUsersResponse": {
       "type": "object",
       "properties": {
         "users": {
@@ -809,7 +789,7 @@
           "description": "Total number of users available."
         }
       },
-      "description": "ListUserResponse is sent in response to a user list."
+      "description": "ListUsersResponse is sent in response to a user list."
     },
     "apiLoginRequest": {
       "type": "object",
@@ -858,7 +838,7 @@
       },
       "description": "LoginResponse is sent in response to a user login."
     },
-    "apiPublishDataPointRequest": {
+    "apiPublishDataPointsRequest": {
       "type": "object",
       "properties": {
         "points": {
@@ -872,40 +852,10 @@
           ]
         }
       },
-      "description": "PublishDataPointRequest is sent to publish data points.",
+      "description": "PublishDataPointsRequest is sent to publish data points.",
       "required": [
         "points"
       ]
-    },
-    "apiReadDeviceResponse": {
-      "type": "object",
-      "properties": {
-        "device": {
-          "$ref": "#/definitions/apiDevice",
-          "description": "Read device message."
-        }
-      },
-      "description": "ReadDeviceResponse is sent in response to a device read."
-    },
-    "apiReadUserResponse": {
-      "type": "object",
-      "properties": {
-        "user": {
-          "$ref": "#/definitions/apiUser",
-          "description": "Read user message."
-        }
-      },
-      "description": "ReadUserResponse is sent in response to a user read."
-    },
-    "apiUpdateDeviceResponse": {
-      "type": "object",
-      "properties": {
-        "device": {
-          "$ref": "#/definitions/apiDevice",
-          "description": "Updated device message."
-        }
-      },
-      "description": "UpdateDeviceResponse is sent in response to a device update."
     },
     "apiUpdateUserPasswordRequest": {
       "type": "object",
@@ -927,16 +877,6 @@
       "required": [
         "password"
       ]
-    },
-    "apiUpdateUserResponse": {
-      "type": "object",
-      "properties": {
-        "user": {
-          "$ref": "#/definitions/apiUser",
-          "description": "Updated user message."
-        }
-      },
-      "description": "UpdateUserResponse is sent in response to a user update."
     },
     "apiUser": {
       "type": "object",

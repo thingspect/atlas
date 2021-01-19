@@ -48,9 +48,9 @@ func NewDataPoint(pubQueue queue.Queuer, pubTopic string,
 	}
 }
 
-// Publish publishes a data point.
-func (d *DataPoint) Publish(ctx context.Context,
-	req *api.PublishDataPointRequest) (*empty.Empty, error) {
+// PublishDataPoints publishes a data point.
+func (d *DataPoint) PublishDataPoints(ctx context.Context,
+	req *api.PublishDataPointsRequest) (*empty.Empty, error) {
 	logger := alog.FromContext(ctx)
 	sess, ok := session.FromContext(ctx)
 	if !ok {
@@ -79,28 +79,29 @@ func (d *DataPoint) Publish(ctx context.Context,
 
 		bVIn, err := proto.Marshal(vIn)
 		if err != nil {
-			logger.Errorf("DataPoint.Publish proto.Marshal: %v", err)
+			logger.Errorf("PublishDataPoints proto.Marshal: %v", err)
 			return nil, status.Error(codes.Internal, "publish failure")
 		}
 
 		if err = d.pubQueue.Publish(d.pubTopic, bVIn); err != nil {
-			logger.Errorf("DataPoint.Publish d.pubQueue.Publish: %v", err)
+			logger.Errorf("PublishDataPoints d.pubQueue.Publish: %v", err)
 			return nil, status.Error(codes.Internal, "publish failure")
 		}
 
-		logger.Debugf("DataPoint.Publish published: %+v", vIn)
+		logger.Debugf("PublishDataPoints published: %+v", vIn)
 	}
 
 	if err := grpc.SetHeader(ctx, metadata.Pairs("atlas-status-code",
 		"202")); err != nil {
-		logger.Errorf("DataPoint.Publish grpc.SetHeader: %v", err)
+		logger.Errorf("PublishDataPoints grpc.SetHeader: %v", err)
 	}
 	return &empty.Empty{}, nil
 }
 
-// Latest retrieves the latest data point for each of a device's attributes.
-func (d *DataPoint) Latest(ctx context.Context,
-	req *api.LatestDataPointRequest) (*api.LatestDataPointResponse, error) {
+// LatestDataPoints retrieves the latest data point for each of a device's
+// attributes.
+func (d *DataPoint) LatestDataPoints(ctx context.Context,
+	req *api.LatestDataPointsRequest) (*api.LatestDataPointsResponse, error) {
 	sess, ok := session.FromContext(ctx)
 	if !ok {
 		return nil, status.Error(codes.PermissionDenied, "permission denied")
@@ -110,9 +111,9 @@ func (d *DataPoint) Latest(ctx context.Context,
 	var devID string
 
 	switch v := req.IdOneof.(type) {
-	case *api.LatestDataPointRequest_UniqId:
+	case *api.LatestDataPointsRequest_UniqId:
 		uniqID = v.UniqId
-	case *api.LatestDataPointRequest_DevId:
+	case *api.LatestDataPointsRequest_DevId:
 		devID = v.DevId
 	}
 
@@ -121,5 +122,5 @@ func (d *DataPoint) Latest(ctx context.Context,
 		return nil, errToStatus(err)
 	}
 
-	return &api.LatestDataPointResponse{Points: points}, nil
+	return &api.LatestDataPointsResponse{Points: points}, nil
 }
