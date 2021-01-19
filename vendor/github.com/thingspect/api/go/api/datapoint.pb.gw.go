@@ -31,8 +31,8 @@ var _ = runtime.String
 var _ = utilities.NewDoubleArray
 var _ = metadata.Join
 
-func request_DataPointService_Publish_0(ctx context.Context, marshaler runtime.Marshaler, client DataPointServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq PublishDataPointRequest
+func request_DataPointService_PublishDataPoints_0(ctx context.Context, marshaler runtime.Marshaler, client DataPointServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+	var protoReq PublishDataPointsRequest
 	var metadata runtime.ServerMetadata
 
 	newReader, berr := utilities.IOReaderFactory(req.Body)
@@ -43,13 +43,13 @@ func request_DataPointService_Publish_0(ctx context.Context, marshaler runtime.M
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
 
-	msg, err := client.Publish(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
+	msg, err := client.PublishDataPoints(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
 	return msg, metadata, err
 
 }
 
-func local_request_DataPointService_Publish_0(ctx context.Context, marshaler runtime.Marshaler, server DataPointServiceServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq PublishDataPointRequest
+func local_request_DataPointService_PublishDataPoints_0(ctx context.Context, marshaler runtime.Marshaler, server DataPointServiceServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+	var protoReq PublishDataPointsRequest
 	var metadata runtime.ServerMetadata
 
 	newReader, berr := utilities.IOReaderFactory(req.Body)
@@ -60,43 +60,43 @@ func local_request_DataPointService_Publish_0(ctx context.Context, marshaler run
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
 
-	msg, err := server.Publish(ctx, &protoReq)
+	msg, err := server.PublishDataPoints(ctx, &protoReq)
 	return msg, metadata, err
 
 }
 
 var (
-	filter_DataPointService_Latest_0 = &utilities.DoubleArray{Encoding: map[string]int{}, Base: []int(nil), Check: []int(nil)}
+	filter_DataPointService_LatestDataPoints_0 = &utilities.DoubleArray{Encoding: map[string]int{}, Base: []int(nil), Check: []int(nil)}
 )
 
-func request_DataPointService_Latest_0(ctx context.Context, marshaler runtime.Marshaler, client DataPointServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq LatestDataPointRequest
+func request_DataPointService_LatestDataPoints_0(ctx context.Context, marshaler runtime.Marshaler, client DataPointServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+	var protoReq LatestDataPointsRequest
 	var metadata runtime.ServerMetadata
 
 	if err := req.ParseForm(); err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
-	if err := runtime.PopulateQueryParameters(&protoReq, req.Form, filter_DataPointService_Latest_0); err != nil {
+	if err := runtime.PopulateQueryParameters(&protoReq, req.Form, filter_DataPointService_LatestDataPoints_0); err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
 
-	msg, err := client.Latest(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
+	msg, err := client.LatestDataPoints(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
 	return msg, metadata, err
 
 }
 
-func local_request_DataPointService_Latest_0(ctx context.Context, marshaler runtime.Marshaler, server DataPointServiceServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq LatestDataPointRequest
+func local_request_DataPointService_LatestDataPoints_0(ctx context.Context, marshaler runtime.Marshaler, server DataPointServiceServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+	var protoReq LatestDataPointsRequest
 	var metadata runtime.ServerMetadata
 
 	if err := req.ParseForm(); err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
-	if err := runtime.PopulateQueryParameters(&protoReq, req.Form, filter_DataPointService_Latest_0); err != nil {
+	if err := runtime.PopulateQueryParameters(&protoReq, req.Form, filter_DataPointService_LatestDataPoints_0); err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
 
-	msg, err := server.Latest(ctx, &protoReq)
+	msg, err := server.LatestDataPoints(ctx, &protoReq)
 	return msg, metadata, err
 
 }
@@ -107,18 +107,18 @@ func local_request_DataPointService_Latest_0(ctx context.Context, marshaler runt
 // Note that using this registration option will cause many gRPC library features to stop working. Consider using RegisterDataPointServiceHandlerFromEndpoint instead.
 func RegisterDataPointServiceHandlerServer(ctx context.Context, mux *runtime.ServeMux, server DataPointServiceServer) error {
 
-	mux.Handle("POST", pattern_DataPointService_Publish_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("POST", pattern_DataPointService_PublishDataPoints_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		var stream runtime.ServerTransportStream
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		rctx, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/api.DataPointService/Publish")
+		rctx, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/api.DataPointService/PublishDataPoints")
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := local_request_DataPointService_Publish_0(rctx, inboundMarshaler, server, req, pathParams)
+		resp, md, err := local_request_DataPointService_PublishDataPoints_0(rctx, inboundMarshaler, server, req, pathParams)
 		md.HeaderMD, md.TrailerMD = metadata.Join(md.HeaderMD, stream.Header()), metadata.Join(md.TrailerMD, stream.Trailer())
 		ctx = runtime.NewServerMetadataContext(ctx, md)
 		if err != nil {
@@ -126,22 +126,22 @@ func RegisterDataPointServiceHandlerServer(ctx context.Context, mux *runtime.Ser
 			return
 		}
 
-		forward_DataPointService_Publish_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+		forward_DataPointService_PublishDataPoints_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 
 	})
 
-	mux.Handle("GET", pattern_DataPointService_Latest_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("GET", pattern_DataPointService_LatestDataPoints_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		var stream runtime.ServerTransportStream
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		rctx, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/api.DataPointService/Latest")
+		rctx, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/api.DataPointService/LatestDataPoints")
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := local_request_DataPointService_Latest_0(rctx, inboundMarshaler, server, req, pathParams)
+		resp, md, err := local_request_DataPointService_LatestDataPoints_0(rctx, inboundMarshaler, server, req, pathParams)
 		md.HeaderMD, md.TrailerMD = metadata.Join(md.HeaderMD, stream.Header()), metadata.Join(md.TrailerMD, stream.Trailer())
 		ctx = runtime.NewServerMetadataContext(ctx, md)
 		if err != nil {
@@ -149,7 +149,7 @@ func RegisterDataPointServiceHandlerServer(ctx context.Context, mux *runtime.Ser
 			return
 		}
 
-		forward_DataPointService_Latest_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+		forward_DataPointService_LatestDataPoints_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 
 	})
 
@@ -194,43 +194,43 @@ func RegisterDataPointServiceHandler(ctx context.Context, mux *runtime.ServeMux,
 // "DataPointServiceClient" to call the correct interceptors.
 func RegisterDataPointServiceHandlerClient(ctx context.Context, mux *runtime.ServeMux, client DataPointServiceClient) error {
 
-	mux.Handle("POST", pattern_DataPointService_Publish_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("POST", pattern_DataPointService_PublishDataPoints_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		rctx, err := runtime.AnnotateContext(ctx, mux, req, "/api.DataPointService/Publish")
+		rctx, err := runtime.AnnotateContext(ctx, mux, req, "/api.DataPointService/PublishDataPoints")
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := request_DataPointService_Publish_0(rctx, inboundMarshaler, client, req, pathParams)
+		resp, md, err := request_DataPointService_PublishDataPoints_0(rctx, inboundMarshaler, client, req, pathParams)
 		ctx = runtime.NewServerMetadataContext(ctx, md)
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
 
-		forward_DataPointService_Publish_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+		forward_DataPointService_PublishDataPoints_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 
 	})
 
-	mux.Handle("GET", pattern_DataPointService_Latest_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("GET", pattern_DataPointService_LatestDataPoints_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		rctx, err := runtime.AnnotateContext(ctx, mux, req, "/api.DataPointService/Latest")
+		rctx, err := runtime.AnnotateContext(ctx, mux, req, "/api.DataPointService/LatestDataPoints")
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := request_DataPointService_Latest_0(rctx, inboundMarshaler, client, req, pathParams)
+		resp, md, err := request_DataPointService_LatestDataPoints_0(rctx, inboundMarshaler, client, req, pathParams)
 		ctx = runtime.NewServerMetadataContext(ctx, md)
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
 
-		forward_DataPointService_Latest_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+		forward_DataPointService_LatestDataPoints_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 
 	})
 
@@ -238,13 +238,13 @@ func RegisterDataPointServiceHandlerClient(ctx context.Context, mux *runtime.Ser
 }
 
 var (
-	pattern_DataPointService_Publish_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1}, []string{"v1", "datapoints"}, ""))
+	pattern_DataPointService_PublishDataPoints_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1}, []string{"v1", "datapoints"}, ""))
 
-	pattern_DataPointService_Latest_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2}, []string{"v1", "datapoints", "latest"}, ""))
+	pattern_DataPointService_LatestDataPoints_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2}, []string{"v1", "datapoints", "latest"}, ""))
 )
 
 var (
-	forward_DataPointService_Publish_0 = runtime.ForwardResponseMessage
+	forward_DataPointService_PublishDataPoints_0 = runtime.ForwardResponseMessage
 
-	forward_DataPointService_Latest_0 = runtime.ForwardResponseMessage
+	forward_DataPointService_LatestDataPoints_0 = runtime.ForwardResponseMessage
 )

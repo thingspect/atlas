@@ -12,7 +12,7 @@ import (
 	"google.golang.org/grpc/status"
 )
 
-const defaultPageSize = 100
+const defaultPageSize = 50
 
 // Session service contains functions to create sessions and keys.
 type Session struct {

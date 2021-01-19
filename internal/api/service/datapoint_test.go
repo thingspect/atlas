@@ -45,7 +45,7 @@ func TestPublishDataPoint(t *testing.T) {
 		defer cancel()
 
 		dpSvc := NewDataPoint(pubQueue, pubTopic, nil)
-		_, err = dpSvc.Publish(ctx, &api.PublishDataPointRequest{
+		_, err = dpSvc.PublishDataPoints(ctx, &api.PublishDataPointsRequest{
 			Points: []*common.DataPoint{point}})
 		t.Logf("err: %v", err)
 		require.NoError(t, err)
@@ -93,7 +93,7 @@ func TestPublishDataPoint(t *testing.T) {
 		defer cancel()
 
 		dpSvc := NewDataPoint(pubQueue, pubTopic, nil)
-		_, err = dpSvc.Publish(ctx, &api.PublishDataPointRequest{
+		_, err = dpSvc.PublishDataPoints(ctx, &api.PublishDataPointsRequest{
 			Points: []*common.DataPoint{point}})
 		t.Logf("err: %v", err)
 		require.NoError(t, err)
@@ -140,7 +140,7 @@ func TestPublishDataPoint(t *testing.T) {
 		defer cancel()
 
 		dpSvc := NewDataPoint(pubQueue, pubTopic, nil)
-		_, err := dpSvc.Publish(ctx, &api.PublishDataPointRequest{
+		_, err := dpSvc.PublishDataPoints(ctx, &api.PublishDataPointsRequest{
 			Points: []*common.DataPoint{point}})
 		t.Logf("err: %v", err)
 		require.Equal(t, status.Error(codes.PermissionDenied,
@@ -172,17 +172,19 @@ func TestLatestDataPoint(t *testing.T) {
 		defer cancel()
 
 		dpSvc := NewDataPoint(nil, "", datapointer)
-		latPoints, err := dpSvc.Latest(ctx, &api.LatestDataPointRequest{
-			IdOneof: &api.LatestDataPointRequest_UniqId{UniqId: point.UniqId}})
+		latPoints, err := dpSvc.LatestDataPoints(ctx,
+			&api.LatestDataPointsRequest{
+				IdOneof: &api.LatestDataPointsRequest_UniqId{
+					UniqId: point.UniqId}})
 		t.Logf("latPoints, err: %+v, %v", latPoints, err)
 		require.NoError(t, err)
 
 		// Testify does not currently support protobuf equality:
 		// https://github.com/stretchr/testify/issues/758
-		if !proto.Equal(&api.LatestDataPointResponse{
+		if !proto.Equal(&api.LatestDataPointsResponse{
 			Points: []*common.DataPoint{point}}, latPoints) {
 			t.Fatalf("\nExpect: %+v\nActual: %+v",
-				&api.LatestDataPointResponse{
+				&api.LatestDataPointsResponse{
 					Points: []*common.DataPoint{point}}, latPoints)
 		}
 	})
@@ -209,17 +211,18 @@ func TestLatestDataPoint(t *testing.T) {
 		defer cancel()
 
 		dpSvc := NewDataPoint(nil, "", datapointer)
-		latPoints, err := dpSvc.Latest(ctx, &api.LatestDataPointRequest{
-			IdOneof: &api.LatestDataPointRequest_DevId{DevId: devID}})
+		latPoints, err := dpSvc.LatestDataPoints(ctx,
+			&api.LatestDataPointsRequest{
+				IdOneof: &api.LatestDataPointsRequest_DevId{DevId: devID}})
 		t.Logf("latPoints, err: %+v, %v", latPoints, err)
 		require.NoError(t, err)
 
 		// Testify does not currently support protobuf equality:
 		// https://github.com/stretchr/testify/issues/758
-		if !proto.Equal(&api.LatestDataPointResponse{
+		if !proto.Equal(&api.LatestDataPointsResponse{
 			Points: []*common.DataPoint{point}}, latPoints) {
 			t.Fatalf("\nExpect: %+v\nActual: %+v",
-				&api.LatestDataPointResponse{
+				&api.LatestDataPointsResponse{
 					Points: []*common.DataPoint{point}}, latPoints)
 		}
 	})
@@ -238,9 +241,10 @@ func TestLatestDataPoint(t *testing.T) {
 		defer cancel()
 
 		dpSvc := NewDataPoint(nil, "", datapointer)
-		latPoints, err := dpSvc.Latest(ctx, &api.LatestDataPointRequest{
-			IdOneof: &api.LatestDataPointRequest_UniqId{
-				UniqId: random.String(16)}})
+		latPoints, err := dpSvc.LatestDataPoints(ctx,
+			&api.LatestDataPointsRequest{
+				IdOneof: &api.LatestDataPointsRequest_UniqId{
+					UniqId: random.String(16)}})
 		t.Logf("latPoints, err: %+v, %v", latPoints, err)
 		require.Nil(t, latPoints)
 		require.Equal(t, status.Error(codes.PermissionDenied,
@@ -263,9 +267,10 @@ func TestLatestDataPoint(t *testing.T) {
 		defer cancel()
 
 		dpSvc := NewDataPoint(nil, "", datapointer)
-		latPoints, err := dpSvc.Latest(ctx, &api.LatestDataPointRequest{
-			IdOneof: &api.LatestDataPointRequest_UniqId{
-				UniqId: random.String(16)}})
+		latPoints, err := dpSvc.LatestDataPoints(ctx,
+			&api.LatestDataPointsRequest{
+				IdOneof: &api.LatestDataPointsRequest_UniqId{
+					UniqId: random.String(16)}})
 		t.Logf("latPoints, err: %+v, %v", latPoints, err)
 		require.Nil(t, latPoints)
 		require.Equal(t, status.Error(codes.InvalidArgument, "invalid format"),

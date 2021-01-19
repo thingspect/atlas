@@ -47,9 +47,9 @@ func NewUser(userDAO Userer) *User {
 	}
 }
 
-// Create creates a user.
-func (u *User) Create(ctx context.Context,
-	req *api.CreateUserRequest) (*api.CreateUserResponse, error) {
+// CreateUser creates a user.
+func (u *User) CreateUser(ctx context.Context,
+	req *api.CreateUserRequest) (*api.User, error) {
 	logger := alog.FromContext(ctx)
 	sess, ok := session.FromContext(ctx)
 	if !ok {
@@ -65,14 +65,14 @@ func (u *User) Create(ctx context.Context,
 
 	if err := grpc.SetHeader(ctx, metadata.Pairs("atlas-status-code",
 		"201")); err != nil {
-		logger.Errorf("User.Create grpc.SetHeader: %v", err)
+		logger.Errorf("CreateUser grpc.SetHeader: %v", err)
 	}
-	return &api.CreateUserResponse{User: user}, nil
+	return user, nil
 }
 
-// Read retrieves a user by ID.
-func (u *User) Read(ctx context.Context,
-	req *api.ReadUserRequest) (*api.ReadUserResponse, error) {
+// GetUser retrieves a user by ID.
+func (u *User) GetUser(ctx context.Context,
+	req *api.GetUserRequest) (*api.User, error) {
 	sess, ok := session.FromContext(ctx)
 	if !ok {
 		return nil, status.Error(codes.PermissionDenied, "permission denied")
@@ -83,12 +83,12 @@ func (u *User) Read(ctx context.Context,
 		return nil, errToStatus(err)
 	}
 
-	return &api.ReadUserResponse{User: user}, nil
+	return user, nil
 }
 
-// Update updates a user.
-func (u *User) Update(ctx context.Context,
-	req *api.UpdateUserRequest) (*api.UpdateUserResponse, error) {
+// UpdateUser updates a user.
+func (u *User) UpdateUser(ctx context.Context,
+	req *api.UpdateUserRequest) (*api.User, error) {
 	sess, ok := session.FromContext(ctx)
 	if !ok {
 		return nil, status.Error(codes.PermissionDenied, "permission denied")
@@ -128,11 +128,11 @@ func (u *User) Update(ctx context.Context,
 		return nil, errToStatus(err)
 	}
 
-	return &api.UpdateUserResponse{User: user}, nil
+	return user, nil
 }
 
-// UpdatePassword updates a user's password by ID.
-func (u *User) UpdatePassword(ctx context.Context,
+// UpdateUserPassword updates a user's password by ID.
+func (u *User) UpdateUserPassword(ctx context.Context,
 	req *api.UpdateUserPasswordRequest) (*empty.Empty, error) {
 	logger := alog.FromContext(ctx)
 	sess, ok := session.FromContext(ctx)
@@ -146,7 +146,7 @@ func (u *User) UpdatePassword(ctx context.Context,
 
 	hash, err := crypto.HashPass(req.Password)
 	if err != nil {
-		logger.Errorf("User.UpdatePassword crypto.HashPass: %v", err)
+		logger.Errorf("UpdateUserPassword crypto.HashPass: %v", err)
 		return nil, errToStatus(crypto.ErrWeakPass)
 	}
 
@@ -158,8 +158,8 @@ func (u *User) UpdatePassword(ctx context.Context,
 	return &empty.Empty{}, nil
 }
 
-// Delete deletes a user by ID.
-func (u *User) Delete(ctx context.Context,
+// DeleteUser deletes a user by ID.
+func (u *User) DeleteUser(ctx context.Context,
 	req *api.DeleteUserRequest) (*empty.Empty, error) {
 	logger := alog.FromContext(ctx)
 	sess, ok := session.FromContext(ctx)
@@ -173,14 +173,14 @@ func (u *User) Delete(ctx context.Context,
 
 	if err := grpc.SetHeader(ctx, metadata.Pairs("atlas-status-code",
 		"204")); err != nil {
-		logger.Errorf("User.Create grpc.SetHeader: %v", err)
+		logger.Errorf("DeleteUser grpc.SetHeader: %v", err)
 	}
 	return &empty.Empty{}, nil
 }
 
-// List retrieves all users.
-func (u *User) List(ctx context.Context,
-	req *api.ListUserRequest) (*api.ListUserResponse, error) {
+// ListUsers retrieves all users.
+func (u *User) ListUsers(ctx context.Context,
+	req *api.ListUsersRequest) (*api.ListUsersResponse, error) {
 	logger := alog.FromContext(ctx)
 	sess, ok := session.FromContext(ctx)
 	if !ok {
@@ -203,7 +203,7 @@ func (u *User) List(ctx context.Context,
 		return nil, errToStatus(err)
 	}
 
-	resp := &api.ListUserResponse{
+	resp := &api.ListUsersResponse{
 		Users:         users,
 		PrevPageToken: req.PageToken,
 		TotalSize:     count,
@@ -218,7 +218,7 @@ func (u *User) List(ctx context.Context,
 			users[len(users)-2].Id); err != nil {
 			// GeneratePageToken should not error based on a DB-derived UUID.
 			// Log the error and include the usable empty token.
-			logger.Errorf("User.List session.GeneratePageToken user, err: "+
+			logger.Errorf("ListUsers session.GeneratePageToken user, err: "+
 				"%+v, %v", users[len(users)-2], err)
 		}
 	}

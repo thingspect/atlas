@@ -30,7 +30,7 @@ func TestPublishDataPoint(t *testing.T) {
 		defer cancel()
 
 		dpCli := api.NewDataPointServiceClient(globalAuthGRPCConn)
-		_, err := dpCli.Publish(ctx, &api.PublishDataPointRequest{
+		_, err := dpCli.PublishDataPoints(ctx, &api.PublishDataPointsRequest{
 			Points: []*common.DataPoint{point}})
 		t.Logf("err: %v", err)
 		require.NoError(t, err)
@@ -68,7 +68,7 @@ func TestPublishDataPoint(t *testing.T) {
 		defer cancel()
 
 		dpCli := api.NewDataPointServiceClient(globalAuthGRPCConn)
-		_, err := dpCli.Publish(ctx, &api.PublishDataPointRequest{
+		_, err := dpCli.PublishDataPoints(ctx, &api.PublishDataPointsRequest{
 			Points: []*common.DataPoint{point}})
 		t.Logf("err: %v", err)
 		require.NoError(t, err)
@@ -111,11 +111,11 @@ func TestPublishDataPoint(t *testing.T) {
 		defer cancel()
 
 		dpCli := api.NewDataPointServiceClient(globalAuthGRPCConn)
-		_, err := dpCli.Publish(ctx, &api.PublishDataPointRequest{
+		_, err := dpCli.PublishDataPoints(ctx, &api.PublishDataPointsRequest{
 			Points: []*common.DataPoint{point}})
 		t.Logf("err: %v", err)
 		require.EqualError(t, err, "rpc error: code = InvalidArgument desc = "+
-			"invalid PublishDataPointRequest.Points[0]: embedded message "+
+			"invalid PublishDataPointsRequest.Points[0]: embedded message "+
 			"failed validation | caused by: invalid DataPoint.UniqId: value "+
 			"length must be between 5 and 40 runes, inclusive")
 	})
@@ -135,7 +135,7 @@ func TestLatestDataPoint(t *testing.T) {
 				common.Status_DISABLED}[random.Intn(2)]}
 
 		devCli := api.NewDeviceServiceClient(globalAuthGRPCConn)
-		createDev, err := devCli.Create(ctx, &api.CreateDeviceRequest{
+		createDev, err := devCli.CreateDevice(ctx, &api.CreateDeviceRequest{
 			Device: dev})
 		t.Logf("createDev, err: %+v, %v", createDev, err)
 		require.NoError(t, err)
@@ -143,19 +143,19 @@ func TestLatestDataPoint(t *testing.T) {
 		dpCli := api.NewDataPointServiceClient(globalAuthGRPCConn)
 
 		points := []*common.DataPoint{
-			{UniqId: createDev.Device.UniqId, Attr: "motion",
+			{UniqId: createDev.UniqId, Attr: "motion",
 				ValOneof: &common.DataPoint_IntVal{IntVal: 123},
 				TraceId:  uuid.New().String()},
-			{UniqId: createDev.Device.UniqId, Attr: "temp",
+			{UniqId: createDev.UniqId, Attr: "temp",
 				ValOneof: &common.DataPoint_Fl64Val{Fl64Val: 9.3},
 				TraceId:  uuid.New().String()},
-			{UniqId: createDev.Device.UniqId, Attr: "power",
+			{UniqId: createDev.UniqId, Attr: "power",
 				ValOneof: &common.DataPoint_StrVal{StrVal: "batt"},
 				TraceId:  uuid.New().String()},
-			{UniqId: createDev.Device.UniqId, Attr: "leak",
+			{UniqId: createDev.UniqId, Attr: "leak",
 				ValOneof: &common.DataPoint_BoolVal{BoolVal: []bool{true,
 					false}[random.Intn(2)]}, TraceId: uuid.New().String()},
-			{UniqId: createDev.Device.UniqId, Attr: "raw",
+			{UniqId: createDev.UniqId, Attr: "raw",
 				ValOneof: &common.DataPoint_BytesVal{BytesVal: []byte{0x00}},
 				TraceId:  uuid.New().String()},
 		}
@@ -185,35 +185,37 @@ func TestLatestDataPoint(t *testing.T) {
 		defer cancel()
 
 		// Verify results by UniqID.
-		latPointsUniqID, err := dpCli.Latest(ctx, &api.LatestDataPointRequest{
-			IdOneof: &api.LatestDataPointRequest_UniqId{
-				UniqId: createDev.Device.UniqId}})
+		latPointsUniqID, err := dpCli.LatestDataPoints(ctx,
+			&api.LatestDataPointsRequest{
+				IdOneof: &api.LatestDataPointsRequest_UniqId{
+					UniqId: createDev.UniqId}})
 		t.Logf("latPointsUniqID, err: %+v, %v", latPointsUniqID, err)
 		require.NoError(t, err)
 		require.Len(t, latPointsUniqID.Points, len(points))
 
 		// Testify does not currently support protobuf equality:
 		// https://github.com/stretchr/testify/issues/758
-		if !proto.Equal(&api.LatestDataPointResponse{Points: points},
+		if !proto.Equal(&api.LatestDataPointsResponse{Points: points},
 			latPointsUniqID) {
 			t.Fatalf("\nExpect: %+v\nActual: %+v",
-				&api.LatestDataPointResponse{Points: points}, latPointsUniqID)
+				&api.LatestDataPointsResponse{Points: points}, latPointsUniqID)
 		}
 
 		// Verify results by dev ID.
-		latPointsDevID, err := dpCli.Latest(ctx, &api.LatestDataPointRequest{
-			IdOneof: &api.LatestDataPointRequest_DevId{
-				DevId: createDev.Device.Id}})
+		latPointsDevID, err := dpCli.LatestDataPoints(ctx,
+			&api.LatestDataPointsRequest{
+				IdOneof: &api.LatestDataPointsRequest_DevId{
+					DevId: createDev.Id}})
 		t.Logf("latPointsDevID, err: %+v, %v", latPointsDevID, err)
 		require.NoError(t, err)
 		require.Len(t, latPointsDevID.Points, len(points))
 
 		// Testify does not currently support protobuf equality:
 		// https://github.com/stretchr/testify/issues/758
-		if !proto.Equal(&api.LatestDataPointResponse{Points: points},
+		if !proto.Equal(&api.LatestDataPointsResponse{Points: points},
 			latPointsDevID) {
 			t.Fatalf("\nExpect: %+v\nActual: %+v",
-				&api.LatestDataPointResponse{Points: points}, latPointsDevID)
+				&api.LatestDataPointsResponse{Points: points}, latPointsDevID)
 		}
 	})
 
@@ -232,9 +234,10 @@ func TestLatestDataPoint(t *testing.T) {
 		require.NoError(t, err)
 
 		dpCli := api.NewDataPointServiceClient(globalAuthGRPCConn)
-		latPoints, err := dpCli.Latest(ctx, &api.LatestDataPointRequest{
-			IdOneof: &api.LatestDataPointRequest_UniqId{
-				UniqId: uuid.New().String()}})
+		latPoints, err := dpCli.LatestDataPoints(ctx,
+			&api.LatestDataPointsRequest{
+				IdOneof: &api.LatestDataPointsRequest_UniqId{
+					UniqId: uuid.New().String()}})
 		t.Logf("latPoints, err: %+v, %v", latPoints, err)
 		require.NoError(t, err)
 		require.Len(t, latPoints.Points, 0)
@@ -247,9 +250,10 @@ func TestLatestDataPoint(t *testing.T) {
 		defer cancel()
 
 		dpCli := api.NewDataPointServiceClient(globalAuthGRPCConn)
-		latPoints, err := dpCli.Latest(ctx, &api.LatestDataPointRequest{
-			IdOneof: &api.LatestDataPointRequest_DevId{
-				DevId: random.String(10)}})
+		latPoints, err := dpCli.LatestDataPoints(ctx,
+			&api.LatestDataPointsRequest{
+				IdOneof: &api.LatestDataPointsRequest_DevId{
+					DevId: random.String(10)}})
 		t.Logf("latPoints, err: %+v, %v", latPoints, err)
 		require.Nil(t, latPoints)
 		require.EqualError(t, err, "rpc error: code = InvalidArgument desc = "+

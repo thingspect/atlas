@@ -20,9 +20,9 @@ const _ = grpc.SupportPackageIsVersion7
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type DataPointServiceClient interface {
 	// Publish data points.
-	Publish(ctx context.Context, in *PublishDataPointRequest, opts ...grpc.CallOption) (*empty.Empty, error)
+	PublishDataPoints(ctx context.Context, in *PublishDataPointsRequest, opts ...grpc.CallOption) (*empty.Empty, error)
 	// List latest data point for each of a device's attributes.
-	Latest(ctx context.Context, in *LatestDataPointRequest, opts ...grpc.CallOption) (*LatestDataPointResponse, error)
+	LatestDataPoints(ctx context.Context, in *LatestDataPointsRequest, opts ...grpc.CallOption) (*LatestDataPointsResponse, error)
 }
 
 type dataPointServiceClient struct {
@@ -33,18 +33,18 @@ func NewDataPointServiceClient(cc grpc.ClientConnInterface) DataPointServiceClie
 	return &dataPointServiceClient{cc}
 }
 
-func (c *dataPointServiceClient) Publish(ctx context.Context, in *PublishDataPointRequest, opts ...grpc.CallOption) (*empty.Empty, error) {
+func (c *dataPointServiceClient) PublishDataPoints(ctx context.Context, in *PublishDataPointsRequest, opts ...grpc.CallOption) (*empty.Empty, error) {
 	out := new(empty.Empty)
-	err := c.cc.Invoke(ctx, "/api.DataPointService/Publish", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/api.DataPointService/PublishDataPoints", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *dataPointServiceClient) Latest(ctx context.Context, in *LatestDataPointRequest, opts ...grpc.CallOption) (*LatestDataPointResponse, error) {
-	out := new(LatestDataPointResponse)
-	err := c.cc.Invoke(ctx, "/api.DataPointService/Latest", in, out, opts...)
+func (c *dataPointServiceClient) LatestDataPoints(ctx context.Context, in *LatestDataPointsRequest, opts ...grpc.CallOption) (*LatestDataPointsResponse, error) {
+	out := new(LatestDataPointsResponse)
+	err := c.cc.Invoke(ctx, "/api.DataPointService/LatestDataPoints", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -56,9 +56,9 @@ func (c *dataPointServiceClient) Latest(ctx context.Context, in *LatestDataPoint
 // for forward compatibility
 type DataPointServiceServer interface {
 	// Publish data points.
-	Publish(context.Context, *PublishDataPointRequest) (*empty.Empty, error)
+	PublishDataPoints(context.Context, *PublishDataPointsRequest) (*empty.Empty, error)
 	// List latest data point for each of a device's attributes.
-	Latest(context.Context, *LatestDataPointRequest) (*LatestDataPointResponse, error)
+	LatestDataPoints(context.Context, *LatestDataPointsRequest) (*LatestDataPointsResponse, error)
 	mustEmbedUnimplementedDataPointServiceServer()
 }
 
@@ -66,11 +66,11 @@ type DataPointServiceServer interface {
 type UnimplementedDataPointServiceServer struct {
 }
 
-func (UnimplementedDataPointServiceServer) Publish(context.Context, *PublishDataPointRequest) (*empty.Empty, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method Publish not implemented")
+func (UnimplementedDataPointServiceServer) PublishDataPoints(context.Context, *PublishDataPointsRequest) (*empty.Empty, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method PublishDataPoints not implemented")
 }
-func (UnimplementedDataPointServiceServer) Latest(context.Context, *LatestDataPointRequest) (*LatestDataPointResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method Latest not implemented")
+func (UnimplementedDataPointServiceServer) LatestDataPoints(context.Context, *LatestDataPointsRequest) (*LatestDataPointsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method LatestDataPoints not implemented")
 }
 func (UnimplementedDataPointServiceServer) mustEmbedUnimplementedDataPointServiceServer() {}
 
@@ -85,38 +85,38 @@ func RegisterDataPointServiceServer(s grpc.ServiceRegistrar, srv DataPointServic
 	s.RegisterService(&DataPointService_ServiceDesc, srv)
 }
 
-func _DataPointService_Publish_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(PublishDataPointRequest)
+func _DataPointService_PublishDataPoints_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(PublishDataPointsRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(DataPointServiceServer).Publish(ctx, in)
+		return srv.(DataPointServiceServer).PublishDataPoints(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/api.DataPointService/Publish",
+		FullMethod: "/api.DataPointService/PublishDataPoints",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(DataPointServiceServer).Publish(ctx, req.(*PublishDataPointRequest))
+		return srv.(DataPointServiceServer).PublishDataPoints(ctx, req.(*PublishDataPointsRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _DataPointService_Latest_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(LatestDataPointRequest)
+func _DataPointService_LatestDataPoints_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(LatestDataPointsRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(DataPointServiceServer).Latest(ctx, in)
+		return srv.(DataPointServiceServer).LatestDataPoints(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/api.DataPointService/Latest",
+		FullMethod: "/api.DataPointService/LatestDataPoints",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(DataPointServiceServer).Latest(ctx, req.(*LatestDataPointRequest))
+		return srv.(DataPointServiceServer).LatestDataPoints(ctx, req.(*LatestDataPointsRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -129,12 +129,12 @@ var DataPointService_ServiceDesc = grpc.ServiceDesc{
 	HandlerType: (*DataPointServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
-			MethodName: "Publish",
-			Handler:    _DataPointService_Publish_Handler,
+			MethodName: "PublishDataPoints",
+			Handler:    _DataPointService_PublishDataPoints_Handler,
 		},
 		{
-			MethodName: "Latest",
-			Handler:    _DataPointService_Latest_Handler,
+			MethodName: "LatestDataPoints",
+			Handler:    _DataPointService_LatestDataPoints_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
