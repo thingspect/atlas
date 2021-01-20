@@ -107,10 +107,10 @@ func TestCreateDevice(t *testing.T) {
 	})
 }
 
-func TestReadDevice(t *testing.T) {
+func TestGetDevice(t *testing.T) {
 	t.Parallel()
 
-	t.Run("Read device by valid ID", func(t *testing.T) {
+	t.Run("Get device by valid ID", func(t *testing.T) {
 		t.Parallel()
 
 		dev := &api.Device{Id: uuid.New().String(), OrgId: uuid.New().String(),
@@ -130,18 +130,18 @@ func TestReadDevice(t *testing.T) {
 		defer cancel()
 
 		devSvc := NewDevice(devicer)
-		readDev, err := devSvc.GetDevice(ctx, &api.GetDeviceRequest{Id: dev.Id})
-		t.Logf("readDev, err: %+v, %v", readDev, err)
+		getDev, err := devSvc.GetDevice(ctx, &api.GetDeviceRequest{Id: dev.Id})
+		t.Logf("getDev, err: %+v, %v", getDev, err)
 		require.NoError(t, err)
 
 		// Testify does not currently support protobuf equality:
 		// https://github.com/stretchr/testify/issues/758
-		if !proto.Equal(dev, readDev) {
-			t.Fatalf("\nExpect: %+v\nActual: %+v", dev, readDev)
+		if !proto.Equal(dev, getDev) {
+			t.Fatalf("\nExpect: %+v\nActual: %+v", dev, getDev)
 		}
 	})
 
-	t.Run("Read device with invalid session", func(t *testing.T) {
+	t.Run("Get device with invalid session", func(t *testing.T) {
 		t.Parallel()
 
 		ctrl := gomock.NewController(t)
@@ -154,15 +154,15 @@ func TestReadDevice(t *testing.T) {
 		defer cancel()
 
 		devSvc := NewDevice(devicer)
-		readDev, err := devSvc.GetDevice(ctx, &api.GetDeviceRequest{
+		getDev, err := devSvc.GetDevice(ctx, &api.GetDeviceRequest{
 			Id: uuid.New().String()})
-		t.Logf("readDev, err: %+v, %v", readDev, err)
-		require.Nil(t, readDev)
+		t.Logf("getDev, err: %+v, %v", getDev, err)
+		require.Nil(t, getDev)
 		require.Equal(t, status.Error(codes.PermissionDenied,
 			"permission denied"), err)
 	})
 
-	t.Run("Read device by unknown ID", func(t *testing.T) {
+	t.Run("Get device by unknown ID", func(t *testing.T) {
 		t.Parallel()
 
 		ctrl := gomock.NewController(t)
@@ -178,10 +178,10 @@ func TestReadDevice(t *testing.T) {
 		defer cancel()
 
 		devSvc := NewDevice(devicer)
-		readDev, err := devSvc.GetDevice(ctx, &api.GetDeviceRequest{
+		getDev, err := devSvc.GetDevice(ctx, &api.GetDeviceRequest{
 			Id: uuid.New().String()})
-		t.Logf("readDev, err: %+v, %v", readDev, err)
-		require.Nil(t, readDev)
+		t.Logf("getDev, err: %+v, %v", getDev, err)
+		require.Nil(t, getDev)
 		require.Equal(t, status.Error(codes.NotFound, "object not found"), err)
 	})
 }
