@@ -108,10 +108,10 @@ func TestCreateUser(t *testing.T) {
 	})
 }
 
-func TestReadUser(t *testing.T) {
+func TestGetUser(t *testing.T) {
 	t.Parallel()
 
-	t.Run("Read user by valid ID", func(t *testing.T) {
+	t.Run("Get user by valid ID", func(t *testing.T) {
 		t.Parallel()
 
 		user := &api.User{Id: uuid.New().String(), OrgId: uuid.New().String(),
@@ -131,18 +131,18 @@ func TestReadUser(t *testing.T) {
 		defer cancel()
 
 		userSvc := NewUser(userr)
-		readUser, err := userSvc.GetUser(ctx, &api.GetUserRequest{Id: user.Id})
-		t.Logf("readUser, err: %+v, %v", readUser, err)
+		getUser, err := userSvc.GetUser(ctx, &api.GetUserRequest{Id: user.Id})
+		t.Logf("getUser, err: %+v, %v", getUser, err)
 		require.NoError(t, err)
 
 		// Testify does not currently support protobuf equality:
 		// https://github.com/stretchr/testify/issues/758
-		if !proto.Equal(user, readUser) {
-			t.Fatalf("\nExpect: %+v\nActual: %+v", user, readUser)
+		if !proto.Equal(user, getUser) {
+			t.Fatalf("\nExpect: %+v\nActual: %+v", user, getUser)
 		}
 	})
 
-	t.Run("Read user with invalid session", func(t *testing.T) {
+	t.Run("Get user with invalid session", func(t *testing.T) {
 		t.Parallel()
 
 		ctrl := gomock.NewController(t)
@@ -155,15 +155,15 @@ func TestReadUser(t *testing.T) {
 		defer cancel()
 
 		userSvc := NewUser(userr)
-		readUser, err := userSvc.GetUser(ctx, &api.GetUserRequest{
+		getUser, err := userSvc.GetUser(ctx, &api.GetUserRequest{
 			Id: uuid.New().String()})
-		t.Logf("readUser, err: %+v, %v", readUser, err)
-		require.Nil(t, readUser)
+		t.Logf("getUser, err: %+v, %v", getUser, err)
+		require.Nil(t, getUser)
 		require.Equal(t, status.Error(codes.PermissionDenied,
 			"permission denied"), err)
 	})
 
-	t.Run("Read user by unknown ID", func(t *testing.T) {
+	t.Run("Get user by unknown ID", func(t *testing.T) {
 		t.Parallel()
 
 		ctrl := gomock.NewController(t)
@@ -179,10 +179,10 @@ func TestReadUser(t *testing.T) {
 		defer cancel()
 
 		userSvc := NewUser(userr)
-		readUser, err := userSvc.GetUser(ctx, &api.GetUserRequest{
+		getUser, err := userSvc.GetUser(ctx, &api.GetUserRequest{
 			Id: uuid.New().String()})
-		t.Logf("readUser, err: %+v, %v", readUser, err)
-		require.Nil(t, readUser)
+		t.Logf("getUser, err: %+v, %v", getUser, err)
+		require.Nil(t, getUser)
 		require.Equal(t, status.Error(codes.NotFound, "object not found"), err)
 	})
 }

@@ -23,7 +23,7 @@ import (
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
-func TestPublishDataPoint(t *testing.T) {
+func TestPublishDataPoints(t *testing.T) {
 	t.Parallel()
 
 	t.Run("Publish valid data point", func(t *testing.T) {
@@ -148,7 +148,7 @@ func TestPublishDataPoint(t *testing.T) {
 	})
 }
 
-func TestLatestDataPoint(t *testing.T) {
+func TestLatestDataPoints(t *testing.T) {
 	t.Parallel()
 
 	t.Run("Latest data points by valid UniqID", func(t *testing.T) {

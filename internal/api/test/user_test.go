@@ -67,7 +67,7 @@ func TestCreateUser(t *testing.T) {
 	})
 }
 
-func TestReadUser(t *testing.T) {
+func TestGetUser(t *testing.T) {
 	t.Parallel()
 
 	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
@@ -83,51 +83,51 @@ func TestReadUser(t *testing.T) {
 	t.Logf("createUser, err: %+v, %v", createUser, err)
 	require.NoError(t, err)
 
-	t.Run("Read user by valid ID", func(t *testing.T) {
+	t.Run("Get user by valid ID", func(t *testing.T) {
 		t.Parallel()
 
 		ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
 		defer cancel()
 
 		userCli := api.NewUserServiceClient(globalAuthGRPCConn)
-		readUser, err := userCli.GetUser(ctx, &api.GetUserRequest{
+		getUser, err := userCli.GetUser(ctx, &api.GetUserRequest{
 			Id: createUser.Id})
-		t.Logf("readUser, err: %+v, %v", readUser, err)
+		t.Logf("getUser, err: %+v, %v", getUser, err)
 		require.NoError(t, err)
 
 		// Testify does not currently support protobuf equality:
 		// https://github.com/stretchr/testify/issues/758
-		if !proto.Equal(createUser, readUser) {
-			t.Fatalf("\nExpect: %+v\nActual: %+v", createUser, readUser)
+		if !proto.Equal(createUser, getUser) {
+			t.Fatalf("\nExpect: %+v\nActual: %+v", createUser, getUser)
 		}
 	})
 
-	t.Run("Read user by unknown ID", func(t *testing.T) {
+	t.Run("Get user by unknown ID", func(t *testing.T) {
 		t.Parallel()
 
 		ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
 		defer cancel()
 
 		userCli := api.NewUserServiceClient(globalAuthGRPCConn)
-		readUser, err := userCli.GetUser(ctx, &api.GetUserRequest{
+		getUser, err := userCli.GetUser(ctx, &api.GetUserRequest{
 			Id: uuid.New().String()})
-		t.Logf("readUser, err: %+v, %v", readUser, err)
-		require.Nil(t, readUser)
+		t.Logf("getUser, err: %+v, %v", getUser, err)
+		require.Nil(t, getUser)
 		require.EqualError(t, err, "rpc error: code = NotFound desc = object "+
 			"not found")
 	})
 
-	t.Run("Reads are isolated by org ID", func(t *testing.T) {
+	t.Run("Get are isolated by org ID", func(t *testing.T) {
 		t.Parallel()
 
 		ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
 		defer cancel()
 
 		secCli := api.NewUserServiceClient(secondaryAuthGRPCConn)
-		readUser, err := secCli.GetUser(ctx, &api.GetUserRequest{
+		getUser, err := secCli.GetUser(ctx, &api.GetUserRequest{
 			Id: createUser.Id})
-		t.Logf("readUser, err: %+v, %v", readUser, err)
-		require.Nil(t, readUser)
+		t.Logf("getUser, err: %+v, %v", getUser, err)
+		require.Nil(t, getUser)
 		require.EqualError(t, err, "rpc error: code = NotFound desc = object "+
 			"not found")
 	})
@@ -486,10 +486,10 @@ func TestDeleteUser(t *testing.T) {
 			defer cancel()
 
 			userCli := api.NewUserServiceClient(globalAuthGRPCConn)
-			readUser, err := userCli.GetUser(ctx, &api.GetUserRequest{
+			getUser, err := userCli.GetUser(ctx, &api.GetUserRequest{
 				Id: createUser.Id})
-			t.Logf("readUser, err: %+v, %v", readUser, err)
-			require.Nil(t, readUser)
+			t.Logf("getUser, err: %+v, %v", getUser, err)
+			require.Nil(t, getUser)
 			require.EqualError(t, err, "rpc error: code = NotFound desc = "+
 				"object not found")
 		})
