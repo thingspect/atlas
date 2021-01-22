@@ -20,7 +20,7 @@ func (ing *Ingestor) parseMessages() {
 	var processCount int
 	for msg := range ing.mqttSub.C() {
 		// Set up logging fields.
-		traceID := uuid.New().String()
+		traceID := uuid.NewString()
 		logger := alog.WithStr("traceID", traceID)
 
 		// Parse and validate topic in format: 'v1/:orgID[/:uniqID][/json]'.

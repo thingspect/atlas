@@ -110,7 +110,7 @@ func TestGetUser(t *testing.T) {
 
 		userCli := api.NewUserServiceClient(globalAuthGRPCConn)
 		getUser, err := userCli.GetUser(ctx, &api.GetUserRequest{
-			Id: uuid.New().String()})
+			Id: uuid.NewString()})
 		t.Logf("getUser, err: %+v, %v", getUser, err)
 		require.Nil(t, getUser)
 		require.EqualError(t, err, "rpc error: code = NotFound desc = object "+
@@ -228,7 +228,7 @@ func TestUpdateUser(t *testing.T) {
 		ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
 		defer cancel()
 
-		unknownUser := &api.User{Id: uuid.New().String(), Email: "api-user-" +
+		unknownUser := &api.User{Id: uuid.NewString(), Email: "api-user-" +
 			random.Email()}
 
 		userCli := api.NewUserServiceClient(globalAuthGRPCConn)
@@ -247,7 +247,7 @@ func TestUpdateUser(t *testing.T) {
 		ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
 		defer cancel()
 
-		unknownUser := &api.User{Id: uuid.New().String(), Email: "api-user-" +
+		unknownUser := &api.User{Id: uuid.NewString(), Email: "api-user-" +
 			random.Email()}
 
 		userCli := api.NewUserServiceClient(globalAuthGRPCConn)
@@ -266,7 +266,7 @@ func TestUpdateUser(t *testing.T) {
 		ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
 		defer cancel()
 
-		unknownUser := &api.User{Id: uuid.New().String(),
+		unknownUser := &api.User{Id: uuid.NewString(),
 			Email: "api-user-" + random.Email(), Status: []common.Status{
 				common.Status_ACTIVE, common.Status_DISABLED}[random.Intn(2)]}
 
@@ -296,7 +296,7 @@ func TestUpdateUser(t *testing.T) {
 		require.NoError(t, err)
 
 		// Update user fields.
-		createUser.OrgId = uuid.New().String()
+		createUser.OrgId = uuid.NewString()
 		createUser.Email = "api-user-" + random.Email()
 
 		secCli := api.NewUserServiceClient(secondaryAuthGRPCConn)
@@ -422,7 +422,7 @@ func TestUpdateUserPassword(t *testing.T) {
 
 		userCli := api.NewUserServiceClient(globalAuthGRPCConn)
 		_, err := userCli.UpdateUserPassword(ctx,
-			&api.UpdateUserPasswordRequest{Id: uuid.New().String(),
+			&api.UpdateUserPasswordRequest{Id: uuid.NewString(),
 				Password: random.String(20)})
 		t.Logf("err: %v", err)
 		require.EqualError(t, err, "rpc error: code = NotFound desc = object "+
@@ -503,7 +503,7 @@ func TestDeleteUser(t *testing.T) {
 
 		userCli := api.NewUserServiceClient(globalAuthGRPCConn)
 		_, err := userCli.DeleteUser(ctx, &api.DeleteUserRequest{
-			Id: uuid.New().String()})
+			Id: uuid.NewString()})
 		t.Logf("err: %v", err)
 		require.EqualError(t, err, "rpc error: code = NotFound desc = object "+
 			"not found")

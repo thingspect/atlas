@@ -27,20 +27,20 @@ func TestAccumulateMessages(t *testing.T) {
 			UniqId: "acc-" + random.String(16), Attr: "acc-motion",
 			ValOneof: &common.DataPoint_IntVal{IntVal: 123},
 			Ts:       timestamppb.New(time.Now().Add(-15 * time.Minute)),
-			Token:    uuid.New().String(), TraceId: uuid.New().String()},
-			OrgId: uuid.New().String()}},
+			Token:    uuid.NewString(), TraceId: uuid.NewString()},
+			OrgId: uuid.NewString()}},
 		{&message.ValidatorOut{Point: &common.DataPoint{
 			UniqId: "acc-" + random.String(16), Attr: "acc-temp",
 			ValOneof: &common.DataPoint_Fl64Val{Fl64Val: 9.3},
 			Ts:       timestamppb.New(time.Now().Add(-15 * time.Minute)),
-			Token:    uuid.New().String(), TraceId: uuid.New().String()},
-			OrgId: uuid.New().String()}},
+			Token:    uuid.NewString(), TraceId: uuid.NewString()},
+			OrgId: uuid.NewString()}},
 		{&message.ValidatorOut{Point: &common.DataPoint{
 			UniqId: "acc-" + random.String(16), Attr: "acc-power",
 			ValOneof: &common.DataPoint_StrVal{StrVal: "batt"},
 			Ts:       timestamppb.New(time.Now().Add(-15 * time.Minute)),
-			Token:    uuid.New().String(), TraceId: uuid.New().String()},
-			OrgId: uuid.New().String()}},
+			Token:    uuid.NewString(), TraceId: uuid.NewString()},
+			OrgId: uuid.NewString()}},
 	}
 
 	for _, test := range tests {
@@ -94,8 +94,8 @@ func TestAccumulateMessagesDuplicate(t *testing.T) {
 		UniqId: "acc-" + random.String(16), Attr: "acc-motion",
 		ValOneof: &common.DataPoint_IntVal{IntVal: 123},
 		Ts:       timestamppb.New(time.Now().Add(-15 * time.Minute)),
-		Token:    uuid.New().String(), TraceId: uuid.New().String()},
-		OrgId: uuid.New().String()}
+		Token:    uuid.NewString(), TraceId: uuid.NewString()},
+		OrgId: uuid.NewString()}
 	require.NoError(t, globalDPDAO.Create(ctx, duplicateVOut.Point,
 		duplicateVOut.OrgId))
 

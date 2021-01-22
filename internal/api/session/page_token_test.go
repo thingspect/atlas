@@ -25,7 +25,7 @@ func TestGeneratePageToken(t *testing.T) {
 		resMinLen int
 		err       string
 	}{
-		{time.Now(), uuid.New().String(), 40, ""},
+		{time.Now(), uuid.NewString(), 40, ""},
 		{time.Time{}, random.String(10), 0, "invalid UUID length: 10"},
 	}
 

@@ -30,7 +30,7 @@ func TestCreateUser(t *testing.T) {
 	t.Run("Create valid user", func(t *testing.T) {
 		t.Parallel()
 
-		user := &api.User{OrgId: uuid.New().String(), Email: random.Email(),
+		user := &api.User{OrgId: uuid.NewString(), Email: random.Email(),
 			Status: []common.Status{common.Status_ACTIVE,
 				common.Status_DISABLED}[random.Intn(2)]}
 
@@ -82,7 +82,7 @@ func TestCreateUser(t *testing.T) {
 	t.Run("Create invalid user", func(t *testing.T) {
 		t.Parallel()
 
-		user := &api.User{OrgId: uuid.New().String(), Email: random.String(81),
+		user := &api.User{OrgId: uuid.NewString(), Email: random.String(81),
 			Status: []common.Status{common.Status_ACTIVE,
 				common.Status_DISABLED}[random.Intn(2)]}
 
@@ -114,7 +114,7 @@ func TestGetUser(t *testing.T) {
 	t.Run("Get user by valid ID", func(t *testing.T) {
 		t.Parallel()
 
-		user := &api.User{Id: uuid.New().String(), OrgId: uuid.New().String(),
+		user := &api.User{Id: uuid.NewString(), OrgId: uuid.NewString(),
 			Email: random.Email(), Status: []common.Status{common.Status_ACTIVE,
 				common.Status_DISABLED}[random.Intn(2)]}
 
@@ -156,7 +156,7 @@ func TestGetUser(t *testing.T) {
 
 		userSvc := NewUser(userr)
 		getUser, err := userSvc.GetUser(ctx, &api.GetUserRequest{
-			Id: uuid.New().String()})
+			Id: uuid.NewString()})
 		t.Logf("getUser, err: %+v, %v", getUser, err)
 		require.Nil(t, getUser)
 		require.Equal(t, status.Error(codes.PermissionDenied,
@@ -174,13 +174,13 @@ func TestGetUser(t *testing.T) {
 			Return(nil, dao.ErrNotFound).Times(1)
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
-			context.Background(), &session.Session{OrgID: uuid.New().String()}),
+			context.Background(), &session.Session{OrgID: uuid.NewString()}),
 			2*time.Second)
 		defer cancel()
 
 		userSvc := NewUser(userr)
 		getUser, err := userSvc.GetUser(ctx, &api.GetUserRequest{
-			Id: uuid.New().String()})
+			Id: uuid.NewString()})
 		t.Logf("getUser, err: %+v, %v", getUser, err)
 		require.Nil(t, getUser)
 		require.Equal(t, status.Error(codes.NotFound, "object not found"), err)
@@ -193,7 +193,7 @@ func TestUpdateUser(t *testing.T) {
 	t.Run("Update user by valid user", func(t *testing.T) {
 		t.Parallel()
 
-		user := &api.User{Id: uuid.New().String(), OrgId: uuid.New().String(),
+		user := &api.User{Id: uuid.NewString(), OrgId: uuid.NewString(),
 			Email: random.Email(), Status: []common.Status{common.Status_ACTIVE,
 				common.Status_DISABLED}[random.Intn(2)]}
 
@@ -224,7 +224,7 @@ func TestUpdateUser(t *testing.T) {
 	t.Run("Partial update user by valid user", func(t *testing.T) {
 		t.Parallel()
 
-		user := &api.User{Id: uuid.New().String(), OrgId: uuid.New().String(),
+		user := &api.User{Id: uuid.NewString(), OrgId: uuid.NewString(),
 			Email: random.Email()}
 		part := &api.User{Id: user.Id, Status: common.Status_ACTIVE}
 		merged := &api.User{Id: user.Id, OrgId: user.OrgId, Email: user.Email,
@@ -289,7 +289,7 @@ func TestUpdateUser(t *testing.T) {
 		userr.EXPECT().Update(gomock.Any(), gomock.Any()).Times(0)
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
-			context.Background(), &session.Session{OrgID: uuid.New().String()}),
+			context.Background(), &session.Session{OrgID: uuid.NewString()}),
 			2*time.Second)
 		defer cancel()
 
@@ -305,7 +305,7 @@ func TestUpdateUser(t *testing.T) {
 	t.Run("Partial update invalid field mask", func(t *testing.T) {
 		t.Parallel()
 
-		user := &api.User{Id: uuid.New().String(), OrgId: uuid.New().String(),
+		user := &api.User{Id: uuid.NewString(), OrgId: uuid.NewString(),
 			Email: random.Email(), Status: []common.Status{
 				common.Status_ACTIVE, common.Status_DISABLED}[random.Intn(2)]}
 
@@ -317,7 +317,7 @@ func TestUpdateUser(t *testing.T) {
 		userr.EXPECT().Update(gomock.Any(), gomock.Any()).Times(0)
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
-			context.Background(), &session.Session{OrgID: uuid.New().String()}),
+			context.Background(), &session.Session{OrgID: uuid.NewString()}),
 			2*time.Second)
 		defer cancel()
 
@@ -334,8 +334,8 @@ func TestUpdateUser(t *testing.T) {
 	t.Run("Partial update user by unknown user", func(t *testing.T) {
 		t.Parallel()
 
-		orgID := uuid.New().String()
-		part := &api.User{Id: uuid.New().String(),
+		orgID := uuid.NewString()
+		part := &api.User{Id: uuid.NewString(),
 			Status: common.Status_ACTIVE}
 
 		ctrl := gomock.NewController(t)
@@ -363,7 +363,7 @@ func TestUpdateUser(t *testing.T) {
 	t.Run("Update user validation failure", func(t *testing.T) {
 		t.Parallel()
 
-		user := &api.User{Id: uuid.New().String(), OrgId: uuid.New().String(),
+		user := &api.User{Id: uuid.NewString(), OrgId: uuid.NewString(),
 			Email: random.String(10), Status: []common.Status{
 				common.Status_ACTIVE, common.Status_DISABLED}[random.Intn(2)]}
 
@@ -392,7 +392,7 @@ func TestUpdateUser(t *testing.T) {
 	t.Run("Update user by invalid user", func(t *testing.T) {
 		t.Parallel()
 
-		user := &api.User{Id: uuid.New().String(), OrgId: uuid.New().String(),
+		user := &api.User{Id: uuid.NewString(), OrgId: uuid.NewString(),
 			Email: random.String(54) + random.Email(), Status: []common.Status{
 				common.Status_ACTIVE, common.Status_DISABLED}[random.Intn(2)]}
 
@@ -432,13 +432,13 @@ func TestUpdateUserPassword(t *testing.T) {
 			gomock.Any()).Return(nil).Times(1)
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
-			context.Background(), &session.Session{OrgID: uuid.New().String()}),
+			context.Background(), &session.Session{OrgID: uuid.NewString()}),
 			2*time.Second)
 		defer cancel()
 
 		userSvc := NewUser(userr)
 		_, err := userSvc.UpdateUserPassword(ctx,
-			&api.UpdateUserPasswordRequest{Id: uuid.New().String(),
+			&api.UpdateUserPasswordRequest{Id: uuid.NewString(),
 				Password: random.String(20)})
 		t.Logf("err: %v", err)
 		require.NoError(t, err)
@@ -459,7 +459,7 @@ func TestUpdateUserPassword(t *testing.T) {
 
 		userSvc := NewUser(userr)
 		_, err := userSvc.UpdateUserPassword(ctx,
-			&api.UpdateUserPasswordRequest{Id: uuid.New().String(),
+			&api.UpdateUserPasswordRequest{Id: uuid.NewString(),
 				Password: random.String(20)})
 		t.Logf("err: %v", err)
 		require.Equal(t, status.Error(codes.PermissionDenied,
@@ -477,13 +477,13 @@ func TestUpdateUserPassword(t *testing.T) {
 			gomock.Any()).Times(0)
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
-			context.Background(), &session.Session{OrgID: uuid.New().String()}),
+			context.Background(), &session.Session{OrgID: uuid.NewString()}),
 			2*time.Second)
 		defer cancel()
 
 		userSvc := NewUser(userr)
 		_, err := userSvc.UpdateUserPassword(ctx,
-			&api.UpdateUserPasswordRequest{Id: uuid.New().String(),
+			&api.UpdateUserPasswordRequest{Id: uuid.NewString(),
 				Password: "1234567890"})
 		t.Logf("err: %v", err)
 		require.Equal(t, status.Error(codes.InvalidArgument,
@@ -501,13 +501,13 @@ func TestUpdateUserPassword(t *testing.T) {
 			gomock.Any()).Return(dao.ErrNotFound).Times(1)
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
-			context.Background(), &session.Session{OrgID: uuid.New().String()}),
+			context.Background(), &session.Session{OrgID: uuid.NewString()}),
 			6*time.Second)
 		defer cancel()
 
 		userSvc := NewUser(userr)
 		_, err := userSvc.UpdateUserPassword(ctx,
-			&api.UpdateUserPasswordRequest{Id: uuid.New().String(),
+			&api.UpdateUserPasswordRequest{Id: uuid.NewString(),
 				Password: random.String(20)})
 		t.Logf("err: %v", err)
 		require.Equal(t, status.Error(codes.NotFound, "object not found"), err)
@@ -528,13 +528,13 @@ func TestDeleteUser(t *testing.T) {
 			Return(nil).Times(1)
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
-			context.Background(), &session.Session{OrgID: uuid.New().String()}),
+			context.Background(), &session.Session{OrgID: uuid.NewString()}),
 			2*time.Second)
 		defer cancel()
 
 		userSvc := NewUser(userr)
 		_, err := userSvc.DeleteUser(ctx, &api.DeleteUserRequest{
-			Id: uuid.New().String()})
+			Id: uuid.NewString()})
 		t.Logf("err: %v", err)
 		require.NoError(t, err)
 	})
@@ -554,7 +554,7 @@ func TestDeleteUser(t *testing.T) {
 
 		userSvc := NewUser(userr)
 		_, err := userSvc.DeleteUser(ctx, &api.DeleteUserRequest{
-			Id: uuid.New().String()})
+			Id: uuid.NewString()})
 		t.Logf("err: %v", err)
 		require.Equal(t, status.Error(codes.PermissionDenied,
 			"permission denied"), err)
@@ -571,13 +571,13 @@ func TestDeleteUser(t *testing.T) {
 			Return(dao.ErrNotFound).Times(1)
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
-			context.Background(), &session.Session{OrgID: uuid.New().String()}),
+			context.Background(), &session.Session{OrgID: uuid.NewString()}),
 			2*time.Second)
 		defer cancel()
 
 		userSvc := NewUser(userr)
 		_, err := userSvc.DeleteUser(ctx, &api.DeleteUserRequest{
-			Id: uuid.New().String()})
+			Id: uuid.NewString()})
 		t.Logf("err: %v", err)
 		require.Equal(t, status.Error(codes.NotFound, "object not found"), err)
 	})
@@ -589,16 +589,16 @@ func TestListUsers(t *testing.T) {
 	t.Run("List users by valid org ID", func(t *testing.T) {
 		t.Parallel()
 
-		orgID := uuid.New().String()
+		orgID := uuid.NewString()
 
 		users := []*api.User{
-			{Id: uuid.New().String(), OrgId: orgID, Email: random.Email(),
+			{Id: uuid.NewString(), OrgId: orgID, Email: random.Email(),
 				Status: []common.Status{common.Status_ACTIVE,
 					common.Status_DISABLED}[random.Intn(2)]},
-			{Id: uuid.New().String(), OrgId: orgID, Email: random.Email(),
+			{Id: uuid.NewString(), OrgId: orgID, Email: random.Email(),
 				Status: []common.Status{common.Status_ACTIVE,
 					common.Status_DISABLED}[random.Intn(2)]},
-			{Id: uuid.New().String(), OrgId: orgID, Email: random.Email(),
+			{Id: uuid.NewString(), OrgId: orgID, Email: random.Email(),
 				Status: []common.Status{common.Status_ACTIVE,
 					common.Status_DISABLED}[random.Intn(2)]},
 		}
@@ -633,18 +633,18 @@ func TestListUsers(t *testing.T) {
 	t.Run("List users by valid org ID with next page", func(t *testing.T) {
 		t.Parallel()
 
-		orgID := uuid.New().String()
+		orgID := uuid.NewString()
 
 		users := []*api.User{
-			{Id: uuid.New().String(), OrgId: orgID, Email: random.Email(),
+			{Id: uuid.NewString(), OrgId: orgID, Email: random.Email(),
 				Status: []common.Status{common.Status_ACTIVE,
 					common.Status_DISABLED}[random.Intn(2)],
 				CreatedAt: timestamppb.Now()},
-			{Id: uuid.New().String(), OrgId: orgID, Email: random.Email(),
+			{Id: uuid.NewString(), OrgId: orgID, Email: random.Email(),
 				Status: []common.Status{common.Status_ACTIVE,
 					common.Status_DISABLED}[random.Intn(2)],
 				CreatedAt: timestamppb.Now()},
-			{Id: uuid.New().String(), OrgId: orgID, Email: random.Email(),
+			{Id: uuid.NewString(), OrgId: orgID, Email: random.Email(),
 				Status: []common.Status{common.Status_ACTIVE,
 					common.Status_DISABLED}[random.Intn(2)],
 				CreatedAt: timestamppb.Now()},
@@ -716,7 +716,7 @@ func TestListUsers(t *testing.T) {
 			gomock.Any(), gomock.Any()).Times(0)
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
-			context.Background(), &session.Session{OrgID: uuid.New().String()}),
+			context.Background(), &session.Session{OrgID: uuid.NewString()}),
 			2*time.Second)
 		defer cancel()
 
@@ -755,10 +755,10 @@ func TestListUsers(t *testing.T) {
 	t.Run("List users with generation failure", func(t *testing.T) {
 		t.Parallel()
 
-		orgID := uuid.New().String()
+		orgID := uuid.NewString()
 
 		users := []*api.User{
-			{Id: uuid.New().String(), OrgId: orgID, Email: random.Email(),
+			{Id: uuid.NewString(), OrgId: orgID, Email: random.Email(),
 				Status: []common.Status{common.Status_ACTIVE,
 					common.Status_DISABLED}[random.Intn(2)],
 				CreatedAt: timestamppb.Now()},
@@ -766,7 +766,7 @@ func TestListUsers(t *testing.T) {
 				Status: []common.Status{common.Status_ACTIVE,
 					common.Status_DISABLED}[random.Intn(2)],
 				CreatedAt: timestamppb.Now()},
-			{Id: uuid.New().String(), OrgId: orgID, Email: random.Email(),
+			{Id: uuid.NewString(), OrgId: orgID, Email: random.Email(),
 				Status: []common.Status{common.Status_ACTIVE,
 					common.Status_DISABLED}[random.Intn(2)],
 				CreatedAt: timestamppb.Now()},

@@ -47,7 +47,7 @@ func main() {
 
 	// Generate UUID and return.
 	if flag.Arg(0) == "uuid" {
-		fmt.Fprintln(os.Stdout, uuid.New().String())
+		fmt.Fprintln(os.Stdout, uuid.NewString())
 		return
 	}
 

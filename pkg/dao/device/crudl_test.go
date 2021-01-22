@@ -122,8 +122,8 @@ func TestRead(t *testing.T) {
 		ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
 		defer cancel()
 
-		readDev, err := globalDevDAO.Read(ctx, uuid.New().String(),
-			uuid.New().String())
+		readDev, err := globalDevDAO.Read(ctx, uuid.NewString(),
+			uuid.NewString())
 		t.Logf("readDev, err: %+v, %v", readDev, err)
 		require.Nil(t, readDev)
 		require.Equal(t, dao.ErrNotFound, err)
@@ -136,7 +136,7 @@ func TestRead(t *testing.T) {
 		defer cancel()
 
 		readDev, err := globalDevDAO.Read(ctx, createDev.Id,
-			uuid.New().String())
+			uuid.NewString())
 		t.Logf("readDev, err: %+v, %v", readDev, err)
 		require.Nil(t, readDev)
 		require.Equal(t, dao.ErrNotFound, err)
@@ -192,7 +192,7 @@ func TestReadByUniqID(t *testing.T) {
 		ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
 		defer cancel()
 
-		readDev, err := globalDevDAO.ReadByUniqID(ctx, uuid.New().String())
+		readDev, err := globalDevDAO.ReadByUniqID(ctx, uuid.NewString())
 		t.Logf("readDev, err: %+v, %v", readDev, err)
 		require.Nil(t, readDev)
 		require.Equal(t, dao.ErrNotFound, err)
@@ -245,9 +245,9 @@ func TestUpdate(t *testing.T) {
 		ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
 		defer cancel()
 
-		unknownDevice := &api.Device{Id: uuid.New().String(),
+		unknownDevice := &api.Device{Id: uuid.NewString(),
 			OrgId: createOrg.ID, UniqId: "dao-device-" + random.String(16),
-			Token: uuid.New().String()}
+			Token: uuid.NewString()}
 		updateDev, err := globalDevDAO.Update(ctx, unknownDevice)
 		t.Logf("updateDev, err: %+v, %v", updateDev, err)
 		require.Nil(t, updateDev)
@@ -268,7 +268,7 @@ func TestUpdate(t *testing.T) {
 		require.NoError(t, err)
 
 		// Update device fields.
-		createDev.OrgId = uuid.New().String()
+		createDev.OrgId = uuid.NewString()
 		createDev.UniqId = "dao-device-" + random.String(16)
 
 		updateDev, err := globalDevDAO.Update(ctx, createDev)
@@ -349,7 +349,7 @@ func TestDelete(t *testing.T) {
 		ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
 		defer cancel()
 
-		err := globalDevDAO.Delete(ctx, uuid.New().String(), createOrg.ID)
+		err := globalDevDAO.Delete(ctx, uuid.NewString(), createOrg.ID)
 		t.Logf("err: %v", err)
 		require.Equal(t, dao.ErrNotFound, err)
 	})
@@ -367,7 +367,7 @@ func TestDelete(t *testing.T) {
 		t.Logf("createDev, err: %+v, %v", createDev, err)
 		require.NoError(t, err)
 
-		err = globalDevDAO.Delete(ctx, createDev.Id, uuid.New().String())
+		err = globalDevDAO.Delete(ctx, createDev.Id, uuid.NewString())
 		t.Logf("err: %v", err)
 		require.Equal(t, dao.ErrNotFound, err)
 	})
@@ -465,7 +465,7 @@ func TestList(t *testing.T) {
 		ctx, cancel := context.WithTimeout(context.Background(), 4*time.Second)
 		defer cancel()
 
-		listDevs, listCount, err := globalDevDAO.List(ctx, uuid.New().String(),
+		listDevs, listCount, err := globalDevDAO.List(ctx, uuid.NewString(),
 			time.Time{}, "", 0)
 		t.Logf("listDevs, err: %+v, %v", listDevs, err)
 		require.NoError(t, err)

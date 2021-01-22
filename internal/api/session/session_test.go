@@ -14,7 +14,7 @@ import (
 func TestNewFromContext(t *testing.T) {
 	t.Parallel()
 
-	sess := &Session{UserID: uuid.New().String(), OrgID: uuid.New().String()}
+	sess := &Session{UserID: uuid.NewString(), OrgID: uuid.NewString()}
 	t.Logf("sess: %+v", sess)
 
 	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)

@@ -102,8 +102,8 @@ func TestRead(t *testing.T) {
 		ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
 		defer cancel()
 
-		readUser, err := globalUserDAO.Read(ctx, uuid.New().String(),
-			uuid.New().String())
+		readUser, err := globalUserDAO.Read(ctx, uuid.NewString(),
+			uuid.NewString())
 		t.Logf("readUser, err: %+v, %v", readUser, err)
 		require.Nil(t, readUser)
 		require.Equal(t, dao.ErrNotFound, err)
@@ -116,7 +116,7 @@ func TestRead(t *testing.T) {
 		defer cancel()
 
 		readUser, err := globalUserDAO.Read(ctx, createUser.Id,
-			uuid.New().String())
+			uuid.NewString())
 		t.Logf("readUser, err: %+v, %v", readUser, err)
 		require.Nil(t, readUser)
 		require.Equal(t, dao.ErrNotFound, err)
@@ -261,7 +261,7 @@ func TestUpdate(t *testing.T) {
 		ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
 		defer cancel()
 
-		unknownUser := &api.User{Id: uuid.New().String(), OrgId: createOrg.ID,
+		unknownUser := &api.User{Id: uuid.NewString(), OrgId: createOrg.ID,
 			Email: "dao-user-" + random.Email(), Status: []common.Status{
 				common.Status_ACTIVE, common.Status_DISABLED}[random.Intn(2)]}
 		updateUser, err := globalUserDAO.Update(ctx, unknownUser)
@@ -284,7 +284,7 @@ func TestUpdate(t *testing.T) {
 		require.NoError(t, err)
 
 		// Update user fields.
-		createUser.OrgId = uuid.New().String()
+		createUser.OrgId = uuid.NewString()
 		createUser.Email = "dao-user-" + random.Email()
 
 		updateUser, err := globalUserDAO.Update(ctx, createUser)
@@ -354,7 +354,7 @@ func TestUpdatePassword(t *testing.T) {
 		ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
 		defer cancel()
 
-		err := globalUserDAO.UpdatePassword(ctx, uuid.New().String(),
+		err := globalUserDAO.UpdatePassword(ctx, uuid.NewString(),
 			createOrg.ID, globalHash)
 		t.Logf("err: %v", err)
 		require.Equal(t, dao.ErrNotFound, err)
@@ -374,7 +374,7 @@ func TestUpdatePassword(t *testing.T) {
 		require.NoError(t, err)
 
 		err = globalUserDAO.UpdatePassword(ctx, createUser.Id,
-			uuid.New().String(), globalHash)
+			uuid.NewString(), globalHash)
 		t.Logf("err: %v", err)
 		require.Equal(t, dao.ErrNotFound, err)
 	})
@@ -429,7 +429,7 @@ func TestDelete(t *testing.T) {
 		ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
 		defer cancel()
 
-		err := globalUserDAO.Delete(ctx, uuid.New().String(), createOrg.ID)
+		err := globalUserDAO.Delete(ctx, uuid.NewString(), createOrg.ID)
 		t.Logf("err: %v", err)
 		require.Equal(t, dao.ErrNotFound, err)
 	})
@@ -447,7 +447,7 @@ func TestDelete(t *testing.T) {
 		t.Logf("createUser, err: %+v, %v", createUser, err)
 		require.NoError(t, err)
 
-		err = globalUserDAO.Delete(ctx, createUser.Id, uuid.New().String())
+		err = globalUserDAO.Delete(ctx, createUser.Id, uuid.NewString())
 		t.Logf("err: %v", err)
 		require.Equal(t, dao.ErrNotFound, err)
 	})
@@ -546,7 +546,7 @@ func TestList(t *testing.T) {
 		defer cancel()
 
 		listUsers, listCount, err := globalUserDAO.List(ctx,
-			uuid.New().String(), time.Time{}, "", 0)
+			uuid.NewString(), time.Time{}, "", 0)
 		t.Logf("listUsers, err: %+v, %v", listUsers, err)
 		require.NoError(t, err)
 		require.Len(t, listUsers, 0)
