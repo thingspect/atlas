@@ -29,7 +29,7 @@ func TestCreateDevice(t *testing.T) {
 	t.Run("Create valid device", func(t *testing.T) {
 		t.Parallel()
 
-		dev := &api.Device{OrgId: uuid.New().String(),
+		dev := &api.Device{OrgId: uuid.NewString(),
 			UniqId: random.String(16), Status: []common.Status{
 				common.Status_ACTIVE, common.Status_DISABLED}[random.Intn(2)]}
 
@@ -81,7 +81,7 @@ func TestCreateDevice(t *testing.T) {
 	t.Run("Create invalid device", func(t *testing.T) {
 		t.Parallel()
 
-		dev := &api.Device{OrgId: uuid.New().String(),
+		dev := &api.Device{OrgId: uuid.NewString(),
 			UniqId: random.String(41), Status: []common.Status{
 				common.Status_ACTIVE, common.Status_DISABLED}[random.Intn(2)]}
 
@@ -113,7 +113,7 @@ func TestGetDevice(t *testing.T) {
 	t.Run("Get device by valid ID", func(t *testing.T) {
 		t.Parallel()
 
-		dev := &api.Device{Id: uuid.New().String(), OrgId: uuid.New().String(),
+		dev := &api.Device{Id: uuid.NewString(), OrgId: uuid.NewString(),
 			UniqId: random.String(16), Status: []common.Status{
 				common.Status_ACTIVE, common.Status_DISABLED}[random.Intn(2)]}
 
@@ -155,7 +155,7 @@ func TestGetDevice(t *testing.T) {
 
 		devSvc := NewDevice(devicer)
 		getDev, err := devSvc.GetDevice(ctx, &api.GetDeviceRequest{
-			Id: uuid.New().String()})
+			Id: uuid.NewString()})
 		t.Logf("getDev, err: %+v, %v", getDev, err)
 		require.Nil(t, getDev)
 		require.Equal(t, status.Error(codes.PermissionDenied,
@@ -173,13 +173,13 @@ func TestGetDevice(t *testing.T) {
 			Return(nil, dao.ErrNotFound).Times(1)
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
-			context.Background(), &session.Session{OrgID: uuid.New().String()}),
+			context.Background(), &session.Session{OrgID: uuid.NewString()}),
 			2*time.Second)
 		defer cancel()
 
 		devSvc := NewDevice(devicer)
 		getDev, err := devSvc.GetDevice(ctx, &api.GetDeviceRequest{
-			Id: uuid.New().String()})
+			Id: uuid.NewString()})
 		t.Logf("getDev, err: %+v, %v", getDev, err)
 		require.Nil(t, getDev)
 		require.Equal(t, status.Error(codes.NotFound, "object not found"), err)
@@ -192,7 +192,7 @@ func TestUpdateDevice(t *testing.T) {
 	t.Run("Update device by valid device", func(t *testing.T) {
 		t.Parallel()
 
-		dev := &api.Device{Id: uuid.New().String(), OrgId: uuid.New().String(),
+		dev := &api.Device{Id: uuid.NewString(), OrgId: uuid.NewString(),
 			UniqId: random.String(16), Status: []common.Status{
 				common.Status_ACTIVE, common.Status_DISABLED}[random.Intn(2)]}
 
@@ -223,7 +223,7 @@ func TestUpdateDevice(t *testing.T) {
 	t.Run("Partial update device by valid device", func(t *testing.T) {
 		t.Parallel()
 
-		dev := &api.Device{Id: uuid.New().String(), OrgId: uuid.New().String(),
+		dev := &api.Device{Id: uuid.NewString(), OrgId: uuid.NewString(),
 			UniqId: random.String(16)}
 		part := &api.Device{Id: dev.Id, Status: common.Status_ACTIVE}
 		merged := &api.Device{Id: dev.Id, OrgId: dev.OrgId, UniqId: dev.UniqId,
@@ -288,7 +288,7 @@ func TestUpdateDevice(t *testing.T) {
 		devicer.EXPECT().Update(gomock.Any(), gomock.Any()).Times(0)
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
-			context.Background(), &session.Session{OrgID: uuid.New().String()}),
+			context.Background(), &session.Session{OrgID: uuid.NewString()}),
 			2*time.Second)
 		defer cancel()
 
@@ -304,7 +304,7 @@ func TestUpdateDevice(t *testing.T) {
 	t.Run("Partial update invalid field mask", func(t *testing.T) {
 		t.Parallel()
 
-		dev := &api.Device{Id: uuid.New().String(), OrgId: uuid.New().String(),
+		dev := &api.Device{Id: uuid.NewString(), OrgId: uuid.NewString(),
 			UniqId: random.String(16), Status: []common.Status{
 				common.Status_ACTIVE, common.Status_DISABLED}[random.Intn(2)]}
 
@@ -316,7 +316,7 @@ func TestUpdateDevice(t *testing.T) {
 		devicer.EXPECT().Update(gomock.Any(), gomock.Any()).Times(0)
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
-			context.Background(), &session.Session{OrgID: uuid.New().String()}),
+			context.Background(), &session.Session{OrgID: uuid.NewString()}),
 			2*time.Second)
 		defer cancel()
 
@@ -333,8 +333,8 @@ func TestUpdateDevice(t *testing.T) {
 	t.Run("Partial update device by unknown device", func(t *testing.T) {
 		t.Parallel()
 
-		orgID := uuid.New().String()
-		part := &api.Device{Id: uuid.New().String(),
+		orgID := uuid.NewString()
+		part := &api.Device{Id: uuid.NewString(),
 			Status: common.Status_ACTIVE}
 
 		ctrl := gomock.NewController(t)
@@ -362,7 +362,7 @@ func TestUpdateDevice(t *testing.T) {
 	t.Run("Update device validation failure", func(t *testing.T) {
 		t.Parallel()
 
-		dev := &api.Device{Id: uuid.New().String(), OrgId: uuid.New().String(),
+		dev := &api.Device{Id: uuid.NewString(), OrgId: uuid.NewString(),
 			UniqId: random.String(41), Status: []common.Status{
 				common.Status_ACTIVE, common.Status_DISABLED}[random.Intn(2)]}
 
@@ -391,7 +391,7 @@ func TestUpdateDevice(t *testing.T) {
 	t.Run("Update device by invalid device", func(t *testing.T) {
 		t.Parallel()
 
-		dev := &api.Device{Id: uuid.New().String(), OrgId: uuid.New().String(),
+		dev := &api.Device{Id: uuid.NewString(), OrgId: uuid.NewString(),
 			UniqId: random.String(16), Status: []common.Status{
 				common.Status_ACTIVE, common.Status_DISABLED}[random.Intn(2)],
 			Token: random.String(10)}
@@ -432,13 +432,13 @@ func TestDeleteDevice(t *testing.T) {
 			Return(nil).Times(1)
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
-			context.Background(), &session.Session{OrgID: uuid.New().String()}),
+			context.Background(), &session.Session{OrgID: uuid.NewString()}),
 			2*time.Second)
 		defer cancel()
 
 		devSvc := NewDevice(devicer)
 		_, err := devSvc.DeleteDevice(ctx, &api.DeleteDeviceRequest{
-			Id: uuid.New().String()})
+			Id: uuid.NewString()})
 		t.Logf("err: %v", err)
 		require.NoError(t, err)
 	})
@@ -458,7 +458,7 @@ func TestDeleteDevice(t *testing.T) {
 
 		devSvc := NewDevice(devicer)
 		_, err := devSvc.DeleteDevice(ctx, &api.DeleteDeviceRequest{
-			Id: uuid.New().String()})
+			Id: uuid.NewString()})
 		t.Logf("err: %v", err)
 		require.Equal(t, status.Error(codes.PermissionDenied,
 			"permission denied"), err)
@@ -475,13 +475,13 @@ func TestDeleteDevice(t *testing.T) {
 			Return(dao.ErrNotFound).Times(1)
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
-			context.Background(), &session.Session{OrgID: uuid.New().String()}),
+			context.Background(), &session.Session{OrgID: uuid.NewString()}),
 			2*time.Second)
 		defer cancel()
 
 		devSvc := NewDevice(devicer)
 		_, err := devSvc.DeleteDevice(ctx, &api.DeleteDeviceRequest{
-			Id: uuid.New().String()})
+			Id: uuid.NewString()})
 		t.Logf("err: %v", err)
 		require.Equal(t, status.Error(codes.NotFound, "object not found"), err)
 	})
@@ -493,16 +493,16 @@ func TestListDevices(t *testing.T) {
 	t.Run("List devices by valid org ID", func(t *testing.T) {
 		t.Parallel()
 
-		orgID := uuid.New().String()
+		orgID := uuid.NewString()
 
 		devs := []*api.Device{
-			{Id: uuid.New().String(), OrgId: orgID, UniqId: random.String(16),
+			{Id: uuid.NewString(), OrgId: orgID, UniqId: random.String(16),
 				Status: []common.Status{common.Status_ACTIVE,
 					common.Status_DISABLED}[random.Intn(2)]},
-			{Id: uuid.New().String(), OrgId: orgID, UniqId: random.String(16),
+			{Id: uuid.NewString(), OrgId: orgID, UniqId: random.String(16),
 				Status: []common.Status{common.Status_ACTIVE,
 					common.Status_DISABLED}[random.Intn(2)]},
-			{Id: uuid.New().String(), OrgId: orgID, UniqId: random.String(16),
+			{Id: uuid.NewString(), OrgId: orgID, UniqId: random.String(16),
 				Status: []common.Status{common.Status_ACTIVE,
 					common.Status_DISABLED}[random.Intn(2)]},
 		}
@@ -537,18 +537,18 @@ func TestListDevices(t *testing.T) {
 	t.Run("List devices by valid org ID with next page", func(t *testing.T) {
 		t.Parallel()
 
-		orgID := uuid.New().String()
+		orgID := uuid.NewString()
 
 		devs := []*api.Device{
-			{Id: uuid.New().String(), OrgId: orgID, UniqId: random.String(16),
+			{Id: uuid.NewString(), OrgId: orgID, UniqId: random.String(16),
 				Status: []common.Status{common.Status_ACTIVE,
 					common.Status_DISABLED}[random.Intn(2)],
 				CreatedAt: timestamppb.Now()},
-			{Id: uuid.New().String(), OrgId: orgID, UniqId: random.String(16),
+			{Id: uuid.NewString(), OrgId: orgID, UniqId: random.String(16),
 				Status: []common.Status{common.Status_ACTIVE,
 					common.Status_DISABLED}[random.Intn(2)],
 				CreatedAt: timestamppb.Now()},
-			{Id: uuid.New().String(), OrgId: orgID, UniqId: random.String(16),
+			{Id: uuid.NewString(), OrgId: orgID, UniqId: random.String(16),
 				Status: []common.Status{common.Status_ACTIVE,
 					common.Status_DISABLED}[random.Intn(2)],
 				CreatedAt: timestamppb.Now()},
@@ -620,7 +620,7 @@ func TestListDevices(t *testing.T) {
 			gomock.Any(), gomock.Any()).Times(0)
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
-			context.Background(), &session.Session{OrgID: uuid.New().String()}),
+			context.Background(), &session.Session{OrgID: uuid.NewString()}),
 			2*time.Second)
 		defer cancel()
 
@@ -659,10 +659,10 @@ func TestListDevices(t *testing.T) {
 	t.Run("List devices with generation failure", func(t *testing.T) {
 		t.Parallel()
 
-		orgID := uuid.New().String()
+		orgID := uuid.NewString()
 
 		devs := []*api.Device{
-			{Id: uuid.New().String(), OrgId: orgID, UniqId: random.String(16),
+			{Id: uuid.NewString(), OrgId: orgID, UniqId: random.String(16),
 				Status: []common.Status{common.Status_ACTIVE,
 					common.Status_DISABLED}[random.Intn(2)],
 				CreatedAt: timestamppb.Now()},
@@ -670,7 +670,7 @@ func TestListDevices(t *testing.T) {
 				Status: []common.Status{common.Status_ACTIVE,
 					common.Status_DISABLED}[random.Intn(2)],
 				CreatedAt: timestamppb.Now()},
-			{Id: uuid.New().String(), OrgId: orgID, UniqId: random.String(16),
+			{Id: uuid.NewString(), OrgId: orgID, UniqId: random.String(16),
 				Status: []common.Status{common.Status_ACTIVE,
 					common.Status_DISABLED}[random.Intn(2)],
 				CreatedAt: timestamppb.Now()},

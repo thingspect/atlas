@@ -65,7 +65,7 @@ func (d *DataPoint) PublishDataPoints(ctx context.Context,
 	// Build and publish ValidatorIn messages.
 	for _, point := range req.Points {
 		// Set up per-point logging fields.
-		traceID := uuid.New().String()
+		traceID := uuid.NewString()
 		logger := logger.WithStr("traceID", traceID)
 
 		vIn := &message.ValidatorIn{

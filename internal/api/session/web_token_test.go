@@ -32,12 +32,12 @@ func TestGenerateToken(t *testing.T) {
 		resMinLen int
 		err       string
 	}{
-		{key, uuid.New().String(), uuid.New().String(), 90, ""},
-		{key, random.String(10), uuid.New().String(), 0,
+		{key, uuid.NewString(), uuid.NewString(), 90, ""},
+		{key, random.String(10), uuid.NewString(), 0,
 			"invalid UUID length: 10"},
-		{key, uuid.New().String(), random.String(10), 0,
+		{key, uuid.NewString(), random.String(10), 0,
 			"invalid UUID length: 10"},
-		{[]byte{}, uuid.New().String(), uuid.New().String(), 0,
+		{[]byte{}, uuid.NewString(), uuid.NewString(), 0,
 			crypto.ErrKeyLength.Error()},
 	}
 
@@ -101,8 +101,8 @@ func TestValidateToken(t *testing.T) {
 		t.Run(fmt.Sprintf("Can validate %+v", lTest), func(t *testing.T) {
 			t.Parallel()
 
-			userID := uuid.New().String()
-			orgID := uuid.New().String()
+			userID := uuid.NewString()
+			orgID := uuid.NewString()
 
 			resGen, exp, err := GenerateWebToken(lTest.inpKey, userID, orgID)
 			t.Logf("resGen, exp, err: %v, %v, %v", resGen, exp, err)

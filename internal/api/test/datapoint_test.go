@@ -145,22 +145,22 @@ func TestListDataPoints(t *testing.T) {
 		points := []*common.DataPoint{
 			{UniqId: createDev.UniqId, Attr: "motion",
 				ValOneof: &common.DataPoint_IntVal{IntVal: 123},
-				TraceId:  uuid.New().String()},
+				TraceId:  uuid.NewString()},
 			{UniqId: createDev.UniqId, Attr: "temp",
 				ValOneof: &common.DataPoint_Fl64Val{Fl64Val: 9.3},
-				TraceId:  uuid.New().String()},
+				TraceId:  uuid.NewString()},
 			{UniqId: createDev.UniqId, Attr: "power",
 				ValOneof: &common.DataPoint_StrVal{StrVal: "batt"},
-				TraceId:  uuid.New().String()},
+				TraceId:  uuid.NewString()},
 			{UniqId: createDev.UniqId, Attr: "leak",
 				ValOneof: &common.DataPoint_BoolVal{BoolVal: []bool{true,
-					false}[random.Intn(2)]}, TraceId: uuid.New().String()},
+					false}[random.Intn(2)]}, TraceId: uuid.NewString()},
 			{UniqId: createDev.UniqId, Attr: "raw",
 				ValOneof: &common.DataPoint_BytesVal{BytesVal: []byte{0x00}},
-				TraceId:  uuid.New().String()},
+				TraceId:  uuid.NewString()},
 			{UniqId: createDev.UniqId, Attr: "motion",
 				ValOneof: &common.DataPoint_IntVal{IntVal: 321},
-				TraceId:  uuid.New().String()},
+				TraceId:  uuid.NewString()},
 		}
 
 		for _, point := range points {
@@ -251,12 +251,12 @@ func TestListDataPoints(t *testing.T) {
 
 		point := &common.DataPoint{UniqId: "api-point-" + random.String(16),
 			Attr: "motion", ValOneof: &common.DataPoint_IntVal{IntVal: 123},
-			Ts: timestamppb.Now(), TraceId: uuid.New().String()}
+			Ts: timestamppb.Now(), TraceId: uuid.NewString()}
 
 		ctx, cancel := context.WithTimeout(context.Background(), 4*time.Second)
 		defer cancel()
 
-		err := globalDPDAO.Create(ctx, point, uuid.New().String())
+		err := globalDPDAO.Create(ctx, point, uuid.NewString())
 		t.Logf("err: %#v", err)
 		require.NoError(t, err)
 
@@ -264,7 +264,7 @@ func TestListDataPoints(t *testing.T) {
 		listPoints, err := dpCli.ListDataPoints(ctx,
 			&api.ListDataPointsRequest{
 				IdOneof: &api.ListDataPointsRequest_UniqId{
-					UniqId: uuid.New().String()}})
+					UniqId: uuid.NewString()}})
 		t.Logf("listPoints, err: %+v, %v", listPoints, err)
 		require.NoError(t, err)
 		require.Len(t, listPoints.Points, 0)
@@ -331,19 +331,19 @@ func TestLatestDataPoints(t *testing.T) {
 		points := []*common.DataPoint{
 			{UniqId: createDev.UniqId, Attr: "motion",
 				ValOneof: &common.DataPoint_IntVal{IntVal: 123},
-				TraceId:  uuid.New().String()},
+				TraceId:  uuid.NewString()},
 			{UniqId: createDev.UniqId, Attr: "temp",
 				ValOneof: &common.DataPoint_Fl64Val{Fl64Val: 9.3},
-				TraceId:  uuid.New().String()},
+				TraceId:  uuid.NewString()},
 			{UniqId: createDev.UniqId, Attr: "power",
 				ValOneof: &common.DataPoint_StrVal{StrVal: "batt"},
-				TraceId:  uuid.New().String()},
+				TraceId:  uuid.NewString()},
 			{UniqId: createDev.UniqId, Attr: "leak",
 				ValOneof: &common.DataPoint_BoolVal{BoolVal: []bool{true,
-					false}[random.Intn(2)]}, TraceId: uuid.New().String()},
+					false}[random.Intn(2)]}, TraceId: uuid.NewString()},
 			{UniqId: createDev.UniqId, Attr: "raw",
 				ValOneof: &common.DataPoint_BytesVal{BytesVal: []byte{0x00}},
-				TraceId:  uuid.New().String()},
+				TraceId:  uuid.NewString()},
 		}
 
 		for _, point := range points {
@@ -410,12 +410,12 @@ func TestLatestDataPoints(t *testing.T) {
 
 		point := &common.DataPoint{UniqId: "api-point-" + random.String(16),
 			Attr: "motion", ValOneof: &common.DataPoint_IntVal{IntVal: 123},
-			Ts: timestamppb.Now(), TraceId: uuid.New().String()}
+			Ts: timestamppb.Now(), TraceId: uuid.NewString()}
 
 		ctx, cancel := context.WithTimeout(context.Background(), 4*time.Second)
 		defer cancel()
 
-		err := globalDPDAO.Create(ctx, point, uuid.New().String())
+		err := globalDPDAO.Create(ctx, point, uuid.NewString())
 		t.Logf("err: %#v", err)
 		require.NoError(t, err)
 
@@ -423,7 +423,7 @@ func TestLatestDataPoints(t *testing.T) {
 		latPoints, err := dpCli.LatestDataPoints(ctx,
 			&api.LatestDataPointsRequest{
 				IdOneof: &api.LatestDataPointsRequest_UniqId{
-					UniqId: uuid.New().String()}})
+					UniqId: uuid.NewString()}})
 		t.Logf("latPoints, err: %+v, %v", latPoints, err)
 		require.NoError(t, err)
 		require.Len(t, latPoints.Points, 0)

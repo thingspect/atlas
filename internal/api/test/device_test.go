@@ -135,7 +135,7 @@ func TestGetDevice(t *testing.T) {
 
 		devCli := api.NewDeviceServiceClient(globalAuthGRPCConn)
 		getDev, err := devCli.GetDevice(ctx, &api.GetDeviceRequest{
-			Id: uuid.New().String()})
+			Id: uuid.NewString()})
 		t.Logf("getDev, err: %+v, %v", getDev, err)
 		require.Nil(t, getDev)
 		require.EqualError(t, err, "rpc error: code = NotFound desc = object "+
@@ -253,9 +253,9 @@ func TestUpdateDevice(t *testing.T) {
 		ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
 		defer cancel()
 
-		unknownDevice := &api.Device{Id: uuid.New().String(),
+		unknownDevice := &api.Device{Id: uuid.NewString(),
 			UniqId: "api-device-" + random.String(16),
-			Token:  uuid.New().String()}
+			Token:  uuid.NewString()}
 
 		devCli := api.NewDeviceServiceClient(globalAuthGRPCConn)
 		updateDev, err := devCli.UpdateDevice(ctx, &api.UpdateDeviceRequest{
@@ -273,9 +273,9 @@ func TestUpdateDevice(t *testing.T) {
 		ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
 		defer cancel()
 
-		unknownDevice := &api.Device{Id: uuid.New().String(),
+		unknownDevice := &api.Device{Id: uuid.NewString(),
 			UniqId: "api-device-" + random.String(16),
-			Token:  uuid.New().String()}
+			Token:  uuid.NewString()}
 
 		devCli := api.NewDeviceServiceClient(globalAuthGRPCConn)
 		updateDev, err := devCli.UpdateDevice(ctx, &api.UpdateDeviceRequest{
@@ -293,10 +293,10 @@ func TestUpdateDevice(t *testing.T) {
 		ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
 		defer cancel()
 
-		unknownDevice := &api.Device{Id: uuid.New().String(),
+		unknownDevice := &api.Device{Id: uuid.NewString(),
 			UniqId: "api-device-" + random.String(16), Status: []common.Status{
 				common.Status_ACTIVE, common.Status_DISABLED}[random.Intn(2)],
-			Token: uuid.New().String()}
+			Token: uuid.NewString()}
 
 		devCli := api.NewDeviceServiceClient(globalAuthGRPCConn)
 		updateDev, err := devCli.UpdateDevice(ctx, &api.UpdateDeviceRequest{
@@ -324,7 +324,7 @@ func TestUpdateDevice(t *testing.T) {
 		require.NoError(t, err)
 
 		// Update device fields.
-		createDev.OrgId = uuid.New().String()
+		createDev.OrgId = uuid.NewString()
 		createDev.UniqId = "api-device-" + random.String(16)
 
 		secCli := api.NewDeviceServiceClient(secondaryAuthGRPCConn)
@@ -442,7 +442,7 @@ func TestDeleteDevice(t *testing.T) {
 
 		devCli := api.NewDeviceServiceClient(globalAuthGRPCConn)
 		_, err := devCli.DeleteDevice(ctx, &api.DeleteDeviceRequest{
-			Id: uuid.New().String()})
+			Id: uuid.NewString()})
 		t.Logf("err: %v", err)
 		require.EqualError(t, err, "rpc error: code = NotFound desc = object "+
 			"not found")

@@ -34,20 +34,20 @@ func TestAccumulateMessages(t *testing.T) {
 			UniqId: random.String(16), Attr: "motion",
 			ValOneof: &common.DataPoint_IntVal{IntVal: 123},
 			Ts:       timestamppb.New(time.Now().Add(-15 * time.Minute)),
-			Token:    uuid.New().String(), TraceId: uuid.New().String()},
-			OrgId: uuid.New().String()}},
+			Token:    uuid.NewString(), TraceId: uuid.NewString()},
+			OrgId: uuid.NewString()}},
 		{&message.ValidatorOut{Point: &common.DataPoint{
 			UniqId: random.String(16), Attr: "temp",
 			ValOneof: &common.DataPoint_Fl64Val{Fl64Val: 9.3},
 			Ts:       timestamppb.New(time.Now().Add(-15 * time.Minute)),
-			Token:    uuid.New().String(), TraceId: uuid.New().String()},
-			OrgId: uuid.New().String()}},
+			Token:    uuid.NewString(), TraceId: uuid.NewString()},
+			OrgId: uuid.NewString()}},
 		{&message.ValidatorOut{Point: &common.DataPoint{
 			UniqId: random.String(16), Attr: "power",
 			ValOneof: &common.DataPoint_StrVal{StrVal: "batt"},
 			Ts:       timestamppb.New(time.Now().Add(-15 * time.Minute)),
-			Token:    uuid.New().String(), TraceId: uuid.New().String()},
-			OrgId: uuid.New().String()}},
+			Token:    uuid.NewString(), TraceId: uuid.NewString()},
+			OrgId: uuid.NewString()}},
 	}
 
 	for _, test := range tests {

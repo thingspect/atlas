@@ -27,7 +27,7 @@ func TestLogin(t *testing.T) {
 		t.Parallel()
 
 		orgName := random.String(10)
-		user := &api.User{Id: uuid.New().String(), OrgId: uuid.New().String(),
+		user := &api.User{Id: uuid.NewString(), OrgId: uuid.NewString(),
 			Email: random.Email(), Status: common.Status_ACTIVE}
 
 		ctrl := gomock.NewController(t)
@@ -59,7 +59,7 @@ func TestLogin(t *testing.T) {
 		t.Parallel()
 
 		orgName := random.String(10)
-		user := &api.User{Id: uuid.New().String(), OrgId: uuid.New().String(),
+		user := &api.User{Id: uuid.NewString(), OrgId: uuid.NewString(),
 			Email: random.Email()}
 
 		ctrl := gomock.NewController(t)
@@ -89,7 +89,7 @@ func TestLogin(t *testing.T) {
 		t.Parallel()
 
 		orgName := random.String(10)
-		user := &api.User{Id: uuid.New().String(), OrgId: uuid.New().String(),
+		user := &api.User{Id: uuid.NewString(), OrgId: uuid.NewString(),
 			Email: random.Email()}
 
 		ctrl := gomock.NewController(t)
@@ -119,7 +119,7 @@ func TestLogin(t *testing.T) {
 		t.Parallel()
 
 		orgName := random.String(10)
-		user := &api.User{Id: uuid.New().String(), OrgId: uuid.New().String(),
+		user := &api.User{Id: uuid.NewString(), OrgId: uuid.NewString(),
 			Email: random.Email(), Status: common.Status_DISABLED}
 
 		ctrl := gomock.NewController(t)
@@ -149,7 +149,7 @@ func TestLogin(t *testing.T) {
 		t.Parallel()
 
 		orgName := random.String(10)
-		user := &api.User{Id: uuid.New().String(), OrgId: uuid.New().String(),
+		user := &api.User{Id: uuid.NewString(), OrgId: uuid.NewString(),
 			Email: random.Email(), Status: common.Status_ACTIVE}
 
 		ctrl := gomock.NewController(t)

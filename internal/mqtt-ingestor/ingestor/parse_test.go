@@ -23,12 +23,12 @@ import (
 func TestParseMessages(t *testing.T) {
 	t.Parallel()
 
-	orgID := uuid.New().String()
+	orgID := uuid.NewString()
 	uniqIDPoint := random.String(16)
 	now := timestamppb.New(time.Now().Add(-15 * time.Minute))
-	pointToken := uuid.New().String()
+	pointToken := uuid.NewString()
 	uniqIDTopic := random.String(16)
-	paylToken := uuid.New().String()
+	paylToken := uuid.NewString()
 
 	tests := []struct {
 		inpTopicParts []string
@@ -131,7 +131,7 @@ func TestParseMessages(t *testing.T) {
 func TestParseMessagesError(t *testing.T) {
 	t.Parallel()
 
-	orgID := uuid.New().String()
+	orgID := uuid.NewString()
 	uniqID := random.String(16)
 
 	tests := []struct {
@@ -187,13 +187,13 @@ func TestParseMessagesError(t *testing.T) {
 func TestDataPointToVIn(t *testing.T) {
 	t.Parallel()
 
-	orgID := uuid.New().String()
+	orgID := uuid.NewString()
 	uniqIDPoint := random.String(16)
 	now := timestamppb.New(time.Now().Add(-15 * time.Minute))
-	pointToken := uuid.New().String()
-	traceID := uuid.New().String()
+	pointToken := uuid.NewString()
+	traceID := uuid.NewString()
 	uniqIDTopic := random.String(16)
-	paylToken := uuid.New().String()
+	paylToken := uuid.NewString()
 
 	tests := []struct {
 		inpTopicParts []string

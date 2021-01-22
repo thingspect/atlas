@@ -28,10 +28,10 @@ func TestValidateMessages(t *testing.T) {
 
 	uniqID := random.String(16)
 	now := timestamppb.New(time.Now().Add(-15 * time.Minute))
-	token := uuid.New().String()
-	traceID := uuid.New().String()
-	orgID := uuid.New().String()
-	devID := uuid.New().String()
+	token := uuid.NewString()
+	traceID := uuid.NewString()
+	orgID := uuid.NewString()
+	devID := uuid.NewString()
 	boolVal := &common.DataPoint_BoolVal{BoolVal: []bool{true,
 		false}[random.Intn(2)]}
 
@@ -134,7 +134,7 @@ func TestValidateMessages(t *testing.T) {
 func TestValidateMessagesError(t *testing.T) {
 	t.Parallel()
 
-	orgID := uuid.New().String()
+	orgID := uuid.NewString()
 
 	tests := []struct {
 		inpVIn    *message.ValidatorIn
@@ -192,8 +192,8 @@ func TestValidateMessagesError(t *testing.T) {
 			devicer := NewMockdevicer(ctrl)
 			devicer.EXPECT().
 				ReadByUniqID(gomock.Any(), gomock.Any()).
-				Return(&api.Device{Id: uuid.New().String(), OrgId: orgID,
-					Status: lTest.inpStatus, Token: uuid.New().String()},
+				Return(&api.Device{Id: uuid.NewString(), OrgId: orgID,
+					Status: lTest.inpStatus, Token: uuid.NewString()},
 					lTest.inpErr).Times(lTest.inpTimes)
 
 			val := Validator{

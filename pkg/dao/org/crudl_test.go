@@ -94,7 +94,7 @@ func TestRead(t *testing.T) {
 		ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
 		defer cancel()
 
-		readOrg, err := globalOrgDAO.Read(ctx, uuid.New().String())
+		readOrg, err := globalOrgDAO.Read(ctx, uuid.NewString())
 		t.Logf("readOrg, err: %+v, %v", readOrg, err)
 		require.Nil(t, readOrg)
 		require.Equal(t, dao.ErrNotFound, err)
@@ -146,7 +146,7 @@ func TestUpdate(t *testing.T) {
 		ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
 		defer cancel()
 
-		unknownOrg := Org{ID: uuid.New().String()}
+		unknownOrg := Org{ID: uuid.NewString()}
 		updateOrg, err := globalOrgDAO.Update(ctx, unknownOrg)
 		t.Logf("updateOrg, err: %+v, %v", updateOrg, err)
 		require.Nil(t, updateOrg)
@@ -212,7 +212,7 @@ func TestDelete(t *testing.T) {
 		ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
 		defer cancel()
 
-		err := globalOrgDAO.Delete(ctx, uuid.New().String())
+		err := globalOrgDAO.Delete(ctx, uuid.NewString())
 		t.Logf("err: %v", err)
 		require.Equal(t, dao.ErrNotFound, err)
 	})

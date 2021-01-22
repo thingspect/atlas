@@ -29,7 +29,7 @@ func TestPublishDataPoints(t *testing.T) {
 	t.Run("Publish valid data point", func(t *testing.T) {
 		t.Parallel()
 
-		orgID := uuid.New().String()
+		orgID := uuid.NewString()
 		point := &common.DataPoint{UniqId: random.String(16), Attr: "motion",
 			ValOneof: &common.DataPoint_IntVal{IntVal: 123},
 			Ts:       timestamppb.New(time.Now().Add(-15 * time.Minute))}
@@ -78,7 +78,7 @@ func TestPublishDataPoints(t *testing.T) {
 	t.Run("Publish valid data point without timestamp", func(t *testing.T) {
 		t.Parallel()
 
-		orgID := uuid.New().String()
+		orgID := uuid.NewString()
 		point := &common.DataPoint{UniqId: random.String(16), Attr: "motion",
 			ValOneof: &common.DataPoint_IntVal{IntVal: 123}}
 
@@ -156,8 +156,8 @@ func TestListDataPoints(t *testing.T) {
 
 		point := &common.DataPoint{UniqId: "dao-point-" + random.String(16),
 			Attr: "motion", ValOneof: &common.DataPoint_IntVal{IntVal: 123},
-			Ts: timestamppb.Now(), TraceId: uuid.New().String()}
-		orgID := uuid.New().String()
+			Ts: timestamppb.Now(), TraceId: uuid.NewString()}
+		orgID := uuid.NewString()
 		end := time.Now().UTC()
 		start := time.Now().UTC().Add(-15 * time.Minute)
 
@@ -197,9 +197,9 @@ func TestListDataPoints(t *testing.T) {
 
 		point := &common.DataPoint{UniqId: "dao-point-" + random.String(16),
 			Attr: "motion", ValOneof: &common.DataPoint_IntVal{IntVal: 123},
-			Ts: timestamppb.Now(), TraceId: uuid.New().String()}
-		orgID := uuid.New().String()
-		devID := uuid.New().String()
+			Ts: timestamppb.Now(), TraceId: uuid.NewString()}
+		orgID := uuid.NewString()
+		devID := uuid.NewString()
 
 		ctrl := gomock.NewController(t)
 		defer ctrl.Finish()
@@ -320,8 +320,8 @@ func TestLatestDataPoints(t *testing.T) {
 
 		point := &common.DataPoint{UniqId: "dao-point-" + random.String(16),
 			Attr: "motion", ValOneof: &common.DataPoint_IntVal{IntVal: 123},
-			Ts: timestamppb.Now(), TraceId: uuid.New().String()}
-		orgID := uuid.New().String()
+			Ts: timestamppb.Now(), TraceId: uuid.NewString()}
+		orgID := uuid.NewString()
 
 		ctrl := gomock.NewController(t)
 		defer ctrl.Finish()
@@ -358,9 +358,9 @@ func TestLatestDataPoints(t *testing.T) {
 
 		point := &common.DataPoint{UniqId: "dao-point-" + random.String(16),
 			Attr: "motion", ValOneof: &common.DataPoint_IntVal{IntVal: 123},
-			Ts: timestamppb.Now(), TraceId: uuid.New().String()}
-		orgID := uuid.New().String()
-		devID := uuid.New().String()
+			Ts: timestamppb.Now(), TraceId: uuid.NewString()}
+		orgID := uuid.NewString()
+		devID := uuid.NewString()
 
 		ctrl := gomock.NewController(t)
 		defer ctrl.Finish()

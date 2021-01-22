@@ -22,7 +22,7 @@ import (
 func TestValidateMessages(t *testing.T) {
 	uniqID := "val-" + random.String(16)
 	now := timestamppb.New(time.Now().Add(-15 * time.Minute))
-	traceID := uuid.New().String()
+	traceID := uuid.NewString()
 	boolVal := &common.DataPoint_BoolVal{BoolVal: []bool{true,
 		false}[random.Intn(2)]}
 
