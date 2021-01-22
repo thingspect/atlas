@@ -7,8 +7,8 @@ option go_package = "github.com/thingspect/atlas/api/go/token";
 
 // Page represents a pagination token.
 message Page {
-  // Lower bound timestamp. Can represent any timestamp, but primarily used for created_at.
-  google.protobuf.Timestamp lbound_ts = 1;
+  // Lower or upper bound timestamp, depending on ordering. Can represent any timestamp, but primarily used for created_at and representing the start of a page.
+  google.protobuf.Timestamp bound_ts = 1;
 
   // Previous ID (UUID). Can represent any UUID-based identifier.
   bytes prev_id = 2;

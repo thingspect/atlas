@@ -10,7 +10,10 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/require"
+	"github.com/thingspect/atlas/api/go/token"
 	"github.com/thingspect/atlas/pkg/test/random"
+	"google.golang.org/protobuf/proto"
+	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 func TestGeneratePageToken(t *testing.T) {
@@ -47,18 +50,32 @@ func TestGeneratePageToken(t *testing.T) {
 func TestParsePageToken(t *testing.T) {
 	t.Parallel()
 
+	prevID := uuid.New()
+
+	nilTSPT := &token.Page{PrevId: prevID[:]}
+	bNilTSPT, err := proto.Marshal(nilTSPT)
+	require.NoError(t, err)
+
+	badUUIDPT := &token.Page{BoundTs: timestamppb.Now(), PrevId: []byte("aaa")}
+	bBadUUIDPT, err := proto.Marshal(badUUIDPT)
+	require.NoError(t, err)
+
 	tests := []struct {
 		inpID string
 		inpTS time.Time
 		inpPT string
 		err   string
 	}{
-		{uuid.New().String(), time.Now().UTC(), "res", ""},
-		{uuid.New().String(), time.Time{}, "", ""},
-		{uuid.New().String(), time.Time{}, "...",
+		{prevID.String(), time.Now().UTC(), "res", ""},
+		{prevID.String(), time.Time{}, "", ""},
+		{prevID.String(), time.Time{}, "...",
 			"illegal base64 data at input byte 0"},
-		{uuid.New().String(), time.Time{}, base64.RawURLEncoding.EncodeToString(
+		{prevID.String(), time.Time{}, base64.RawURLEncoding.EncodeToString(
 			[]byte("aaa")), "unexpected EOF"},
+		{prevID.String(), time.Time{}, base64.RawURLEncoding.EncodeToString(
+			bNilTSPT), ""},
+		{prevID.String(), time.Time{}, base64.RawURLEncoding.EncodeToString(
+			bBadUUIDPT), "invalid UUID (got 3 bytes)"},
 	}
 
 	for _, test := range tests {

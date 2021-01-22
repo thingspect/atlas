@@ -131,68 +131,120 @@ func TestCreate(t *testing.T) {
 func TestList(t *testing.T) {
 	t.Parallel()
 
-	t.Run("List data points by valid org ID", func(t *testing.T) {
+	t.Run("List data points by UniqID, dev ID, and attr", func(t *testing.T) {
 		t.Parallel()
 
-		tests := []struct {
-			inpPoint *common.DataPoint
-			inpOrgID string
-		}{
-			{&common.DataPoint{UniqId: "dao-point-" + random.String(16),
-				Attr: "motion", ValOneof: &common.DataPoint_IntVal{IntVal: 123},
-				Ts: timestamppb.Now(), TraceId: uuid.New().String()},
-				uuid.New().String()},
-			{&common.DataPoint{UniqId: "dao-point-" + random.String(16),
-				Attr: "temp", ValOneof: &common.DataPoint_Fl64Val{Fl64Val: 9.3},
-				Ts: timestamppb.Now(), TraceId: uuid.New().String()},
-				uuid.New().String()},
-			{&common.DataPoint{UniqId: "dao-point-" + random.String(16),
-				Attr: "power", ValOneof: &common.DataPoint_StrVal{
-					StrVal: "batt"}, Ts: timestamppb.Now(),
-				TraceId: uuid.New().String()}, uuid.New().String()},
-			{&common.DataPoint{UniqId: "dao-point-" + random.String(16),
-				Attr: "leak", ValOneof: &common.DataPoint_BoolVal{
-					BoolVal: []bool{true, false}[random.Intn(2)]},
-				Ts: timestamppb.Now(), TraceId: uuid.New().String()},
-				uuid.New().String()},
-			{&common.DataPoint{UniqId: "dao-point-" + random.String(16),
-				Attr: "raw", ValOneof: &common.DataPoint_BytesVal{
-					BytesVal: []byte{0x00}}, Ts: timestamppb.Now(),
-				TraceId: uuid.New().String()}, uuid.New().String()},
+		ctx, cancel := context.WithTimeout(context.Background(), 4*time.Second)
+		defer cancel()
+
+		org := org.Org{Name: "dao-point-" + random.String(10)}
+		createOrg, err := globalOrgDAO.Create(ctx, org)
+		t.Logf("createOrg, err: %+v, %v", createOrg, err)
+		require.NoError(t, err)
+
+		dev := &api.Device{OrgId: createOrg.ID, UniqId: "dao-point-" +
+			random.String(16), Status: []common.Status{common.Status_ACTIVE,
+			common.Status_DISABLED}[random.Intn(2)]}
+		createDev, err := globalDevDAO.Create(ctx, dev)
+		t.Logf("createDev, err: %+v, %v", createDev, err)
+		require.NoError(t, err)
+
+		points := []*common.DataPoint{
+			{UniqId: createDev.UniqId, Attr: "motion",
+				ValOneof: &common.DataPoint_IntVal{IntVal: 123},
+				TraceId:  uuid.New().String()},
+			{UniqId: createDev.UniqId, Attr: "temp",
+				ValOneof: &common.DataPoint_Fl64Val{Fl64Val: 9.3},
+				TraceId:  uuid.New().String()},
+			{UniqId: createDev.UniqId, Attr: "power",
+				ValOneof: &common.DataPoint_StrVal{StrVal: "batt"},
+				TraceId:  uuid.New().String()},
+			{UniqId: createDev.UniqId, Attr: "leak",
+				ValOneof: &common.DataPoint_BoolVal{BoolVal: []bool{true,
+					false}[random.Intn(2)]}, TraceId: uuid.New().String()},
+			{UniqId: createDev.UniqId, Attr: "raw",
+				ValOneof: &common.DataPoint_BytesVal{BytesVal: []byte{0x00}},
+				TraceId:  uuid.New().String()},
+			{UniqId: createDev.UniqId, Attr: "motion",
+				ValOneof: &common.DataPoint_IntVal{IntVal: 321},
+				TraceId:  uuid.New().String()},
 		}
 
-		for _, test := range tests {
-			lTest := test
+		for _, point := range points {
+			ctx, cancel := context.WithTimeout(context.Background(),
+				2*time.Second)
+			defer cancel()
 
-			t.Run(fmt.Sprintf("Can list %+v", lTest), func(t *testing.T) {
-				t.Parallel()
+			// Set a new in-place timestamp.
+			point.Ts = timestamppb.New(time.Now().UTC().Truncate(
+				time.Millisecond))
+			time.Sleep(time.Millisecond)
 
-				ctx, cancel := context.WithTimeout(context.Background(),
-					4*time.Second)
-				defer cancel()
+			err := globalDPDAO.Create(ctx, point, createOrg.ID)
+			t.Logf("err: %v", err)
+			require.NoError(t, err)
+		}
 
-				err := globalDPDAO.Create(ctx, lTest.inpPoint, lTest.inpOrgID)
-				t.Logf("err: %v", err)
-				require.NoError(t, err)
+		sort.Slice(points, func(i, j int) bool {
+			return points[i].Ts.AsTime().After(points[j].Ts.AsTime())
+		})
 
-				listPoints, err := globalDPDAO.List(ctx, lTest.inpOrgID,
-					lTest.inpPoint.UniqId, lTest.inpPoint.Ts.AsTime(),
-					lTest.inpPoint.Ts.AsTime().Add(time.Millisecond))
-				t.Logf("listPoints, err: %+v, %v", listPoints, err)
-				require.NoError(t, err)
-				require.Len(t, listPoints, 1)
+		ctx, cancel = context.WithTimeout(context.Background(), 4*time.Second)
+		defer cancel()
 
-				// Normalize timestamp.
-				lTest.inpPoint.Ts = timestamppb.New(
-					lTest.inpPoint.Ts.AsTime().Truncate(time.Millisecond))
+		// Verify results by UniqID.
+		listPointsUniqID, err := globalDPDAO.List(ctx, createOrg.ID,
+			createDev.UniqId, "", "", points[0].Ts.AsTime(),
+			points[len(points)-1].Ts.AsTime().Add(-time.Millisecond))
+		t.Logf("listPointsUniqID, err: %+v, %v", listPointsUniqID, err)
+		require.NoError(t, err)
+		require.Len(t, listPointsUniqID, len(points))
 
-				// Testify does not currently support protobuf equality:
-				// https://github.com/stretchr/testify/issues/758
-				if !proto.Equal(lTest.inpPoint, listPoints[0]) {
-					t.Fatalf("\nExpect: %+v\nActual: %+v", lTest.inpPoint,
-						listPoints[0])
+		// Testify does not currently support protobuf equality:
+		// https://github.com/stretchr/testify/issues/758
+		for i, point := range points {
+			if !proto.Equal(point, listPointsUniqID[i]) {
+				t.Fatalf("\nExpect: %+v\nActual: %+v", point,
+					listPointsUniqID[i])
+			}
+		}
+
+		// Verify results by dev ID without oldest point.
+		listPointsDevID, err := globalDPDAO.List(ctx, createOrg.ID, "",
+			createDev.Id, "", points[0].Ts.AsTime(),
+			points[len(points)-1].Ts.AsTime())
+		t.Logf("listPointsDevID, err: %+v, %v", listPointsDevID, err)
+		require.NoError(t, err)
+		require.Len(t, listPointsDevID, len(points)-1)
+
+		// Testify does not currently support protobuf equality:
+		// https://github.com/stretchr/testify/issues/758
+		for i, point := range points[:len(points)-1] {
+			if !proto.Equal(point, listPointsDevID[i]) {
+				t.Fatalf("\nExpect: %+v\nActual: %+v", point,
+					listPointsDevID[i])
+			}
+		}
+
+		// Verify results by UniqID and attribute.
+		listPointsUniqID, err = globalDPDAO.List(ctx, createOrg.ID,
+			createDev.UniqId, "", "motion", points[0].Ts.AsTime(),
+			points[len(points)-1].Ts.AsTime().Add(-time.Millisecond))
+		t.Logf("listPointsUniqID, err: %+v, %v", listPointsUniqID, err)
+		require.NoError(t, err)
+		require.Len(t, listPointsUniqID, 2)
+
+		// Testify does not currently support protobuf equality:
+		// https://github.com/stretchr/testify/issues/758
+		mcount := 0
+		for _, point := range points {
+			if point.Attr == "motion" {
+				if !proto.Equal(point, listPointsUniqID[mcount]) {
+					t.Fatalf("\nExpect: %+v\nActual: %+v", point,
+						listPointsUniqID[mcount])
 				}
-			})
+				mcount++
+			}
 		}
 	})
 
@@ -212,7 +264,7 @@ func TestList(t *testing.T) {
 		require.NoError(t, err)
 
 		listPoints, err := globalDPDAO.List(ctx, uuid.New().String(),
-			point.UniqId, point.Ts.AsTime(), point.Ts.AsTime())
+			point.UniqId, "", "", point.Ts.AsTime(), point.Ts.AsTime())
 		t.Logf("listPoints, err: %+v, %v", listPoints, err)
 		require.NoError(t, err)
 		require.Len(t, listPoints, 0)
@@ -225,7 +277,7 @@ func TestList(t *testing.T) {
 		defer cancel()
 
 		listPoints, err := globalDPDAO.List(ctx, random.String(10),
-			uuid.New().String(), time.Now(), time.Now())
+			uuid.New().String(), "", "", time.Now(), time.Now())
 		t.Logf("listPoints, err: %+v, %v", listPoints, err)
 		require.Nil(t, listPoints)
 		require.ErrorIs(t, err, dao.ErrInvalidFormat)

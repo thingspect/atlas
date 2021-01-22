@@ -4,6 +4,7 @@ package service
 
 import (
 	"context"
+	"time"
 
 	"github.com/golang/protobuf/ptypes/empty"
 	"github.com/google/uuid"
@@ -23,6 +24,8 @@ import (
 
 // DataPointer defines the methods provided by a datapoint.DAO.
 type DataPointer interface {
+	List(ctx context.Context, orgID, uniqID, devID, attr string, end,
+		start time.Time) ([]*common.DataPoint, error)
 	Latest(ctx context.Context, orgID, uniqID,
 		devID string) ([]*common.DataPoint, error)
 }
@@ -96,6 +99,48 @@ func (d *DataPoint) PublishDataPoints(ctx context.Context,
 		logger.Errorf("PublishDataPoints grpc.SetHeader: %v", err)
 	}
 	return &empty.Empty{}, nil
+}
+
+// ListDataPoints retrieves all data points within a time range.
+func (d *DataPoint) ListDataPoints(ctx context.Context,
+	req *api.ListDataPointsRequest) (*api.ListDataPointsResponse, error) {
+	sess, ok := session.FromContext(ctx)
+	if !ok {
+		return nil, status.Error(codes.PermissionDenied, "permission denied")
+	}
+
+	var uniqID string
+	var devID string
+
+	switch v := req.IdOneof.(type) {
+	case *api.ListDataPointsRequest_UniqId:
+		uniqID = v.UniqId
+	case *api.ListDataPointsRequest_DevId:
+		devID = v.DevId
+	}
+
+	end := time.Now().UTC()
+	if req.EndTime != nil {
+		end = req.EndTime.AsTime().UTC()
+	}
+
+	start := end.Add(-24 * time.Hour)
+	if req.StartTime != nil && req.StartTime.AsTime().UTC().Before(end) {
+		start = req.StartTime.AsTime().UTC()
+	}
+
+	if end.Sub(start) > 90*24*time.Hour {
+		return nil, status.Error(codes.InvalidArgument,
+			"maximum time range exceeded")
+	}
+
+	points, err := d.dpDAO.List(ctx, sess.OrgID, uniqID, devID, req.Attr, end,
+		start)
+	if err != nil {
+		return nil, errToStatus(err)
+	}
+
+	return &api.ListDataPointsResponse{Points: points}, nil
 }
 
 // LatestDataPoints retrieves the latest data point for each of a device's

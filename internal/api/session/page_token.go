@@ -13,7 +13,7 @@ import (
 // GeneratePageToken generates a page token in raw (no padding), URL-safe base64
 // format. It returns the token and an error value. The token is not currently
 // encrypted due to the inclusion of only known IDs and timestamps.
-func GeneratePageToken(lboundTS time.Time, prevID string) (string, error) {
+func GeneratePageToken(boundTS time.Time, prevID string) (string, error) {
 	// Convert lastID to []byte.
 	lastUUID, err := uuid.Parse(prevID)
 	if err != nil {
@@ -22,8 +22,8 @@ func GeneratePageToken(lboundTS time.Time, prevID string) (string, error) {
 
 	// Build page token.
 	pt := &token.Page{
-		LboundTs: timestamppb.New(lboundTS),
-		PrevId:   lastUUID[:],
+		BoundTs: timestamppb.New(boundTS),
+		PrevId:  lastUUID[:],
 	}
 
 	bPT, err := proto.Marshal(pt)
@@ -48,14 +48,17 @@ func ParsePageToken(pToken string) (time.Time, string, error) {
 		return time.Time{}, "", err
 	}
 
-	// Unmarshal page token.
+	// Unmarshal page token. A nil error with missing timestamp is treated as an
+	// empty token.
 	pt := &token.Page{}
-	if err := proto.Unmarshal(bPT, pt); err != nil {
+	if err := proto.Unmarshal(bPT, pt); err != nil || pt.BoundTs == nil {
 		return time.Time{}, "", err
 	}
 
-	var lastUUID uuid.UUID
-	copy(lastUUID[:], pt.PrevId)
+	lastUUID, err := uuid.FromBytes(pt.PrevId)
+	if err != nil {
+		return time.Time{}, "", err
+	}
 
-	return pt.LboundTs.AsTime().UTC(), lastUUID.String(), nil
+	return pt.BoundTs.AsTime().UTC(), lastUUID.String(), nil
 }
