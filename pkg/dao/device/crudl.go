@@ -152,10 +152,10 @@ ORDER BY created_at ASC, id ASC
 LIMIT %d
 `
 
-// List retrieves all devices by org ID. If lboundTS and prevID are zero values,
+// List retrieves all devices by org ID. If lBoundTS and prevID are zero values,
 // the first page of results is returned. Limits of 0 or less do not apply a
 // limit. List returns a slice of devices, a total count, and an error value.
-func (d *DAO) List(ctx context.Context, orgID string, lboundTS time.Time,
+func (d *DAO) List(ctx context.Context, orgID string, lBoundTS time.Time,
 	prevID string, limit int32) ([]*api.Device, int32, error) {
 	// Run count query.
 	var count int32
@@ -168,13 +168,13 @@ func (d *DAO) List(ctx context.Context, orgID string, lboundTS time.Time,
 	query := listDevices
 	args := []interface{}{orgID}
 
-	if prevID != "" && !lboundTS.IsZero() {
+	if prevID != "" && !lBoundTS.IsZero() {
 		query += listDevicesTSAndID
-		args = append(args, lboundTS, prevID)
+		args = append(args, lBoundTS, prevID)
 	}
 
 	// Ordering is applied with the limit, which will always be present for API
-	// usage, whereas lboundTS and prevID will not for first pages.
+	// usage, whereas lBoundTS and prevID will not for first pages.
 	if limit > 0 {
 		query += fmt.Sprintf(listDevicesLimit, limit)
 	}

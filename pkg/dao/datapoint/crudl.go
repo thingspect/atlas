@@ -49,22 +49,62 @@ func (d *DAO) Create(ctx context.Context, point *common.DataPoint,
 	return dao.DBToSentinel(err)
 }
 
-const listDataPoints = `
-SELECT uniq_id, attr, int_val, fl64_val, str_val, bool_val, bytes_val,
-created_at, trace_id
-FROM data_points
-WHERE (org_id, uniq_id) = ($1, $2)
-AND created_at >= $3
-AND created_at < $4
+const listDataPointsByUniqID = `
+SELECT d.uniq_id, d.attr, d.int_val, d.fl64_val, d.str_val, d.bool_val,
+d.bytes_val, d.created_at, d.trace_id
+FROM data_points d
+WHERE (d.org_id, d.uniq_id) = ($1, $2)
+AND d.created_at <= $3
+AND d.created_at > $4
 `
 
-// List retrieves all data points by org ID, UniqID, and [start, end) times.
-func (d *DAO) List(ctx context.Context, orgID, uniqID string, start,
-	end time.Time) ([]*common.DataPoint, error) {
-	var points []*common.DataPoint
+const listDataPointsByDevID = `
+SELECT d.uniq_id, d.attr, d.int_val, d.fl64_val, d.str_val, d.bool_val,
+d.bytes_val, d.created_at, d.trace_id
+FROM data_points d
+INNER JOIN devices de ON (
+  d.org_id = de.org_id
+  AND d.uniq_id = de.uniq_id
+)
+WHERE (d.org_id, de.id) = ($1, $2)
+AND d.created_at <= $3
+AND d.created_at > $4
+`
 
-	rows, err := d.pg.QueryContext(ctx, listDataPoints, orgID, uniqID,
-		start.Truncate(time.Millisecond), end.Truncate(time.Millisecond))
+const listDataPointsAttr = `
+AND d.attr = $5
+`
+
+const listDataPointsOrder = `
+ORDER BY d.created_at DESC
+`
+
+// List retrieves all data points by org ID, UniqID or device ID, optional
+// attribute, and [end, start) times. If both uniqID and devID are provided,
+// uniqID takes precedence and devID is ignored.
+func (d *DAO) List(ctx context.Context, orgID, uniqID, devID, attr string, end,
+	start time.Time) ([]*common.DataPoint, error) {
+	// Build list query.
+	query := listDataPointsByUniqID
+	args := []interface{}{orgID}
+
+	if uniqID == "" && devID != "" {
+		query = listDataPointsByDevID
+		args = append(args, devID, end, start)
+	} else {
+		args = append(args, uniqID, end, start)
+	}
+
+	if attr != "" {
+		query += listDataPointsAttr
+		args = append(args, attr)
+	}
+
+	query += listDataPointsOrder
+
+	// Run list query.
+	var points []*common.DataPoint
+	rows, err := d.pg.QueryContext(ctx, query, args...)
 	if err != nil {
 		return nil, dao.DBToSentinel(err)
 	}

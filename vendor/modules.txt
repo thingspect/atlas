@@ -6,8 +6,6 @@ github.com/eclipse/paho.mqtt.golang
 github.com/eclipse/paho.mqtt.golang/packets
 # github.com/envoyproxy/protoc-gen-validate v0.4.1
 github.com/envoyproxy/protoc-gen-validate/validate
-# github.com/gofrs/uuid v3.3.0+incompatible
-## explicit
 # github.com/golang/mock v1.4.4
 ## explicit
 github.com/golang/mock/gomock
@@ -26,7 +24,7 @@ github.com/golang/protobuf/ptypes/wrappers
 # github.com/golang/snappy v0.0.2
 ## explicit
 github.com/golang/snappy
-# github.com/google/uuid v1.1.5
+# github.com/google/uuid v1.2.0
 ## explicit
 github.com/google/uuid
 # github.com/gorilla/websocket v1.4.2
@@ -60,16 +58,12 @@ github.com/jackc/pgtype
 github.com/jackc/pgx/v4
 github.com/jackc/pgx/v4/internal/sanitize
 github.com/jackc/pgx/v4/stdlib
-# github.com/lib/pq v1.8.0
-## explicit
 # github.com/mennanov/fmutils v0.0.3
 ## explicit
 github.com/mennanov/fmutils
 # github.com/nsqio/go-nsq v1.0.8
 ## explicit
 github.com/nsqio/go-nsq
-# github.com/pkg/errors v0.9.1
-## explicit
 # github.com/pmezard/go-difflib v1.0.0
 github.com/pmezard/go-difflib/difflib
 # github.com/rs/zerolog v1.20.0
@@ -77,13 +71,11 @@ github.com/pmezard/go-difflib/difflib
 github.com/rs/zerolog
 github.com/rs/zerolog/internal/cbor
 github.com/rs/zerolog/internal/json
-# github.com/shopspring/decimal v1.2.0
-## explicit
 # github.com/stretchr/testify v1.7.0
 ## explicit
 github.com/stretchr/testify/assert
 github.com/stretchr/testify/require
-# github.com/thingspect/api/go v0.0.0-20210119045026-4346433cdf4a
+# github.com/thingspect/api/go v0.0.0-20210122221724-e658c9f55b74
 ## explicit
 github.com/thingspect/api/go/api
 github.com/thingspect/api/go/common
@@ -94,7 +86,6 @@ golang.org/x/crypto/bcrypt
 golang.org/x/crypto/blowfish
 golang.org/x/crypto/pbkdf2
 # golang.org/x/net v0.0.0-20210119194325-5f4716e94777
-## explicit
 golang.org/x/net/http/httpguts
 golang.org/x/net/http2
 golang.org/x/net/http2/hpack
@@ -103,8 +94,7 @@ golang.org/x/net/internal/socks
 golang.org/x/net/internal/timeseries
 golang.org/x/net/proxy
 golang.org/x/net/trace
-# golang.org/x/sys v0.0.0-20210119212857-b64e53b001e4
-## explicit
+# golang.org/x/sys v0.0.0-20210122093101-04d7465088b8
 golang.org/x/sys/internal/unsafeheader
 golang.org/x/sys/unix
 # golang.org/x/text v0.3.5
@@ -124,8 +114,7 @@ golang.org/x/text/width
 # golang.org/x/xerrors v0.0.0-20200804184101-5ec99f83aff1
 golang.org/x/xerrors
 golang.org/x/xerrors/internal
-# google.golang.org/genproto v0.0.0-20210119180700-e258113e47cc
-## explicit
+# google.golang.org/genproto v0.0.0-20210122163508-8081c04a3579
 google.golang.org/genproto/googleapis/api/annotations
 google.golang.org/genproto/googleapis/api/httpbody
 google.golang.org/genproto/googleapis/rpc/status

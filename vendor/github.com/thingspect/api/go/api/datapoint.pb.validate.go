@@ -125,6 +125,198 @@ var _ interface {
 	ErrorName() string
 } = PublishDataPointsRequestValidationError{}
 
+// Validate checks the field values on ListDataPointsRequest with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, an error is returned.
+func (m *ListDataPointsRequest) Validate() error {
+	if m == nil {
+		return nil
+	}
+
+	if l := utf8.RuneCountInString(m.GetAttr()); l < 0 || l > 40 {
+		return ListDataPointsRequestValidationError{
+			field:  "Attr",
+			reason: "value length must be between 0 and 40 runes, inclusive",
+		}
+	}
+
+	if v, ok := interface{}(m.GetEndTime()).(interface{ Validate() error }); ok {
+		if err := v.Validate(); err != nil {
+			return ListDataPointsRequestValidationError{
+				field:  "EndTime",
+				reason: "embedded message failed validation",
+				cause:  err,
+			}
+		}
+	}
+
+	if v, ok := interface{}(m.GetStartTime()).(interface{ Validate() error }); ok {
+		if err := v.Validate(); err != nil {
+			return ListDataPointsRequestValidationError{
+				field:  "StartTime",
+				reason: "embedded message failed validation",
+				cause:  err,
+			}
+		}
+	}
+
+	switch m.IdOneof.(type) {
+
+	case *ListDataPointsRequest_UniqId:
+		// no validation rules for UniqId
+
+	case *ListDataPointsRequest_DevId:
+		// no validation rules for DevId
+
+	default:
+		return ListDataPointsRequestValidationError{
+			field:  "IdOneof",
+			reason: "value is required",
+		}
+
+	}
+
+	return nil
+}
+
+// ListDataPointsRequestValidationError is the validation error returned by
+// ListDataPointsRequest.Validate if the designated constraints aren't met.
+type ListDataPointsRequestValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e ListDataPointsRequestValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e ListDataPointsRequestValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e ListDataPointsRequestValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e ListDataPointsRequestValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e ListDataPointsRequestValidationError) ErrorName() string {
+	return "ListDataPointsRequestValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e ListDataPointsRequestValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sListDataPointsRequest.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = ListDataPointsRequestValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = ListDataPointsRequestValidationError{}
+
+// Validate checks the field values on ListDataPointsResponse with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, an error is returned.
+func (m *ListDataPointsResponse) Validate() error {
+	if m == nil {
+		return nil
+	}
+
+	for idx, item := range m.GetPoints() {
+		_, _ = idx, item
+
+		if v, ok := interface{}(item).(interface{ Validate() error }); ok {
+			if err := v.Validate(); err != nil {
+				return ListDataPointsResponseValidationError{
+					field:  fmt.Sprintf("Points[%v]", idx),
+					reason: "embedded message failed validation",
+					cause:  err,
+				}
+			}
+		}
+
+	}
+
+	return nil
+}
+
+// ListDataPointsResponseValidationError is the validation error returned by
+// ListDataPointsResponse.Validate if the designated constraints aren't met.
+type ListDataPointsResponseValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e ListDataPointsResponseValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e ListDataPointsResponseValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e ListDataPointsResponseValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e ListDataPointsResponseValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e ListDataPointsResponseValidationError) ErrorName() string {
+	return "ListDataPointsResponseValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e ListDataPointsResponseValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sListDataPointsResponse.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = ListDataPointsResponseValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = ListDataPointsResponseValidationError{}
+
 // Validate checks the field values on LatestDataPointsRequest with the rules
 // defined in the proto definition for this message. If any rules are
 // violated, an error is returned.

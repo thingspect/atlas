@@ -84,7 +84,7 @@ func ValidateWebToken(key []byte, ciphertoken string) (*Session, error) {
 		return nil, errWebTokenExp
 	}
 
-	// Build Session to return.
+	// Build Session to return. UUIDs have been decrypted and are safe to copy.
 	var userUUID uuid.UUID
 	copy(userUUID[:], pwt.UserId)
 

@@ -31,6 +31,66 @@
   ],
   "paths": {
     "/v1/datapoints": {
+      "get": {
+        "summary": "List all data points within a [end, start) time range in descending timestamp order.",
+        "operationId": "DataPointService_ListDataPoints",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/apiListDataPointsResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "uniqID",
+            "description": "Device unique ID.",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "devID",
+            "description": "Device ID (UUID).",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "attr",
+            "description": "Device attribute. If not specified, all attributes are returned.",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "endTime",
+            "description": "Data points range end time. Defaults to current time if not specified. Maximum supported time range is 90 days.",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "format": "date-time"
+          },
+          {
+            "name": "startTime",
+            "description": "Data points range start time. Defaults to end_time - 24 hours if not specified or after end_time. Maximum supported time range is 90 days.",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "format": "date-time"
+          }
+        ],
+        "tags": [
+          "DataPointService"
+        ]
+      },
       "post": {
         "summary": "Publish data points.",
         "operationId": "DataPointService_PublishDataPoints",
@@ -127,7 +187,7 @@
         "parameters": [
           {
             "name": "pageSize",
-            "description": "Number of devices to retrieve in a single page. Defaults to 50 if not specified.",
+            "description": "Number of devices to retrieve in a single page. Defaults to 50 if not specified, with a maximum of 250.",
             "in": "query",
             "required": false,
             "type": "integer",
@@ -408,7 +468,7 @@
         "parameters": [
           {
             "name": "pageSize",
-            "description": "Number of users to retrieve in a single page. Defaults to 50 if not specified.",
+            "description": "Number of users to retrieve in a single page. Defaults to 50 if not specified, with a maximum of 250.",
             "in": "query",
             "required": false,
             "type": "integer",
@@ -734,10 +794,23 @@
           "items": {
             "$ref": "#/definitions/commonDataPoint"
           },
-          "description": "Data point array."
+          "description": "Data point array, ordered by ascending attribute name."
         }
       },
       "description": "LatestDataPointsResponse is sent in response to a device latest list."
+    },
+    "apiListDataPointsResponse": {
+      "type": "object",
+      "properties": {
+        "points": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/commonDataPoint"
+          },
+          "description": "Data point array, ordered by descending created_at timestamp."
+        }
+      },
+      "description": "ListDataPointsResponse is sent in response to a device data points list."
     },
     "apiListDevicesResponse": {
       "type": "object",
@@ -747,7 +820,7 @@
           "items": {
             "$ref": "#/definitions/apiDevice"
           },
-          "description": "Device array."
+          "description": "Device array, ordered by ascending created_at timestamp."
         },
         "nextPageToken": {
           "type": "string",
@@ -773,7 +846,7 @@
           "items": {
             "$ref": "#/definitions/apiUser"
           },
-          "description": "User array."
+          "description": "User array, ordered by ascending created_at timestamp."
         },
         "nextPageToken": {
           "type": "string",

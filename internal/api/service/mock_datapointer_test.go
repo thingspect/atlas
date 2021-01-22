@@ -9,6 +9,7 @@ import (
 	gomock "github.com/golang/mock/gomock"
 	common "github.com/thingspect/api/go/common"
 	reflect "reflect"
+	time "time"
 )
 
 // MockDataPointer is a mock of DataPointer interface
@@ -32,6 +33,21 @@ func NewMockDataPointer(ctrl *gomock.Controller) *MockDataPointer {
 // EXPECT returns an object that allows the caller to indicate expected use
 func (m *MockDataPointer) EXPECT() *MockDataPointerMockRecorder {
 	return m.recorder
+}
+
+// List mocks base method
+func (m *MockDataPointer) List(ctx context.Context, orgID, uniqID, devID, attr string, end, start time.Time) ([]*common.DataPoint, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "List", ctx, orgID, uniqID, devID, attr, end, start)
+	ret0, _ := ret[0].([]*common.DataPoint)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// List indicates an expected call of List
+func (mr *MockDataPointerMockRecorder) List(ctx, orgID, uniqID, devID, attr, end, start interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "List", reflect.TypeOf((*MockDataPointer)(nil).List), ctx, orgID, uniqID, devID, attr, end, start)
 }
 
 // Latest mocks base method

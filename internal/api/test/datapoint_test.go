@@ -121,6 +121,192 @@ func TestPublishDataPoints(t *testing.T) {
 	})
 }
 
+func TestListDataPoints(t *testing.T) {
+	t.Parallel()
+
+	t.Run("List data points by UniqID, dev ID, and attr", func(t *testing.T) {
+		t.Parallel()
+
+		ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
+		defer cancel()
+
+		dev := &api.Device{UniqId: "api-point-" + random.String(16),
+			Status: []common.Status{common.Status_ACTIVE,
+				common.Status_DISABLED}[random.Intn(2)]}
+
+		devCli := api.NewDeviceServiceClient(globalAuthGRPCConn)
+		createDev, err := devCli.CreateDevice(ctx, &api.CreateDeviceRequest{
+			Device: dev})
+		t.Logf("createDev, err: %+v, %v", createDev, err)
+		require.NoError(t, err)
+
+		dpCli := api.NewDataPointServiceClient(globalAuthGRPCConn)
+
+		points := []*common.DataPoint{
+			{UniqId: createDev.UniqId, Attr: "motion",
+				ValOneof: &common.DataPoint_IntVal{IntVal: 123},
+				TraceId:  uuid.New().String()},
+			{UniqId: createDev.UniqId, Attr: "temp",
+				ValOneof: &common.DataPoint_Fl64Val{Fl64Val: 9.3},
+				TraceId:  uuid.New().String()},
+			{UniqId: createDev.UniqId, Attr: "power",
+				ValOneof: &common.DataPoint_StrVal{StrVal: "batt"},
+				TraceId:  uuid.New().String()},
+			{UniqId: createDev.UniqId, Attr: "leak",
+				ValOneof: &common.DataPoint_BoolVal{BoolVal: []bool{true,
+					false}[random.Intn(2)]}, TraceId: uuid.New().String()},
+			{UniqId: createDev.UniqId, Attr: "raw",
+				ValOneof: &common.DataPoint_BytesVal{BytesVal: []byte{0x00}},
+				TraceId:  uuid.New().String()},
+			{UniqId: createDev.UniqId, Attr: "motion",
+				ValOneof: &common.DataPoint_IntVal{IntVal: 321},
+				TraceId:  uuid.New().String()},
+		}
+
+		for _, point := range points {
+			ctx, cancel := context.WithTimeout(context.Background(),
+				2*time.Second)
+			defer cancel()
+
+			// Set a new in-place timestamp.
+			point.Ts = timestamppb.New(time.Now().UTC().Truncate(
+				time.Millisecond))
+			time.Sleep(time.Millisecond)
+
+			err := globalDPDAO.Create(ctx, point, globalAuthOrgID)
+			t.Logf("err: %v", err)
+			require.NoError(t, err)
+		}
+
+		sort.Slice(points, func(i, j int) bool {
+			return points[i].Ts.AsTime().After(points[j].Ts.AsTime())
+		})
+
+		ctx, cancel = context.WithTimeout(context.Background(), 4*time.Second)
+		defer cancel()
+
+		// Verify results by UniqID.
+		listPointsUniqID, err := dpCli.ListDataPoints(ctx,
+			&api.ListDataPointsRequest{
+				IdOneof: &api.ListDataPointsRequest_UniqId{
+					UniqId: createDev.UniqId}, EndTime: points[0].Ts,
+				StartTime: timestamppb.New(
+					points[len(points)-1].Ts.AsTime().Add(-time.Millisecond))})
+		t.Logf("listPointsUniqID, err: %+v, %v", listPointsUniqID, err)
+		require.NoError(t, err)
+		require.Len(t, listPointsUniqID.Points, len(points))
+
+		// Testify does not currently support protobuf equality:
+		// https://github.com/stretchr/testify/issues/758
+		if !proto.Equal(&api.ListDataPointsResponse{Points: points},
+			listPointsUniqID) {
+			t.Fatalf("\nExpect: %+v\nActual: %+v",
+				&api.ListDataPointsResponse{Points: points}, listPointsUniqID)
+		}
+
+		// Verify results by dev ID without oldest point.
+		listPointsDevID, err := dpCli.ListDataPoints(ctx,
+			&api.ListDataPointsRequest{
+				IdOneof: &api.ListDataPointsRequest_DevId{
+					DevId: createDev.Id}, StartTime: points[len(points)-1].Ts})
+		t.Logf("listPointsDevID, err: %+v, %v", listPointsDevID, err)
+		require.NoError(t, err)
+		require.Len(t, listPointsDevID.Points, len(points)-1)
+
+		// Testify does not currently support protobuf equality:
+		// https://github.com/stretchr/testify/issues/758
+		if !proto.Equal(&api.ListDataPointsResponse{
+			Points: points[:len(points)-1]}, listPointsDevID) {
+			t.Fatalf("\nExpect: %+v\nActual: %+v", &api.ListDataPointsResponse{
+				Points: points[:len(points)-1]}, listPointsDevID)
+		}
+
+		// Verify results by UniqID and attribute.
+		listPointsUniqID, err = dpCli.ListDataPoints(ctx,
+			&api.ListDataPointsRequest{
+				IdOneof: &api.ListDataPointsRequest_UniqId{
+					UniqId: createDev.UniqId}, Attr: "motion",
+				StartTime: timestamppb.New(
+					points[len(points)-1].Ts.AsTime().Add(-time.Millisecond))})
+		t.Logf("listPointsUniqID, err: %+v, %v", listPointsUniqID, err)
+		require.NoError(t, err)
+		require.Len(t, listPointsUniqID.Points, 2)
+
+		// Testify does not currently support protobuf equality:
+		// https://github.com/stretchr/testify/issues/758
+		mcount := 0
+		for _, point := range points {
+			if point.Attr == "motion" {
+				if !proto.Equal(point, listPointsUniqID.Points[mcount]) {
+					t.Fatalf("\nExpect: %+v\nActual: %+v", point,
+						listPointsUniqID.Points[mcount])
+				}
+				mcount++
+			}
+		}
+	})
+
+	t.Run("List data points are isolated by org ID", func(t *testing.T) {
+		t.Parallel()
+
+		point := &common.DataPoint{UniqId: "api-point-" + random.String(16),
+			Attr: "motion", ValOneof: &common.DataPoint_IntVal{IntVal: 123},
+			Ts: timestamppb.Now(), TraceId: uuid.New().String()}
+
+		ctx, cancel := context.WithTimeout(context.Background(), 4*time.Second)
+		defer cancel()
+
+		err := globalDPDAO.Create(ctx, point, uuid.New().String())
+		t.Logf("err: %#v", err)
+		require.NoError(t, err)
+
+		dpCli := api.NewDataPointServiceClient(globalAuthGRPCConn)
+		listPoints, err := dpCli.ListDataPoints(ctx,
+			&api.ListDataPointsRequest{
+				IdOneof: &api.ListDataPointsRequest_UniqId{
+					UniqId: uuid.New().String()}})
+		t.Logf("listPoints, err: %+v, %v", listPoints, err)
+		require.NoError(t, err)
+		require.Len(t, listPoints.Points, 0)
+	})
+
+	t.Run("List data points by invalid time range", func(t *testing.T) {
+		t.Parallel()
+
+		ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
+		defer cancel()
+
+		dpCli := api.NewDataPointServiceClient(globalAuthGRPCConn)
+		listPoints, err := dpCli.ListDataPoints(ctx,
+			&api.ListDataPointsRequest{
+				IdOneof: &api.ListDataPointsRequest_DevId{
+					DevId: random.String(10)}, EndTime: timestamppb.Now(),
+				StartTime: timestamppb.New(time.Now().Add(
+					-91 * 24 * time.Hour))})
+		t.Logf("listPoints, err: %+v, %v", listPoints, err)
+		require.Nil(t, listPoints)
+		require.EqualError(t, err, "rpc error: code = InvalidArgument desc = "+
+			"maximum time range exceeded")
+	})
+
+	t.Run("List data points by invalid dev ID", func(t *testing.T) {
+		t.Parallel()
+
+		ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
+		defer cancel()
+
+		dpCli := api.NewDataPointServiceClient(globalAuthGRPCConn)
+		listPoints, err := dpCli.ListDataPoints(ctx,
+			&api.ListDataPointsRequest{
+				IdOneof: &api.ListDataPointsRequest_DevId{
+					DevId: random.String(10)}})
+		t.Logf("listPoints, err: %+v, %v", listPoints, err)
+		require.Nil(t, listPoints)
+		require.EqualError(t, err, "rpc error: code = InvalidArgument desc = "+
+			"invalid format: UUID")
+	})
+}
+
 func TestLatestDataPoints(t *testing.T) {
 	t.Parallel()
 

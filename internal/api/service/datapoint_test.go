@@ -148,6 +148,170 @@ func TestPublishDataPoints(t *testing.T) {
 	})
 }
 
+func TestListDataPoints(t *testing.T) {
+	t.Parallel()
+
+	t.Run("List data points by valid UniqID with ts", func(t *testing.T) {
+		t.Parallel()
+
+		point := &common.DataPoint{UniqId: "dao-point-" + random.String(16),
+			Attr: "motion", ValOneof: &common.DataPoint_IntVal{IntVal: 123},
+			Ts: timestamppb.Now(), TraceId: uuid.New().String()}
+		orgID := uuid.New().String()
+		end := time.Now().UTC()
+		start := time.Now().UTC().Add(-15 * time.Minute)
+
+		ctrl := gomock.NewController(t)
+		defer ctrl.Finish()
+
+		datapointer := NewMockDataPointer(ctrl)
+		datapointer.EXPECT().List(gomock.Any(), orgID, point.UniqId, "", "",
+			end, start).Return([]*common.DataPoint{point}, nil).Times(1)
+
+		ctx, cancel := context.WithTimeout(session.NewContext(
+			context.Background(), &session.Session{OrgID: orgID}),
+			2*time.Second)
+		defer cancel()
+
+		dpSvc := NewDataPoint(nil, "", datapointer)
+		listPoints, err := dpSvc.ListDataPoints(ctx,
+			&api.ListDataPointsRequest{
+				IdOneof: &api.ListDataPointsRequest_UniqId{
+					UniqId: point.UniqId}, EndTime: timestamppb.New(end),
+				StartTime: timestamppb.New(start)})
+		t.Logf("listPoints, err: %+v, %v", listPoints, err)
+		require.NoError(t, err)
+
+		// Testify does not currently support protobuf equality:
+		// https://github.com/stretchr/testify/issues/758
+		if !proto.Equal(&api.ListDataPointsResponse{
+			Points: []*common.DataPoint{point}}, listPoints) {
+			t.Fatalf("\nExpect: %+v\nActual: %+v",
+				&api.ListDataPointsResponse{
+					Points: []*common.DataPoint{point}}, listPoints)
+		}
+	})
+
+	t.Run("List data points by valid dev ID with attr", func(t *testing.T) {
+		t.Parallel()
+
+		point := &common.DataPoint{UniqId: "dao-point-" + random.String(16),
+			Attr: "motion", ValOneof: &common.DataPoint_IntVal{IntVal: 123},
+			Ts: timestamppb.Now(), TraceId: uuid.New().String()}
+		orgID := uuid.New().String()
+		devID := uuid.New().String()
+
+		ctrl := gomock.NewController(t)
+		defer ctrl.Finish()
+
+		datapointer := NewMockDataPointer(ctrl)
+		datapointer.EXPECT().List(gomock.Any(), orgID, "", devID, point.Attr,
+			gomock.Any(), gomock.Any()).Return([]*common.DataPoint{point}, nil).
+			Times(1)
+
+		ctx, cancel := context.WithTimeout(session.NewContext(
+			context.Background(), &session.Session{OrgID: orgID}),
+			2*time.Second)
+		defer cancel()
+
+		dpSvc := NewDataPoint(nil, "", datapointer)
+		listPoints, err := dpSvc.ListDataPoints(ctx,
+			&api.ListDataPointsRequest{
+				IdOneof: &api.ListDataPointsRequest_DevId{DevId: devID},
+				Attr:    point.Attr})
+		t.Logf("listPoints, err: %+v, %v", listPoints, err)
+		require.NoError(t, err)
+
+		// Testify does not currently support protobuf equality:
+		// https://github.com/stretchr/testify/issues/758
+		if !proto.Equal(&api.ListDataPointsResponse{
+			Points: []*common.DataPoint{point}}, listPoints) {
+			t.Fatalf("\nExpect: %+v\nActual: %+v",
+				&api.ListDataPointsResponse{
+					Points: []*common.DataPoint{point}}, listPoints)
+		}
+	})
+
+	t.Run("List data points with invalid session", func(t *testing.T) {
+		t.Parallel()
+
+		ctrl := gomock.NewController(t)
+		defer ctrl.Finish()
+
+		datapointer := NewMockDataPointer(ctrl)
+		datapointer.EXPECT().List(gomock.Any(), gomock.Any(), gomock.Any(),
+			gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any()).Times(0)
+
+		ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
+		defer cancel()
+
+		dpSvc := NewDataPoint(nil, "", datapointer)
+		listPoints, err := dpSvc.ListDataPoints(ctx,
+			&api.ListDataPointsRequest{
+				IdOneof: &api.ListDataPointsRequest_UniqId{
+					UniqId: random.String(16)}})
+		t.Logf("listPoints, err: %+v, %v", listPoints, err)
+		require.Nil(t, listPoints)
+		require.Equal(t, status.Error(codes.PermissionDenied,
+			"permission denied"), err)
+	})
+
+	t.Run("List data points by invalid time range", func(t *testing.T) {
+		t.Parallel()
+
+		ctrl := gomock.NewController(t)
+		defer ctrl.Finish()
+
+		datapointer := NewMockDataPointer(ctrl)
+		datapointer.EXPECT().List(gomock.Any(), gomock.Any(), gomock.Any(),
+			gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any()).Times(0)
+
+		ctx, cancel := context.WithTimeout(session.NewContext(
+			context.Background(), &session.Session{OrgID: "aaa"}),
+			2*time.Second)
+		defer cancel()
+
+		dpSvc := NewDataPoint(nil, "", datapointer)
+		listPoints, err := dpSvc.ListDataPoints(ctx,
+			&api.ListDataPointsRequest{
+				IdOneof: &api.ListDataPointsRequest_UniqId{
+					UniqId: random.String(16)}, EndTime: timestamppb.Now(),
+				StartTime: timestamppb.New(time.Now().Add(
+					-91 * 24 * time.Hour))})
+		t.Logf("listPoints, err: %+v, %v", listPoints, err)
+		require.Nil(t, listPoints)
+		require.Equal(t, status.Error(codes.InvalidArgument,
+			"maximum time range exceeded"), err)
+	})
+
+	t.Run("List data points by invalid org ID", func(t *testing.T) {
+		t.Parallel()
+
+		ctrl := gomock.NewController(t)
+		defer ctrl.Finish()
+
+		datapointer := NewMockDataPointer(ctrl)
+		datapointer.EXPECT().List(gomock.Any(), "aaa", gomock.Any(),
+			gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any()).Return(nil,
+			dao.ErrInvalidFormat).Times(1)
+
+		ctx, cancel := context.WithTimeout(session.NewContext(
+			context.Background(), &session.Session{OrgID: "aaa"}),
+			2*time.Second)
+		defer cancel()
+
+		dpSvc := NewDataPoint(nil, "", datapointer)
+		listPoints, err := dpSvc.ListDataPoints(ctx,
+			&api.ListDataPointsRequest{
+				IdOneof: &api.ListDataPointsRequest_UniqId{
+					UniqId: random.String(16)}})
+		t.Logf("listPoints, err: %+v, %v", listPoints, err)
+		require.Nil(t, listPoints)
+		require.Equal(t, status.Error(codes.InvalidArgument, "invalid format"),
+			err)
+	})
+}
+
 func TestLatestDataPoints(t *testing.T) {
 	t.Parallel()
 

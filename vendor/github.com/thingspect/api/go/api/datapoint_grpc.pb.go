@@ -21,6 +21,8 @@ const _ = grpc.SupportPackageIsVersion7
 type DataPointServiceClient interface {
 	// Publish data points.
 	PublishDataPoints(ctx context.Context, in *PublishDataPointsRequest, opts ...grpc.CallOption) (*empty.Empty, error)
+	// List all data points within a [end, start) time range in descending timestamp order.
+	ListDataPoints(ctx context.Context, in *ListDataPointsRequest, opts ...grpc.CallOption) (*ListDataPointsResponse, error)
 	// List latest data point for each of a device's attributes.
 	LatestDataPoints(ctx context.Context, in *LatestDataPointsRequest, opts ...grpc.CallOption) (*LatestDataPointsResponse, error)
 }
@@ -42,6 +44,15 @@ func (c *dataPointServiceClient) PublishDataPoints(ctx context.Context, in *Publ
 	return out, nil
 }
 
+func (c *dataPointServiceClient) ListDataPoints(ctx context.Context, in *ListDataPointsRequest, opts ...grpc.CallOption) (*ListDataPointsResponse, error) {
+	out := new(ListDataPointsResponse)
+	err := c.cc.Invoke(ctx, "/api.DataPointService/ListDataPoints", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *dataPointServiceClient) LatestDataPoints(ctx context.Context, in *LatestDataPointsRequest, opts ...grpc.CallOption) (*LatestDataPointsResponse, error) {
 	out := new(LatestDataPointsResponse)
 	err := c.cc.Invoke(ctx, "/api.DataPointService/LatestDataPoints", in, out, opts...)
@@ -57,6 +68,8 @@ func (c *dataPointServiceClient) LatestDataPoints(ctx context.Context, in *Lates
 type DataPointServiceServer interface {
 	// Publish data points.
 	PublishDataPoints(context.Context, *PublishDataPointsRequest) (*empty.Empty, error)
+	// List all data points within a [end, start) time range in descending timestamp order.
+	ListDataPoints(context.Context, *ListDataPointsRequest) (*ListDataPointsResponse, error)
 	// List latest data point for each of a device's attributes.
 	LatestDataPoints(context.Context, *LatestDataPointsRequest) (*LatestDataPointsResponse, error)
 	mustEmbedUnimplementedDataPointServiceServer()
@@ -68,6 +81,9 @@ type UnimplementedDataPointServiceServer struct {
 
 func (UnimplementedDataPointServiceServer) PublishDataPoints(context.Context, *PublishDataPointsRequest) (*empty.Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method PublishDataPoints not implemented")
+}
+func (UnimplementedDataPointServiceServer) ListDataPoints(context.Context, *ListDataPointsRequest) (*ListDataPointsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ListDataPoints not implemented")
 }
 func (UnimplementedDataPointServiceServer) LatestDataPoints(context.Context, *LatestDataPointsRequest) (*LatestDataPointsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method LatestDataPoints not implemented")
@@ -103,6 +119,24 @@ func _DataPointService_PublishDataPoints_Handler(srv interface{}, ctx context.Co
 	return interceptor(ctx, in, info, handler)
 }
 
+func _DataPointService_ListDataPoints_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ListDataPointsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(DataPointServiceServer).ListDataPoints(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/api.DataPointService/ListDataPoints",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(DataPointServiceServer).ListDataPoints(ctx, req.(*ListDataPointsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _DataPointService_LatestDataPoints_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(LatestDataPointsRequest)
 	if err := dec(in); err != nil {
@@ -131,6 +165,10 @@ var DataPointService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "PublishDataPoints",
 			Handler:    _DataPointService_PublishDataPoints_Handler,
+		},
+		{
+			MethodName: "ListDataPoints",
+			Handler:    _DataPointService_ListDataPoints_Handler,
 		},
 		{
 			MethodName: "LatestDataPoints",
