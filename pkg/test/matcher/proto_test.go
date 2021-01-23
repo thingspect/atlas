@@ -16,7 +16,7 @@ type protoer interface {
 	f(vIn *message.ValidatorIn) error
 }
 
-func run(p protoer, vIn *message.ValidatorIn) error {
+func runProto(p protoer, vIn *message.ValidatorIn) error {
 	return p.f(vIn)
 }
 
@@ -28,5 +28,5 @@ func TestProtoMatcher(t *testing.T) {
 	protoer.EXPECT().f(NewProtoMatcher(&message.ValidatorIn{})).Return(
 		nil).Times(1)
 
-	require.NoError(t, run(protoer, &message.ValidatorIn{}))
+	require.NoError(t, runProto(protoer, &message.ValidatorIn{}))
 }

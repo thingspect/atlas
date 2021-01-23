@@ -16,6 +16,7 @@ import (
 	"github.com/thingspect/atlas/internal/api/session"
 	"github.com/thingspect/atlas/pkg/dao"
 	"github.com/thingspect/atlas/pkg/queue"
+	"github.com/thingspect/atlas/pkg/test/matcher"
 	"github.com/thingspect/atlas/pkg/test/random"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -206,8 +207,9 @@ func TestListDataPoints(t *testing.T) {
 
 		datapointer := NewMockDataPointer(ctrl)
 		datapointer.EXPECT().List(gomock.Any(), orgID, "", devID, point.Attr,
-			gomock.Any(), gomock.Any()).Return([]*common.DataPoint{point}, nil).
-			Times(1)
+			matcher.NewRecentMatcher(2*time.Second),
+			matcher.NewRecentMatcher(24*time.Hour+2*time.Second)).
+			Return([]*common.DataPoint{point}, nil).Times(1)
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
 			context.Background(), &session.Session{OrgID: orgID}),
