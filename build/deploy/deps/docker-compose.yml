@@ -1,0 +1,87 @@
+version: "3"
+services:
+  postgres:
+    image: postgres:11-alpine
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_PASSWORD=notasecurepassword
+      - POSTGRES_DB=atlas
+    volumes:
+      - ./volume/postgres:/var/lib/postgresql/data
+  nsqlookupd:
+    image: nsqio/nsq:v1.2.0
+    command: /nsqlookupd --log-level=warn
+  nsqd:
+    image: nsqio/nsq:v1.2.0
+    command: /nsqd --lookupd-tcp-address=nsqlookupd:4160 --broadcast-address=nsqd --log-level=warn
+    depends_on:
+      - nsqlookupd
+    volumes:
+      - ./volume/nsqd:/data
+  nsqadmin:
+    image: nsqio/nsq:v1.2.0
+    command: /nsqadmin --lookupd-http-address=nsqlookupd:4161 --log-level=warn
+    depends_on:
+      - nsqlookupd
+    ports:
+      - "4171:4171"
+  mqtt:
+    image: eclipse-mosquitto:2.0
+    ports:
+      - "1883:1883"
+    volumes:
+      - ./volume/mosquitto/config:/mosquitto/config
+      - ./volume/mosquitto/data:/mosquitto/data
+  redis:
+    image: redis:6-alpine
+    command: redis-server --save 300 1 --save 60 100 --appendonly no
+    volumes:
+      - ./volume/redis:/data
+  chirpstack-network-server:
+    image: chirpstack/chirpstack-network-server:3
+    depends_on:
+      - postgres
+      - mqtt
+      - redis
+    environment:
+      - POSTGRESQL__DSN=postgres://postgres:notasecurepassword@postgres/chirpstack_ns?sslmode=disable
+      - REDIS__URL=redis://redis:6379
+      - NETWORK_SERVER__NET_ID=b86498
+      - NETWORK_SERVER__BAND__NAME=US915
+      - NETWORK_SERVER__GATEWAY__BACKEND__MQTT__EVENT_TOPIC=lora/gateway/+/event/+
+      - NETWORK_SERVER__GATEWAY__BACKEND__MQTT__COMMAND_TOPIC_TEMPLATE=lora/gateway/{{ .GatewayID }}/command/{{ .CommandType }}
+      - NETWORK_SERVER__GATEWAY__BACKEND__MQTT__SERVER=tcp://mqtt:1883
+      - NETWORK_SERVER__GATEWAY__BACKEND__MQTT__USERNAME=lorasvc
+      - NETWORK_SERVER__GATEWAY__BACKEND__MQTT__PASSWORD=notasecurepassword
+      - NETWORK_SERVER__GATEWAY__BACKEND__MQTT__CLIENT_ID=chirpstack-network-server-1
+      - NETWORK_SERVER__GATEWAY__BACKEND__MQTT__MAX_RECONNECT_INTERVAL=5s
+      - JOIN_SERVER__DEFAULT__SERVER=http://chirpstack-application-server:8003
+      - MONITORING__BIND=0.0.0.0:9323
+      - MONITORING__HEALTHCHECK_ENDPOINT=true
+  chirpstack-application-server:
+    image: chirpstack/chirpstack-application-server:3
+    ports:
+      - "8080:8080"
+    depends_on:
+      - postgres
+      - mqtt
+      - redis
+    environment:
+      - POSTGRESQL__DSN=postgres://postgres:notasecurepassword@postgres/chirpstack_as?sslmode=disable
+      - REDIS__URL=redis://redis:6379
+      - APPLICATION_SERVER__INTEGRATION__MARSHALER=protobuf
+      - APPLICATION_SERVER__INTEGRATION__MQTT__EVENT_TOPIC_TEMPLATE=lora/application/{{ .ApplicationID }}/device/{{ .DevEUI }}/event/{{ .EventType }}
+      - APPLICATION_SERVER__INTEGRATION__MQTT__COMMAND_TOPIC_TEMPLATE=lora/application/{{ .ApplicationID }}/device/{{ .DevEUI }}/command/{{ .CommandType }}
+      - APPLICATION_SERVER__INTEGRATION__MQTT__SERVER=tcp://mqtt:1883
+      - APPLICATION_SERVER__INTEGRATION__MQTT__USERNAME=lorasvc
+      - APPLICATION_SERVER__INTEGRATION__MQTT__PASSWORD=notasecurepassword
+      - APPLICATION_SERVER__INTEGRATION__MQTT__CLIENT_ID=chirpstack-application-server-1
+      - APPLICATION_SERVER__INTEGRATION__MQTT__MAX_RECONNECT_INTERVAL=5s
+      - APPLICATION_SERVER__API__PUBLIC_HOST=chirpstack-application-server:8001
+      - APPLICATION_SERVER__EXTERNAL_API__JWT_SECRET=notasecurehash
+      - MONITORING__BIND=0.0.0.0:9323
+      - MONITORING__HEALTHCHECK_ENDPOINT=true
+networks:
+  default:
+    name: deps

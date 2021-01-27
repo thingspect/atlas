@@ -1,0 +1,41 @@
+version: "3"
+services:
+  api:
+    image: ghcr.io/thingspect/atlas:21e67083
+    command: api
+    ports:
+      - "8000:8000"
+      - "50051:50051"
+    environment:
+      - API_PG_URI=postgres://postgres:notasecurepassword@postgres/atlas
+      - API_PWT_KEY=AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=
+      - API_NSQ_PUB_ADDR=nsqd:4150
+  mqtt-ingestor:
+    image: ghcr.io/thingspect/atlas:21e67083
+    command: mqtt-ingestor
+    depends_on:
+      - validator
+    environment:
+      - MQTT_INGEST_MQTT_ADDR=tcp://mqtt:1883
+      - MQTT_INGEST_MQTT_PASS=notasecurepassword
+      - MQTT_INGEST_NSQ_PUB_ADDR=nsqd:4150
+  validator:
+    image: ghcr.io/thingspect/atlas:21e67083
+    command: validator
+    depends_on:
+      - accumulator
+    environment:
+      - VALIDATOR_PG_URI=postgres://postgres:notasecurepassword@postgres/atlas
+      - VALIDATOR_NSQ_LOOKUP_ADDRS=nsqlookupd:4161
+      - VALIDATOR_NSQ_PUB_ADDR=nsqd:4150
+  accumulator:
+    image: ghcr.io/thingspect/atlas:21e67083
+    command: accumulator
+    environment:
+      - ACCUMULATOR_PG_URI=postgres://postgres:notasecurepassword@postgres/atlas
+      - ACCUMULATOR_NSQ_LOOKUP_ADDRS=nsqlookupd:4161
+      - ACCUMULATOR_NSQ_PUB_ADDR=nsqd:4150
+networks:
+  default:
+    external:
+      name: deps

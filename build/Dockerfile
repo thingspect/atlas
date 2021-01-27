@@ -13,6 +13,6 @@ RUN apk add --no-cache ca-certificates tzdata
 
 # Add build files
 COPY bin/* /bin/
-COPY web /
+COPY web/* /web/
 
 USER nobody
