@@ -14,12 +14,14 @@ import (
 	"github.com/thingspect/atlas/pkg/dao/org"
 	"github.com/thingspect/atlas/pkg/dao/user"
 	"github.com/thingspect/atlas/pkg/postgres"
+	"github.com/thingspect/atlas/pkg/test/random"
 )
 
 const usage = `Usage:
 %[1]s uuid
-%[1]s org <org name> <admin email> <admin password>
-%[1]s user <org ID> <user email> <user password>
+%[1]s uniqid
+%[1]s [options] org <org name> <admin email> <admin password>
+%[1]s [options] user <org ID> <user email> <user password>
 `
 
 func main() {
@@ -32,7 +34,7 @@ func main() {
 		"postgres://postgres:postgres@127.0.0.1/atlas_test", "PostgreSQL URI")
 	flag.Parse()
 
-	if _, ok := map[string]struct{}{"uuid": {}, "org": {},
+	if _, ok := map[string]struct{}{"uuid": {}, "uniqid": {}, "org": {},
 		"user": {}}[flag.Arg(0)]; !ok {
 		flag.Usage()
 		os.Exit(2)
@@ -45,9 +47,14 @@ func main() {
 		}
 	}
 
+	switch flag.Arg(0) {
 	// Generate UUID and return.
-	if flag.Arg(0) == "uuid" {
+	case "uuid":
 		fmt.Fprintln(os.Stdout, uuid.NewString())
+		return
+	// Generate UniqID and return.
+	case "uniqid":
+		fmt.Fprintln(os.Stdout, random.String(16))
 		return
 	}
 
@@ -58,9 +65,9 @@ func main() {
 	userDAO := user.NewDAO(pg)
 	orgID := flag.Arg(1)
 
-	switch {
+	switch flag.Arg(0) {
 	// Create org and fall through to user.
-	case flag.Arg(0) == "org":
+	case "org":
 		ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
 		defer cancel()
 
@@ -71,7 +78,7 @@ func main() {
 		fmt.Fprintf(os.Stdout, "Org: %+v\n", createOrg)
 		fallthrough
 	// Create user.
-	case flag.Arg(0) == "user":
+	case "user":
 		hash, err := crypto.HashPass(flag.Arg(3))
 		checkErr(err)
 
