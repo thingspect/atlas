@@ -82,6 +82,7 @@ func TestNSQSubscribeLookup(t *testing.T) {
 
 	// Publish before subscribe to allow for discovery by nsqlookupd.
 	require.NoError(t, nsq.Publish(topic, payload))
+	time.Sleep(100 * time.Millisecond)
 
 	sub, err := nsq.Subscribe(topic)
 	t.Logf("sub, err: %+v, %v", sub, err)
@@ -144,7 +145,7 @@ func TestNSQUnsubscribe(t *testing.T) {
 
 	require.NoError(t, sub.Unsubscribe())
 
-	// Publish after unsubscribe to verify closed channel.
+	// Publish after unsubscribe to verify closed sub.
 	require.NoError(t, nsq.Publish("testNSQUnsubscribe-"+random.String(10),
 		[]byte(random.String(10))))
 
@@ -165,17 +166,16 @@ func TestNSQRequeue(t *testing.T) {
 	topic := "testNSQRequeue-" + random.String(10)
 	payload := []byte(random.String(10))
 
-	nsq, err := NewNSQ(testConfig.NSQPubAddr, testConfig.NSQLookupAddrs,
+	nsq, err := NewNSQ(testConfig.NSQPubAddr, nil,
 		"testNSQRequeue-"+random.String(10), time.Millisecond)
 	t.Logf("nsq, err: %+v, %v", nsq, err)
 	require.NoError(t, err)
 
-	// Publish before subscribe to allow for discovery by nsqlookupd.
-	require.NoError(t, nsq.Publish(topic, payload))
-
 	sub, err := nsq.Subscribe(topic)
 	t.Logf("sub, err: %+v, %v", sub, err)
 	require.NoError(t, err)
+
+	require.NoError(t, nsq.Publish(topic, payload))
 
 	select {
 	case msg := <-sub.C():
