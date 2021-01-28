@@ -1,6 +1,6 @@
 // Package alog provides functions to write logs with a friendly API. An
 // interface and implementation was chosen over simpler package wrappers to
-// support Entry-style returns.
+// support changing implementations.
 package alog
 
 // Logger defines the methods provided by a Log.

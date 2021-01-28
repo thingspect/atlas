@@ -9,12 +9,13 @@ import (
 	"time"
 
 	"github.com/thingspect/atlas/pkg/alog"
+	"github.com/thingspect/atlas/pkg/metric"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/status"
 )
 
-// Log logs requests, responses, and metadata, and implements the
+// Log logs requests, responses, and metadata, sends metrics, and implements the
 // grpc.UnaryServerInterceptor type signature.
 func Log(skipPaths map[string]struct{}) grpc.UnaryServerInterceptor {
 	return func(ctx context.Context, req interface{},
@@ -26,6 +27,13 @@ func Log(skipPaths map[string]struct{}) grpc.UnaryServerInterceptor {
 
 		start := time.Now()
 		resp, err := handler(ctx, req)
+		dur := time.Since(start)
+
+		// Send metrics.
+		metric.Timing("durms", dur, map[string]string{"path": info.FullMethod})
+		if err != nil {
+			metric.Incr("error", map[string]string{"path": info.FullMethod})
+		}
 
 		if _, ok := skipPaths[info.FullMethod]; ok {
 			return resp, err
@@ -33,7 +41,7 @@ func Log(skipPaths map[string]struct{}) grpc.UnaryServerInterceptor {
 
 		// Add additional logging fields.
 		logFields := map[string]interface{}{
-			"durms": fmt.Sprintf("%d", time.Since(start)/time.Millisecond),
+			"durms": fmt.Sprintf("%d", dur/time.Millisecond),
 			"code":  status.Code(err).String(),
 		}
 		logger.Logger = logger.WithFields(logFields)

@@ -8,7 +8,8 @@ const pref = "MQTT_INGEST_"
 
 // Config holds settings used by the MQTT Ingestor service.
 type Config struct {
-	LogLevel string
+	LogLevel   string
+	StatsDAddr string
 
 	MQTTAddr   string
 	MQTTUser   string
@@ -23,7 +24,8 @@ type Config struct {
 // New instantiates a service Config, parses the environment, and returns it.
 func New() *Config {
 	return &Config{
-		LogLevel: config.String(pref+"LOG_LEVEL", "DEBUG"),
+		LogLevel:   config.String(pref+"LOG_LEVEL", "DEBUG"),
+		StatsDAddr: config.String(pref+"STATSD_ADDR", ""),
 
 		MQTTAddr:   config.String(pref+"MQTT_ADDR", "tcp://127.0.0.1:1883"),
 		MQTTUser:   config.String(pref+"MQTT_USER", "mqtt-ingestor"),

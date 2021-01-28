@@ -8,6 +8,7 @@ import (
 	"github.com/thingspect/api/go/mqtt"
 	"github.com/thingspect/atlas/api/go/message"
 	"github.com/thingspect/atlas/pkg/alog"
+	"github.com/thingspect/atlas/pkg/metric"
 	"google.golang.org/protobuf/encoding/protojson"
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/known/timestamppb"
@@ -19,6 +20,8 @@ func (ing *Ingestor) parseMessages() {
 
 	var processCount int
 	for msg := range ing.mqttSub.C() {
+		metric.Incr("received", nil)
+
 		// Set up logging fields.
 		traceID := uuid.NewString()
 		logger := alog.WithStr("traceID", traceID)
@@ -28,6 +31,7 @@ func (ing *Ingestor) parseMessages() {
 		topicParts := strings.Split(topic, "/")
 		if len(topicParts) < 2 || len(topicParts) > 4 || topicParts[0] != "v1" {
 			msg.Ack()
+			metric.Incr("error", map[string]string{"func": "topic"})
 			logger.Errorf("parseMessages malformed topic: %v", topic)
 			continue
 		}
@@ -47,6 +51,7 @@ func (ing *Ingestor) parseMessages() {
 		}
 		if err != nil {
 			msg.Ack()
+			metric.Incr("error", map[string]string{"func": "unmarshal"})
 			logger.Errorf("parseMessages proto.Unmarshal: %v", err)
 			continue
 		}
@@ -59,17 +64,20 @@ func (ing *Ingestor) parseMessages() {
 
 			bVIn, err := proto.Marshal(vIn)
 			if err != nil {
+				metric.Incr("error", map[string]string{"func": "marshal"})
 				logger.Errorf("parseMessages proto.Marshal: %v", err)
 				continue
 			}
 
 			if err = ing.parserQueue.Publish(ing.parserPubTopic,
 				bVIn); err != nil {
+				metric.Incr("error", map[string]string{"func": "publish"})
 				logger.Errorf("parseMessages ing.parserPub.Publish: %v", err)
 				continue
 			}
 
 			successCount++
+			metric.Incr("published", nil)
 			logger.Debugf("parseMessages published: %+v", vIn)
 		}
 
@@ -77,6 +85,7 @@ func (ing *Ingestor) parseMessages() {
 		// Deduplication will take place downstream.
 		if successCount == len(payl.Points) {
 			msg.Ack()
+			metric.Incr("processed", nil)
 		}
 
 		processCount++
