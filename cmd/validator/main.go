@@ -4,6 +4,7 @@ import (
 	"github.com/thingspect/atlas/internal/validator/config"
 	"github.com/thingspect/atlas/internal/validator/validator"
 	"github.com/thingspect/atlas/pkg/alog"
+	"github.com/thingspect/atlas/pkg/metric"
 )
 
 func main() {
@@ -11,6 +12,7 @@ func main() {
 
 	alog.SetGlobal(alog.NewJSON().WithLevel(cfg.LogLevel).WithStr("service",
 		validator.ServiceName))
+	metric.SetStatsD(cfg.StatsDAddr, validator.ServiceName)
 
 	// Build Validator.
 	val, err := validator.New(cfg)

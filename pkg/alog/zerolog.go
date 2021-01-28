@@ -15,7 +15,7 @@ type zlog struct {
 	zl zerolog.Logger
 }
 
-// Verify zerolog implements z.zl.
+// Verify zlog implements Logger.
 var _ Logger = &zlog{}
 
 // newZlogConsole returns a new Logger with console formatting at the debug

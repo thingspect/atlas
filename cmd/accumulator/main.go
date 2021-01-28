@@ -4,6 +4,7 @@ import (
 	"github.com/thingspect/atlas/internal/accumulator/accumulator"
 	"github.com/thingspect/atlas/internal/accumulator/config"
 	"github.com/thingspect/atlas/pkg/alog"
+	"github.com/thingspect/atlas/pkg/metric"
 )
 
 func main() {
@@ -11,6 +12,7 @@ func main() {
 
 	alog.SetGlobal(alog.NewJSON().WithLevel(cfg.LogLevel).WithStr("service",
 		accumulator.ServiceName))
+	metric.SetStatsD(cfg.StatsDAddr, accumulator.ServiceName)
 
 	// Build Accumulator.
 	acc, err := accumulator.New(cfg)

@@ -8,6 +8,7 @@ import (
 	"github.com/thingspect/atlas/api/go/message"
 	"github.com/thingspect/atlas/pkg/alog"
 	"github.com/thingspect/atlas/pkg/dao"
+	"github.com/thingspect/atlas/pkg/metric"
 	"google.golang.org/protobuf/proto"
 )
 
@@ -18,10 +19,12 @@ func (acc *Accumulator) accumulateMessages() {
 	var processCount int
 	for msg := range acc.vOutSub.C() {
 		// Retrieve published message.
+		metric.Incr("received", nil)
 		vOut := &message.ValidatorOut{}
 		err := proto.Unmarshal(msg.Payload(), vOut)
 		if err != nil || vOut.Point == nil {
 			msg.Ack()
+			metric.Incr("error", map[string]string{"func": "unmarshal"})
 			alog.Errorf("validateMessages proto.Unmarshal vOut, err: %+v, %v",
 				vOut, err)
 			continue
@@ -42,19 +45,22 @@ func (acc *Accumulator) accumulateMessages() {
 		cancel()
 		if errors.Is(err, dao.ErrAlreadyExists) ||
 			errors.Is(err, dao.ErrInvalidFormat) {
+			msg.Ack()
+			metric.Incr("duplicate", nil)
 			logger.Errorf("accumulateMessages discard acc.dpDAO.Create: %v",
 				err)
-			msg.Ack()
 			continue
 		}
 		if err != nil {
+			msg.Requeue()
+			metric.Incr("error", map[string]string{"func": "create"})
 			logger.Errorf("accumulateMessages requeue acc.dpDAO.Create: %v",
 				err)
-			msg.Requeue()
 			continue
 		}
 
 		msg.Ack()
+		metric.Incr("processed", nil)
 		logger.Debugf("accumulateMessages created: %+v", vOut)
 
 		processCount++
