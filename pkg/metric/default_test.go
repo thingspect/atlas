@@ -10,8 +10,8 @@ import (
 	"github.com/thingspect/atlas/pkg/test/random"
 )
 
-func TestGlobal(t *testing.T) {
-	metricer := global()
+func TestDefault(t *testing.T) {
+	metricer := getDefault()
 	t.Logf("metricer: %#v", metricer)
 
 	for i := 0; i < 5; i++ {
@@ -29,7 +29,7 @@ func TestGlobal(t *testing.T) {
 	}
 }
 
-func TestGlobalNoOp(t *testing.T) {
+func TestDefaultNoOp(t *testing.T) {
 	for i := 0; i < 5; i++ {
 		lTest := i
 

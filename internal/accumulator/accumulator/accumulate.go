@@ -47,8 +47,7 @@ func (acc *Accumulator) accumulateMessages() {
 			errors.Is(err, dao.ErrInvalidFormat) {
 			msg.Ack()
 			metric.Incr("duplicate", nil)
-			logger.Errorf("accumulateMessages discard acc.dpDAO.Create: %v",
-				err)
+			logger.Infof("accumulateMessages discard acc.dpDAO.Create: %v", err)
 			continue
 		}
 		if err != nil {

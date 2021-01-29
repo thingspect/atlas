@@ -62,23 +62,23 @@ func (val *Validator) validateMessages() {
 		switch err := vIn.Point.Validate(); {
 		case err != nil:
 			msg.Ack()
-			metric.Incr("error", map[string]string{"func": "validate"})
+			metric.Incr("invalid", map[string]string{"func": "validate"})
 			logger.Debugf("validateMessages vIn.Point.Validate: %v", err)
 			continue
 		case vIn.OrgId != dev.OrgId:
 			msg.Ack()
-			metric.Incr("error", map[string]string{"func": "orgid"})
+			metric.Incr("invalid", map[string]string{"func": "orgid"})
 			logger.Errorf("validateMessages incorrect org ID, expected: %v, "+
 				"actual: %v", dev.OrgId, vIn.OrgId)
 			continue
 		case dev.Status != common.Status_ACTIVE:
 			msg.Ack()
-			metric.Incr("disabled", nil)
+			metric.Incr("invalid", map[string]string{"func": "disabled"})
 			logger.Debugf("validateMessages device disabled: %+v", vIn)
 			continue
 		case !vIn.SkipToken && vIn.Point.Token != dev.Token:
 			msg.Ack()
-			metric.Incr("error", map[string]string{"func": "token"})
+			metric.Incr("invalid", map[string]string{"func": "token"})
 			logger.Debugf("validateMessages invalid token: %+v", vIn)
 			continue
 		}

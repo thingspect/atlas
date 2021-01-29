@@ -7,5 +7,5 @@ import (
 func init() {
 	zerolog.TimeFieldFormat = zerolog.TimeFormatUnixMs
 
-	SetGlobal(NewConsole())
+	SetDefault(NewConsole())
 }

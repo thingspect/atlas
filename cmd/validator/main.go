@@ -10,7 +10,7 @@ import (
 func main() {
 	cfg := config.New()
 
-	alog.SetGlobal(alog.NewJSON().WithLevel(cfg.LogLevel).WithStr("service",
+	alog.SetDefault(alog.NewJSON().WithLevel(cfg.LogLevel).WithStr("service",
 		validator.ServiceName))
 	metric.SetStatsD(cfg.StatsDAddr, validator.ServiceName)
 
