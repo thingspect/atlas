@@ -158,6 +158,8 @@ func TestAccumulateMessagesError(t *testing.T) {
 			if lTest.inpTimes > 0 {
 				wg.Wait()
 			} else {
+				// If the failure mode isn't supported WaitGroup operation,
+				// give it time to traverse the code.
 				time.Sleep(100 * time.Millisecond)
 			}
 		})
