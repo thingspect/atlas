@@ -10,6 +10,7 @@ import (
 	"os/signal"
 	"syscall"
 
+	"github.com/NYTimes/gziphandler"
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
 	"github.com/thingspect/api/go/api"
 	"github.com/thingspect/atlas/internal/api/config"
@@ -22,6 +23,9 @@ import (
 	"github.com/thingspect/atlas/pkg/postgres"
 	"github.com/thingspect/atlas/pkg/queue"
 	"google.golang.org/grpc"
+
+	// encoding/gzip imported for use by UseCompressor CallOption.
+	_ "google.golang.org/grpc/encoding/gzip"
 )
 
 const (
@@ -126,7 +130,7 @@ func New(cfg *config.Config) (*API, error) {
 		grpcSrv: srv,
 		httpSrv: &http.Server{
 			Addr:    httpPort,
-			Handler: mux,
+			Handler: gziphandler.GzipHandler(mux),
 		},
 		httpCancel: cancel,
 	}, nil
