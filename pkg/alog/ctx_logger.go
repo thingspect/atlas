@@ -19,11 +19,11 @@ func NewContext(ctx context.Context, logger *CtxLogger) context.Context {
 }
 
 // FromContext returns the CtxLogger value stored in a Context, if any. If a
-// CtxLogger is not present, one carrying the global logger will be returned.
+// CtxLogger is not present, one carrying the default logger will be returned.
 func FromContext(ctx context.Context) *CtxLogger {
 	logger, ok := ctx.Value(loggerKey{}).(*CtxLogger)
 	if !ok {
-		return &CtxLogger{Logger: Global()}
+		return &CtxLogger{Logger: Default()}
 	}
 
 	return logger

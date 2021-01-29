@@ -30,9 +30,9 @@ func Log(skipPaths map[string]struct{}) grpc.UnaryServerInterceptor {
 		dur := time.Since(start)
 
 		// Send metrics.
-		metric.Timing("durms", dur, map[string]string{"path": info.FullMethod})
+		metric.Timing("durms", dur, nil)
 		if err != nil {
-			metric.Incr("error", map[string]string{"path": info.FullMethod})
+			metric.Incr("error", nil)
 		}
 
 		if _, ok := skipPaths[info.FullMethod]; ok {

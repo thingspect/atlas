@@ -79,9 +79,15 @@ services:
       - APPLICATION_SERVER__INTEGRATION__MQTT__CLIENT_ID=chirpstack-application-server-1
       - APPLICATION_SERVER__INTEGRATION__MQTT__MAX_RECONNECT_INTERVAL=5s
       - APPLICATION_SERVER__API__PUBLIC_HOST=chirpstack-application-server:8001
-      - APPLICATION_SERVER__EXTERNAL_API__JWT_SECRET=notasecurehash
+      - APPLICATION_SERVER__EXTERNAL_API__JWT_SECRET=notasecurekey
       - MONITORING__BIND=0.0.0.0:9323
       - MONITORING__HEALTHCHECK_ENDPOINT=true
+  dogstatsd:
+    image: datadog/dogstatsd:latest
+    environment:
+      - DD_API_KEY=notasecurekey
+      - DD_DOGSTATSD_NON_LOCAL_TRAFFIC=true
+      - DD_ENV=dev
 networks:
   default:
     name: deps

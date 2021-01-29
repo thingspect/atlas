@@ -9,8 +9,8 @@ import (
 	"github.com/thingspect/atlas/pkg/test/random"
 )
 
-func TestGlobal(t *testing.T) {
-	logger := Global()
+func TestDefault(t *testing.T) {
+	logger := Default()
 	t.Logf("logger: %#v", logger)
 
 	for i := 0; i < 5; i++ {
@@ -30,8 +30,8 @@ func TestGlobal(t *testing.T) {
 	}
 }
 
-func TestGlobalConsole(t *testing.T) {
-	SetGlobal(NewConsole())
+func TestDefaultConsole(t *testing.T) {
+	SetDefault(NewConsole())
 
 	for i := 0; i < 5; i++ {
 		lTest := i
@@ -50,8 +50,8 @@ func TestGlobalConsole(t *testing.T) {
 	}
 }
 
-func TestGlobalJSON(t *testing.T) {
-	SetGlobal(NewJSON())
+func TestDefaultJSON(t *testing.T) {
+	SetDefault(NewJSON())
 
 	for i := 0; i < 5; i++ {
 		lTest := i
@@ -70,7 +70,7 @@ func TestGlobalJSON(t *testing.T) {
 	}
 }
 
-func TestGlobalWithStr(t *testing.T) {
+func TestDefaultWithStr(t *testing.T) {
 	t.Parallel()
 
 	logger := WithStr(random.String(10), random.String(10))
@@ -93,7 +93,7 @@ func TestGlobalWithStr(t *testing.T) {
 	}
 }
 
-func TestGlobalWithFields(t *testing.T) {
+func TestDefaultWithFields(t *testing.T) {
 	t.Parallel()
 
 	fields := map[string]interface{}{

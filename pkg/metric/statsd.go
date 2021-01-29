@@ -17,7 +17,7 @@ type statsD struct {
 // Verify statsd implements Metricer.
 var _ Metricer = &statsD{}
 
-// SetStatsD builds a new StatsD Metric and sets it to the global metricer.
+// SetStatsD builds a new StatsD Metric and sets it to the default metricer.
 func SetStatsD(addr, prefix string) {
 	if addr == "" {
 		alog.Error("SetStatsD addr not found, continuing to use noOpMetric")
@@ -28,9 +28,9 @@ func SetStatsD(addr, prefix string) {
 		prefix += "."
 	}
 
-	setGlobal(&statsD{
+	setDefault(&statsD{
 		client: statsd.NewClient(addr,
-			statsd.TagStyle(statsd.TagFormatGraphite),
+			statsd.TagStyle(statsd.TagFormatDatadog),
 			statsd.MetricPrefix(prefix)),
 	})
 }

@@ -26,7 +26,7 @@ func TestNewFromContext(t *testing.T) {
 	require.Equal(t, logger, ctxLogger)
 }
 
-func TestFromContextGlobal(t *testing.T) {
+func TestFromContextDefault(t *testing.T) {
 	t.Parallel()
 
 	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
@@ -34,5 +34,5 @@ func TestFromContextGlobal(t *testing.T) {
 
 	ctxLogger := FromContext(ctx)
 	t.Logf("ctxLogger: %+v", ctxLogger)
-	require.Equal(t, &CtxLogger{Logger: Global()}, ctxLogger)
+	require.Equal(t, &CtxLogger{Logger: Default()}, ctxLogger)
 }
