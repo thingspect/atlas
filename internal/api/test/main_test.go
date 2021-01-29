@@ -19,6 +19,7 @@ import (
 	testconfig "github.com/thingspect/atlas/pkg/test/config"
 	"github.com/thingspect/atlas/pkg/test/random"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/encoding/gzip"
 )
 
 var (
@@ -88,6 +89,7 @@ func TestMain(m *testing.M) {
 	opts := []grpc.DialOption{
 		grpc.WithBlock(),
 		grpc.WithInsecure(),
+		grpc.WithDefaultCallOptions(grpc.UseCompressor(gzip.Name)),
 	}
 	globalNoAuthGRPCConn, err = grpc.Dial(api.GRPCHost+api.GRPCPort, opts...)
 	if err != nil {

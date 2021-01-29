@@ -3,6 +3,7 @@ module github.com/thingspect/atlas
 go 1.15
 
 require (
+	github.com/NYTimes/gziphandler v1.1.1
 	github.com/eclipse/paho.mqtt.golang v1.3.1
 	github.com/golang/mock v1.4.4
 	github.com/golang/protobuf v1.4.3
