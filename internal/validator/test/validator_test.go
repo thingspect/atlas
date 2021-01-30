@@ -35,7 +35,7 @@ func TestValidateMessages(t *testing.T) {
 	require.NoError(t, err)
 
 	dev := &api.Device{OrgId: createOrg.ID, UniqId: uniqID,
-		Status: common.Status_ACTIVE}
+		Status: api.Status_ACTIVE}
 	createDev, err := globalDevDAO.Create(ctx, dev)
 	t.Logf("createDev, err: %+v, %v", createDev, err)
 	require.NoError(t, err)
@@ -122,13 +122,13 @@ func TestValidateMessagesError(t *testing.T) {
 	require.NoError(t, err)
 
 	dev := &api.Device{OrgId: createOrg.ID, UniqId: uniqID,
-		Status: common.Status_ACTIVE}
+		Status: api.Status_ACTIVE}
 	createDev, err := globalDevDAO.Create(ctx, dev)
 	t.Logf("createDev, err: %+v, %v", createDev, err)
 	require.NoError(t, err)
 
 	disDev := &api.Device{OrgId: createOrg.ID, UniqId: disUniqID,
-		Status: common.Status_DISABLED}
+		Status: api.Status_DISABLED}
 	createDisDev, err := globalDevDAO.Create(ctx, disDev)
 	t.Logf("createDisDev, err: %+v, %v", createDisDev, err)
 	require.NoError(t, err)

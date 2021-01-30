@@ -11,7 +11,6 @@ import (
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/require"
 	"github.com/thingspect/api/go/api"
-	"github.com/thingspect/api/go/common"
 	"github.com/thingspect/atlas/pkg/test/random"
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/known/fieldmaskpb"
@@ -24,8 +23,8 @@ func TestCreateDevice(t *testing.T) {
 		t.Parallel()
 
 		dev := &api.Device{UniqId: "api-device-" + random.String(16),
-			Status: []common.Status{common.Status_ACTIVE,
-				common.Status_DISABLED}[random.Intn(2)]}
+			Status: []api.Status{api.Status_ACTIVE,
+				api.Status_DISABLED}[random.Intn(2)]}
 
 		ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
 		defer cancel()
@@ -49,8 +48,8 @@ func TestCreateDevice(t *testing.T) {
 		t.Parallel()
 
 		dev := &api.Device{UniqId: strings.ToUpper("api-device-" +
-			random.String(16)), Status: []common.Status{common.Status_ACTIVE,
-			common.Status_DISABLED}[random.Intn(2)]}
+			random.String(16)), Status: []api.Status{api.Status_ACTIVE,
+			api.Status_DISABLED}[random.Intn(2)]}
 
 		ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
 		defer cancel()
@@ -74,8 +73,8 @@ func TestCreateDevice(t *testing.T) {
 		t.Parallel()
 
 		dev := &api.Device{UniqId: "api-device-" + random.String(40),
-			Status: []common.Status{common.Status_ACTIVE,
-				common.Status_DISABLED}[random.Intn(2)]}
+			Status: []api.Status{api.Status_ACTIVE,
+				api.Status_DISABLED}[random.Intn(2)]}
 
 		ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
 		defer cancel()
@@ -99,8 +98,8 @@ func TestGetDevice(t *testing.T) {
 	defer cancel()
 
 	dev := &api.Device{UniqId: "api-device-" + random.String(16),
-		Status: []common.Status{common.Status_ACTIVE,
-			common.Status_DISABLED}[random.Intn(2)]}
+		Status: []api.Status{api.Status_ACTIVE,
+			api.Status_DISABLED}[random.Intn(2)]}
 
 	devCli := api.NewDeviceServiceClient(globalAuthGRPCConn)
 	createDev, err := devCli.CreateDevice(ctx, &api.CreateDeviceRequest{
@@ -168,8 +167,8 @@ func TestUpdateDevice(t *testing.T) {
 		defer cancel()
 
 		dev := &api.Device{UniqId: "api-device-" + random.String(16),
-			Status: []common.Status{common.Status_ACTIVE,
-				common.Status_DISABLED}[random.Intn(2)]}
+			Status: []api.Status{api.Status_ACTIVE,
+				api.Status_DISABLED}[random.Intn(2)]}
 
 		devCli := api.NewDeviceServiceClient(globalAuthGRPCConn)
 		createDev, err := devCli.CreateDevice(ctx, &api.CreateDeviceRequest{
@@ -179,8 +178,8 @@ func TestUpdateDevice(t *testing.T) {
 
 		// Update device fields.
 		createDev.UniqId = "api-device-" + random.String(16)
-		createDev.Status = []common.Status{common.Status_ACTIVE,
-			common.Status_DISABLED}[random.Intn(2)]
+		createDev.Status = []api.Status{api.Status_ACTIVE,
+			api.Status_DISABLED}[random.Intn(2)]
 
 		updateDev, err := devCli.UpdateDevice(ctx, &api.UpdateDeviceRequest{
 			Device: createDev})
@@ -203,8 +202,8 @@ func TestUpdateDevice(t *testing.T) {
 		defer cancel()
 
 		dev := &api.Device{UniqId: "api-device-" + random.String(16),
-			Status: []common.Status{common.Status_ACTIVE,
-				common.Status_DISABLED}[random.Intn(2)]}
+			Status: []api.Status{api.Status_ACTIVE,
+				api.Status_DISABLED}[random.Intn(2)]}
 
 		devCli := api.NewDeviceServiceClient(globalAuthGRPCConn)
 		createDev, err := devCli.CreateDevice(ctx, &api.CreateDeviceRequest{
@@ -214,8 +213,8 @@ func TestUpdateDevice(t *testing.T) {
 
 		// Update device fields.
 		part := &api.Device{Id: createDev.Id, UniqId: "api-device-" +
-			random.String(16), Status: []common.Status{common.Status_ACTIVE,
-			common.Status_DISABLED}[random.Intn(2)]}
+			random.String(16), Status: []api.Status{api.Status_ACTIVE,
+			api.Status_DISABLED}[random.Intn(2)]}
 
 		updateDev, err := devCli.UpdateDevice(ctx, &api.UpdateDeviceRequest{
 			Device: part, UpdateMask: &fieldmaskpb.FieldMask{
@@ -294,8 +293,8 @@ func TestUpdateDevice(t *testing.T) {
 		defer cancel()
 
 		unknownDevice := &api.Device{Id: uuid.NewString(),
-			UniqId: "api-device-" + random.String(16), Status: []common.Status{
-				common.Status_ACTIVE, common.Status_DISABLED}[random.Intn(2)],
+			UniqId: "api-device-" + random.String(16), Status: []api.Status{
+				api.Status_ACTIVE, api.Status_DISABLED}[random.Intn(2)],
 			Token: uuid.NewString()}
 
 		devCli := api.NewDeviceServiceClient(globalAuthGRPCConn)
@@ -314,8 +313,8 @@ func TestUpdateDevice(t *testing.T) {
 		defer cancel()
 
 		dev := &api.Device{UniqId: "api-device-" + random.String(16),
-			Status: []common.Status{common.Status_ACTIVE,
-				common.Status_DISABLED}[random.Intn(2)]}
+			Status: []api.Status{api.Status_ACTIVE,
+				api.Status_DISABLED}[random.Intn(2)]}
 
 		devCli := api.NewDeviceServiceClient(globalAuthGRPCConn)
 		createDev, err := devCli.CreateDevice(ctx, &api.CreateDeviceRequest{
@@ -343,8 +342,8 @@ func TestUpdateDevice(t *testing.T) {
 		defer cancel()
 
 		dev := &api.Device{UniqId: "api-device-" + random.String(16),
-			Status: []common.Status{common.Status_ACTIVE,
-				common.Status_DISABLED}[random.Intn(2)]}
+			Status: []api.Status{api.Status_ACTIVE,
+				api.Status_DISABLED}[random.Intn(2)]}
 
 		devCli := api.NewDeviceServiceClient(globalAuthGRPCConn)
 		createDev, err := devCli.CreateDevice(ctx, &api.CreateDeviceRequest{
@@ -372,8 +371,8 @@ func TestUpdateDevice(t *testing.T) {
 		defer cancel()
 
 		dev := &api.Device{UniqId: "api-device-" + random.String(16),
-			Status: []common.Status{common.Status_ACTIVE,
-				common.Status_DISABLED}[random.Intn(2)]}
+			Status: []api.Status{api.Status_ACTIVE,
+				api.Status_DISABLED}[random.Intn(2)]}
 
 		devCli := api.NewDeviceServiceClient(globalAuthGRPCConn)
 		createDev, err := devCli.CreateDevice(ctx, &api.CreateDeviceRequest{
@@ -403,8 +402,8 @@ func TestDeleteDevice(t *testing.T) {
 		defer cancel()
 
 		dev := &api.Device{UniqId: "api-device-" + random.String(16),
-			Status: []common.Status{common.Status_ACTIVE,
-				common.Status_DISABLED}[random.Intn(2)]}
+			Status: []api.Status{api.Status_ACTIVE,
+				api.Status_DISABLED}[random.Intn(2)]}
 
 		devCli := api.NewDeviceServiceClient(globalAuthGRPCConn)
 		createDev, err := devCli.CreateDevice(ctx, &api.CreateDeviceRequest{
@@ -455,8 +454,8 @@ func TestDeleteDevice(t *testing.T) {
 		defer cancel()
 
 		dev := &api.Device{UniqId: "api-device-" + random.String(16),
-			Status: []common.Status{common.Status_ACTIVE,
-				common.Status_DISABLED}[random.Intn(2)]}
+			Status: []api.Status{api.Status_ACTIVE,
+				api.Status_DISABLED}[random.Intn(2)]}
 
 		devCli := api.NewDeviceServiceClient(globalAuthGRPCConn)
 		createDev, err := devCli.CreateDevice(ctx, &api.CreateDeviceRequest{
@@ -480,11 +479,11 @@ func TestListDevices(t *testing.T) {
 	defer cancel()
 
 	devIDs := []string{}
-	devStatuses := []common.Status{}
+	devStatuses := []api.Status{}
 	for i := 0; i < 3; i++ {
 		dev := &api.Device{UniqId: "api-device-" + random.String(16),
-			Status: []common.Status{common.Status_ACTIVE,
-				common.Status_DISABLED}[random.Intn(2)]}
+			Status: []api.Status{api.Status_ACTIVE,
+				api.Status_DISABLED}[random.Intn(2)]}
 
 		devCli := api.NewDeviceServiceClient(globalAuthGRPCConn)
 		createDev, err := devCli.CreateDevice(ctx, &api.CreateDeviceRequest{

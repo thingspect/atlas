@@ -11,7 +11,6 @@ import (
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/require"
 	"github.com/thingspect/api/go/api"
-	"github.com/thingspect/api/go/common"
 	"github.com/thingspect/atlas/internal/api/session"
 	"github.com/thingspect/atlas/pkg/dao"
 	"github.com/thingspect/atlas/pkg/test/matcher"
@@ -30,8 +29,8 @@ func TestCreateDevice(t *testing.T) {
 		t.Parallel()
 
 		dev := &api.Device{OrgId: uuid.NewString(),
-			UniqId: random.String(16), Status: []common.Status{
-				common.Status_ACTIVE, common.Status_DISABLED}[random.Intn(2)]}
+			UniqId: random.String(16), Status: []api.Status{
+				api.Status_ACTIVE, api.Status_DISABLED}[random.Intn(2)]}
 
 		ctrl := gomock.NewController(t)
 		defer ctrl.Finish()
@@ -82,8 +81,8 @@ func TestCreateDevice(t *testing.T) {
 		t.Parallel()
 
 		dev := &api.Device{OrgId: uuid.NewString(),
-			UniqId: random.String(41), Status: []common.Status{
-				common.Status_ACTIVE, common.Status_DISABLED}[random.Intn(2)]}
+			UniqId: random.String(41), Status: []api.Status{
+				api.Status_ACTIVE, api.Status_DISABLED}[random.Intn(2)]}
 
 		ctrl := gomock.NewController(t)
 		defer ctrl.Finish()
@@ -114,8 +113,8 @@ func TestGetDevice(t *testing.T) {
 		t.Parallel()
 
 		dev := &api.Device{Id: uuid.NewString(), OrgId: uuid.NewString(),
-			UniqId: random.String(16), Status: []common.Status{
-				common.Status_ACTIVE, common.Status_DISABLED}[random.Intn(2)]}
+			UniqId: random.String(16), Status: []api.Status{
+				api.Status_ACTIVE, api.Status_DISABLED}[random.Intn(2)]}
 
 		ctrl := gomock.NewController(t)
 		defer ctrl.Finish()
@@ -193,8 +192,8 @@ func TestUpdateDevice(t *testing.T) {
 		t.Parallel()
 
 		dev := &api.Device{Id: uuid.NewString(), OrgId: uuid.NewString(),
-			UniqId: random.String(16), Status: []common.Status{
-				common.Status_ACTIVE, common.Status_DISABLED}[random.Intn(2)]}
+			UniqId: random.String(16), Status: []api.Status{
+				api.Status_ACTIVE, api.Status_DISABLED}[random.Intn(2)]}
 
 		ctrl := gomock.NewController(t)
 		defer ctrl.Finish()
@@ -225,9 +224,9 @@ func TestUpdateDevice(t *testing.T) {
 
 		dev := &api.Device{Id: uuid.NewString(), OrgId: uuid.NewString(),
 			UniqId: random.String(16)}
-		part := &api.Device{Id: dev.Id, Status: common.Status_ACTIVE}
+		part := &api.Device{Id: dev.Id, Status: api.Status_ACTIVE}
 		merged := &api.Device{Id: dev.Id, OrgId: dev.OrgId, UniqId: dev.UniqId,
-			Status: common.Status_ACTIVE}
+			Status: api.Status_ACTIVE}
 
 		ctrl := gomock.NewController(t)
 		defer ctrl.Finish()
@@ -305,8 +304,8 @@ func TestUpdateDevice(t *testing.T) {
 		t.Parallel()
 
 		dev := &api.Device{Id: uuid.NewString(), OrgId: uuid.NewString(),
-			UniqId: random.String(16), Status: []common.Status{
-				common.Status_ACTIVE, common.Status_DISABLED}[random.Intn(2)]}
+			UniqId: random.String(16), Status: []api.Status{
+				api.Status_ACTIVE, api.Status_DISABLED}[random.Intn(2)]}
 
 		ctrl := gomock.NewController(t)
 		defer ctrl.Finish()
@@ -335,7 +334,7 @@ func TestUpdateDevice(t *testing.T) {
 
 		orgID := uuid.NewString()
 		part := &api.Device{Id: uuid.NewString(),
-			Status: common.Status_ACTIVE}
+			Status: api.Status_ACTIVE}
 
 		ctrl := gomock.NewController(t)
 		defer ctrl.Finish()
@@ -363,8 +362,8 @@ func TestUpdateDevice(t *testing.T) {
 		t.Parallel()
 
 		dev := &api.Device{Id: uuid.NewString(), OrgId: uuid.NewString(),
-			UniqId: random.String(41), Status: []common.Status{
-				common.Status_ACTIVE, common.Status_DISABLED}[random.Intn(2)]}
+			UniqId: random.String(41), Status: []api.Status{
+				api.Status_ACTIVE, api.Status_DISABLED}[random.Intn(2)]}
 
 		ctrl := gomock.NewController(t)
 		defer ctrl.Finish()
@@ -392,8 +391,8 @@ func TestUpdateDevice(t *testing.T) {
 		t.Parallel()
 
 		dev := &api.Device{Id: uuid.NewString(), OrgId: uuid.NewString(),
-			UniqId: random.String(16), Status: []common.Status{
-				common.Status_ACTIVE, common.Status_DISABLED}[random.Intn(2)],
+			UniqId: random.String(16), Status: []api.Status{
+				api.Status_ACTIVE, api.Status_DISABLED}[random.Intn(2)],
 			Token: random.String(10)}
 
 		ctrl := gomock.NewController(t)
@@ -497,14 +496,14 @@ func TestListDevices(t *testing.T) {
 
 		devs := []*api.Device{
 			{Id: uuid.NewString(), OrgId: orgID, UniqId: random.String(16),
-				Status: []common.Status{common.Status_ACTIVE,
-					common.Status_DISABLED}[random.Intn(2)]},
+				Status: []api.Status{api.Status_ACTIVE,
+					api.Status_DISABLED}[random.Intn(2)]},
 			{Id: uuid.NewString(), OrgId: orgID, UniqId: random.String(16),
-				Status: []common.Status{common.Status_ACTIVE,
-					common.Status_DISABLED}[random.Intn(2)]},
+				Status: []api.Status{api.Status_ACTIVE,
+					api.Status_DISABLED}[random.Intn(2)]},
 			{Id: uuid.NewString(), OrgId: orgID, UniqId: random.String(16),
-				Status: []common.Status{common.Status_ACTIVE,
-					common.Status_DISABLED}[random.Intn(2)]},
+				Status: []api.Status{api.Status_ACTIVE,
+					api.Status_DISABLED}[random.Intn(2)]},
 		}
 
 		ctrl := gomock.NewController(t)
@@ -541,16 +540,16 @@ func TestListDevices(t *testing.T) {
 
 		devs := []*api.Device{
 			{Id: uuid.NewString(), OrgId: orgID, UniqId: random.String(16),
-				Status: []common.Status{common.Status_ACTIVE,
-					common.Status_DISABLED}[random.Intn(2)],
+				Status: []api.Status{api.Status_ACTIVE,
+					api.Status_DISABLED}[random.Intn(2)],
 				CreatedAt: timestamppb.Now()},
 			{Id: uuid.NewString(), OrgId: orgID, UniqId: random.String(16),
-				Status: []common.Status{common.Status_ACTIVE,
-					common.Status_DISABLED}[random.Intn(2)],
+				Status: []api.Status{api.Status_ACTIVE,
+					api.Status_DISABLED}[random.Intn(2)],
 				CreatedAt: timestamppb.Now()},
 			{Id: uuid.NewString(), OrgId: orgID, UniqId: random.String(16),
-				Status: []common.Status{common.Status_ACTIVE,
-					common.Status_DISABLED}[random.Intn(2)],
+				Status: []api.Status{api.Status_ACTIVE,
+					api.Status_DISABLED}[random.Intn(2)],
 				CreatedAt: timestamppb.Now()},
 		}
 
@@ -663,16 +662,16 @@ func TestListDevices(t *testing.T) {
 
 		devs := []*api.Device{
 			{Id: uuid.NewString(), OrgId: orgID, UniqId: random.String(16),
-				Status: []common.Status{common.Status_ACTIVE,
-					common.Status_DISABLED}[random.Intn(2)],
+				Status: []api.Status{api.Status_ACTIVE,
+					api.Status_DISABLED}[random.Intn(2)],
 				CreatedAt: timestamppb.Now()},
 			{Id: "...", OrgId: orgID, UniqId: random.String(16),
-				Status: []common.Status{common.Status_ACTIVE,
-					common.Status_DISABLED}[random.Intn(2)],
+				Status: []api.Status{api.Status_ACTIVE,
+					api.Status_DISABLED}[random.Intn(2)],
 				CreatedAt: timestamppb.Now()},
 			{Id: uuid.NewString(), OrgId: orgID, UniqId: random.String(16),
-				Status: []common.Status{common.Status_ACTIVE,
-					common.Status_DISABLED}[random.Intn(2)],
+				Status: []api.Status{api.Status_ACTIVE,
+					api.Status_DISABLED}[random.Intn(2)],
 				CreatedAt: timestamppb.Now()},
 		}
 

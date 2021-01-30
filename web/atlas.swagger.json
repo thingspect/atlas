@@ -757,7 +757,7 @@
           ]
         },
         "status": {
-          "$ref": "#/definitions/commonStatus",
+          "$ref": "#/definitions/apiStatus",
           "description": "Device status.",
           "required": [
             "status"
@@ -930,6 +930,16 @@
         "points"
       ]
     },
+    "apiStatus": {
+      "type": "string",
+      "enum": [
+        "STATUS_UNSPECIFIED",
+        "ACTIVE",
+        "DISABLED"
+      ],
+      "default": "STATUS_UNSPECIFIED",
+      "description": "Status represents the status of a message.\n\n - STATUS_UNSPECIFIED: Status is not specified.\n - ACTIVE: Message subject is active.\n - DISABLED: Message subject is disabled."
+    },
     "apiUpdateUserPasswordRequest": {
       "type": "object",
       "properties": {
@@ -972,7 +982,7 @@
           ]
         },
         "status": {
-          "$ref": "#/definitions/commonStatus",
+          "$ref": "#/definitions/apiStatus",
           "description": "User status.",
           "required": [
             "status"
@@ -1058,16 +1068,6 @@
         "uniqID",
         "attr"
       ]
-    },
-    "commonStatus": {
-      "type": "string",
-      "enum": [
-        "STATUS_UNSPECIFIED",
-        "ACTIVE",
-        "DISABLED"
-      ],
-      "default": "STATUS_UNSPECIFIED",
-      "description": "Status represents the status of a message.\n\n - STATUS_UNSPECIFIED: Status is not specified.\n - ACTIVE: Message subject is active.\n - DISABLED: Message subject is disabled."
     },
     "googlerpcStatus": {
       "type": "object",

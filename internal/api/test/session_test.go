@@ -9,7 +9,6 @@ import (
 
 	"github.com/stretchr/testify/require"
 	"github.com/thingspect/api/go/api"
-	"github.com/thingspect/api/go/common"
 	"github.com/thingspect/atlas/internal/api/session"
 	"github.com/thingspect/atlas/pkg/dao/org"
 	"github.com/thingspect/atlas/pkg/test/random"
@@ -27,7 +26,7 @@ func TestLogin(t *testing.T) {
 	require.NoError(t, err)
 
 	user := &api.User{OrgId: createOrg.ID, Email: "api-session-" +
-		random.Email(), Status: common.Status_ACTIVE}
+		random.Email(), Status: api.Status_ACTIVE}
 	createUser, err := globalUserDAO.Create(ctx, user)
 	t.Logf("createUser, err: %+v, %v", createUser, err)
 	require.NoError(t, err)
@@ -38,7 +37,7 @@ func TestLogin(t *testing.T) {
 	require.NoError(t, err)
 
 	disUser := &api.User{OrgId: createOrg.ID, Email: "api-session-" +
-		random.Email(), Status: common.Status_DISABLED}
+		random.Email(), Status: api.Status_DISABLED}
 	createDisUser, err := globalUserDAO.Create(ctx, disUser)
 	t.Logf("createDisUser, err: %+v, %v", createDisUser, err)
 	require.NoError(t, err)
