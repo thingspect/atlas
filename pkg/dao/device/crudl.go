@@ -7,7 +7,6 @@ import (
 	"time"
 
 	"github.com/thingspect/api/go/api"
-	"github.com/thingspect/api/go/common"
 	"github.com/thingspect/atlas/pkg/alog"
 	"github.com/thingspect/atlas/pkg/dao"
 	"google.golang.org/protobuf/types/known/timestamppb"
@@ -53,7 +52,7 @@ func (d *DAO) Read(ctx context.Context, devID, orgID string) (*api.Device,
 		return nil, dao.DBToSentinel(err)
 	}
 
-	dev.Status = common.Status(common.Status_value[status])
+	dev.Status = api.Status(api.Status_value[status])
 	dev.CreatedAt = timestamppb.New(createdAt)
 	dev.UpdatedAt = timestamppb.New(updatedAt)
 	return dev, nil
@@ -79,7 +78,7 @@ func (d *DAO) ReadByUniqID(ctx context.Context, uniqID string) (*api.Device,
 		return nil, dao.DBToSentinel(err)
 	}
 
-	dev.Status = common.Status(common.Status_value[status])
+	dev.Status = api.Status(api.Status_value[status])
 	dev.CreatedAt = timestamppb.New(createdAt)
 	dev.UpdatedAt = timestamppb.New(updatedAt)
 	return dev, nil
@@ -202,7 +201,7 @@ func (d *DAO) List(ctx context.Context, orgID string, lBoundTS time.Time,
 			return nil, 0, dao.DBToSentinel(err)
 		}
 
-		dev.Status = common.Status(common.Status_value[status])
+		dev.Status = api.Status(api.Status_value[status])
 		dev.CreatedAt = timestamppb.New(createdAt)
 		dev.UpdatedAt = timestamppb.New(updatedAt)
 		devs = append(devs, dev)

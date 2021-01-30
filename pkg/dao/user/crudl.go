@@ -6,7 +6,6 @@ import (
 	"time"
 
 	"github.com/thingspect/api/go/api"
-	"github.com/thingspect/api/go/common"
 	"github.com/thingspect/atlas/pkg/alog"
 	"github.com/thingspect/atlas/pkg/dao"
 	"google.golang.org/protobuf/types/known/timestamppb"
@@ -49,7 +48,7 @@ func (d *DAO) Read(ctx context.Context, userID, orgID string) (*api.User,
 		return nil, dao.DBToSentinel(err)
 	}
 
-	user.Status = common.Status(common.Status_value[status])
+	user.Status = api.Status(api.Status_value[status])
 	user.CreatedAt = timestamppb.New(createdAt)
 	user.UpdatedAt = timestamppb.New(updatedAt)
 	return user, nil
@@ -77,7 +76,7 @@ func (d *DAO) ReadByEmail(ctx context.Context, email,
 		return nil, nil, dao.DBToSentinel(err)
 	}
 
-	user.Status = common.Status(common.Status_value[status])
+	user.Status = api.Status(api.Status_value[status])
 	user.CreatedAt = timestamppb.New(createdAt)
 	user.UpdatedAt = timestamppb.New(updatedAt)
 	return user, passHash, nil
@@ -219,7 +218,7 @@ func (d *DAO) List(ctx context.Context, orgID string, lboundTS time.Time,
 			return nil, 0, dao.DBToSentinel(err)
 		}
 
-		user.Status = common.Status(common.Status_value[status])
+		user.Status = api.Status(api.Status_value[status])
 		user.CreatedAt = timestamppb.New(createdAt)
 		user.UpdatedAt = timestamppb.New(updatedAt)
 		users = append(users, user)

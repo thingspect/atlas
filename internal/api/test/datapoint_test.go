@@ -131,8 +131,8 @@ func TestListDataPoints(t *testing.T) {
 		defer cancel()
 
 		dev := &api.Device{UniqId: "api-point-" + random.String(16),
-			Status: []common.Status{common.Status_ACTIVE,
-				common.Status_DISABLED}[random.Intn(2)]}
+			Status: []api.Status{api.Status_ACTIVE,
+				api.Status_DISABLED}[random.Intn(2)]}
 
 		devCli := api.NewDeviceServiceClient(globalAuthGRPCConn)
 		createDev, err := devCli.CreateDevice(ctx, &api.CreateDeviceRequest{
@@ -317,8 +317,8 @@ func TestLatestDataPoints(t *testing.T) {
 		defer cancel()
 
 		dev := &api.Device{UniqId: "api-point-" + random.String(16),
-			Status: []common.Status{common.Status_ACTIVE,
-				common.Status_DISABLED}[random.Intn(2)]}
+			Status: []api.Status{api.Status_ACTIVE,
+				api.Status_DISABLED}[random.Intn(2)]}
 
 		devCli := api.NewDeviceServiceClient(globalAuthGRPCConn)
 		createDev, err := devCli.CreateDevice(ctx, &api.CreateDeviceRequest{

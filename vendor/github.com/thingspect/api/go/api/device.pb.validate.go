@@ -16,8 +16,6 @@ import (
 	"unicode/utf8"
 
 	"github.com/golang/protobuf/ptypes"
-
-	common "github.com/thingspect/api/go/common"
 )
 
 // ensure the imports are used
@@ -33,8 +31,6 @@ var (
 	_ = (*url.URL)(nil)
 	_ = (*mail.Address)(nil)
 	_ = ptypes.DynamicAny{}
-
-	_ = common.Status(0)
 )
 
 // define the regex for a UUID once up-front
@@ -61,7 +57,7 @@ func (m *Device) Validate() error {
 	if _, ok := _Device_Status_InLookup[m.GetStatus()]; !ok {
 		return DeviceValidationError{
 			field:  "Status",
-			reason: "value must be in list [1 2]",
+			reason: "value must be in list [3 6]",
 		}
 	}
 
@@ -144,9 +140,9 @@ var _ interface {
 	ErrorName() string
 } = DeviceValidationError{}
 
-var _Device_Status_InLookup = map[common.Status]struct{}{
-	1: {},
-	2: {},
+var _Device_Status_InLookup = map[Status]struct{}{
+	3: {},
+	6: {},
 }
 
 // Validate checks the field values on CreateDeviceRequest with the rules

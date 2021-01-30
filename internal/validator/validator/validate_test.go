@@ -90,7 +90,7 @@ func TestValidateMessages(t *testing.T) {
 			devicer.EXPECT().
 				ReadByUniqID(gomock.Any(), lTest.inpVIn.Point.UniqId).
 				Return(&api.Device{Id: devID, OrgId: orgID,
-					Status: common.Status_ACTIVE, Token: token}, nil).Times(1)
+					Status: api.Status_ACTIVE, Token: token}, nil).Times(1)
 
 			val := Validator{
 				devDAO:       devicer,
@@ -138,38 +138,38 @@ func TestValidateMessagesError(t *testing.T) {
 
 	tests := []struct {
 		inpVIn    *message.ValidatorIn
-		inpStatus common.Status
+		inpStatus api.Status
 		inpErr    error
 		inpTimes  int
 	}{
 		// Bad payload.
-		{nil, common.Status_ACTIVE, nil, 0},
+		{nil, api.Status_ACTIVE, nil, 0},
 		// Missing data point.
-		{&message.ValidatorIn{}, common.Status_ACTIVE, nil, 0},
+		{&message.ValidatorIn{}, api.Status_ACTIVE, nil, 0},
 		// Device not found.
-		{&message.ValidatorIn{Point: &common.DataPoint{}}, common.Status_ACTIVE,
+		{&message.ValidatorIn{Point: &common.DataPoint{}}, api.Status_ACTIVE,
 			dao.ErrNotFound, 1},
 		// Devicer error.
-		{&message.ValidatorIn{Point: &common.DataPoint{}}, common.Status_ACTIVE,
+		{&message.ValidatorIn{Point: &common.DataPoint{}}, api.Status_ACTIVE,
 			errTestProc, 1},
 		// Missing value.
-		{&message.ValidatorIn{Point: &common.DataPoint{}}, common.Status_ACTIVE,
+		{&message.ValidatorIn{Point: &common.DataPoint{}}, api.Status_ACTIVE,
 			nil, 1},
 		// Invalid org ID.
 		{&message.ValidatorIn{Point: &common.DataPoint{
 			UniqId: random.String(16), Attr: random.String(10),
 			ValOneof: &common.DataPoint_IntVal{}}, OrgId: "val-aaa"},
-			common.Status_ACTIVE, nil, 1},
+			api.Status_ACTIVE, nil, 1},
 		// Device status.
 		{&message.ValidatorIn{Point: &common.DataPoint{
 			UniqId: random.String(16), Attr: random.String(10),
 			ValOneof: &common.DataPoint_IntVal{}}, OrgId: orgID},
-			common.Status_DISABLED, nil, 1},
+			api.Status_DISABLED, nil, 1},
 		// Invalid token.
 		{&message.ValidatorIn{Point: &common.DataPoint{
 			UniqId: random.String(16), Attr: random.String(10),
 			ValOneof: &common.DataPoint_IntVal{}, Token: "val-aaa"},
-			OrgId: orgID}, common.Status_ACTIVE, nil, 1},
+			OrgId: orgID}, api.Status_ACTIVE, nil, 1},
 	}
 
 	for _, test := range tests {

@@ -11,7 +11,6 @@ import (
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/require"
 	"github.com/thingspect/api/go/api"
-	"github.com/thingspect/api/go/common"
 	"github.com/thingspect/atlas/internal/api/session"
 	"github.com/thingspect/atlas/pkg/crypto"
 	"github.com/thingspect/atlas/pkg/dao"
@@ -31,8 +30,8 @@ func TestCreateUser(t *testing.T) {
 		t.Parallel()
 
 		user := &api.User{OrgId: uuid.NewString(), Email: random.Email(),
-			Status: []common.Status{common.Status_ACTIVE,
-				common.Status_DISABLED}[random.Intn(2)]}
+			Status: []api.Status{api.Status_ACTIVE,
+				api.Status_DISABLED}[random.Intn(2)]}
 
 		ctrl := gomock.NewController(t)
 		defer ctrl.Finish()
@@ -83,8 +82,8 @@ func TestCreateUser(t *testing.T) {
 		t.Parallel()
 
 		user := &api.User{OrgId: uuid.NewString(), Email: random.String(81),
-			Status: []common.Status{common.Status_ACTIVE,
-				common.Status_DISABLED}[random.Intn(2)]}
+			Status: []api.Status{api.Status_ACTIVE,
+				api.Status_DISABLED}[random.Intn(2)]}
 
 		ctrl := gomock.NewController(t)
 		defer ctrl.Finish()
@@ -115,8 +114,8 @@ func TestGetUser(t *testing.T) {
 		t.Parallel()
 
 		user := &api.User{Id: uuid.NewString(), OrgId: uuid.NewString(),
-			Email: random.Email(), Status: []common.Status{common.Status_ACTIVE,
-				common.Status_DISABLED}[random.Intn(2)]}
+			Email: random.Email(), Status: []api.Status{api.Status_ACTIVE,
+				api.Status_DISABLED}[random.Intn(2)]}
 
 		ctrl := gomock.NewController(t)
 		defer ctrl.Finish()
@@ -194,8 +193,8 @@ func TestUpdateUser(t *testing.T) {
 		t.Parallel()
 
 		user := &api.User{Id: uuid.NewString(), OrgId: uuid.NewString(),
-			Email: random.Email(), Status: []common.Status{common.Status_ACTIVE,
-				common.Status_DISABLED}[random.Intn(2)]}
+			Email: random.Email(), Status: []api.Status{api.Status_ACTIVE,
+				api.Status_DISABLED}[random.Intn(2)]}
 
 		ctrl := gomock.NewController(t)
 		defer ctrl.Finish()
@@ -226,9 +225,9 @@ func TestUpdateUser(t *testing.T) {
 
 		user := &api.User{Id: uuid.NewString(), OrgId: uuid.NewString(),
 			Email: random.Email()}
-		part := &api.User{Id: user.Id, Status: common.Status_ACTIVE}
+		part := &api.User{Id: user.Id, Status: api.Status_ACTIVE}
 		merged := &api.User{Id: user.Id, OrgId: user.OrgId, Email: user.Email,
-			Status: common.Status_ACTIVE}
+			Status: api.Status_ACTIVE}
 
 		ctrl := gomock.NewController(t)
 		defer ctrl.Finish()
@@ -306,8 +305,8 @@ func TestUpdateUser(t *testing.T) {
 		t.Parallel()
 
 		user := &api.User{Id: uuid.NewString(), OrgId: uuid.NewString(),
-			Email: random.Email(), Status: []common.Status{
-				common.Status_ACTIVE, common.Status_DISABLED}[random.Intn(2)]}
+			Email: random.Email(), Status: []api.Status{
+				api.Status_ACTIVE, api.Status_DISABLED}[random.Intn(2)]}
 
 		ctrl := gomock.NewController(t)
 		defer ctrl.Finish()
@@ -336,7 +335,7 @@ func TestUpdateUser(t *testing.T) {
 
 		orgID := uuid.NewString()
 		part := &api.User{Id: uuid.NewString(),
-			Status: common.Status_ACTIVE}
+			Status: api.Status_ACTIVE}
 
 		ctrl := gomock.NewController(t)
 		defer ctrl.Finish()
@@ -364,8 +363,8 @@ func TestUpdateUser(t *testing.T) {
 		t.Parallel()
 
 		user := &api.User{Id: uuid.NewString(), OrgId: uuid.NewString(),
-			Email: random.String(10), Status: []common.Status{
-				common.Status_ACTIVE, common.Status_DISABLED}[random.Intn(2)]}
+			Email: random.String(10), Status: []api.Status{
+				api.Status_ACTIVE, api.Status_DISABLED}[random.Intn(2)]}
 
 		ctrl := gomock.NewController(t)
 		defer ctrl.Finish()
@@ -393,8 +392,8 @@ func TestUpdateUser(t *testing.T) {
 		t.Parallel()
 
 		user := &api.User{Id: uuid.NewString(), OrgId: uuid.NewString(),
-			Email: random.String(54) + random.Email(), Status: []common.Status{
-				common.Status_ACTIVE, common.Status_DISABLED}[random.Intn(2)]}
+			Email: random.String(54) + random.Email(), Status: []api.Status{
+				api.Status_ACTIVE, api.Status_DISABLED}[random.Intn(2)]}
 
 		ctrl := gomock.NewController(t)
 		defer ctrl.Finish()
@@ -593,14 +592,14 @@ func TestListUsers(t *testing.T) {
 
 		users := []*api.User{
 			{Id: uuid.NewString(), OrgId: orgID, Email: random.Email(),
-				Status: []common.Status{common.Status_ACTIVE,
-					common.Status_DISABLED}[random.Intn(2)]},
+				Status: []api.Status{api.Status_ACTIVE,
+					api.Status_DISABLED}[random.Intn(2)]},
 			{Id: uuid.NewString(), OrgId: orgID, Email: random.Email(),
-				Status: []common.Status{common.Status_ACTIVE,
-					common.Status_DISABLED}[random.Intn(2)]},
+				Status: []api.Status{api.Status_ACTIVE,
+					api.Status_DISABLED}[random.Intn(2)]},
 			{Id: uuid.NewString(), OrgId: orgID, Email: random.Email(),
-				Status: []common.Status{common.Status_ACTIVE,
-					common.Status_DISABLED}[random.Intn(2)]},
+				Status: []api.Status{api.Status_ACTIVE,
+					api.Status_DISABLED}[random.Intn(2)]},
 		}
 
 		ctrl := gomock.NewController(t)
@@ -637,16 +636,16 @@ func TestListUsers(t *testing.T) {
 
 		users := []*api.User{
 			{Id: uuid.NewString(), OrgId: orgID, Email: random.Email(),
-				Status: []common.Status{common.Status_ACTIVE,
-					common.Status_DISABLED}[random.Intn(2)],
+				Status: []api.Status{api.Status_ACTIVE,
+					api.Status_DISABLED}[random.Intn(2)],
 				CreatedAt: timestamppb.Now()},
 			{Id: uuid.NewString(), OrgId: orgID, Email: random.Email(),
-				Status: []common.Status{common.Status_ACTIVE,
-					common.Status_DISABLED}[random.Intn(2)],
+				Status: []api.Status{api.Status_ACTIVE,
+					api.Status_DISABLED}[random.Intn(2)],
 				CreatedAt: timestamppb.Now()},
 			{Id: uuid.NewString(), OrgId: orgID, Email: random.Email(),
-				Status: []common.Status{common.Status_ACTIVE,
-					common.Status_DISABLED}[random.Intn(2)],
+				Status: []api.Status{api.Status_ACTIVE,
+					api.Status_DISABLED}[random.Intn(2)],
 				CreatedAt: timestamppb.Now()},
 		}
 
@@ -759,16 +758,16 @@ func TestListUsers(t *testing.T) {
 
 		users := []*api.User{
 			{Id: uuid.NewString(), OrgId: orgID, Email: random.Email(),
-				Status: []common.Status{common.Status_ACTIVE,
-					common.Status_DISABLED}[random.Intn(2)],
+				Status: []api.Status{api.Status_ACTIVE,
+					api.Status_DISABLED}[random.Intn(2)],
 				CreatedAt: timestamppb.Now()},
 			{Id: "...", OrgId: orgID, Email: random.Email(),
-				Status: []common.Status{common.Status_ACTIVE,
-					common.Status_DISABLED}[random.Intn(2)],
+				Status: []api.Status{api.Status_ACTIVE,
+					api.Status_DISABLED}[random.Intn(2)],
 				CreatedAt: timestamppb.Now()},
 			{Id: uuid.NewString(), OrgId: orgID, Email: random.Email(),
-				Status: []common.Status{common.Status_ACTIVE,
-					common.Status_DISABLED}[random.Intn(2)],
+				Status: []api.Status{api.Status_ACTIVE,
+					api.Status_DISABLED}[random.Intn(2)],
 				CreatedAt: timestamppb.Now()},
 		}
 

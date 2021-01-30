@@ -11,7 +11,6 @@ import (
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/require"
 	"github.com/thingspect/api/go/api"
-	"github.com/thingspect/api/go/common"
 	"github.com/thingspect/atlas/pkg/test/random"
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/known/fieldmaskpb"
@@ -24,8 +23,8 @@ func TestCreateUser(t *testing.T) {
 		t.Parallel()
 
 		user := &api.User{Email: "api-user-" + random.Email(),
-			Status: []common.Status{common.Status_ACTIVE,
-				common.Status_DISABLED}[random.Intn(2)]}
+			Status: []api.Status{api.Status_ACTIVE,
+				api.Status_DISABLED}[random.Intn(2)]}
 
 		ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
 		defer cancel()
@@ -49,8 +48,8 @@ func TestCreateUser(t *testing.T) {
 		t.Parallel()
 
 		user := &api.User{Email: "api-user-" + random.String(10),
-			Status: []common.Status{common.Status_ACTIVE,
-				common.Status_DISABLED}[random.Intn(2)]}
+			Status: []api.Status{api.Status_ACTIVE,
+				api.Status_DISABLED}[random.Intn(2)]}
 
 		ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
 		defer cancel()
@@ -74,8 +73,8 @@ func TestGetUser(t *testing.T) {
 	defer cancel()
 
 	user := &api.User{Email: "api-user-" + random.Email(),
-		Status: []common.Status{common.Status_ACTIVE,
-			common.Status_DISABLED}[random.Intn(2)]}
+		Status: []api.Status{api.Status_ACTIVE,
+			api.Status_DISABLED}[random.Intn(2)]}
 
 	userCli := api.NewUserServiceClient(globalAuthGRPCConn)
 	createUser, err := userCli.CreateUser(ctx, &api.CreateUserRequest{
@@ -143,8 +142,8 @@ func TestUpdateUser(t *testing.T) {
 		defer cancel()
 
 		user := &api.User{Email: "api-user-" + random.Email(),
-			Status: []common.Status{common.Status_ACTIVE,
-				common.Status_DISABLED}[random.Intn(2)]}
+			Status: []api.Status{api.Status_ACTIVE,
+				api.Status_DISABLED}[random.Intn(2)]}
 
 		userCli := api.NewUserServiceClient(globalAuthGRPCConn)
 		createUser, err := userCli.CreateUser(ctx, &api.CreateUserRequest{
@@ -154,8 +153,8 @@ func TestUpdateUser(t *testing.T) {
 
 		// Update user fields.
 		createUser.Email = "api-user-" + random.Email()
-		createUser.Status = []common.Status{common.Status_ACTIVE,
-			common.Status_DISABLED}[random.Intn(2)]
+		createUser.Status = []api.Status{api.Status_ACTIVE,
+			api.Status_DISABLED}[random.Intn(2)]
 
 		updateUser, err := userCli.UpdateUser(ctx, &api.UpdateUserRequest{
 			User: createUser})
@@ -178,8 +177,8 @@ func TestUpdateUser(t *testing.T) {
 		defer cancel()
 
 		user := &api.User{Email: "api-user-" + random.Email(),
-			Status: []common.Status{common.Status_ACTIVE,
-				common.Status_DISABLED}[random.Intn(2)]}
+			Status: []api.Status{api.Status_ACTIVE,
+				api.Status_DISABLED}[random.Intn(2)]}
 
 		userCli := api.NewUserServiceClient(globalAuthGRPCConn)
 		createUser, err := userCli.CreateUser(ctx, &api.CreateUserRequest{
@@ -189,8 +188,8 @@ func TestUpdateUser(t *testing.T) {
 
 		// Update user fields.
 		part := &api.User{Id: createUser.Id, Email: "api-user-" +
-			random.Email(), Status: []common.Status{common.Status_ACTIVE,
-			common.Status_DISABLED}[random.Intn(2)]}
+			random.Email(), Status: []api.Status{api.Status_ACTIVE,
+			api.Status_DISABLED}[random.Intn(2)]}
 
 		updateUser, err := userCli.UpdateUser(ctx, &api.UpdateUserRequest{
 			User: part, UpdateMask: &fieldmaskpb.FieldMask{
@@ -267,8 +266,8 @@ func TestUpdateUser(t *testing.T) {
 		defer cancel()
 
 		unknownUser := &api.User{Id: uuid.NewString(),
-			Email: "api-user-" + random.Email(), Status: []common.Status{
-				common.Status_ACTIVE, common.Status_DISABLED}[random.Intn(2)]}
+			Email: "api-user-" + random.Email(), Status: []api.Status{
+				api.Status_ACTIVE, api.Status_DISABLED}[random.Intn(2)]}
 
 		userCli := api.NewUserServiceClient(globalAuthGRPCConn)
 		updateUser, err := userCli.UpdateUser(ctx, &api.UpdateUserRequest{
@@ -286,8 +285,8 @@ func TestUpdateUser(t *testing.T) {
 		defer cancel()
 
 		user := &api.User{Email: "api-user-" + random.Email(),
-			Status: []common.Status{common.Status_ACTIVE,
-				common.Status_DISABLED}[random.Intn(2)]}
+			Status: []api.Status{api.Status_ACTIVE,
+				api.Status_DISABLED}[random.Intn(2)]}
 
 		userCli := api.NewUserServiceClient(globalAuthGRPCConn)
 		createUser, err := userCli.CreateUser(ctx, &api.CreateUserRequest{
@@ -315,8 +314,8 @@ func TestUpdateUser(t *testing.T) {
 		defer cancel()
 
 		user := &api.User{Email: "api-user-" + random.Email(),
-			Status: []common.Status{common.Status_ACTIVE,
-				common.Status_DISABLED}[random.Intn(2)]}
+			Status: []api.Status{api.Status_ACTIVE,
+				api.Status_DISABLED}[random.Intn(2)]}
 
 		userCli := api.NewUserServiceClient(globalAuthGRPCConn)
 		createUser, err := userCli.CreateUser(ctx, &api.CreateUserRequest{
@@ -344,8 +343,8 @@ func TestUpdateUser(t *testing.T) {
 		defer cancel()
 
 		user := &api.User{Email: "api-user-" + random.Email(),
-			Status: []common.Status{common.Status_ACTIVE,
-				common.Status_DISABLED}[random.Intn(2)]}
+			Status: []api.Status{api.Status_ACTIVE,
+				api.Status_DISABLED}[random.Intn(2)]}
 
 		userCli := api.NewUserServiceClient(globalAuthGRPCConn)
 		createUser, err := userCli.CreateUser(ctx, &api.CreateUserRequest{
@@ -376,8 +375,8 @@ func TestUpdateUserPassword(t *testing.T) {
 		defer cancel()
 
 		user := &api.User{Email: "api-user-" + random.Email(),
-			Status: []common.Status{common.Status_ACTIVE,
-				common.Status_DISABLED}[random.Intn(2)]}
+			Status: []api.Status{api.Status_ACTIVE,
+				api.Status_DISABLED}[random.Intn(2)]}
 
 		userCli := api.NewUserServiceClient(globalAuthGRPCConn)
 		createUser, err := userCli.CreateUser(ctx, &api.CreateUserRequest{
@@ -398,8 +397,8 @@ func TestUpdateUserPassword(t *testing.T) {
 		defer cancel()
 
 		user := &api.User{Email: "api-user-" + random.Email(),
-			Status: []common.Status{common.Status_ACTIVE,
-				common.Status_DISABLED}[random.Intn(2)]}
+			Status: []api.Status{api.Status_ACTIVE,
+				api.Status_DISABLED}[random.Intn(2)]}
 
 		userCli := api.NewUserServiceClient(globalAuthGRPCConn)
 		createUser, err := userCli.CreateUser(ctx, &api.CreateUserRequest{
@@ -436,8 +435,8 @@ func TestUpdateUserPassword(t *testing.T) {
 		defer cancel()
 
 		user := &api.User{Email: "api-user-" + random.Email(),
-			Status: []common.Status{common.Status_ACTIVE,
-				common.Status_DISABLED}[random.Intn(2)]}
+			Status: []api.Status{api.Status_ACTIVE,
+				api.Status_DISABLED}[random.Intn(2)]}
 
 		userCli := api.NewUserServiceClient(globalAuthGRPCConn)
 		createUser, err := userCli.CreateUser(ctx, &api.CreateUserRequest{
@@ -464,8 +463,8 @@ func TestDeleteUser(t *testing.T) {
 		defer cancel()
 
 		user := &api.User{Email: "api-user-" + random.Email(),
-			Status: []common.Status{common.Status_ACTIVE,
-				common.Status_DISABLED}[random.Intn(2)]}
+			Status: []api.Status{api.Status_ACTIVE,
+				api.Status_DISABLED}[random.Intn(2)]}
 
 		userCli := api.NewUserServiceClient(globalAuthGRPCConn)
 		createUser, err := userCli.CreateUser(ctx, &api.CreateUserRequest{
@@ -516,8 +515,8 @@ func TestDeleteUser(t *testing.T) {
 		defer cancel()
 
 		user := &api.User{Email: "api-user-" + random.Email(),
-			Status: []common.Status{common.Status_ACTIVE,
-				common.Status_DISABLED}[random.Intn(2)]}
+			Status: []api.Status{api.Status_ACTIVE,
+				api.Status_DISABLED}[random.Intn(2)]}
 
 		userCli := api.NewUserServiceClient(globalAuthGRPCConn)
 		createUser, err := userCli.CreateUser(ctx, &api.CreateUserRequest{
@@ -541,11 +540,11 @@ func TestListUsers(t *testing.T) {
 	defer cancel()
 
 	userIDs := []string{}
-	userStatuses := []common.Status{}
+	userStatuses := []api.Status{}
 	for i := 0; i < 3; i++ {
 		user := &api.User{Email: "api-user-" + random.Email(),
-			Status: []common.Status{common.Status_ACTIVE,
-				common.Status_DISABLED}[random.Intn(2)]}
+			Status: []api.Status{api.Status_ACTIVE,
+				api.Status_DISABLED}[random.Intn(2)]}
 
 		userCli := api.NewUserServiceClient(globalAuthGRPCConn)
 		createUser, err := userCli.CreateUser(ctx, &api.CreateUserRequest{

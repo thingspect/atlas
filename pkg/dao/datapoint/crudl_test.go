@@ -143,8 +143,8 @@ func TestList(t *testing.T) {
 		require.NoError(t, err)
 
 		dev := &api.Device{OrgId: createOrg.ID, UniqId: "dao-point-" +
-			random.String(16), Status: []common.Status{common.Status_ACTIVE,
-			common.Status_DISABLED}[random.Intn(2)]}
+			random.String(16), Status: []api.Status{api.Status_ACTIVE,
+			api.Status_DISABLED}[random.Intn(2)]}
 		createDev, err := globalDevDAO.Create(ctx, dev)
 		t.Logf("createDev, err: %+v, %v", createDev, err)
 		require.NoError(t, err)
@@ -299,8 +299,8 @@ func TestLatest(t *testing.T) {
 		require.NoError(t, err)
 
 		dev := &api.Device{OrgId: createOrg.ID, UniqId: "dao-point-" +
-			random.String(16), Status: []common.Status{common.Status_ACTIVE,
-			common.Status_DISABLED}[random.Intn(2)]}
+			random.String(16), Status: []api.Status{api.Status_ACTIVE,
+			api.Status_DISABLED}[random.Intn(2)]}
 		createDev, err := globalDevDAO.Create(ctx, dev)
 		t.Logf("createDev, err: %+v, %v", createDev, err)
 		require.NoError(t, err)
