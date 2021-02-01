@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/thingspect/api/go/api"
+	"github.com/thingspect/api/go/common"
 	"github.com/thingspect/atlas/internal/api/session"
 	"github.com/thingspect/atlas/pkg/alog"
 	"github.com/thingspect/atlas/pkg/crypto"
@@ -48,13 +49,13 @@ func (s *Session) Login(ctx context.Context,
 		user.OrgId)
 
 	if err := crypto.CompareHashPass(hash, req.Password); err != nil ||
-		user.Status != api.Status_ACTIVE {
+		user.Status != api.Status_ACTIVE || user.Role < common.Role_VIEWER {
 		logger.Debugf("Login crypto.CompareHashPass err, user.Status: %v, %s",
 			err, user.Status)
 		return nil, status.Error(codes.Unauthenticated, "unauthorized")
 	}
 
-	token, exp, err := session.GenerateWebToken(s.pwtKey, user.Id, user.OrgId)
+	token, exp, err := session.GenerateWebToken(s.pwtKey, user)
 	if err != nil {
 		logger.Errorf("Login crypto.GenerateToken: %v", err)
 		return nil, status.Error(codes.Unauthenticated, "unauthorized")

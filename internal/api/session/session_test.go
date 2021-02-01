@@ -9,12 +9,14 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/require"
+	"github.com/thingspect/atlas/pkg/test/random"
 )
 
 func TestNewFromContext(t *testing.T) {
 	t.Parallel()
 
-	sess := &Session{UserID: uuid.NewString(), OrgID: uuid.NewString()}
+	user := random.User("session", uuid.NewString())
+	sess := &Session{UserID: user.Id, OrgID: user.OrgId, Role: user.Role}
 	t.Logf("sess: %+v", sess)
 
 	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)

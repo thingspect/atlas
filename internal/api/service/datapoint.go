@@ -56,8 +56,8 @@ func (d *DataPoint) PublishDataPoints(ctx context.Context,
 	req *api.PublishDataPointsRequest) (*empty.Empty, error) {
 	logger := alog.FromContext(ctx)
 	sess, ok := session.FromContext(ctx)
-	if !ok {
-		return nil, status.Error(codes.PermissionDenied, "permission denied")
+	if !ok || sess.Role < common.Role_BUILDER {
+		return nil, errPerm(common.Role_BUILDER)
 	}
 
 	logger.Logger = logger.WithStr("paylType", "api")
@@ -105,8 +105,8 @@ func (d *DataPoint) PublishDataPoints(ctx context.Context,
 func (d *DataPoint) ListDataPoints(ctx context.Context,
 	req *api.ListDataPointsRequest) (*api.ListDataPointsResponse, error) {
 	sess, ok := session.FromContext(ctx)
-	if !ok {
-		return nil, status.Error(codes.PermissionDenied, "permission denied")
+	if !ok || sess.Role < common.Role_VIEWER {
+		return nil, errPerm(common.Role_VIEWER)
 	}
 
 	var uniqID string
@@ -148,8 +148,8 @@ func (d *DataPoint) ListDataPoints(ctx context.Context,
 func (d *DataPoint) LatestDataPoints(ctx context.Context,
 	req *api.LatestDataPointsRequest) (*api.LatestDataPointsResponse, error) {
 	sess, ok := session.FromContext(ctx)
-	if !ok {
-		return nil, status.Error(codes.PermissionDenied, "permission denied")
+	if !ok || sess.Role < common.Role_VIEWER {
+		return nil, errPerm(common.Role_VIEWER)
 	}
 
 	var uniqID string

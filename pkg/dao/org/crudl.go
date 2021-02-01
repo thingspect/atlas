@@ -5,8 +5,10 @@ import (
 	"strings"
 	"time"
 
+	"github.com/thingspect/api/go/api"
 	"github.com/thingspect/atlas/pkg/alog"
 	"github.com/thingspect/atlas/pkg/dao"
+	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 const createOrg = `
@@ -16,17 +18,17 @@ RETURNING id
 `
 
 // Create creates an organization in the database.
-func (d *DAO) Create(ctx context.Context, org Org) (*Org, error) {
+func (d *DAO) Create(ctx context.Context, org *api.Org) (*api.Org, error) {
 	org.Name = strings.ToLower(org.Name)
 	now := time.Now().UTC().Truncate(time.Microsecond)
-	org.CreatedAt = now
-	org.UpdatedAt = now
+	org.CreatedAt = timestamppb.New(now)
+	org.UpdatedAt = timestamppb.New(now)
 
-	if err := d.pg.QueryRowContext(ctx, createOrg, org.Name, org.CreatedAt,
-		org.UpdatedAt).Scan(&org.ID); err != nil {
+	if err := d.pg.QueryRowContext(ctx, createOrg, org.Name, now,
+		now).Scan(&org.Id); err != nil {
 		return nil, dao.DBToSentinel(err)
 	}
-	return &org, nil
+	return org, nil
 }
 
 const readOrg = `
@@ -36,17 +38,18 @@ WHERE id = $1
 `
 
 // Read retrieves an organization by ID.
-func (d *DAO) Read(ctx context.Context, orgID string) (*Org, error) {
-	var org Org
+func (d *DAO) Read(ctx context.Context, orgID string) (*api.Org, error) {
+	org := &api.Org{}
+	var createdAt, updatedAt time.Time
 
-	if err := d.pg.QueryRowContext(ctx, readOrg, orgID).Scan(&org.ID, &org.Name,
-		&org.CreatedAt, &org.UpdatedAt); err != nil {
+	if err := d.pg.QueryRowContext(ctx, readOrg, orgID).Scan(&org.Id, &org.Name,
+		&createdAt, &updatedAt); err != nil {
 		return nil, dao.DBToSentinel(err)
 	}
 
-	org.CreatedAt = org.CreatedAt.In(time.UTC)
-	org.UpdatedAt = org.UpdatedAt.In(time.UTC)
-	return &org, nil
+	org.CreatedAt = timestamppb.New(createdAt)
+	org.UpdatedAt = timestamppb.New(updatedAt)
+	return org, nil
 }
 
 const updateOrg = `
@@ -58,17 +61,19 @@ RETURNING created_at
 
 // Update updates an organization in the database. CreatedAt should not
 // update, so it is safe to override it at the DAO level.
-func (d *DAO) Update(ctx context.Context, org Org) (*Org, error) {
+func (d *DAO) Update(ctx context.Context, org *api.Org) (*api.Org, error) {
 	org.Name = strings.ToLower(org.Name)
-	org.UpdatedAt = time.Now().UTC().Truncate(time.Microsecond)
+	var createdAt time.Time
+	updatedAt := time.Now().UTC().Truncate(time.Microsecond)
+	org.UpdatedAt = timestamppb.New(updatedAt)
 
-	if err := d.pg.QueryRowContext(ctx, updateOrg, org.Name, org.UpdatedAt,
-		org.ID).Scan(&org.CreatedAt); err != nil {
+	if err := d.pg.QueryRowContext(ctx, updateOrg, org.Name, updatedAt,
+		org.Id).Scan(&createdAt); err != nil {
 		return nil, dao.DBToSentinel(err)
 	}
 
-	org.CreatedAt = org.CreatedAt.In(time.UTC)
-	return &org, nil
+	org.CreatedAt = timestamppb.New(createdAt)
+	return org, nil
 }
 
 const deleteOrg = `
@@ -94,8 +99,8 @@ FROM orgs
 `
 
 // List retrieves all organizations.
-func (d *DAO) List(ctx context.Context) ([]*Org, error) {
-	var orgs []*Org
+func (d *DAO) List(ctx context.Context) ([]*api.Org, error) {
+	var orgs []*api.Org
 
 	rows, err := d.pg.QueryContext(ctx, listOrgs)
 	if err != nil {
@@ -109,15 +114,17 @@ func (d *DAO) List(ctx context.Context) ([]*Org, error) {
 	}()
 
 	for rows.Next() {
-		var org Org
-		if err = rows.Scan(&org.ID, &org.Name, &org.CreatedAt,
-			&org.UpdatedAt); err != nil {
+		org := &api.Org{}
+		var createdAt, updatedAt time.Time
+
+		if err = rows.Scan(&org.Id, &org.Name, &createdAt,
+			&updatedAt); err != nil {
 			return nil, dao.DBToSentinel(err)
 		}
 
-		org.CreatedAt = org.CreatedAt.In(time.UTC)
-		org.UpdatedAt = org.UpdatedAt.In(time.UTC)
-		orgs = append(orgs, &org)
+		org.CreatedAt = timestamppb.New(createdAt)
+		org.UpdatedAt = timestamppb.New(updatedAt)
+		orgs = append(orgs, org)
 	}
 
 	if err = rows.Close(); err != nil {

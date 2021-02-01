@@ -16,6 +16,8 @@ import (
 	"unicode/utf8"
 
 	"github.com/golang/protobuf/ptypes"
+
+	common "github.com/thingspect/api/go/common"
 )
 
 // ensure the imports are used
@@ -31,6 +33,8 @@ var (
 	_ = (*url.URL)(nil)
 	_ = (*mail.Address)(nil)
 	_ = ptypes.DynamicAny{}
+
+	_ = common.Role(0)
 )
 
 // define the regex for a UUID once up-front
@@ -52,6 +56,13 @@ func (m *User) Validate() error {
 			field:  "Email",
 			reason: "value must be a valid email address",
 			cause:  err,
+		}
+	}
+
+	if _, ok := _User_Role_InLookup[m.GetRole()]; !ok {
+		return UserValidationError{
+			field:  "Role",
+			reason: "value must be in list [3 6 9 12 15]",
 		}
 	}
 
@@ -188,6 +199,14 @@ var _ interface {
 	Cause() error
 	ErrorName() string
 } = UserValidationError{}
+
+var _User_Role_InLookup = map[common.Role]struct{}{
+	3:  {},
+	6:  {},
+	9:  {},
+	12: {},
+	15: {},
+}
 
 var _User_Status_InLookup = map[Status]struct{}{
 	3: {},

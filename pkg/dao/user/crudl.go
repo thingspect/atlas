@@ -6,14 +6,15 @@ import (
 	"time"
 
 	"github.com/thingspect/api/go/api"
+	"github.com/thingspect/api/go/common"
 	"github.com/thingspect/atlas/pkg/alog"
 	"github.com/thingspect/atlas/pkg/dao"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 const createUser = `
-INSERT INTO users (org_id, email, status, created_at, updated_at)
-VALUES ($1, $2, $3, $4, $5)
+INSERT INTO users (org_id, email, role, status, created_at, updated_at)
+VALUES ($1, $2, $3, $4, $5, $6)
 RETURNING id
 `
 
@@ -24,14 +25,15 @@ func (d *DAO) Create(ctx context.Context, user *api.User) (*api.User, error) {
 	user.UpdatedAt = timestamppb.New(now)
 
 	if err := d.pg.QueryRowContext(ctx, createUser, user.OrgId, user.Email,
-		user.Status.String(), now, now).Scan(&user.Id); err != nil {
+		user.Role.String(), user.Status.String(), now,
+		now).Scan(&user.Id); err != nil {
 		return nil, dao.DBToSentinel(err)
 	}
 	return user, nil
 }
 
 const readUser = `
-SELECT id, org_id, email, status, created_at, updated_at
+SELECT id, org_id, email, role, status, created_at, updated_at
 FROM users
 WHERE (id, org_id) = ($1, $2)
 `
@@ -40,14 +42,16 @@ WHERE (id, org_id) = ($1, $2)
 func (d *DAO) Read(ctx context.Context, userID, orgID string) (*api.User,
 	error) {
 	user := &api.User{}
-	var status string
+	var role, status string
 	var createdAt, updatedAt time.Time
 
 	if err := d.pg.QueryRowContext(ctx, readUser, userID, orgID).Scan(&user.Id,
-		&user.OrgId, &user.Email, &status, &createdAt, &updatedAt); err != nil {
+		&user.OrgId, &user.Email, &role, &status, &createdAt,
+		&updatedAt); err != nil {
 		return nil, dao.DBToSentinel(err)
 	}
 
+	user.Role = common.Role(common.Role_value[role])
 	user.Status = api.Status(api.Status_value[status])
 	user.CreatedAt = timestamppb.New(createdAt)
 	user.UpdatedAt = timestamppb.New(updatedAt)
@@ -55,7 +59,7 @@ func (d *DAO) Read(ctx context.Context, userID, orgID string) (*api.User,
 }
 
 const readUserByEmail = `
-SELECT u.id, u.org_id, u.email, u.password_hash, u.status, u.created_at,
+SELECT u.id, u.org_id, u.email, u.password_hash, u.role, u.status, u.created_at,
 u.updated_at
 FROM users u
 INNER JOIN orgs o ON u.org_id = o.id
@@ -67,15 +71,16 @@ func (d *DAO) ReadByEmail(ctx context.Context, email,
 	orgName string) (*api.User, []byte, error) {
 	user := &api.User{}
 	var passHash []byte
-	var status string
+	var role, status string
 	var createdAt, updatedAt time.Time
 
 	if err := d.pg.QueryRowContext(ctx, readUserByEmail, email, orgName).Scan(
-		&user.Id, &user.OrgId, &user.Email, &passHash, &status, &createdAt,
-		&updatedAt); err != nil {
+		&user.Id, &user.OrgId, &user.Email, &passHash, &role, &status,
+		&createdAt, &updatedAt); err != nil {
 		return nil, nil, dao.DBToSentinel(err)
 	}
 
+	user.Role = common.Role(common.Role_value[role])
 	user.Status = api.Status(api.Status_value[status])
 	user.CreatedAt = timestamppb.New(createdAt)
 	user.UpdatedAt = timestamppb.New(updatedAt)
@@ -84,8 +89,8 @@ func (d *DAO) ReadByEmail(ctx context.Context, email,
 
 const updateUser = `
 UPDATE users
-SET email = $1, status = $2, updated_at = $3
-WHERE (id, org_id) = ($4, $5)
+SET email = $1, role = $2, status = $3, updated_at = $4
+WHERE (id, org_id) = ($5, $6)
 RETURNING created_at
 `
 
@@ -97,8 +102,8 @@ func (d *DAO) Update(ctx context.Context, user *api.User) (*api.User, error) {
 	user.UpdatedAt = timestamppb.New(updatedAt)
 
 	if err := d.pg.QueryRowContext(ctx, updateUser, user.Email,
-		user.Status.String(), updatedAt, user.Id, user.OrgId).Scan(
-		&createdAt); err != nil {
+		user.Role.String(), user.Status.String(), updatedAt, user.Id,
+		user.OrgId).Scan(&createdAt); err != nil {
 		return nil, dao.DBToSentinel(err)
 	}
 
@@ -151,7 +156,7 @@ WHERE org_id = $1
 `
 
 const listUsers = `
-SELECT id, org_id, email, status, created_at, updated_at
+SELECT id, org_id, email, role, status, created_at, updated_at
 FROM users
 WHERE org_id = $1
 `
@@ -210,14 +215,15 @@ func (d *DAO) List(ctx context.Context, orgID string, lboundTS time.Time,
 
 	for rows.Next() {
 		user := &api.User{}
-		var status string
+		var role, status string
 		var createdAt, updatedAt time.Time
 
-		if err = rows.Scan(&user.Id, &user.OrgId, &user.Email, &status,
+		if err = rows.Scan(&user.Id, &user.OrgId, &user.Email, &role, &status,
 			&createdAt, &updatedAt); err != nil {
 			return nil, 0, dao.DBToSentinel(err)
 		}
 
+		user.Role = common.Role(common.Role_value[role])
 		user.Status = api.Status(api.Status_value[status])
 		user.CreatedAt = timestamppb.New(createdAt)
 		user.UpdatedAt = timestamppb.New(updatedAt)

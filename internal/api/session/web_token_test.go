@@ -11,6 +11,8 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/require"
+	"github.com/thingspect/api/go/api"
+	"github.com/thingspect/api/go/common"
 	"github.com/thingspect/atlas/api/go/token"
 	"github.com/thingspect/atlas/pkg/crypto"
 	"github.com/thingspect/atlas/pkg/test/random"
@@ -47,8 +49,9 @@ func TestGenerateToken(t *testing.T) {
 		t.Run(fmt.Sprintf("Can generate %+v", lTest), func(t *testing.T) {
 			t.Parallel()
 
-			res, exp, err := GenerateWebToken(lTest.inpKey, lTest.inpUserID,
-				lTest.inpOrgID)
+			res, exp, err := GenerateWebToken(lTest.inpKey, &api.User{
+				Id: lTest.inpUserID, OrgId: lTest.inpOrgID,
+				Role: common.Role_BUILDER})
 			t.Logf("res, exp, err: %v, %+v, %#v", res, exp, err)
 			require.GreaterOrEqual(t, len(res), lTest.resMinLen)
 			if exp != nil {
@@ -101,10 +104,8 @@ func TestValidateToken(t *testing.T) {
 		t.Run(fmt.Sprintf("Can validate %+v", lTest), func(t *testing.T) {
 			t.Parallel()
 
-			userID := uuid.NewString()
-			orgID := uuid.NewString()
-
-			resGen, exp, err := GenerateWebToken(lTest.inpKey, userID, orgID)
+			user := random.User("webtoken", uuid.NewString())
+			resGen, exp, err := GenerateWebToken(lTest.inpKey, user)
 			t.Logf("resGen, exp, err: %v, %v, %v", resGen, exp, err)
 			require.NoError(t, err)
 
@@ -117,8 +118,9 @@ func TestValidateToken(t *testing.T) {
 			}
 			t.Logf("resVal, err: %+v, %v", resVal, err)
 			if resVal != nil {
-				require.Equal(t, userID, resVal.UserID)
-				require.Equal(t, orgID, resVal.OrgID)
+				require.Equal(t, user.Id, resVal.UserID)
+				require.Equal(t, user.OrgId, resVal.OrgID)
+				require.Equal(t, user.Role, resVal.Role)
 			}
 			if lTest.err == "" {
 				require.NoError(t, err)

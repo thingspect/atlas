@@ -194,7 +194,7 @@ func TestNSQRequeue(t *testing.T) {
 		t.Logf("Ack msg.Topic, msg.Payload: %v, %x", msg.Topic(), msg.Payload())
 		require.Equal(t, topic, msg.Topic())
 		require.Equal(t, payload, msg.Payload())
-	case <-time.After(10 * time.Second):
+	case <-time.After(15 * time.Second):
 		t.Fatal("Ack message timed out")
 	}
 }

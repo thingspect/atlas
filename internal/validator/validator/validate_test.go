@@ -28,10 +28,9 @@ func TestValidateMessages(t *testing.T) {
 
 	uniqID := random.String(16)
 	now := timestamppb.New(time.Now().Add(-15 * time.Minute))
-	token := uuid.NewString()
+	dev := random.Device("val", uuid.NewString())
+	dev.Status = api.Status_ACTIVE
 	traceID := uuid.NewString()
-	orgID := uuid.NewString()
-	devID := uuid.NewString()
 	boolVal := &common.DataPoint_BoolVal{BoolVal: []bool{true,
 		false}[random.Intn(2)]}
 
@@ -41,31 +40,31 @@ func TestValidateMessages(t *testing.T) {
 	}{
 		{&message.ValidatorIn{Point: &common.DataPoint{UniqId: uniqID,
 			Attr: "motion", ValOneof: &common.DataPoint_IntVal{IntVal: 123},
-			Ts: now, Token: token, TraceId: traceID}, OrgId: orgID},
+			Ts: now, Token: dev.Token, TraceId: traceID}, OrgId: dev.OrgId},
 			&message.ValidatorOut{Point: &common.DataPoint{UniqId: uniqID,
 				Attr: "motion", ValOneof: &common.DataPoint_IntVal{IntVal: 123},
-				Ts: now, Token: token, TraceId: traceID}, OrgId: orgID,
-				DevId: devID}},
+				Ts: now, Token: dev.Token, TraceId: traceID}, OrgId: dev.OrgId,
+				DevId: dev.Id}},
 		{&message.ValidatorIn{Point: &common.DataPoint{UniqId: uniqID,
 			Attr: "temp", ValOneof: &common.DataPoint_Fl64Val{Fl64Val: 9.3},
-			Ts: now, Token: token, TraceId: traceID}, OrgId: orgID},
+			Ts: now, Token: dev.Token, TraceId: traceID}, OrgId: dev.OrgId},
 			&message.ValidatorOut{Point: &common.DataPoint{UniqId: uniqID,
 				Attr: "temp", ValOneof: &common.DataPoint_Fl64Val{Fl64Val: 9.3},
-				Ts: now, Token: token, TraceId: traceID}, OrgId: orgID,
-				DevId: devID}},
+				Ts: now, Token: dev.Token, TraceId: traceID}, OrgId: dev.OrgId,
+				DevId: dev.Id}},
 		{&message.ValidatorIn{Point: &common.DataPoint{UniqId: uniqID,
 			Attr: "power", ValOneof: &common.DataPoint_StrVal{StrVal: "batt"},
-			Ts: now, Token: token, TraceId: traceID}, OrgId: orgID},
+			Ts: now, Token: dev.Token, TraceId: traceID}, OrgId: dev.OrgId},
 			&message.ValidatorOut{Point: &common.DataPoint{UniqId: uniqID,
 				Attr: "power", ValOneof: &common.DataPoint_StrVal{
-					StrVal: "batt"}, Ts: now, Token: token, TraceId: traceID},
-				OrgId: orgID, DevId: devID}},
+					StrVal: "batt"}, Ts: now, Token: dev.Token, TraceId: traceID},
+				OrgId: dev.OrgId, DevId: dev.Id}},
 		{&message.ValidatorIn{Point: &common.DataPoint{UniqId: uniqID,
 			Attr: "leak", ValOneof: boolVal, Ts: now, TraceId: traceID},
-			OrgId: orgID, SkipToken: true},
+			OrgId: dev.OrgId, SkipToken: true},
 			&message.ValidatorOut{Point: &common.DataPoint{UniqId: uniqID,
 				Attr: "leak", ValOneof: boolVal, Ts: now, TraceId: traceID},
-				OrgId: orgID, DevId: devID}},
+				OrgId: dev.OrgId, DevId: dev.Id}},
 	}
 
 	for _, test := range tests {
@@ -87,10 +86,8 @@ func TestValidateMessages(t *testing.T) {
 			defer ctrl.Finish()
 
 			devicer := NewMockdevicer(ctrl)
-			devicer.EXPECT().
-				ReadByUniqID(gomock.Any(), lTest.inpVIn.Point.UniqId).
-				Return(&api.Device{Id: devID, OrgId: orgID,
-					Status: api.Status_ACTIVE, Token: token}, nil).Times(1)
+			devicer.EXPECT().ReadByUniqID(gomock.Any(),
+				lTest.inpVIn.Point.UniqId).Return(dev, nil).Times(1)
 
 			val := Validator{
 				devDAO:       devicer,
@@ -134,7 +131,7 @@ func TestValidateMessages(t *testing.T) {
 func TestValidateMessagesError(t *testing.T) {
 	t.Parallel()
 
-	orgID := uuid.NewString()
+	dev := random.Device("val", uuid.NewString())
 
 	tests := []struct {
 		inpVIn    *message.ValidatorIn
@@ -163,13 +160,13 @@ func TestValidateMessagesError(t *testing.T) {
 		// Device status.
 		{&message.ValidatorIn{Point: &common.DataPoint{
 			UniqId: random.String(16), Attr: random.String(10),
-			ValOneof: &common.DataPoint_IntVal{}}, OrgId: orgID},
+			ValOneof: &common.DataPoint_IntVal{}}, OrgId: dev.OrgId},
 			api.Status_DISABLED, nil, 1},
 		// Invalid token.
 		{&message.ValidatorIn{Point: &common.DataPoint{
 			UniqId: random.String(16), Attr: random.String(10),
 			ValOneof: &common.DataPoint_IntVal{}, Token: "val-aaa"},
-			OrgId: orgID}, api.Status_ACTIVE, nil, 1},
+			OrgId: dev.OrgId}, api.Status_ACTIVE, nil, 1},
 	}
 
 	for _, test := range tests {
@@ -177,6 +174,9 @@ func TestValidateMessagesError(t *testing.T) {
 
 		t.Run(fmt.Sprintf("Cannot validate %+v", lTest), func(t *testing.T) {
 			t.Parallel()
+
+			lDev := proto.Clone(dev).(*api.Device)
+			lDev.Status = lTest.inpStatus
 
 			vInQueue := queue.NewFake()
 			vInSub, err := vInQueue.Subscribe("")
@@ -190,11 +190,8 @@ func TestValidateMessagesError(t *testing.T) {
 			defer ctrl.Finish()
 
 			devicer := NewMockdevicer(ctrl)
-			devicer.EXPECT().
-				ReadByUniqID(gomock.Any(), gomock.Any()).
-				Return(&api.Device{Id: uuid.NewString(), OrgId: orgID,
-					Status: lTest.inpStatus, Token: uuid.NewString()},
-					lTest.inpErr).Times(lTest.inpTimes)
+			devicer.EXPECT().ReadByUniqID(gomock.Any(), gomock.Any()).
+				Return(lDev, lTest.inpErr).Times(lTest.inpTimes)
 
 			val := Validator{
 				devDAO:       devicer,

@@ -22,20 +22,18 @@ func TestCreateDevice(t *testing.T) {
 	t.Run("Create valid device", func(t *testing.T) {
 		t.Parallel()
 
-		dev := &api.Device{UniqId: "api-device-" + random.String(16),
-			Status: []api.Status{api.Status_ACTIVE,
-				api.Status_DISABLED}[random.Intn(2)]}
+		dev := random.Device("api-device", uuid.NewString())
 
 		ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
 		defer cancel()
 
-		devCli := api.NewDeviceServiceClient(globalAuthGRPCConn)
+		devCli := api.NewDeviceServiceClient(globalAdminGRPCConn)
 		createDev, err := devCli.CreateDevice(ctx, &api.CreateDeviceRequest{
 			Device: dev})
 		t.Logf("createDev, err: %+v, %v", createDev, err)
 		require.NoError(t, err)
 		require.NotNil(t, createDev)
-		require.Equal(t, globalAuthOrgID, createDev.OrgId)
+		require.Equal(t, globalAdminOrgID, createDev.OrgId)
 		require.Equal(t, dev.UniqId, createDev.UniqId)
 		require.Equal(t, dev.Status, createDev.Status)
 		require.WithinDuration(t, time.Now(), createDev.CreatedAt.AsTime(),
@@ -47,20 +45,19 @@ func TestCreateDevice(t *testing.T) {
 	t.Run("Create valid device with uppercase UniqId", func(t *testing.T) {
 		t.Parallel()
 
-		dev := &api.Device{UniqId: strings.ToUpper("api-device-" +
-			random.String(16)), Status: []api.Status{api.Status_ACTIVE,
-			api.Status_DISABLED}[random.Intn(2)]}
+		dev := random.Device("api-device", uuid.NewString())
+		dev.UniqId = strings.ToUpper(dev.UniqId)
 
 		ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
 		defer cancel()
 
-		devCli := api.NewDeviceServiceClient(globalAuthGRPCConn)
+		devCli := api.NewDeviceServiceClient(globalAdminGRPCConn)
 		createDev, err := devCli.CreateDevice(ctx, &api.CreateDeviceRequest{
 			Device: dev})
 		t.Logf("createDev, err: %+v, %v", createDev, err)
 		require.NoError(t, err)
 		require.NotNil(t, createDev)
-		require.Equal(t, globalAuthOrgID, createDev.OrgId)
+		require.Equal(t, globalAdminOrgID, createDev.OrgId)
 		require.Equal(t, strings.ToLower(dev.UniqId), createDev.UniqId)
 		require.Equal(t, dev.Status, createDev.Status)
 		require.WithinDuration(t, time.Now(), createDev.CreatedAt.AsTime(),
@@ -72,14 +69,13 @@ func TestCreateDevice(t *testing.T) {
 	t.Run("Create invalid device", func(t *testing.T) {
 		t.Parallel()
 
-		dev := &api.Device{UniqId: "api-device-" + random.String(40),
-			Status: []api.Status{api.Status_ACTIVE,
-				api.Status_DISABLED}[random.Intn(2)]}
+		dev := random.Device("api-device", uuid.NewString())
+		dev.UniqId = "api-device-" + random.String(40)
 
 		ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
 		defer cancel()
 
-		devCli := api.NewDeviceServiceClient(globalAuthGRPCConn)
+		devCli := api.NewDeviceServiceClient(globalAdminGRPCConn)
 		createDev, err := devCli.CreateDevice(ctx, &api.CreateDeviceRequest{
 			Device: dev})
 		t.Logf("createDev, err: %+v, %v", createDev, err)
@@ -89,6 +85,21 @@ func TestCreateDevice(t *testing.T) {
 			"validation | caused by: invalid Device.UniqId: value length must "+
 			"be between 5 and 40 runes, inclusive")
 	})
+
+	t.Run("Create valid device with insufficient role", func(t *testing.T) {
+		t.Parallel()
+
+		ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
+		defer cancel()
+
+		devCli := api.NewDeviceServiceClient(secondaryViewerGRPCConn)
+		createDev, err := devCli.CreateDevice(ctx, &api.CreateDeviceRequest{
+			Device: random.Device("api-device", uuid.NewString())})
+		t.Logf("createDev, err: %+v, %v", createDev, err)
+		require.Nil(t, createDev)
+		require.EqualError(t, err, "rpc error: code = PermissionDenied desc = "+
+			"permission denied, BUILDER role required")
+	})
 }
 
 func TestGetDevice(t *testing.T) {
@@ -97,13 +108,9 @@ func TestGetDevice(t *testing.T) {
 	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
 	defer cancel()
 
-	dev := &api.Device{UniqId: "api-device-" + random.String(16),
-		Status: []api.Status{api.Status_ACTIVE,
-			api.Status_DISABLED}[random.Intn(2)]}
-
-	devCli := api.NewDeviceServiceClient(globalAuthGRPCConn)
+	devCli := api.NewDeviceServiceClient(globalAdminGRPCConn)
 	createDev, err := devCli.CreateDevice(ctx, &api.CreateDeviceRequest{
-		Device: dev})
+		Device: random.Device("api-device", uuid.NewString())})
 	t.Logf("createDev, err: %+v, %v", createDev, err)
 	require.NoError(t, err)
 
@@ -113,7 +120,7 @@ func TestGetDevice(t *testing.T) {
 		ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
 		defer cancel()
 
-		devCli := api.NewDeviceServiceClient(globalAuthGRPCConn)
+		devCli := api.NewDeviceServiceClient(globalAdminGRPCConn)
 		getDev, err := devCli.GetDevice(ctx, &api.GetDeviceRequest{
 			Id: createDev.Id})
 		t.Logf("getDev, err: %+v, %v", getDev, err)
@@ -132,7 +139,7 @@ func TestGetDevice(t *testing.T) {
 		ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
 		defer cancel()
 
-		devCli := api.NewDeviceServiceClient(globalAuthGRPCConn)
+		devCli := api.NewDeviceServiceClient(globalAdminGRPCConn)
 		getDev, err := devCli.GetDevice(ctx, &api.GetDeviceRequest{
 			Id: uuid.NewString()})
 		t.Logf("getDev, err: %+v, %v", getDev, err)
@@ -147,7 +154,7 @@ func TestGetDevice(t *testing.T) {
 		ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
 		defer cancel()
 
-		secCli := api.NewDeviceServiceClient(secondaryAuthGRPCConn)
+		secCli := api.NewDeviceServiceClient(secondaryAdminGRPCConn)
 		getDev, err := secCli.GetDevice(ctx, &api.GetDeviceRequest{
 			Id: createDev.Id})
 		t.Logf("getDev, err: %+v, %v", getDev, err)
@@ -166,20 +173,15 @@ func TestUpdateDevice(t *testing.T) {
 		ctx, cancel := context.WithTimeout(context.Background(), 4*time.Second)
 		defer cancel()
 
-		dev := &api.Device{UniqId: "api-device-" + random.String(16),
-			Status: []api.Status{api.Status_ACTIVE,
-				api.Status_DISABLED}[random.Intn(2)]}
-
-		devCli := api.NewDeviceServiceClient(globalAuthGRPCConn)
+		devCli := api.NewDeviceServiceClient(globalAdminGRPCConn)
 		createDev, err := devCli.CreateDevice(ctx, &api.CreateDeviceRequest{
-			Device: dev})
+			Device: random.Device("api-device", uuid.NewString())})
 		t.Logf("createDev, err: %+v, %v", createDev, err)
 		require.NoError(t, err)
 
 		// Update device fields.
 		createDev.UniqId = "api-device-" + random.String(16)
-		createDev.Status = []api.Status{api.Status_ACTIVE,
-			api.Status_DISABLED}[random.Intn(2)]
+		createDev.Status = api.Status_DISABLED
 
 		updateDev, err := devCli.UpdateDevice(ctx, &api.UpdateDeviceRequest{
 			Device: createDev})
@@ -201,20 +203,15 @@ func TestUpdateDevice(t *testing.T) {
 		ctx, cancel := context.WithTimeout(context.Background(), 4*time.Second)
 		defer cancel()
 
-		dev := &api.Device{UniqId: "api-device-" + random.String(16),
-			Status: []api.Status{api.Status_ACTIVE,
-				api.Status_DISABLED}[random.Intn(2)]}
-
-		devCli := api.NewDeviceServiceClient(globalAuthGRPCConn)
+		devCli := api.NewDeviceServiceClient(globalAdminGRPCConn)
 		createDev, err := devCli.CreateDevice(ctx, &api.CreateDeviceRequest{
-			Device: dev})
+			Device: random.Device("api-device", uuid.NewString())})
 		t.Logf("createDev, err: %+v, %v", createDev, err)
 		require.NoError(t, err)
 
 		// Update device fields.
 		part := &api.Device{Id: createDev.Id, UniqId: "api-device-" +
-			random.String(16), Status: []api.Status{api.Status_ACTIVE,
-			api.Status_DISABLED}[random.Intn(2)]}
+			random.String(16), Status: api.Status_DISABLED}
 
 		updateDev, err := devCli.UpdateDevice(ctx, &api.UpdateDeviceRequest{
 			Device: part, UpdateMask: &fieldmaskpb.FieldMask{
@@ -231,13 +228,28 @@ func TestUpdateDevice(t *testing.T) {
 			updateDev.UpdatedAt.AsTime(), 2*time.Second)
 	})
 
+	t.Run("Update device with insufficient role", func(t *testing.T) {
+		t.Parallel()
+
+		ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
+		defer cancel()
+
+		devCli := api.NewDeviceServiceClient(secondaryViewerGRPCConn)
+		updateDev, err := devCli.UpdateDevice(ctx, &api.UpdateDeviceRequest{
+			Device: random.Device("api-device", uuid.NewString())})
+		t.Logf("updateDev, err: %+v, %v", updateDev, err)
+		require.Nil(t, updateDev)
+		require.EqualError(t, err, "rpc error: code = PermissionDenied desc = "+
+			"permission denied, BUILDER role required")
+	})
+
 	t.Run("Update nil device", func(t *testing.T) {
 		t.Parallel()
 
 		ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
 		defer cancel()
 
-		devCli := api.NewDeviceServiceClient(globalAuthGRPCConn)
+		devCli := api.NewDeviceServiceClient(globalAdminGRPCConn)
 		updateDev, err := devCli.UpdateDevice(ctx, &api.UpdateDeviceRequest{
 			Device: nil})
 		t.Logf("updateDev, err: %+v, %v", updateDev, err)
@@ -252,14 +264,10 @@ func TestUpdateDevice(t *testing.T) {
 		ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
 		defer cancel()
 
-		unknownDevice := &api.Device{Id: uuid.NewString(),
-			UniqId: "api-device-" + random.String(16),
-			Token:  uuid.NewString()}
-
-		devCli := api.NewDeviceServiceClient(globalAuthGRPCConn)
+		devCli := api.NewDeviceServiceClient(globalAdminGRPCConn)
 		updateDev, err := devCli.UpdateDevice(ctx, &api.UpdateDeviceRequest{
-			Device: unknownDevice, UpdateMask: &fieldmaskpb.FieldMask{
-				Paths: []string{"aaa"}}})
+			Device:     random.Device("api-device", uuid.NewString()),
+			UpdateMask: &fieldmaskpb.FieldMask{Paths: []string{"aaa"}}})
 		t.Logf("updateDev, err: %+v, %v", updateDev, err)
 		require.Nil(t, updateDev)
 		require.EqualError(t, err, "rpc error: code = InvalidArgument desc = "+
@@ -272,13 +280,10 @@ func TestUpdateDevice(t *testing.T) {
 		ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
 		defer cancel()
 
-		unknownDevice := &api.Device{Id: uuid.NewString(),
-			UniqId: "api-device-" + random.String(16),
-			Token:  uuid.NewString()}
-
-		devCli := api.NewDeviceServiceClient(globalAuthGRPCConn)
+		devCli := api.NewDeviceServiceClient(globalAdminGRPCConn)
 		updateDev, err := devCli.UpdateDevice(ctx, &api.UpdateDeviceRequest{
-			Device: unknownDevice, UpdateMask: &fieldmaskpb.FieldMask{
+			Device: random.Device("api-device", uuid.NewString()),
+			UpdateMask: &fieldmaskpb.FieldMask{
 				Paths: []string{"uniq_id", "token"}}})
 		t.Logf("updateDev, err: %+v, %v", updateDev, err)
 		require.Nil(t, updateDev)
@@ -292,14 +297,9 @@ func TestUpdateDevice(t *testing.T) {
 		ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
 		defer cancel()
 
-		unknownDevice := &api.Device{Id: uuid.NewString(),
-			UniqId: "api-device-" + random.String(16), Status: []api.Status{
-				api.Status_ACTIVE, api.Status_DISABLED}[random.Intn(2)],
-			Token: uuid.NewString()}
-
-		devCli := api.NewDeviceServiceClient(globalAuthGRPCConn)
+		devCli := api.NewDeviceServiceClient(globalAdminGRPCConn)
 		updateDev, err := devCli.UpdateDevice(ctx, &api.UpdateDeviceRequest{
-			Device: unknownDevice})
+			Device: random.Device("api-device", uuid.NewString())})
 		t.Logf("updateDev, err: %+v, %v", updateDev, err)
 		require.Nil(t, updateDev)
 		require.EqualError(t, err, "rpc error: code = NotFound desc = object "+
@@ -312,13 +312,9 @@ func TestUpdateDevice(t *testing.T) {
 		ctx, cancel := context.WithTimeout(context.Background(), 4*time.Second)
 		defer cancel()
 
-		dev := &api.Device{UniqId: "api-device-" + random.String(16),
-			Status: []api.Status{api.Status_ACTIVE,
-				api.Status_DISABLED}[random.Intn(2)]}
-
-		devCli := api.NewDeviceServiceClient(globalAuthGRPCConn)
+		devCli := api.NewDeviceServiceClient(globalAdminGRPCConn)
 		createDev, err := devCli.CreateDevice(ctx, &api.CreateDeviceRequest{
-			Device: dev})
+			Device: random.Device("api-device", uuid.NewString())})
 		t.Logf("createDev, err: %+v, %v", createDev, err)
 		require.NoError(t, err)
 
@@ -326,7 +322,7 @@ func TestUpdateDevice(t *testing.T) {
 		createDev.OrgId = uuid.NewString()
 		createDev.UniqId = "api-device-" + random.String(16)
 
-		secCli := api.NewDeviceServiceClient(secondaryAuthGRPCConn)
+		secCli := api.NewDeviceServiceClient(secondaryAdminGRPCConn)
 		updateDev, err := secCli.UpdateDevice(ctx, &api.UpdateDeviceRequest{
 			Device: createDev})
 		t.Logf("updateDev, err: %+v, %v", updateDev, err)
@@ -341,13 +337,9 @@ func TestUpdateDevice(t *testing.T) {
 		ctx, cancel := context.WithTimeout(context.Background(), 4*time.Second)
 		defer cancel()
 
-		dev := &api.Device{UniqId: "api-device-" + random.String(16),
-			Status: []api.Status{api.Status_ACTIVE,
-				api.Status_DISABLED}[random.Intn(2)]}
-
-		devCli := api.NewDeviceServiceClient(globalAuthGRPCConn)
+		devCli := api.NewDeviceServiceClient(globalAdminGRPCConn)
 		createDev, err := devCli.CreateDevice(ctx, &api.CreateDeviceRequest{
-			Device: dev})
+			Device: random.Device("api-device", uuid.NewString())})
 		t.Logf("createDev, err: %+v, %v", createDev, err)
 		require.NoError(t, err)
 
@@ -370,13 +362,9 @@ func TestUpdateDevice(t *testing.T) {
 		ctx, cancel := context.WithTimeout(context.Background(), 4*time.Second)
 		defer cancel()
 
-		dev := &api.Device{UniqId: "api-device-" + random.String(16),
-			Status: []api.Status{api.Status_ACTIVE,
-				api.Status_DISABLED}[random.Intn(2)]}
-
-		devCli := api.NewDeviceServiceClient(globalAuthGRPCConn)
+		devCli := api.NewDeviceServiceClient(globalAdminGRPCConn)
 		createDev, err := devCli.CreateDevice(ctx, &api.CreateDeviceRequest{
-			Device: dev})
+			Device: random.Device("api-device", uuid.NewString())})
 		t.Logf("createDev, err: %+v, %v", createDev, err)
 		require.NoError(t, err)
 
@@ -401,13 +389,9 @@ func TestDeleteDevice(t *testing.T) {
 		ctx, cancel := context.WithTimeout(context.Background(), 4*time.Second)
 		defer cancel()
 
-		dev := &api.Device{UniqId: "api-device-" + random.String(16),
-			Status: []api.Status{api.Status_ACTIVE,
-				api.Status_DISABLED}[random.Intn(2)]}
-
-		devCli := api.NewDeviceServiceClient(globalAuthGRPCConn)
+		devCli := api.NewDeviceServiceClient(globalAdminGRPCConn)
 		createDev, err := devCli.CreateDevice(ctx, &api.CreateDeviceRequest{
-			Device: dev})
+			Device: random.Device("api-device", uuid.NewString())})
 		t.Logf("createDev, err: %+v, %v", createDev, err)
 		require.NoError(t, err)
 
@@ -423,7 +407,7 @@ func TestDeleteDevice(t *testing.T) {
 				2*time.Second)
 			defer cancel()
 
-			devCli := api.NewDeviceServiceClient(globalAuthGRPCConn)
+			devCli := api.NewDeviceServiceClient(globalAdminGRPCConn)
 			getDev, err := devCli.GetDevice(ctx, &api.GetDeviceRequest{
 				Id: createDev.Id})
 			t.Logf("getDev, err: %+v, %v", getDev, err)
@@ -433,13 +417,27 @@ func TestDeleteDevice(t *testing.T) {
 		})
 	})
 
+	t.Run("Delete device with insufficient role", func(t *testing.T) {
+		t.Parallel()
+
+		ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
+		defer cancel()
+
+		devCli := api.NewDeviceServiceClient(secondaryViewerGRPCConn)
+		_, err := devCli.DeleteDevice(ctx, &api.DeleteDeviceRequest{
+			Id: uuid.NewString()})
+		t.Logf("err: %v", err)
+		require.EqualError(t, err, "rpc error: code = PermissionDenied desc = "+
+			"permission denied, BUILDER role required")
+	})
+
 	t.Run("Delete device by unknown ID", func(t *testing.T) {
 		t.Parallel()
 
 		ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
 		defer cancel()
 
-		devCli := api.NewDeviceServiceClient(globalAuthGRPCConn)
+		devCli := api.NewDeviceServiceClient(globalAdminGRPCConn)
 		_, err := devCli.DeleteDevice(ctx, &api.DeleteDeviceRequest{
 			Id: uuid.NewString()})
 		t.Logf("err: %v", err)
@@ -453,17 +451,13 @@ func TestDeleteDevice(t *testing.T) {
 		ctx, cancel := context.WithTimeout(context.Background(), 4*time.Second)
 		defer cancel()
 
-		dev := &api.Device{UniqId: "api-device-" + random.String(16),
-			Status: []api.Status{api.Status_ACTIVE,
-				api.Status_DISABLED}[random.Intn(2)]}
-
-		devCli := api.NewDeviceServiceClient(globalAuthGRPCConn)
+		devCli := api.NewDeviceServiceClient(globalAdminGRPCConn)
 		createDev, err := devCli.CreateDevice(ctx, &api.CreateDeviceRequest{
-			Device: dev})
+			Device: random.Device("api-device", uuid.NewString())})
 		t.Logf("createDev, err: %+v, %v", createDev, err)
 		require.NoError(t, err)
 
-		secCli := api.NewDeviceServiceClient(secondaryAuthGRPCConn)
+		secCli := api.NewDeviceServiceClient(secondaryAdminGRPCConn)
 		_, err = secCli.DeleteDevice(ctx, &api.DeleteDeviceRequest{
 			Id: createDev.Id})
 		t.Logf("err: %v", err)
@@ -481,15 +475,12 @@ func TestListDevices(t *testing.T) {
 	devIDs := []string{}
 	devStatuses := []api.Status{}
 	for i := 0; i < 3; i++ {
-		dev := &api.Device{UniqId: "api-device-" + random.String(16),
-			Status: []api.Status{api.Status_ACTIVE,
-				api.Status_DISABLED}[random.Intn(2)]}
-
-		devCli := api.NewDeviceServiceClient(globalAuthGRPCConn)
+		devCli := api.NewDeviceServiceClient(globalAdminGRPCConn)
 		createDev, err := devCli.CreateDevice(ctx, &api.CreateDeviceRequest{
-			Device: dev})
+			Device: random.Device("api-device", uuid.NewString())})
 		t.Logf("createDev, err: %+v, %v", createDev, err)
 		require.NoError(t, err)
+
 		devIDs = append(devIDs, createDev.Id)
 		devStatuses = append(devStatuses, createDev.Status)
 	}
@@ -500,7 +491,7 @@ func TestListDevices(t *testing.T) {
 		ctx, cancel := context.WithTimeout(context.Background(), 4*time.Second)
 		defer cancel()
 
-		devCli := api.NewDeviceServiceClient(globalAuthGRPCConn)
+		devCli := api.NewDeviceServiceClient(globalAdminGRPCConn)
 		listDevs, err := devCli.ListDevices(ctx, &api.ListDevicesRequest{})
 		t.Logf("listDevs, err: %+v, %v", listDevs, err)
 		require.NoError(t, err)
@@ -523,8 +514,9 @@ func TestListDevices(t *testing.T) {
 		ctx, cancel := context.WithTimeout(context.Background(), 8*time.Second)
 		defer cancel()
 
-		devCli := api.NewDeviceServiceClient(globalAuthGRPCConn)
-		listDevs, err := devCli.ListDevices(ctx, &api.ListDevicesRequest{PageSize: 2})
+		devCli := api.NewDeviceServiceClient(globalAdminGRPCConn)
+		listDevs, err := devCli.ListDevices(ctx, &api.ListDevicesRequest{
+			PageSize: 2})
 		t.Logf("listDevs, err: %+v, %v", listDevs, err)
 		require.NoError(t, err)
 		require.Len(t, listDevs.Devices, 2)
@@ -532,8 +524,8 @@ func TestListDevices(t *testing.T) {
 		require.NotEmpty(t, listDevs.NextPageToken)
 		require.GreaterOrEqual(t, listDevs.TotalSize, int32(3))
 
-		nextDevs, err := devCli.ListDevices(ctx, &api.ListDevicesRequest{PageSize: 2,
-			PageToken: listDevs.NextPageToken})
+		nextDevs, err := devCli.ListDevices(ctx, &api.ListDevicesRequest{
+			PageSize: 2, PageToken: listDevs.NextPageToken})
 		t.Logf("nextDevs, err: %+v, %v", nextDevs, err)
 		require.NoError(t, err)
 		require.GreaterOrEqual(t, len(nextDevs.Devices), 1)
@@ -547,7 +539,7 @@ func TestListDevices(t *testing.T) {
 		ctx, cancel := context.WithTimeout(context.Background(), 4*time.Second)
 		defer cancel()
 
-		secCli := api.NewDeviceServiceClient(secondaryAuthGRPCConn)
+		secCli := api.NewDeviceServiceClient(secondaryAdminGRPCConn)
 		listDevs, err := secCli.ListDevices(ctx, &api.ListDevicesRequest{})
 		t.Logf("listDevs, err: %+v, %v", listDevs, err)
 		require.NoError(t, err)
@@ -561,7 +553,7 @@ func TestListDevices(t *testing.T) {
 		ctx, cancel := context.WithTimeout(context.Background(), 4*time.Second)
 		defer cancel()
 
-		devCli := api.NewDeviceServiceClient(globalAuthGRPCConn)
+		devCli := api.NewDeviceServiceClient(globalAdminGRPCConn)
 		listDevs, err := devCli.ListDevices(ctx, &api.ListDevicesRequest{
 			PageToken: "..."})
 		t.Logf("listDevs, err: %+v, %v", listDevs, err)

@@ -13,14 +13,12 @@ import (
 	"github.com/thingspect/api/go/api"
 	"github.com/thingspect/api/go/common"
 	"github.com/thingspect/atlas/api/go/message"
-	"github.com/thingspect/atlas/pkg/dao/org"
 	"github.com/thingspect/atlas/pkg/test/random"
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 func TestValidateMessages(t *testing.T) {
-	uniqID := "val-" + random.String(16)
 	now := timestamppb.New(time.Now().Add(-15 * time.Minute))
 	traceID := uuid.NewString()
 	boolVal := &common.DataPoint_BoolVal{BoolVal: []bool{true,
@@ -29,13 +27,12 @@ func TestValidateMessages(t *testing.T) {
 	ctx, cancel := context.WithTimeout(context.Background(), 4*time.Second)
 	defer cancel()
 
-	org := org.Org{Name: "val-" + random.String(10)}
-	createOrg, err := globalOrgDAO.Create(ctx, org)
+	createOrg, err := globalOrgDAO.Create(ctx, random.Org("val"))
 	t.Logf("createOrg, err: %+v, %v", createOrg, err)
 	require.NoError(t, err)
 
-	dev := &api.Device{OrgId: createOrg.ID, UniqId: uniqID,
-		Status: api.Status_ACTIVE}
+	dev := random.Device("val", createOrg.Id)
+	dev.Status = api.Status_ACTIVE
 	createDev, err := globalDevDAO.Create(ctx, dev)
 	t.Logf("createDev, err: %+v, %v", createDev, err)
 	require.NoError(t, err)
@@ -44,36 +41,40 @@ func TestValidateMessages(t *testing.T) {
 		inpVIn *message.ValidatorIn
 		res    *message.ValidatorOut
 	}{
-		{&message.ValidatorIn{Point: &common.DataPoint{UniqId: uniqID,
+		{&message.ValidatorIn{Point: &common.DataPoint{UniqId: createDev.UniqId,
 			Attr: "val-motion", ValOneof: &common.DataPoint_IntVal{IntVal: 123},
 			Ts: now, Token: createDev.Token, TraceId: traceID},
-			OrgId: createOrg.ID},
-			&message.ValidatorOut{Point: &common.DataPoint{UniqId: uniqID,
-				Attr: "val-motion", ValOneof: &common.DataPoint_IntVal{
-					IntVal: 123}, Ts: now, Token: createDev.Token,
-				TraceId: traceID}, OrgId: createOrg.ID, DevId: createDev.Id}},
-		{&message.ValidatorIn{Point: &common.DataPoint{UniqId: uniqID,
+			OrgId: createOrg.Id},
+			&message.ValidatorOut{Point: &common.DataPoint{
+				UniqId: createDev.UniqId, Attr: "val-motion",
+				ValOneof: &common.DataPoint_IntVal{IntVal: 123}, Ts: now,
+				Token: createDev.Token, TraceId: traceID}, OrgId: createOrg.Id,
+				DevId: createDev.Id}},
+		{&message.ValidatorIn{Point: &common.DataPoint{UniqId: createDev.UniqId,
 			Attr: "val-temp", ValOneof: &common.DataPoint_Fl64Val{Fl64Val: 9.3},
 			Ts: now, Token: createDev.Token, TraceId: traceID},
-			OrgId: createOrg.ID},
-			&message.ValidatorOut{Point: &common.DataPoint{UniqId: uniqID,
-				Attr: "val-temp", ValOneof: &common.DataPoint_Fl64Val{
-					Fl64Val: 9.3}, Ts: now, Token: createDev.Token,
-				TraceId: traceID}, OrgId: createOrg.ID, DevId: createDev.Id}},
-		{&message.ValidatorIn{Point: &common.DataPoint{UniqId: uniqID,
+			OrgId: createOrg.Id},
+			&message.ValidatorOut{Point: &common.DataPoint{
+				UniqId: createDev.UniqId, Attr: "val-temp",
+				ValOneof: &common.DataPoint_Fl64Val{Fl64Val: 9.3}, Ts: now,
+				Token: createDev.Token, TraceId: traceID}, OrgId: createOrg.Id,
+				DevId: createDev.Id}},
+		{&message.ValidatorIn{Point: &common.DataPoint{UniqId: createDev.UniqId,
 			Attr: "val-power", ValOneof: &common.DataPoint_StrVal{
 				StrVal: "batt"}, Ts: now, Token: createDev.Token,
-			TraceId: traceID}, OrgId: createOrg.ID},
-			&message.ValidatorOut{Point: &common.DataPoint{UniqId: uniqID,
-				Attr: "val-power", ValOneof: &common.DataPoint_StrVal{
-					StrVal: "batt"}, Ts: now, Token: createDev.Token,
-				TraceId: traceID}, OrgId: createOrg.ID, DevId: createDev.Id}},
-		{&message.ValidatorIn{Point: &common.DataPoint{UniqId: uniqID,
+			TraceId: traceID}, OrgId: createOrg.Id},
+			&message.ValidatorOut{Point: &common.DataPoint{
+				UniqId: createDev.UniqId, Attr: "val-power",
+				ValOneof: &common.DataPoint_StrVal{StrVal: "batt"}, Ts: now,
+				Token: createDev.Token, TraceId: traceID}, OrgId: createOrg.Id,
+				DevId: createDev.Id}},
+		{&message.ValidatorIn{Point: &common.DataPoint{UniqId: createDev.UniqId,
 			Attr: "val-leak", ValOneof: boolVal, Ts: now, TraceId: traceID},
-			OrgId: createOrg.ID, SkipToken: true},
-			&message.ValidatorOut{Point: &common.DataPoint{UniqId: uniqID,
-				Attr: "val-leak", ValOneof: boolVal, Ts: now, TraceId: traceID},
-				OrgId: createOrg.ID, DevId: createDev.Id}},
+			OrgId: createOrg.Id, SkipToken: true},
+			&message.ValidatorOut{Point: &common.DataPoint{
+				UniqId: createDev.UniqId, Attr: "val-leak",
+				ValOneof: boolVal, Ts: now, TraceId: traceID},
+				OrgId: createOrg.Id, DevId: createDev.Id}},
 	}
 
 	for _, test := range tests {
@@ -116,19 +117,18 @@ func TestValidateMessagesError(t *testing.T) {
 	ctx, cancel := context.WithTimeout(context.Background(), 6*time.Second)
 	defer cancel()
 
-	org := org.Org{Name: "val-" + random.String(10)}
-	createOrg, err := globalOrgDAO.Create(ctx, org)
+	createOrg, err := globalOrgDAO.Create(ctx, random.Org("val"))
 	t.Logf("createOrg, err: %+v, %v", createOrg, err)
 	require.NoError(t, err)
 
-	dev := &api.Device{OrgId: createOrg.ID, UniqId: uniqID,
-		Status: api.Status_ACTIVE}
+	dev := random.Device("val", createOrg.Id)
+	dev.Status = api.Status_ACTIVE
 	createDev, err := globalDevDAO.Create(ctx, dev)
 	t.Logf("createDev, err: %+v, %v", createDev, err)
 	require.NoError(t, err)
 
-	disDev := &api.Device{OrgId: createOrg.ID, UniqId: disUniqID,
-		Status: api.Status_DISABLED}
+	disDev := random.Device("val", createOrg.Id)
+	dev.Status = api.Status_DISABLED
 	createDisDev, err := globalDevDAO.Create(ctx, disDev)
 	t.Logf("createDisDev, err: %+v, %v", createDisDev, err)
 	require.NoError(t, err)
@@ -151,11 +151,11 @@ func TestValidateMessagesError(t *testing.T) {
 		// Device disabled.
 		{&message.ValidatorIn{Point: &common.DataPoint{UniqId: disUniqID,
 			Attr: random.String(10), ValOneof: &common.DataPoint_IntVal{}},
-			OrgId: createOrg.ID}},
+			OrgId: createOrg.Id}},
 		// Invalid token.
 		{&message.ValidatorIn{Point: &common.DataPoint{UniqId: uniqID,
 			Attr: random.String(10), ValOneof: &common.DataPoint_IntVal{},
-			Token: "val-aaa"}, OrgId: createOrg.ID}},
+			Token: "val-aaa"}, OrgId: createOrg.Id}},
 	}
 
 	for _, test := range tests {

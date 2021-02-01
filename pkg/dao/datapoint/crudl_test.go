@@ -11,10 +11,8 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/require"
-	"github.com/thingspect/api/go/api"
 	"github.com/thingspect/api/go/common"
 	"github.com/thingspect/atlas/pkg/dao"
-	"github.com/thingspect/atlas/pkg/dao/org"
 	"github.com/thingspect/atlas/pkg/test/random"
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/known/timestamppb"
@@ -137,15 +135,12 @@ func TestList(t *testing.T) {
 		ctx, cancel := context.WithTimeout(context.Background(), 4*time.Second)
 		defer cancel()
 
-		org := org.Org{Name: "dao-point-" + random.String(10)}
-		createOrg, err := globalOrgDAO.Create(ctx, org)
+		createOrg, err := globalOrgDAO.Create(ctx, random.Org("dao-device"))
 		t.Logf("createOrg, err: %+v, %v", createOrg, err)
 		require.NoError(t, err)
 
-		dev := &api.Device{OrgId: createOrg.ID, UniqId: "dao-point-" +
-			random.String(16), Status: []api.Status{api.Status_ACTIVE,
-			api.Status_DISABLED}[random.Intn(2)]}
-		createDev, err := globalDevDAO.Create(ctx, dev)
+		createDev, err := globalDevDAO.Create(ctx, random.Device("dao-point",
+			createOrg.Id))
 		t.Logf("createDev, err: %+v, %v", createDev, err)
 		require.NoError(t, err)
 
@@ -180,7 +175,7 @@ func TestList(t *testing.T) {
 				time.Millisecond))
 			time.Sleep(time.Millisecond)
 
-			err := globalDPDAO.Create(ctx, point, createOrg.ID)
+			err := globalDPDAO.Create(ctx, point, createOrg.Id)
 			t.Logf("err: %v", err)
 			require.NoError(t, err)
 		}
@@ -193,7 +188,7 @@ func TestList(t *testing.T) {
 		defer cancel()
 
 		// Verify results by UniqID.
-		listPointsUniqID, err := globalDPDAO.List(ctx, createOrg.ID,
+		listPointsUniqID, err := globalDPDAO.List(ctx, createOrg.Id,
 			createDev.UniqId, "", "", points[0].Ts.AsTime(),
 			points[len(points)-1].Ts.AsTime().Add(-time.Millisecond))
 		t.Logf("listPointsUniqID, err: %+v, %v", listPointsUniqID, err)
@@ -210,7 +205,7 @@ func TestList(t *testing.T) {
 		}
 
 		// Verify results by dev ID without oldest point.
-		listPointsDevID, err := globalDPDAO.List(ctx, createOrg.ID, "",
+		listPointsDevID, err := globalDPDAO.List(ctx, createOrg.Id, "",
 			createDev.Id, "", points[0].Ts.AsTime(),
 			points[len(points)-1].Ts.AsTime())
 		t.Logf("listPointsDevID, err: %+v, %v", listPointsDevID, err)
@@ -227,7 +222,7 @@ func TestList(t *testing.T) {
 		}
 
 		// Verify results by UniqID and attribute.
-		listPointsUniqID, err = globalDPDAO.List(ctx, createOrg.ID,
+		listPointsUniqID, err = globalDPDAO.List(ctx, createOrg.Id,
 			createDev.UniqId, "", "motion", points[0].Ts.AsTime(),
 			points[len(points)-1].Ts.AsTime().Add(-time.Millisecond))
 		t.Logf("listPointsUniqID, err: %+v, %v", listPointsUniqID, err)
@@ -293,15 +288,12 @@ func TestLatest(t *testing.T) {
 		ctx, cancel := context.WithTimeout(context.Background(), 4*time.Second)
 		defer cancel()
 
-		org := org.Org{Name: "dao-point-" + random.String(10)}
-		createOrg, err := globalOrgDAO.Create(ctx, org)
+		createOrg, err := globalOrgDAO.Create(ctx, random.Org("dao-device"))
 		t.Logf("createOrg, err: %+v, %v", createOrg, err)
 		require.NoError(t, err)
 
-		dev := &api.Device{OrgId: createOrg.ID, UniqId: "dao-point-" +
-			random.String(16), Status: []api.Status{api.Status_ACTIVE,
-			api.Status_DISABLED}[random.Intn(2)]}
-		createDev, err := globalDevDAO.Create(ctx, dev)
+		createDev, err := globalDevDAO.Create(ctx, random.Device("dao-point",
+			createOrg.Id))
 		t.Logf("createDev, err: %+v, %v", createDev, err)
 		require.NoError(t, err)
 
@@ -334,7 +326,7 @@ func TestLatest(t *testing.T) {
 					time.Millisecond))
 				time.Sleep(time.Millisecond)
 
-				err := globalDPDAO.Create(ctx, point, createOrg.ID)
+				err := globalDPDAO.Create(ctx, point, createOrg.Id)
 				t.Logf("err: %v", err)
 				require.NoError(t, err)
 			}
@@ -348,7 +340,7 @@ func TestLatest(t *testing.T) {
 		defer cancel()
 
 		// Verify results by UniqID.
-		latPointsUniqID, err := globalDPDAO.Latest(ctx, createOrg.ID,
+		latPointsUniqID, err := globalDPDAO.Latest(ctx, createOrg.Id,
 			createDev.UniqId, "")
 		t.Logf("latPointsUniqID, err: %+v, %v", latPointsUniqID, err)
 		require.NoError(t, err)
@@ -364,7 +356,7 @@ func TestLatest(t *testing.T) {
 		}
 
 		// Verify results by dev ID.
-		latPointsDevID, err := globalDPDAO.Latest(ctx, createOrg.ID, "",
+		latPointsDevID, err := globalDPDAO.Latest(ctx, createOrg.Id, "",
 			createDev.Id)
 		t.Logf("latPointsDevID, err: %+v, %v", latPointsDevID, err)
 		require.NoError(t, err)

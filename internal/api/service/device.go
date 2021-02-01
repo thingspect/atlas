@@ -9,6 +9,7 @@ import (
 	"github.com/golang/protobuf/ptypes/empty"
 	"github.com/mennanov/fmutils"
 	"github.com/thingspect/api/go/api"
+	"github.com/thingspect/api/go/common"
 	"github.com/thingspect/atlas/internal/api/session"
 	"github.com/thingspect/atlas/pkg/alog"
 	"google.golang.org/grpc"
@@ -47,8 +48,8 @@ func (d *Device) CreateDevice(ctx context.Context,
 	req *api.CreateDeviceRequest) (*api.Device, error) {
 	logger := alog.FromContext(ctx)
 	sess, ok := session.FromContext(ctx)
-	if !ok {
-		return nil, status.Error(codes.PermissionDenied, "permission denied")
+	if !ok || sess.Role < common.Role_BUILDER {
+		return nil, errPerm(common.Role_BUILDER)
 	}
 
 	req.Device.OrgId = sess.OrgID
@@ -69,8 +70,8 @@ func (d *Device) CreateDevice(ctx context.Context,
 func (d *Device) GetDevice(ctx context.Context,
 	req *api.GetDeviceRequest) (*api.Device, error) {
 	sess, ok := session.FromContext(ctx)
-	if !ok {
-		return nil, status.Error(codes.PermissionDenied, "permission denied")
+	if !ok || sess.Role < common.Role_VIEWER {
+		return nil, errPerm(common.Role_VIEWER)
 	}
 
 	dev, err := d.devDAO.Read(ctx, req.Id, sess.OrgID)
@@ -81,12 +82,13 @@ func (d *Device) GetDevice(ctx context.Context,
 	return dev, nil
 }
 
-// UpdateDevice updates a device.
+// UpdateDevice updates a device. Update actions validate after merge to support
+// partial updates.
 func (d *Device) UpdateDevice(ctx context.Context,
 	req *api.UpdateDeviceRequest) (*api.Device, error) {
 	sess, ok := session.FromContext(ctx)
-	if !ok {
-		return nil, status.Error(codes.PermissionDenied, "permission denied")
+	if !ok || sess.Role < common.Role_BUILDER {
+		return nil, errPerm(common.Role_BUILDER)
 	}
 
 	if req.Device == nil {
@@ -131,8 +133,8 @@ func (d *Device) DeleteDevice(ctx context.Context,
 	req *api.DeleteDeviceRequest) (*empty.Empty, error) {
 	logger := alog.FromContext(ctx)
 	sess, ok := session.FromContext(ctx)
-	if !ok {
-		return nil, status.Error(codes.PermissionDenied, "permission denied")
+	if !ok || sess.Role < common.Role_BUILDER {
+		return nil, errPerm(common.Role_BUILDER)
 	}
 
 	if err := d.devDAO.Delete(ctx, req.Id, sess.OrgID); err != nil {
@@ -151,8 +153,8 @@ func (d *Device) ListDevices(ctx context.Context,
 	req *api.ListDevicesRequest) (*api.ListDevicesResponse, error) {
 	logger := alog.FromContext(ctx)
 	sess, ok := session.FromContext(ctx)
-	if !ok {
-		return nil, status.Error(codes.PermissionDenied, "permission denied")
+	if !ok || sess.Role < common.Role_VIEWER {
+		return nil, errPerm(common.Role_VIEWER)
 	}
 
 	if req.PageSize == 0 {

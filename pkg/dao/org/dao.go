@@ -1,3 +1,5 @@
+// Package org provides functions to query and modify organizations in the
+// database.
 package org
 
 import (
