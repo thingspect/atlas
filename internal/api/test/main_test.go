@@ -8,6 +8,7 @@ import (
 	"os"
 	"testing"
 
+	"github.com/thingspect/api/go/common"
 	"github.com/thingspect/atlas/internal/api/api"
 	"github.com/thingspect/atlas/internal/api/config"
 	"github.com/thingspect/atlas/pkg/crypto"
@@ -31,10 +32,11 @@ var (
 	// globalHash is stored globally for test performance under -race.
 	globalHash []byte
 
-	globalNoAuthGRPCConn  *grpc.ClientConn
-	globalAuthGRPCConn    *grpc.ClientConn
-	globalAuthOrgID       string
-	secondaryAuthGRPCConn *grpc.ClientConn
+	globalNoAuthGRPCConn    *grpc.ClientConn
+	globalAdminGRPCConn     *grpc.ClientConn
+	globalAdminOrgID        string
+	secondaryAdminGRPCConn  *grpc.ClientConn
+	secondaryViewerGRPCConn *grpc.ClientConn
 
 	globalPubTopic string
 	globalPubSub   queue.Subber
@@ -97,16 +99,22 @@ func TestMain(m *testing.M) {
 	}
 
 	// Build authenticated gRPC connections.
-	globalAuthOrgID, globalAuthGRPCConn, err = authGRPCConn(api.GRPCHost +
-		api.GRPCPort)
+	globalAdminOrgID, globalAdminGRPCConn, err = authGRPCConn(api.GRPCHost+
+		api.GRPCPort, common.Role_ADMIN)
 	if err != nil {
-		log.Fatalf("TestMain globalAuthGRPCConn authGRPCConn: %v", err)
+		log.Fatalf("TestMain globalAdminOrgID authGRPCConn: %v", err)
 	}
 
-	_, secondaryAuthGRPCConn, err = authGRPCConn(api.GRPCHost +
-		api.GRPCPort)
+	_, secondaryAdminGRPCConn, err = authGRPCConn(api.GRPCHost+api.GRPCPort,
+		common.Role_ADMIN)
 	if err != nil {
-		log.Fatalf("TestMain secondaryAuthGRPCConn authGRPCConn: %v", err)
+		log.Fatalf("TestMain secondaryAdminGRPCConn authGRPCConn: %v", err)
+	}
+
+	_, secondaryViewerGRPCConn, err = authGRPCConn(api.GRPCHost+api.GRPCPort,
+		common.Role_VIEWER)
+	if err != nil {
+		log.Fatalf("TestMain secondaryViewerGRPCConn authGRPCConn: %v", err)
 	}
 
 	// Set up NSQ subscription to verify published messages. Use a unique

@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/google/uuid"
+	"github.com/thingspect/api/go/api"
 	"github.com/thingspect/atlas/api/go/token"
 	"github.com/thingspect/atlas/pkg/crypto"
 	"google.golang.org/protobuf/proto"
@@ -20,15 +21,15 @@ var errWebTokenExp = errors.New("crypto: token expired")
 // GenerateWebToken generates an encrypted protobuf web token in raw (no
 // padding) base64 format. It returns the token, expiration time, and an error
 // value.
-func GenerateWebToken(key []byte, userID, orgID string) (string,
+func GenerateWebToken(key []byte, user *api.User) (string,
 	*timestamppb.Timestamp, error) {
-	// Convert userID and orgID to byte slices.
-	userUUID, err := uuid.Parse(userID)
+	// Convert user.Id and user.OrgId to byte slices.
+	userUUID, err := uuid.Parse(user.Id)
 	if err != nil {
 		return "", nil, err
 	}
 
-	orgUUID, err := uuid.Parse(orgID)
+	orgUUID, err := uuid.Parse(user.OrgId)
 	if err != nil {
 		return "", nil, err
 	}
@@ -42,6 +43,7 @@ func GenerateWebToken(key []byte, userID, orgID string) (string,
 	pwt := &token.Web{
 		UserId:    userUUID[:],
 		OrgId:     orgUUID[:],
+		Role:      user.Role,
 		ExpiresAt: exp,
 	}
 
@@ -94,5 +96,6 @@ func ValidateWebToken(key []byte, ciphertoken string) (*Session, error) {
 	return &Session{
 		UserID: userUUID.String(),
 		OrgID:  orgUUID.String(),
+		Role:   pwt.Role,
 	}, nil
 }

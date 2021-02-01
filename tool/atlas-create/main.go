@@ -9,6 +9,7 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/thingspect/api/go/api"
+	"github.com/thingspect/api/go/common"
 	"github.com/thingspect/atlas/pkg/crypto"
 	"github.com/thingspect/atlas/pkg/dao/org"
 	"github.com/thingspect/atlas/pkg/dao/user"
@@ -20,7 +21,7 @@ const usage = `Usage:
 %[1]s uuid
 %[1]s uniqid
 %[1]s [options] org <org name> <admin email> <admin password>
-%[1]s [options] user <org ID> <user email> <user password>
+%[1]s [options] user <org ID> <admin email> <admin password>
 `
 
 func main() {
@@ -70,10 +71,9 @@ func main() {
 		ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
 		defer cancel()
 
-		org := org.Org{Name: flag.Arg(1)}
-		createOrg, err := orgDAO.Create(ctx, org)
+		createOrg, err := orgDAO.Create(ctx, &api.Org{Name: flag.Arg(1)})
 		checkErr(err)
-		orgID = createOrg.ID
+		orgID = createOrg.Id
 		fmt.Fprintf(os.Stdout, "Org: %+v\n", createOrg)
 		fallthrough
 	// Create user.
@@ -84,8 +84,12 @@ func main() {
 		ctx, cancel := context.WithTimeout(context.Background(), 6*time.Second)
 		defer cancel()
 
-		user := &api.User{OrgId: orgID, Email: flag.Arg(2),
-			Status: api.Status_ACTIVE}
+		user := &api.User{
+			OrgId:  orgID,
+			Email:  flag.Arg(2),
+			Role:   common.Role_ADMIN,
+			Status: api.Status_ACTIVE,
+		}
 		createUser, err := userDAO.Create(ctx, user)
 		checkErr(err)
 

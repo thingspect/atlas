@@ -2,12 +2,17 @@
 // sessions and tokens for authentication.
 package session
 
-import "context"
+import (
+	"context"
+
+	"github.com/thingspect/api/go/common"
+)
 
 // Session represents user information as retrieved from an encrypted web token.
 type Session struct {
 	UserID string
 	OrgID  string
+	Role   common.Role
 }
 
 // sessionKey is the key for Session values in Contexts. It is unexported,

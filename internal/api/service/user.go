@@ -9,6 +9,7 @@ import (
 	"github.com/golang/protobuf/ptypes/empty"
 	"github.com/mennanov/fmutils"
 	"github.com/thingspect/api/go/api"
+	"github.com/thingspect/api/go/common"
 	"github.com/thingspect/atlas/internal/api/session"
 	"github.com/thingspect/atlas/pkg/alog"
 	"github.com/thingspect/atlas/pkg/crypto"
@@ -52,8 +53,8 @@ func (u *User) CreateUser(ctx context.Context,
 	req *api.CreateUserRequest) (*api.User, error) {
 	logger := alog.FromContext(ctx)
 	sess, ok := session.FromContext(ctx)
-	if !ok {
-		return nil, status.Error(codes.PermissionDenied, "permission denied")
+	if !ok || sess.Role < common.Role_ADMIN {
+		return nil, errPerm(common.Role_ADMIN)
 	}
 
 	req.User.OrgId = sess.OrgID
@@ -74,8 +75,8 @@ func (u *User) CreateUser(ctx context.Context,
 func (u *User) GetUser(ctx context.Context,
 	req *api.GetUserRequest) (*api.User, error) {
 	sess, ok := session.FromContext(ctx)
-	if !ok {
-		return nil, status.Error(codes.PermissionDenied, "permission denied")
+	if !ok || (sess.Role < common.Role_ADMIN && req.Id != sess.UserID) {
+		return nil, errPerm(common.Role_ADMIN)
 	}
 
 	user, err := u.userDAO.Read(ctx, req.Id, sess.OrgID)
@@ -86,18 +87,23 @@ func (u *User) GetUser(ctx context.Context,
 	return user, nil
 }
 
-// UpdateUser updates a user.
+// UpdateUser updates a user. Update actions validate after merge to support
+// partial updates.
 func (u *User) UpdateUser(ctx context.Context,
 	req *api.UpdateUserRequest) (*api.User, error) {
 	sess, ok := session.FromContext(ctx)
 	if !ok {
-		return nil, status.Error(codes.PermissionDenied, "permission denied")
+		return nil, errPerm(common.Role_ADMIN)
 	}
 
 	if req.User == nil {
 		return nil, status.Error(codes.InvalidArgument, req.Validate().Error())
 	}
 	req.User.OrgId = sess.OrgID
+
+	if sess.Role < common.Role_ADMIN && req.User.Id != sess.UserID {
+		return nil, errPerm(common.Role_ADMIN)
+	}
 
 	// Perform partial update if directed.
 	if req.UpdateMask != nil && len(req.UpdateMask.Paths) > 0 {
@@ -136,8 +142,8 @@ func (u *User) UpdateUserPassword(ctx context.Context,
 	req *api.UpdateUserPasswordRequest) (*empty.Empty, error) {
 	logger := alog.FromContext(ctx)
 	sess, ok := session.FromContext(ctx)
-	if !ok {
-		return nil, status.Error(codes.PermissionDenied, "permission denied")
+	if !ok || (sess.Role < common.Role_ADMIN && req.Id != sess.UserID) {
+		return nil, errPerm(common.Role_ADMIN)
 	}
 
 	if err := crypto.CheckPass(req.Password); err != nil {
@@ -163,8 +169,8 @@ func (u *User) DeleteUser(ctx context.Context,
 	req *api.DeleteUserRequest) (*empty.Empty, error) {
 	logger := alog.FromContext(ctx)
 	sess, ok := session.FromContext(ctx)
-	if !ok {
-		return nil, status.Error(codes.PermissionDenied, "permission denied")
+	if !ok || sess.Role < common.Role_ADMIN {
+		return nil, errPerm(common.Role_ADMIN)
 	}
 
 	if err := u.userDAO.Delete(ctx, req.Id, sess.OrgID); err != nil {
@@ -184,7 +190,20 @@ func (u *User) ListUsers(ctx context.Context,
 	logger := alog.FromContext(ctx)
 	sess, ok := session.FromContext(ctx)
 	if !ok {
-		return nil, status.Error(codes.PermissionDenied, "permission denied")
+		return nil, errPerm(common.Role_ADMIN)
+	}
+
+	// If the user does not have sufficient role, return only their user.
+	if sess.Role < common.Role_ADMIN {
+		user, err := u.userDAO.Read(ctx, sess.UserID, sess.OrgID)
+		if err != nil {
+			return nil, errToStatus(err)
+		}
+
+		return &api.ListUsersResponse{
+			Users:     []*api.User{user},
+			TotalSize: 1,
+		}, nil
 	}
 
 	if req.PageSize == 0 {

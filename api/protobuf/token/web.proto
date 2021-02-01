@@ -1,6 +1,7 @@
 syntax = "proto3";
 package token;
 
+import "common/role.proto";
 import "google/protobuf/timestamp.proto";
 
 option go_package = "github.com/thingspect/atlas/api/go/token";
@@ -13,6 +14,9 @@ message Web {
   // Organization ID (UUID).
   bytes org_id = 2;
 
+  // User role.
+  common.Role role = 3;
+
   // Web token expiration timestamp. Nanos should be zeroed for compactness.
-  google.protobuf.Timestamp expires_at = 3;
+  google.protobuf.Timestamp expires_at = 4;
 }

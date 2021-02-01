@@ -56,10 +56,7 @@ func TestStatusCode(t *testing.T) {
 
 		ctrl := gomock.NewController(t)
 		defer ctrl.Finish()
-
 		respWriter := NewMockResponseWriter(ctrl)
-		respWriter.EXPECT().Header().Times(0)
-		respWriter.EXPECT().WriteHeader(gomock.Any()).Times(0)
 
 		ctx, cancel := context.WithTimeout(runtime.NewServerMetadataContext(
 			context.Background(), runtime.ServerMetadata{HeaderMD: mdHeader}),
@@ -84,10 +81,7 @@ func TestStatusCode(t *testing.T) {
 
 		ctrl := gomock.NewController(t)
 		defer ctrl.Finish()
-
 		respWriter := NewMockResponseWriter(ctrl)
-		respWriter.EXPECT().Header().Times(0)
-		respWriter.EXPECT().WriteHeader(gomock.Any()).Times(0)
 
 		ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
 		defer cancel()
@@ -111,10 +105,7 @@ func TestStatusCode(t *testing.T) {
 
 		ctrl := gomock.NewController(t)
 		defer ctrl.Finish()
-
 		respWriter := NewMockResponseWriter(ctrl)
-		respWriter.EXPECT().Header().Times(0)
-		respWriter.EXPECT().WriteHeader(gomock.Any()).Times(0)
 
 		ctx, cancel := context.WithTimeout(runtime.NewServerMetadataContext(
 			context.Background(), runtime.ServerMetadata{HeaderMD: mdHeader}),

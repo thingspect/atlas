@@ -23,14 +23,14 @@ func TestCreate(t *testing.T) {
 		ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
 		defer cancel()
 
-		org := Org{Name: "dao-org-" + random.String(10)}
+		org := random.Org("dao-org")
 		createOrg, err := globalOrgDAO.Create(ctx, org)
 		t.Logf("createOrg, err: %+v, %v", createOrg, err)
 		require.NoError(t, err)
 		require.Equal(t, org.Name, createOrg.Name)
-		require.WithinDuration(t, time.Now(), createOrg.CreatedAt,
+		require.WithinDuration(t, time.Now(), createOrg.CreatedAt.AsTime(),
 			2*time.Second)
-		require.WithinDuration(t, time.Now(), createOrg.UpdatedAt,
+		require.WithinDuration(t, time.Now(), createOrg.UpdatedAt.AsTime(),
 			2*time.Second)
 	})
 
@@ -40,14 +40,15 @@ func TestCreate(t *testing.T) {
 		ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
 		defer cancel()
 
-		org := Org{Name: strings.ToUpper("dao-org-" + random.String(10))}
+		org := random.Org("dao-org")
+		org.Name = strings.ToUpper(org.Name)
 		createOrg, err := globalOrgDAO.Create(ctx, org)
 		t.Logf("createOrg, err: %+v, %v", createOrg, err)
 		require.NoError(t, err)
 		require.Equal(t, strings.ToLower(org.Name), createOrg.Name)
-		require.WithinDuration(t, time.Now(), createOrg.CreatedAt,
+		require.WithinDuration(t, time.Now(), createOrg.CreatedAt.AsTime(),
 			2*time.Second)
-		require.WithinDuration(t, time.Now(), createOrg.UpdatedAt,
+		require.WithinDuration(t, time.Now(), createOrg.UpdatedAt.AsTime(),
 			2*time.Second)
 	})
 
@@ -57,7 +58,8 @@ func TestCreate(t *testing.T) {
 		ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
 		defer cancel()
 
-		org := Org{Name: "dao-org-" + random.String(40)}
+		org := random.Org("dao-org")
+		org.Name = "dao-org-" + random.String(40)
 		createOrg, err := globalOrgDAO.Create(ctx, org)
 		t.Logf("createOrg, err: %+v, %v", createOrg, err)
 		require.Nil(t, createOrg)
@@ -71,8 +73,7 @@ func TestRead(t *testing.T) {
 	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
 	defer cancel()
 
-	org := Org{Name: "dao-org-" + random.String(10)}
-	createOrg, err := globalOrgDAO.Create(ctx, org)
+	createOrg, err := globalOrgDAO.Create(ctx, random.Org("dao-org"))
 	t.Logf("createOrg, err: %+v, %v", createOrg, err)
 	require.NoError(t, err)
 
@@ -82,7 +83,7 @@ func TestRead(t *testing.T) {
 		ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
 		defer cancel()
 
-		readOrg, err := globalOrgDAO.Read(ctx, createOrg.ID)
+		readOrg, err := globalOrgDAO.Read(ctx, createOrg.Id)
 		t.Logf("readOrg, err: %+v, %v", readOrg, err)
 		require.NoError(t, err)
 		require.Equal(t, createOrg, readOrg)
@@ -122,22 +123,22 @@ func TestUpdate(t *testing.T) {
 		ctx, cancel := context.WithTimeout(context.Background(), 4*time.Second)
 		defer cancel()
 
-		org := Org{Name: "dao-org-" + random.String(10)}
-		createOrg, err := globalOrgDAO.Create(ctx, org)
+		createOrg, err := globalOrgDAO.Create(ctx, random.Org("dao-org"))
 		t.Logf("createOrg, err: %+v, %v", createOrg, err)
 		require.NoError(t, err)
 
 		// Update org fields.
 		createOrg.Name = "dao-org-" + random.String(10)
 
-		updateOrg, err := globalOrgDAO.Update(ctx, *createOrg)
+		updateOrg, err := globalOrgDAO.Update(ctx, createOrg)
 		t.Logf("updateOrg, err: %+v, %v", updateOrg, err)
 		require.NoError(t, err)
 		require.Equal(t, createOrg.Name, updateOrg.Name)
 		require.Equal(t, createOrg.CreatedAt, updateOrg.CreatedAt)
-		require.True(t, updateOrg.UpdatedAt.After(updateOrg.CreatedAt))
-		require.WithinDuration(t, createOrg.CreatedAt, updateOrg.UpdatedAt,
-			2*time.Second)
+		require.True(t, updateOrg.UpdatedAt.AsTime().After(
+			updateOrg.CreatedAt.AsTime()))
+		require.WithinDuration(t, createOrg.CreatedAt.AsTime(),
+			updateOrg.UpdatedAt.AsTime(), 2*time.Second)
 	})
 
 	t.Run("Update unknown org", func(t *testing.T) {
@@ -146,8 +147,7 @@ func TestUpdate(t *testing.T) {
 		ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
 		defer cancel()
 
-		unknownOrg := Org{ID: uuid.NewString()}
-		updateOrg, err := globalOrgDAO.Update(ctx, unknownOrg)
+		updateOrg, err := globalOrgDAO.Update(ctx, random.Org("dao-org"))
 		t.Logf("updateOrg, err: %+v, %v", updateOrg, err)
 		require.Nil(t, updateOrg)
 		require.Equal(t, dao.ErrNotFound, err)
@@ -159,15 +159,14 @@ func TestUpdate(t *testing.T) {
 		ctx, cancel := context.WithTimeout(context.Background(), 4*time.Second)
 		defer cancel()
 
-		org := Org{Name: "dao-org-" + random.String(10)}
-		createOrg, err := globalOrgDAO.Create(ctx, org)
+		createOrg, err := globalOrgDAO.Create(ctx, random.Org("dao-org"))
 		t.Logf("createOrg, err: %+v, %v", createOrg, err)
 		require.NoError(t, err)
 
 		// Update org fields.
 		createOrg.Name = "dao-org-" + random.String(40)
 
-		updateOrg, err := globalOrgDAO.Update(ctx, *createOrg)
+		updateOrg, err := globalOrgDAO.Update(ctx, createOrg)
 		t.Logf("updateOrg, err: %+v, %v", updateOrg, err)
 		require.Nil(t, updateOrg)
 		require.ErrorIs(t, err, dao.ErrInvalidFormat)
@@ -183,12 +182,11 @@ func TestDelete(t *testing.T) {
 		ctx, cancel := context.WithTimeout(context.Background(), 4*time.Second)
 		defer cancel()
 
-		org := Org{Name: "dao-org-" + random.String(10)}
-		createOrg, err := globalOrgDAO.Create(ctx, org)
+		createOrg, err := globalOrgDAO.Create(ctx, random.Org("dao-org"))
 		t.Logf("createOrg, err: %+v, %v", createOrg, err)
 		require.NoError(t, err)
 
-		err = globalOrgDAO.Delete(ctx, createOrg.ID)
+		err = globalOrgDAO.Delete(ctx, createOrg.Id)
 		t.Logf("err: %v", err)
 		require.NoError(t, err)
 
@@ -199,7 +197,7 @@ func TestDelete(t *testing.T) {
 				2*time.Second)
 			defer cancel()
 
-			readOrg, err := globalOrgDAO.Read(ctx, createOrg.ID)
+			readOrg, err := globalOrgDAO.Read(ctx, createOrg.Id)
 			t.Logf("readOrg, err: %+v, %v", readOrg, err)
 			require.Nil(t, readOrg)
 			require.Equal(t, dao.ErrNotFound, err)
@@ -226,11 +224,11 @@ func TestList(t *testing.T) {
 
 	var lastOrgID string
 	for i := 0; i < 3; i++ {
-		org := Org{Name: "dao-org-" + random.String(10)}
-		createOrg, err := globalOrgDAO.Create(ctx, org)
+		createOrg, err := globalOrgDAO.Create(ctx, random.Org("dao-org"))
 		t.Logf("createOrg, err: %+v, %v", createOrg, err)
 		require.NoError(t, err)
-		lastOrgID = createOrg.ID
+
+		lastOrgID = createOrg.Id
 	}
 
 	t.Run("List orgs", func(t *testing.T) {
@@ -246,7 +244,7 @@ func TestList(t *testing.T) {
 
 		var found bool
 		for _, org := range listOrgs {
-			if org.ID == lastOrgID {
+			if org.Id == lastOrgID {
 				found = true
 			}
 		}

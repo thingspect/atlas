@@ -3,7 +3,9 @@ package service
 
 import (
 	"errors"
+	"fmt"
 
+	"github.com/thingspect/api/go/common"
 	"github.com/thingspect/atlas/pkg/alog"
 	"github.com/thingspect/atlas/pkg/crypto"
 	"github.com/thingspect/atlas/pkg/dao"
@@ -35,4 +37,10 @@ func errToStatus(err error) error {
 	alog.Errorf("errToStatus unmatched error: %#v", err)
 
 	return status.Error(codes.Unknown, err.Error())
+}
+
+// errPerm returns a PermissionDenied status due to insufficient role.
+func errPerm(role common.Role) error {
+	return status.Error(codes.PermissionDenied,
+		fmt.Sprintf("permission denied, %s role required", role.String()))
 }

@@ -67,9 +67,8 @@ func TestAccumulateMessages(t *testing.T) {
 			wg.Add(1)
 
 			datapointer := NewMockdatapointer(ctrl)
-			datapointer.EXPECT().
-				Create(gomock.Any(), matcher.NewProtoMatcher(lTest.inp.Point),
-					lTest.inp.OrgId).
+			datapointer.EXPECT().Create(gomock.Any(),
+				matcher.NewProtoMatcher(lTest.inp.Point), lTest.inp.OrgId).
 				DoAndReturn(func(_ ...interface{}) error {
 					defer wg.Done()
 					return nil
@@ -130,8 +129,7 @@ func TestAccumulateMessagesError(t *testing.T) {
 			wg.Add(1)
 
 			datapointer := NewMockdatapointer(ctrl)
-			datapointer.EXPECT().
-				Create(gomock.Any(), gomock.Any(), "").
+			datapointer.EXPECT().Create(gomock.Any(), gomock.Any(), "").
 				DoAndReturn(func(_ ...interface{}) error {
 					defer wg.Done()
 					return lTest.inpErr

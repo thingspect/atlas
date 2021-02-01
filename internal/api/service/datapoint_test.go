@@ -41,8 +41,8 @@ func TestPublishDataPoints(t *testing.T) {
 		pubTopic := "topic-" + random.String(10)
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
-			context.Background(), &session.Session{OrgID: orgID}),
-			2*time.Second)
+			context.Background(), &session.Session{OrgID: orgID,
+				Role: common.Role_ADMIN}), 2*time.Second)
 		defer cancel()
 
 		dpSvc := NewDataPoint(pubQueue, pubTopic, nil)
@@ -89,8 +89,8 @@ func TestPublishDataPoints(t *testing.T) {
 		pubTopic := "topic-" + random.String(10)
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
-			context.Background(), &session.Session{OrgID: orgID}),
-			2*time.Second)
+			context.Background(), &session.Session{OrgID: orgID,
+				Role: common.Role_ADMIN}), 2*time.Second)
 		defer cancel()
 
 		dpSvc := NewDataPoint(pubQueue, pubTopic, nil)
@@ -144,8 +144,28 @@ func TestPublishDataPoints(t *testing.T) {
 		_, err := dpSvc.PublishDataPoints(ctx, &api.PublishDataPointsRequest{
 			Points: []*common.DataPoint{point}})
 		t.Logf("err: %v", err)
-		require.Equal(t, status.Error(codes.PermissionDenied,
-			"permission denied"), err)
+		require.Equal(t, errPerm(common.Role_BUILDER), err)
+	})
+
+	t.Run("Publish data point with insufficient role", func(t *testing.T) {
+		t.Parallel()
+
+		point := &common.DataPoint{UniqId: random.String(16), Attr: "motion",
+			ValOneof: &common.DataPoint_IntVal{IntVal: 123}}
+
+		pubQueue := queue.NewFake()
+		pubTopic := "topic-" + random.String(10)
+
+		ctx, cancel := context.WithTimeout(session.NewContext(
+			context.Background(), &session.Session{OrgID: uuid.NewString(),
+				Role: common.Role_VIEWER}), 2*time.Second)
+		defer cancel()
+
+		dpSvc := NewDataPoint(pubQueue, pubTopic, nil)
+		_, err := dpSvc.PublishDataPoints(ctx, &api.PublishDataPointsRequest{
+			Points: []*common.DataPoint{point}})
+		t.Logf("err: %v", err)
+		require.Equal(t, errPerm(common.Role_BUILDER), err)
 	})
 }
 
@@ -155,7 +175,7 @@ func TestListDataPoints(t *testing.T) {
 	t.Run("List data points by valid UniqID with ts", func(t *testing.T) {
 		t.Parallel()
 
-		point := &common.DataPoint{UniqId: "dao-point-" + random.String(16),
+		point := &common.DataPoint{UniqId: "api-point-" + random.String(16),
 			Attr: "motion", ValOneof: &common.DataPoint_IntVal{IntVal: 123},
 			Ts: timestamppb.Now(), TraceId: uuid.NewString()}
 		orgID := uuid.NewString()
@@ -170,8 +190,8 @@ func TestListDataPoints(t *testing.T) {
 			end, start).Return([]*common.DataPoint{point}, nil).Times(1)
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
-			context.Background(), &session.Session{OrgID: orgID}),
-			2*time.Second)
+			context.Background(), &session.Session{OrgID: orgID,
+				Role: common.Role_ADMIN}), 2*time.Second)
 		defer cancel()
 
 		dpSvc := NewDataPoint(nil, "", datapointer)
@@ -196,7 +216,7 @@ func TestListDataPoints(t *testing.T) {
 	t.Run("List data points by valid dev ID with attr", func(t *testing.T) {
 		t.Parallel()
 
-		point := &common.DataPoint{UniqId: "dao-point-" + random.String(16),
+		point := &common.DataPoint{UniqId: "api-point-" + random.String(16),
 			Attr: "motion", ValOneof: &common.DataPoint_IntVal{IntVal: 123},
 			Ts: timestamppb.Now(), TraceId: uuid.NewString()}
 		orgID := uuid.NewString()
@@ -212,8 +232,8 @@ func TestListDataPoints(t *testing.T) {
 			Return([]*common.DataPoint{point}, nil).Times(1)
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
-			context.Background(), &session.Session{OrgID: orgID}),
-			2*time.Second)
+			context.Background(), &session.Session{OrgID: orgID,
+				Role: common.Role_ADMIN}), 2*time.Second)
 		defer cancel()
 
 		dpSvc := NewDataPoint(nil, "", datapointer)
@@ -239,10 +259,7 @@ func TestListDataPoints(t *testing.T) {
 
 		ctrl := gomock.NewController(t)
 		defer ctrl.Finish()
-
 		datapointer := NewMockDataPointer(ctrl)
-		datapointer.EXPECT().List(gomock.Any(), gomock.Any(), gomock.Any(),
-			gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any()).Times(0)
 
 		ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
 		defer cancel()
@@ -254,8 +271,29 @@ func TestListDataPoints(t *testing.T) {
 					UniqId: random.String(16)}})
 		t.Logf("listPoints, err: %+v, %v", listPoints, err)
 		require.Nil(t, listPoints)
-		require.Equal(t, status.Error(codes.PermissionDenied,
-			"permission denied"), err)
+		require.Equal(t, errPerm(common.Role_VIEWER), err)
+	})
+
+	t.Run("List data points with insufficient role", func(t *testing.T) {
+		t.Parallel()
+
+		ctrl := gomock.NewController(t)
+		defer ctrl.Finish()
+		datapointer := NewMockDataPointer(ctrl)
+
+		ctx, cancel := context.WithTimeout(session.NewContext(
+			context.Background(), &session.Session{OrgID: uuid.NewString(),
+				Role: common.Role_CONTACT}), 2*time.Second)
+		defer cancel()
+
+		dpSvc := NewDataPoint(nil, "", datapointer)
+		listPoints, err := dpSvc.ListDataPoints(ctx,
+			&api.ListDataPointsRequest{
+				IdOneof: &api.ListDataPointsRequest_UniqId{
+					UniqId: random.String(16)}})
+		t.Logf("listPoints, err: %+v, %v", listPoints, err)
+		require.Nil(t, listPoints)
+		require.Equal(t, errPerm(common.Role_VIEWER), err)
 	})
 
 	t.Run("List data points by invalid time range", func(t *testing.T) {
@@ -263,14 +301,11 @@ func TestListDataPoints(t *testing.T) {
 
 		ctrl := gomock.NewController(t)
 		defer ctrl.Finish()
-
 		datapointer := NewMockDataPointer(ctrl)
-		datapointer.EXPECT().List(gomock.Any(), gomock.Any(), gomock.Any(),
-			gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any()).Times(0)
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
-			context.Background(), &session.Session{OrgID: "aaa"}),
-			2*time.Second)
+			context.Background(), &session.Session{OrgID: uuid.NewString(),
+				Role: common.Role_ADMIN}), 2*time.Second)
 		defer cancel()
 
 		dpSvc := NewDataPoint(nil, "", datapointer)
@@ -298,8 +333,8 @@ func TestListDataPoints(t *testing.T) {
 			dao.ErrInvalidFormat).Times(1)
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
-			context.Background(), &session.Session{OrgID: "aaa"}),
-			2*time.Second)
+			context.Background(), &session.Session{OrgID: "aaa",
+				Role: common.Role_ADMIN}), 2*time.Second)
 		defer cancel()
 
 		dpSvc := NewDataPoint(nil, "", datapointer)
@@ -320,7 +355,7 @@ func TestLatestDataPoints(t *testing.T) {
 	t.Run("Latest data points by valid UniqID", func(t *testing.T) {
 		t.Parallel()
 
-		point := &common.DataPoint{UniqId: "dao-point-" + random.String(16),
+		point := &common.DataPoint{UniqId: "api-point-" + random.String(16),
 			Attr: "motion", ValOneof: &common.DataPoint_IntVal{IntVal: 123},
 			Ts: timestamppb.Now(), TraceId: uuid.NewString()}
 		orgID := uuid.NewString()
@@ -333,8 +368,8 @@ func TestLatestDataPoints(t *testing.T) {
 			Return([]*common.DataPoint{point}, nil).Times(1)
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
-			context.Background(), &session.Session{OrgID: orgID}),
-			2*time.Second)
+			context.Background(), &session.Session{OrgID: orgID,
+				Role: common.Role_ADMIN}), 2*time.Second)
 		defer cancel()
 
 		dpSvc := NewDataPoint(nil, "", datapointer)
@@ -358,7 +393,7 @@ func TestLatestDataPoints(t *testing.T) {
 	t.Run("Latest data points by valid dev ID", func(t *testing.T) {
 		t.Parallel()
 
-		point := &common.DataPoint{UniqId: "dao-point-" + random.String(16),
+		point := &common.DataPoint{UniqId: "api-point-" + random.String(16),
 			Attr: "motion", ValOneof: &common.DataPoint_IntVal{IntVal: 123},
 			Ts: timestamppb.Now(), TraceId: uuid.NewString()}
 		orgID := uuid.NewString()
@@ -372,8 +407,8 @@ func TestLatestDataPoints(t *testing.T) {
 			Return([]*common.DataPoint{point}, nil).Times(1)
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
-			context.Background(), &session.Session{OrgID: orgID}),
-			2*time.Second)
+			context.Background(), &session.Session{OrgID: orgID,
+				Role: common.Role_ADMIN}), 2*time.Second)
 		defer cancel()
 
 		dpSvc := NewDataPoint(nil, "", datapointer)
@@ -398,10 +433,7 @@ func TestLatestDataPoints(t *testing.T) {
 
 		ctrl := gomock.NewController(t)
 		defer ctrl.Finish()
-
 		datapointer := NewMockDataPointer(ctrl)
-		datapointer.EXPECT().Latest(gomock.Any(), gomock.Any(), gomock.Any(),
-			gomock.Any()).Times(0)
 
 		ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
 		defer cancel()
@@ -413,8 +445,29 @@ func TestLatestDataPoints(t *testing.T) {
 					UniqId: random.String(16)}})
 		t.Logf("latPoints, err: %+v, %v", latPoints, err)
 		require.Nil(t, latPoints)
-		require.Equal(t, status.Error(codes.PermissionDenied,
-			"permission denied"), err)
+		require.Equal(t, errPerm(common.Role_VIEWER), err)
+	})
+
+	t.Run("Latest data points with insufficient role", func(t *testing.T) {
+		t.Parallel()
+
+		ctrl := gomock.NewController(t)
+		defer ctrl.Finish()
+		datapointer := NewMockDataPointer(ctrl)
+
+		ctx, cancel := context.WithTimeout(session.NewContext(
+			context.Background(), &session.Session{OrgID: uuid.NewString(),
+				Role: common.Role_CONTACT}), 2*time.Second)
+		defer cancel()
+
+		dpSvc := NewDataPoint(nil, "", datapointer)
+		latPoints, err := dpSvc.LatestDataPoints(ctx,
+			&api.LatestDataPointsRequest{
+				IdOneof: &api.LatestDataPointsRequest_UniqId{
+					UniqId: random.String(16)}})
+		t.Logf("latPoints, err: %+v, %v", latPoints, err)
+		require.Nil(t, latPoints)
+		require.Equal(t, errPerm(common.Role_VIEWER), err)
 	})
 
 	t.Run("Latest data points by invalid org ID", func(t *testing.T) {
@@ -428,8 +481,8 @@ func TestLatestDataPoints(t *testing.T) {
 			gomock.Any()).Return(nil, dao.ErrInvalidFormat).Times(1)
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
-			context.Background(), &session.Session{OrgID: "aaa"}),
-			2*time.Second)
+			context.Background(), &session.Session{OrgID: "aaa",
+				Role: common.Role_ADMIN}), 2*time.Second)
 		defer cancel()
 
 		dpSvc := NewDataPoint(nil, "", datapointer)

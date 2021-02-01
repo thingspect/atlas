@@ -7,7 +7,7 @@ import (
 	"time"
 
 	"github.com/thingspect/api/go/api"
-	"github.com/thingspect/atlas/pkg/dao/org"
+	"github.com/thingspect/api/go/common"
 	"github.com/thingspect/atlas/pkg/test/random"
 	"google.golang.org/grpc"
 )
@@ -27,24 +27,25 @@ func (c *credential) RequireTransportSecurity() bool {
 	return false
 }
 
-func authGRPCConn(grpcAddr string) (string, *grpc.ClientConn, error) {
+func authGRPCConn(grpcAddr string, role common.Role) (string, *grpc.ClientConn,
+	error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 14*time.Second)
 	defer cancel()
 
-	org := org.Org{Name: "api-helper-" + random.String(10)}
-	createOrg, err := globalOrgDAO.Create(ctx, org)
+	createOrg, err := globalOrgDAO.Create(ctx, random.Org("api-helper"))
 	if err != nil {
 		return "", nil, err
 	}
 
-	user := &api.User{OrgId: createOrg.ID, Email: "api-helper-" +
-		random.Email(), Status: api.Status_ACTIVE}
+	user := random.User("api-helper", createOrg.Id)
+	user.Role = role
+	user.Status = api.Status_ACTIVE
 	createUser, err := globalUserDAO.Create(ctx, user)
 	if err != nil {
 		return "", nil, err
 	}
 
-	if err = globalUserDAO.UpdatePassword(ctx, user.Id, createOrg.ID,
+	if err = globalUserDAO.UpdatePassword(ctx, createUser.Id, createOrg.Id,
 		globalHash); err != nil {
 		return "", nil, err
 	}
@@ -66,5 +67,5 @@ func authGRPCConn(grpcAddr string) (string, *grpc.ClientConn, error) {
 	if err != nil {
 		return "", nil, err
 	}
-	return createOrg.ID, conn, nil
+	return createOrg.Id, conn, nil
 }

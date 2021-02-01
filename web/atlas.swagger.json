@@ -981,6 +981,13 @@
             "email"
           ]
         },
+        "role": {
+          "$ref": "#/definitions/commonRole",
+          "description": "User role.",
+          "required": [
+            "role"
+          ]
+        },
         "status": {
           "$ref": "#/definitions/apiStatus",
           "description": "User status.",
@@ -1004,6 +1011,7 @@
       "description": "User represents a user as stored in the database.",
       "required": [
         "email",
+        "role",
         "status"
       ]
     },
@@ -1068,6 +1076,19 @@
         "uniqID",
         "attr"
       ]
+    },
+    "commonRole": {
+      "type": "string",
+      "enum": [
+        "ROLE_UNSPECIFIED",
+        "CONTACT",
+        "VIEWER",
+        "BUILDER",
+        "ADMIN",
+        "SYS_ADMIN"
+      ],
+      "default": "ROLE_UNSPECIFIED",
+      "description": "Role represents the role of a user.\n\n - ROLE_UNSPECIFIED: Role is not specified.\n - CONTACT: Contacts are not allowed to log in to the system, but can receive and respond to alerts from their organization.\n - VIEWER: Viewers can only read resources in their organization, but can update their own user.\n - BUILDER: Builders can read and modify resources in their organization, but can only update their own user.\n - ADMIN: Admins can read and modify anything in their organization, including creating users of an equal or lesser role.\n - SYS_ADMIN: System admins can create organizations and modify anything in their organization."
     },
     "googlerpcStatus": {
       "type": "object",

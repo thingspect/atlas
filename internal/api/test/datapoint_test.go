@@ -29,7 +29,7 @@ func TestPublishDataPoints(t *testing.T) {
 		ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
 		defer cancel()
 
-		dpCli := api.NewDataPointServiceClient(globalAuthGRPCConn)
+		dpCli := api.NewDataPointServiceClient(globalAdminGRPCConn)
 		_, err := dpCli.PublishDataPoints(ctx, &api.PublishDataPointsRequest{
 			Points: []*common.DataPoint{point}})
 		t.Logf("err: %v", err)
@@ -51,9 +51,9 @@ func TestPublishDataPoints(t *testing.T) {
 			// Testify does not currently support protobuf equality:
 			// https://github.com/stretchr/testify/issues/758
 			if !proto.Equal(&message.ValidatorIn{Point: point,
-				OrgId: globalAuthOrgID, SkipToken: true}, vIn) {
+				OrgId: globalAdminOrgID, SkipToken: true}, vIn) {
 				t.Fatalf("\nExpect: %+v\nActual: %+v", &message.ValidatorIn{
-					Point: point, OrgId: globalAuthOrgID, SkipToken: true}, vIn)
+					Point: point, OrgId: globalAdminOrgID, SkipToken: true}, vIn)
 			}
 		case <-time.After(5 * time.Second):
 			t.Fatal("Message timed out")
@@ -67,7 +67,7 @@ func TestPublishDataPoints(t *testing.T) {
 		ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
 		defer cancel()
 
-		dpCli := api.NewDataPointServiceClient(globalAuthGRPCConn)
+		dpCli := api.NewDataPointServiceClient(globalAdminGRPCConn)
 		_, err := dpCli.PublishDataPoints(ctx, &api.PublishDataPointsRequest{
 			Points: []*common.DataPoint{point}})
 		t.Logf("err: %v", err)
@@ -93,9 +93,9 @@ func TestPublishDataPoints(t *testing.T) {
 			// Testify does not currently support protobuf equality:
 			// https://github.com/stretchr/testify/issues/758
 			if !proto.Equal(&message.ValidatorIn{Point: point,
-				OrgId: globalAuthOrgID, SkipToken: true}, vIn) {
+				OrgId: globalAdminOrgID, SkipToken: true}, vIn) {
 				t.Fatalf("\nExpect: %+v\nActual: %+v", &message.ValidatorIn{
-					Point: point, OrgId: globalAuthOrgID, SkipToken: true}, vIn)
+					Point: point, OrgId: globalAdminOrgID, SkipToken: true}, vIn)
 			}
 		case <-time.After(5 * time.Second):
 			t.Fatal("Message timed out")
@@ -110,7 +110,7 @@ func TestPublishDataPoints(t *testing.T) {
 		ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
 		defer cancel()
 
-		dpCli := api.NewDataPointServiceClient(globalAuthGRPCConn)
+		dpCli := api.NewDataPointServiceClient(globalAdminGRPCConn)
 		_, err := dpCli.PublishDataPoints(ctx, &api.PublishDataPointsRequest{
 			Points: []*common.DataPoint{point}})
 		t.Logf("err: %v", err)
@@ -118,6 +118,22 @@ func TestPublishDataPoints(t *testing.T) {
 			"invalid PublishDataPointsRequest.Points[0]: embedded message "+
 			"failed validation | caused by: invalid DataPoint.UniqId: value "+
 			"length must be between 5 and 40 runes, inclusive")
+	})
+
+	t.Run("Publish data point with insufficient role", func(t *testing.T) {
+		point := &common.DataPoint{UniqId: "api-point-" + random.String(16),
+			Attr: "motion", ValOneof: &common.DataPoint_IntVal{IntVal: 123},
+			Ts: timestamppb.New(time.Now().Add(-15 * time.Minute))}
+
+		ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
+		defer cancel()
+
+		dpCli := api.NewDataPointServiceClient(secondaryViewerGRPCConn)
+		_, err := dpCli.PublishDataPoints(ctx, &api.PublishDataPointsRequest{
+			Points: []*common.DataPoint{point}})
+		t.Logf("err: %v", err)
+		require.EqualError(t, err, "rpc error: code = PermissionDenied desc = "+
+			"permission denied, BUILDER role required")
 	})
 }
 
@@ -130,17 +146,13 @@ func TestListDataPoints(t *testing.T) {
 		ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
 		defer cancel()
 
-		dev := &api.Device{UniqId: "api-point-" + random.String(16),
-			Status: []api.Status{api.Status_ACTIVE,
-				api.Status_DISABLED}[random.Intn(2)]}
-
-		devCli := api.NewDeviceServiceClient(globalAuthGRPCConn)
+		devCli := api.NewDeviceServiceClient(globalAdminGRPCConn)
 		createDev, err := devCli.CreateDevice(ctx, &api.CreateDeviceRequest{
-			Device: dev})
+			Device: random.Device("api-point", uuid.NewString())})
 		t.Logf("createDev, err: %+v, %v", createDev, err)
 		require.NoError(t, err)
 
-		dpCli := api.NewDataPointServiceClient(globalAuthGRPCConn)
+		dpCli := api.NewDataPointServiceClient(globalAdminGRPCConn)
 
 		points := []*common.DataPoint{
 			{UniqId: createDev.UniqId, Attr: "motion",
@@ -173,7 +185,7 @@ func TestListDataPoints(t *testing.T) {
 				time.Millisecond))
 			time.Sleep(time.Millisecond)
 
-			err := globalDPDAO.Create(ctx, point, globalAuthOrgID)
+			err := globalDPDAO.Create(ctx, point, globalAdminOrgID)
 			t.Logf("err: %v", err)
 			require.NoError(t, err)
 		}
@@ -260,7 +272,7 @@ func TestListDataPoints(t *testing.T) {
 		t.Logf("err: %#v", err)
 		require.NoError(t, err)
 
-		dpCli := api.NewDataPointServiceClient(globalAuthGRPCConn)
+		dpCli := api.NewDataPointServiceClient(globalAdminGRPCConn)
 		listPoints, err := dpCli.ListDataPoints(ctx,
 			&api.ListDataPointsRequest{
 				IdOneof: &api.ListDataPointsRequest_UniqId{
@@ -276,7 +288,7 @@ func TestListDataPoints(t *testing.T) {
 		ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
 		defer cancel()
 
-		dpCli := api.NewDataPointServiceClient(globalAuthGRPCConn)
+		dpCli := api.NewDataPointServiceClient(globalAdminGRPCConn)
 		listPoints, err := dpCli.ListDataPoints(ctx,
 			&api.ListDataPointsRequest{
 				IdOneof: &api.ListDataPointsRequest_DevId{
@@ -295,7 +307,7 @@ func TestListDataPoints(t *testing.T) {
 		ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
 		defer cancel()
 
-		dpCli := api.NewDataPointServiceClient(globalAuthGRPCConn)
+		dpCli := api.NewDataPointServiceClient(globalAdminGRPCConn)
 		listPoints, err := dpCli.ListDataPoints(ctx,
 			&api.ListDataPointsRequest{
 				IdOneof: &api.ListDataPointsRequest_DevId{
@@ -316,17 +328,13 @@ func TestLatestDataPoints(t *testing.T) {
 		ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
 		defer cancel()
 
-		dev := &api.Device{UniqId: "api-point-" + random.String(16),
-			Status: []api.Status{api.Status_ACTIVE,
-				api.Status_DISABLED}[random.Intn(2)]}
-
-		devCli := api.NewDeviceServiceClient(globalAuthGRPCConn)
+		devCli := api.NewDeviceServiceClient(globalAdminGRPCConn)
 		createDev, err := devCli.CreateDevice(ctx, &api.CreateDeviceRequest{
-			Device: dev})
+			Device: random.Device("api-point", uuid.NewString())})
 		t.Logf("createDev, err: %+v, %v", createDev, err)
 		require.NoError(t, err)
 
-		dpCli := api.NewDataPointServiceClient(globalAuthGRPCConn)
+		dpCli := api.NewDataPointServiceClient(globalAdminGRPCConn)
 
 		points := []*common.DataPoint{
 			{UniqId: createDev.UniqId, Attr: "motion",
@@ -357,7 +365,7 @@ func TestLatestDataPoints(t *testing.T) {
 					time.Millisecond))
 				time.Sleep(time.Millisecond)
 
-				err := globalDPDAO.Create(ctx, point, globalAuthOrgID)
+				err := globalDPDAO.Create(ctx, point, globalAdminOrgID)
 				t.Logf("err: %v", err)
 				require.NoError(t, err)
 			}
@@ -419,7 +427,7 @@ func TestLatestDataPoints(t *testing.T) {
 		t.Logf("err: %#v", err)
 		require.NoError(t, err)
 
-		dpCli := api.NewDataPointServiceClient(globalAuthGRPCConn)
+		dpCli := api.NewDataPointServiceClient(globalAdminGRPCConn)
 		latPoints, err := dpCli.LatestDataPoints(ctx,
 			&api.LatestDataPointsRequest{
 				IdOneof: &api.LatestDataPointsRequest_UniqId{
@@ -435,7 +443,7 @@ func TestLatestDataPoints(t *testing.T) {
 		ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
 		defer cancel()
 
-		dpCli := api.NewDataPointServiceClient(globalAuthGRPCConn)
+		dpCli := api.NewDataPointServiceClient(globalAdminGRPCConn)
 		latPoints, err := dpCli.LatestDataPoints(ctx,
 			&api.LatestDataPointsRequest{
 				IdOneof: &api.LatestDataPointsRequest_DevId{
