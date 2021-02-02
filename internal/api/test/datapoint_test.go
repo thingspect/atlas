@@ -103,6 +103,22 @@ func TestPublishDataPoints(t *testing.T) {
 		}
 	})
 
+	t.Run("Publish data point with insufficient role", func(t *testing.T) {
+		point := &common.DataPoint{UniqId: "api-point-" + random.String(16),
+			Attr: "motion", ValOneof: &common.DataPoint_IntVal{IntVal: 123},
+			Ts: timestamppb.New(time.Now().Add(-15 * time.Minute))}
+
+		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
+		defer cancel()
+
+		dpCli := api.NewDataPointServiceClient(secondaryViewerGRPCConn)
+		_, err := dpCli.PublishDataPoints(ctx, &api.PublishDataPointsRequest{
+			Points: []*common.DataPoint{point}})
+		t.Logf("err: %v", err)
+		require.EqualError(t, err, "rpc error: code = PermissionDenied desc = "+
+			"permission denied, BUILDER role required")
+	})
+
 	t.Run("Publish invalid data point", func(t *testing.T) {
 		point := &common.DataPoint{UniqId: "api-point-" + random.String(40),
 			Attr: "motion", ValOneof: &common.DataPoint_IntVal{IntVal: 123},
@@ -119,22 +135,6 @@ func TestPublishDataPoints(t *testing.T) {
 			"invalid PublishDataPointsRequest.Points[0]: embedded message "+
 			"failed validation | caused by: invalid DataPoint.UniqId: value "+
 			"length must be between 5 and 40 runes, inclusive")
-	})
-
-	t.Run("Publish data point with insufficient role", func(t *testing.T) {
-		point := &common.DataPoint{UniqId: "api-point-" + random.String(16),
-			Attr: "motion", ValOneof: &common.DataPoint_IntVal{IntVal: 123},
-			Ts: timestamppb.New(time.Now().Add(-15 * time.Minute))}
-
-		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
-		defer cancel()
-
-		dpCli := api.NewDataPointServiceClient(secondaryViewerGRPCConn)
-		_, err := dpCli.PublishDataPoints(ctx, &api.PublishDataPointsRequest{
-			Points: []*common.DataPoint{point}})
-		t.Logf("err: %v", err)
-		require.EqualError(t, err, "rpc error: code = PermissionDenied desc = "+
-			"permission denied, BUILDER role required")
 	})
 }
 

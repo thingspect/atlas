@@ -222,13 +222,17 @@ func TestList(t *testing.T) {
 	ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
 	defer cancel()
 
-	var lastOrgID string
+	orgIDs := []string{}
+	orgNames := []string{}
+	orgTSes := []time.Time{}
 	for i := 0; i < 3; i++ {
 		createOrg, err := globalOrgDAO.Create(ctx, random.Org("dao-org"))
 		t.Logf("createOrg, err: %+v, %v", createOrg, err)
 		require.NoError(t, err)
 
-		lastOrgID = createOrg.Id
+		orgIDs = append(orgIDs, createOrg.Id)
+		orgNames = append(orgNames, createOrg.Name)
+		orgTSes = append(orgTSes, createOrg.CreatedAt.AsTime())
 	}
 
 	t.Run("List orgs", func(t *testing.T) {
@@ -237,17 +241,46 @@ func TestList(t *testing.T) {
 		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
 		defer cancel()
 
-		listOrgs, err := globalOrgDAO.List(ctx)
+		listOrgs, listCount, err := globalOrgDAO.List(ctx, time.Time{}, "", 0)
 		t.Logf("listOrgs, err: %+v, %v", listOrgs, err)
 		require.NoError(t, err)
 		require.GreaterOrEqual(t, len(listOrgs), 3)
+		require.GreaterOrEqual(t, listCount, int32(3))
 
 		var found bool
 		for _, org := range listOrgs {
-			if org.Id == lastOrgID {
+			if org.Id == orgIDs[len(orgIDs)-1] &&
+				org.Name == orgNames[len(orgIDs)-1] {
 				found = true
 			}
 		}
 		require.True(t, found)
+	})
+
+	t.Run("List orgs with pagination", func(t *testing.T) {
+		t.Parallel()
+
+		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
+		defer cancel()
+
+		listOrgs, listCount, err := globalOrgDAO.List(ctx, orgTSes[1],
+			orgIDs[1], 1)
+		t.Logf("listOrgs, err: %+v, %v", listOrgs, err)
+		require.NoError(t, err)
+		require.Len(t, listOrgs, 1)
+		require.GreaterOrEqual(t, listCount, int32(3))
+	})
+
+	t.Run("List orgs with limit", func(t *testing.T) {
+		t.Parallel()
+
+		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
+		defer cancel()
+
+		listOrgs, listCount, err := globalOrgDAO.List(ctx, time.Time{}, "", 2)
+		t.Logf("listOrgs, err: %+v, %v", listOrgs, err)
+		require.NoError(t, err)
+		require.Len(t, listOrgs, 2)
+		require.GreaterOrEqual(t, listCount, int32(3))
 	})
 }

@@ -44,6 +44,21 @@ func TestCreateUser(t *testing.T) {
 			2*time.Second)
 	})
 
+	t.Run("Create valid user with insufficient role", func(t *testing.T) {
+		t.Parallel()
+
+		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
+		defer cancel()
+
+		userCli := api.NewUserServiceClient(secondaryViewerGRPCConn)
+		createUser, err := userCli.CreateUser(ctx, &api.CreateUserRequest{
+			User: random.User("api-user", uuid.NewString())})
+		t.Logf("createUser, err: %+v, %v", createUser, err)
+		require.Nil(t, createUser)
+		require.EqualError(t, err, "rpc error: code = PermissionDenied desc = "+
+			"permission denied, ADMIN role required")
+	})
+
 	t.Run("Create invalid user", func(t *testing.T) {
 		t.Parallel()
 
@@ -62,21 +77,6 @@ func TestCreateUser(t *testing.T) {
 			"invalid CreateUserRequest.User: embedded message failed "+
 			"validation | caused by: invalid User.Email: value must be a "+
 			"valid email address | caused by: mail: missing '@' or angle-addr")
-	})
-
-	t.Run("Create valid user with insufficient role", func(t *testing.T) {
-		t.Parallel()
-
-		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
-		defer cancel()
-
-		userCli := api.NewUserServiceClient(secondaryViewerGRPCConn)
-		createUser, err := userCli.CreateUser(ctx, &api.CreateUserRequest{
-			User: random.User("api-user", uuid.NewString())})
-		t.Logf("createUser, err: %+v, %v", createUser, err)
-		require.Nil(t, createUser)
-		require.EqualError(t, err, "rpc error: code = PermissionDenied desc = "+
-			"permission denied, ADMIN role required")
 	})
 }
 
@@ -658,7 +658,7 @@ func TestListUsers(t *testing.T) {
 
 		userCli := api.NewUserServiceClient(globalAdminGRPCConn)
 		listUsers, err := userCli.ListUsers(ctx, &api.ListUsersRequest{
-			PageToken: "..."})
+			PageToken: badUUID})
 		t.Logf("listUsers, err: %+v, %v", listUsers, err)
 		require.Nil(t, listUsers)
 		require.EqualError(t, err, "rpc error: code = InvalidArgument desc = "+

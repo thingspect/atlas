@@ -8,6 +8,7 @@ import (
 
 	"github.com/thingspect/api/go/api"
 	"github.com/thingspect/api/go/common"
+	iapi "github.com/thingspect/atlas/internal/api/api"
 	"github.com/thingspect/atlas/pkg/test/random"
 	"google.golang.org/grpc"
 )
@@ -27,8 +28,7 @@ func (c *credential) RequireTransportSecurity() bool {
 	return false
 }
 
-func authGRPCConn(grpcAddr string, role common.Role) (string, *grpc.ClientConn,
-	error) {
+func authGRPCConn(role common.Role) (string, *grpc.ClientConn, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 14*time.Second)
 	defer cancel()
 
@@ -63,7 +63,7 @@ func authGRPCConn(grpcAddr string, role common.Role) (string, *grpc.ClientConn,
 		grpc.WithInsecure(),
 		grpc.WithPerRPCCredentials(&credential{token: loginResp.Token}),
 	}
-	conn, err := grpc.Dial(grpcAddr, opts...)
+	conn, err := grpc.Dial(iapi.GRPCHost+iapi.GRPCPort, opts...)
 	if err != nil {
 		return "", nil, err
 	}

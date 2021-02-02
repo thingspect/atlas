@@ -24,7 +24,10 @@ import (
 	"google.golang.org/grpc/encoding/gzip"
 )
 
-const testTimeout = 8 * time.Second
+const (
+	testTimeout = 8 * time.Second
+	badUUID     = "..."
+)
 
 var (
 	globalOrgDAO  *org.DAO
@@ -35,11 +38,12 @@ var (
 	// globalHash is stored globally for test performance under -race.
 	globalHash []byte
 
-	globalNoAuthGRPCConn    *grpc.ClientConn
-	globalAdminGRPCConn     *grpc.ClientConn
-	globalAdminOrgID        string
-	secondaryAdminGRPCConn  *grpc.ClientConn
-	secondaryViewerGRPCConn *grpc.ClientConn
+	globalNoAuthGRPCConn      *grpc.ClientConn
+	globalAdminGRPCConn       *grpc.ClientConn
+	globalAdminOrgID          string
+	secondaryAdminGRPCConn    *grpc.ClientConn
+	secondaryViewerGRPCConn   *grpc.ClientConn
+	secondarySysAdminGRPCConn *grpc.ClientConn
 
 	globalPubTopic string
 	globalPubSub   queue.Subber
@@ -102,22 +106,24 @@ func TestMain(m *testing.M) {
 	}
 
 	// Build authenticated gRPC connections.
-	globalAdminOrgID, globalAdminGRPCConn, err = authGRPCConn(api.GRPCHost+
-		api.GRPCPort, common.Role_ADMIN)
+	globalAdminOrgID, globalAdminGRPCConn, err = authGRPCConn(common.Role_ADMIN)
 	if err != nil {
 		log.Fatalf("TestMain globalAdminOrgID authGRPCConn: %v", err)
 	}
 
-	_, secondaryAdminGRPCConn, err = authGRPCConn(api.GRPCHost+api.GRPCPort,
-		common.Role_ADMIN)
+	_, secondaryAdminGRPCConn, err = authGRPCConn(common.Role_ADMIN)
 	if err != nil {
 		log.Fatalf("TestMain secondaryAdminGRPCConn authGRPCConn: %v", err)
 	}
 
-	_, secondaryViewerGRPCConn, err = authGRPCConn(api.GRPCHost+api.GRPCPort,
-		common.Role_VIEWER)
+	_, secondaryViewerGRPCConn, err = authGRPCConn(common.Role_VIEWER)
 	if err != nil {
 		log.Fatalf("TestMain secondaryViewerGRPCConn authGRPCConn: %v", err)
+	}
+
+	_, secondarySysAdminGRPCConn, err = authGRPCConn(common.Role_SYS_ADMIN)
+	if err != nil {
+		log.Fatalf("TestMain secondarySysAdminGRPCConn authGRPCConn: %v", err)
 	}
 
 	// Set up NSQ subscription to verify published messages. Use a unique

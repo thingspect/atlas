@@ -813,7 +813,7 @@ func TestListUsers(t *testing.T) {
 
 		userSvc := NewUser(userer)
 		listUsers, err := userSvc.ListUsers(ctx, &api.ListUsersRequest{
-			PageToken: "..."})
+			PageToken: badUUID})
 		t.Logf("listUsers, err: %+v, %v", listUsers, err)
 		require.Nil(t, listUsers)
 		require.Equal(t, status.Error(codes.InvalidArgument,
@@ -853,7 +853,7 @@ func TestListUsers(t *testing.T) {
 			random.User("api-user", uuid.NewString()),
 			random.User("api-user", uuid.NewString()),
 		}
-		users[1].Id = "..."
+		users[1].Id = badUUID
 
 		ctrl := gomock.NewController(t)
 		defer ctrl.Finish()
@@ -876,8 +876,8 @@ func TestListUsers(t *testing.T) {
 
 		// Testify does not currently support protobuf equality:
 		// https://github.com/stretchr/testify/issues/758
-		if !proto.Equal(&api.ListUsersResponse{Users: users[:2],
-			TotalSize: 3}, listUsers) {
+		if !proto.Equal(&api.ListUsersResponse{Users: users[:2], TotalSize: 3},
+			listUsers) {
 			t.Fatalf("\nExpect: %+v\nActual: %+v",
 				&api.ListUsersResponse{Users: users[:2], TotalSize: 3},
 				listUsers)
