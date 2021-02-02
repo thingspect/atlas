@@ -173,11 +173,7 @@ func (d *Device) ListDevices(ctx context.Context,
 		return nil, errToStatus(err)
 	}
 
-	resp := &api.ListDevicesResponse{
-		Devices:       devs,
-		PrevPageToken: req.PageToken,
-		TotalSize:     count,
-	}
+	resp := &api.ListDevicesResponse{Devices: devs, TotalSize: count}
 
 	// Populate next page token.
 	if len(devs) == int(req.PageSize+1) {

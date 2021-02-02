@@ -744,8 +744,6 @@ func (m *ListUsersResponse) Validate() error {
 
 	// no validation rules for NextPageToken
 
-	// no validation rules for PrevPageToken
-
 	// no validation rules for TotalSize
 
 	return nil

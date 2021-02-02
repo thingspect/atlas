@@ -18,9 +18,8 @@ require (
 	github.com/rs/zerolog v1.20.0
 	github.com/smira/go-statsd v1.3.2
 	github.com/stretchr/testify v1.7.0
-	github.com/thingspect/api/go v0.0.0-20210202165704-fd8f3451561d
+	github.com/thingspect/api/go v0.0.0-20210202175329-bac6da4f5f9c
 	golang.org/x/crypto v0.0.0-20201221181555-eec23a3978ad
-	google.golang.org/genproto v0.0.0-20210202153253-cf70463f6119 // indirect
 	google.golang.org/grpc v1.35.0
 	google.golang.org/protobuf v1.25.0
 	gopkg.in/yaml.v3 v3.0.0-20210107192922-496545a6307b // indirect

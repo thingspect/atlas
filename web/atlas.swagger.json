@@ -1076,10 +1076,6 @@
           "type": "string",
           "description": "Pagination token used to retrieve the next page of results. Not returned for the last page."
         },
-        "prevPageToken": {
-          "type": "string",
-          "description": "Pagination token used to retrieve the previous page of results. Not returned for the first page."
-        },
         "totalSize": {
           "type": "integer",
           "format": "int32",
@@ -1102,10 +1098,6 @@
           "type": "string",
           "description": "Pagination token used to retrieve the next page of results. Not returned for the last page."
         },
-        "prevPageToken": {
-          "type": "string",
-          "description": "Pagination token used to retrieve the previous page of results. Not returned for the first page."
-        },
         "totalSize": {
           "type": "integer",
           "format": "int32",
@@ -1127,10 +1119,6 @@
         "nextPageToken": {
           "type": "string",
           "description": "Pagination token used to retrieve the next page of results. Not returned for the last page."
-        },
-        "prevPageToken": {
-          "type": "string",
-          "description": "Pagination token used to retrieve the previous page of results. Not returned for the first page."
         },
         "totalSize": {
           "type": "integer",

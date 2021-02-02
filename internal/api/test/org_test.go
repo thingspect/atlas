@@ -421,7 +421,6 @@ func TestListOrgs(t *testing.T) {
 		t.Logf("listOrgs, err: %+v, %v", listOrgs, err)
 		require.NoError(t, err)
 		require.Len(t, listOrgs.Orgs, 2)
-		require.Empty(t, listOrgs.PrevPageToken)
 		require.NotEmpty(t, listOrgs.NextPageToken)
 		require.GreaterOrEqual(t, listOrgs.TotalSize, int32(3))
 
@@ -430,7 +429,6 @@ func TestListOrgs(t *testing.T) {
 		t.Logf("nextOrgs, err: %+v, %v", nextOrgs, err)
 		require.NoError(t, err)
 		require.GreaterOrEqual(t, len(nextOrgs.Orgs), 1)
-		require.NotEmpty(t, nextOrgs.PrevPageToken)
 		require.GreaterOrEqual(t, nextOrgs.TotalSize, int32(3))
 	})
 
