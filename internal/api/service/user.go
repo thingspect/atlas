@@ -101,6 +101,7 @@ func (u *User) UpdateUser(ctx context.Context,
 	}
 	req.User.OrgId = sess.OrgID
 
+	// Non-admins can only update their own user.
 	if sess.Role < common.Role_ADMIN && req.User.Id != sess.UserID {
 		return nil, errPerm(common.Role_ADMIN)
 	}
@@ -222,11 +223,7 @@ func (u *User) ListUsers(ctx context.Context,
 		return nil, errToStatus(err)
 	}
 
-	resp := &api.ListUsersResponse{
-		Users:         users,
-		PrevPageToken: req.PageToken,
-		TotalSize:     count,
-	}
+	resp := &api.ListUsersResponse{Users: users, TotalSize: count}
 
 	// Populate next page token.
 	if len(users) == int(req.PageSize+1) {

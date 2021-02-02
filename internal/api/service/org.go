@@ -93,6 +93,7 @@ func (u *Org) UpdateOrg(ctx context.Context,
 		return nil, status.Error(codes.InvalidArgument, req.Validate().Error())
 	}
 
+	// Admins can only update their own org, system admins can update any org.
 	if (sess.Role < common.Role_SYS_ADMIN && req.Org.Id != sess.OrgID) ||
 		(sess.Role < common.Role_ADMIN && req.Org.Id == sess.OrgID) {
 		return nil, errPerm(common.Role_SYS_ADMIN)
@@ -187,11 +188,7 @@ func (u *Org) ListOrgs(ctx context.Context,
 		return nil, errToStatus(err)
 	}
 
-	resp := &api.ListOrgsResponse{
-		Orgs:          orgs,
-		PrevPageToken: req.PageToken,
-		TotalSize:     count,
-	}
+	resp := &api.ListOrgsResponse{Orgs: orgs, TotalSize: count}
 
 	// Populate next page token.
 	if len(orgs) == int(req.PageSize+1) {

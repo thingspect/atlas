@@ -609,7 +609,6 @@ func TestListUsers(t *testing.T) {
 		t.Logf("listUsers, err: %+v, %v", listUsers, err)
 		require.NoError(t, err)
 		require.Len(t, listUsers.Users, 2)
-		require.Empty(t, listUsers.PrevPageToken)
 		require.NotEmpty(t, listUsers.NextPageToken)
 		require.GreaterOrEqual(t, listUsers.TotalSize, int32(3))
 
@@ -618,7 +617,6 @@ func TestListUsers(t *testing.T) {
 		t.Logf("nextUsers, err: %+v, %v", nextUsers, err)
 		require.NoError(t, err)
 		require.GreaterOrEqual(t, len(nextUsers.Users), 1)
-		require.NotEmpty(t, nextUsers.PrevPageToken)
 		require.GreaterOrEqual(t, nextUsers.TotalSize, int32(3))
 	})
 

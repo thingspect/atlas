@@ -8,6 +8,8 @@ CREATE TABLE orgs (
   updated_at timestamptz NOT NULL
 );
 
+CREATE INDEX orgs_paginate_idx ON orgs (created_at, id);
+
 CREATE TABLE devices (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   org_id uuid NOT NULL REFERENCES orgs (id),
