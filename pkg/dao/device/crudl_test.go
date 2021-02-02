@@ -18,7 +18,7 @@ import (
 func TestCreate(t *testing.T) {
 	t.Parallel()
 
-	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
 	defer cancel()
 
 	createOrg, err := globalOrgDAO.Create(ctx, random.Org("dao-device"))
@@ -28,7 +28,7 @@ func TestCreate(t *testing.T) {
 	t.Run("Create valid device", func(t *testing.T) {
 		t.Parallel()
 
-		ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
+		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
 		defer cancel()
 
 		dev := random.Device("dao-device", createOrg.Id)
@@ -47,7 +47,7 @@ func TestCreate(t *testing.T) {
 	t.Run("Create valid device with uppercase UniqId", func(t *testing.T) {
 		t.Parallel()
 
-		ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
+		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
 		defer cancel()
 
 		dev := random.Device("dao-device", createOrg.Id)
@@ -67,7 +67,7 @@ func TestCreate(t *testing.T) {
 	t.Run("Create invalid device", func(t *testing.T) {
 		t.Parallel()
 
-		ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
+		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
 		defer cancel()
 
 		dev := random.Device("dao-device", createOrg.Id)
@@ -82,7 +82,7 @@ func TestCreate(t *testing.T) {
 func TestRead(t *testing.T) {
 	t.Parallel()
 
-	ctx, cancel := context.WithTimeout(context.Background(), 4*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
 	defer cancel()
 
 	createOrg, err := globalOrgDAO.Create(ctx, random.Org("dao-device"))
@@ -97,7 +97,7 @@ func TestRead(t *testing.T) {
 	t.Run("Read device by valid ID", func(t *testing.T) {
 		t.Parallel()
 
-		ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
+		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
 		defer cancel()
 
 		readDev, err := globalDevDAO.Read(ctx, createDev.Id, createDev.OrgId)
@@ -109,7 +109,7 @@ func TestRead(t *testing.T) {
 	t.Run("Read device by unknown ID", func(t *testing.T) {
 		t.Parallel()
 
-		ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
+		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
 		defer cancel()
 
 		readDev, err := globalDevDAO.Read(ctx, uuid.NewString(),
@@ -122,7 +122,7 @@ func TestRead(t *testing.T) {
 	t.Run("Reads are isolated by org ID", func(t *testing.T) {
 		t.Parallel()
 
-		ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
+		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
 		defer cancel()
 
 		readDev, err := globalDevDAO.Read(ctx, createDev.Id,
@@ -135,7 +135,7 @@ func TestRead(t *testing.T) {
 	t.Run("Read device by invalid ID", func(t *testing.T) {
 		t.Parallel()
 
-		ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
+		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
 		defer cancel()
 
 		readDev, err := globalDevDAO.Read(ctx, random.String(10),
@@ -149,7 +149,7 @@ func TestRead(t *testing.T) {
 func TestReadByUniqID(t *testing.T) {
 	t.Parallel()
 
-	ctx, cancel := context.WithTimeout(context.Background(), 4*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
 	defer cancel()
 
 	createOrg, err := globalOrgDAO.Create(ctx, random.Org("dao-device"))
@@ -164,7 +164,7 @@ func TestReadByUniqID(t *testing.T) {
 	t.Run("Read device by valid UniqID", func(t *testing.T) {
 		t.Parallel()
 
-		ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
+		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
 		defer cancel()
 
 		readDev, err := globalDevDAO.ReadByUniqID(ctx, createDev.UniqId)
@@ -176,7 +176,7 @@ func TestReadByUniqID(t *testing.T) {
 	t.Run("Read device by unknown UniqID", func(t *testing.T) {
 		t.Parallel()
 
-		ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
+		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
 		defer cancel()
 
 		readDev, err := globalDevDAO.ReadByUniqID(ctx, uuid.NewString())
@@ -189,7 +189,7 @@ func TestReadByUniqID(t *testing.T) {
 func TestUpdate(t *testing.T) {
 	t.Parallel()
 
-	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
 	defer cancel()
 
 	createOrg, err := globalOrgDAO.Create(ctx, random.Org("dao-device"))
@@ -199,7 +199,7 @@ func TestUpdate(t *testing.T) {
 	t.Run("Update device by valid device", func(t *testing.T) {
 		t.Parallel()
 
-		ctx, cancel := context.WithTimeout(context.Background(), 4*time.Second)
+		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
 		defer cancel()
 
 		createDev, err := globalDevDAO.Create(ctx, random.Device("dao-device",
@@ -226,7 +226,7 @@ func TestUpdate(t *testing.T) {
 	t.Run("Update unknown device", func(t *testing.T) {
 		t.Parallel()
 
-		ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
+		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
 		defer cancel()
 
 		updateDev, err := globalDevDAO.Update(ctx, random.Device("dao-device",
@@ -239,7 +239,7 @@ func TestUpdate(t *testing.T) {
 	t.Run("Updates are isolated by org ID", func(t *testing.T) {
 		t.Parallel()
 
-		ctx, cancel := context.WithTimeout(context.Background(), 4*time.Second)
+		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
 		defer cancel()
 
 		createDev, err := globalDevDAO.Create(ctx, random.Device("dao-device",
@@ -260,7 +260,7 @@ func TestUpdate(t *testing.T) {
 	t.Run("Update device by invalid device", func(t *testing.T) {
 		t.Parallel()
 
-		ctx, cancel := context.WithTimeout(context.Background(), 4*time.Second)
+		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
 		defer cancel()
 
 		createDev, err := globalDevDAO.Create(ctx, random.Device("dao-device",
@@ -281,7 +281,7 @@ func TestUpdate(t *testing.T) {
 func TestDelete(t *testing.T) {
 	t.Parallel()
 
-	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
 	defer cancel()
 
 	createOrg, err := globalOrgDAO.Create(ctx, random.Org("dao-device"))
@@ -291,7 +291,7 @@ func TestDelete(t *testing.T) {
 	t.Run("Delete device by valid ID", func(t *testing.T) {
 		t.Parallel()
 
-		ctx, cancel := context.WithTimeout(context.Background(), 4*time.Second)
+		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
 		defer cancel()
 
 		createDev, err := globalDevDAO.Create(ctx, random.Device("dao-device",
@@ -307,7 +307,7 @@ func TestDelete(t *testing.T) {
 			t.Parallel()
 
 			ctx, cancel := context.WithTimeout(context.Background(),
-				2*time.Second)
+				testTimeout)
 			defer cancel()
 
 			readDev, err := globalDevDAO.Read(ctx, createDev.Id,
@@ -321,7 +321,7 @@ func TestDelete(t *testing.T) {
 	t.Run("Delete device by unknown ID", func(t *testing.T) {
 		t.Parallel()
 
-		ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
+		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
 		defer cancel()
 
 		err := globalDevDAO.Delete(ctx, uuid.NewString(), createOrg.Id)
@@ -332,7 +332,7 @@ func TestDelete(t *testing.T) {
 	t.Run("Deletes are isolated by org ID", func(t *testing.T) {
 		t.Parallel()
 
-		ctx, cancel := context.WithTimeout(context.Background(), 4*time.Second)
+		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
 		defer cancel()
 
 		createDev, err := globalDevDAO.Create(ctx, random.Device("dao-device",
@@ -349,7 +349,7 @@ func TestDelete(t *testing.T) {
 func TestList(t *testing.T) {
 	t.Parallel()
 
-	ctx, cancel := context.WithTimeout(context.Background(), 8*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
 	defer cancel()
 
 	createOrg, err := globalOrgDAO.Create(ctx, random.Org("dao-device"))
@@ -373,7 +373,7 @@ func TestList(t *testing.T) {
 	t.Run("List devices by valid org ID", func(t *testing.T) {
 		t.Parallel()
 
-		ctx, cancel := context.WithTimeout(context.Background(), 4*time.Second)
+		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
 		defer cancel()
 
 		listDevs, listCount, err := globalDevDAO.List(ctx, createOrg.Id,
@@ -396,7 +396,7 @@ func TestList(t *testing.T) {
 	t.Run("List devices by valid org ID with pagination", func(t *testing.T) {
 		t.Parallel()
 
-		ctx, cancel := context.WithTimeout(context.Background(), 4*time.Second)
+		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
 		defer cancel()
 
 		listDevs, listCount, err := globalDevDAO.List(ctx, createOrg.Id,
@@ -419,7 +419,7 @@ func TestList(t *testing.T) {
 	t.Run("List devices by valid org ID with limit", func(t *testing.T) {
 		t.Parallel()
 
-		ctx, cancel := context.WithTimeout(context.Background(), 4*time.Second)
+		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
 		defer cancel()
 
 		listDevs, listCount, err := globalDevDAO.List(ctx, createOrg.Id,
@@ -433,7 +433,7 @@ func TestList(t *testing.T) {
 	t.Run("Lists are isolated by org ID", func(t *testing.T) {
 		t.Parallel()
 
-		ctx, cancel := context.WithTimeout(context.Background(), 4*time.Second)
+		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
 		defer cancel()
 
 		listDevs, listCount, err := globalDevDAO.List(ctx, uuid.NewString(),
@@ -447,7 +447,7 @@ func TestList(t *testing.T) {
 	t.Run("List devices by invalid org ID", func(t *testing.T) {
 		t.Parallel()
 
-		ctx, cancel := context.WithTimeout(context.Background(), 4*time.Second)
+		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
 		defer cancel()
 
 		listDevs, listCount, err := globalDevDAO.List(ctx, random.String(10),

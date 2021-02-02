@@ -11,13 +11,15 @@ import (
 	"github.com/thingspect/atlas/pkg/test/random"
 )
 
+const testTimeout = 2 * time.Second
+
 func TestNewFromContext(t *testing.T) {
 	t.Parallel()
 
 	logger := &CtxLogger{Logger: WithStr(random.String(10), random.String(10))}
 	t.Logf("logger: %+v", logger)
 
-	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
 	defer cancel()
 
 	ctx = NewContext(ctx, logger)
@@ -29,7 +31,7 @@ func TestNewFromContext(t *testing.T) {
 func TestFromContextDefault(t *testing.T) {
 	t.Parallel()
 
-	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
 	defer cancel()
 
 	ctxLogger := FromContext(ctx)

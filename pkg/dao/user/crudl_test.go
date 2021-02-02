@@ -19,7 +19,7 @@ import (
 func TestCreate(t *testing.T) {
 	t.Parallel()
 
-	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
 	defer cancel()
 
 	createOrg, err := globalOrgDAO.Create(ctx, random.Org("dao-user"))
@@ -29,7 +29,7 @@ func TestCreate(t *testing.T) {
 	t.Run("Create valid user", func(t *testing.T) {
 		t.Parallel()
 
-		ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
+		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
 		defer cancel()
 
 		user := random.User("dao-user", createOrg.Id)
@@ -49,7 +49,7 @@ func TestCreate(t *testing.T) {
 	t.Run("Create invalid user", func(t *testing.T) {
 		t.Parallel()
 
-		ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
+		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
 		defer cancel()
 
 		user := random.User("dao-user", createOrg.Id)
@@ -64,7 +64,7 @@ func TestCreate(t *testing.T) {
 func TestRead(t *testing.T) {
 	t.Parallel()
 
-	ctx, cancel := context.WithTimeout(context.Background(), 4*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
 	defer cancel()
 
 	createOrg, err := globalOrgDAO.Create(ctx, random.Org("dao-user"))
@@ -79,7 +79,7 @@ func TestRead(t *testing.T) {
 	t.Run("Read user by valid ID", func(t *testing.T) {
 		t.Parallel()
 
-		ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
+		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
 		defer cancel()
 
 		readUser, err := globalUserDAO.Read(ctx, createUser.Id,
@@ -92,7 +92,7 @@ func TestRead(t *testing.T) {
 	t.Run("Read user by unknown ID", func(t *testing.T) {
 		t.Parallel()
 
-		ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
+		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
 		defer cancel()
 
 		readUser, err := globalUserDAO.Read(ctx, uuid.NewString(),
@@ -105,7 +105,7 @@ func TestRead(t *testing.T) {
 	t.Run("Reads are isolated by org ID", func(t *testing.T) {
 		t.Parallel()
 
-		ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
+		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
 		defer cancel()
 
 		readUser, err := globalUserDAO.Read(ctx, createUser.Id,
@@ -118,7 +118,7 @@ func TestRead(t *testing.T) {
 	t.Run("Read user by invalid ID", func(t *testing.T) {
 		t.Parallel()
 
-		ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
+		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
 		defer cancel()
 
 		readUser, err := globalUserDAO.Read(ctx, random.String(10),
@@ -132,7 +132,7 @@ func TestRead(t *testing.T) {
 func TestReadByEmail(t *testing.T) {
 	t.Parallel()
 
-	ctx, cancel := context.WithTimeout(context.Background(), 6*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
 	defer cancel()
 
 	createOrg, err := globalOrgDAO.Create(ctx, random.Org("dao-user"))
@@ -152,7 +152,7 @@ func TestReadByEmail(t *testing.T) {
 	t.Run("Read user by valid email", func(t *testing.T) {
 		t.Parallel()
 
-		ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
+		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
 		defer cancel()
 
 		readUser, readHash, err := globalUserDAO.ReadByEmail(ctx,
@@ -178,7 +178,7 @@ func TestReadByEmail(t *testing.T) {
 	t.Run("Read user by unknown email", func(t *testing.T) {
 		t.Parallel()
 
-		ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
+		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
 		defer cancel()
 
 		readUser, readHash, err := globalUserDAO.ReadByEmail(ctx,
@@ -192,7 +192,7 @@ func TestReadByEmail(t *testing.T) {
 	t.Run("Reads are isolated by org name", func(t *testing.T) {
 		t.Parallel()
 
-		ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
+		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
 		defer cancel()
 
 		readUser, readHash, err := globalUserDAO.ReadByEmail(ctx,
@@ -207,7 +207,7 @@ func TestReadByEmail(t *testing.T) {
 func TestUpdate(t *testing.T) {
 	t.Parallel()
 
-	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
 	defer cancel()
 
 	createOrg, err := globalOrgDAO.Create(ctx, random.Org("dao-user"))
@@ -217,7 +217,7 @@ func TestUpdate(t *testing.T) {
 	t.Run("Update user by valid user", func(t *testing.T) {
 		t.Parallel()
 
-		ctx, cancel := context.WithTimeout(context.Background(), 4*time.Second)
+		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
 		defer cancel()
 
 		createUser, err := globalUserDAO.Create(ctx, random.User("dao-user",
@@ -246,7 +246,7 @@ func TestUpdate(t *testing.T) {
 	t.Run("Update unknown user", func(t *testing.T) {
 		t.Parallel()
 
-		ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
+		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
 		defer cancel()
 
 		updateUser, err := globalUserDAO.Update(ctx, random.User("dao-user",
@@ -259,7 +259,7 @@ func TestUpdate(t *testing.T) {
 	t.Run("Updates are isolated by org ID", func(t *testing.T) {
 		t.Parallel()
 
-		ctx, cancel := context.WithTimeout(context.Background(), 4*time.Second)
+		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
 		defer cancel()
 
 		createUser, err := globalUserDAO.Create(ctx, random.User("dao-user",
@@ -280,7 +280,7 @@ func TestUpdate(t *testing.T) {
 	t.Run("Update user by invalid user", func(t *testing.T) {
 		t.Parallel()
 
-		ctx, cancel := context.WithTimeout(context.Background(), 4*time.Second)
+		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
 		defer cancel()
 
 		createUser, err := globalUserDAO.Create(ctx, random.User("dao-user",
@@ -302,7 +302,7 @@ func TestUpdate(t *testing.T) {
 func TestUpdatePassword(t *testing.T) {
 	t.Parallel()
 
-	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
 	defer cancel()
 
 	createOrg, err := globalOrgDAO.Create(ctx, random.Org("dao-user"))
@@ -312,7 +312,7 @@ func TestUpdatePassword(t *testing.T) {
 	t.Run("Update user password by valid ID", func(t *testing.T) {
 		t.Parallel()
 
-		ctx, cancel := context.WithTimeout(context.Background(), 4*time.Second)
+		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
 		defer cancel()
 
 		createUser, err := globalUserDAO.Create(ctx, random.User("dao-user",
@@ -329,7 +329,7 @@ func TestUpdatePassword(t *testing.T) {
 	t.Run("Update user password by unknown ID", func(t *testing.T) {
 		t.Parallel()
 
-		ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
+		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
 		defer cancel()
 
 		err := globalUserDAO.UpdatePassword(ctx, uuid.NewString(),
@@ -341,7 +341,7 @@ func TestUpdatePassword(t *testing.T) {
 	t.Run("Password updates are isolated by org ID", func(t *testing.T) {
 		t.Parallel()
 
-		ctx, cancel := context.WithTimeout(context.Background(), 4*time.Second)
+		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
 		defer cancel()
 
 		createUser, err := globalUserDAO.Create(ctx, random.User("dao-user",
@@ -359,7 +359,7 @@ func TestUpdatePassword(t *testing.T) {
 func TestDelete(t *testing.T) {
 	t.Parallel()
 
-	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
 	defer cancel()
 
 	createOrg, err := globalOrgDAO.Create(ctx, random.Org("dao-user"))
@@ -369,7 +369,7 @@ func TestDelete(t *testing.T) {
 	t.Run("Delete user by valid ID", func(t *testing.T) {
 		t.Parallel()
 
-		ctx, cancel := context.WithTimeout(context.Background(), 4*time.Second)
+		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
 		defer cancel()
 
 		createUser, err := globalUserDAO.Create(ctx, random.User("dao-user",
@@ -385,7 +385,7 @@ func TestDelete(t *testing.T) {
 			t.Parallel()
 
 			ctx, cancel := context.WithTimeout(context.Background(),
-				2*time.Second)
+				testTimeout)
 			defer cancel()
 
 			readUser, err := globalUserDAO.Read(ctx, createUser.Id,
@@ -399,7 +399,7 @@ func TestDelete(t *testing.T) {
 	t.Run("Delete user by unknown ID", func(t *testing.T) {
 		t.Parallel()
 
-		ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
+		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
 		defer cancel()
 
 		err := globalUserDAO.Delete(ctx, uuid.NewString(), createOrg.Id)
@@ -410,7 +410,7 @@ func TestDelete(t *testing.T) {
 	t.Run("Deletes are isolated by org ID", func(t *testing.T) {
 		t.Parallel()
 
-		ctx, cancel := context.WithTimeout(context.Background(), 4*time.Second)
+		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
 		defer cancel()
 
 		createUser, err := globalUserDAO.Create(ctx, random.User("dao-user",
@@ -427,7 +427,7 @@ func TestDelete(t *testing.T) {
 func TestList(t *testing.T) {
 	t.Parallel()
 
-	ctx, cancel := context.WithTimeout(context.Background(), 8*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
 	defer cancel()
 
 	createOrg, err := globalOrgDAO.Create(ctx, random.Org("dao-user"))
@@ -453,7 +453,7 @@ func TestList(t *testing.T) {
 	t.Run("List users by valid org ID", func(t *testing.T) {
 		t.Parallel()
 
-		ctx, cancel := context.WithTimeout(context.Background(), 4*time.Second)
+		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
 		defer cancel()
 
 		listUsers, listCount, err := globalUserDAO.List(ctx, createOrg.Id,
@@ -477,7 +477,7 @@ func TestList(t *testing.T) {
 	t.Run("List users by valid org ID with pagination", func(t *testing.T) {
 		t.Parallel()
 
-		ctx, cancel := context.WithTimeout(context.Background(), 4*time.Second)
+		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
 		defer cancel()
 
 		listUsers, listCount, err := globalUserDAO.List(ctx, createOrg.Id,
@@ -501,7 +501,7 @@ func TestList(t *testing.T) {
 	t.Run("List users by valid org ID with limit", func(t *testing.T) {
 		t.Parallel()
 
-		ctx, cancel := context.WithTimeout(context.Background(), 4*time.Second)
+		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
 		defer cancel()
 
 		listUsers, listCount, err := globalUserDAO.List(ctx, createOrg.Id,
@@ -515,7 +515,7 @@ func TestList(t *testing.T) {
 	t.Run("Lists are isolated by org ID", func(t *testing.T) {
 		t.Parallel()
 
-		ctx, cancel := context.WithTimeout(context.Background(), 4*time.Second)
+		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
 		defer cancel()
 
 		listUsers, listCount, err := globalUserDAO.List(ctx,
@@ -529,7 +529,7 @@ func TestList(t *testing.T) {
 	t.Run("List users by invalid org ID", func(t *testing.T) {
 		t.Parallel()
 
-		ctx, cancel := context.WithTimeout(context.Background(), 4*time.Second)
+		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
 		defer cancel()
 
 		listUsers, listCount, err := globalUserDAO.List(ctx, random.String(10),

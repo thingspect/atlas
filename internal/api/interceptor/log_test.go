@@ -15,6 +15,8 @@ import (
 	"google.golang.org/grpc/metadata"
 )
 
+const testTimeout = 2 * time.Second
+
 func TestLog(t *testing.T) {
 	t.Parallel()
 
@@ -45,7 +47,7 @@ func TestLog(t *testing.T) {
 			t.Parallel()
 
 			ctx, cancel := context.WithTimeout(context.Background(),
-				2*time.Second)
+				testTimeout)
 			defer cancel()
 			ctx = metadata.NewIncomingContext(ctx,
 				metadata.Pairs(lTest.inpMD...))

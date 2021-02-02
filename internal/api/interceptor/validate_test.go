@@ -7,7 +7,6 @@ import (
 	"fmt"
 	"io"
 	"testing"
-	"time"
 
 	"github.com/stretchr/testify/require"
 	"github.com/thingspect/atlas/pkg/test/random"
@@ -51,7 +50,7 @@ func TestValidate(t *testing.T) {
 			t.Parallel()
 
 			ctx, cancel := context.WithTimeout(context.Background(),
-				2*time.Second)
+				testTimeout)
 			defer cancel()
 
 			handler := func(ctx context.Context, req interface{}) (interface{},

@@ -6,6 +6,7 @@ import (
 	"log"
 	"os"
 	"testing"
+	"time"
 
 	"github.com/thingspect/atlas/internal/accumulator/accumulator"
 	"github.com/thingspect/atlas/internal/accumulator/config"
@@ -15,6 +16,8 @@ import (
 	testconfig "github.com/thingspect/atlas/pkg/test/config"
 	"github.com/thingspect/atlas/pkg/test/random"
 )
+
+const testTimeout = 2 * time.Second
 
 var (
 	globalVOutSubTopic string

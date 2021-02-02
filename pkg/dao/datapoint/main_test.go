@@ -6,12 +6,15 @@ import (
 	"log"
 	"os"
 	"testing"
+	"time"
 
 	"github.com/thingspect/atlas/pkg/dao/device"
 	"github.com/thingspect/atlas/pkg/dao/org"
 	"github.com/thingspect/atlas/pkg/postgres"
 	"github.com/thingspect/atlas/pkg/test/config"
 )
+
+const testTimeout = 4 * time.Second
 
 var (
 	globalDPDAO  *DAO

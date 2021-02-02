@@ -6,6 +6,7 @@ import (
 	"log"
 	"os"
 	"testing"
+	"time"
 
 	"github.com/thingspect/atlas/internal/validator/config"
 	"github.com/thingspect/atlas/internal/validator/validator"
@@ -16,6 +17,8 @@ import (
 	testconfig "github.com/thingspect/atlas/pkg/test/config"
 	"github.com/thingspect/atlas/pkg/test/random"
 )
+
+const testTimeout = 6 * time.Second
 
 var (
 	globalVInSubTopic string

@@ -15,6 +15,8 @@ import (
 	"google.golang.org/grpc/metadata"
 )
 
+const testTimeout = 2 * time.Second
+
 func TestStatusCode(t *testing.T) {
 	t.Parallel()
 
@@ -35,7 +37,7 @@ func TestStatusCode(t *testing.T) {
 
 		ctx, cancel := context.WithTimeout(runtime.NewServerMetadataContext(
 			context.Background(), runtime.ServerMetadata{HeaderMD: mdHeader}),
-			2*time.Second)
+			testTimeout)
 		defer cancel()
 
 		err := statusCode(ctx, respWriter, nil)
@@ -60,7 +62,7 @@ func TestStatusCode(t *testing.T) {
 
 		ctx, cancel := context.WithTimeout(runtime.NewServerMetadataContext(
 			context.Background(), runtime.ServerMetadata{HeaderMD: mdHeader}),
-			2*time.Second)
+			testTimeout)
 		defer cancel()
 
 		err := statusCode(ctx, respWriter, nil)
@@ -83,7 +85,7 @@ func TestStatusCode(t *testing.T) {
 		defer ctrl.Finish()
 		respWriter := NewMockResponseWriter(ctrl)
 
-		ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
+		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
 		defer cancel()
 
 		err := statusCode(ctx, respWriter, nil)
@@ -109,7 +111,7 @@ func TestStatusCode(t *testing.T) {
 
 		ctx, cancel := context.WithTimeout(runtime.NewServerMetadataContext(
 			context.Background(), runtime.ServerMetadata{HeaderMD: mdHeader}),
-			2*time.Second)
+			testTimeout)
 		defer cancel()
 
 		err := statusCode(ctx, respWriter, nil)

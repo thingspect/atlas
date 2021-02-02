@@ -39,7 +39,7 @@ func TestCreateUser(t *testing.T) {
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
 			context.Background(), &session.Session{OrgID: user.OrgId,
-				Role: common.Role_ADMIN}), 2*time.Second)
+				Role: common.Role_ADMIN}), testTimeout)
 		defer cancel()
 
 		userSvc := NewUser(userer)
@@ -62,7 +62,7 @@ func TestCreateUser(t *testing.T) {
 		defer ctrl.Finish()
 		userer := NewMockUserer(ctrl)
 
-		ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
+		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
 		defer cancel()
 
 		userSvc := NewUser(userer)
@@ -82,7 +82,7 @@ func TestCreateUser(t *testing.T) {
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
 			context.Background(), &session.Session{OrgID: uuid.NewString(),
-				Role: common.Role_BUILDER}), 2*time.Second)
+				Role: common.Role_BUILDER}), testTimeout)
 		defer cancel()
 
 		userSvc := NewUser(userer)
@@ -107,7 +107,7 @@ func TestCreateUser(t *testing.T) {
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
 			context.Background(), &session.Session{OrgID: user.OrgId,
-				Role: common.Role_ADMIN}), 2*time.Second)
+				Role: common.Role_ADMIN}), testTimeout)
 		defer cancel()
 
 		userSvc := NewUser(userer)
@@ -137,7 +137,7 @@ func TestGetUser(t *testing.T) {
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
 			context.Background(), &session.Session{OrgID: user.OrgId,
-				Role: common.Role_ADMIN}), 2*time.Second)
+				Role: common.Role_ADMIN}), testTimeout)
 		defer cancel()
 
 		userSvc := NewUser(userer)
@@ -159,7 +159,7 @@ func TestGetUser(t *testing.T) {
 		defer ctrl.Finish()
 		userer := NewMockUserer(ctrl)
 
-		ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
+		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
 		defer cancel()
 
 		userSvc := NewUser(userer)
@@ -180,7 +180,7 @@ func TestGetUser(t *testing.T) {
 		ctx, cancel := context.WithTimeout(session.NewContext(
 			context.Background(), &session.Session{UserID: uuid.NewString(),
 				OrgID: uuid.NewString(), Role: common.Role_VIEWER}),
-			2*time.Second)
+			testTimeout)
 		defer cancel()
 
 		userSvc := NewUser(userer)
@@ -203,7 +203,7 @@ func TestGetUser(t *testing.T) {
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
 			context.Background(), &session.Session{OrgID: uuid.NewString(),
-				Role: common.Role_ADMIN}), 2*time.Second)
+				Role: common.Role_ADMIN}), testTimeout)
 		defer cancel()
 
 		userSvc := NewUser(userer)
@@ -231,7 +231,7 @@ func TestUpdateUser(t *testing.T) {
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
 			context.Background(), &session.Session{OrgID: user.OrgId,
-				Role: common.Role_ADMIN}), 2*time.Second)
+				Role: common.Role_ADMIN}), testTimeout)
 		defer cancel()
 
 		userSvc := NewUser(userer)
@@ -266,7 +266,7 @@ func TestUpdateUser(t *testing.T) {
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
 			context.Background(), &session.Session{OrgID: user.OrgId,
-				Role: common.Role_ADMIN}), 2*time.Second)
+				Role: common.Role_ADMIN}), testTimeout)
 		defer cancel()
 
 		userSvc := NewUser(userer)
@@ -290,7 +290,7 @@ func TestUpdateUser(t *testing.T) {
 		defer ctrl.Finish()
 		userer := NewMockUserer(ctrl)
 
-		ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
+		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
 		defer cancel()
 
 		userSvc := NewUser(userer)
@@ -310,7 +310,7 @@ func TestUpdateUser(t *testing.T) {
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
 			context.Background(), &session.Session{OrgID: uuid.NewString(),
-				Role: common.Role_ADMIN}), 2*time.Second)
+				Role: common.Role_ADMIN}), testTimeout)
 		defer cancel()
 
 		userSvc := NewUser(userer)
@@ -332,7 +332,7 @@ func TestUpdateUser(t *testing.T) {
 		ctx, cancel := context.WithTimeout(session.NewContext(
 			context.Background(), &session.Session{UserID: uuid.NewString(),
 				OrgID: uuid.NewString(), Role: common.Role_VIEWER}),
-			2*time.Second)
+			testTimeout)
 		defer cancel()
 
 		userSvc := NewUser(userer)
@@ -354,7 +354,7 @@ func TestUpdateUser(t *testing.T) {
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
 			context.Background(), &session.Session{OrgID: uuid.NewString(),
-				Role: common.Role_ADMIN}), 2*time.Second)
+				Role: common.Role_ADMIN}), testTimeout)
 		defer cancel()
 
 		userSvc := NewUser(userer)
@@ -382,7 +382,7 @@ func TestUpdateUser(t *testing.T) {
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
 			context.Background(), &session.Session{OrgID: orgID,
-				Role: common.Role_ADMIN}), 2*time.Second)
+				Role: common.Role_ADMIN}), testTimeout)
 		defer cancel()
 
 		userSvc := NewUser(userer)
@@ -406,7 +406,7 @@ func TestUpdateUser(t *testing.T) {
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
 			context.Background(), &session.Session{OrgID: user.OrgId,
-				Role: common.Role_ADMIN}), 2*time.Second)
+				Role: common.Role_ADMIN}), testTimeout)
 		defer cancel()
 
 		userSvc := NewUser(userer)
@@ -435,7 +435,7 @@ func TestUpdateUser(t *testing.T) {
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
 			context.Background(), &session.Session{OrgID: user.OrgId,
-				Role: common.Role_ADMIN}), 2*time.Second)
+				Role: common.Role_ADMIN}), testTimeout)
 		defer cancel()
 
 		userSvc := NewUser(userer)
@@ -463,7 +463,7 @@ func TestUpdateUserPassword(t *testing.T) {
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
 			context.Background(), &session.Session{OrgID: uuid.NewString(),
-				Role: common.Role_ADMIN}), 2*time.Second)
+				Role: common.Role_ADMIN}), testTimeout)
 		defer cancel()
 
 		userSvc := NewUser(userer)
@@ -481,7 +481,7 @@ func TestUpdateUserPassword(t *testing.T) {
 		defer ctrl.Finish()
 		userer := NewMockUserer(ctrl)
 
-		ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
+		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
 		defer cancel()
 
 		userSvc := NewUser(userer)
@@ -502,7 +502,7 @@ func TestUpdateUserPassword(t *testing.T) {
 		ctx, cancel := context.WithTimeout(session.NewContext(
 			context.Background(), &session.Session{UserID: uuid.NewString(),
 				OrgID: uuid.NewString(), Role: common.Role_VIEWER}),
-			2*time.Second)
+			testTimeout)
 		defer cancel()
 
 		userSvc := NewUser(userer)
@@ -522,7 +522,7 @@ func TestUpdateUserPassword(t *testing.T) {
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
 			context.Background(), &session.Session{OrgID: uuid.NewString(),
-				Role: common.Role_ADMIN}), 2*time.Second)
+				Role: common.Role_ADMIN}), testTimeout)
 		defer cancel()
 
 		userSvc := NewUser(userer)
@@ -546,7 +546,7 @@ func TestUpdateUserPassword(t *testing.T) {
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
 			context.Background(), &session.Session{OrgID: uuid.NewString(),
-				Role: common.Role_ADMIN}), 6*time.Second)
+				Role: common.Role_ADMIN}), testTimeout)
 		defer cancel()
 
 		userSvc := NewUser(userer)
@@ -573,7 +573,7 @@ func TestDeleteUser(t *testing.T) {
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
 			context.Background(), &session.Session{OrgID: uuid.NewString(),
-				Role: common.Role_ADMIN}), 2*time.Second)
+				Role: common.Role_ADMIN}), testTimeout)
 		defer cancel()
 
 		userSvc := NewUser(userer)
@@ -590,7 +590,7 @@ func TestDeleteUser(t *testing.T) {
 		defer ctrl.Finish()
 		userer := NewMockUserer(ctrl)
 
-		ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
+		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
 		defer cancel()
 
 		userSvc := NewUser(userer)
@@ -609,7 +609,7 @@ func TestDeleteUser(t *testing.T) {
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
 			context.Background(), &session.Session{OrgID: uuid.NewString(),
-				Role: common.Role_BUILDER}), 2*time.Second)
+				Role: common.Role_BUILDER}), testTimeout)
 		defer cancel()
 
 		userSvc := NewUser(userer)
@@ -631,7 +631,7 @@ func TestDeleteUser(t *testing.T) {
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
 			context.Background(), &session.Session{OrgID: uuid.NewString(),
-				Role: common.Role_ADMIN}), 2*time.Second)
+				Role: common.Role_ADMIN}), testTimeout)
 		defer cancel()
 
 		userSvc := NewUser(userer)
@@ -665,7 +665,7 @@ func TestListUsers(t *testing.T) {
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
 			context.Background(), &session.Session{OrgID: orgID,
-				Role: common.Role_ADMIN}), 2*time.Second)
+				Role: common.Role_ADMIN}), testTimeout)
 		defer cancel()
 
 		userSvc := NewUser(userer)
@@ -707,7 +707,7 @@ func TestListUsers(t *testing.T) {
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
 			context.Background(), &session.Session{OrgID: orgID,
-				Role: common.Role_ADMIN}), 2*time.Second)
+				Role: common.Role_ADMIN}), testTimeout)
 		defer cancel()
 
 		userSvc := NewUser(userer)
@@ -734,7 +734,7 @@ func TestListUsers(t *testing.T) {
 		defer ctrl.Finish()
 		userer := NewMockUserer(ctrl)
 
-		ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
+		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
 		defer cancel()
 
 		userSvc := NewUser(userer)
@@ -758,7 +758,7 @@ func TestListUsers(t *testing.T) {
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
 			context.Background(), &session.Session{UserID: user.Id,
-				OrgID: user.OrgId, Role: common.Role_VIEWER}), 2*time.Second)
+				OrgID: user.OrgId, Role: common.Role_VIEWER}), testTimeout)
 		defer cancel()
 
 		userSvc := NewUser(userer)
@@ -789,7 +789,7 @@ func TestListUsers(t *testing.T) {
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
 			context.Background(), &session.Session{UserID: user.Id,
-				OrgID: user.OrgId, Role: common.Role_VIEWER}), 2*time.Second)
+				OrgID: user.OrgId, Role: common.Role_VIEWER}), testTimeout)
 		defer cancel()
 
 		userSvc := NewUser(userer)
@@ -808,7 +808,7 @@ func TestListUsers(t *testing.T) {
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
 			context.Background(), &session.Session{OrgID: uuid.NewString(),
-				Role: common.Role_ADMIN}), 2*time.Second)
+				Role: common.Role_ADMIN}), testTimeout)
 		defer cancel()
 
 		userSvc := NewUser(userer)
@@ -832,7 +832,7 @@ func TestListUsers(t *testing.T) {
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
 			context.Background(), &session.Session{OrgID: "aaa",
-				Role: common.Role_ADMIN}), 2*time.Second)
+				Role: common.Role_ADMIN}), testTimeout)
 		defer cancel()
 
 		userSvc := NewUser(userer)
@@ -864,7 +864,7 @@ func TestListUsers(t *testing.T) {
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
 			context.Background(), &session.Session{OrgID: orgID,
-				Role: common.Role_ADMIN}), 2*time.Second)
+				Role: common.Role_ADMIN}), testTimeout)
 		defer cancel()
 
 		userSvc := NewUser(userer)

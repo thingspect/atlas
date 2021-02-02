@@ -24,7 +24,7 @@ func TestCreateDevice(t *testing.T) {
 
 		dev := random.Device("api-device", uuid.NewString())
 
-		ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
+		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
 		defer cancel()
 
 		devCli := api.NewDeviceServiceClient(globalAdminGRPCConn)
@@ -48,7 +48,7 @@ func TestCreateDevice(t *testing.T) {
 		dev := random.Device("api-device", uuid.NewString())
 		dev.UniqId = strings.ToUpper(dev.UniqId)
 
-		ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
+		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
 		defer cancel()
 
 		devCli := api.NewDeviceServiceClient(globalAdminGRPCConn)
@@ -72,7 +72,7 @@ func TestCreateDevice(t *testing.T) {
 		dev := random.Device("api-device", uuid.NewString())
 		dev.UniqId = "api-device-" + random.String(40)
 
-		ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
+		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
 		defer cancel()
 
 		devCli := api.NewDeviceServiceClient(globalAdminGRPCConn)
@@ -89,7 +89,7 @@ func TestCreateDevice(t *testing.T) {
 	t.Run("Create valid device with insufficient role", func(t *testing.T) {
 		t.Parallel()
 
-		ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
+		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
 		defer cancel()
 
 		devCli := api.NewDeviceServiceClient(secondaryViewerGRPCConn)
@@ -105,7 +105,7 @@ func TestCreateDevice(t *testing.T) {
 func TestGetDevice(t *testing.T) {
 	t.Parallel()
 
-	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
 	defer cancel()
 
 	devCli := api.NewDeviceServiceClient(globalAdminGRPCConn)
@@ -117,7 +117,7 @@ func TestGetDevice(t *testing.T) {
 	t.Run("Get device by valid ID", func(t *testing.T) {
 		t.Parallel()
 
-		ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
+		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
 		defer cancel()
 
 		devCli := api.NewDeviceServiceClient(globalAdminGRPCConn)
@@ -136,7 +136,7 @@ func TestGetDevice(t *testing.T) {
 	t.Run("Get device by unknown ID", func(t *testing.T) {
 		t.Parallel()
 
-		ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
+		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
 		defer cancel()
 
 		devCli := api.NewDeviceServiceClient(globalAdminGRPCConn)
@@ -151,7 +151,7 @@ func TestGetDevice(t *testing.T) {
 	t.Run("Get are isolated by org ID", func(t *testing.T) {
 		t.Parallel()
 
-		ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
+		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
 		defer cancel()
 
 		secCli := api.NewDeviceServiceClient(secondaryAdminGRPCConn)
@@ -170,7 +170,7 @@ func TestUpdateDevice(t *testing.T) {
 	t.Run("Update device by valid device", func(t *testing.T) {
 		t.Parallel()
 
-		ctx, cancel := context.WithTimeout(context.Background(), 4*time.Second)
+		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
 		defer cancel()
 
 		devCli := api.NewDeviceServiceClient(globalAdminGRPCConn)
@@ -200,7 +200,7 @@ func TestUpdateDevice(t *testing.T) {
 	t.Run("Partial update device by valid device", func(t *testing.T) {
 		t.Parallel()
 
-		ctx, cancel := context.WithTimeout(context.Background(), 4*time.Second)
+		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
 		defer cancel()
 
 		devCli := api.NewDeviceServiceClient(globalAdminGRPCConn)
@@ -231,7 +231,7 @@ func TestUpdateDevice(t *testing.T) {
 	t.Run("Update device with insufficient role", func(t *testing.T) {
 		t.Parallel()
 
-		ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
+		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
 		defer cancel()
 
 		devCli := api.NewDeviceServiceClient(secondaryViewerGRPCConn)
@@ -246,7 +246,7 @@ func TestUpdateDevice(t *testing.T) {
 	t.Run("Update nil device", func(t *testing.T) {
 		t.Parallel()
 
-		ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
+		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
 		defer cancel()
 
 		devCli := api.NewDeviceServiceClient(globalAdminGRPCConn)
@@ -261,7 +261,7 @@ func TestUpdateDevice(t *testing.T) {
 	t.Run("Partial update invalid field mask", func(t *testing.T) {
 		t.Parallel()
 
-		ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
+		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
 		defer cancel()
 
 		devCli := api.NewDeviceServiceClient(globalAdminGRPCConn)
@@ -277,7 +277,7 @@ func TestUpdateDevice(t *testing.T) {
 	t.Run("Partial update device by unknown device", func(t *testing.T) {
 		t.Parallel()
 
-		ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
+		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
 		defer cancel()
 
 		devCli := api.NewDeviceServiceClient(globalAdminGRPCConn)
@@ -294,7 +294,7 @@ func TestUpdateDevice(t *testing.T) {
 	t.Run("Update device by unknown device", func(t *testing.T) {
 		t.Parallel()
 
-		ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
+		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
 		defer cancel()
 
 		devCli := api.NewDeviceServiceClient(globalAdminGRPCConn)
@@ -309,7 +309,7 @@ func TestUpdateDevice(t *testing.T) {
 	t.Run("Updates are isolated by org ID", func(t *testing.T) {
 		t.Parallel()
 
-		ctx, cancel := context.WithTimeout(context.Background(), 4*time.Second)
+		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
 		defer cancel()
 
 		devCli := api.NewDeviceServiceClient(globalAdminGRPCConn)
@@ -334,7 +334,7 @@ func TestUpdateDevice(t *testing.T) {
 	t.Run("Update device validation failure", func(t *testing.T) {
 		t.Parallel()
 
-		ctx, cancel := context.WithTimeout(context.Background(), 4*time.Second)
+		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
 		defer cancel()
 
 		devCli := api.NewDeviceServiceClient(globalAdminGRPCConn)
@@ -359,7 +359,7 @@ func TestUpdateDevice(t *testing.T) {
 	t.Run("Update device by invalid device", func(t *testing.T) {
 		t.Parallel()
 
-		ctx, cancel := context.WithTimeout(context.Background(), 4*time.Second)
+		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
 		defer cancel()
 
 		devCli := api.NewDeviceServiceClient(globalAdminGRPCConn)
@@ -386,7 +386,7 @@ func TestDeleteDevice(t *testing.T) {
 	t.Run("Delete device by valid ID", func(t *testing.T) {
 		t.Parallel()
 
-		ctx, cancel := context.WithTimeout(context.Background(), 4*time.Second)
+		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
 		defer cancel()
 
 		devCli := api.NewDeviceServiceClient(globalAdminGRPCConn)
@@ -404,7 +404,7 @@ func TestDeleteDevice(t *testing.T) {
 			t.Parallel()
 
 			ctx, cancel := context.WithTimeout(context.Background(),
-				2*time.Second)
+				testTimeout)
 			defer cancel()
 
 			devCli := api.NewDeviceServiceClient(globalAdminGRPCConn)
@@ -420,7 +420,7 @@ func TestDeleteDevice(t *testing.T) {
 	t.Run("Delete device with insufficient role", func(t *testing.T) {
 		t.Parallel()
 
-		ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
+		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
 		defer cancel()
 
 		devCli := api.NewDeviceServiceClient(secondaryViewerGRPCConn)
@@ -434,7 +434,7 @@ func TestDeleteDevice(t *testing.T) {
 	t.Run("Delete device by unknown ID", func(t *testing.T) {
 		t.Parallel()
 
-		ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
+		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
 		defer cancel()
 
 		devCli := api.NewDeviceServiceClient(globalAdminGRPCConn)
@@ -448,7 +448,7 @@ func TestDeleteDevice(t *testing.T) {
 	t.Run("Deletes are isolated by org ID", func(t *testing.T) {
 		t.Parallel()
 
-		ctx, cancel := context.WithTimeout(context.Background(), 4*time.Second)
+		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
 		defer cancel()
 
 		devCli := api.NewDeviceServiceClient(globalAdminGRPCConn)
@@ -469,7 +469,7 @@ func TestDeleteDevice(t *testing.T) {
 func TestListDevices(t *testing.T) {
 	t.Parallel()
 
-	ctx, cancel := context.WithTimeout(context.Background(), 6*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
 	defer cancel()
 
 	devIDs := []string{}
@@ -488,7 +488,7 @@ func TestListDevices(t *testing.T) {
 	t.Run("List devices by valid org ID", func(t *testing.T) {
 		t.Parallel()
 
-		ctx, cancel := context.WithTimeout(context.Background(), 4*time.Second)
+		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
 		defer cancel()
 
 		devCli := api.NewDeviceServiceClient(globalAdminGRPCConn)
@@ -511,7 +511,7 @@ func TestListDevices(t *testing.T) {
 	t.Run("List devices by valid org ID with next page", func(t *testing.T) {
 		t.Parallel()
 
-		ctx, cancel := context.WithTimeout(context.Background(), 8*time.Second)
+		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
 		defer cancel()
 
 		devCli := api.NewDeviceServiceClient(globalAdminGRPCConn)
@@ -536,7 +536,7 @@ func TestListDevices(t *testing.T) {
 	t.Run("Lists are isolated by org ID", func(t *testing.T) {
 		t.Parallel()
 
-		ctx, cancel := context.WithTimeout(context.Background(), 4*time.Second)
+		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
 		defer cancel()
 
 		secCli := api.NewDeviceServiceClient(secondaryAdminGRPCConn)
@@ -550,7 +550,7 @@ func TestListDevices(t *testing.T) {
 	t.Run("List devices by invalid page token", func(t *testing.T) {
 		t.Parallel()
 
-		ctx, cancel := context.WithTimeout(context.Background(), 4*time.Second)
+		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
 		defer cancel()
 
 		devCli := api.NewDeviceServiceClient(globalAdminGRPCConn)

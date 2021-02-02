@@ -26,7 +26,7 @@ func TestPublishDataPoints(t *testing.T) {
 			Attr: "motion", ValOneof: &common.DataPoint_IntVal{IntVal: 123},
 			Ts: timestamppb.New(time.Now().Add(-15 * time.Minute))}
 
-		ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
+		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
 		defer cancel()
 
 		dpCli := api.NewDataPointServiceClient(globalAdminGRPCConn)
@@ -53,9 +53,10 @@ func TestPublishDataPoints(t *testing.T) {
 			if !proto.Equal(&message.ValidatorIn{Point: point,
 				OrgId: globalAdminOrgID, SkipToken: true}, vIn) {
 				t.Fatalf("\nExpect: %+v\nActual: %+v", &message.ValidatorIn{
-					Point: point, OrgId: globalAdminOrgID, SkipToken: true}, vIn)
+					Point: point, OrgId: globalAdminOrgID, SkipToken: true},
+					vIn)
 			}
-		case <-time.After(5 * time.Second):
+		case <-time.After(testTimeout):
 			t.Fatal("Message timed out")
 		}
 	})
@@ -64,7 +65,7 @@ func TestPublishDataPoints(t *testing.T) {
 		point := &common.DataPoint{UniqId: "api-point-" + random.String(16),
 			Attr: "motion", ValOneof: &common.DataPoint_IntVal{IntVal: 123}}
 
-		ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
+		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
 		defer cancel()
 
 		dpCli := api.NewDataPointServiceClient(globalAdminGRPCConn)
@@ -97,7 +98,7 @@ func TestPublishDataPoints(t *testing.T) {
 				t.Fatalf("\nExpect: %+v\nActual: %+v", &message.ValidatorIn{
 					Point: point, OrgId: globalAdminOrgID, SkipToken: true}, vIn)
 			}
-		case <-time.After(5 * time.Second):
+		case <-time.After(testTimeout):
 			t.Fatal("Message timed out")
 		}
 	})
@@ -107,7 +108,7 @@ func TestPublishDataPoints(t *testing.T) {
 			Attr: "motion", ValOneof: &common.DataPoint_IntVal{IntVal: 123},
 			Ts: timestamppb.New(time.Now().Add(-15 * time.Minute))}
 
-		ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
+		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
 		defer cancel()
 
 		dpCli := api.NewDataPointServiceClient(globalAdminGRPCConn)
@@ -125,7 +126,7 @@ func TestPublishDataPoints(t *testing.T) {
 			Attr: "motion", ValOneof: &common.DataPoint_IntVal{IntVal: 123},
 			Ts: timestamppb.New(time.Now().Add(-15 * time.Minute))}
 
-		ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
+		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
 		defer cancel()
 
 		dpCli := api.NewDataPointServiceClient(secondaryViewerGRPCConn)
@@ -143,7 +144,7 @@ func TestListDataPoints(t *testing.T) {
 	t.Run("List data points by UniqID, dev ID, and attr", func(t *testing.T) {
 		t.Parallel()
 
-		ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
+		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
 		defer cancel()
 
 		devCli := api.NewDeviceServiceClient(globalAdminGRPCConn)
@@ -177,7 +178,7 @@ func TestListDataPoints(t *testing.T) {
 
 		for _, point := range points {
 			ctx, cancel := context.WithTimeout(context.Background(),
-				2*time.Second)
+				testTimeout)
 			defer cancel()
 
 			// Set a new in-place timestamp.
@@ -194,7 +195,7 @@ func TestListDataPoints(t *testing.T) {
 			return points[i].Ts.AsTime().After(points[j].Ts.AsTime())
 		})
 
-		ctx, cancel = context.WithTimeout(context.Background(), 4*time.Second)
+		ctx, cancel = context.WithTimeout(context.Background(), testTimeout)
 		defer cancel()
 
 		// Verify results by UniqID.
@@ -265,7 +266,7 @@ func TestListDataPoints(t *testing.T) {
 			Attr: "motion", ValOneof: &common.DataPoint_IntVal{IntVal: 123},
 			Ts: timestamppb.Now(), TraceId: uuid.NewString()}
 
-		ctx, cancel := context.WithTimeout(context.Background(), 4*time.Second)
+		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
 		defer cancel()
 
 		err := globalDPDAO.Create(ctx, point, uuid.NewString())
@@ -285,7 +286,7 @@ func TestListDataPoints(t *testing.T) {
 	t.Run("List data points by invalid time range", func(t *testing.T) {
 		t.Parallel()
 
-		ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
+		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
 		defer cancel()
 
 		dpCli := api.NewDataPointServiceClient(globalAdminGRPCConn)
@@ -304,7 +305,7 @@ func TestListDataPoints(t *testing.T) {
 	t.Run("List data points by invalid dev ID", func(t *testing.T) {
 		t.Parallel()
 
-		ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
+		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
 		defer cancel()
 
 		dpCli := api.NewDataPointServiceClient(globalAdminGRPCConn)
@@ -325,7 +326,7 @@ func TestLatestDataPoints(t *testing.T) {
 	t.Run("Latest data points by valid UniqID and dev ID", func(t *testing.T) {
 		t.Parallel()
 
-		ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
+		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
 		defer cancel()
 
 		devCli := api.NewDeviceServiceClient(globalAdminGRPCConn)
@@ -357,7 +358,7 @@ func TestLatestDataPoints(t *testing.T) {
 		for _, point := range points {
 			for i := 0; i < random.Intn(6)+3; i++ {
 				ctx, cancel := context.WithTimeout(context.Background(),
-					2*time.Second)
+					testTimeout)
 				defer cancel()
 
 				// Set a new in-place timestamp each pass.
@@ -375,7 +376,7 @@ func TestLatestDataPoints(t *testing.T) {
 			return points[i].Attr < points[j].Attr
 		})
 
-		ctx, cancel = context.WithTimeout(context.Background(), 4*time.Second)
+		ctx, cancel = context.WithTimeout(context.Background(), testTimeout)
 		defer cancel()
 
 		// Verify results by UniqID.
@@ -420,7 +421,7 @@ func TestLatestDataPoints(t *testing.T) {
 			Attr: "motion", ValOneof: &common.DataPoint_IntVal{IntVal: 123},
 			Ts: timestamppb.Now(), TraceId: uuid.NewString()}
 
-		ctx, cancel := context.WithTimeout(context.Background(), 4*time.Second)
+		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
 		defer cancel()
 
 		err := globalDPDAO.Create(ctx, point, uuid.NewString())
@@ -440,7 +441,7 @@ func TestLatestDataPoints(t *testing.T) {
 	t.Run("Latest data points by invalid dev ID", func(t *testing.T) {
 		t.Parallel()
 
-		ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
+		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
 		defer cancel()
 
 		dpCli := api.NewDataPointServiceClient(globalAdminGRPCConn)

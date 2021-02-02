@@ -12,6 +12,8 @@ import (
 	"github.com/thingspect/atlas/pkg/test/random"
 )
 
+const testTimeout = 5 * time.Second
+
 func TestNewMQTT(t *testing.T) {
 	t.Parallel()
 
@@ -92,7 +94,7 @@ func TestMQTTSubscribe(t *testing.T) {
 		t.Logf("msg.Topic, msg.Payload: %v, %x", msg.Topic(), msg.Payload())
 		require.Equal(t, topic, msg.Topic())
 		require.Equal(t, payload, msg.Payload())
-	case <-time.After(5 * time.Second):
+	case <-time.After(testTimeout):
 		t.Fatal("Message timed out")
 	}
 }
@@ -124,7 +126,7 @@ func TestMQTTUnsubscribe(t *testing.T) {
 		t.Logf("msg, ok: %#v, %v", msg, ok)
 		require.Nil(t, msg)
 		require.False(t, ok)
-	case <-time.After(5 * time.Second):
+	case <-time.After(testTimeout):
 		t.Fatal("Message timed out")
 	}
 }
