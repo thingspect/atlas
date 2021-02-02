@@ -24,6 +24,7 @@ func TestCreateUser(t *testing.T) {
 		t.Parallel()
 
 		user := random.User("api-user", uuid.NewString())
+		user.Role = common.Role_BUILDER
 
 		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
 		defer cancel()
@@ -59,6 +60,24 @@ func TestCreateUser(t *testing.T) {
 			"permission denied, ADMIN role required")
 	})
 
+	t.Run("Create sysadmin user as non-sysadmin", func(t *testing.T) {
+		t.Parallel()
+
+		user := random.User("api-user", uuid.NewString())
+		user.Role = common.Role_SYS_ADMIN
+
+		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
+		defer cancel()
+
+		userCli := api.NewUserServiceClient(globalAdminGRPCConn)
+		createUser, err := userCli.CreateUser(ctx, &api.CreateUserRequest{
+			User: user})
+		t.Logf("createUser, err: %+v, %v", createUser, err)
+		require.Nil(t, createUser)
+		require.EqualError(t, err, "rpc error: code = PermissionDenied desc = "+
+			"permission denied, role modification not allowed")
+	})
+
 	t.Run("Create invalid user", func(t *testing.T) {
 		t.Parallel()
 
@@ -83,12 +102,15 @@ func TestCreateUser(t *testing.T) {
 func TestGetUser(t *testing.T) {
 	t.Parallel()
 
+	user := random.User("api-user", uuid.NewString())
+	user.Role = common.Role_BUILDER
+
 	ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
 	defer cancel()
 
 	userCli := api.NewUserServiceClient(globalAdminGRPCConn)
 	createUser, err := userCli.CreateUser(ctx, &api.CreateUserRequest{
-		User: random.User("api-user", uuid.NewString())})
+		User: user})
 	t.Logf("createUser, err: %+v, %v", createUser, err)
 	require.NoError(t, err)
 
@@ -163,12 +185,15 @@ func TestUpdateUser(t *testing.T) {
 	t.Run("Update user by valid user", func(t *testing.T) {
 		t.Parallel()
 
+		user := random.User("api-user", uuid.NewString())
+		user.Role = common.Role_BUILDER
+
 		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
 		defer cancel()
 
 		userCli := api.NewUserServiceClient(globalAdminGRPCConn)
 		createUser, err := userCli.CreateUser(ctx, &api.CreateUserRequest{
-			User: random.User("api-user", uuid.NewString())})
+			User: user})
 		t.Logf("createUser, err: %+v, %v", createUser, err)
 		require.NoError(t, err)
 
@@ -195,12 +220,15 @@ func TestUpdateUser(t *testing.T) {
 	t.Run("Partial update user by valid user", func(t *testing.T) {
 		t.Parallel()
 
+		user := random.User("api-user", uuid.NewString())
+		user.Role = common.Role_BUILDER
+
 		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
 		defer cancel()
 
 		userCli := api.NewUserServiceClient(globalAdminGRPCConn)
 		createUser, err := userCli.CreateUser(ctx, &api.CreateUserRequest{
-			User: random.User("api-user", uuid.NewString())})
+			User: user})
 		t.Logf("createUser, err: %+v, %v", createUser, err)
 		require.NoError(t, err)
 
@@ -288,12 +316,15 @@ func TestUpdateUser(t *testing.T) {
 	t.Run("Update user by unknown user", func(t *testing.T) {
 		t.Parallel()
 
+		user := random.User("api-user", uuid.NewString())
+		user.Role = common.Role_BUILDER
+
 		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
 		defer cancel()
 
 		userCli := api.NewUserServiceClient(globalAdminGRPCConn)
 		updateUser, err := userCli.UpdateUser(ctx, &api.UpdateUserRequest{
-			User: random.User("api-user", uuid.NewString())})
+			User: user})
 		t.Logf("updateUser, err: %+v, %v", updateUser, err)
 		require.Nil(t, updateUser)
 		require.EqualError(t, err, "rpc error: code = NotFound desc = object "+
@@ -303,12 +334,15 @@ func TestUpdateUser(t *testing.T) {
 	t.Run("Updates are isolated by org ID", func(t *testing.T) {
 		t.Parallel()
 
+		user := random.User("api-user", uuid.NewString())
+		user.Role = common.Role_BUILDER
+
 		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
 		defer cancel()
 
 		userCli := api.NewUserServiceClient(globalAdminGRPCConn)
 		createUser, err := userCli.CreateUser(ctx, &api.CreateUserRequest{
-			User: random.User("api-user", uuid.NewString())})
+			User: user})
 		t.Logf("createUser, err: %+v, %v", createUser, err)
 		require.NoError(t, err)
 
@@ -328,12 +362,15 @@ func TestUpdateUser(t *testing.T) {
 	t.Run("Update user validation failure", func(t *testing.T) {
 		t.Parallel()
 
+		user := random.User("api-user", uuid.NewString())
+		user.Role = common.Role_BUILDER
+
 		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
 		defer cancel()
 
 		userCli := api.NewUserServiceClient(globalAdminGRPCConn)
 		createUser, err := userCli.CreateUser(ctx, &api.CreateUserRequest{
-			User: random.User("api-user", uuid.NewString())})
+			User: user})
 		t.Logf("createUser, err: %+v, %v", createUser, err)
 		require.NoError(t, err)
 
@@ -350,15 +387,44 @@ func TestUpdateUser(t *testing.T) {
 			"valid email address | caused by: mail: missing '@' or angle-addr")
 	})
 
-	t.Run("Update user by invalid user", func(t *testing.T) {
+	t.Run("Update user role to sysadmin as non-sysadmin", func(t *testing.T) {
 		t.Parallel()
+
+		user := random.User("api-user", uuid.NewString())
+		user.Role = common.Role_BUILDER
 
 		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
 		defer cancel()
 
 		userCli := api.NewUserServiceClient(globalAdminGRPCConn)
 		createUser, err := userCli.CreateUser(ctx, &api.CreateUserRequest{
-			User: random.User("api-user", uuid.NewString())})
+			User: user})
+		t.Logf("createUser, err: %+v, %v", createUser, err)
+		require.NoError(t, err)
+
+		// Update user fields.
+		createUser.Role = common.Role_SYS_ADMIN
+
+		updateUser, err := userCli.UpdateUser(ctx, &api.UpdateUserRequest{
+			User: createUser})
+		t.Logf("updateUser, err: %+v, %v", updateUser, err)
+		require.Nil(t, updateUser)
+		require.EqualError(t, err, "rpc error: code = PermissionDenied desc = "+
+			"permission denied, role modification not allowed")
+	})
+
+	t.Run("Update user by invalid user", func(t *testing.T) {
+		t.Parallel()
+
+		user := random.User("api-user", uuid.NewString())
+		user.Role = common.Role_BUILDER
+
+		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
+		defer cancel()
+
+		userCli := api.NewUserServiceClient(globalAdminGRPCConn)
+		createUser, err := userCli.CreateUser(ctx, &api.CreateUserRequest{
+			User: user})
 		t.Logf("createUser, err: %+v, %v", createUser, err)
 		require.NoError(t, err)
 
@@ -381,12 +447,15 @@ func TestUpdateUserPassword(t *testing.T) {
 	t.Run("Update user password by valid ID", func(t *testing.T) {
 		t.Parallel()
 
+		user := random.User("api-user", uuid.NewString())
+		user.Role = common.Role_BUILDER
+
 		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
 		defer cancel()
 
 		userCli := api.NewUserServiceClient(globalAdminGRPCConn)
 		createUser, err := userCli.CreateUser(ctx, &api.CreateUserRequest{
-			User: random.User("api-user", uuid.NewString())})
+			User: user})
 		t.Logf("createUser, err: %+v, %v", createUser, err)
 		require.NoError(t, err)
 
@@ -414,12 +483,15 @@ func TestUpdateUserPassword(t *testing.T) {
 	t.Run("Update user password with weak password", func(t *testing.T) {
 		t.Parallel()
 
+		user := random.User("api-user", uuid.NewString())
+		user.Role = common.Role_BUILDER
+
 		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
 		defer cancel()
 
 		userCli := api.NewUserServiceClient(globalAdminGRPCConn)
 		createUser, err := userCli.CreateUser(ctx, &api.CreateUserRequest{
-			User: random.User("api-user", uuid.NewString())})
+			User: user})
 		t.Logf("createUser, err: %+v, %v", createUser, err)
 		require.NoError(t, err)
 
@@ -448,12 +520,15 @@ func TestUpdateUserPassword(t *testing.T) {
 	t.Run("Password updates are isolated by org ID", func(t *testing.T) {
 		t.Parallel()
 
+		user := random.User("api-user", uuid.NewString())
+		user.Role = common.Role_BUILDER
+
 		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
 		defer cancel()
 
 		userCli := api.NewUserServiceClient(globalAdminGRPCConn)
 		createUser, err := userCli.CreateUser(ctx, &api.CreateUserRequest{
-			User: random.User("api-user", uuid.NewString())})
+			User: user})
 		t.Logf("createUser, err: %+v, %v", createUser, err)
 		require.NoError(t, err)
 
@@ -472,12 +547,15 @@ func TestDeleteUser(t *testing.T) {
 	t.Run("Delete user by valid ID", func(t *testing.T) {
 		t.Parallel()
 
+		user := random.User("api-user", uuid.NewString())
+		user.Role = common.Role_BUILDER
+
 		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
 		defer cancel()
 
 		userCli := api.NewUserServiceClient(globalAdminGRPCConn)
 		createUser, err := userCli.CreateUser(ctx, &api.CreateUserRequest{
-			User: random.User("api-user", uuid.NewString())})
+			User: user})
 		t.Logf("createUser, err: %+v, %v", createUser, err)
 		require.NoError(t, err)
 
@@ -534,12 +612,15 @@ func TestDeleteUser(t *testing.T) {
 	t.Run("Deletes are isolated by org ID", func(t *testing.T) {
 		t.Parallel()
 
+		user := random.User("api-user", uuid.NewString())
+		user.Role = common.Role_BUILDER
+
 		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
 		defer cancel()
 
 		userCli := api.NewUserServiceClient(globalAdminGRPCConn)
 		createUser, err := userCli.CreateUser(ctx, &api.CreateUserRequest{
-			User: random.User("api-user", uuid.NewString())})
+			User: user})
 		t.Logf("createUser, err: %+v, %v", createUser, err)
 		require.NoError(t, err)
 
@@ -562,9 +643,12 @@ func TestListUsers(t *testing.T) {
 	userRoles := []common.Role{}
 	userStatuses := []api.Status{}
 	for i := 0; i < 3; i++ {
+		user := random.User("api-user", uuid.NewString())
+		user.Role = common.Role_BUILDER
+
 		userCli := api.NewUserServiceClient(globalAdminGRPCConn)
 		createUser, err := userCli.CreateUser(ctx, &api.CreateUserRequest{
-			User: random.User("api-user", uuid.NewString())})
+			User: user})
 		t.Logf("createUser, err: %+v, %v", createUser, err)
 		require.NoError(t, err)
 
