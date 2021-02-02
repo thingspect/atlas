@@ -24,7 +24,7 @@ func (d *DAO) Create(ctx context.Context, point *common.DataPoint,
 	// Truncate timestamp to milliseconds for deduplication.
 	createdAt := point.Ts.AsTime().UTC().Truncate(time.Millisecond)
 
-	var intVal *int64
+	var intVal *int32
 	var fl64Val *float64
 	var strVal *string
 	var boolVal *bool
@@ -117,7 +117,7 @@ func (d *DAO) List(ctx context.Context, orgID, uniqID, devID, attr string, end,
 
 	for rows.Next() {
 		point := &common.DataPoint{}
-		var intVal *int64
+		var intVal *int32
 		var fl64Val *float64
 		var strVal *string
 		var boolVal *bool
@@ -266,7 +266,7 @@ func (d *DAO) Latest(ctx context.Context, orgID, uniqID,
 
 	for rows.Next() {
 		point := &common.DataPoint{}
-		var intVal *int64
+		var intVal *int32
 		var fl64Val *float64
 		var strVal *string
 		var boolVal *bool

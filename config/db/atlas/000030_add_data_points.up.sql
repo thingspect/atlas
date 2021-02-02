@@ -2,7 +2,7 @@ CREATE TABLE data_points (
   org_id uuid NOT NULL,
   uniq_id varchar(40) NOT NULL CHECK (uniq_id = lower(uniq_id)),
   attr varchar(40) NOT NULL,
-  int_val bigint,
+  int_val integer,
   fl64_val double precision,
   str_val varchar(255),
   bool_val boolean,
