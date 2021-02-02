@@ -57,6 +57,12 @@ func (u *User) CreateUser(ctx context.Context,
 		return nil, errPerm(common.Role_ADMIN)
 	}
 
+	// Only system admins can elevate to system admin.
+	if sess.Role == common.Role_ADMIN && req.User.Role > common.Role_ADMIN {
+		return nil, status.Error(codes.PermissionDenied,
+			"permission denied, role modification not allowed")
+	}
+
 	req.User.OrgId = sess.OrgID
 
 	user, err := u.userDAO.Create(ctx, req.User)
@@ -128,6 +134,14 @@ func (u *User) UpdateUser(ctx context.Context,
 	// Validate after merge to support partial updates.
 	if err := req.Validate(); err != nil {
 		return nil, status.Error(codes.InvalidArgument, err.Error())
+	}
+
+	// Only admins can update roles, and only system admins can elevate to
+	// system admin.
+	if (sess.Role < common.Role_ADMIN && req.User.Role != sess.Role) ||
+		(sess.Role == common.Role_ADMIN && req.User.Role > common.Role_ADMIN) {
+		return nil, status.Error(codes.PermissionDenied,
+			"permission denied, role modification not allowed")
 	}
 
 	user, err := u.userDAO.Update(ctx, req.User)

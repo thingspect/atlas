@@ -30,6 +30,7 @@ func TestCreateUser(t *testing.T) {
 		t.Parallel()
 
 		user := random.User("api-user", uuid.NewString())
+		user.Role = common.Role_BUILDER
 
 		ctrl := gomock.NewController(t)
 		defer ctrl.Finish()
@@ -87,16 +88,41 @@ func TestCreateUser(t *testing.T) {
 
 		userSvc := NewUser(userer)
 		createUser, err := userSvc.CreateUser(ctx, &api.CreateUserRequest{
-			User: nil})
+			User: random.User("api-user", uuid.NewString())})
 		t.Logf("createUser, err: %+v, %v", createUser, err)
 		require.Nil(t, createUser)
 		require.Equal(t, errPerm(common.Role_ADMIN), err)
+	})
+
+	t.Run("Create sysadmin user as non-sysadmin", func(t *testing.T) {
+		t.Parallel()
+
+		user := random.User("api-user", uuid.NewString())
+		user.Role = common.Role_SYS_ADMIN
+
+		ctrl := gomock.NewController(t)
+		defer ctrl.Finish()
+		userer := NewMockUserer(ctrl)
+
+		ctx, cancel := context.WithTimeout(session.NewContext(
+			context.Background(), &session.Session{OrgID: uuid.NewString(),
+				Role: common.Role_ADMIN}), testTimeout)
+		defer cancel()
+
+		userSvc := NewUser(userer)
+		createUser, err := userSvc.CreateUser(ctx, &api.CreateUserRequest{
+			User: user})
+		t.Logf("createUser, err: %+v, %v", createUser, err)
+		require.Nil(t, createUser)
+		require.Equal(t, status.Error(codes.PermissionDenied, "permission "+
+			"denied, role modification not allowed"), err)
 	})
 
 	t.Run("Create invalid user", func(t *testing.T) {
 		t.Parallel()
 
 		user := random.User("api-user", uuid.NewString())
+		user.Role = common.Role_BUILDER
 
 		ctrl := gomock.NewController(t)
 		defer ctrl.Finish()
@@ -222,6 +248,7 @@ func TestUpdateUser(t *testing.T) {
 		t.Parallel()
 
 		user := random.User("api-user", uuid.NewString())
+		user.Role = common.Role_ADMIN
 
 		ctrl := gomock.NewController(t)
 		defer ctrl.Finish()
@@ -251,6 +278,7 @@ func TestUpdateUser(t *testing.T) {
 		t.Parallel()
 
 		user := random.User("api-user", uuid.NewString())
+		user.Role = common.Role_ADMIN
 		part := &api.User{Id: user.Id, Status: api.Status_ACTIVE}
 		merged := &api.User{Id: user.Id, OrgId: user.OrgId, Email: user.Email,
 			Role: user.Role, Status: api.Status_ACTIVE}
@@ -420,11 +448,60 @@ func TestUpdateUser(t *testing.T) {
 			"address | caused by: mail: missing '@' or angle-addr"), err)
 	})
 
+	t.Run("Update user role with insufficient role", func(t *testing.T) {
+		t.Parallel()
+
+		user := random.User("api-user", uuid.NewString())
+		user.Role = common.Role_VIEWER
+
+		ctrl := gomock.NewController(t)
+		defer ctrl.Finish()
+		userer := NewMockUserer(ctrl)
+
+		ctx, cancel := context.WithTimeout(session.NewContext(
+			context.Background(), &session.Session{UserID: user.Id,
+				OrgID: user.OrgId, Role: common.Role_BUILDER}), testTimeout)
+		defer cancel()
+
+		userSvc := NewUser(userer)
+		updateUser, err := userSvc.UpdateUser(ctx, &api.UpdateUserRequest{
+			User: user})
+		t.Logf("updateUser, err: %+v, %v", updateUser, err)
+		require.Nil(t, updateUser)
+		require.Equal(t, status.Error(codes.PermissionDenied, "permission "+
+			"denied, role modification not allowed"), err)
+	})
+
+	t.Run("Update user role to sysadmin as non-sysadmin", func(t *testing.T) {
+		t.Parallel()
+
+		user := random.User("api-user", uuid.NewString())
+		user.Role = common.Role_SYS_ADMIN
+
+		ctrl := gomock.NewController(t)
+		defer ctrl.Finish()
+		userer := NewMockUserer(ctrl)
+
+		ctx, cancel := context.WithTimeout(session.NewContext(
+			context.Background(), &session.Session{UserID: user.Id,
+				OrgID: user.OrgId, Role: common.Role_ADMIN}), testTimeout)
+		defer cancel()
+
+		userSvc := NewUser(userer)
+		updateUser, err := userSvc.UpdateUser(ctx, &api.UpdateUserRequest{
+			User: user})
+		t.Logf("updateUser, err: %+v, %v", updateUser, err)
+		require.Nil(t, updateUser)
+		require.Equal(t, status.Error(codes.PermissionDenied, "permission "+
+			"denied, role modification not allowed"), err)
+	})
+
 	t.Run("Update user by invalid user", func(t *testing.T) {
 		t.Parallel()
 
 		user := random.User("api-user", uuid.NewString())
 		user.Email = random.String(54) + random.Email()
+		user.Role = common.Role_ADMIN
 
 		ctrl := gomock.NewController(t)
 		defer ctrl.Finish()
