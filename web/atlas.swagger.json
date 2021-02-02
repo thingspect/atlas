@@ -17,6 +17,9 @@
       "name": "DataPointService"
     },
     {
+      "name": "OrgService"
+    },
+    {
       "name": "SessionService"
     },
     {
@@ -410,6 +413,253 @@
         ],
         "tags": [
           "DeviceService"
+        ]
+      }
+    },
+    "/v1/organizations": {
+      "get": {
+        "summary": "List all orgs.",
+        "operationId": "OrgService_ListOrgs",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/apiListOrgsResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "pageSize",
+            "description": "Number of organizations to retrieve in a single page. Defaults to 50 if not specified, with a maximum of 250.",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
+          },
+          {
+            "name": "pageToken",
+            "description": "Token of the page to retrieve. If not specified, the first page of results will be returned. To request the next page of results, use next_page_token from the previous response.",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "OrgService"
+        ]
+      },
+      "post": {
+        "summary": "Create an organization.",
+        "operationId": "OrgService_CreateOrg",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/apiOrg"
+            }
+          },
+          "201": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/apiOrg"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "description": "Org message to create.",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/apiOrg",
+              "required": [
+                "org"
+              ]
+            }
+          }
+        ],
+        "tags": [
+          "OrgService"
+        ]
+      }
+    },
+    "/v1/organizations/{id}": {
+      "get": {
+        "summary": "Get an organization by ID.",
+        "operationId": "OrgService_GetOrg",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/apiOrg"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "description": "Organization ID (UUID) to get.",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "OrgService"
+        ]
+      },
+      "delete": {
+        "summary": "Delete an organization by ID.",
+        "operationId": "OrgService_DeleteOrg",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "properties": {}
+            }
+          },
+          "204": {
+            "description": "A successful response.",
+            "schema": {}
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "description": "Organization ID (UUID) to delete.",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "OrgService"
+        ]
+      }
+    },
+    "/v1/organizations/{org.id}": {
+      "put": {
+        "summary": "Update an organization.",
+        "operationId": "OrgService_UpdateOrg",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/apiOrg"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "org.id",
+            "description": "Organization ID (UUID).",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "description": "Org message to update.",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/apiOrg",
+              "required": [
+                "org"
+              ]
+            }
+          },
+          {
+            "name": "updateMask",
+            "description": "Fields to update. Automatically populated by a PATCH request. If not present, a full resource update is performed.",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "OrgService"
+        ]
+      },
+      "patch": {
+        "summary": "Update an organization.",
+        "operationId": "OrgService_UpdateOrg2",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/apiOrg"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "org.id",
+            "description": "Organization ID (UUID).",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "description": "Org message to update.",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/apiOrg",
+              "required": [
+                "org"
+              ]
+            }
+          },
+          {
+            "name": "updateMask",
+            "description": "Fields to update. Automatically populated by a PATCH request. If not present, a full resource update is performed.",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "OrgService"
         ]
       }
     },
@@ -838,6 +1088,32 @@
       },
       "description": "ListDevicesResponse is sent in response to a device list."
     },
+    "apiListOrgsResponse": {
+      "type": "object",
+      "properties": {
+        "orgs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/apiOrg"
+          },
+          "description": "Org array, ordered by ascending created_at timestamp."
+        },
+        "nextPageToken": {
+          "type": "string",
+          "description": "Pagination token used to retrieve the next page of results. Not returned for the last page."
+        },
+        "prevPageToken": {
+          "type": "string",
+          "description": "Pagination token used to retrieve the previous page of results. Not returned for the first page."
+        },
+        "totalSize": {
+          "type": "integer",
+          "format": "int32",
+          "description": "Total number of orgs available."
+        }
+      },
+      "description": "ListOrgsResponse is sent in response to an organization list."
+    },
     "apiListUsersResponse": {
       "type": "object",
       "properties": {
@@ -910,6 +1186,39 @@
         }
       },
       "description": "LoginResponse is sent in response to a user login."
+    },
+    "apiOrg": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Organization ID (UUID).",
+          "readOnly": true
+        },
+        "name": {
+          "type": "string",
+          "description": "Organization name.",
+          "required": [
+            "name"
+          ]
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Organization creation timestamp.",
+          "readOnly": true
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Organization modification timestamp.",
+          "readOnly": true
+        }
+      },
+      "description": "Org represents an organization as stored in the database.",
+      "required": [
+        "name"
+      ]
     },
     "apiPublishDataPointsRequest": {
       "type": "object",

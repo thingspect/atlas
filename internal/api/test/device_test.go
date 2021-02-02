@@ -66,6 +66,21 @@ func TestCreateDevice(t *testing.T) {
 			2*time.Second)
 	})
 
+	t.Run("Create valid device with insufficient role", func(t *testing.T) {
+		t.Parallel()
+
+		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
+		defer cancel()
+
+		devCli := api.NewDeviceServiceClient(secondaryViewerGRPCConn)
+		createDev, err := devCli.CreateDevice(ctx, &api.CreateDeviceRequest{
+			Device: random.Device("api-device", uuid.NewString())})
+		t.Logf("createDev, err: %+v, %v", createDev, err)
+		require.Nil(t, createDev)
+		require.EqualError(t, err, "rpc error: code = PermissionDenied desc = "+
+			"permission denied, BUILDER role required")
+	})
+
 	t.Run("Create invalid device", func(t *testing.T) {
 		t.Parallel()
 
@@ -84,21 +99,6 @@ func TestCreateDevice(t *testing.T) {
 			"invalid CreateDeviceRequest.Device: embedded message failed "+
 			"validation | caused by: invalid Device.UniqId: value length must "+
 			"be between 5 and 40 runes, inclusive")
-	})
-
-	t.Run("Create valid device with insufficient role", func(t *testing.T) {
-		t.Parallel()
-
-		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
-		defer cancel()
-
-		devCli := api.NewDeviceServiceClient(secondaryViewerGRPCConn)
-		createDev, err := devCli.CreateDevice(ctx, &api.CreateDeviceRequest{
-			Device: random.Device("api-device", uuid.NewString())})
-		t.Logf("createDev, err: %+v, %v", createDev, err)
-		require.Nil(t, createDev)
-		require.EqualError(t, err, "rpc error: code = PermissionDenied desc = "+
-			"permission denied, BUILDER role required")
 	})
 }
 
@@ -555,7 +555,7 @@ func TestListDevices(t *testing.T) {
 
 		devCli := api.NewDeviceServiceClient(globalAdminGRPCConn)
 		listDevs, err := devCli.ListDevices(ctx, &api.ListDevicesRequest{
-			PageToken: "..."})
+			PageToken: badUUID})
 		t.Logf("listDevs, err: %+v, %v", listDevs, err)
 		require.Nil(t, listDevs)
 		require.EqualError(t, err, "rpc error: code = InvalidArgument desc = "+

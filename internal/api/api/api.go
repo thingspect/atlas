@@ -19,6 +19,7 @@ import (
 	"github.com/thingspect/atlas/pkg/alog"
 	"github.com/thingspect/atlas/pkg/dao/datapoint"
 	"github.com/thingspect/atlas/pkg/dao/device"
+	"github.com/thingspect/atlas/pkg/dao/org"
 	"github.com/thingspect/atlas/pkg/dao/user"
 	"github.com/thingspect/atlas/pkg/postgres"
 	"github.com/thingspect/atlas/pkg/queue"
@@ -71,6 +72,7 @@ func New(cfg *config.Config) (*API, error) {
 	skipValidate := map[string]struct{}{
 		// Update actions validate after merge to support partial updates.
 		"/api.DeviceService/UpdateDevice": {},
+		"/api.OrgService/UpdateOrg":       {},
 		"/api.UserService/UpdateUser":     {},
 	}
 
@@ -82,6 +84,7 @@ func New(cfg *config.Config) (*API, error) {
 	api.RegisterDataPointServiceServer(srv, service.NewDataPoint(nsq,
 		cfg.NSQPubTopic, datapoint.NewDAO(pg)))
 	api.RegisterDeviceServiceServer(srv, service.NewDevice(device.NewDAO(pg)))
+	api.RegisterOrgServiceServer(srv, service.NewOrg(org.NewDAO(pg)))
 	api.RegisterSessionServiceServer(srv, service.NewSession(user.NewDAO(pg),
 		cfg.PWTKey))
 	api.RegisterUserServiceServer(srv, service.NewUser(user.NewDAO(pg)))
@@ -102,6 +105,13 @@ func New(cfg *config.Config) (*API, error) {
 
 	// Device.
 	if err := api.RegisterDeviceServiceHandlerFromEndpoint(ctx, gwMux,
+		GRPCHost+GRPCPort, opts); err != nil {
+		cancel()
+		return nil, err
+	}
+
+	// Org.
+	if err := api.RegisterOrgServiceHandlerFromEndpoint(ctx, gwMux,
 		GRPCHost+GRPCPort, opts); err != nil {
 		cancel()
 		return nil, err

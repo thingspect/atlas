@@ -664,7 +664,7 @@ func TestListDevices(t *testing.T) {
 
 		devSvc := NewDevice(devicer)
 		listDevs, err := devSvc.ListDevices(ctx, &api.ListDevicesRequest{
-			PageToken: "..."})
+			PageToken: badUUID})
 		t.Logf("listDevs, err: %+v, %v", listDevs, err)
 		require.Nil(t, listDevs)
 		require.Equal(t, status.Error(codes.InvalidArgument,
@@ -704,7 +704,7 @@ func TestListDevices(t *testing.T) {
 			random.Device("api-device", uuid.NewString()),
 			random.Device("api-device", uuid.NewString()),
 		}
-		devs[1].Id = "..."
+		devs[1].Id = badUUID
 
 		ctrl := gomock.NewController(t)
 		defer ctrl.Finish()

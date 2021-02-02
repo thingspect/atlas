@@ -12,7 +12,10 @@ import (
 	"github.com/thingspect/atlas/pkg/test/random"
 )
 
-const testTimeout = 2 * time.Second
+const (
+	testTimeout = 2 * time.Second
+	badUUID     = "..."
+)
 
 var (
 	globalPass string
