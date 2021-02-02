@@ -1020,7 +1020,7 @@
       "properties": {
         "uniqID": {
           "type": "string",
-          "description": "Device unique ID. Will be ignored during MQTT ingest if provided as part of the topic. Required for API publish.",
+          "description": "Device unique ID. Ignored during MQTT ingest if provided as part of the topic. Required for API publish.",
           "required": [
             "uniq_id"
           ]
@@ -1033,9 +1033,9 @@
           ]
         },
         "intVal": {
-          "type": "string",
-          "format": "int64",
-          "description": "Integer value, 64-bit."
+          "type": "integer",
+          "format": "int32",
+          "description": "Integer value, 32-bit."
         },
         "fl64Val": {
           "type": "number",
@@ -1053,7 +1053,7 @@
         "bytesVal": {
           "type": "string",
           "format": "byte",
-          "description": "Bytes value."
+          "description": "Bytes value. When used with JSON, the value will be represented as a base64 string."
         },
         "ts": {
           "type": "string",
