@@ -42,7 +42,7 @@ func TestPublishDataPoints(t *testing.T) {
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
 			context.Background(), &session.Session{OrgID: orgID,
-				Role: common.Role_ADMIN}), 2*time.Second)
+				Role: common.Role_ADMIN}), testTimeout)
 		defer cancel()
 
 		dpSvc := NewDataPoint(pubQueue, pubTopic, nil)
@@ -71,7 +71,7 @@ func TestPublishDataPoints(t *testing.T) {
 				t.Fatalf("\nExpect: %+v\nActual: %+v", &message.ValidatorIn{
 					Point: point, OrgId: orgID, SkipToken: true}, vIn)
 			}
-		case <-time.After(2 * time.Second):
+		case <-time.After(testTimeout):
 			t.Fatal("Message timed out")
 		}
 	})
@@ -90,7 +90,7 @@ func TestPublishDataPoints(t *testing.T) {
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
 			context.Background(), &session.Session{OrgID: orgID,
-				Role: common.Role_ADMIN}), 2*time.Second)
+				Role: common.Role_ADMIN}), testTimeout)
 		defer cancel()
 
 		dpSvc := NewDataPoint(pubQueue, pubTopic, nil)
@@ -123,7 +123,7 @@ func TestPublishDataPoints(t *testing.T) {
 				t.Fatalf("\nExpect: %+v\nActual: %+v", &message.ValidatorIn{
 					Point: point, OrgId: orgID, SkipToken: true}, vIn)
 			}
-		case <-time.After(2 * time.Second):
+		case <-time.After(testTimeout):
 			t.Fatal("Message timed out")
 		}
 	})
@@ -137,7 +137,7 @@ func TestPublishDataPoints(t *testing.T) {
 		pubQueue := queue.NewFake()
 		pubTopic := "topic-" + random.String(10)
 
-		ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
+		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
 		defer cancel()
 
 		dpSvc := NewDataPoint(pubQueue, pubTopic, nil)
@@ -158,7 +158,7 @@ func TestPublishDataPoints(t *testing.T) {
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
 			context.Background(), &session.Session{OrgID: uuid.NewString(),
-				Role: common.Role_VIEWER}), 2*time.Second)
+				Role: common.Role_VIEWER}), testTimeout)
 		defer cancel()
 
 		dpSvc := NewDataPoint(pubQueue, pubTopic, nil)
@@ -191,7 +191,7 @@ func TestListDataPoints(t *testing.T) {
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
 			context.Background(), &session.Session{OrgID: orgID,
-				Role: common.Role_ADMIN}), 2*time.Second)
+				Role: common.Role_ADMIN}), testTimeout)
 		defer cancel()
 
 		dpSvc := NewDataPoint(nil, "", datapointer)
@@ -233,7 +233,7 @@ func TestListDataPoints(t *testing.T) {
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
 			context.Background(), &session.Session{OrgID: orgID,
-				Role: common.Role_ADMIN}), 2*time.Second)
+				Role: common.Role_ADMIN}), testTimeout)
 		defer cancel()
 
 		dpSvc := NewDataPoint(nil, "", datapointer)
@@ -261,7 +261,7 @@ func TestListDataPoints(t *testing.T) {
 		defer ctrl.Finish()
 		datapointer := NewMockDataPointer(ctrl)
 
-		ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
+		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
 		defer cancel()
 
 		dpSvc := NewDataPoint(nil, "", datapointer)
@@ -283,7 +283,7 @@ func TestListDataPoints(t *testing.T) {
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
 			context.Background(), &session.Session{OrgID: uuid.NewString(),
-				Role: common.Role_CONTACT}), 2*time.Second)
+				Role: common.Role_CONTACT}), testTimeout)
 		defer cancel()
 
 		dpSvc := NewDataPoint(nil, "", datapointer)
@@ -305,7 +305,7 @@ func TestListDataPoints(t *testing.T) {
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
 			context.Background(), &session.Session{OrgID: uuid.NewString(),
-				Role: common.Role_ADMIN}), 2*time.Second)
+				Role: common.Role_ADMIN}), testTimeout)
 		defer cancel()
 
 		dpSvc := NewDataPoint(nil, "", datapointer)
@@ -334,7 +334,7 @@ func TestListDataPoints(t *testing.T) {
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
 			context.Background(), &session.Session{OrgID: "aaa",
-				Role: common.Role_ADMIN}), 2*time.Second)
+				Role: common.Role_ADMIN}), testTimeout)
 		defer cancel()
 
 		dpSvc := NewDataPoint(nil, "", datapointer)
@@ -369,7 +369,7 @@ func TestLatestDataPoints(t *testing.T) {
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
 			context.Background(), &session.Session{OrgID: orgID,
-				Role: common.Role_ADMIN}), 2*time.Second)
+				Role: common.Role_ADMIN}), testTimeout)
 		defer cancel()
 
 		dpSvc := NewDataPoint(nil, "", datapointer)
@@ -408,7 +408,7 @@ func TestLatestDataPoints(t *testing.T) {
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
 			context.Background(), &session.Session{OrgID: orgID,
-				Role: common.Role_ADMIN}), 2*time.Second)
+				Role: common.Role_ADMIN}), testTimeout)
 		defer cancel()
 
 		dpSvc := NewDataPoint(nil, "", datapointer)
@@ -435,7 +435,7 @@ func TestLatestDataPoints(t *testing.T) {
 		defer ctrl.Finish()
 		datapointer := NewMockDataPointer(ctrl)
 
-		ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
+		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
 		defer cancel()
 
 		dpSvc := NewDataPoint(nil, "", datapointer)
@@ -457,7 +457,7 @@ func TestLatestDataPoints(t *testing.T) {
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
 			context.Background(), &session.Session{OrgID: uuid.NewString(),
-				Role: common.Role_CONTACT}), 2*time.Second)
+				Role: common.Role_CONTACT}), testTimeout)
 		defer cancel()
 
 		dpSvc := NewDataPoint(nil, "", datapointer)
@@ -482,7 +482,7 @@ func TestLatestDataPoints(t *testing.T) {
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
 			context.Background(), &session.Session{OrgID: "aaa",
-				Role: common.Role_ADMIN}), 2*time.Second)
+				Role: common.Role_ADMIN}), testTimeout)
 		defer cancel()
 
 		dpSvc := NewDataPoint(nil, "", datapointer)

@@ -24,7 +24,7 @@ func TestValidateMessages(t *testing.T) {
 	boolVal := &common.DataPoint_BoolVal{BoolVal: []bool{true,
 		false}[random.Intn(2)]}
 
-	ctx, cancel := context.WithTimeout(context.Background(), 4*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
 	defer cancel()
 
 	createOrg, err := globalOrgDAO.Create(ctx, random.Org("val"))
@@ -103,7 +103,7 @@ func TestValidateMessages(t *testing.T) {
 				if !proto.Equal(lTest.res, vOut) {
 					t.Fatalf("\nExpect: %+v\nActual: %+v", lTest.res, vOut)
 				}
-			case <-time.After(5 * time.Second):
+			case <-time.After(testTimeout):
 				t.Fatal("Message timed out")
 			}
 		})
@@ -114,7 +114,7 @@ func TestValidateMessagesError(t *testing.T) {
 	uniqID := "val-" + random.String(16)
 	disUniqID := "val-" + random.String(16)
 
-	ctx, cancel := context.WithTimeout(context.Background(), 6*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
 	defer cancel()
 
 	createOrg, err := globalOrgDAO.Create(ctx, random.Org("val"))

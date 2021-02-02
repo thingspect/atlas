@@ -6,10 +6,13 @@ import (
 	"log"
 	"os"
 	"testing"
+	"time"
 
 	"github.com/thingspect/atlas/pkg/crypto"
 	"github.com/thingspect/atlas/pkg/test/random"
 )
+
+const testTimeout = 2 * time.Second
 
 var (
 	globalPass string

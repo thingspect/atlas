@@ -41,7 +41,7 @@ func TestLogin(t *testing.T) {
 		_, err := rand.Read(key)
 		require.NoError(t, err)
 
-		ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
+		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
 		defer cancel()
 
 		sessSvc := NewSession(userer, key)
@@ -73,7 +73,7 @@ func TestLogin(t *testing.T) {
 		_, err := rand.Read(key)
 		require.NoError(t, err)
 
-		ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
+		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
 		defer cancel()
 
 		sessSvc := NewSession(userer, key)
@@ -103,7 +103,7 @@ func TestLogin(t *testing.T) {
 		_, err := rand.Read(key)
 		require.NoError(t, err)
 
-		ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
+		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
 		defer cancel()
 
 		sessSvc := NewSession(userer, key)
@@ -133,7 +133,7 @@ func TestLogin(t *testing.T) {
 		_, err := rand.Read(key)
 		require.NoError(t, err)
 
-		ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
+		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
 		defer cancel()
 
 		sessSvc := NewSession(userer, key)
@@ -164,7 +164,7 @@ func TestLogin(t *testing.T) {
 		_, err := rand.Read(key)
 		require.NoError(t, err)
 
-		ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
+		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
 		defer cancel()
 
 		sessSvc := NewSession(userer, key)
@@ -191,7 +191,7 @@ func TestLogin(t *testing.T) {
 		userer.EXPECT().ReadByEmail(gomock.Any(), user.Email, org.Name).
 			Return(user, globalHash, nil).Times(1)
 
-		ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
+		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
 		defer cancel()
 
 		sessSvc := NewSession(userer, nil)

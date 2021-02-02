@@ -7,6 +7,7 @@ import (
 	"log"
 	"os"
 	"testing"
+	"time"
 
 	"github.com/thingspect/api/go/common"
 	"github.com/thingspect/atlas/internal/api/api"
@@ -22,6 +23,8 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/encoding/gzip"
 )
+
+const testTimeout = 8 * time.Second
 
 var (
 	globalOrgDAO  *org.DAO

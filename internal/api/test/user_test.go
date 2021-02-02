@@ -25,7 +25,7 @@ func TestCreateUser(t *testing.T) {
 
 		user := random.User("api-user", uuid.NewString())
 
-		ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
+		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
 		defer cancel()
 
 		userCli := api.NewUserServiceClient(globalAdminGRPCConn)
@@ -50,7 +50,7 @@ func TestCreateUser(t *testing.T) {
 		user := random.User("api-user", uuid.NewString())
 		user.Email = "api-user-" + random.String(80)
 
-		ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
+		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
 		defer cancel()
 
 		userCli := api.NewUserServiceClient(globalAdminGRPCConn)
@@ -67,7 +67,7 @@ func TestCreateUser(t *testing.T) {
 	t.Run("Create valid user with insufficient role", func(t *testing.T) {
 		t.Parallel()
 
-		ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
+		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
 		defer cancel()
 
 		userCli := api.NewUserServiceClient(secondaryViewerGRPCConn)
@@ -83,7 +83,7 @@ func TestCreateUser(t *testing.T) {
 func TestGetUser(t *testing.T) {
 	t.Parallel()
 
-	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
 	defer cancel()
 
 	userCli := api.NewUserServiceClient(globalAdminGRPCConn)
@@ -95,7 +95,7 @@ func TestGetUser(t *testing.T) {
 	t.Run("Get user by valid ID", func(t *testing.T) {
 		t.Parallel()
 
-		ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
+		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
 		defer cancel()
 
 		userCli := api.NewUserServiceClient(globalAdminGRPCConn)
@@ -114,7 +114,7 @@ func TestGetUser(t *testing.T) {
 	t.Run("Get user with insufficient role", func(t *testing.T) {
 		t.Parallel()
 
-		ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
+		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
 		defer cancel()
 
 		userCli := api.NewUserServiceClient(secondaryViewerGRPCConn)
@@ -129,7 +129,7 @@ func TestGetUser(t *testing.T) {
 	t.Run("Get user by unknown ID", func(t *testing.T) {
 		t.Parallel()
 
-		ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
+		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
 		defer cancel()
 
 		userCli := api.NewUserServiceClient(globalAdminGRPCConn)
@@ -144,7 +144,7 @@ func TestGetUser(t *testing.T) {
 	t.Run("Get are isolated by org ID", func(t *testing.T) {
 		t.Parallel()
 
-		ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
+		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
 		defer cancel()
 
 		secCli := api.NewUserServiceClient(secondaryAdminGRPCConn)
@@ -163,7 +163,7 @@ func TestUpdateUser(t *testing.T) {
 	t.Run("Update user by valid user", func(t *testing.T) {
 		t.Parallel()
 
-		ctx, cancel := context.WithTimeout(context.Background(), 4*time.Second)
+		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
 		defer cancel()
 
 		userCli := api.NewUserServiceClient(globalAdminGRPCConn)
@@ -195,7 +195,7 @@ func TestUpdateUser(t *testing.T) {
 	t.Run("Partial update user by valid user", func(t *testing.T) {
 		t.Parallel()
 
-		ctx, cancel := context.WithTimeout(context.Background(), 4*time.Second)
+		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
 		defer cancel()
 
 		userCli := api.NewUserServiceClient(globalAdminGRPCConn)
@@ -226,7 +226,7 @@ func TestUpdateUser(t *testing.T) {
 	t.Run("Update nil user", func(t *testing.T) {
 		t.Parallel()
 
-		ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
+		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
 		defer cancel()
 
 		userCli := api.NewUserServiceClient(globalAdminGRPCConn)
@@ -241,7 +241,7 @@ func TestUpdateUser(t *testing.T) {
 	t.Run("Update user with insufficient role", func(t *testing.T) {
 		t.Parallel()
 
-		ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
+		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
 		defer cancel()
 
 		userCli := api.NewUserServiceClient(secondaryViewerGRPCConn)
@@ -256,7 +256,7 @@ func TestUpdateUser(t *testing.T) {
 	t.Run("Partial update invalid field mask", func(t *testing.T) {
 		t.Parallel()
 
-		ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
+		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
 		defer cancel()
 
 		userCli := api.NewUserServiceClient(globalAdminGRPCConn)
@@ -272,7 +272,7 @@ func TestUpdateUser(t *testing.T) {
 	t.Run("Partial update user by unknown user", func(t *testing.T) {
 		t.Parallel()
 
-		ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
+		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
 		defer cancel()
 
 		userCli := api.NewUserServiceClient(globalAdminGRPCConn)
@@ -288,7 +288,7 @@ func TestUpdateUser(t *testing.T) {
 	t.Run("Update user by unknown user", func(t *testing.T) {
 		t.Parallel()
 
-		ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
+		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
 		defer cancel()
 
 		userCli := api.NewUserServiceClient(globalAdminGRPCConn)
@@ -303,7 +303,7 @@ func TestUpdateUser(t *testing.T) {
 	t.Run("Updates are isolated by org ID", func(t *testing.T) {
 		t.Parallel()
 
-		ctx, cancel := context.WithTimeout(context.Background(), 4*time.Second)
+		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
 		defer cancel()
 
 		userCli := api.NewUserServiceClient(globalAdminGRPCConn)
@@ -328,7 +328,7 @@ func TestUpdateUser(t *testing.T) {
 	t.Run("Update user validation failure", func(t *testing.T) {
 		t.Parallel()
 
-		ctx, cancel := context.WithTimeout(context.Background(), 4*time.Second)
+		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
 		defer cancel()
 
 		userCli := api.NewUserServiceClient(globalAdminGRPCConn)
@@ -353,7 +353,7 @@ func TestUpdateUser(t *testing.T) {
 	t.Run("Update user by invalid user", func(t *testing.T) {
 		t.Parallel()
 
-		ctx, cancel := context.WithTimeout(context.Background(), 4*time.Second)
+		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
 		defer cancel()
 
 		userCli := api.NewUserServiceClient(globalAdminGRPCConn)
@@ -381,7 +381,7 @@ func TestUpdateUserPassword(t *testing.T) {
 	t.Run("Update user password by valid ID", func(t *testing.T) {
 		t.Parallel()
 
-		ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
 		defer cancel()
 
 		userCli := api.NewUserServiceClient(globalAdminGRPCConn)
@@ -399,7 +399,7 @@ func TestUpdateUserPassword(t *testing.T) {
 	t.Run("Update user password with insufficient role", func(t *testing.T) {
 		t.Parallel()
 
-		ctx, cancel := context.WithTimeout(context.Background(), 8*time.Second)
+		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
 		defer cancel()
 
 		userCli := api.NewUserServiceClient(secondaryViewerGRPCConn)
@@ -414,7 +414,7 @@ func TestUpdateUserPassword(t *testing.T) {
 	t.Run("Update user password with weak password", func(t *testing.T) {
 		t.Parallel()
 
-		ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
+		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
 		defer cancel()
 
 		userCli := api.NewUserServiceClient(globalAdminGRPCConn)
@@ -433,7 +433,7 @@ func TestUpdateUserPassword(t *testing.T) {
 	t.Run("Update user password by unknown ID", func(t *testing.T) {
 		t.Parallel()
 
-		ctx, cancel := context.WithTimeout(context.Background(), 8*time.Second)
+		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
 		defer cancel()
 
 		userCli := api.NewUserServiceClient(globalAdminGRPCConn)
@@ -448,7 +448,7 @@ func TestUpdateUserPassword(t *testing.T) {
 	t.Run("Password updates are isolated by org ID", func(t *testing.T) {
 		t.Parallel()
 
-		ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
 		defer cancel()
 
 		userCli := api.NewUserServiceClient(globalAdminGRPCConn)
@@ -472,7 +472,7 @@ func TestDeleteUser(t *testing.T) {
 	t.Run("Delete user by valid ID", func(t *testing.T) {
 		t.Parallel()
 
-		ctx, cancel := context.WithTimeout(context.Background(), 4*time.Second)
+		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
 		defer cancel()
 
 		userCli := api.NewUserServiceClient(globalAdminGRPCConn)
@@ -490,7 +490,7 @@ func TestDeleteUser(t *testing.T) {
 			t.Parallel()
 
 			ctx, cancel := context.WithTimeout(context.Background(),
-				2*time.Second)
+				testTimeout)
 			defer cancel()
 
 			userCli := api.NewUserServiceClient(globalAdminGRPCConn)
@@ -506,7 +506,7 @@ func TestDeleteUser(t *testing.T) {
 	t.Run("Delete user with insufficient role", func(t *testing.T) {
 		t.Parallel()
 
-		ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
+		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
 		defer cancel()
 
 		userCli := api.NewUserServiceClient(secondaryViewerGRPCConn)
@@ -520,7 +520,7 @@ func TestDeleteUser(t *testing.T) {
 	t.Run("Delete user by unknown ID", func(t *testing.T) {
 		t.Parallel()
 
-		ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
+		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
 		defer cancel()
 
 		userCli := api.NewUserServiceClient(globalAdminGRPCConn)
@@ -534,7 +534,7 @@ func TestDeleteUser(t *testing.T) {
 	t.Run("Deletes are isolated by org ID", func(t *testing.T) {
 		t.Parallel()
 
-		ctx, cancel := context.WithTimeout(context.Background(), 4*time.Second)
+		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
 		defer cancel()
 
 		userCli := api.NewUserServiceClient(globalAdminGRPCConn)
@@ -555,7 +555,7 @@ func TestDeleteUser(t *testing.T) {
 func TestListUsers(t *testing.T) {
 	t.Parallel()
 
-	ctx, cancel := context.WithTimeout(context.Background(), 6*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
 	defer cancel()
 
 	userIDs := []string{}
@@ -576,7 +576,7 @@ func TestListUsers(t *testing.T) {
 	t.Run("List users by valid org ID", func(t *testing.T) {
 		t.Parallel()
 
-		ctx, cancel := context.WithTimeout(context.Background(), 4*time.Second)
+		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
 		defer cancel()
 
 		userCli := api.NewUserServiceClient(globalAdminGRPCConn)
@@ -600,7 +600,7 @@ func TestListUsers(t *testing.T) {
 	t.Run("List users by valid org ID with next page", func(t *testing.T) {
 		t.Parallel()
 
-		ctx, cancel := context.WithTimeout(context.Background(), 8*time.Second)
+		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
 		defer cancel()
 
 		userCli := api.NewUserServiceClient(globalAdminGRPCConn)
@@ -625,7 +625,7 @@ func TestListUsers(t *testing.T) {
 	t.Run("List users with insufficient role", func(t *testing.T) {
 		t.Parallel()
 
-		ctx, cancel := context.WithTimeout(context.Background(), 4*time.Second)
+		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
 		defer cancel()
 
 		secCli := api.NewUserServiceClient(secondaryViewerGRPCConn)
@@ -639,7 +639,7 @@ func TestListUsers(t *testing.T) {
 	t.Run("Lists are isolated by org ID", func(t *testing.T) {
 		t.Parallel()
 
-		ctx, cancel := context.WithTimeout(context.Background(), 4*time.Second)
+		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
 		defer cancel()
 
 		secCli := api.NewUserServiceClient(secondaryAdminGRPCConn)
@@ -653,7 +653,7 @@ func TestListUsers(t *testing.T) {
 	t.Run("List users by invalid page token", func(t *testing.T) {
 		t.Parallel()
 
-		ctx, cancel := context.WithTimeout(context.Background(), 4*time.Second)
+		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
 		defer cancel()
 
 		userCli := api.NewUserServiceClient(globalAdminGRPCConn)

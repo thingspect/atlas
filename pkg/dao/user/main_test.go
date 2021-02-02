@@ -6,6 +6,7 @@ import (
 	"log"
 	"os"
 	"testing"
+	"time"
 
 	"github.com/thingspect/atlas/pkg/crypto"
 	"github.com/thingspect/atlas/pkg/dao/org"
@@ -13,6 +14,8 @@ import (
 	"github.com/thingspect/atlas/pkg/test/config"
 	"github.com/thingspect/atlas/pkg/test/random"
 )
+
+const testTimeout = 8 * time.Second
 
 var (
 	globalOrgDAO  *org.DAO

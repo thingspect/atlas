@@ -58,7 +58,7 @@ func TestAccumulateMessages(t *testing.T) {
 			time.Sleep(2 * time.Second)
 
 			ctx, cancel := context.WithTimeout(context.Background(),
-				2*time.Second)
+				testTimeout)
 			defer cancel()
 
 			listPoints, err := globalDPDAO.List(ctx, lTest.inp.OrgId,
@@ -87,7 +87,7 @@ func TestAccumulateMessages(t *testing.T) {
 func TestAccumulateMessagesDuplicate(t *testing.T) {
 	t.Parallel()
 
-	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
 	defer cancel()
 
 	duplicateVOut := &message.ValidatorOut{Point: &common.DataPoint{
@@ -106,7 +106,7 @@ func TestAccumulateMessagesDuplicate(t *testing.T) {
 	require.NoError(t, globalVOutQueue.Publish(globalVOutSubTopic, bVOut))
 	time.Sleep(2 * time.Second)
 
-	ctx, cancel = context.WithTimeout(context.Background(), 2*time.Second)
+	ctx, cancel = context.WithTimeout(context.Background(), testTimeout)
 	defer cancel()
 
 	listPoints, err := globalDPDAO.List(ctx, duplicateVOut.OrgId,

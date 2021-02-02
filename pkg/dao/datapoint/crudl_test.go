@@ -58,7 +58,7 @@ func TestCreate(t *testing.T) {
 				t.Parallel()
 
 				ctx, cancel := context.WithTimeout(context.Background(),
-					2*time.Second)
+					testTimeout)
 				defer cancel()
 
 				err := globalDPDAO.Create(ctx, lTest.inpPoint, lTest.inpOrgID)
@@ -95,7 +95,7 @@ func TestCreate(t *testing.T) {
 				t.Parallel()
 
 				ctx, cancel := context.WithTimeout(context.Background(),
-					2*time.Second)
+					testTimeout)
 				defer cancel()
 
 				err := globalDPDAO.Create(ctx, lTest.inpPoint, orgID)
@@ -113,7 +113,7 @@ func TestCreate(t *testing.T) {
 			Ts: timestamppb.Now(), TraceId: uuid.NewString()}
 		orgID := uuid.NewString()
 
-		ctx, cancel := context.WithTimeout(context.Background(), 4*time.Second)
+		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
 		defer cancel()
 
 		err := globalDPDAO.Create(ctx, point, orgID)
@@ -132,7 +132,7 @@ func TestList(t *testing.T) {
 	t.Run("List data points by UniqID, dev ID, and attr", func(t *testing.T) {
 		t.Parallel()
 
-		ctx, cancel := context.WithTimeout(context.Background(), 4*time.Second)
+		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
 		defer cancel()
 
 		createOrg, err := globalOrgDAO.Create(ctx, random.Org("dao-device"))
@@ -167,7 +167,7 @@ func TestList(t *testing.T) {
 
 		for _, point := range points {
 			ctx, cancel := context.WithTimeout(context.Background(),
-				2*time.Second)
+				testTimeout)
 			defer cancel()
 
 			// Set a new in-place timestamp.
@@ -184,7 +184,7 @@ func TestList(t *testing.T) {
 			return points[i].Ts.AsTime().After(points[j].Ts.AsTime())
 		})
 
-		ctx, cancel = context.WithTimeout(context.Background(), 4*time.Second)
+		ctx, cancel = context.WithTimeout(context.Background(), testTimeout)
 		defer cancel()
 
 		// Verify results by UniqID.
@@ -251,7 +251,7 @@ func TestList(t *testing.T) {
 			Ts: timestamppb.Now(), TraceId: uuid.NewString()}
 		orgID := uuid.NewString()
 
-		ctx, cancel := context.WithTimeout(context.Background(), 4*time.Second)
+		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
 		defer cancel()
 
 		err := globalDPDAO.Create(ctx, point, orgID)
@@ -268,7 +268,7 @@ func TestList(t *testing.T) {
 	t.Run("List data points by invalid org ID", func(t *testing.T) {
 		t.Parallel()
 
-		ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
+		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
 		defer cancel()
 
 		listPoints, err := globalDPDAO.List(ctx, random.String(10),
@@ -285,7 +285,7 @@ func TestLatest(t *testing.T) {
 	t.Run("Latest data points by valid UniqID and dev ID", func(t *testing.T) {
 		t.Parallel()
 
-		ctx, cancel := context.WithTimeout(context.Background(), 4*time.Second)
+		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
 		defer cancel()
 
 		createOrg, err := globalOrgDAO.Create(ctx, random.Org("dao-device"))
@@ -318,7 +318,7 @@ func TestLatest(t *testing.T) {
 		for _, point := range points {
 			for i := 0; i < random.Intn(6)+3; i++ {
 				ctx, cancel := context.WithTimeout(context.Background(),
-					2*time.Second)
+					testTimeout)
 				defer cancel()
 
 				// Set a new in-place timestamp each pass.
@@ -336,7 +336,7 @@ func TestLatest(t *testing.T) {
 			return points[i].Attr < points[j].Attr
 		})
 
-		ctx, cancel = context.WithTimeout(context.Background(), 4*time.Second)
+		ctx, cancel = context.WithTimeout(context.Background(), testTimeout)
 		defer cancel()
 
 		// Verify results by UniqID.
@@ -378,7 +378,7 @@ func TestLatest(t *testing.T) {
 			Attr: "motion", ValOneof: &common.DataPoint_IntVal{IntVal: 123},
 			Ts: timestamppb.Now(), TraceId: uuid.NewString()}
 
-		ctx, cancel := context.WithTimeout(context.Background(), 4*time.Second)
+		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
 		defer cancel()
 
 		err := globalDPDAO.Create(ctx, point, uuid.NewString())
@@ -395,7 +395,7 @@ func TestLatest(t *testing.T) {
 	t.Run("Latest data points by invalid dev ID", func(t *testing.T) {
 		t.Parallel()
 
-		ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
+		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
 		defer cancel()
 
 		latPoints, err := globalDPDAO.Latest(ctx, uuid.NewString(), "",

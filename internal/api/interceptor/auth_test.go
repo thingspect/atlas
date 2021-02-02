@@ -7,7 +7,6 @@ import (
 	"crypto/rand"
 	"fmt"
 	"testing"
-	"time"
 
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/require"
@@ -62,7 +61,7 @@ func TestAuth(t *testing.T) {
 			t.Parallel()
 
 			ctx, cancel := context.WithTimeout(context.Background(),
-				2*time.Second)
+				testTimeout)
 			defer cancel()
 			if lTest.inpMD != nil {
 				ctx = metadata.NewIncomingContext(ctx,

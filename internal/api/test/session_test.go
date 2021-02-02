@@ -17,7 +17,7 @@ import (
 func TestLogin(t *testing.T) {
 	t.Parallel()
 
-	ctx, cancel := context.WithTimeout(context.Background(), 8*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
 	defer cancel()
 
 	createOrg, err := globalOrgDAO.Create(ctx, random.Org("api-session"))
@@ -62,7 +62,7 @@ func TestLogin(t *testing.T) {
 	t.Run("Log in valid user", func(t *testing.T) {
 		t.Parallel()
 
-		ctx, cancel := context.WithTimeout(context.Background(), 6*time.Second)
+		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
 		defer cancel()
 
 		sessCli := api.NewSessionServiceClient(globalNoAuthGRPCConn)
@@ -80,7 +80,7 @@ func TestLogin(t *testing.T) {
 	t.Run("Log in unknown user", func(t *testing.T) {
 		t.Parallel()
 
-		ctx, cancel := context.WithTimeout(context.Background(), 6*time.Second)
+		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
 		defer cancel()
 
 		sessCli := api.NewSessionServiceClient(globalNoAuthGRPCConn)
@@ -96,7 +96,7 @@ func TestLogin(t *testing.T) {
 	t.Run("Log in wrong password", func(t *testing.T) {
 		t.Parallel()
 
-		ctx, cancel := context.WithTimeout(context.Background(), 6*time.Second)
+		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
 		defer cancel()
 
 		sessCli := api.NewSessionServiceClient(globalNoAuthGRPCConn)
@@ -112,7 +112,7 @@ func TestLogin(t *testing.T) {
 	t.Run("Log in disabled user", func(t *testing.T) {
 		t.Parallel()
 
-		ctx, cancel := context.WithTimeout(context.Background(), 6*time.Second)
+		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
 		defer cancel()
 
 		sessCli := api.NewSessionServiceClient(globalNoAuthGRPCConn)
@@ -128,7 +128,7 @@ func TestLogin(t *testing.T) {
 	t.Run("Log in contact user", func(t *testing.T) {
 		t.Parallel()
 
-		ctx, cancel := context.WithTimeout(context.Background(), 6*time.Second)
+		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
 		defer cancel()
 
 		sessCli := api.NewSessionServiceClient(globalNoAuthGRPCConn)

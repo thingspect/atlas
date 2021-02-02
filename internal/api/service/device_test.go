@@ -38,7 +38,7 @@ func TestCreateDevice(t *testing.T) {
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
 			context.Background(), &session.Session{OrgID: dev.OrgId,
-				Role: common.Role_ADMIN}), 2*time.Second)
+				Role: common.Role_ADMIN}), testTimeout)
 		defer cancel()
 
 		devSvc := NewDevice(devicer)
@@ -61,7 +61,7 @@ func TestCreateDevice(t *testing.T) {
 		defer ctrl.Finish()
 		devicer := NewMockDevicer(ctrl)
 
-		ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
+		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
 		defer cancel()
 
 		devSvc := NewDevice(devicer)
@@ -81,7 +81,7 @@ func TestCreateDevice(t *testing.T) {
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
 			context.Background(), &session.Session{OrgID: uuid.NewString(),
-				Role: common.Role_VIEWER}), 2*time.Second)
+				Role: common.Role_VIEWER}), testTimeout)
 		defer cancel()
 
 		devSvc := NewDevice(devicer)
@@ -107,7 +107,7 @@ func TestCreateDevice(t *testing.T) {
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
 			context.Background(), &session.Session{OrgID: dev.OrgId,
-				Role: common.Role_ADMIN}), 2*time.Second)
+				Role: common.Role_ADMIN}), testTimeout)
 		defer cancel()
 
 		devSvc := NewDevice(devicer)
@@ -137,7 +137,7 @@ func TestGetDevice(t *testing.T) {
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
 			context.Background(), &session.Session{OrgID: dev.OrgId,
-				Role: common.Role_ADMIN}), 2*time.Second)
+				Role: common.Role_ADMIN}), testTimeout)
 		defer cancel()
 
 		devSvc := NewDevice(devicer)
@@ -159,7 +159,7 @@ func TestGetDevice(t *testing.T) {
 		defer ctrl.Finish()
 		devicer := NewMockDevicer(ctrl)
 
-		ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
+		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
 		defer cancel()
 
 		devSvc := NewDevice(devicer)
@@ -179,7 +179,7 @@ func TestGetDevice(t *testing.T) {
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
 			context.Background(), &session.Session{OrgID: uuid.NewString(),
-				Role: common.Role_CONTACT}), 2*time.Second)
+				Role: common.Role_CONTACT}), testTimeout)
 		defer cancel()
 
 		devSvc := NewDevice(devicer)
@@ -202,7 +202,7 @@ func TestGetDevice(t *testing.T) {
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
 			context.Background(), &session.Session{OrgID: uuid.NewString(),
-				Role: common.Role_ADMIN}), 2*time.Second)
+				Role: common.Role_ADMIN}), testTimeout)
 		defer cancel()
 
 		devSvc := NewDevice(devicer)
@@ -230,7 +230,7 @@ func TestUpdateDevice(t *testing.T) {
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
 			context.Background(), &session.Session{OrgID: dev.OrgId,
-				Role: common.Role_ADMIN}), 2*time.Second)
+				Role: common.Role_ADMIN}), testTimeout)
 		defer cancel()
 
 		devSvc := NewDevice(devicer)
@@ -265,7 +265,7 @@ func TestUpdateDevice(t *testing.T) {
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
 			context.Background(), &session.Session{OrgID: dev.OrgId,
-				Role: common.Role_ADMIN}), 2*time.Second)
+				Role: common.Role_ADMIN}), testTimeout)
 		defer cancel()
 
 		devSvc := NewDevice(devicer)
@@ -289,7 +289,7 @@ func TestUpdateDevice(t *testing.T) {
 		defer ctrl.Finish()
 		devicer := NewMockDevicer(ctrl)
 
-		ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
+		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
 		defer cancel()
 
 		devSvc := NewDevice(devicer)
@@ -309,7 +309,7 @@ func TestUpdateDevice(t *testing.T) {
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
 			context.Background(), &session.Session{OrgID: uuid.NewString(),
-				Role: common.Role_VIEWER}), 2*time.Second)
+				Role: common.Role_VIEWER}), testTimeout)
 		defer cancel()
 
 		devSvc := NewDevice(devicer)
@@ -329,7 +329,7 @@ func TestUpdateDevice(t *testing.T) {
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
 			context.Background(), &session.Session{OrgID: uuid.NewString(),
-				Role: common.Role_ADMIN}), 2*time.Second)
+				Role: common.Role_ADMIN}), testTimeout)
 		defer cancel()
 
 		devSvc := NewDevice(devicer)
@@ -352,7 +352,7 @@ func TestUpdateDevice(t *testing.T) {
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
 			context.Background(), &session.Session{OrgID: uuid.NewString(),
-				Role: common.Role_ADMIN}), 2*time.Second)
+				Role: common.Role_ADMIN}), testTimeout)
 		defer cancel()
 
 		devSvc := NewDevice(devicer)
@@ -380,7 +380,7 @@ func TestUpdateDevice(t *testing.T) {
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
 			context.Background(), &session.Session{OrgID: orgID,
-				Role: common.Role_ADMIN}), 2*time.Second)
+				Role: common.Role_ADMIN}), testTimeout)
 		defer cancel()
 
 		devSvc := NewDevice(devicer)
@@ -404,7 +404,7 @@ func TestUpdateDevice(t *testing.T) {
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
 			context.Background(), &session.Session{OrgID: dev.OrgId,
-				Role: common.Role_ADMIN}), 2*time.Second)
+				Role: common.Role_ADMIN}), testTimeout)
 		defer cancel()
 
 		devSvc := NewDevice(devicer)
@@ -432,7 +432,7 @@ func TestUpdateDevice(t *testing.T) {
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
 			context.Background(), &session.Session{OrgID: dev.OrgId,
-				Role: common.Role_ADMIN}), 2*time.Second)
+				Role: common.Role_ADMIN}), testTimeout)
 		defer cancel()
 
 		devSvc := NewDevice(devicer)
@@ -460,7 +460,7 @@ func TestDeleteDevice(t *testing.T) {
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
 			context.Background(), &session.Session{OrgID: uuid.NewString(),
-				Role: common.Role_ADMIN}), 2*time.Second)
+				Role: common.Role_ADMIN}), testTimeout)
 		defer cancel()
 
 		devSvc := NewDevice(devicer)
@@ -477,7 +477,7 @@ func TestDeleteDevice(t *testing.T) {
 		defer ctrl.Finish()
 		devicer := NewMockDevicer(ctrl)
 
-		ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
+		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
 		defer cancel()
 
 		devSvc := NewDevice(devicer)
@@ -496,7 +496,7 @@ func TestDeleteDevice(t *testing.T) {
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
 			context.Background(), &session.Session{OrgID: uuid.NewString(),
-				Role: common.Role_VIEWER}), 2*time.Second)
+				Role: common.Role_VIEWER}), testTimeout)
 		defer cancel()
 
 		devSvc := NewDevice(devicer)
@@ -518,7 +518,7 @@ func TestDeleteDevice(t *testing.T) {
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
 			context.Background(), &session.Session{OrgID: uuid.NewString(),
-				Role: common.Role_ADMIN}), 2*time.Second)
+				Role: common.Role_ADMIN}), testTimeout)
 		defer cancel()
 
 		devSvc := NewDevice(devicer)
@@ -552,7 +552,7 @@ func TestListDevices(t *testing.T) {
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
 			context.Background(), &session.Session{OrgID: orgID,
-				Role: common.Role_ADMIN}), 2*time.Second)
+				Role: common.Role_ADMIN}), testTimeout)
 		defer cancel()
 
 		devSvc := NewDevice(devicer)
@@ -594,7 +594,7 @@ func TestListDevices(t *testing.T) {
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
 			context.Background(), &session.Session{OrgID: orgID,
-				Role: common.Role_ADMIN}), 2*time.Second)
+				Role: common.Role_ADMIN}), testTimeout)
 		defer cancel()
 
 		devSvc := NewDevice(devicer)
@@ -621,7 +621,7 @@ func TestListDevices(t *testing.T) {
 		defer ctrl.Finish()
 		devicer := NewMockDevicer(ctrl)
 
-		ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
+		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
 		defer cancel()
 
 		devSvc := NewDevice(devicer)
@@ -640,7 +640,7 @@ func TestListDevices(t *testing.T) {
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
 			context.Background(), &session.Session{OrgID: uuid.NewString(),
-				Role: common.Role_CONTACT}), 2*time.Second)
+				Role: common.Role_CONTACT}), testTimeout)
 		defer cancel()
 
 		devSvc := NewDevice(devicer)
@@ -659,7 +659,7 @@ func TestListDevices(t *testing.T) {
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
 			context.Background(), &session.Session{OrgID: uuid.NewString(),
-				Role: common.Role_ADMIN}), 2*time.Second)
+				Role: common.Role_ADMIN}), testTimeout)
 		defer cancel()
 
 		devSvc := NewDevice(devicer)
@@ -683,7 +683,7 @@ func TestListDevices(t *testing.T) {
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
 			context.Background(), &session.Session{OrgID: "aaa",
-				Role: common.Role_ADMIN}), 2*time.Second)
+				Role: common.Role_ADMIN}), testTimeout)
 		defer cancel()
 
 		devSvc := NewDevice(devicer)
@@ -715,7 +715,7 @@ func TestListDevices(t *testing.T) {
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
 			context.Background(), &session.Session{OrgID: orgID,
-				Role: common.Role_ADMIN}), 2*time.Second)
+				Role: common.Role_ADMIN}), testTimeout)
 		defer cancel()
 
 		devSvc := NewDevice(devicer)

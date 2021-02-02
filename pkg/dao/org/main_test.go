@@ -6,10 +6,13 @@ import (
 	"log"
 	"os"
 	"testing"
+	"time"
 
 	"github.com/thingspect/atlas/pkg/postgres"
 	"github.com/thingspect/atlas/pkg/test/config"
 )
+
+const testTimeout = 8 * time.Second
 
 var globalOrgDAO *DAO
 
