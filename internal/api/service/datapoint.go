@@ -6,7 +6,6 @@ import (
 	"context"
 	"time"
 
-	"github.com/golang/protobuf/ptypes/empty"
 	"github.com/google/uuid"
 	"github.com/thingspect/api/go/api"
 	"github.com/thingspect/api/go/common"
@@ -19,6 +18,7 @@ import (
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/proto"
+	"google.golang.org/protobuf/types/known/emptypb"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
@@ -53,7 +53,7 @@ func NewDataPoint(pubQueue queue.Queuer, pubTopic string,
 
 // PublishDataPoints publishes a data point.
 func (d *DataPoint) PublishDataPoints(ctx context.Context,
-	req *api.PublishDataPointsRequest) (*empty.Empty, error) {
+	req *api.PublishDataPointsRequest) (*emptypb.Empty, error) {
 	logger := alog.FromContext(ctx)
 	sess, ok := session.FromContext(ctx)
 	if !ok || sess.Role < common.Role_BUILDER {
@@ -98,7 +98,7 @@ func (d *DataPoint) PublishDataPoints(ctx context.Context,
 		"202")); err != nil {
 		logger.Errorf("PublishDataPoints grpc.SetHeader: %v", err)
 	}
-	return &empty.Empty{}, nil
+	return &emptypb.Empty{}, nil
 }
 
 // ListDataPoints retrieves all data points within a time range.

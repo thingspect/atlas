@@ -1,6 +1,11 @@
 # github.com/NYTimes/gziphandler v1.1.1
 ## explicit
 github.com/NYTimes/gziphandler
+# github.com/brocaar/chirpstack-api/go/v3 v3.9.3
+## explicit
+github.com/brocaar/chirpstack-api/go/v3/as/integration
+github.com/brocaar/chirpstack-api/go/v3/common
+github.com/brocaar/chirpstack-api/go/v3/gw
 # github.com/davecgh/go-spew v1.1.1
 github.com/davecgh/go-spew/spew
 # github.com/eclipse/paho.mqtt.golang v1.3.1
@@ -15,6 +20,7 @@ github.com/golang/mock/gomock
 github.com/golang/mock/mockgen/model
 # github.com/golang/protobuf v1.4.3
 ## explicit
+github.com/golang/protobuf/jsonpb
 github.com/golang/protobuf/proto
 github.com/golang/protobuf/protoc-gen-go/descriptor
 github.com/golang/protobuf/ptypes
@@ -120,7 +126,8 @@ golang.org/x/text/width
 # golang.org/x/xerrors v0.0.0-20200804184101-5ec99f83aff1
 golang.org/x/xerrors
 golang.org/x/xerrors/internal
-# google.golang.org/genproto v0.0.0-20210202153253-cf70463f6119
+# google.golang.org/genproto v0.0.0-20210204154452-deb828366460
+## explicit
 google.golang.org/genproto/googleapis/api/annotations
 google.golang.org/genproto/googleapis/api/httpbody
 google.golang.org/genproto/googleapis/rpc/status

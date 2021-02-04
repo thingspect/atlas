@@ -6,7 +6,6 @@ import (
 	"context"
 	"time"
 
-	"github.com/golang/protobuf/ptypes/empty"
 	"github.com/mennanov/fmutils"
 	"github.com/thingspect/api/go/api"
 	"github.com/thingspect/api/go/common"
@@ -17,6 +16,7 @@ import (
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/proto"
+	"google.golang.org/protobuf/types/known/emptypb"
 )
 
 // Orger defines the methods provided by an org.DAO.
@@ -133,7 +133,7 @@ func (u *Org) UpdateOrg(ctx context.Context,
 
 // DeleteOrg deletes an organization by ID.
 func (u *Org) DeleteOrg(ctx context.Context,
-	req *api.DeleteOrgRequest) (*empty.Empty, error) {
+	req *api.DeleteOrgRequest) (*emptypb.Empty, error) {
 	logger := alog.FromContext(ctx)
 	sess, ok := session.FromContext(ctx)
 	if !ok || sess.Role < common.Role_SYS_ADMIN {
@@ -148,7 +148,7 @@ func (u *Org) DeleteOrg(ctx context.Context,
 		"204")); err != nil {
 		logger.Errorf("DeleteOrg grpc.SetHeader: %v", err)
 	}
-	return &empty.Empty{}, nil
+	return &emptypb.Empty{}, nil
 }
 
 // ListOrgs retrieves all orgs.

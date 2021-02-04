@@ -6,7 +6,6 @@ import (
 	"context"
 	"time"
 
-	"github.com/golang/protobuf/ptypes/empty"
 	"github.com/mennanov/fmutils"
 	"github.com/thingspect/api/go/api"
 	"github.com/thingspect/api/go/common"
@@ -18,6 +17,7 @@ import (
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/proto"
+	"google.golang.org/protobuf/types/known/emptypb"
 )
 
 // Userer defines the methods provided by a user.DAO.
@@ -154,7 +154,7 @@ func (u *User) UpdateUser(ctx context.Context,
 
 // UpdateUserPassword updates a user's password by ID.
 func (u *User) UpdateUserPassword(ctx context.Context,
-	req *api.UpdateUserPasswordRequest) (*empty.Empty, error) {
+	req *api.UpdateUserPasswordRequest) (*emptypb.Empty, error) {
 	logger := alog.FromContext(ctx)
 	sess, ok := session.FromContext(ctx)
 	if !ok || (sess.Role < common.Role_ADMIN && req.Id != sess.UserID) {
@@ -176,12 +176,12 @@ func (u *User) UpdateUserPassword(ctx context.Context,
 		return nil, errToStatus(err)
 	}
 
-	return &empty.Empty{}, nil
+	return &emptypb.Empty{}, nil
 }
 
 // DeleteUser deletes a user by ID.
 func (u *User) DeleteUser(ctx context.Context,
-	req *api.DeleteUserRequest) (*empty.Empty, error) {
+	req *api.DeleteUserRequest) (*emptypb.Empty, error) {
 	logger := alog.FromContext(ctx)
 	sess, ok := session.FromContext(ctx)
 	if !ok || sess.Role < common.Role_ADMIN {
@@ -196,7 +196,7 @@ func (u *User) DeleteUser(ctx context.Context,
 		"204")); err != nil {
 		logger.Errorf("DeleteUser grpc.SetHeader: %v", err)
 	}
-	return &empty.Empty{}, nil
+	return &emptypb.Empty{}, nil
 }
 
 // ListUsers retrieves all users.
