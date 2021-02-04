@@ -4,6 +4,7 @@ go 1.15
 
 require (
 	github.com/NYTimes/gziphandler v1.1.1
+	github.com/brocaar/chirpstack-api/go/v3 v3.9.3
 	github.com/eclipse/paho.mqtt.golang v1.3.1
 	github.com/golang/mock v1.4.4
 	github.com/golang/protobuf v1.4.3
@@ -20,6 +21,7 @@ require (
 	github.com/stretchr/testify v1.7.0
 	github.com/thingspect/api/go v0.0.0-20210202175329-bac6da4f5f9c
 	golang.org/x/crypto v0.0.0-20201221181555-eec23a3978ad
+	google.golang.org/genproto v0.0.0-20210204154452-deb828366460 // indirect
 	google.golang.org/grpc v1.35.0
 	google.golang.org/protobuf v1.25.0
 	gopkg.in/yaml.v3 v3.0.0-20210107192922-496545a6307b // indirect

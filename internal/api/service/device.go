@@ -6,7 +6,6 @@ import (
 	"context"
 	"time"
 
-	"github.com/golang/protobuf/ptypes/empty"
 	"github.com/mennanov/fmutils"
 	"github.com/thingspect/api/go/api"
 	"github.com/thingspect/api/go/common"
@@ -17,6 +16,7 @@ import (
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/proto"
+	"google.golang.org/protobuf/types/known/emptypb"
 )
 
 // Devicer defines the methods provided by a device.DAO.
@@ -130,7 +130,7 @@ func (d *Device) UpdateDevice(ctx context.Context,
 
 // DeleteDevice deletes a device by ID.
 func (d *Device) DeleteDevice(ctx context.Context,
-	req *api.DeleteDeviceRequest) (*empty.Empty, error) {
+	req *api.DeleteDeviceRequest) (*emptypb.Empty, error) {
 	logger := alog.FromContext(ctx)
 	sess, ok := session.FromContext(ctx)
 	if !ok || sess.Role < common.Role_BUILDER {
@@ -145,7 +145,7 @@ func (d *Device) DeleteDevice(ctx context.Context,
 		"204")); err != nil {
 		logger.Errorf("DeleteDevice grpc.SetHeader: %v", err)
 	}
-	return &empty.Empty{}, nil
+	return &emptypb.Empty{}, nil
 }
 
 // ListDevices retrieves all devices.
