@@ -6,6 +6,7 @@ import (
 	"encoding/base64"
 	"encoding/hex"
 	"fmt"
+	"strconv"
 	"testing"
 	"time"
 
@@ -56,11 +57,11 @@ func TestGatewayStats(t *testing.T) {
 					now.Format(time.RFC3339Nano))},
 				{Attr: "id", Value: uniqID},
 				{Attr: "ip", Value: "127.0.0.1"},
-				{Attr: "time", Value: int(now.Unix())},
-				{Attr: "rx_received", Value: 1},
-				{Attr: "rx_received_valid", Value: 2},
-				{Attr: "tx_received", Value: 3},
-				{Attr: "tx_transmitted", Value: 4},
+				{Attr: "time", Value: strconv.FormatInt(now.Unix(), 10)},
+				{Attr: "rx_received", Value: int32(1)},
+				{Attr: "rx_received_valid", Value: int32(2)},
+				{Attr: "tx_received", Value: int32(3)},
+				{Attr: "tx_transmitted", Value: int32(4)},
 				{Attr: "aaa", Value: "bbb"},
 			}, ""},
 		{&gw.GatewayStats{MetaData: map[string]string{
@@ -71,11 +72,11 @@ func TestGatewayStats(t *testing.T) {
 				{Attr: "cell_status", Value: "DISCONNECTED"},
 			}, ""},
 		{&gw.GatewayStats{MetaData: map[string]string{
-			"int_time": "1612391935"}},
+			"int_hour": "1612391935"}},
 			[]*parse.Point{
-				{Attr: "raw_gateway", Value: `{"metaData":{"int_time":` +
+				{Attr: "raw_gateway", Value: `{"metaData":{"int_hour":` +
 					`"1612391935"}}`},
-				{Attr: "time", Value: 1612391935},
+				{Attr: "hour", Value: int32(1612391935)},
 			}, ""},
 		{&gw.GatewayStats{MetaData: map[string]string{
 			"fl64_uptime": "13379004.3"}},
@@ -87,10 +88,10 @@ func TestGatewayStats(t *testing.T) {
 		// Gateway Stats bad length.
 		{nil, nil, "unexpected EOF"},
 		// Gateway Stats bad metadata int conversion.
-		{&gw.GatewayStats{MetaData: map[string]string{"int_time": "aaa"}},
+		{&gw.GatewayStats{MetaData: map[string]string{"int_hour": "aaa"}},
 			[]*parse.Point{
-				{Attr: "raw_gateway", Value: `{"metaData":{"int_time":"aaa"}}`},
-			}, `strconv.Atoi: parsing "aaa": invalid syntax`},
+				{Attr: "raw_gateway", Value: `{"metaData":{"int_hour":"aaa"}}`},
+			}, `strconv.ParseInt: parsing "aaa": invalid syntax`},
 		// Gateway Stats bad metadata float64 conversion.
 		{&gw.GatewayStats{MetaData: map[string]string{"fl64_time": "bbb"}},
 			[]*parse.Point{

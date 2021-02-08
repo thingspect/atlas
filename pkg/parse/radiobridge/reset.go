@@ -24,12 +24,12 @@ func reset(body []byte) ([]*parse.Point, error) {
 	}
 
 	// Parse protocol, count, and hardware version.
-	proto := int(body[0] >> 4)
+	proto := int32(body[0] >> 4)
 	msgs := []*parse.Point{{Attr: "proto", Value: proto}}
 
-	count := int(body[0] & clearProto)
+	count := int32(body[0] & clearProto)
 	msgs = append(msgs, &parse.Point{Attr: "count", Value: count})
-	msgs = append(msgs, &parse.Point{Attr: "hw_ver", Value: int(body[3])})
+	msgs = append(msgs, &parse.Point{Attr: "hw_ver", Value: int32(body[3])})
 
 	// Parse firmware version.
 	var firmware string

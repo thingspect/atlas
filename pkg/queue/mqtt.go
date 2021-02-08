@@ -35,6 +35,7 @@ func NewMQTT(addr, user, pass, clientID string,
 		SetUsername(user).
 		SetPassword(pass).
 		SetClientID(clientID).
+		SetOrderMatters(false).
 		SetMaxReconnectInterval(connectTimeout)
 	client := mqtt.NewClient(opts)
 

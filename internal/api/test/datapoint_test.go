@@ -169,8 +169,8 @@ func TestListDataPoints(t *testing.T) {
 				ValOneof: &common.DataPoint_BoolVal{BoolVal: []bool{true,
 					false}[random.Intn(2)]}, TraceId: uuid.NewString()},
 			{UniqId: createDev.UniqId, Attr: "raw",
-				ValOneof: &common.DataPoint_BytesVal{BytesVal: []byte{0x00}},
-				TraceId:  uuid.NewString()},
+				ValOneof: &common.DataPoint_BytesVal{
+					BytesVal: random.Bytes(10)}, TraceId: uuid.NewString()},
 			{UniqId: createDev.UniqId, Attr: "motion",
 				ValOneof: &common.DataPoint_IntVal{IntVal: 321},
 				TraceId:  uuid.NewString()},
@@ -351,8 +351,8 @@ func TestLatestDataPoints(t *testing.T) {
 				ValOneof: &common.DataPoint_BoolVal{BoolVal: []bool{true,
 					false}[random.Intn(2)]}, TraceId: uuid.NewString()},
 			{UniqId: createDev.UniqId, Attr: "raw",
-				ValOneof: &common.DataPoint_BytesVal{BytesVal: []byte{0x00}},
-				TraceId:  uuid.NewString()},
+				ValOneof: &common.DataPoint_BytesVal{
+					BytesVal: random.Bytes(10)}, TraceId: uuid.NewString()},
 		}
 
 		for _, point := range points {

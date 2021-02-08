@@ -19,10 +19,10 @@ func tamper(body []byte) ([]*parse.Point, error) {
 	}
 
 	// Parse protocol and count.
-	proto := int(body[0] >> 4)
+	proto := int32(body[0] >> 4)
 	msgs := []*parse.Point{{Attr: "proto", Value: proto}}
 
-	count := int(body[0] & clearProto)
+	count := int32(body[0] & clearProto)
 	msgs = append(msgs, &parse.Point{Attr: "count", Value: count})
 
 	// Parse tamper status.

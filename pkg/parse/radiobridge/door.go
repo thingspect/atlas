@@ -32,7 +32,7 @@ func Door(body []byte) ([]*parse.Point, error) {
 	}
 
 	// Parse count.
-	count := int(body[0] & clearProto)
+	count := int32(body[0] & clearProto)
 	msgs := []*parse.Point{{Attr: "count", Value: count}}
 
 	// Parse open status.

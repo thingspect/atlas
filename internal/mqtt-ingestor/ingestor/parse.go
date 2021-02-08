@@ -20,6 +20,7 @@ func (ing *Ingestor) parseMessages() {
 
 	var processCount int
 	for msg := range ing.mqttSub.C() {
+		msg.Ack()
 		metric.Incr("received", nil)
 
 		// Set up logging fields.
@@ -30,7 +31,6 @@ func (ing *Ingestor) parseMessages() {
 		topic := msg.Topic()
 		topicParts := strings.Split(topic, "/")
 		if len(topicParts) < 2 || len(topicParts) > 4 || topicParts[0] != "v1" {
-			msg.Ack()
 			metric.Incr("error", map[string]string{"func": "topic"})
 			logger.Errorf("parseMessages malformed topic: %v", topic)
 			continue
@@ -50,11 +50,11 @@ func (ing *Ingestor) parseMessages() {
 			err = proto.Unmarshal(msg.Payload(), payl)
 		}
 		if err != nil {
-			msg.Ack()
 			metric.Incr("error", map[string]string{"func": "unmarshal"})
 			logger.Errorf("parseMessages proto.Unmarshal: %v", err)
 			continue
 		}
+		metric.Incr("processed", nil)
 		logger.Debugf("parseMessages payl: %+v", payl)
 
 		// Build and publish ValidatorIn messages.
@@ -72,20 +72,13 @@ func (ing *Ingestor) parseMessages() {
 			if err = ing.parserQueue.Publish(ing.parserPubTopic,
 				bVIn); err != nil {
 				metric.Incr("error", map[string]string{"func": "publish"})
-				logger.Errorf("parseMessages ing.parserPub.Publish: %v", err)
+				logger.Errorf("parseMessages ing.parserQueue.Publish: %v", err)
 				continue
 			}
 
 			successCount++
 			metric.Incr("published", nil)
 			logger.Debugf("parseMessages published: %+v", vIn)
-		}
-
-		// Do not ack on errors, as publish may retry successfully.
-		// Deduplication will take place downstream.
-		if successCount == len(payl.Points) {
-			msg.Ack()
-			metric.Incr("processed", nil)
 		}
 
 		processCount++

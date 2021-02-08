@@ -1,0 +1,21 @@
+syntax = "proto3";
+package message;
+
+import "google/protobuf/timestamp.proto";
+
+option go_package = "github.com/thingspect/atlas/api/go/message";
+
+// ParserIn represents a data payload and associated metadata as used in message queues.
+message ParserIn {
+  // Device unique ID.
+  string uniq_id = 1;
+
+  // Data payload.
+  bytes data = 2;
+
+  // Timestamp.
+  google.protobuf.Timestamp ts = 3;
+
+  // Trace ID (UUID).
+  string trace_id = 4;
+}

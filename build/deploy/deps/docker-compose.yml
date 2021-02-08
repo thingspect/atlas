@@ -52,7 +52,7 @@ services:
       - NETWORK_SERVER__GATEWAY__BACKEND__MQTT__EVENT_TOPIC=$share/csgroup/lora/gateway/+/event/+
       - NETWORK_SERVER__GATEWAY__BACKEND__MQTT__COMMAND_TOPIC_TEMPLATE=$share/csgroup/lora/gateway/{{ .GatewayID }}/command/{{ .CommandType }}
       - NETWORK_SERVER__GATEWAY__BACKEND__MQTT__SERVER=tcp://mqtt:1883
-      - NETWORK_SERVER__GATEWAY__BACKEND__MQTT__USERNAME=lorasvc
+      - NETWORK_SERVER__GATEWAY__BACKEND__MQTT__USERNAME=chirpstack-ns
       - NETWORK_SERVER__GATEWAY__BACKEND__MQTT__PASSWORD=notasecurepassword
       - NETWORK_SERVER__GATEWAY__BACKEND__MQTT__CLIENT_ID=chirpstack-network-server-1
       - NETWORK_SERVER__GATEWAY__BACKEND__MQTT__MAX_RECONNECT_INTERVAL=5s
@@ -74,7 +74,7 @@ services:
       - APPLICATION_SERVER__INTEGRATION__MQTT__EVENT_TOPIC_TEMPLATE=lora/application/{{ .ApplicationID }}/device/{{ .DevEUI }}/event/{{ .EventType }}
       - APPLICATION_SERVER__INTEGRATION__MQTT__COMMAND_TOPIC_TEMPLATE=lora/application/{{ .ApplicationID }}/device/{{ .DevEUI }}/command/{{ .CommandType }}
       - APPLICATION_SERVER__INTEGRATION__MQTT__SERVER=tcp://mqtt:1883
-      - APPLICATION_SERVER__INTEGRATION__MQTT__USERNAME=lorasvc
+      - APPLICATION_SERVER__INTEGRATION__MQTT__USERNAME=chirpstack-as
       - APPLICATION_SERVER__INTEGRATION__MQTT__PASSWORD=notasecurepassword
       - APPLICATION_SERVER__INTEGRATION__MQTT__CLIENT_ID=chirpstack-application-server-1
       - APPLICATION_SERVER__INTEGRATION__MQTT__MAX_RECONNECT_INTERVAL=5s

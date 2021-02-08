@@ -7,19 +7,26 @@ import (
 	"log"
 )
 
-// String returns a new random hex string n characters in length. Care should be
-// taken when used outside of tests.
-func String(n uint) string {
-	b := make([]byte, n/2+1)
+// Bytes returns a new random []byte. Care should be taken when used outside of
+// tests.
+func Bytes(n uint) []byte {
+	b := make([]byte, n)
 	if _, err := rand.Read(b); err != nil {
 		// rand.Read should not fail.
 		log.Fatalf("String rand.Read: %v", err)
 	}
 
-	return hex.EncodeToString(b)[:n]
+	return b
 }
 
-// Email generates a random email at thingspect.com.
+// String returns a new random hex string n characters in length. Care should be
+// taken when used outside of tests.
+func String(n uint) string {
+	return hex.EncodeToString(Bytes(n/2 + 1))[:n]
+}
+
+// Email generates a random email at thingspect.com. Care should be taken when
+// used outside of tests.
 func Email() string {
 	return String(10) + "@thingspect.com"
 }

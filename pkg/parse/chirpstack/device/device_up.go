@@ -3,6 +3,7 @@ package device
 import (
 	"encoding/hex"
 	"sort"
+	"strconv"
 	"time"
 
 	as "github.com/brocaar/chirpstack-api/go/v3/as/integration"
@@ -13,27 +14,30 @@ import (
 	//lint:ignore SA1019 // third-party dependency
 	"github.com/golang/protobuf/proto"
 	"github.com/thingspect/atlas/pkg/parse"
+	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 // deviceUp parses a device Uplink payload from a []byte according to the spec.
-// Points, a time, and a data []byte are built from successful parse results. If
-// a fatal error is encountered, it is returned along with any valid points.
-func deviceUp(body []byte) ([]*parse.Point, time.Time, []byte, error) {
+// Points, a timestamp, and a data []byte are built from successful parse
+// results. If a fatal error is encountered, it is returned along with any valid
+// points.
+func deviceUp(body []byte) ([]*parse.Point, *timestamppb.Timestamp, []byte,
+	error) {
 	upMsg := &as.UplinkEvent{}
 	if err := proto.Unmarshal(body, upMsg); err != nil {
-		return nil, time.Time{}, nil, err
+		return nil, nil, nil, err
 	}
 
 	// Build raw device payload for debugging.
 	marshaler := &jsonpb.Marshaler{}
 	gw, err := marshaler.MarshalToString(upMsg)
 	if err != nil {
-		return nil, time.Time{}, upMsg.Data, err
+		return nil, nil, upMsg.Data, err
 	}
 	msgs := []*parse.Point{{Attr: "raw_device", Value: gw}}
 
 	// Parse UplinkRXInfos.
-	upTime := time.Now()
+	upTime := timestamppb.Now()
 	if len(upMsg.RxInfo) > 0 {
 		// Sort upMsg.RxInfo by strongest RSSI.
 		sort.Slice(upMsg.RxInfo, func(i, j int) bool {
@@ -48,11 +52,13 @@ func deviceUp(body []byte) ([]*parse.Point, time.Time, []byte, error) {
 		// Populate time channel if it is provided by the gateway. Use it as
 		// upTime if it is accurate.
 		if upMsg.RxInfo[0].Time != nil {
-			ts := upMsg.RxInfo[0].Time.AsTime()
 			msgs = append(msgs, &parse.Point{Attr: "time",
-				Value: int(ts.Unix())})
-			if ts.Before(upTime) && time.Since(ts) < parse.ValidWindow {
-				upTime = ts
+				Value: strconv.FormatInt(upMsg.RxInfo[0].Time.Seconds, 10)})
+
+			ts := upMsg.RxInfo[0].Time.AsTime()
+			if ts.Before(upTime.AsTime()) &&
+				time.Since(ts) < parse.ValidWindow {
+				upTime = upMsg.RxInfo[0].Time
 			}
 		}
 
@@ -69,14 +75,14 @@ func deviceUp(body []byte) ([]*parse.Point, time.Time, []byte, error) {
 	// Parse UplinkTXInfo.
 	if upMsg.TxInfo != nil && upMsg.TxInfo.Frequency != 0 {
 		msgs = append(msgs, &parse.Point{Attr: "frequency",
-			Value: int(upMsg.TxInfo.Frequency)})
+			Value: int32(upMsg.TxInfo.Frequency)})
 	}
 
 	// Parse UplinkEvent.
 	msgs = append(msgs, &parse.Point{Attr: "adr", Value: upMsg.Adr})
-	msgs = append(msgs, &parse.Point{Attr: "data_rate", Value: int(upMsg.Dr)})
+	msgs = append(msgs, &parse.Point{Attr: "data_rate", Value: int32(upMsg.Dr)})
 	msgs = append(msgs, &parse.Point{Attr: "confirmed",
 		Value: upMsg.ConfirmedUplink})
 
-	return msgs, upTime.UTC(), upMsg.Data, nil
+	return msgs, upTime, upMsg.Data, nil
 }

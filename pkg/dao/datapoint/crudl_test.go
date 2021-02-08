@@ -47,7 +47,7 @@ func TestCreate(t *testing.T) {
 				uuid.NewString()},
 			{&common.DataPoint{UniqId: "dao-point-" + random.String(16),
 				Attr: "raw", ValOneof: &common.DataPoint_BytesVal{
-					BytesVal: []byte{0x00}}, Ts: timestamppb.Now(),
+					BytesVal: random.Bytes(10)}, Ts: timestamppb.Now(),
 				TraceId: uuid.NewString()}, uuid.NewString()},
 		}
 
@@ -83,7 +83,7 @@ func TestCreate(t *testing.T) {
 				dao.ErrInvalidFormat},
 			{&common.DataPoint{UniqId: "dao-point-" + random.String(16),
 				Attr: "raw", ValOneof: &common.DataPoint_BytesVal{
-					BytesVal: []byte(random.String(256))},
+					BytesVal: random.Bytes(256)},
 				Ts: timestamppb.Now(), TraceId: uuid.NewString()},
 				dao.ErrInvalidFormat},
 		}
@@ -158,8 +158,8 @@ func TestList(t *testing.T) {
 				ValOneof: &common.DataPoint_BoolVal{BoolVal: []bool{true,
 					false}[random.Intn(2)]}, TraceId: uuid.NewString()},
 			{UniqId: createDev.UniqId, Attr: "raw",
-				ValOneof: &common.DataPoint_BytesVal{BytesVal: []byte{0x00}},
-				TraceId:  uuid.NewString()},
+				ValOneof: &common.DataPoint_BytesVal{
+					BytesVal: random.Bytes(10)}, TraceId: uuid.NewString()},
 			{UniqId: createDev.UniqId, Attr: "motion",
 				ValOneof: &common.DataPoint_IntVal{IntVal: 321},
 				TraceId:  uuid.NewString()},
@@ -311,8 +311,8 @@ func TestLatest(t *testing.T) {
 				ValOneof: &common.DataPoint_BoolVal{BoolVal: []bool{true,
 					false}[random.Intn(2)]}, TraceId: uuid.NewString()},
 			{UniqId: createDev.UniqId, Attr: "raw",
-				ValOneof: &common.DataPoint_BytesVal{BytesVal: []byte{0x00}},
-				TraceId:  uuid.NewString()},
+				ValOneof: &common.DataPoint_BytesVal{
+					BytesVal: random.Bytes(10)}, TraceId: uuid.NewString()},
 		}
 
 		for _, point := range points {

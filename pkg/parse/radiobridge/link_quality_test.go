@@ -22,18 +22,18 @@ func TestLinkQuality(t *testing.T) {
 	}{
 		// Link Quality.
 		{"1dfb010000", []*parse.Point{
-			{Attr: "proto", Value: 1},
-			{Attr: "count", Value: 13},
-			{Attr: "sub_band", Value: 1},
-			{Attr: "dev_rssi", Value: 0},
-			{Attr: "dev_snr", Value: 0},
+			{Attr: "proto", Value: int32(1)},
+			{Attr: "count", Value: int32(13)},
+			{Attr: "sub_band", Value: int32(1)},
+			{Attr: "dev_rssi", Value: int32(0)},
+			{Attr: "dev_snr", Value: int32(0)},
 		}, ""},
 		{"1dfb01ca0b", []*parse.Point{
-			{Attr: "proto", Value: 1},
-			{Attr: "count", Value: 13},
-			{Attr: "sub_band", Value: 1},
-			{Attr: "dev_rssi", Value: -54},
-			{Attr: "dev_snr", Value: 11},
+			{Attr: "proto", Value: int32(1)},
+			{Attr: "count", Value: int32(13)},
+			{Attr: "sub_band", Value: int32(1)},
+			{Attr: "dev_rssi", Value: int32(-54)},
+			{Attr: "dev_snr", Value: int32(11)},
 		}, ""},
 		// Link Quality bad length.
 		{"", nil, "link quality format bad length: "},

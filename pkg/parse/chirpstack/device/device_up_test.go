@@ -6,6 +6,7 @@ import (
 	"encoding/base64"
 	"encoding/hex"
 	"fmt"
+	"strconv"
 	"testing"
 	"time"
 
@@ -34,13 +35,18 @@ func TestDeviceUp(t *testing.T) {
 	// Truncate to nearest second for compatibility with jsonpb.Marshaler and
 	// time.RFC3339Nano formatting.
 	now := time.Now().UTC().Add(-15 * time.Minute).Truncate(time.Second)
-	pNow := timestamppb.New(now)
+	tsNow := timestamppb.New(now)
+
+	bData := random.Bytes(10)
+	b64Data := base64.StdEncoding.EncodeToString(bData)
+	t.Logf("b64Data: %v", b64Data)
 
 	// Device Uplink payloads, see deviceUp() for format description.
 	tests := []struct {
 		inp       *as.UplinkEvent
 		resPoints []*parse.Point
 		resTime   time.Time
+		resData   []byte
 		err       string
 	}{
 		// Device Uplink.
@@ -48,31 +54,31 @@ func TestDeviceUp(t *testing.T) {
 			[]*parse.Point{
 				{Attr: "raw_device", Value: `{"rxInfo":[{}]}`},
 				{Attr: "adr", Value: false},
-				{Attr: "data_rate", Value: 0},
+				{Attr: "data_rate", Value: int32(0)},
 				{Attr: "confirmed", Value: false},
-			}, time.Now(), ""},
+			}, time.Now(), nil, ""},
 		{&as.UplinkEvent{RxInfo: []*gw.UplinkRXInfo{{GatewayId: []byte("aaa"),
-			Time: pNow, Rssi: -80, LoraSnr: 1}, {GatewayId: bGatewayID,
-			Time: pNow, Rssi: -74, LoraSnr: 7.8}}, TxInfo: &gw.UplinkTXInfo{
-			Frequency: 902700000}, Adr: true, Dr: 3,
+			Time: tsNow, Rssi: -80, LoraSnr: 1}, {GatewayId: bGatewayID,
+			Time: tsNow, Rssi: -74, LoraSnr: 7.8}}, TxInfo: &gw.UplinkTXInfo{
+			Frequency: 902700000}, Adr: true, Dr: 3, Data: bData,
 			ConfirmedUplink: true}, []*parse.Point{
 			{Attr: "raw_device", Value: fmt.Sprintf(`{"rxInfo":[{"gatewayID":`+
 				`"YWFh","time":"%s","rssi":-80,"loRaSNR":1},{"gatewayID":"%s",`+
 				`"time":"%s","rssi":-74,"loRaSNR":7.8}],"txInfo":{"frequency":`+
-				`902700000},"adr":true,"dr":3,"confirmedUplink":true}`,
-				now.Format(time.RFC3339Nano), b64GatewayID,
-				now.Format(time.RFC3339Nano))},
+				`902700000},"adr":true,"dr":3,"data":"%s","confirmedUplink":`+
+				`true}`, now.Format(time.RFC3339Nano), b64GatewayID,
+				now.Format(time.RFC3339Nano), b64Data)},
 			{Attr: "gateway_id", Value: gatewayID},
-			{Attr: "time", Value: int(now.Unix())},
+			{Attr: "time", Value: strconv.FormatInt(now.Unix(), 10)},
 			{Attr: "rssi", Value: -74},
 			{Attr: "snr", Value: 7.8},
-			{Attr: "frequency", Value: 902700000},
+			{Attr: "frequency", Value: int32(902700000)},
 			{Attr: "adr", Value: true},
-			{Attr: "data_rate", Value: 3},
+			{Attr: "data_rate", Value: int32(3)},
 			{Attr: "confirmed", Value: true},
-		}, now, ""},
+		}, now, bData, ""},
 		// Device Uplink bad length.
-		{nil, nil, time.Time{}, "unexpected EOF"},
+		{nil, nil, time.Time{}, nil, "unexpected EOF"},
 	}
 
 	for _, test := range tests {
@@ -91,8 +97,11 @@ func TestDeviceUp(t *testing.T) {
 			res, ts, data, err := deviceUp(bInp)
 			t.Logf("res, ts, data, err: %#v, %v, %x, %v", res, ts, data, err)
 			require.Equal(t, lTest.resPoints, res)
-			require.WithinDuration(t, lTest.resTime, ts, 2*time.Second)
-			require.Nil(t, data)
+			if !lTest.resTime.IsZero() {
+				require.WithinDuration(t, lTest.resTime, ts.AsTime(),
+					2*time.Second)
+			}
+			require.Equal(t, lTest.resData, data)
 			if lTest.err != "" {
 				require.EqualError(t, err, lTest.err)
 			}

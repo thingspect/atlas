@@ -40,10 +40,10 @@ func supervisory(body []byte) ([]*parse.Point, error) {
 	}
 
 	// Parse protocol and count.
-	proto := int(body[0] >> 4)
+	proto := int32(body[0] >> 4)
 	msgs := []*parse.Point{{Attr: "proto", Value: proto}}
 
-	count := int(body[0] & clearProto)
+	count := int32(body[0] & clearProto)
 	msgs = append(msgs, &parse.Point{Attr: "count", Value: count})
 
 	// Parse error codes.
@@ -71,7 +71,7 @@ func supervisory(body []byte) ([]*parse.Point, error) {
 	// Event count, 2 bytes.
 	if len(body) >= 11 {
 		msgs = append(msgs, &parse.Point{Attr: "total_count",
-			Value: int(binary.BigEndian.Uint16(body[9:11]))})
+			Value: int32(binary.BigEndian.Uint16(body[9:11]))})
 	}
 
 	// Check for any remaining bytes.

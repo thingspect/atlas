@@ -3,16 +3,17 @@ package device
 
 import (
 	"fmt"
-	"time"
 
 	"github.com/thingspect/atlas/pkg/parse"
+	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
-// Device parses a device payload from a []byte according to the spec. Points
-// and (optional) data []byte and times are built from successful parse results.
-// If a fatal error is encountered, it is returned along with any valid points.
-func Device(event string, body []byte) ([]*parse.Point, time.Time, []byte,
-	error) {
+// Device parses a device payload from a []byte according to the spec. Points,
+// optional data []byte, and a timestamp are built from successful parse
+// results. If a fatal error is encountered, it is returned along with any valid
+// points.
+func Device(event string, body []byte) ([]*parse.Point, *timestamppb.Timestamp,
+	[]byte, error) {
 	switch event {
 	case "up":
 		return deviceUp(body)
@@ -21,15 +22,15 @@ func Device(event string, body []byte) ([]*parse.Point, time.Time, []byte,
 		return msgs, ts, nil, err
 	case "ack":
 		msgs, err := deviceAck(body)
-		return msgs, time.Now(), nil, err
+		return msgs, timestamppb.Now(), nil, err
 	case "error":
 		msgs, err := deviceError(body)
-		return msgs, time.Now(), nil, err
+		return msgs, timestamppb.Now(), nil, err
 	case "txack":
 		msgs, err := deviceTxAck(body)
-		return msgs, time.Now(), nil, err
+		return msgs, timestamppb.Now(), nil, err
 	default:
-		return nil, time.Time{}, nil, fmt.Errorf("%w: %s, %x",
-			parse.ErrUnknownEvent, event, body)
+		return nil, nil, nil, fmt.Errorf("%w: %s, %x", parse.ErrUnknownEvent,
+			event, body)
 	}
 }
