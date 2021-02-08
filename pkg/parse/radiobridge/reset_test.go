@@ -22,33 +22,33 @@ func TestReset(t *testing.T) {
 	}{
 		// Reset.
 		{"100001120102181c", []*parse.Point{
-			{Attr: "proto", Value: 1},
-			{Attr: "count", Value: 0},
-			{Attr: "hw_ver", Value: 18},
+			{Attr: "proto", Value: int32(1)},
+			{Attr: "count", Value: int32(0)},
+			{Attr: "hw_ver", Value: int32(18)},
 			{Attr: "ver", Value: "1.2"},
 		}, ""},
 		{"100001127fff181c", []*parse.Point{
-			{Attr: "proto", Value: 1},
-			{Attr: "count", Value: 0},
-			{Attr: "hw_ver", Value: 18},
+			{Attr: "proto", Value: int32(1)},
+			{Attr: "count", Value: int32(0)},
+			{Attr: "hw_ver", Value: int32(18)},
 			{Attr: "ver", Value: "127.255"},
 		}, ""},
 		{"100001128823181c", []*parse.Point{
-			{Attr: "proto", Value: 1},
-			{Attr: "count", Value: 0},
-			{Attr: "hw_ver", Value: 18},
+			{Attr: "proto", Value: int32(1)},
+			{Attr: "count", Value: int32(0)},
+			{Attr: "hw_ver", Value: int32(18)},
 			{Attr: "ver", Value: "2.1.3"},
 		}, ""},
 		{"100001128801181c", []*parse.Point{
-			{Attr: "proto", Value: 1},
-			{Attr: "count", Value: 0},
-			{Attr: "hw_ver", Value: 18},
+			{Attr: "proto", Value: int32(1)},
+			{Attr: "count", Value: int32(0)},
+			{Attr: "hw_ver", Value: int32(18)},
 			{Attr: "ver", Value: "2.0.1"},
 		}, ""},
 		{"10000112ffff181c", []*parse.Point{
-			{Attr: "proto", Value: 1},
-			{Attr: "count", Value: 0},
-			{Attr: "hw_ver", Value: 18},
+			{Attr: "proto", Value: int32(1)},
+			{Attr: "count", Value: int32(0)},
+			{Attr: "hw_ver", Value: int32(18)},
 			{Attr: "ver", Value: "31.31.31"},
 		}, ""},
 		// Reset bad length.
@@ -58,9 +58,9 @@ func TestReset(t *testing.T) {
 			"100101120102181c"},
 		// Reset unused trailing bytes.
 		{"100001120102181cff", []*parse.Point{
-			{Attr: "proto", Value: 1},
-			{Attr: "count", Value: 0},
-			{Attr: "hw_ver", Value: 18},
+			{Attr: "proto", Value: int32(1)},
+			{Attr: "count", Value: int32(0)},
+			{Attr: "hw_ver", Value: int32(18)},
 			{Attr: "ver", Value: "1.2"},
 		}, "reset format unused trailing bytes: 100001120102181cff"},
 	}

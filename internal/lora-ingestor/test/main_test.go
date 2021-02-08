@@ -8,8 +8,8 @@ import (
 	"os"
 	"testing"
 
-	"github.com/thingspect/atlas/internal/mqtt-ingestor/config"
-	"github.com/thingspect/atlas/internal/mqtt-ingestor/ingestor"
+	"github.com/thingspect/atlas/internal/lora-ingestor/config"
+	"github.com/thingspect/atlas/internal/lora-ingestor/ingestor"
 	"github.com/thingspect/atlas/pkg/queue"
 	testconfig "github.com/thingspect/atlas/pkg/test/config"
 	"github.com/thingspect/atlas/pkg/test/random"
@@ -18,8 +18,12 @@ import (
 var (
 	globalMQTTQueue queue.Queuer
 
-	globalParserPubTopic string
-	globalParserSub      queue.Subber
+	globalParserPubGWTopic   string
+	globalParserPubDevTopic  string
+	globalParserPubDataTopic string
+	globalParserGWSub        queue.Subber
+	globalParserDevSub       queue.Subber
+	globalParserDataSub      queue.Subber
 )
 
 func TestMain(m *testing.M) {
@@ -29,9 +33,15 @@ func TestMain(m *testing.M) {
 	cfg.MQTTAddr = testConfig.MQTTAddr
 
 	cfg.NSQPubAddr = testConfig.NSQPubAddr
-	cfg.NSQPubTopic += "-test-" + random.String(10)
-	globalParserPubTopic = cfg.NSQPubTopic
-	log.Printf("TestMain cfg.NSQPubTopic: %v", cfg.NSQPubTopic)
+	cfg.NSQPubGWTopic += "-test-" + random.String(10)
+	globalParserPubGWTopic = cfg.NSQPubGWTopic
+	log.Printf("TestMain cfg.NSQPubGWTopic: %v", cfg.NSQPubGWTopic)
+	cfg.NSQPubDevTopic += "-test-" + random.String(10)
+	globalParserPubDevTopic = cfg.NSQPubDevTopic
+	log.Printf("TestMain cfg.NSQPubDevTopic: %v", cfg.NSQPubDevTopic)
+	cfg.NSQPubDataTopic += "-test-" + random.String(10)
+	globalParserPubDataTopic = cfg.NSQPubDataTopic
+	log.Printf("TestMain cfg.NSQPubDataTopic: %v", cfg.NSQPubDataTopic)
 
 	// Set up MQTT client connection to publish test payloads.
 	var err error
@@ -65,9 +75,17 @@ func TestMain(m *testing.M) {
 		log.Fatalf("TestMain queue.NewNSQ: %v", err)
 	}
 
-	globalParserSub, err = nsq.Subscribe(cfg.NSQPubTopic)
+	globalParserGWSub, err = nsq.Subscribe(cfg.NSQPubGWTopic)
 	if err != nil {
-		log.Fatalf("TestMain nsq.Subscribe: %v", err)
+		log.Fatalf("TestMain GW nsq.Subscribe: %v", err)
+	}
+	globalParserDevSub, err = nsq.Subscribe(cfg.NSQPubDevTopic)
+	if err != nil {
+		log.Fatalf("TestMain Dev nsq.Subscribe: %v", err)
+	}
+	globalParserDataSub, err = nsq.Subscribe(cfg.NSQPubDataTopic)
+	if err != nil {
+		log.Fatalf("TestMain Data nsq.Subscribe: %v", err)
 	}
 	log.Printf("TestMain connected as NSQ sub channel: %v", subChannel)
 

@@ -17,14 +17,14 @@ func TestFakePublish(t *testing.T) {
 	t.Logf("fake: %+v", fake)
 
 	require.NoError(t, fake.Publish("testFakePublish-"+random.String(10),
-		[]byte(random.String(10))))
+		random.Bytes(10)))
 }
 
 func TestFakeSubscribe(t *testing.T) {
 	t.Parallel()
 
 	topic := "testFakeSubscribePub-" + random.String(10)
-	payload := []byte(random.String(10))
+	payload := random.Bytes(10)
 
 	fake := NewFake()
 	t.Logf("fake: %+v", fake)

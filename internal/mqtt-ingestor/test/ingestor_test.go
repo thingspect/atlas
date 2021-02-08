@@ -30,31 +30,40 @@ func TestParseMessages(t *testing.T) {
 	tests := []struct {
 		inpTopicParts []string
 		inpPaylToken  string
-		inpPoint      *common.DataPoint
-		res           *message.ValidatorIn
+		inpPoints     []*common.DataPoint
+		res           []*message.ValidatorIn
 	}{
-		{[]string{"v1", orgID, "json"}, "",
-			&common.DataPoint{UniqId: uniqIDPoint, Attr: "ing-motion",
+		{[]string{"v1", orgID, "json"}, "", []*common.DataPoint{
+			{UniqId: uniqIDPoint, Attr: "motion",
 				ValOneof: &common.DataPoint_IntVal{IntVal: 123}, Ts: now,
 				Token: pointToken},
-			&message.ValidatorIn{Point: &common.DataPoint{UniqId: uniqIDPoint,
-				Attr:     "ing-motion",
-				ValOneof: &common.DataPoint_IntVal{IntVal: 123}, Ts: now,
-				Token: pointToken}, OrgId: orgID}},
-		{[]string{"v1", orgID, uniqIDTopic}, paylToken,
-			&common.DataPoint{Attr: "ing-temp",
-				ValOneof: &common.DataPoint_Fl64Val{Fl64Val: 9.3}},
-			&message.ValidatorIn{Point: &common.DataPoint{UniqId: uniqIDTopic,
-				Attr:     "ing-temp",
+			{UniqId: uniqIDPoint, Attr: "motion",
+				ValOneof: &common.DataPoint_IntVal{IntVal: 321}, Ts: now,
+				Token: pointToken},
+		}, []*message.ValidatorIn{
+			{Point: &common.DataPoint{UniqId: uniqIDPoint,
+				Attr: "motion", ValOneof: &common.DataPoint_IntVal{IntVal: 123},
+				Ts: now, Token: pointToken}, OrgId: orgID},
+			{Point: &common.DataPoint{UniqId: uniqIDPoint,
+				Attr: "motion", ValOneof: &common.DataPoint_IntVal{IntVal: 321},
+				Ts: now, Token: pointToken}, OrgId: orgID},
+		}},
+		{[]string{"v1", orgID, uniqIDTopic}, paylToken, []*common.DataPoint{
+			{Attr: "temp", ValOneof: &common.DataPoint_Fl64Val{Fl64Val: 9.3}},
+		}, []*message.ValidatorIn{
+			{Point: &common.DataPoint{UniqId: uniqIDTopic, Attr: "temp",
 				ValOneof: &common.DataPoint_Fl64Val{Fl64Val: 9.3},
-				Token:    paylToken}, OrgId: orgID}},
+				Token:    paylToken}, OrgId: orgID},
+		}},
 		{[]string{"v1", orgID, uniqIDTopic, "json"}, paylToken,
-			&common.DataPoint{Attr: "ing-power",
-				ValOneof: &common.DataPoint_StrVal{StrVal: "batt"}},
-			&message.ValidatorIn{Point: &common.DataPoint{UniqId: uniqIDTopic,
-				Attr:     "ing-power",
-				ValOneof: &common.DataPoint_StrVal{StrVal: "batt"},
-				Token:    paylToken}, OrgId: orgID}},
+			[]*common.DataPoint{
+				{Attr: "power", ValOneof: &common.DataPoint_StrVal{
+					StrVal: "batt"}},
+			}, []*message.ValidatorIn{
+				{Point: &common.DataPoint{UniqId: uniqIDTopic, Attr: "power",
+					ValOneof: &common.DataPoint_StrVal{StrVal: "batt"},
+					Token:    paylToken}, OrgId: orgID},
+			}},
 	}
 
 	for _, test := range tests {
@@ -63,7 +72,7 @@ func TestParseMessages(t *testing.T) {
 		t.Run(fmt.Sprintf("Can parse %+v", lTest), func(t *testing.T) {
 			var bPayl []byte
 			var err error
-			payl := &mqtt.Payload{Points: []*common.DataPoint{lTest.inpPoint},
+			payl := &mqtt.Payload{Points: lTest.inpPoints,
 				Token: lTest.inpPaylToken}
 
 			if lTest.inpTopicParts[len(lTest.inpTopicParts)-1] == "json" {
@@ -77,33 +86,35 @@ func TestParseMessages(t *testing.T) {
 			require.NoError(t, globalMQTTQueue.Publish(strings.Join(
 				lTest.inpTopicParts, "/"), bPayl))
 
-			select {
-			case msg := <-globalParserSub.C():
-				msg.Ack()
-				t.Logf("msg.Topic, msg.Payload: %v, %s", msg.Topic(),
-					msg.Payload())
-				require.Equal(t, globalParserPubTopic, msg.Topic())
+			for i, res := range lTest.res {
+				select {
+				case msg := <-globalParserSub.C():
+					msg.Ack()
+					t.Logf("msg.Topic, msg.Payload: %v, %s", msg.Topic(),
+						msg.Payload())
+					require.Equal(t, globalParserPubTopic, msg.Topic())
 
-				vIn := &message.ValidatorIn{}
-				require.NoError(t, proto.Unmarshal(msg.Payload(), vIn))
-				t.Logf("vIn: %+v", vIn)
+					vIn := &message.ValidatorIn{}
+					require.NoError(t, proto.Unmarshal(msg.Payload(), vIn))
+					t.Logf("vIn: %+v", vIn)
 
-				// Normalize generated trace ID.
-				lTest.res.Point.TraceId = vIn.Point.TraceId
-				// Normalize timestamps.
-				if lTest.inpPoint.Ts == nil {
-					require.WithinDuration(t, time.Now(), vIn.Point.Ts.AsTime(),
-						5*time.Second)
-					lTest.res.Point.Ts = vIn.Point.Ts
+					// Normalize generated trace ID.
+					res.Point.TraceId = vIn.Point.TraceId
+					// Normalize timestamps.
+					if lTest.inpPoints[i].Ts == nil {
+						require.WithinDuration(t, time.Now(),
+							vIn.Point.Ts.AsTime(), 5*time.Second)
+						res.Point.Ts = vIn.Point.Ts
+					}
+
+					// Testify does not currently support protobuf equality:
+					// https://github.com/stretchr/testify/issues/758
+					if !proto.Equal(res, vIn) {
+						t.Fatalf("\nExpect: %+v\nActual: %+v", lTest.res, vIn)
+					}
+				case <-time.After(5 * time.Second):
+					t.Fatal("Message timed out")
 				}
-
-				// Testify does not currently support protobuf equality:
-				// https://github.com/stretchr/testify/issues/758
-				if !proto.Equal(lTest.res, vIn) {
-					t.Fatalf("\nExpect: %+v\nActual: %+v", lTest.res, vIn)
-				}
-			case <-time.After(5 * time.Second):
-				t.Fatal("Message timed out")
 			}
 		})
 	}

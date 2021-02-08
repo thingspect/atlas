@@ -65,7 +65,7 @@ func (val *Validator) validateMessages() {
 			metric.Incr("invalid", map[string]string{"func": "validate"})
 			logger.Debugf("validateMessages vIn.Point.Validate: %v", err)
 			continue
-		case vIn.OrgId != dev.OrgId:
+		case !vIn.SkipToken && vIn.OrgId != dev.OrgId:
 			msg.Ack()
 			metric.Incr("invalid", map[string]string{"func": "orgid"})
 			logger.Errorf("validateMessages incorrect org ID, expected: %v, "+
@@ -87,7 +87,7 @@ func (val *Validator) validateMessages() {
 		// Build and publish ValidatorOut message.
 		vOut := &message.ValidatorOut{
 			Point: vIn.Point,
-			OrgId: vIn.OrgId,
+			OrgId: dev.OrgId,
 			DevId: dev.Id,
 		}
 

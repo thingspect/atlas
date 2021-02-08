@@ -10,6 +10,26 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
+func TestBytes(t *testing.T) {
+	t.Parallel()
+
+	for i := 5; i < 15; i++ {
+		lTest := i
+
+		t.Run(fmt.Sprintf("Can generate %v", lTest), func(t *testing.T) {
+			t.Parallel()
+
+			b1 := Bytes(uint(lTest))
+			b2 := Bytes(uint(lTest))
+			t.Logf("b1, b2: %x, %x", b1, b2)
+
+			require.Len(t, b1, lTest)
+			require.Len(t, b2, lTest)
+			require.NotEqual(t, b1, b2)
+		})
+	}
+}
+
 func TestString(t *testing.T) {
 	t.Parallel()
 

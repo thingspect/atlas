@@ -75,6 +75,13 @@ func TestValidateMessages(t *testing.T) {
 				UniqId: createDev.UniqId, Attr: "val-leak",
 				ValOneof: boolVal, Ts: now, TraceId: traceID},
 				OrgId: createOrg.Id, DevId: createDev.Id}},
+		{&message.ValidatorIn{Point: &common.DataPoint{UniqId: createDev.UniqId,
+			Attr: "val-leak", ValOneof: boolVal, Ts: now, TraceId: traceID},
+			SkipToken: true},
+			&message.ValidatorOut{Point: &common.DataPoint{
+				UniqId: createDev.UniqId, Attr: "val-leak",
+				ValOneof: boolVal, Ts: now, TraceId: traceID},
+				OrgId: createOrg.Id, DevId: createDev.Id}},
 	}
 
 	for _, test := range tests {

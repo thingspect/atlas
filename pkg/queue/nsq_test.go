@@ -58,14 +58,14 @@ func TestNSQPublish(t *testing.T) {
 	require.NoError(t, err)
 
 	require.NoError(t, nsq.Publish("testNSQPublish-"+random.String(10),
-		[]byte(random.String(10))))
+		random.Bytes(10)))
 
 	nsq, err = NewNSQ(testConfig.NSQPubAddr, nil, "", DefaultNSQRequeueDelay)
 	t.Logf("nsq, err: %+v, %v", nsq, err)
 	require.NoError(t, err)
 
 	require.NoError(t, nsq.Publish("testNSQPublish-"+random.String(10),
-		[]byte(random.String(10))))
+		random.Bytes(10)))
 }
 
 func TestNSQSubscribeLookup(t *testing.T) {
@@ -73,7 +73,7 @@ func TestNSQSubscribeLookup(t *testing.T) {
 
 	testConfig := config.New()
 	topic := "testNSQSubscribeLookup-" + random.String(10)
-	payload := []byte(random.String(10))
+	payload := random.Bytes(10)
 
 	nsq, err := NewNSQ(testConfig.NSQPubAddr, testConfig.NSQLookupAddrs,
 		"testNSQSubscribeLookup-"+random.String(10), DefaultNSQRequeueDelay)
@@ -104,7 +104,7 @@ func TestNSQSubscribePub(t *testing.T) {
 
 	testConfig := config.New()
 	topic := "testNSQSubscribePub-" + random.String(10)
-	payload := []byte(random.String(10))
+	payload := random.Bytes(10)
 
 	nsq, err := NewNSQ(testConfig.NSQPubAddr, nil,
 		"testNSQSubscribePub-"+random.String(10), DefaultNSQRequeueDelay)
@@ -147,7 +147,7 @@ func TestNSQUnsubscribe(t *testing.T) {
 
 	// Publish after unsubscribe to verify closed sub.
 	require.NoError(t, nsq.Publish("testNSQUnsubscribe-"+random.String(10),
-		[]byte(random.String(10))))
+		random.Bytes(10)))
 
 	select {
 	case msg, ok := <-sub.C():
@@ -164,7 +164,7 @@ func TestNSQRequeue(t *testing.T) {
 
 	testConfig := config.New()
 	topic := "testNSQRequeue-" + random.String(10)
-	payload := []byte(random.String(10))
+	payload := random.Bytes(10)
 
 	nsq, err := NewNSQ(testConfig.NSQPubAddr, nil,
 		"testNSQRequeue-"+random.String(10), time.Millisecond)

@@ -10,7 +10,7 @@ message ValidatorIn {
   // Data point.
   common.DataPoint point = 1;
 
-  // Organization ID (UUID).
+  // Organization ID (UUID). May be empty if generated internally (LoRaWAN, etc.).
   string org_id = 2;
 
   // Authentication has already taken place (API, LoRaWAN, etc.) and token validation can be skipped.

@@ -20,20 +20,20 @@ func linkQuality(body []byte) ([]*parse.Point, error) {
 	}
 
 	// Parse protocol and count.
-	proto := int(body[0] >> 4)
+	proto := int32(body[0] >> 4)
 	msgs := []*parse.Point{{Attr: "proto", Value: proto}}
 
-	count := int(body[0] & clearProto)
+	count := int32(body[0] & clearProto)
 	msgs = append(msgs, &parse.Point{Attr: "count", Value: count})
 
 	// Parse sub-band.
-	msgs = append(msgs, &parse.Point{Attr: "sub_band", Value: int(body[2])})
+	msgs = append(msgs, &parse.Point{Attr: "sub_band", Value: int32(body[2])})
 
 	// Parse device RSSI and SNR.
 	msgs = append(msgs, &parse.Point{Attr: "dev_rssi",
-		Value: int(int8(body[3]))})
+		Value: int32(int8(body[3]))})
 	msgs = append(msgs, &parse.Point{Attr: "dev_snr",
-		Value: int(int8(body[4]))})
+		Value: int32(int8(body[4]))})
 
 	return msgs, nil
 }

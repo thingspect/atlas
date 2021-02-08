@@ -3,6 +3,7 @@ package device
 import (
 	"encoding/hex"
 	"sort"
+	"strconv"
 	"time"
 
 	as "github.com/brocaar/chirpstack-api/go/v3/as/integration"
@@ -13,20 +14,21 @@ import (
 	//lint:ignore SA1019 // third-party dependency
 	"github.com/golang/protobuf/proto"
 	"github.com/thingspect/atlas/pkg/parse"
+	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 // deviceJoin parses a device Join payload from a []byte according to the spec.
-func deviceJoin(body []byte) ([]*parse.Point, time.Time, error) {
+func deviceJoin(body []byte) ([]*parse.Point, *timestamppb.Timestamp, error) {
 	joinMsg := &as.JoinEvent{}
 	if err := proto.Unmarshal(body, joinMsg); err != nil {
-		return nil, time.Time{}, err
+		return nil, nil, err
 	}
 
 	// Build raw device payload for debugging.
 	marshaler := &jsonpb.Marshaler{}
 	gw, err := marshaler.MarshalToString(joinMsg)
 	if err != nil {
-		return nil, time.Time{}, err
+		return nil, nil, err
 	}
 	msgs := []*parse.Point{{Attr: "raw_device", Value: gw}}
 
@@ -42,7 +44,7 @@ func deviceJoin(body []byte) ([]*parse.Point, time.Time, error) {
 	}
 
 	// Parse UplinkRXInfos.
-	joinTime := time.Now()
+	joinTime := timestamppb.Now()
 	if len(joinMsg.RxInfo) > 0 {
 		// Sort joinMsg.RxInfo by strongest RSSI.
 		sort.Slice(joinMsg.RxInfo, func(i, j int) bool {
@@ -57,11 +59,13 @@ func deviceJoin(body []byte) ([]*parse.Point, time.Time, error) {
 		// Populate time channel if it is provided by the gateway. Use it as
 		// joinTime if it is accurate.
 		if joinMsg.RxInfo[0].Time != nil {
-			ts := joinMsg.RxInfo[0].Time.AsTime()
 			msgs = append(msgs, &parse.Point{Attr: "time",
-				Value: int(ts.Unix())})
-			if ts.Before(joinTime) && time.Since(ts) < parse.ValidWindow {
-				joinTime = ts
+				Value: strconv.FormatInt(joinMsg.RxInfo[0].Time.Seconds, 10)})
+
+			ts := joinMsg.RxInfo[0].Time.AsTime()
+			if ts.Before(joinTime.AsTime()) &&
+				time.Since(ts) < parse.ValidWindow {
+				joinTime = joinMsg.RxInfo[0].Time
 			}
 		}
 
@@ -78,11 +82,11 @@ func deviceJoin(body []byte) ([]*parse.Point, time.Time, error) {
 	// Parse UplinkTXInfo.
 	if joinMsg.TxInfo != nil && joinMsg.TxInfo.Frequency != 0 {
 		msgs = append(msgs, &parse.Point{Attr: "frequency",
-			Value: int(joinMsg.TxInfo.Frequency)})
+			Value: int32(joinMsg.TxInfo.Frequency)})
 	}
 
 	// Parse JoinEvent data rate.
-	msgs = append(msgs, &parse.Point{Attr: "data_rate", Value: int(joinMsg.Dr)})
+	msgs = append(msgs, &parse.Point{Attr: "data_rate", Value: int32(joinMsg.Dr)})
 
-	return msgs, joinTime.UTC(), nil
+	return msgs, joinTime, nil
 }

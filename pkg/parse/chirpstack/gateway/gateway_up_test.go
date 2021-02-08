@@ -37,11 +37,11 @@ func TestGatewayUp(t *testing.T) {
 				{Attr: "raw_gateway", Value: `{"txInfo":{"frequency":` +
 					`902700000,"loRaModulationInfo":{"spreadingFactor":7}},` +
 					`"rxInfo":{"rssi":-74,"loRaSNR":7.8,"channel":2}}`},
-				{Attr: "frequency", Value: 902700000},
-				{Attr: "spread_factor", Value: 7},
-				{Attr: "lora_rssi", Value: -74},
+				{Attr: "frequency", Value: int32(902700000)},
+				{Attr: "spread_factor", Value: int32(7)},
+				{Attr: "lora_rssi", Value: int32(-74)},
 				{Attr: "snr", Value: 7.8},
-				{Attr: "channel", Value: 2},
+				{Attr: "channel", Value: int32(2)},
 			}, ""},
 		// Gateway Uplink bad length.
 		{nil, nil, "unexpected EOF"},

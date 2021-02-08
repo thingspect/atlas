@@ -43,7 +43,7 @@ func TestNewMQTT(t *testing.T) {
 			res, err := NewMQTT(lTest.inpAddr, testConfig.MQTTUser,
 				testConfig.MQTTPass, "testNewMQTT-"+random.String(10),
 				lTest.inpTimeout)
-			t.Logf("res, err: %+v, %v", res, err)
+			t.Logf("res, err: %+v, %#v", res, err)
 			if lTest.err == "" {
 				require.NotNil(t, res)
 				require.NoError(t, err)
@@ -66,7 +66,7 @@ func TestMQTTPublish(t *testing.T) {
 	require.NoError(t, err)
 
 	require.NoError(t, mqtt.Publish("testMQTTPublish-"+random.String(10),
-		[]byte(random.String(10))))
+		random.Bytes(10)))
 }
 
 func TestMQTTSubscribe(t *testing.T) {
@@ -74,7 +74,7 @@ func TestMQTTSubscribe(t *testing.T) {
 
 	testConfig := config.New()
 	topic := "testMQTTSubscribe-" + random.String(10)
-	payload := []byte(random.String(10))
+	payload := random.Bytes(10)
 
 	mqtt, err := NewMQTT(testConfig.MQTTAddr, testConfig.MQTTUser,
 		testConfig.MQTTPass, "testMQTTSubscribe-"+random.String(10),
@@ -119,7 +119,7 @@ func TestMQTTUnsubscribe(t *testing.T) {
 
 	// Publish after unsubscribe to verify closed channel.
 	require.NoError(t, mqtt.Publish("testMQTTUnsubscribe-"+random.String(10),
-		[]byte(random.String(10))))
+		random.Bytes(10)))
 
 	select {
 	case msg, ok := <-sub.C():

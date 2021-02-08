@@ -34,7 +34,7 @@ type ValidatorIn struct {
 
 	// Data point.
 	Point *common.DataPoint `protobuf:"bytes,1,opt,name=point,proto3" json:"point,omitempty"`
-	// Organization ID (UUID).
+	// Organization ID (UUID). May be empty if generated internally (LoRaWAN, etc.).
 	OrgId string `protobuf:"bytes,2,opt,name=org_id,json=orgId,proto3" json:"org_id,omitempty"`
 	// Authentication has already taken place (API, LoRaWAN, etc.) and token validation can be skipped.
 	SkipToken bool `protobuf:"varint,3,opt,name=skip_token,json=skipToken,proto3" json:"skip_token,omitempty"`

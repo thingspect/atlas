@@ -30,13 +30,13 @@ func TestDevice(t *testing.T) {
 		{"up", "", []*parse.Point{
 			{Attr: "raw_device", Value: `{}`},
 			{Attr: "adr", Value: false},
-			{Attr: "data_rate", Value: 0},
+			{Attr: "data_rate", Value: int32(0)},
 			{Attr: "confirmed", Value: false},
 		}, nil},
 		{"join", "", []*parse.Point{
 			{Attr: "raw_device", Value: `{}`},
 			{Attr: "join", Value: true},
-			{Attr: "data_rate", Value: 0},
+			{Attr: "data_rate", Value: int32(0)},
 		}, nil},
 		{"ack", "", []*parse.Point{
 			{Attr: "raw_device", Value: `{}`},
@@ -67,8 +67,9 @@ func TestDevice(t *testing.T) {
 			res, ts, data, err := Device(lTest.inpEvent, bInpBody)
 			t.Logf("res, ts, data, err: %#v, %v, %x, %v", res, ts, data, err)
 			require.Equal(t, lTest.res, res)
-			if !ts.IsZero() {
-				require.WithinDuration(t, time.Now(), ts, 2*time.Second)
+			if ts != nil {
+				require.WithinDuration(t, time.Now(), ts.AsTime(),
+					2*time.Second)
 			}
 			require.Nil(t, data)
 			require.Equal(t, lTest.err, err)

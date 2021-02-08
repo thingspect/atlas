@@ -31,13 +31,13 @@ func gatewayUp(body []byte) ([]*parse.Point, error) {
 	if upMsg.TxInfo != nil {
 		if upMsg.TxInfo.Frequency != 0 {
 			msgs = append(msgs, &parse.Point{Attr: "frequency",
-				Value: int(upMsg.TxInfo.Frequency)})
+				Value: int32(upMsg.TxInfo.Frequency)})
 		}
 
 		mod := upMsg.TxInfo.GetLoraModulationInfo()
 		if mod != nil && mod.SpreadingFactor != 0 {
 			msgs = append(msgs, &parse.Point{Attr: "spread_factor",
-				Value: int(mod.SpreadingFactor)})
+				Value: int32(mod.SpreadingFactor)})
 		}
 	}
 
@@ -45,7 +45,7 @@ func gatewayUp(body []byte) ([]*parse.Point, error) {
 	if upMsg.RxInfo != nil {
 		if upMsg.RxInfo.Rssi != 0 {
 			msgs = append(msgs, &parse.Point{Attr: "lora_rssi",
-				Value: int(upMsg.RxInfo.Rssi)})
+				Value: upMsg.RxInfo.Rssi})
 		}
 
 		if upMsg.RxInfo.LoraSnr != 0 {
@@ -55,7 +55,7 @@ func gatewayUp(body []byte) ([]*parse.Point, error) {
 
 		if upMsg.RxInfo.Channel != 0 {
 			msgs = append(msgs, &parse.Point{Attr: "channel",
-				Value: int(upMsg.RxInfo.Channel)})
+				Value: int32(upMsg.RxInfo.Channel)})
 		}
 	}
 
