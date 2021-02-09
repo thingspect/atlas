@@ -45,8 +45,8 @@ func TestDoor(t *testing.T) {
 			{Attr: "proto", Value: int32(1)},
 			{Attr: "count", Value: int32(13)},
 			{Attr: "sub_band", Value: int32(1)},
-			{Attr: "dev_rssi", Value: int32(0)},
-			{Attr: "dev_snr", Value: int32(0)},
+			{Attr: "device_rssi", Value: int32(0)},
+			{Attr: "device_snr", Value: int32(0)},
 		}, ""},
 		// Door.
 		{"190301", []*parse.Point{

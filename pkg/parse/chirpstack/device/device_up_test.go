@@ -70,7 +70,7 @@ func TestDeviceUp(t *testing.T) {
 				now.Format(time.RFC3339Nano), b64Data)},
 			{Attr: "gateway_id", Value: gatewayID},
 			{Attr: "time", Value: strconv.FormatInt(now.Unix(), 10)},
-			{Attr: "rssi", Value: -74},
+			{Attr: "lora_rssi", Value: -74},
 			{Attr: "snr", Value: 7.8},
 			{Attr: "frequency", Value: int32(902700000)},
 			{Attr: "adr", Value: true},

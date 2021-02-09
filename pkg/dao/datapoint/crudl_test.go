@@ -83,7 +83,7 @@ func TestCreate(t *testing.T) {
 				dao.ErrInvalidFormat},
 			{&common.DataPoint{UniqId: "dao-point-" + random.String(16),
 				Attr: "raw", ValOneof: &common.DataPoint_BytesVal{
-					BytesVal: random.Bytes(256)},
+					BytesVal: random.Bytes(3000)},
 				Ts: timestamppb.Now(), TraceId: uuid.NewString()},
 				dao.ErrInvalidFormat},
 		}
