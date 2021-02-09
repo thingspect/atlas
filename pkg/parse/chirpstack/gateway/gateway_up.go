@@ -36,7 +36,7 @@ func gatewayUp(body []byte) ([]*parse.Point, error) {
 
 		mod := upMsg.TxInfo.GetLoraModulationInfo()
 		if mod != nil && mod.SpreadingFactor != 0 {
-			msgs = append(msgs, &parse.Point{Attr: "spread_factor",
+			msgs = append(msgs, &parse.Point{Attr: "sf",
 				Value: int32(mod.SpreadingFactor)})
 		}
 	}

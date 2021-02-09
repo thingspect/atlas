@@ -49,8 +49,8 @@ services:
       - REDIS__URL=redis://redis:6379
       - NETWORK_SERVER__NET_ID=b86498
       - NETWORK_SERVER__BAND__NAME=US915
-      - NETWORK_SERVER__GATEWAY__BACKEND__MQTT__EVENT_TOPIC=$share/csgroup/lora/gateway/+/event/+
-      - NETWORK_SERVER__GATEWAY__BACKEND__MQTT__COMMAND_TOPIC_TEMPLATE=$share/csgroup/lora/gateway/{{ .GatewayID }}/command/{{ .CommandType }}
+      - NETWORK_SERVER__GATEWAY__BACKEND__MQTT__EVENT_TOPIC=$$share/csgroup/lora/gateway/+/event/+
+      - NETWORK_SERVER__GATEWAY__BACKEND__MQTT__COMMAND_TOPIC_TEMPLATE=lora/gateway/{{ .GatewayID }}/command/{{ .CommandType }}
       - NETWORK_SERVER__GATEWAY__BACKEND__MQTT__SERVER=tcp://mqtt:1883
       - NETWORK_SERVER__GATEWAY__BACKEND__MQTT__USERNAME=chirpstack-ns
       - NETWORK_SERVER__GATEWAY__BACKEND__MQTT__PASSWORD=notasecurepassword

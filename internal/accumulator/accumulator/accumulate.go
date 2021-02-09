@@ -25,7 +25,7 @@ func (acc *Accumulator) accumulateMessages() {
 		if err != nil || vOut.Point == nil {
 			msg.Ack()
 			metric.Incr("error", map[string]string{"func": "unmarshal"})
-			alog.Errorf("validateMessages proto.Unmarshal vOut, err: %+v, %v",
+			alog.Errorf("accumulateMessages proto.Unmarshal vOut, err: %+v, %v",
 				vOut, err)
 			continue
 		}
@@ -43,11 +43,17 @@ func (acc *Accumulator) accumulateMessages() {
 		ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 		err = acc.dpDAO.Create(ctx, vOut.Point, vOut.OrgId)
 		cancel()
-		if errors.Is(err, dao.ErrAlreadyExists) ||
-			errors.Is(err, dao.ErrInvalidFormat) {
+		if errors.Is(err, dao.ErrAlreadyExists) {
 			msg.Ack()
 			metric.Incr("duplicate", nil)
 			logger.Infof("accumulateMessages discard acc.dpDAO.Create: %v", err)
+			continue
+		}
+		if errors.Is(err, dao.ErrInvalidFormat) {
+			msg.Ack()
+			metric.Incr("error", map[string]string{"func": "create"})
+			logger.Errorf("accumulateMessages invalid acc.dpDAO.Create: %v",
+				err)
 			continue
 		}
 		if err != nil {

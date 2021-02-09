@@ -129,3 +129,31 @@ func TestAccumulateMessagesDuplicate(t *testing.T) {
 			listPoints[0])
 	}
 }
+
+func TestAccumulateMessagesInvalid(t *testing.T) {
+	t.Parallel()
+
+	invalidVOut := &message.ValidatorOut{Point: &common.DataPoint{
+		UniqId: "acc-" + random.String(16), Attr: "acc-raw",
+		ValOneof: &common.DataPoint_BytesVal{BytesVal: random.Bytes(3000)},
+		Ts:       timestamppb.New(time.Now().Add(-15 * time.Minute)),
+		Token:    uuid.NewString(), TraceId: uuid.NewString()},
+		OrgId: uuid.NewString()}
+
+	bVOut, err := proto.Marshal(invalidVOut)
+	require.NoError(t, err)
+	t.Logf("bVOut: %s", bVOut)
+
+	require.NoError(t, globalVOutQueue.Publish(globalVOutSubTopic, bVOut))
+	time.Sleep(2 * time.Second)
+
+	ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
+	defer cancel()
+
+	listPoints, err := globalDPDAO.List(ctx, invalidVOut.OrgId,
+		invalidVOut.Point.UniqId, "", "", invalidVOut.Point.Ts.AsTime(),
+		invalidVOut.Point.Ts.AsTime().Add(-time.Millisecond))
+	t.Logf("listPoints, err: %+v, %v", listPoints, err)
+	require.NoError(t, err)
+	require.Len(t, listPoints, 0)
+}

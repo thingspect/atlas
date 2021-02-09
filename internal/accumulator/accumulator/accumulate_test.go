@@ -108,6 +108,9 @@ func TestAccumulateMessagesError(t *testing.T) {
 		// Duplicate data point.
 		{&message.ValidatorOut{Point: &common.DataPoint{}},
 			dao.ErrAlreadyExists, 1},
+		// Invalid data point.
+		{&message.ValidatorOut{Point: &common.DataPoint{}},
+			dao.ErrInvalidFormat, 1},
 		// DataPointer error.
 		{&message.ValidatorOut{Point: &common.DataPoint{}}, errTestProc, 1},
 	}

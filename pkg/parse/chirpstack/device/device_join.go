@@ -70,7 +70,7 @@ func deviceJoin(body []byte) ([]*parse.Point, *timestamppb.Timestamp, error) {
 		}
 
 		if joinMsg.RxInfo[0].Rssi != 0 {
-			msgs = append(msgs, &parse.Point{Attr: "rssi",
+			msgs = append(msgs, &parse.Point{Attr: "lora_rssi",
 				Value: int(joinMsg.RxInfo[0].Rssi)})
 		}
 		if joinMsg.RxInfo[0].LoraSnr != 0 {
@@ -86,7 +86,8 @@ func deviceJoin(body []byte) ([]*parse.Point, *timestamppb.Timestamp, error) {
 	}
 
 	// Parse JoinEvent data rate.
-	msgs = append(msgs, &parse.Point{Attr: "data_rate", Value: int32(joinMsg.Dr)})
+	msgs = append(msgs, &parse.Point{Attr: "data_rate",
+		Value: int32(joinMsg.Dr)})
 
 	return msgs, joinTime, nil
 }
