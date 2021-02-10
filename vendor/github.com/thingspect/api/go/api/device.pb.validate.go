@@ -63,6 +63,8 @@ func (m *Device) Validate() error {
 
 	// no validation rules for Token
 
+	// no validation rules for Decoder
+
 	if v, ok := interface{}(m.GetCreatedAt()).(interface{ Validate() error }); ok {
 		if err := v.Validate(); err != nil {
 			return DeviceValidationError{

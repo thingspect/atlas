@@ -250,9 +250,11 @@ func TestUpdateDevice(t *testing.T) {
 		t.Parallel()
 
 		dev := random.Device("api-device", uuid.NewString())
-		part := &api.Device{Id: dev.Id, Status: api.Status_ACTIVE}
+		part := &api.Device{Id: dev.Id, Status: api.Status_ACTIVE,
+			Decoder: api.Decoder_GATEWAY}
 		merged := &api.Device{Id: dev.Id, OrgId: dev.OrgId, UniqId: dev.UniqId,
-			Status: api.Status_ACTIVE, Token: dev.Token}
+			Status: api.Status_ACTIVE, Decoder: api.Decoder_GATEWAY,
+			Token: dev.Token}
 
 		ctrl := gomock.NewController(t)
 		defer ctrl.Finish()
@@ -271,7 +273,7 @@ func TestUpdateDevice(t *testing.T) {
 		devSvc := NewDevice(devicer)
 		updateDev, err := devSvc.UpdateDevice(ctx, &api.UpdateDeviceRequest{
 			Device: part, UpdateMask: &fieldmaskpb.FieldMask{
-				Paths: []string{"status"}}})
+				Paths: []string{"status", "decoder"}}})
 		t.Logf("updateDev, err: %+v, %v", updateDev, err)
 		require.NoError(t, err)
 
