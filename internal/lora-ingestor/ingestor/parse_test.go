@@ -40,8 +40,11 @@ func TestParseGateways(t *testing.T) {
 				ValOneof: &common.DataPoint_StrVal{
 					StrVal: `{"rxInfo":{"rssi":-74}}`}}, SkipToken: true},
 			{Point: &common.DataPoint{UniqId: uniqID, Attr: "lora_rssi",
-				ValOneof: &common.DataPoint_IntVal{
-					IntVal: -74}}, SkipToken: true},
+				ValOneof: &common.DataPoint_IntVal{IntVal: -74}},
+				SkipToken: true},
+			{Point: &common.DataPoint{UniqId: uniqID, Attr: "channel",
+				ValOneof: &common.DataPoint_IntVal{IntVal: 0}},
+				SkipToken: true},
 		}},
 		{"lora/gateway/" + uniqID + "/event/stats", &gw.GatewayStats{
 			RxPacketsReceivedOk: 2}, []*message.ValidatorIn{
@@ -227,6 +230,9 @@ func TestParseDevices(t *testing.T) {
 					StrVal: `{"rxInfo":[{}],"dr":3}`}}, SkipToken: true},
 			{Point: &common.DataPoint{UniqId: uniqID, Attr: "join",
 				ValOneof: &common.DataPoint_BoolVal{BoolVal: true}},
+				SkipToken: true},
+			{Point: &common.DataPoint{UniqId: uniqID, Attr: "channel",
+				ValOneof: &common.DataPoint_IntVal{IntVal: 0}},
 				SkipToken: true},
 			{Point: &common.DataPoint{UniqId: uniqID, Attr: "data_rate",
 				ValOneof: &common.DataPoint_IntVal{IntVal: 3}},

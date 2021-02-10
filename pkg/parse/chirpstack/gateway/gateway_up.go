@@ -47,16 +47,12 @@ func gatewayUp(body []byte) ([]*parse.Point, error) {
 			msgs = append(msgs, &parse.Point{Attr: "lora_rssi",
 				Value: upMsg.RxInfo.Rssi})
 		}
-
 		if upMsg.RxInfo.LoraSnr != 0 {
 			msgs = append(msgs, &parse.Point{Attr: "snr",
 				Value: upMsg.RxInfo.LoraSnr})
 		}
-
-		if upMsg.RxInfo.Channel != 0 {
-			msgs = append(msgs, &parse.Point{Attr: "channel",
-				Value: int32(upMsg.RxInfo.Channel)})
-		}
+		msgs = append(msgs, &parse.Point{Attr: "channel",
+			Value: int32(upMsg.RxInfo.Channel)})
 	}
 
 	return msgs, nil

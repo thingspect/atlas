@@ -64,6 +64,7 @@ func TestMain(m *testing.M) {
 		[]byte("val-aaa")); err != nil {
 		log.Fatalf("TestMain globalVInQueue.Publish: %v", err)
 	}
+	log.Print("TestMain published throwaway message")
 
 	// Set up Validator.
 	val, err := validator.New(cfg)

@@ -77,6 +77,8 @@ func deviceJoin(body []byte) ([]*parse.Point, *timestamppb.Timestamp, error) {
 			msgs = append(msgs, &parse.Point{Attr: "snr",
 				Value: joinMsg.RxInfo[0].LoraSnr})
 		}
+		msgs = append(msgs, &parse.Point{Attr: "channel",
+			Value: int32(joinMsg.RxInfo[0].Channel)})
 	}
 
 	// Parse UplinkTXInfo.

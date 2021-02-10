@@ -65,6 +65,7 @@ func TestDeviceJoin(t *testing.T) {
 			[]*parse.Point{
 				{Attr: "raw_device", Value: `{"rxInfo":[{}]}`},
 				{Attr: "join", Value: true},
+				{Attr: "channel", Value: int32(0)},
 				{Attr: "data_rate", Value: int32(0)},
 			}, time.Now(), ""},
 		{&as.JoinEvent{DevEui: bUniqID, DevAddr: bDevAddr,
@@ -85,6 +86,7 @@ func TestDeviceJoin(t *testing.T) {
 			{Attr: "time", Value: strconv.FormatInt(now.Unix(), 10)},
 			{Attr: "lora_rssi", Value: -74},
 			{Attr: "snr", Value: 7.8},
+			{Attr: "channel", Value: int32(0)},
 			{Attr: "frequency", Value: int32(902700000)},
 			{Attr: "data_rate", Value: int32(3)},
 		}, now, ""},
