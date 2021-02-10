@@ -63,7 +63,7 @@ func New(cfg *config.Config) (*Validator, error) {
 	}, nil
 }
 
-// Serve starts the message parsers.
+// Serve starts the message validators.
 func (val *Validator) Serve(concurrency int) {
 	for i := 0; i < concurrency; i++ {
 		go val.validateMessages()

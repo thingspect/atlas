@@ -18,8 +18,8 @@ import (
 var (
 	globalMQTTQueue queue.Queuer
 
-	globalParserPubTopic string
-	globalParserSub      queue.Subber
+	globalDecoderPubTopic string
+	globalDecoderSub      queue.Subber
 )
 
 func TestMain(m *testing.M) {
@@ -30,7 +30,7 @@ func TestMain(m *testing.M) {
 
 	cfg.NSQPubAddr = testConfig.NSQPubAddr
 	cfg.NSQPubTopic += "-test-" + random.String(10)
-	globalParserPubTopic = cfg.NSQPubTopic
+	globalDecoderPubTopic = cfg.NSQPubTopic
 	log.Printf("TestMain cfg.NSQPubTopic: %v", cfg.NSQPubTopic)
 
 	// Set up MQTT client connection to publish test payloads.
@@ -65,7 +65,7 @@ func TestMain(m *testing.M) {
 		log.Fatalf("TestMain queue.NewNSQ: %v", err)
 	}
 
-	globalParserSub, err = nsq.Subscribe(cfg.NSQPubTopic)
+	globalDecoderSub, err = nsq.Subscribe(cfg.NSQPubTopic)
 	if err != nil {
 		log.Fatalf("TestMain nsq.Subscribe: %v", err)
 	}

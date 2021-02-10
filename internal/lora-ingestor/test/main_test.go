@@ -18,12 +18,12 @@ import (
 var (
 	globalMQTTQueue queue.Queuer
 
-	globalParserPubGWTopic   string
-	globalParserPubDevTopic  string
-	globalParserPubDataTopic string
-	globalParserGWSub        queue.Subber
-	globalParserDevSub       queue.Subber
-	globalParserDataSub      queue.Subber
+	globalDecoderPubGWTopic   string
+	globalDecoderPubDevTopic  string
+	globalDecoderPubDataTopic string
+	globalDecoderGWSub        queue.Subber
+	globalDecoderDevSub       queue.Subber
+	globalDecoderDataSub      queue.Subber
 )
 
 func TestMain(m *testing.M) {
@@ -34,13 +34,13 @@ func TestMain(m *testing.M) {
 
 	cfg.NSQPubAddr = testConfig.NSQPubAddr
 	cfg.NSQPubGWTopic += "-test-" + random.String(10)
-	globalParserPubGWTopic = cfg.NSQPubGWTopic
+	globalDecoderPubGWTopic = cfg.NSQPubGWTopic
 	log.Printf("TestMain cfg.NSQPubGWTopic: %v", cfg.NSQPubGWTopic)
 	cfg.NSQPubDevTopic += "-test-" + random.String(10)
-	globalParserPubDevTopic = cfg.NSQPubDevTopic
+	globalDecoderPubDevTopic = cfg.NSQPubDevTopic
 	log.Printf("TestMain cfg.NSQPubDevTopic: %v", cfg.NSQPubDevTopic)
 	cfg.NSQPubDataTopic += "-test-" + random.String(10)
-	globalParserPubDataTopic = cfg.NSQPubDataTopic
+	globalDecoderPubDataTopic = cfg.NSQPubDataTopic
 	log.Printf("TestMain cfg.NSQPubDataTopic: %v", cfg.NSQPubDataTopic)
 
 	// Set up MQTT client connection to publish test payloads.
@@ -75,15 +75,15 @@ func TestMain(m *testing.M) {
 		log.Fatalf("TestMain queue.NewNSQ: %v", err)
 	}
 
-	globalParserGWSub, err = nsq.Subscribe(cfg.NSQPubGWTopic)
+	globalDecoderGWSub, err = nsq.Subscribe(cfg.NSQPubGWTopic)
 	if err != nil {
 		log.Fatalf("TestMain GW nsq.Subscribe: %v", err)
 	}
-	globalParserDevSub, err = nsq.Subscribe(cfg.NSQPubDevTopic)
+	globalDecoderDevSub, err = nsq.Subscribe(cfg.NSQPubDevTopic)
 	if err != nil {
 		log.Fatalf("TestMain Dev nsq.Subscribe: %v", err)
 	}
-	globalParserDataSub, err = nsq.Subscribe(cfg.NSQPubDataTopic)
+	globalDecoderDataSub, err = nsq.Subscribe(cfg.NSQPubDataTopic)
 	if err != nil {
 		log.Fatalf("TestMain Data nsq.Subscribe: %v", err)
 	}

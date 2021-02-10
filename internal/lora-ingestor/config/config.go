@@ -37,7 +37,7 @@ func New() *Config {
 		NSQPubAddr:      config.String(pref+"NSQ_PUB_ADDR", "127.0.0.1:4150"),
 		NSQPubGWTopic:   config.String(pref+"NSQ_PUB_GW_TOPIC", "ValidatorIn"),
 		NSQPubDevTopic:  config.String(pref+"NSQ_PUB_DEV_TOPIC", "ValidatorIn"),
-		NSQPubDataTopic: config.String(pref+"NSQ_PUB_DATA_TOPIC", "ParserIn"),
+		NSQPubDataTopic: config.String(pref+"NSQ_PUB_DATA_TOPIC", "DecoderIn"),
 		Concurrency:     config.Int(pref+"CONCURRENCY", 5),
 	}
 }

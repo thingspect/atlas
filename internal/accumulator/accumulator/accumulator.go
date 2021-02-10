@@ -62,7 +62,7 @@ func New(cfg *config.Config) (*Accumulator, error) {
 	}, nil
 }
 
-// Serve starts the message parsers.
+// Serve starts the message accumulators.
 func (acc *Accumulator) Serve(concurrency int) {
 	for i := 0; i < concurrency; i++ {
 		go acc.accumulateMessages()

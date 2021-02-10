@@ -26,10 +26,10 @@ type Ingestor struct {
 	mqttGWSub  queue.Subber
 	mqttDevSub queue.Subber
 
-	parserQueue        queue.Queuer
-	parserPubGWTopic   string
-	parserPubDevTopic  string
-	parserPubDataTopic string
+	decoderQueue        queue.Queuer
+	decoderPubGWTopic   string
+	decoderPubDevTopic  string
+	decoderPubDataTopic string
 }
 
 // New builds a new Ingestor and returns a reference to it and an error value.
@@ -78,18 +78,18 @@ func New(cfg *config.Config) (*Ingestor, error) {
 		mqttGWSub:  mqttGWSub,
 		mqttDevSub: mqttDevSub,
 
-		parserQueue:        nsq,
-		parserPubGWTopic:   cfg.NSQPubGWTopic,
-		parserPubDevTopic:  cfg.NSQPubDevTopic,
-		parserPubDataTopic: cfg.NSQPubDataTopic,
+		decoderQueue:        nsq,
+		decoderPubGWTopic:   cfg.NSQPubGWTopic,
+		decoderPubDevTopic:  cfg.NSQPubDevTopic,
+		decoderPubDataTopic: cfg.NSQPubDataTopic,
 	}, nil
 }
 
-// Serve starts the message parsers.
+// Serve starts the message decoders.
 func (ing *Ingestor) Serve(concurrency int) {
 	for i := 0; i < concurrency; i++ {
-		go ing.parseGateways()
-		go ing.parseDevices()
+		go ing.decodeGateways()
+		go ing.decodeDevices()
 	}
 
 	// Handle graceful shutdown.
@@ -104,5 +104,5 @@ func (ing *Ingestor) Serve(concurrency int) {
 	if err := ing.mqttDevSub.Unsubscribe(); err != nil {
 		alog.Errorf("Serve ing.mqttDevSub.Unsubscribe: %v", err)
 	}
-	ing.parserQueue.Disconnect()
+	ing.decoderQueue.Disconnect()
 }
