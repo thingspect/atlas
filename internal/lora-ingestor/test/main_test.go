@@ -7,6 +7,7 @@ import (
 	"log"
 	"os"
 	"testing"
+	"time"
 
 	"github.com/thingspect/atlas/internal/lora-ingestor/config"
 	"github.com/thingspect/atlas/internal/lora-ingestor/ingestor"
@@ -14,6 +15,8 @@ import (
 	testconfig "github.com/thingspect/atlas/pkg/test/config"
 	"github.com/thingspect/atlas/pkg/test/random"
 )
+
+const testTimeout = 6 * time.Second
 
 var (
 	globalMQTTQueue queue.Queuer

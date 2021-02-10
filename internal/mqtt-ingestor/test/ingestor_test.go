@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"github.com/google/uuid"
+	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"github.com/thingspect/api/go/common"
 	"github.com/thingspect/api/go/mqtt"
@@ -86,24 +87,26 @@ func TestDecodeMessages(t *testing.T) {
 			require.NoError(t, globalMQTTQueue.Publish(strings.Join(
 				lTest.inpTopicParts, "/"), bPayl))
 
+			// Don't stop the flow of execution (assert) to avoid leaving
+			// messages orphaned in the queue.
 			for i, res := range lTest.res {
 				select {
 				case msg := <-globalDecoderSub.C():
 					msg.Ack()
 					t.Logf("msg.Topic, msg.Payload: %v, %s", msg.Topic(),
 						msg.Payload())
-					require.Equal(t, globalDecoderPubTopic, msg.Topic())
+					assert.Equal(t, globalDecoderPubTopic, msg.Topic())
 
 					vIn := &message.ValidatorIn{}
-					require.NoError(t, proto.Unmarshal(msg.Payload(), vIn))
+					assert.NoError(t, proto.Unmarshal(msg.Payload(), vIn))
 					t.Logf("vIn: %+v", vIn)
 
 					// Normalize generated trace ID.
 					res.Point.TraceId = vIn.Point.TraceId
 					// Normalize timestamps.
 					if lTest.inpPoints[i].Ts == nil {
-						require.WithinDuration(t, time.Now(),
-							vIn.Point.Ts.AsTime(), 5*time.Second)
+						assert.WithinDuration(t, time.Now(),
+							vIn.Point.Ts.AsTime(), testTimeout)
 						res.Point.Ts = vIn.Point.Ts
 					}
 
