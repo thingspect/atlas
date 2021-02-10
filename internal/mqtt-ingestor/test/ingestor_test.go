@@ -19,7 +19,7 @@ import (
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
-func TestParseMessages(t *testing.T) {
+func TestDecodeMessages(t *testing.T) {
 	orgID := uuid.NewString()
 	uniqIDPoint := "ing-" + random.String(16)
 	now := timestamppb.New(time.Now().Add(-15 * time.Minute))
@@ -69,7 +69,7 @@ func TestParseMessages(t *testing.T) {
 	for _, test := range tests {
 		lTest := test
 
-		t.Run(fmt.Sprintf("Can parse %+v", lTest), func(t *testing.T) {
+		t.Run(fmt.Sprintf("Can decode %+v", lTest), func(t *testing.T) {
 			var bPayl []byte
 			var err error
 			payl := &mqtt.Payload{Points: lTest.inpPoints,
@@ -88,11 +88,11 @@ func TestParseMessages(t *testing.T) {
 
 			for i, res := range lTest.res {
 				select {
-				case msg := <-globalParserSub.C():
+				case msg := <-globalDecoderSub.C():
 					msg.Ack()
 					t.Logf("msg.Topic, msg.Payload: %v, %s", msg.Topic(),
 						msg.Payload())
-					require.Equal(t, globalParserPubTopic, msg.Topic())
+					require.Equal(t, globalDecoderPubTopic, msg.Topic())
 
 					vIn := &message.ValidatorIn{}
 					require.NoError(t, proto.Unmarshal(msg.Payload(), vIn))
@@ -120,7 +120,7 @@ func TestParseMessages(t *testing.T) {
 	}
 }
 
-func TestParseMessagesError(t *testing.T) {
+func TestDecodeMessagesError(t *testing.T) {
 	orgID := uuid.NewString()
 	uniqID := "ing-" + random.String(16)
 
@@ -140,14 +140,14 @@ func TestParseMessagesError(t *testing.T) {
 	for _, test := range tests {
 		lTest := test
 
-		t.Run(fmt.Sprintf("Cannot parse %+v", lTest), func(t *testing.T) {
+		t.Run(fmt.Sprintf("Cannot decode %+v", lTest), func(t *testing.T) {
 			t.Parallel()
 
 			require.NoError(t, globalMQTTQueue.Publish(lTest.inpTopic,
 				lTest.inpPayl))
 
 			select {
-			case msg := <-globalParserSub.C():
+			case msg := <-globalDecoderSub.C():
 				t.Fatalf("Received unexpected msg.Topic, msg.Payload: %v, %s",
 					msg.Topic(), msg.Payload())
 			case <-time.After(500 * time.Millisecond):

@@ -22,9 +22,9 @@ const (
 
 // Ingestor holds references to the message broker connections.
 type Ingestor struct {
-	mqttSub        queue.Subber
-	parserQueue    queue.Queuer
-	parserPubTopic string
+	mqttSub         queue.Subber
+	decoderQueue    queue.Queuer
+	decoderPubTopic string
 }
 
 // New builds a new Ingestor and returns a reference to it and an error value.
@@ -60,16 +60,16 @@ func New(cfg *config.Config) (*Ingestor, error) {
 	}
 
 	return &Ingestor{
-		mqttSub:        mqttSub,
-		parserQueue:    nsq,
-		parserPubTopic: cfg.NSQPubTopic,
+		mqttSub:         mqttSub,
+		decoderQueue:    nsq,
+		decoderPubTopic: cfg.NSQPubTopic,
 	}, nil
 }
 
-// Serve starts the message parsers.
+// Serve starts the message decoders.
 func (ing *Ingestor) Serve(concurrency int) {
 	for i := 0; i < concurrency; i++ {
-		go ing.parseMessages()
+		go ing.decodeMessages()
 	}
 
 	// Handle graceful shutdown.
@@ -81,5 +81,5 @@ func (ing *Ingestor) Serve(concurrency int) {
 	if err := ing.mqttSub.Unsubscribe(); err != nil {
 		alog.Errorf("Serve ing.mqttSub.Unsubscribe: %v", err)
 	}
-	ing.parserQueue.Disconnect()
+	ing.decoderQueue.Disconnect()
 }
