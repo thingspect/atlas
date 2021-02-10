@@ -13,8 +13,8 @@ import (
 )
 
 const createDevice = `
-INSERT INTO devices (org_id, uniq_id, status, created_at, updated_at)
-VALUES ($1, $2, $3, $4, $5)
+INSERT INTO devices (org_id, uniq_id, status, decoder, created_at, updated_at)
+VALUES ($1, $2, $3, $4, $5, $6)
 RETURNING id, token
 `
 
@@ -27,14 +27,15 @@ func (d *DAO) Create(ctx context.Context, dev *api.Device) (*api.Device,
 	dev.UpdatedAt = timestamppb.New(now)
 
 	if err := d.pg.QueryRowContext(ctx, createDevice, dev.OrgId, dev.UniqId,
-		dev.Status.String(), now, now).Scan(&dev.Id, &dev.Token); err != nil {
+		dev.Status.String(), dev.Decoder.String(), now, now).Scan(&dev.Id,
+		&dev.Token); err != nil {
 		return nil, dao.DBToSentinel(err)
 	}
 	return dev, nil
 }
 
 const readDevice = `
-SELECT id, org_id, uniq_id, status, token, created_at, updated_at
+SELECT id, org_id, uniq_id, status, token, decoder, created_at, updated_at
 FROM devices
 WHERE (id, org_id) = ($1, $2)
 `
@@ -44,22 +45,24 @@ func (d *DAO) Read(ctx context.Context, devID, orgID string) (*api.Device,
 	error) {
 	dev := &api.Device{}
 	var status string
+	var decoder string
 	var createdAt, updatedAt time.Time
 
 	if err := d.pg.QueryRowContext(ctx, readDevice, devID, orgID).Scan(&dev.Id,
-		&dev.OrgId, &dev.UniqId, &status, &dev.Token, &createdAt,
+		&dev.OrgId, &dev.UniqId, &status, &dev.Token, &decoder, &createdAt,
 		&updatedAt); err != nil {
 		return nil, dao.DBToSentinel(err)
 	}
 
 	dev.Status = api.Status(api.Status_value[status])
+	dev.Decoder = api.Decoder(api.Decoder_value[decoder])
 	dev.CreatedAt = timestamppb.New(createdAt)
 	dev.UpdatedAt = timestamppb.New(updatedAt)
 	return dev, nil
 }
 
 const readDeviceByUniqID = `
-SELECT id, org_id, uniq_id, status, token, created_at, updated_at
+SELECT id, org_id, uniq_id, status, token, decoder, created_at, updated_at
 FROM devices
 WHERE uniq_id = $1
 `
@@ -69,16 +72,18 @@ WHERE uniq_id = $1
 func (d *DAO) ReadByUniqID(ctx context.Context, uniqID string) (*api.Device,
 	error) {
 	dev := &api.Device{}
+	var decoder string
 	var status string
 	var createdAt, updatedAt time.Time
 
 	if err := d.pg.QueryRowContext(ctx, readDeviceByUniqID, uniqID).Scan(
-		&dev.Id, &dev.OrgId, &dev.UniqId, &status, &dev.Token, &createdAt,
-		&updatedAt); err != nil {
+		&dev.Id, &dev.OrgId, &dev.UniqId, &status, &dev.Token, &decoder,
+		&createdAt, &updatedAt); err != nil {
 		return nil, dao.DBToSentinel(err)
 	}
 
 	dev.Status = api.Status(api.Status_value[status])
+	dev.Decoder = api.Decoder(api.Decoder_value[decoder])
 	dev.CreatedAt = timestamppb.New(createdAt)
 	dev.UpdatedAt = timestamppb.New(updatedAt)
 	return dev, nil
@@ -86,8 +91,8 @@ func (d *DAO) ReadByUniqID(ctx context.Context, uniqID string) (*api.Device,
 
 const updateDevice = `
 UPDATE devices
-SET uniq_id = $1, status = $2, token = $3, updated_at = $4
-WHERE (id, org_id) = ($5, $6)
+SET uniq_id = $1, status = $2, token = $3, decoder = $4, updated_at = $5
+WHERE (id, org_id) = ($6, $7)
 RETURNING created_at
 `
 
@@ -101,8 +106,8 @@ func (d *DAO) Update(ctx context.Context, dev *api.Device) (*api.Device,
 	dev.UpdatedAt = timestamppb.New(updatedAt)
 
 	if err := d.pg.QueryRowContext(ctx, updateDevice, dev.UniqId,
-		dev.Status.String(), dev.Token, updatedAt, dev.Id, dev.OrgId).Scan(
-		&createdAt); err != nil {
+		dev.Status.String(), dev.Token, dev.Decoder.String(), updatedAt, dev.Id,
+		dev.OrgId).Scan(&createdAt); err != nil {
 		return nil, dao.DBToSentinel(err)
 	}
 
@@ -134,7 +139,7 @@ WHERE org_id = $1
 `
 
 const listDevices = `
-SELECT id, org_id, uniq_id, status, token, created_at, updated_at
+SELECT id, org_id, uniq_id, status, token, decoder, created_at, updated_at
 FROM devices
 WHERE org_id = $1
 `
@@ -194,14 +199,16 @@ func (d *DAO) List(ctx context.Context, orgID string, lBoundTS time.Time,
 	for rows.Next() {
 		dev := &api.Device{}
 		var status string
+		var decoder string
 		var createdAt, updatedAt time.Time
 
 		if err = rows.Scan(&dev.Id, &dev.OrgId, &dev.UniqId, &status,
-			&dev.Token, &createdAt, &updatedAt); err != nil {
+			&dev.Token, &decoder, &createdAt, &updatedAt); err != nil {
 			return nil, 0, dao.DBToSentinel(err)
 		}
 
 		dev.Status = api.Status(api.Status_value[status])
+		dev.Decoder = api.Decoder(api.Decoder_value[decoder])
 		dev.CreatedAt = timestamppb.New(createdAt)
 		dev.UpdatedAt = timestamppb.New(updatedAt)
 		devs = append(devs, dev)

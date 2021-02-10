@@ -16,6 +16,7 @@ CREATE TABLE devices (
   uniq_id varchar(40) UNIQUE NOT NULL CHECK (uniq_id = lower(uniq_id)),
   status status NOT NULL,
   token uuid UNIQUE NOT NULL DEFAULT gen_random_uuid(),
+  decoder varchar(40) NOT NULL,
   created_at timestamptz NOT NULL,
   updated_at timestamptz NOT NULL
 );

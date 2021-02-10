@@ -238,10 +238,7 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/apiDevice",
-              "required": [
-                "device"
-              ]
+              "$ref": "#/definitions/apiDevice"
             }
           }
         ],
@@ -282,10 +279,7 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/apiDevice",
-              "required": [
-                "device"
-              ]
+              "$ref": "#/definitions/apiDevice"
             }
           },
           {
@@ -331,10 +325,7 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/apiDevice",
-              "required": [
-                "device"
-              ]
+              "$ref": "#/definitions/apiDevice"
             }
           },
           {
@@ -485,10 +476,7 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/apiOrg",
-              "required": [
-                "org"
-              ]
+              "$ref": "#/definitions/apiOrg"
             }
           }
         ],
@@ -595,10 +583,7 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/apiOrg",
-              "required": [
-                "org"
-              ]
+              "$ref": "#/definitions/apiOrg"
             }
           },
           {
@@ -644,10 +629,7 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/apiOrg",
-              "required": [
-                "org"
-              ]
+              "$ref": "#/definitions/apiOrg"
             }
           },
           {
@@ -766,10 +748,7 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/apiUser",
-              "required": [
-                "user"
-              ]
+              "$ref": "#/definitions/apiUser"
             }
           }
         ],
@@ -916,10 +895,7 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/apiUser",
-              "required": [
-                "user"
-              ]
+              "$ref": "#/definitions/apiUser"
             }
           },
           {
@@ -965,10 +941,7 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/apiUser",
-              "required": [
-                "user"
-              ]
+              "$ref": "#/definitions/apiUser"
             }
           },
           {
@@ -986,6 +959,17 @@
     }
   },
   "definitions": {
+    "apiDecoder": {
+      "type": "string",
+      "enum": [
+        "RAW",
+        "GATEWAY",
+        "RADIO_BRIDGE_DOOR_V1",
+        "RADIO_BRIDGE_DOOR_V2"
+      ],
+      "default": "RAW",
+      "description": "Decoder represents the data payload decoder for a device.\n\n - RAW: Payloads will be passed through without decoding. Appropriate for devices that do not use decoders (MQTT, API, etc.).\n - GATEWAY: LoRaWAN gateway. Acts as a pass-through in the absence of device data payloads.\n - RADIO_BRIDGE_DOOR_V1: Radio Bridge Door/Window sensor with V1 firmware.\n - RADIO_BRIDGE_DOOR_V2: Radio Bridge Door/Window sensor with V2 firmware."
+    },
     "apiDevice": {
       "type": "object",
       "properties": {
@@ -1008,14 +992,15 @@
         },
         "status": {
           "$ref": "#/definitions/apiStatus",
-          "description": "Device status.",
-          "required": [
-            "status"
-          ]
+          "description": "Device status."
         },
         "token": {
           "type": "string",
           "description": "Authentication token (UUID)."
+        },
+        "decoder": {
+          "$ref": "#/definitions/apiDecoder",
+          "description": "Device data payload decoder."
         },
         "createdAt": {
           "type": "string",
@@ -1032,8 +1017,7 @@
       },
       "description": "Device represents a device as stored in the database.",
       "required": [
-        "uniqID",
-        "status"
+        "uniqID"
       ]
     },
     "apiLatestDataPointsResponse": {
@@ -1280,17 +1264,11 @@
         },
         "role": {
           "$ref": "#/definitions/commonRole",
-          "description": "User role.",
-          "required": [
-            "role"
-          ]
+          "description": "User role."
         },
         "status": {
           "$ref": "#/definitions/apiStatus",
-          "description": "User status.",
-          "required": [
-            "status"
-          ]
+          "description": "User status."
         },
         "createdAt": {
           "type": "string",
@@ -1307,9 +1285,7 @@
       },
       "description": "User represents a user as stored in the database.",
       "required": [
-        "email",
-        "role",
-        "status"
+        "email"
       ]
     },
     "commonDataPoint": {

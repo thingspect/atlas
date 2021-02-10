@@ -38,6 +38,7 @@ func TestCreate(t *testing.T) {
 		require.Equal(t, dev.OrgId, createDev.OrgId)
 		require.Equal(t, dev.UniqId, createDev.UniqId)
 		require.Equal(t, dev.Status, createDev.Status)
+		require.Equal(t, dev.Decoder, createDev.Decoder)
 		require.WithinDuration(t, time.Now(), createDev.CreatedAt.AsTime(),
 			2*time.Second)
 		require.WithinDuration(t, time.Now(), createDev.UpdatedAt.AsTime(),
@@ -58,6 +59,7 @@ func TestCreate(t *testing.T) {
 		require.Equal(t, dev.OrgId, createDev.OrgId)
 		require.Equal(t, strings.ToLower(dev.UniqId), createDev.UniqId)
 		require.Equal(t, dev.Status, createDev.Status)
+		require.Equal(t, dev.Decoder, createDev.Decoder)
 		require.WithinDuration(t, time.Now(), createDev.CreatedAt.AsTime(),
 			2*time.Second)
 		require.WithinDuration(t, time.Now(), createDev.UpdatedAt.AsTime(),
@@ -210,12 +212,14 @@ func TestUpdate(t *testing.T) {
 		// Update device fields.
 		createDev.UniqId = "dao-device-" + random.String(16)
 		createDev.Status = api.Status_DISABLED
+		createDev.Decoder = api.Decoder_GATEWAY
 
 		updateDev, err := globalDevDAO.Update(ctx, createDev)
 		t.Logf("updateDev, err: %+v, %v", updateDev, err)
 		require.NoError(t, err)
 		require.Equal(t, createDev.UniqId, updateDev.UniqId)
 		require.Equal(t, createDev.Status, updateDev.Status)
+		require.Equal(t, createDev.Decoder, updateDev.Decoder)
 		require.Equal(t, createDev.CreatedAt, updateDev.CreatedAt)
 		require.True(t, updateDev.UpdatedAt.AsTime().After(
 			updateDev.CreatedAt.AsTime()))
@@ -358,6 +362,7 @@ func TestList(t *testing.T) {
 
 	devIDs := []string{}
 	devStatuses := []api.Status{}
+	devDecoders := []api.Decoder{}
 	devTSes := []time.Time{}
 	for i := 0; i < 3; i++ {
 		createDev, err := globalDevDAO.Create(ctx, random.Device("dao-device",
@@ -367,6 +372,7 @@ func TestList(t *testing.T) {
 
 		devIDs = append(devIDs, createDev.Id)
 		devStatuses = append(devStatuses, createDev.Status)
+		devDecoders = append(devDecoders, createDev.Decoder)
 		devTSes = append(devTSes, createDev.CreatedAt.AsTime())
 	}
 
@@ -386,7 +392,8 @@ func TestList(t *testing.T) {
 		var found bool
 		for _, dev := range listDevs {
 			if dev.Id == devIDs[len(devIDs)-1] &&
-				dev.Status == devStatuses[len(devIDs)-1] {
+				dev.Status == devStatuses[len(devIDs)-1] &&
+				dev.Decoder == devDecoders[len(devIDs)-1] {
 				found = true
 			}
 		}
@@ -409,7 +416,8 @@ func TestList(t *testing.T) {
 		var found bool
 		for _, dev := range listDevs {
 			if dev.Id == devIDs[len(devIDs)-1] &&
-				dev.Status == devStatuses[len(devIDs)-1] {
+				dev.Status == devStatuses[len(devIDs)-1] &&
+				dev.Decoder == devDecoders[len(devIDs)-1] {
 				found = true
 			}
 		}

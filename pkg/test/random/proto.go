@@ -44,6 +44,12 @@ func Device(prefix, orgID string) *api.Device {
 			api.Status_ACTIVE,
 			api.Status_DISABLED,
 		}[Intn(2)],
+		Decoder: []api.Decoder{
+			api.Decoder_RAW,
+			api.Decoder_GATEWAY,
+			api.Decoder_RADIO_BRIDGE_DOOR_V1,
+			api.Decoder_RADIO_BRIDGE_DOOR_V2,
+		}[Intn(4)],
 		Token: uuid.NewString(),
 	}
 }
