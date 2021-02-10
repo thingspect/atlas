@@ -27,6 +27,7 @@ func TestGatewayUp(t *testing.T) {
 		{&gw.UplinkFrame{RxInfo: &gw.UplinkRXInfo{}},
 			[]*parse.Point{
 				{Attr: "raw_gateway", Value: `{"rxInfo":{}}`},
+				{Attr: "channel", Value: int32(0)},
 			}, ""},
 		{&gw.UplinkFrame{TxInfo: &gw.UplinkTXInfo{Frequency: 902700000,
 			ModulationInfo: &gw.UplinkTXInfo_LoraModulationInfo{

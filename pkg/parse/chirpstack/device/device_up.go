@@ -70,6 +70,8 @@ func deviceUp(body []byte) ([]*parse.Point, *timestamppb.Timestamp, []byte,
 			msgs = append(msgs, &parse.Point{Attr: "snr",
 				Value: upMsg.RxInfo[0].LoraSnr})
 		}
+		msgs = append(msgs, &parse.Point{Attr: "channel",
+			Value: int32(upMsg.RxInfo[0].Channel)})
 	}
 
 	// Parse UplinkTXInfo.

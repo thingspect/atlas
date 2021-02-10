@@ -53,6 +53,7 @@ func TestDeviceUp(t *testing.T) {
 		{&as.UplinkEvent{RxInfo: []*gw.UplinkRXInfo{{}}},
 			[]*parse.Point{
 				{Attr: "raw_device", Value: `{"rxInfo":[{}]}`},
+				{Attr: "channel", Value: int32(0)},
 				{Attr: "adr", Value: false},
 				{Attr: "data_rate", Value: int32(0)},
 				{Attr: "confirmed", Value: false},
@@ -72,6 +73,7 @@ func TestDeviceUp(t *testing.T) {
 			{Attr: "time", Value: strconv.FormatInt(now.Unix(), 10)},
 			{Attr: "lora_rssi", Value: -74},
 			{Attr: "snr", Value: 7.8},
+			{Attr: "channel", Value: int32(0)},
 			{Attr: "frequency", Value: int32(902700000)},
 			{Attr: "adr", Value: true},
 			{Attr: "data_rate", Value: int32(3)},
