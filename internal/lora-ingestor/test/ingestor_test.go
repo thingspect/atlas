@@ -13,6 +13,7 @@ import (
 
 	//lint:ignore SA1019 // third-party dependency
 	"github.com/golang/protobuf/proto"
+	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"github.com/thingspect/api/go/common"
 	"github.com/thingspect/atlas/api/go/message"
@@ -81,23 +82,25 @@ func TestDecodeGateways(t *testing.T) {
 			require.NoError(t, globalMQTTQueue.Publish(lTest.inpTopic,
 				bInpProto))
 
+			// Don't stop the flow of execution (assert) to avoid leaving
+			// messages orphaned in the queue.
 			for _, res := range lTest.res {
 				select {
 				case msg := <-globalDecoderGWSub.C():
 					msg.Ack()
 					t.Logf("GW msg.Topic, msg.Payload: %v, %s", msg.Topic(),
 						msg.Payload())
-					require.Equal(t, globalDecoderPubGWTopic, msg.Topic())
+					assert.Equal(t, globalDecoderPubGWTopic, msg.Topic())
 
 					vIn := &message.ValidatorIn{}
-					require.NoError(t, proto.Unmarshal(msg.Payload(), vIn))
+					assert.NoError(t, proto.Unmarshal(msg.Payload(), vIn))
 					t.Logf("vIn: %+v", vIn)
 
 					// Normalize generated trace ID.
 					res.Point.TraceId = vIn.Point.TraceId
 					// Normalize timestamps.
-					require.WithinDuration(t, time.Now(), vIn.Point.Ts.AsTime(),
-						2*time.Second)
+					assert.WithinDuration(t, time.Now(), vIn.Point.Ts.AsTime(),
+						testTimeout)
 					res.Point.Ts = vIn.Point.Ts
 
 					// Testify does not currently support protobuf equality:
@@ -212,7 +215,7 @@ func TestDecodeDevices(t *testing.T) {
 					res.Point.TraceId = vIn.Point.TraceId
 					// Normalize timestamps.
 					require.WithinDuration(t, time.Now(), vIn.Point.Ts.AsTime(),
-						2*time.Second)
+						testTimeout)
 					res.Point.Ts = vIn.Point.Ts
 
 					// Testify does not currently support protobuf equality:
@@ -242,7 +245,7 @@ func TestDecodeDevices(t *testing.T) {
 					lTest.resPIn.TraceId = pIn.TraceId
 					// Normalize timestamps.
 					require.WithinDuration(t, time.Now(), pIn.Ts.AsTime(),
-						2*time.Second)
+						testTimeout)
 					lTest.resPIn.Ts = pIn.Ts
 
 					// Testify does not currently support protobuf equality:
