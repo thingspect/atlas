@@ -38,8 +38,8 @@ func TestValidateMessages(t *testing.T) {
 	require.NoError(t, err)
 
 	tests := []struct {
-		inpVIn *message.ValidatorIn
-		res    *message.ValidatorOut
+		inp *message.ValidatorIn
+		res *message.ValidatorOut
 	}{
 		{&message.ValidatorIn{Point: &common.DataPoint{UniqId: createDev.UniqId,
 			Attr: "val-motion", ValOneof: &common.DataPoint_IntVal{IntVal: 123},
@@ -88,7 +88,7 @@ func TestValidateMessages(t *testing.T) {
 		lTest := test
 
 		t.Run(fmt.Sprintf("Can validate %+v", lTest), func(t *testing.T) {
-			bVIn, err := proto.Marshal(lTest.inpVIn)
+			bVIn, err := proto.Marshal(lTest.inp)
 			require.NoError(t, err)
 			t.Logf("bVIn: %s", bVIn)
 
@@ -118,9 +118,6 @@ func TestValidateMessages(t *testing.T) {
 }
 
 func TestValidateMessagesError(t *testing.T) {
-	uniqID := "val-" + random.String(16)
-	disUniqID := "val-" + random.String(16)
-
 	ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
 	defer cancel()
 
@@ -135,13 +132,13 @@ func TestValidateMessagesError(t *testing.T) {
 	require.NoError(t, err)
 
 	disDev := random.Device("val", createOrg.Id)
-	dev.Status = api.Status_DISABLED
+	disDev.Status = api.Status_DISABLED
 	createDisDev, err := globalDevDAO.Create(ctx, disDev)
 	t.Logf("createDisDev, err: %+v, %v", createDisDev, err)
 	require.NoError(t, err)
 
 	tests := []struct {
-		inpVIn *message.ValidatorIn
+		inp *message.ValidatorIn
 	}{
 		// Bad payload.
 		{nil},
@@ -149,18 +146,19 @@ func TestValidateMessagesError(t *testing.T) {
 		{&message.ValidatorIn{Point: &common.DataPoint{
 			UniqId: random.String(16)}}},
 		// Missing value.
-		{&message.ValidatorIn{Point: &common.DataPoint{UniqId: uniqID,
+		{&message.ValidatorIn{Point: &common.DataPoint{UniqId: createDev.UniqId,
 			Attr: random.String(10)}}},
 		// Invalid org ID.
-		{&message.ValidatorIn{Point: &common.DataPoint{UniqId: uniqID,
+		{&message.ValidatorIn{Point: &common.DataPoint{UniqId: createDev.UniqId,
 			Attr: random.String(10), ValOneof: &common.DataPoint_IntVal{}},
 			OrgId: "val-aaa"}},
 		// Device disabled.
-		{&message.ValidatorIn{Point: &common.DataPoint{UniqId: disUniqID,
-			Attr: random.String(10), ValOneof: &common.DataPoint_IntVal{}},
-			OrgId: createOrg.Id}},
+		{&message.ValidatorIn{Point: &common.DataPoint{
+			UniqId: createDisDev.UniqId, Attr: random.String(10),
+			ValOneof: &common.DataPoint_IntVal{}}, OrgId: createOrg.Id,
+			SkipToken: true}},
 		// Invalid token.
-		{&message.ValidatorIn{Point: &common.DataPoint{UniqId: uniqID,
+		{&message.ValidatorIn{Point: &common.DataPoint{UniqId: createDev.UniqId,
 			Attr: random.String(10), ValOneof: &common.DataPoint_IntVal{},
 			Token: "val-aaa"}, OrgId: createOrg.Id}},
 	}
@@ -172,9 +170,9 @@ func TestValidateMessagesError(t *testing.T) {
 			t.Parallel()
 
 			bVIn := []byte("val-aaa")
-			if lTest.inpVIn != nil {
+			if lTest.inp != nil {
 				var err error
-				bVIn, err = proto.Marshal(lTest.inpVIn)
+				bVIn, err = proto.Marshal(lTest.inp)
 				require.NoError(t, err)
 				t.Logf("bVIn: %s", bVIn)
 			}

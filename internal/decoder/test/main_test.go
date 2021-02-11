@@ -8,8 +8,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/thingspect/atlas/internal/validator/config"
-	"github.com/thingspect/atlas/internal/validator/validator"
+	"github.com/thingspect/atlas/internal/decoder/config"
+	"github.com/thingspect/atlas/internal/decoder/decoder"
 	"github.com/thingspect/atlas/pkg/dao/device"
 	"github.com/thingspect/atlas/pkg/dao/org"
 	"github.com/thingspect/atlas/pkg/postgres"
@@ -21,11 +21,11 @@ import (
 const testTimeout = 6 * time.Second
 
 var (
-	globalVInSubTopic string
-	globalVInQueue    queue.Queuer
+	globalDInSubTopic string
+	globalDInQueue    queue.Queuer
 
-	globalVOutPubTopic string
-	globalVOutSub      queue.Subber
+	globalDecoderPubTopic string
+	globalDecoderSub      queue.Subber
 
 	globalOrgDAO *org.DAO
 	globalDevDAO *device.DAO
@@ -39,43 +39,43 @@ func TestMain(m *testing.M) {
 
 	cfg.NSQLookupAddrs = testConfig.NSQLookupAddrs
 	cfg.NSQSubTopic += "-test-" + random.String(10)
-	globalVInSubTopic = cfg.NSQSubTopic
+	globalDInSubTopic = cfg.NSQSubTopic
 	log.Printf("TestMain cfg.NSQSubTopic: %v", cfg.NSQSubTopic)
 	// Use a unique channel for each test run. This prevents failed tests from
 	// interfering with the next run, but does require eventual cleaning.
-	cfg.NSQSubChannel = "validator-test-" + random.String(10)
+	cfg.NSQSubChannel = "decoder-test-" + random.String(10)
 
 	cfg.NSQPubAddr = testConfig.NSQPubAddr
 	cfg.NSQPubTopic += "-test-" + random.String(10)
-	globalVOutPubTopic = cfg.NSQPubTopic
+	globalDecoderPubTopic = cfg.NSQPubTopic
 	log.Printf("TestMain cfg.NSQPubTopic: %v", cfg.NSQPubTopic)
 
 	// Set up NSQ queue to publish test payloads.
 	var err error
-	globalVInQueue, err = queue.NewNSQ(cfg.NSQPubAddr, nil, "",
+	globalDInQueue, err = queue.NewNSQ(cfg.NSQPubAddr, nil, "",
 		queue.DefaultNSQRequeueDelay)
 	if err != nil {
-		log.Fatalf("TestMain globalVInQueue queue.NewNSQ: %v", err)
+		log.Fatalf("TestMain globalDInQueue queue.NewNSQ: %v", err)
 	}
 
 	// Publish a throwaway message before subscribe to allow for discovery by
 	// nsqlookupd.
-	if err = globalVInQueue.Publish(cfg.NSQSubTopic,
-		[]byte("val-aaa")); err != nil {
-		log.Fatalf("TestMain globalVInQueue.Publish: %v", err)
+	if err = globalDInQueue.Publish(cfg.NSQSubTopic,
+		[]byte("dec-aaa")); err != nil {
+		log.Fatalf("TestMain globalDInQueue.Publish: %v", err)
 	}
 	time.Sleep(100 * time.Millisecond)
 	log.Print("TestMain published throwaway message")
 
-	// Set up Validator.
-	val, err := validator.New(cfg)
+	// Set up Decoder.
+	dec, err := decoder.New(cfg)
 	if err != nil {
-		log.Fatalf("TestMain validator.New: %v", err)
+		log.Fatalf("TestMain decoder.New: %v", err)
 	}
 
 	// Serve connections.
 	go func() {
-		val.Serve(cfg.Concurrency)
+		dec.Serve(cfg.Concurrency)
 	}()
 
 	// Set up database connection.
@@ -87,15 +87,15 @@ func TestMain(m *testing.M) {
 	globalDevDAO = device.NewDAO(pg)
 
 	// Set up NSQ subscription to verify published messages.
-	vOutQueue, err := queue.NewNSQ(cfg.NSQPubAddr, nil, cfg.NSQSubChannel,
+	decoderQueue, err := queue.NewNSQ(cfg.NSQPubAddr, nil, cfg.NSQSubChannel,
 		queue.DefaultNSQRequeueDelay)
 	if err != nil {
-		log.Fatalf("TestMain vOutQueue queue.NewNSQ: %v", err)
+		log.Fatalf("TestMain decoderQueue queue.NewNSQ: %v", err)
 	}
 
-	globalVOutSub, err = vOutQueue.Subscribe(cfg.NSQPubTopic)
+	globalDecoderSub, err = decoderQueue.Subscribe(cfg.NSQPubTopic)
 	if err != nil {
-		log.Fatalf("TestMain vOutQueue.Subscribe: %v", err)
+		log.Fatalf("TestMain decoderQueue.Subscribe: %v", err)
 	}
 	log.Printf("TestMain connected as NSQ sub channel: %v", cfg.NSQSubChannel)
 

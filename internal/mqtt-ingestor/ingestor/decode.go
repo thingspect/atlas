@@ -58,7 +58,6 @@ func (ing *Ingestor) decodeMessages() {
 		logger.Debugf("decodeMessages payl: %+v", payl)
 
 		// Build and publish ValidatorIn messages.
-		var successCount int
 		for _, point := range payl.Points {
 			vIn := dataPointToVIn(traceID, payl.Token, topicParts, point)
 
@@ -77,7 +76,6 @@ func (ing *Ingestor) decodeMessages() {
 				continue
 			}
 
-			successCount++
 			metric.Incr("published", nil)
 			logger.Debugf("decodeMessages published: %+v", vIn)
 		}

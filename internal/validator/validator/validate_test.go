@@ -26,49 +26,48 @@ var errTestProc = errors.New("validator: test processor error")
 func TestValidateMessages(t *testing.T) {
 	t.Parallel()
 
-	uniqID := random.String(16)
-	now := timestamppb.New(time.Now().Add(-15 * time.Minute))
 	dev := random.Device("val", uuid.NewString())
+	now := timestamppb.New(time.Now().Add(-15 * time.Minute))
 	dev.Status = api.Status_ACTIVE
 	traceID := uuid.NewString()
 	boolVal := &common.DataPoint_BoolVal{BoolVal: []bool{true,
 		false}[random.Intn(2)]}
 
 	tests := []struct {
-		inpVIn *message.ValidatorIn
-		res    *message.ValidatorOut
+		inp *message.ValidatorIn
+		res *message.ValidatorOut
 	}{
-		{&message.ValidatorIn{Point: &common.DataPoint{UniqId: uniqID,
+		{&message.ValidatorIn{Point: &common.DataPoint{UniqId: dev.UniqId,
 			Attr: "motion", ValOneof: &common.DataPoint_IntVal{IntVal: 123},
 			Ts: now, Token: dev.Token, TraceId: traceID}, OrgId: dev.OrgId},
-			&message.ValidatorOut{Point: &common.DataPoint{UniqId: uniqID,
+			&message.ValidatorOut{Point: &common.DataPoint{UniqId: dev.UniqId,
 				Attr: "motion", ValOneof: &common.DataPoint_IntVal{IntVal: 123},
 				Ts: now, Token: dev.Token, TraceId: traceID}, OrgId: dev.OrgId,
 				DevId: dev.Id}},
-		{&message.ValidatorIn{Point: &common.DataPoint{UniqId: uniqID,
+		{&message.ValidatorIn{Point: &common.DataPoint{UniqId: dev.UniqId,
 			Attr: "temp", ValOneof: &common.DataPoint_Fl64Val{Fl64Val: 9.3},
 			Ts: now, Token: dev.Token, TraceId: traceID}, OrgId: dev.OrgId},
-			&message.ValidatorOut{Point: &common.DataPoint{UniqId: uniqID,
+			&message.ValidatorOut{Point: &common.DataPoint{UniqId: dev.UniqId,
 				Attr: "temp", ValOneof: &common.DataPoint_Fl64Val{Fl64Val: 9.3},
 				Ts: now, Token: dev.Token, TraceId: traceID}, OrgId: dev.OrgId,
 				DevId: dev.Id}},
-		{&message.ValidatorIn{Point: &common.DataPoint{UniqId: uniqID,
+		{&message.ValidatorIn{Point: &common.DataPoint{UniqId: dev.UniqId,
 			Attr: "power", ValOneof: &common.DataPoint_StrVal{StrVal: "batt"},
 			Ts: now, Token: dev.Token, TraceId: traceID}, OrgId: dev.OrgId},
-			&message.ValidatorOut{Point: &common.DataPoint{UniqId: uniqID,
+			&message.ValidatorOut{Point: &common.DataPoint{UniqId: dev.UniqId,
 				Attr: "power", ValOneof: &common.DataPoint_StrVal{
 					StrVal: "batt"}, Ts: now, Token: dev.Token,
 				TraceId: traceID}, OrgId: dev.OrgId, DevId: dev.Id}},
-		{&message.ValidatorIn{Point: &common.DataPoint{UniqId: uniqID,
+		{&message.ValidatorIn{Point: &common.DataPoint{UniqId: dev.UniqId,
 			Attr: "leak", ValOneof: boolVal, Ts: now, TraceId: traceID},
 			OrgId: dev.OrgId, SkipToken: true},
-			&message.ValidatorOut{Point: &common.DataPoint{UniqId: uniqID,
+			&message.ValidatorOut{Point: &common.DataPoint{UniqId: dev.UniqId,
 				Attr: "leak", ValOneof: boolVal, Ts: now, TraceId: traceID},
 				OrgId: dev.OrgId, DevId: dev.Id}},
-		{&message.ValidatorIn{Point: &common.DataPoint{UniqId: uniqID,
+		{&message.ValidatorIn{Point: &common.DataPoint{UniqId: dev.UniqId,
 			Attr: "leak", ValOneof: boolVal, Ts: now, TraceId: traceID},
 			SkipToken: true},
-			&message.ValidatorOut{Point: &common.DataPoint{UniqId: uniqID,
+			&message.ValidatorOut{Point: &common.DataPoint{UniqId: dev.UniqId,
 				Attr: "leak", ValOneof: boolVal, Ts: now, TraceId: traceID},
 				OrgId: dev.OrgId, DevId: dev.Id}},
 	}
@@ -92,8 +91,8 @@ func TestValidateMessages(t *testing.T) {
 			defer ctrl.Finish()
 
 			devicer := NewMockdevicer(ctrl)
-			devicer.EXPECT().ReadByUniqID(gomock.Any(),
-				lTest.inpVIn.Point.UniqId).Return(dev, nil).Times(1)
+			devicer.EXPECT().ReadByUniqID(gomock.Any(), lTest.inp.Point.UniqId).
+				Return(dev, nil).Times(1)
 
 			val := Validator{
 				devDAO:       devicer,
@@ -105,7 +104,7 @@ func TestValidateMessages(t *testing.T) {
 				val.validateMessages()
 			}()
 
-			bVIn, err := proto.Marshal(lTest.inpVIn)
+			bVIn, err := proto.Marshal(lTest.inp)
 			require.NoError(t, err)
 			t.Logf("bVIn: %s", bVIn)
 

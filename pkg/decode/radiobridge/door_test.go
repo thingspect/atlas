@@ -76,7 +76,6 @@ func TestDoor(t *testing.T) {
 
 			bInp, err := hex.DecodeString(lTest.inp)
 			require.NoError(t, err)
-			t.Logf("bInp: %x", bInp)
 
 			res, err := Door(bInp)
 			t.Logf("res, err: %#v, %v", res, err)

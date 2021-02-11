@@ -69,6 +69,7 @@ func TestDeviceUp(t *testing.T) {
 				`902700000},"adr":true,"dr":3,"data":"%s","confirmedUplink":`+
 				`true}`, now.Format(time.RFC3339Nano), b64GatewayID,
 				now.Format(time.RFC3339Nano), b64Data)},
+			{Attr: "raw_data", Value: hex.EncodeToString(bData)},
 			{Attr: "gateway_id", Value: gatewayID},
 			{Attr: "time", Value: strconv.FormatInt(now.Unix(), 10)},
 			{Attr: "lora_rssi", Value: -74},

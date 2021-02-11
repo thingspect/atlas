@@ -49,7 +49,6 @@ func TestLinkQuality(t *testing.T) {
 
 			bInp, err := hex.DecodeString(lTest.inp)
 			require.NoError(t, err)
-			t.Logf("bInp: %x", bInp)
 
 			res, err := linkQuality(bInp)
 			t.Logf("res, err: %#v, %v", res, err)

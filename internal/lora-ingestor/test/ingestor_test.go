@@ -4,6 +4,7 @@ package test
 
 import (
 	"encoding/base64"
+	"encoding/hex"
 	"fmt"
 	"testing"
 	"time"
@@ -106,10 +107,10 @@ func TestDecodeGateways(t *testing.T) {
 					// Testify does not currently support protobuf equality:
 					// https://github.com/stretchr/testify/issues/758
 					if !proto.Equal(res, vIn) {
-						t.Fatalf("\nExpect: %+v\nActual: %+v", lTest.res, vIn)
+						t.Errorf("\nExpect: %+v\nActual: %+v", lTest.res, vIn)
 					}
-				case <-time.After(5 * time.Second):
-					t.Fatal("Message timed out")
+				case <-time.After(testTimeout):
+					t.Error("Message timed out")
 				}
 			}
 		})
@@ -134,6 +135,9 @@ func TestDecodeDevices(t *testing.T) {
 			{Point: &common.DataPoint{UniqId: uniqID, Attr: "raw_device",
 				ValOneof: &common.DataPoint_StrVal{StrVal: fmt.Sprintf(
 					`{"data":"%s"}`, b64Data)}}, SkipToken: true},
+			{Point: &common.DataPoint{UniqId: uniqID, Attr: "raw_data",
+				ValOneof: &common.DataPoint_StrVal{
+					StrVal: hex.EncodeToString(bData)}}, SkipToken: true},
 			{Point: &common.DataPoint{UniqId: uniqID, Attr: "adr",
 				ValOneof: &common.DataPoint_BoolVal{BoolVal: false}},
 				SkipToken: true},
@@ -199,33 +203,35 @@ func TestDecodeDevices(t *testing.T) {
 			require.NoError(t, globalMQTTQueue.Publish(lTest.inpTopic,
 				bInpProto))
 
+			// Don't stop the flow of execution (assert) to avoid leaving
+			// messages orphaned in the queue.
 			for _, res := range lTest.resVIn {
 				select {
 				case msg := <-globalDecoderDevSub.C():
 					msg.Ack()
 					t.Logf("Dev msg.Topic, msg.Payload: %v, %s", msg.Topic(),
 						msg.Payload())
-					require.Equal(t, globalDecoderPubDevTopic, msg.Topic())
+					assert.Equal(t, globalDecoderPubDevTopic, msg.Topic())
 
 					vIn := &message.ValidatorIn{}
-					require.NoError(t, proto.Unmarshal(msg.Payload(), vIn))
+					assert.NoError(t, proto.Unmarshal(msg.Payload(), vIn))
 					t.Logf("vIn: %+v", vIn)
 
 					// Normalize generated trace ID.
 					res.Point.TraceId = vIn.Point.TraceId
 					// Normalize timestamps.
-					require.WithinDuration(t, time.Now(), vIn.Point.Ts.AsTime(),
+					assert.WithinDuration(t, time.Now(), vIn.Point.Ts.AsTime(),
 						testTimeout)
 					res.Point.Ts = vIn.Point.Ts
 
 					// Testify does not currently support protobuf equality:
 					// https://github.com/stretchr/testify/issues/758
 					if !proto.Equal(res, vIn) {
-						t.Fatalf("\nExpect: %+v\nActual: %+v", lTest.resVIn,
+						t.Errorf("\nExpect: %+v\nActual: %+v", lTest.resVIn,
 							vIn)
 					}
-				case <-time.After(5 * time.Second):
-					t.Fatal("Message timed out")
+				case <-time.After(testTimeout):
+					t.Error("Message timed out")
 				}
 			}
 
@@ -254,7 +260,7 @@ func TestDecodeDevices(t *testing.T) {
 						t.Fatalf("\nExpect: %+v\nActual: %+v", lTest.resPIn,
 							pIn)
 					}
-				case <-time.After(5 * time.Second):
+				case <-time.After(testTimeout):
 					t.Fatal("Message timed out")
 				}
 			}

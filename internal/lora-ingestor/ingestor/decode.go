@@ -4,12 +4,11 @@ import (
 	"strings"
 
 	"github.com/google/uuid"
-	"github.com/thingspect/api/go/common"
 	"github.com/thingspect/atlas/api/go/message"
 	"github.com/thingspect/atlas/pkg/alog"
-	"github.com/thingspect/atlas/pkg/decode"
 	"github.com/thingspect/atlas/pkg/decode/chirpstack/device"
 	"github.com/thingspect/atlas/pkg/decode/chirpstack/gateway"
+	"github.com/thingspect/atlas/pkg/decode/registry"
 	"github.com/thingspect/atlas/pkg/metric"
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/known/timestamppb"
@@ -45,7 +44,7 @@ func (ing *Ingestor) decodeGateways() {
 		logger = logger.WithStr("event", topicParts[4])
 
 		// Decode payload. Continue execution in the presence of errors, as
-		// valid points may be included.
+		// valid points may be returned.
 		points, err := gateway.Gateway(topicParts[4], msg.Payload())
 		if err != nil {
 			metric.Incr("error", map[string]string{"func": "decode"})
@@ -56,7 +55,8 @@ func (ing *Ingestor) decodeGateways() {
 
 		// Build and publish ValidatorIn messages.
 		for _, point := range points {
-			vIn := pointToVIn(traceID, topicParts[2], point, timestamppb.Now())
+			vIn := registry.PointToVIn(traceID, topicParts[2], point,
+				timestamppb.Now())
 
 			bVIn, err := proto.Marshal(vIn)
 			if err != nil {
@@ -127,7 +127,7 @@ func (ing *Ingestor) decodeDevices() {
 
 		// Build and publish ValidatorIn messages.
 		for _, point := range points {
-			vIn := pointToVIn(traceID, topicParts[4], point, ts)
+			vIn := registry.PointToVIn(traceID, topicParts[4], point, ts)
 
 			bVIn, err := proto.Marshal(vIn)
 			if err != nil {
@@ -181,45 +181,4 @@ func (ing *Ingestor) decodeDevices() {
 			alog.Infof("decodeDevices processed %v messages", processCount)
 		}
 	}
-}
-
-// pointToVIn maps a Point to ValidatorIn.
-func pointToVIn(traceID, uniqID string, point *decode.Point,
-	ts *timestamppb.Timestamp) *message.ValidatorIn {
-	vIn := &message.ValidatorIn{
-		Point: &common.DataPoint{
-			UniqId:  uniqID,
-			Attr:    point.Attr,
-			Ts:      ts,
-			TraceId: traceID,
-		},
-		SkipToken: true,
-	}
-
-	switch v := point.Value.(type) {
-	case int32:
-		vIn.Point.ValOneof = &common.DataPoint_IntVal{IntVal: v}
-	case int:
-		vIn.Point.ValOneof = &common.DataPoint_IntVal{IntVal: int32(v)}
-		alog.Errorf("pointToVIn casting from int: %v, %v,", point.Attr, v)
-	case int64:
-		vIn.Point.ValOneof = &common.DataPoint_IntVal{IntVal: int32(v)}
-		alog.Errorf("pointToVIn casting from int64: %v, %v,", point.Attr, v)
-	case float64:
-		vIn.Point.ValOneof = &common.DataPoint_Fl64Val{Fl64Val: v}
-	case float32:
-		vIn.Point.ValOneof = &common.DataPoint_Fl64Val{Fl64Val: float64(v)}
-		alog.Errorf("pointToVIn casting from float32: %v, %v,", point.Attr, v)
-	case string:
-		vIn.Point.ValOneof = &common.DataPoint_StrVal{StrVal: v}
-	case bool:
-		vIn.Point.ValOneof = &common.DataPoint_BoolVal{BoolVal: v}
-	case []byte:
-		vIn.Point.ValOneof = &common.DataPoint_BytesVal{BytesVal: v}
-	default:
-		alog.Errorf("pointToVIn unknown type: %v, %T, %v,", point.Attr,
-			point.Value, point.Value)
-	}
-
-	return vIn
 }
