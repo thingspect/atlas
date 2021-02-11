@@ -28,13 +28,18 @@ func deviceUp(body []byte) ([]*decode.Point, *timestamppb.Timestamp, []byte,
 		return nil, nil, nil, err
 	}
 
-	// Build raw device payload for debugging.
+	// Build raw device and data payloads for debugging.
 	marshaler := &jsonpb.Marshaler{}
 	gw, err := marshaler.MarshalToString(upMsg)
 	if err != nil {
 		return nil, nil, upMsg.Data, err
 	}
 	msgs := []*decode.Point{{Attr: "raw_device", Value: gw}}
+
+	if upMsg.Data != nil {
+		msgs = append(msgs, &decode.Point{Attr: "raw_data",
+			Value: hex.EncodeToString(upMsg.Data)})
+	}
 
 	// Parse UplinkRXInfos.
 	upTime := timestamppb.Now()

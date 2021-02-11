@@ -55,6 +55,7 @@ func TestMain(m *testing.M) {
 		[]byte("acc-aaa")); err != nil {
 		log.Fatalf("TestMain globalVOutQueue.Publish: %v", err)
 	}
+	time.Sleep(100 * time.Millisecond)
 	log.Print("TestMain published throwaway message")
 
 	// Set up Accumulator.
