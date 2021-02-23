@@ -1,4 +1,5 @@
 // Package matcher provides types that implement the gomock.Matcher interface.
+// This package must not be used outside of tests.
 package matcher
 
 import (

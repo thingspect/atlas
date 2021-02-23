@@ -7,7 +7,7 @@ import (
 )
 
 // Intn returns, as an int, a non-negative cryptographically secure number in
-// [0,n) from rand.Reader. Care should be taken when used outside of tests.
+// [0,n) from rand.Reader. This function must not be used outside of tests.
 func Intn(n int) int {
 	rn, err := rand.Int(rand.Reader, big.NewInt(int64(n)))
 	if err != nil {
