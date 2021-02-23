@@ -1,4 +1,5 @@
 // Package random provides functions for generating random values for tests.
+// This package must not be used outside of tests.
 package random
 
 import (
@@ -7,7 +8,7 @@ import (
 	"log"
 )
 
-// Bytes returns a new random []byte. Care should be taken when used outside of
+// Bytes returns a new random []byte. This function must not be used outside of
 // tests.
 func Bytes(n uint) []byte {
 	b := make([]byte, n)
@@ -19,13 +20,13 @@ func Bytes(n uint) []byte {
 	return b
 }
 
-// String returns a new random hex string n characters in length. Care should be
-// taken when used outside of tests.
+// String returns a new random hex string n characters in length. This function
+// must not be used outside of tests.
 func String(n uint) string {
 	return hex.EncodeToString(Bytes(n/2 + 1))[:n]
 }
 
-// Email generates a random email at thingspect.com. Care should be taken when
+// Email generates a random email at thingspect.com. This function must not be
 // used outside of tests.
 func Email() string {
 	return String(10) + "@thingspect.com"
