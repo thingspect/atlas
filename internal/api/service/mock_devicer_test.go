@@ -6,36 +6,37 @@ package service
 
 import (
 	context "context"
-	gomock "github.com/golang/mock/gomock"
-	api "github.com/thingspect/api/go/api"
 	reflect "reflect"
 	time "time"
+
+	gomock "github.com/golang/mock/gomock"
+	api "github.com/thingspect/api/go/api"
 )
 
-// MockDevicer is a mock of Devicer interface
+// MockDevicer is a mock of Devicer interface.
 type MockDevicer struct {
 	ctrl     *gomock.Controller
 	recorder *MockDevicerMockRecorder
 }
 
-// MockDevicerMockRecorder is the mock recorder for MockDevicer
+// MockDevicerMockRecorder is the mock recorder for MockDevicer.
 type MockDevicerMockRecorder struct {
 	mock *MockDevicer
 }
 
-// NewMockDevicer creates a new mock instance
+// NewMockDevicer creates a new mock instance.
 func NewMockDevicer(ctrl *gomock.Controller) *MockDevicer {
 	mock := &MockDevicer{ctrl: ctrl}
 	mock.recorder = &MockDevicerMockRecorder{mock}
 	return mock
 }
 
-// EXPECT returns an object that allows the caller to indicate expected use
+// EXPECT returns an object that allows the caller to indicate expected use.
 func (m *MockDevicer) EXPECT() *MockDevicerMockRecorder {
 	return m.recorder
 }
 
-// Create mocks base method
+// Create mocks base method.
 func (m *MockDevicer) Create(ctx context.Context, dev *api.Device) (*api.Device, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Create", ctx, dev)
@@ -44,43 +45,13 @@ func (m *MockDevicer) Create(ctx context.Context, dev *api.Device) (*api.Device,
 	return ret0, ret1
 }
 
-// Create indicates an expected call of Create
+// Create indicates an expected call of Create.
 func (mr *MockDevicerMockRecorder) Create(ctx, dev interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Create", reflect.TypeOf((*MockDevicer)(nil).Create), ctx, dev)
 }
 
-// Read mocks base method
-func (m *MockDevicer) Read(ctx context.Context, devID, orgID string) (*api.Device, error) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Read", ctx, devID, orgID)
-	ret0, _ := ret[0].(*api.Device)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// Read indicates an expected call of Read
-func (mr *MockDevicerMockRecorder) Read(ctx, devID, orgID interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Read", reflect.TypeOf((*MockDevicer)(nil).Read), ctx, devID, orgID)
-}
-
-// Update mocks base method
-func (m *MockDevicer) Update(ctx context.Context, dev *api.Device) (*api.Device, error) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Update", ctx, dev)
-	ret0, _ := ret[0].(*api.Device)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// Update indicates an expected call of Update
-func (mr *MockDevicerMockRecorder) Update(ctx, dev interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Update", reflect.TypeOf((*MockDevicer)(nil).Update), ctx, dev)
-}
-
-// Delete mocks base method
+// Delete mocks base method.
 func (m *MockDevicer) Delete(ctx context.Context, devID, orgID string) error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Delete", ctx, devID, orgID)
@@ -88,13 +59,13 @@ func (m *MockDevicer) Delete(ctx context.Context, devID, orgID string) error {
 	return ret0
 }
 
-// Delete indicates an expected call of Delete
+// Delete indicates an expected call of Delete.
 func (mr *MockDevicerMockRecorder) Delete(ctx, devID, orgID interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Delete", reflect.TypeOf((*MockDevicer)(nil).Delete), ctx, devID, orgID)
 }
 
-// List mocks base method
+// List mocks base method.
 func (m *MockDevicer) List(ctx context.Context, orgID string, lboundTS time.Time, prevID string, limit int32) ([]*api.Device, int32, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "List", ctx, orgID, lboundTS, prevID, limit)
@@ -104,8 +75,38 @@ func (m *MockDevicer) List(ctx context.Context, orgID string, lboundTS time.Time
 	return ret0, ret1, ret2
 }
 
-// List indicates an expected call of List
+// List indicates an expected call of List.
 func (mr *MockDevicerMockRecorder) List(ctx, orgID, lboundTS, prevID, limit interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "List", reflect.TypeOf((*MockDevicer)(nil).List), ctx, orgID, lboundTS, prevID, limit)
+}
+
+// Read mocks base method.
+func (m *MockDevicer) Read(ctx context.Context, devID, orgID string) (*api.Device, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "Read", ctx, devID, orgID)
+	ret0, _ := ret[0].(*api.Device)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// Read indicates an expected call of Read.
+func (mr *MockDevicerMockRecorder) Read(ctx, devID, orgID interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Read", reflect.TypeOf((*MockDevicer)(nil).Read), ctx, devID, orgID)
+}
+
+// Update mocks base method.
+func (m *MockDevicer) Update(ctx context.Context, dev *api.Device) (*api.Device, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "Update", ctx, dev)
+	ret0, _ := ret[0].(*api.Device)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// Update indicates an expected call of Update.
+func (mr *MockDevicerMockRecorder) Update(ctx, dev interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Update", reflect.TypeOf((*MockDevicer)(nil).Update), ctx, dev)
 }

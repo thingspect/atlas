@@ -60,13 +60,10 @@ func TestAccumulateMessages(t *testing.T) {
 			vOutSub, err := vOutQueue.Subscribe("")
 			require.NoError(t, err)
 
-			ctrl := gomock.NewController(t)
-			defer ctrl.Finish()
-
 			var wg sync.WaitGroup
 			wg.Add(1)
 
-			datapointer := NewMockdatapointer(ctrl)
+			datapointer := NewMockdatapointer(gomock.NewController(t))
 			datapointer.EXPECT().Create(gomock.Any(),
 				matcher.NewProtoMatcher(lTest.inp.Point), lTest.inp.OrgId).
 				DoAndReturn(func(_ ...interface{}) error {
@@ -125,13 +122,10 @@ func TestAccumulateMessagesError(t *testing.T) {
 			vOutSub, err := vOutQueue.Subscribe("")
 			require.NoError(t, err)
 
-			ctrl := gomock.NewController(t)
-			defer ctrl.Finish()
-
 			var wg sync.WaitGroup
 			wg.Add(1)
 
-			datapointer := NewMockdatapointer(ctrl)
+			datapointer := NewMockdatapointer(gomock.NewController(t))
 			datapointer.EXPECT().Create(gomock.Any(), gomock.Any(), "").
 				DoAndReturn(func(_ ...interface{}) error {
 					defer wg.Done()

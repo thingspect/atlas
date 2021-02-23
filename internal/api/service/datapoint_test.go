@@ -131,18 +131,11 @@ func TestPublishDataPoints(t *testing.T) {
 	t.Run("Publish data point with invalid session", func(t *testing.T) {
 		t.Parallel()
 
-		point := &common.DataPoint{UniqId: random.String(16), Attr: "motion",
-			ValOneof: &common.DataPoint_IntVal{IntVal: 123}}
-
-		pubQueue := queue.NewFake()
-		pubTopic := "topic-" + random.String(10)
-
 		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
 		defer cancel()
 
-		dpSvc := NewDataPoint(pubQueue, pubTopic, nil)
-		_, err := dpSvc.PublishDataPoints(ctx, &api.PublishDataPointsRequest{
-			Points: []*common.DataPoint{point}})
+		dpSvc := NewDataPoint(nil, "", nil)
+		_, err := dpSvc.PublishDataPoints(ctx, &api.PublishDataPointsRequest{})
 		t.Logf("err: %v", err)
 		require.Equal(t, errPerm(common.Role_BUILDER), err)
 	})
@@ -150,20 +143,13 @@ func TestPublishDataPoints(t *testing.T) {
 	t.Run("Publish data point with insufficient role", func(t *testing.T) {
 		t.Parallel()
 
-		point := &common.DataPoint{UniqId: random.String(16), Attr: "motion",
-			ValOneof: &common.DataPoint_IntVal{IntVal: 123}}
-
-		pubQueue := queue.NewFake()
-		pubTopic := "topic-" + random.String(10)
-
 		ctx, cancel := context.WithTimeout(session.NewContext(
 			context.Background(), &session.Session{OrgID: uuid.NewString(),
 				Role: common.Role_VIEWER}), testTimeout)
 		defer cancel()
 
-		dpSvc := NewDataPoint(pubQueue, pubTopic, nil)
-		_, err := dpSvc.PublishDataPoints(ctx, &api.PublishDataPointsRequest{
-			Points: []*common.DataPoint{point}})
+		dpSvc := NewDataPoint(nil, "", nil)
+		_, err := dpSvc.PublishDataPoints(ctx, &api.PublishDataPointsRequest{})
 		t.Logf("err: %v", err)
 		require.Equal(t, errPerm(common.Role_BUILDER), err)
 	})
@@ -182,10 +168,7 @@ func TestListDataPoints(t *testing.T) {
 		end := time.Now().UTC()
 		start := time.Now().UTC().Add(-15 * time.Minute)
 
-		ctrl := gomock.NewController(t)
-		defer ctrl.Finish()
-
-		datapointer := NewMockDataPointer(ctrl)
+		datapointer := NewMockDataPointer(gomock.NewController(t))
 		datapointer.EXPECT().List(gomock.Any(), orgID, point.UniqId, "", "",
 			end, start).Return([]*common.DataPoint{point}, nil).Times(1)
 
@@ -222,10 +205,7 @@ func TestListDataPoints(t *testing.T) {
 		orgID := uuid.NewString()
 		devID := uuid.NewString()
 
-		ctrl := gomock.NewController(t)
-		defer ctrl.Finish()
-
-		datapointer := NewMockDataPointer(ctrl)
+		datapointer := NewMockDataPointer(gomock.NewController(t))
 		datapointer.EXPECT().List(gomock.Any(), orgID, "", devID, point.Attr,
 			matcher.NewRecentMatcher(2*time.Second),
 			matcher.NewRecentMatcher(24*time.Hour+2*time.Second)).
@@ -257,18 +237,12 @@ func TestListDataPoints(t *testing.T) {
 	t.Run("List data points with invalid session", func(t *testing.T) {
 		t.Parallel()
 
-		ctrl := gomock.NewController(t)
-		defer ctrl.Finish()
-		datapointer := NewMockDataPointer(ctrl)
-
 		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
 		defer cancel()
 
-		dpSvc := NewDataPoint(nil, "", datapointer)
+		dpSvc := NewDataPoint(nil, "", nil)
 		listPoints, err := dpSvc.ListDataPoints(ctx,
-			&api.ListDataPointsRequest{
-				IdOneof: &api.ListDataPointsRequest_UniqId{
-					UniqId: random.String(16)}})
+			&api.ListDataPointsRequest{})
 		t.Logf("listPoints, err: %+v, %v", listPoints, err)
 		require.Nil(t, listPoints)
 		require.Equal(t, errPerm(common.Role_VIEWER), err)
@@ -277,20 +251,14 @@ func TestListDataPoints(t *testing.T) {
 	t.Run("List data points with insufficient role", func(t *testing.T) {
 		t.Parallel()
 
-		ctrl := gomock.NewController(t)
-		defer ctrl.Finish()
-		datapointer := NewMockDataPointer(ctrl)
-
 		ctx, cancel := context.WithTimeout(session.NewContext(
 			context.Background(), &session.Session{OrgID: uuid.NewString(),
 				Role: common.Role_CONTACT}), testTimeout)
 		defer cancel()
 
-		dpSvc := NewDataPoint(nil, "", datapointer)
+		dpSvc := NewDataPoint(nil, "", nil)
 		listPoints, err := dpSvc.ListDataPoints(ctx,
-			&api.ListDataPointsRequest{
-				IdOneof: &api.ListDataPointsRequest_UniqId{
-					UniqId: random.String(16)}})
+			&api.ListDataPointsRequest{})
 		t.Logf("listPoints, err: %+v, %v", listPoints, err)
 		require.Nil(t, listPoints)
 		require.Equal(t, errPerm(common.Role_VIEWER), err)
@@ -299,16 +267,12 @@ func TestListDataPoints(t *testing.T) {
 	t.Run("List data points by invalid time range", func(t *testing.T) {
 		t.Parallel()
 
-		ctrl := gomock.NewController(t)
-		defer ctrl.Finish()
-		datapointer := NewMockDataPointer(ctrl)
-
 		ctx, cancel := context.WithTimeout(session.NewContext(
 			context.Background(), &session.Session{OrgID: uuid.NewString(),
 				Role: common.Role_ADMIN}), testTimeout)
 		defer cancel()
 
-		dpSvc := NewDataPoint(nil, "", datapointer)
+		dpSvc := NewDataPoint(nil, "", nil)
 		listPoints, err := dpSvc.ListDataPoints(ctx,
 			&api.ListDataPointsRequest{
 				IdOneof: &api.ListDataPointsRequest_UniqId{
@@ -324,10 +288,7 @@ func TestListDataPoints(t *testing.T) {
 	t.Run("List data points by invalid org ID", func(t *testing.T) {
 		t.Parallel()
 
-		ctrl := gomock.NewController(t)
-		defer ctrl.Finish()
-
-		datapointer := NewMockDataPointer(ctrl)
+		datapointer := NewMockDataPointer(gomock.NewController(t))
 		datapointer.EXPECT().List(gomock.Any(), "aaa", gomock.Any(),
 			gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any()).Return(nil,
 			dao.ErrInvalidFormat).Times(1)
@@ -360,10 +321,7 @@ func TestLatestDataPoints(t *testing.T) {
 			Ts: timestamppb.Now(), TraceId: uuid.NewString()}
 		orgID := uuid.NewString()
 
-		ctrl := gomock.NewController(t)
-		defer ctrl.Finish()
-
-		datapointer := NewMockDataPointer(ctrl)
+		datapointer := NewMockDataPointer(gomock.NewController(t))
 		datapointer.EXPECT().Latest(gomock.Any(), orgID, point.UniqId, "").
 			Return([]*common.DataPoint{point}, nil).Times(1)
 
@@ -399,10 +357,7 @@ func TestLatestDataPoints(t *testing.T) {
 		orgID := uuid.NewString()
 		devID := uuid.NewString()
 
-		ctrl := gomock.NewController(t)
-		defer ctrl.Finish()
-
-		datapointer := NewMockDataPointer(ctrl)
+		datapointer := NewMockDataPointer(gomock.NewController(t))
 		datapointer.EXPECT().Latest(gomock.Any(), orgID, "", devID).
 			Return([]*common.DataPoint{point}, nil).Times(1)
 
@@ -431,18 +386,12 @@ func TestLatestDataPoints(t *testing.T) {
 	t.Run("Latest data points with invalid session", func(t *testing.T) {
 		t.Parallel()
 
-		ctrl := gomock.NewController(t)
-		defer ctrl.Finish()
-		datapointer := NewMockDataPointer(ctrl)
-
 		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
 		defer cancel()
 
-		dpSvc := NewDataPoint(nil, "", datapointer)
+		dpSvc := NewDataPoint(nil, "", nil)
 		latPoints, err := dpSvc.LatestDataPoints(ctx,
-			&api.LatestDataPointsRequest{
-				IdOneof: &api.LatestDataPointsRequest_UniqId{
-					UniqId: random.String(16)}})
+			&api.LatestDataPointsRequest{})
 		t.Logf("latPoints, err: %+v, %v", latPoints, err)
 		require.Nil(t, latPoints)
 		require.Equal(t, errPerm(common.Role_VIEWER), err)
@@ -451,20 +400,14 @@ func TestLatestDataPoints(t *testing.T) {
 	t.Run("Latest data points with insufficient role", func(t *testing.T) {
 		t.Parallel()
 
-		ctrl := gomock.NewController(t)
-		defer ctrl.Finish()
-		datapointer := NewMockDataPointer(ctrl)
-
 		ctx, cancel := context.WithTimeout(session.NewContext(
 			context.Background(), &session.Session{OrgID: uuid.NewString(),
 				Role: common.Role_CONTACT}), testTimeout)
 		defer cancel()
 
-		dpSvc := NewDataPoint(nil, "", datapointer)
+		dpSvc := NewDataPoint(nil, "", nil)
 		latPoints, err := dpSvc.LatestDataPoints(ctx,
-			&api.LatestDataPointsRequest{
-				IdOneof: &api.LatestDataPointsRequest_UniqId{
-					UniqId: random.String(16)}})
+			&api.LatestDataPointsRequest{})
 		t.Logf("latPoints, err: %+v, %v", latPoints, err)
 		require.Nil(t, latPoints)
 		require.Equal(t, errPerm(common.Role_VIEWER), err)
@@ -473,10 +416,7 @@ func TestLatestDataPoints(t *testing.T) {
 	t.Run("Latest data points by invalid org ID", func(t *testing.T) {
 		t.Parallel()
 
-		ctrl := gomock.NewController(t)
-		defer ctrl.Finish()
-
-		datapointer := NewMockDataPointer(ctrl)
+		datapointer := NewMockDataPointer(gomock.NewController(t))
 		datapointer.EXPECT().Latest(gomock.Any(), "aaa", gomock.Any(),
 			gomock.Any()).Return(nil, dao.ErrInvalidFormat).Times(1)
 

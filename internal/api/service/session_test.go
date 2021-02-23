@@ -30,10 +30,7 @@ func TestLogin(t *testing.T) {
 		user.Role = common.Role_ADMIN
 		user.Status = api.Status_ACTIVE
 
-		ctrl := gomock.NewController(t)
-		defer ctrl.Finish()
-
-		userer := NewMockUserer(ctrl)
+		userer := NewMockUserer(gomock.NewController(t))
 		userer.EXPECT().ReadByEmail(gomock.Any(), user.Email, org.Name).
 			Return(user, globalHash, nil).Times(1)
 
@@ -62,10 +59,7 @@ func TestLogin(t *testing.T) {
 		user := random.User("api-session", org.Id)
 		user.Status = api.Status_ACTIVE
 
-		ctrl := gomock.NewController(t)
-		defer ctrl.Finish()
-
-		userer := NewMockUserer(ctrl)
+		userer := NewMockUserer(gomock.NewController(t))
 		userer.EXPECT().ReadByEmail(gomock.Any(), user.Email, org.Name).
 			Return(nil, nil, dao.ErrNotFound).Times(1)
 
@@ -92,10 +86,7 @@ func TestLogin(t *testing.T) {
 		user := random.User("api-session", org.Id)
 		user.Status = api.Status_ACTIVE
 
-		ctrl := gomock.NewController(t)
-		defer ctrl.Finish()
-
-		userer := NewMockUserer(ctrl)
+		userer := NewMockUserer(gomock.NewController(t))
 		userer.EXPECT().ReadByEmail(gomock.Any(), user.Email, org.Name).
 			Return(user, globalHash, nil).Times(1)
 
@@ -122,10 +113,7 @@ func TestLogin(t *testing.T) {
 		user := random.User("api-session", org.Id)
 		user.Status = api.Status_DISABLED
 
-		ctrl := gomock.NewController(t)
-		defer ctrl.Finish()
-
-		userer := NewMockUserer(ctrl)
+		userer := NewMockUserer(gomock.NewController(t))
 		userer.EXPECT().ReadByEmail(gomock.Any(), user.Email, org.Name).
 			Return(user, globalHash, nil).Times(1)
 
@@ -153,10 +141,7 @@ func TestLogin(t *testing.T) {
 		user.Role = common.Role_CONTACT
 		user.Status = api.Status_ACTIVE
 
-		ctrl := gomock.NewController(t)
-		defer ctrl.Finish()
-
-		userer := NewMockUserer(ctrl)
+		userer := NewMockUserer(gomock.NewController(t))
 		userer.EXPECT().ReadByEmail(gomock.Any(), user.Email, org.Name).
 			Return(user, globalHash, nil).Times(1)
 
@@ -184,10 +169,7 @@ func TestLogin(t *testing.T) {
 		user.Role = common.Role_ADMIN
 		user.Status = api.Status_ACTIVE
 
-		ctrl := gomock.NewController(t)
-		defer ctrl.Finish()
-
-		userer := NewMockUserer(ctrl)
+		userer := NewMockUserer(gomock.NewController(t))
 		userer.EXPECT().ReadByEmail(gomock.Any(), user.Email, org.Name).
 			Return(user, globalHash, nil).Times(1)
 

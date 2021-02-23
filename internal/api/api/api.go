@@ -21,6 +21,7 @@ import (
 	"github.com/thingspect/atlas/pkg/dao/device"
 	"github.com/thingspect/atlas/pkg/dao/org"
 	"github.com/thingspect/atlas/pkg/dao/user"
+	"github.com/thingspect/atlas/pkg/lora"
 	"github.com/thingspect/atlas/pkg/postgres"
 	"github.com/thingspect/atlas/pkg/queue"
 	"google.golang.org/grpc"
@@ -65,15 +66,28 @@ func New(cfg *config.Config) (*API, error) {
 		return nil, err
 	}
 
+	// Set up LoRaWAN connection. Allow a mock for local usage, but warn loudly.
+	var cs lora.Loraer
+	if cfg.LoRaAddr == "" {
+		alog.Error("New cfg.LoRaAddr not found, using lora.NewFake()")
+		cs = lora.NewFake()
+	} else {
+		cs, err = lora.NewChirpstack(cfg.LoRaAddr, cfg.LoRaAPIKey,
+			cfg.LoRaOrgID, cfg.LoRaNSID, cfg.LoRaAppID, cfg.LoRaDevProfID)
+		if err != nil {
+			return nil, err
+		}
+	}
+
 	// Register gRPC services.
 	skipAuth := map[string]struct{}{
-		"/api.SessionService/Login": {},
+		"/thingspect.api.SessionService/Login": {},
 	}
 	skipValidate := map[string]struct{}{
 		// Update actions validate after merge to support partial updates.
-		"/api.DeviceService/UpdateDevice": {},
-		"/api.OrgService/UpdateOrg":       {},
-		"/api.UserService/UpdateUser":     {},
+		"/thingspect.api.DeviceService/UpdateDevice": {},
+		"/thingspect.api.OrgService/UpdateOrg":       {},
+		"/thingspect.api.UserService/UpdateUser":     {},
 	}
 
 	srv := grpc.NewServer(grpc.ChainUnaryInterceptor(
@@ -83,7 +97,8 @@ func New(cfg *config.Config) (*API, error) {
 	))
 	api.RegisterDataPointServiceServer(srv, service.NewDataPoint(nsq,
 		cfg.NSQPubTopic, datapoint.NewDAO(pg)))
-	api.RegisterDeviceServiceServer(srv, service.NewDevice(device.NewDAO(pg)))
+	api.RegisterDeviceServiceServer(srv, service.NewDevice(device.NewDAO(pg),
+		cs))
 	api.RegisterOrgServiceServer(srv, service.NewOrg(org.NewDAO(pg)))
 	api.RegisterSessionServiceServer(srv, service.NewSession(user.NewDAO(pg),
 		cfg.PWTKey))

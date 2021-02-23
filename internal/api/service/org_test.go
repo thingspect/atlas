@@ -30,10 +30,7 @@ func TestCreateOrg(t *testing.T) {
 
 		org := random.Org("api-org")
 
-		ctrl := gomock.NewController(t)
-		defer ctrl.Finish()
-
-		orger := NewMockOrger(ctrl)
+		orger := NewMockOrger(gomock.NewController(t))
 		orger.EXPECT().Create(gomock.Any(), org).Return(org, nil).Times(1)
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
@@ -57,16 +54,11 @@ func TestCreateOrg(t *testing.T) {
 	t.Run("Create org with invalid session", func(t *testing.T) {
 		t.Parallel()
 
-		ctrl := gomock.NewController(t)
-		defer ctrl.Finish()
-		orger := NewMockOrger(ctrl)
-
 		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
 		defer cancel()
 
-		orgSvc := NewOrg(orger)
-		createOrg, err := orgSvc.CreateOrg(ctx, &api.CreateOrgRequest{
-			Org: nil})
+		orgSvc := NewOrg(nil)
+		createOrg, err := orgSvc.CreateOrg(ctx, &api.CreateOrgRequest{})
 		t.Logf("createOrg, err: %+v, %v", createOrg, err)
 		require.Nil(t, createOrg)
 		require.Equal(t, errPerm(common.Role_SYS_ADMIN), err)
@@ -75,18 +67,13 @@ func TestCreateOrg(t *testing.T) {
 	t.Run("Create org with insufficient role", func(t *testing.T) {
 		t.Parallel()
 
-		ctrl := gomock.NewController(t)
-		defer ctrl.Finish()
-		orger := NewMockOrger(ctrl)
-
 		ctx, cancel := context.WithTimeout(session.NewContext(
 			context.Background(), &session.Session{OrgID: uuid.NewString(),
 				Role: common.Role_ADMIN}), testTimeout)
 		defer cancel()
 
-		orgSvc := NewOrg(orger)
-		createOrg, err := orgSvc.CreateOrg(ctx, &api.CreateOrgRequest{
-			Org: nil})
+		orgSvc := NewOrg(nil)
+		createOrg, err := orgSvc.CreateOrg(ctx, &api.CreateOrgRequest{})
 		t.Logf("createOrg, err: %+v, %v", createOrg, err)
 		require.Nil(t, createOrg)
 		require.Equal(t, errPerm(common.Role_SYS_ADMIN), err)
@@ -97,10 +84,7 @@ func TestCreateOrg(t *testing.T) {
 
 		org := random.Org("api-org")
 
-		ctrl := gomock.NewController(t)
-		defer ctrl.Finish()
-
-		orger := NewMockOrger(ctrl)
+		orger := NewMockOrger(gomock.NewController(t))
 		orger.EXPECT().Create(gomock.Any(), org).Return(nil,
 			dao.ErrInvalidFormat).Times(1)
 
@@ -127,10 +111,7 @@ func TestGetOrg(t *testing.T) {
 
 		org := random.Org("api-org")
 
-		ctrl := gomock.NewController(t)
-		defer ctrl.Finish()
-
-		orger := NewMockOrger(ctrl)
+		orger := NewMockOrger(gomock.NewController(t))
 		orger.EXPECT().Read(gomock.Any(), org.Id).Return(org, nil).Times(1)
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
@@ -153,16 +134,11 @@ func TestGetOrg(t *testing.T) {
 	t.Run("Get org with invalid session", func(t *testing.T) {
 		t.Parallel()
 
-		ctrl := gomock.NewController(t)
-		defer ctrl.Finish()
-		orger := NewMockOrger(ctrl)
-
 		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
 		defer cancel()
 
-		orgSvc := NewOrg(orger)
-		getOrg, err := orgSvc.GetOrg(ctx, &api.GetOrgRequest{
-			Id: uuid.NewString()})
+		orgSvc := NewOrg(nil)
+		getOrg, err := orgSvc.GetOrg(ctx, &api.GetOrgRequest{})
 		t.Logf("getOrg, err: %+v, %v", getOrg, err)
 		require.Nil(t, getOrg)
 		require.Equal(t, errPerm(common.Role_SYS_ADMIN), err)
@@ -171,19 +147,14 @@ func TestGetOrg(t *testing.T) {
 	t.Run("Get org with insufficient role", func(t *testing.T) {
 		t.Parallel()
 
-		ctrl := gomock.NewController(t)
-		defer ctrl.Finish()
-		orger := NewMockOrger(ctrl)
-
 		ctx, cancel := context.WithTimeout(session.NewContext(
 			context.Background(), &session.Session{UserID: uuid.NewString(),
 				OrgID: uuid.NewString(), Role: common.Role_ADMIN}),
 			testTimeout)
 		defer cancel()
 
-		orgSvc := NewOrg(orger)
-		getOrg, err := orgSvc.GetOrg(ctx, &api.GetOrgRequest{
-			Id: uuid.NewString()})
+		orgSvc := NewOrg(nil)
+		getOrg, err := orgSvc.GetOrg(ctx, &api.GetOrgRequest{})
 		t.Logf("getOrg, err: %+v, %v", getOrg, err)
 		require.Nil(t, getOrg)
 		require.Equal(t, errPerm(common.Role_SYS_ADMIN), err)
@@ -192,10 +163,7 @@ func TestGetOrg(t *testing.T) {
 	t.Run("Get org by unknown ID", func(t *testing.T) {
 		t.Parallel()
 
-		ctrl := gomock.NewController(t)
-		defer ctrl.Finish()
-
-		orger := NewMockOrger(ctrl)
+		orger := NewMockOrger(gomock.NewController(t))
 		orger.EXPECT().Read(gomock.Any(), gomock.Any()).Return(nil,
 			dao.ErrNotFound).Times(1)
 
@@ -221,10 +189,7 @@ func TestUpdateOrg(t *testing.T) {
 
 		org := random.Org("api-org")
 
-		ctrl := gomock.NewController(t)
-		defer ctrl.Finish()
-
-		orger := NewMockOrger(ctrl)
+		orger := NewMockOrger(gomock.NewController(t))
 		orger.EXPECT().Update(gomock.Any(), org).Return(org, nil).Times(1)
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
@@ -252,10 +217,7 @@ func TestUpdateOrg(t *testing.T) {
 		part := &api.Org{Id: org.Id, Name: random.String(10)}
 		merged := &api.Org{Id: org.Id, Name: part.Name}
 
-		ctrl := gomock.NewController(t)
-		defer ctrl.Finish()
-
-		orger := NewMockOrger(ctrl)
+		orger := NewMockOrger(gomock.NewController(t))
 		orger.EXPECT().Read(gomock.Any(), org.Id).Return(org, nil).Times(1)
 		orger.EXPECT().Update(gomock.Any(), matcher.NewProtoMatcher(merged)).
 			Return(merged, nil).Times(1)
@@ -282,16 +244,11 @@ func TestUpdateOrg(t *testing.T) {
 	t.Run("Update org with invalid session", func(t *testing.T) {
 		t.Parallel()
 
-		ctrl := gomock.NewController(t)
-		defer ctrl.Finish()
-		orger := NewMockOrger(ctrl)
-
 		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
 		defer cancel()
 
-		orgSvc := NewOrg(orger)
-		updateOrg, err := orgSvc.UpdateOrg(ctx, &api.UpdateOrgRequest{
-			Org: nil})
+		orgSvc := NewOrg(nil)
+		updateOrg, err := orgSvc.UpdateOrg(ctx, &api.UpdateOrgRequest{})
 		t.Logf("updateOrg, err: %+v, %v", updateOrg, err)
 		require.Nil(t, updateOrg)
 		require.Equal(t, errPerm(common.Role_SYS_ADMIN), err)
@@ -300,18 +257,13 @@ func TestUpdateOrg(t *testing.T) {
 	t.Run("Update nil org", func(t *testing.T) {
 		t.Parallel()
 
-		ctrl := gomock.NewController(t)
-		defer ctrl.Finish()
-		orger := NewMockOrger(ctrl)
-
 		ctx, cancel := context.WithTimeout(session.NewContext(
 			context.Background(), &session.Session{OrgID: uuid.NewString(),
 				Role: common.Role_SYS_ADMIN}), testTimeout)
 		defer cancel()
 
-		orgSvc := NewOrg(orger)
-		updateOrg, err := orgSvc.UpdateOrg(ctx, &api.UpdateOrgRequest{
-			Org: nil})
+		orgSvc := NewOrg(nil)
+		updateOrg, err := orgSvc.UpdateOrg(ctx, &api.UpdateOrgRequest{})
 		t.Logf("updateOrg, err: %+v, %v", updateOrg, err)
 		require.Nil(t, updateOrg)
 		require.Equal(t, status.Error(codes.InvalidArgument,
@@ -323,17 +275,13 @@ func TestUpdateOrg(t *testing.T) {
 
 		org := random.Org("api-org")
 
-		ctrl := gomock.NewController(t)
-		defer ctrl.Finish()
-		orger := NewMockOrger(ctrl)
-
 		ctx, cancel := context.WithTimeout(session.NewContext(
 			context.Background(), &session.Session{UserID: uuid.NewString(),
 				OrgID: org.Id, Role: common.Role_BUILDER}),
 			testTimeout)
 		defer cancel()
 
-		orgSvc := NewOrg(orger)
+		orgSvc := NewOrg(nil)
 		updateOrg, err := orgSvc.UpdateOrg(ctx, &api.UpdateOrgRequest{
 			Org: org})
 		t.Logf("updateOrg, err: %+v, %v", updateOrg, err)
@@ -344,17 +292,13 @@ func TestUpdateOrg(t *testing.T) {
 	t.Run("Update different org with insufficient role", func(t *testing.T) {
 		t.Parallel()
 
-		ctrl := gomock.NewController(t)
-		defer ctrl.Finish()
-		orger := NewMockOrger(ctrl)
-
 		ctx, cancel := context.WithTimeout(session.NewContext(
 			context.Background(), &session.Session{UserID: uuid.NewString(),
 				OrgID: uuid.NewString(), Role: common.Role_ADMIN}),
 			testTimeout)
 		defer cancel()
 
-		orgSvc := NewOrg(orger)
+		orgSvc := NewOrg(nil)
 		updateOrg, err := orgSvc.UpdateOrg(ctx, &api.UpdateOrgRequest{
 			Org: random.Org("api-org")})
 		t.Logf("updateOrg, err: %+v, %v", updateOrg, err)
@@ -367,16 +311,12 @@ func TestUpdateOrg(t *testing.T) {
 
 		org := random.Org("api-org")
 
-		ctrl := gomock.NewController(t)
-		defer ctrl.Finish()
-		orger := NewMockOrger(ctrl)
-
 		ctx, cancel := context.WithTimeout(session.NewContext(
 			context.Background(), &session.Session{OrgID: uuid.NewString(),
 				Role: common.Role_SYS_ADMIN}), testTimeout)
 		defer cancel()
 
-		orgSvc := NewOrg(orger)
+		orgSvc := NewOrg(nil)
 		updateOrg, err := orgSvc.UpdateOrg(ctx, &api.UpdateOrgRequest{
 			Org: org, UpdateMask: &fieldmaskpb.FieldMask{
 				Paths: []string{"aaa"}}})
@@ -392,10 +332,7 @@ func TestUpdateOrg(t *testing.T) {
 		orgID := uuid.NewString()
 		part := &api.Org{Id: uuid.NewString(), Name: random.String(10)}
 
-		ctrl := gomock.NewController(t)
-		defer ctrl.Finish()
-
-		orger := NewMockOrger(ctrl)
+		orger := NewMockOrger(gomock.NewController(t))
 		orger.EXPECT().Read(gomock.Any(), part.Id).Return(nil, dao.ErrNotFound).
 			Times(1)
 
@@ -419,16 +356,12 @@ func TestUpdateOrg(t *testing.T) {
 		org := random.Org("api-org")
 		org.Name = random.String(41)
 
-		ctrl := gomock.NewController(t)
-		defer ctrl.Finish()
-		orger := NewMockOrger(ctrl)
-
 		ctx, cancel := context.WithTimeout(session.NewContext(
 			context.Background(), &session.Session{OrgID: org.Id,
 				Role: common.Role_SYS_ADMIN}), testTimeout)
 		defer cancel()
 
-		orgSvc := NewOrg(orger)
+		orgSvc := NewOrg(nil)
 		updateOrg, err := orgSvc.UpdateOrg(ctx, &api.UpdateOrgRequest{
 			Org: org})
 		t.Logf("updateOrg, err: %+v, %v", updateOrg, err)
@@ -444,10 +377,7 @@ func TestUpdateOrg(t *testing.T) {
 
 		org := random.Org("api-org")
 
-		ctrl := gomock.NewController(t)
-		defer ctrl.Finish()
-
-		orger := NewMockOrger(ctrl)
+		orger := NewMockOrger(gomock.NewController(t))
 		orger.EXPECT().Update(gomock.Any(), org).Return(nil,
 			dao.ErrInvalidFormat).Times(1)
 
@@ -472,10 +402,7 @@ func TestDeleteOrg(t *testing.T) {
 	t.Run("Delete org by valid ID", func(t *testing.T) {
 		t.Parallel()
 
-		ctrl := gomock.NewController(t)
-		defer ctrl.Finish()
-
-		orger := NewMockOrger(ctrl)
+		orger := NewMockOrger(gomock.NewController(t))
 		orger.EXPECT().Delete(gomock.Any(), gomock.Any()).Return(nil).Times(1)
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
@@ -493,16 +420,11 @@ func TestDeleteOrg(t *testing.T) {
 	t.Run("Delete org with invalid session", func(t *testing.T) {
 		t.Parallel()
 
-		ctrl := gomock.NewController(t)
-		defer ctrl.Finish()
-		orger := NewMockOrger(ctrl)
-
 		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
 		defer cancel()
 
-		orgSvc := NewOrg(orger)
-		_, err := orgSvc.DeleteOrg(ctx, &api.DeleteOrgRequest{
-			Id: uuid.NewString()})
+		orgSvc := NewOrg(nil)
+		_, err := orgSvc.DeleteOrg(ctx, &api.DeleteOrgRequest{})
 		t.Logf("err: %v", err)
 		require.Equal(t, errPerm(common.Role_SYS_ADMIN), err)
 	})
@@ -510,18 +432,13 @@ func TestDeleteOrg(t *testing.T) {
 	t.Run("Delete org with insufficient role", func(t *testing.T) {
 		t.Parallel()
 
-		ctrl := gomock.NewController(t)
-		defer ctrl.Finish()
-		orger := NewMockOrger(ctrl)
-
 		ctx, cancel := context.WithTimeout(session.NewContext(
 			context.Background(), &session.Session{OrgID: uuid.NewString(),
 				Role: common.Role_ADMIN}), testTimeout)
 		defer cancel()
 
-		orgSvc := NewOrg(orger)
-		_, err := orgSvc.DeleteOrg(ctx, &api.DeleteOrgRequest{
-			Id: uuid.NewString()})
+		orgSvc := NewOrg(nil)
+		_, err := orgSvc.DeleteOrg(ctx, &api.DeleteOrgRequest{})
 		t.Logf("err: %v", err)
 		require.Equal(t, errPerm(common.Role_SYS_ADMIN), err)
 	})
@@ -529,10 +446,7 @@ func TestDeleteOrg(t *testing.T) {
 	t.Run("Delete org by unknown ID", func(t *testing.T) {
 		t.Parallel()
 
-		ctrl := gomock.NewController(t)
-		defer ctrl.Finish()
-
-		orger := NewMockOrger(ctrl)
+		orger := NewMockOrger(gomock.NewController(t))
 		orger.EXPECT().Delete(gomock.Any(), gomock.Any()).
 			Return(dao.ErrNotFound).Times(1)
 
@@ -563,10 +477,7 @@ func TestListOrgs(t *testing.T) {
 			random.Org("api-org"),
 		}
 
-		ctrl := gomock.NewController(t)
-		defer ctrl.Finish()
-
-		orger := NewMockOrger(ctrl)
+		orger := NewMockOrger(gomock.NewController(t))
 		orger.EXPECT().List(gomock.Any(), time.Time{}, "", int32(51)).
 			Return(orgs, int32(3), nil).Times(1)
 
@@ -605,10 +516,7 @@ func TestListOrgs(t *testing.T) {
 			orgs[1].Id)
 		require.NoError(t, err)
 
-		ctrl := gomock.NewController(t)
-		defer ctrl.Finish()
-
-		orger := NewMockOrger(ctrl)
+		orger := NewMockOrger(gomock.NewController(t))
 		orger.EXPECT().List(gomock.Any(), time.Time{}, "", int32(3)).
 			Return(orgs, int32(3), nil).Times(1)
 
@@ -637,29 +545,22 @@ func TestListOrgs(t *testing.T) {
 	t.Run("List orgs with invalid session", func(t *testing.T) {
 		t.Parallel()
 
-		ctrl := gomock.NewController(t)
-		defer ctrl.Finish()
-		orger := NewMockOrger(ctrl)
-
 		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
 		defer cancel()
 
-		orgSvc := NewOrg(orger)
+		orgSvc := NewOrg(nil)
 		listOrgs, err := orgSvc.ListOrgs(ctx, &api.ListOrgsRequest{})
 		t.Logf("listOrgs, err: %+v, %v", listOrgs, err)
 		require.Nil(t, listOrgs)
 		require.Equal(t, errPerm(common.Role_SYS_ADMIN), err)
 	})
 
-	t.Run("List orgs with insufficient role", func(t *testing.T) {
+	t.Run("List own org with insufficient role", func(t *testing.T) {
 		t.Parallel()
 
 		org := random.Org("api-org")
 
-		ctrl := gomock.NewController(t)
-		defer ctrl.Finish()
-
-		orger := NewMockOrger(ctrl)
+		orger := NewMockOrger(gomock.NewController(t))
 		orger.EXPECT().Read(gomock.Any(), org.Id).Return(org, nil).Times(1)
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
@@ -686,10 +587,7 @@ func TestListOrgs(t *testing.T) {
 
 		org := random.Org("api-org")
 
-		ctrl := gomock.NewController(t)
-		defer ctrl.Finish()
-
-		orger := NewMockOrger(ctrl)
+		orger := NewMockOrger(gomock.NewController(t))
 		orger.EXPECT().Read(gomock.Any(), gomock.Any()).Return(nil,
 			dao.ErrNotFound).Times(1)
 
@@ -708,16 +606,12 @@ func TestListOrgs(t *testing.T) {
 	t.Run("List orgs by invalid page token", func(t *testing.T) {
 		t.Parallel()
 
-		ctrl := gomock.NewController(t)
-		defer ctrl.Finish()
-		orger := NewMockOrger(ctrl)
-
 		ctx, cancel := context.WithTimeout(session.NewContext(
 			context.Background(), &session.Session{OrgID: uuid.NewString(),
 				Role: common.Role_SYS_ADMIN}), testTimeout)
 		defer cancel()
 
-		orgSvc := NewOrg(orger)
+		orgSvc := NewOrg(nil)
 		listOrgs, err := orgSvc.ListOrgs(ctx, &api.ListOrgsRequest{
 			PageToken: badUUID})
 		t.Logf("listOrgs, err: %+v, %v", listOrgs, err)
@@ -729,10 +623,7 @@ func TestListOrgs(t *testing.T) {
 	t.Run("List orgs by invalid org ID", func(t *testing.T) {
 		t.Parallel()
 
-		ctrl := gomock.NewController(t)
-		defer ctrl.Finish()
-
-		orger := NewMockOrger(ctrl)
+		orger := NewMockOrger(gomock.NewController(t))
 		orger.EXPECT().List(gomock.Any(), gomock.Any(), gomock.Any(),
 			gomock.Any()).Return(nil, int32(0), dao.ErrInvalidFormat).Times(1)
 
@@ -761,10 +652,7 @@ func TestListOrgs(t *testing.T) {
 		}
 		orgs[1].Id = badUUID
 
-		ctrl := gomock.NewController(t)
-		defer ctrl.Finish()
-
-		orger := NewMockOrger(ctrl)
+		orger := NewMockOrger(gomock.NewController(t))
 		orger.EXPECT().List(gomock.Any(), time.Time{}, "", int32(3)).
 			Return(orgs, int32(3), nil).Times(1)
 

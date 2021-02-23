@@ -32,7 +32,7 @@ func NewSessionServiceClient(cc grpc.ClientConnInterface) SessionServiceClient {
 
 func (c *sessionServiceClient) Login(ctx context.Context, in *LoginRequest, opts ...grpc.CallOption) (*LoginResponse, error) {
 	out := new(LoginResponse)
-	err := c.cc.Invoke(ctx, "/api.SessionService/Login", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/thingspect.api.SessionService/Login", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -78,7 +78,7 @@ func _SessionService_Login_Handler(srv interface{}, ctx context.Context, dec fun
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/api.SessionService/Login",
+		FullMethod: "/thingspect.api.SessionService/Login",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(SessionServiceServer).Login(ctx, req.(*LoginRequest))
@@ -90,7 +90,7 @@ func _SessionService_Login_Handler(srv interface{}, ctx context.Context, dec fun
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
 var SessionService_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "api.SessionService",
+	ServiceName: "thingspect.api.SessionService",
 	HandlerType: (*SessionServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{

@@ -1,5 +1,5 @@
 syntax = "proto3";
-package message;
+package thingspect.int.message;
 
 import "google/protobuf/timestamp.proto";
 

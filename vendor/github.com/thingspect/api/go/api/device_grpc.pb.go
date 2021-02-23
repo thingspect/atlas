@@ -21,10 +21,14 @@ const _ = grpc.SupportPackageIsVersion7
 type DeviceServiceClient interface {
 	// Create a device.
 	CreateDevice(ctx context.Context, in *CreateDeviceRequest, opts ...grpc.CallOption) (*Device, error)
+	// Add LoRaWAN configuration to a device.
+	CreateDeviceLoRaWAN(ctx context.Context, in *CreateDeviceLoRaWANRequest, opts ...grpc.CallOption) (*empty.Empty, error)
 	// Get a device by ID.
 	GetDevice(ctx context.Context, in *GetDeviceRequest, opts ...grpc.CallOption) (*Device, error)
 	// Update a device.
 	UpdateDevice(ctx context.Context, in *UpdateDeviceRequest, opts ...grpc.CallOption) (*Device, error)
+	// Remove LoRaWAN configuration from a device.
+	DeleteDeviceLoRaWAN(ctx context.Context, in *DeleteDeviceLoRaWANRequest, opts ...grpc.CallOption) (*empty.Empty, error)
 	// Delete a device by ID.
 	DeleteDevice(ctx context.Context, in *DeleteDeviceRequest, opts ...grpc.CallOption) (*empty.Empty, error)
 	// List all devices.
@@ -41,7 +45,16 @@ func NewDeviceServiceClient(cc grpc.ClientConnInterface) DeviceServiceClient {
 
 func (c *deviceServiceClient) CreateDevice(ctx context.Context, in *CreateDeviceRequest, opts ...grpc.CallOption) (*Device, error) {
 	out := new(Device)
-	err := c.cc.Invoke(ctx, "/api.DeviceService/CreateDevice", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/thingspect.api.DeviceService/CreateDevice", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *deviceServiceClient) CreateDeviceLoRaWAN(ctx context.Context, in *CreateDeviceLoRaWANRequest, opts ...grpc.CallOption) (*empty.Empty, error) {
+	out := new(empty.Empty)
+	err := c.cc.Invoke(ctx, "/thingspect.api.DeviceService/CreateDeviceLoRaWAN", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -50,7 +63,7 @@ func (c *deviceServiceClient) CreateDevice(ctx context.Context, in *CreateDevice
 
 func (c *deviceServiceClient) GetDevice(ctx context.Context, in *GetDeviceRequest, opts ...grpc.CallOption) (*Device, error) {
 	out := new(Device)
-	err := c.cc.Invoke(ctx, "/api.DeviceService/GetDevice", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/thingspect.api.DeviceService/GetDevice", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -59,7 +72,16 @@ func (c *deviceServiceClient) GetDevice(ctx context.Context, in *GetDeviceReques
 
 func (c *deviceServiceClient) UpdateDevice(ctx context.Context, in *UpdateDeviceRequest, opts ...grpc.CallOption) (*Device, error) {
 	out := new(Device)
-	err := c.cc.Invoke(ctx, "/api.DeviceService/UpdateDevice", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/thingspect.api.DeviceService/UpdateDevice", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *deviceServiceClient) DeleteDeviceLoRaWAN(ctx context.Context, in *DeleteDeviceLoRaWANRequest, opts ...grpc.CallOption) (*empty.Empty, error) {
+	out := new(empty.Empty)
+	err := c.cc.Invoke(ctx, "/thingspect.api.DeviceService/DeleteDeviceLoRaWAN", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -68,7 +90,7 @@ func (c *deviceServiceClient) UpdateDevice(ctx context.Context, in *UpdateDevice
 
 func (c *deviceServiceClient) DeleteDevice(ctx context.Context, in *DeleteDeviceRequest, opts ...grpc.CallOption) (*empty.Empty, error) {
 	out := new(empty.Empty)
-	err := c.cc.Invoke(ctx, "/api.DeviceService/DeleteDevice", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/thingspect.api.DeviceService/DeleteDevice", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -77,7 +99,7 @@ func (c *deviceServiceClient) DeleteDevice(ctx context.Context, in *DeleteDevice
 
 func (c *deviceServiceClient) ListDevices(ctx context.Context, in *ListDevicesRequest, opts ...grpc.CallOption) (*ListDevicesResponse, error) {
 	out := new(ListDevicesResponse)
-	err := c.cc.Invoke(ctx, "/api.DeviceService/ListDevices", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/thingspect.api.DeviceService/ListDevices", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -90,10 +112,14 @@ func (c *deviceServiceClient) ListDevices(ctx context.Context, in *ListDevicesRe
 type DeviceServiceServer interface {
 	// Create a device.
 	CreateDevice(context.Context, *CreateDeviceRequest) (*Device, error)
+	// Add LoRaWAN configuration to a device.
+	CreateDeviceLoRaWAN(context.Context, *CreateDeviceLoRaWANRequest) (*empty.Empty, error)
 	// Get a device by ID.
 	GetDevice(context.Context, *GetDeviceRequest) (*Device, error)
 	// Update a device.
 	UpdateDevice(context.Context, *UpdateDeviceRequest) (*Device, error)
+	// Remove LoRaWAN configuration from a device.
+	DeleteDeviceLoRaWAN(context.Context, *DeleteDeviceLoRaWANRequest) (*empty.Empty, error)
 	// Delete a device by ID.
 	DeleteDevice(context.Context, *DeleteDeviceRequest) (*empty.Empty, error)
 	// List all devices.
@@ -108,11 +134,17 @@ type UnimplementedDeviceServiceServer struct {
 func (UnimplementedDeviceServiceServer) CreateDevice(context.Context, *CreateDeviceRequest) (*Device, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateDevice not implemented")
 }
+func (UnimplementedDeviceServiceServer) CreateDeviceLoRaWAN(context.Context, *CreateDeviceLoRaWANRequest) (*empty.Empty, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CreateDeviceLoRaWAN not implemented")
+}
 func (UnimplementedDeviceServiceServer) GetDevice(context.Context, *GetDeviceRequest) (*Device, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetDevice not implemented")
 }
 func (UnimplementedDeviceServiceServer) UpdateDevice(context.Context, *UpdateDeviceRequest) (*Device, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateDevice not implemented")
+}
+func (UnimplementedDeviceServiceServer) DeleteDeviceLoRaWAN(context.Context, *DeleteDeviceLoRaWANRequest) (*empty.Empty, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DeleteDeviceLoRaWAN not implemented")
 }
 func (UnimplementedDeviceServiceServer) DeleteDevice(context.Context, *DeleteDeviceRequest) (*empty.Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteDevice not implemented")
@@ -143,10 +175,28 @@ func _DeviceService_CreateDevice_Handler(srv interface{}, ctx context.Context, d
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/api.DeviceService/CreateDevice",
+		FullMethod: "/thingspect.api.DeviceService/CreateDevice",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(DeviceServiceServer).CreateDevice(ctx, req.(*CreateDeviceRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _DeviceService_CreateDeviceLoRaWAN_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CreateDeviceLoRaWANRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(DeviceServiceServer).CreateDeviceLoRaWAN(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/thingspect.api.DeviceService/CreateDeviceLoRaWAN",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(DeviceServiceServer).CreateDeviceLoRaWAN(ctx, req.(*CreateDeviceLoRaWANRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -161,7 +211,7 @@ func _DeviceService_GetDevice_Handler(srv interface{}, ctx context.Context, dec 
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/api.DeviceService/GetDevice",
+		FullMethod: "/thingspect.api.DeviceService/GetDevice",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(DeviceServiceServer).GetDevice(ctx, req.(*GetDeviceRequest))
@@ -179,10 +229,28 @@ func _DeviceService_UpdateDevice_Handler(srv interface{}, ctx context.Context, d
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/api.DeviceService/UpdateDevice",
+		FullMethod: "/thingspect.api.DeviceService/UpdateDevice",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(DeviceServiceServer).UpdateDevice(ctx, req.(*UpdateDeviceRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _DeviceService_DeleteDeviceLoRaWAN_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DeleteDeviceLoRaWANRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(DeviceServiceServer).DeleteDeviceLoRaWAN(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/thingspect.api.DeviceService/DeleteDeviceLoRaWAN",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(DeviceServiceServer).DeleteDeviceLoRaWAN(ctx, req.(*DeleteDeviceLoRaWANRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -197,7 +265,7 @@ func _DeviceService_DeleteDevice_Handler(srv interface{}, ctx context.Context, d
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/api.DeviceService/DeleteDevice",
+		FullMethod: "/thingspect.api.DeviceService/DeleteDevice",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(DeviceServiceServer).DeleteDevice(ctx, req.(*DeleteDeviceRequest))
@@ -215,7 +283,7 @@ func _DeviceService_ListDevices_Handler(srv interface{}, ctx context.Context, de
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/api.DeviceService/ListDevices",
+		FullMethod: "/thingspect.api.DeviceService/ListDevices",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(DeviceServiceServer).ListDevices(ctx, req.(*ListDevicesRequest))
@@ -227,12 +295,16 @@ func _DeviceService_ListDevices_Handler(srv interface{}, ctx context.Context, de
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
 var DeviceService_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "api.DeviceService",
+	ServiceName: "thingspect.api.DeviceService",
 	HandlerType: (*DeviceServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
 			MethodName: "CreateDevice",
 			Handler:    _DeviceService_CreateDevice_Handler,
+		},
+		{
+			MethodName: "CreateDeviceLoRaWAN",
+			Handler:    _DeviceService_CreateDeviceLoRaWAN_Handler,
 		},
 		{
 			MethodName: "GetDevice",
@@ -241,6 +313,10 @@ var DeviceService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "UpdateDevice",
 			Handler:    _DeviceService_UpdateDevice_Handler,
+		},
+		{
+			MethodName: "DeleteDeviceLoRaWAN",
+			Handler:    _DeviceService_DeleteDeviceLoRaWAN_Handler,
 		},
 		{
 			MethodName: "DeleteDevice",

@@ -14,6 +14,7 @@ import (
 	"github.com/thingspect/api/go/common"
 	"github.com/thingspect/atlas/internal/api/session"
 	"github.com/thingspect/atlas/pkg/dao"
+	"github.com/thingspect/atlas/pkg/lora"
 	"github.com/thingspect/atlas/pkg/test/matcher"
 	"github.com/thingspect/atlas/pkg/test/random"
 	"google.golang.org/grpc/codes"
@@ -30,10 +31,7 @@ func TestCreateDevice(t *testing.T) {
 
 		dev := random.Device("api-device", uuid.NewString())
 
-		ctrl := gomock.NewController(t)
-		defer ctrl.Finish()
-
-		devicer := NewMockDevicer(ctrl)
+		devicer := NewMockDevicer(gomock.NewController(t))
 		devicer.EXPECT().Create(gomock.Any(), dev).Return(dev, nil).Times(1)
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
@@ -41,7 +39,7 @@ func TestCreateDevice(t *testing.T) {
 				Role: common.Role_ADMIN}), testTimeout)
 		defer cancel()
 
-		devSvc := NewDevice(devicer)
+		devSvc := NewDevice(devicer, nil)
 		createDev, err := devSvc.CreateDevice(ctx, &api.CreateDeviceRequest{
 			Device: dev})
 		t.Logf("createDev, err: %+v, %v", createDev, err)
@@ -57,16 +55,11 @@ func TestCreateDevice(t *testing.T) {
 	t.Run("Create device with invalid session", func(t *testing.T) {
 		t.Parallel()
 
-		ctrl := gomock.NewController(t)
-		defer ctrl.Finish()
-		devicer := NewMockDevicer(ctrl)
-
 		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
 		defer cancel()
 
-		devSvc := NewDevice(devicer)
-		createDev, err := devSvc.CreateDevice(ctx, &api.CreateDeviceRequest{
-			Device: nil})
+		devSvc := NewDevice(nil, nil)
+		createDev, err := devSvc.CreateDevice(ctx, &api.CreateDeviceRequest{})
 		t.Logf("createDev, err: %+v, %v", createDev, err)
 		require.Nil(t, createDev)
 		require.Equal(t, errPerm(common.Role_BUILDER), err)
@@ -75,18 +68,13 @@ func TestCreateDevice(t *testing.T) {
 	t.Run("Create device with insufficient role", func(t *testing.T) {
 		t.Parallel()
 
-		ctrl := gomock.NewController(t)
-		defer ctrl.Finish()
-		devicer := NewMockDevicer(ctrl)
-
 		ctx, cancel := context.WithTimeout(session.NewContext(
 			context.Background(), &session.Session{OrgID: uuid.NewString(),
 				Role: common.Role_VIEWER}), testTimeout)
 		defer cancel()
 
-		devSvc := NewDevice(devicer)
-		createDev, err := devSvc.CreateDevice(ctx, &api.CreateDeviceRequest{
-			Device: nil})
+		devSvc := NewDevice(nil, nil)
+		createDev, err := devSvc.CreateDevice(ctx, &api.CreateDeviceRequest{})
 		t.Logf("createDev, err: %+v, %v", createDev, err)
 		require.Nil(t, createDev)
 		require.Equal(t, errPerm(common.Role_BUILDER), err)
@@ -98,10 +86,7 @@ func TestCreateDevice(t *testing.T) {
 		dev := random.Device("api-device", uuid.NewString())
 		dev.UniqId = random.String(41)
 
-		ctrl := gomock.NewController(t)
-		defer ctrl.Finish()
-
-		devicer := NewMockDevicer(ctrl)
+		devicer := NewMockDevicer(gomock.NewController(t))
 		devicer.EXPECT().Create(gomock.Any(), dev).Return(nil,
 			dao.ErrInvalidFormat).Times(1)
 
@@ -110,11 +95,148 @@ func TestCreateDevice(t *testing.T) {
 				Role: common.Role_ADMIN}), testTimeout)
 		defer cancel()
 
-		devSvc := NewDevice(devicer)
+		devSvc := NewDevice(devicer, nil)
 		createDev, err := devSvc.CreateDevice(ctx, &api.CreateDeviceRequest{
 			Device: dev})
 		t.Logf("createDev, err: %+v, %v", createDev, err)
 		require.Nil(t, createDev)
+		require.Equal(t, status.Error(codes.InvalidArgument, "invalid format"),
+			err)
+	})
+}
+
+func TestCreateDeviceLoRaWAN(t *testing.T) {
+	t.Parallel()
+
+	t.Run("Create valid gateway configuration", func(t *testing.T) {
+		t.Parallel()
+
+		dev := random.Device("api-device", uuid.NewString())
+
+		ctrl := gomock.NewController(t)
+		devicer := NewMockDevicer(ctrl)
+		devicer.EXPECT().Read(gomock.Any(), dev.Id, dev.OrgId).Return(dev, nil).
+			Times(1)
+		loraer := lora.NewMockLoraer(ctrl)
+		loraer.EXPECT().CreateGateway(gomock.Any(), dev.UniqId).Return(nil).
+			Times(1)
+
+		ctx, cancel := context.WithTimeout(session.NewContext(
+			context.Background(), &session.Session{OrgID: dev.OrgId,
+				Role: common.Role_ADMIN}), testTimeout)
+		defer cancel()
+
+		devSvc := NewDevice(devicer, loraer)
+		_, err := devSvc.CreateDeviceLoRaWAN(ctx,
+			&api.CreateDeviceLoRaWANRequest{Id: dev.Id,
+				TypeOneof: &api.CreateDeviceLoRaWANRequest_GatewayLorawanType{},
+			})
+		t.Logf("err: %v", err)
+		require.NoError(t, err)
+	})
+
+	t.Run("Create valid device configuration", func(t *testing.T) {
+		t.Parallel()
+
+		dev := random.Device("api-device", uuid.NewString())
+		appKey := random.String(32)
+
+		ctrl := gomock.NewController(t)
+		devicer := NewMockDevicer(ctrl)
+		devicer.EXPECT().Read(gomock.Any(), dev.Id, dev.OrgId).Return(dev, nil).
+			Times(1)
+		loraer := lora.NewMockLoraer(ctrl)
+		loraer.EXPECT().CreateDevice(gomock.Any(), dev.UniqId, appKey).
+			Return(nil).Times(1)
+
+		ctx, cancel := context.WithTimeout(session.NewContext(
+			context.Background(), &session.Session{OrgID: dev.OrgId,
+				Role: common.Role_ADMIN}), testTimeout)
+		defer cancel()
+
+		devSvc := NewDevice(devicer, loraer)
+		_, err := devSvc.CreateDeviceLoRaWAN(ctx,
+			&api.CreateDeviceLoRaWANRequest{Id: dev.Id,
+				TypeOneof: &api.CreateDeviceLoRaWANRequest_DeviceLorawanType{
+					DeviceLorawanType: &api.CreateDeviceLoRaWANRequest_DeviceLoRaWANType{
+						AppKey: appKey}}})
+		t.Logf("err: %v", err)
+		require.NoError(t, err)
+	})
+
+	t.Run("Create configuration with invalid session", func(t *testing.T) {
+		t.Parallel()
+
+		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
+		defer cancel()
+
+		devSvc := NewDevice(nil, nil)
+		_, err := devSvc.CreateDeviceLoRaWAN(ctx,
+			&api.CreateDeviceLoRaWANRequest{})
+		t.Logf("err: %v", err)
+		require.Equal(t, errPerm(common.Role_BUILDER), err)
+	})
+
+	t.Run("Create configuration with insufficient role", func(t *testing.T) {
+		t.Parallel()
+
+		ctx, cancel := context.WithTimeout(session.NewContext(
+			context.Background(), &session.Session{OrgID: uuid.NewString(),
+				Role: common.Role_VIEWER}), testTimeout)
+		defer cancel()
+
+		devSvc := NewDevice(nil, nil)
+		_, err := devSvc.CreateDeviceLoRaWAN(ctx,
+			&api.CreateDeviceLoRaWANRequest{})
+		t.Logf("err: %v", err)
+		require.Equal(t, errPerm(common.Role_BUILDER), err)
+	})
+
+	t.Run("Create configuration by unknown ID", func(t *testing.T) {
+		t.Parallel()
+
+		devicer := NewMockDevicer(gomock.NewController(t))
+		devicer.EXPECT().Read(gomock.Any(), gomock.Any(), gomock.Any()).
+			Return(nil, dao.ErrNotFound).Times(1)
+
+		ctx, cancel := context.WithTimeout(session.NewContext(
+			context.Background(), &session.Session{OrgID: uuid.NewString(),
+				Role: common.Role_ADMIN}), testTimeout)
+		defer cancel()
+
+		devSvc := NewDevice(devicer, nil)
+		_, err := devSvc.CreateDeviceLoRaWAN(ctx,
+			&api.CreateDeviceLoRaWANRequest{})
+		t.Logf("err: %v", err)
+		require.Equal(t, status.Error(codes.NotFound, "object not found"), err)
+	})
+
+	t.Run("Create invalid configuration", func(t *testing.T) {
+		t.Parallel()
+
+		dev := random.Device("api-device", uuid.NewString())
+		appKey := random.String(33)
+
+		ctrl := gomock.NewController(t)
+		devicer := NewMockDevicer(ctrl)
+		devicer.EXPECT().Read(gomock.Any(), dev.Id, dev.OrgId).Return(dev, nil).
+			Times(1)
+		loraer := lora.NewMockLoraer(ctrl)
+		loraer.EXPECT().CreateDevice(gomock.Any(), dev.UniqId, appKey).
+			Return(dao.ErrInvalidFormat).Times(1)
+
+		ctx, cancel := context.WithTimeout(session.NewContext(
+			context.Background(), &session.Session{OrgID: dev.OrgId,
+				Role: common.Role_ADMIN}), testTimeout)
+		defer cancel()
+
+		devSvc := NewDevice(devicer, loraer)
+		_, err := devSvc.CreateDeviceLoRaWAN(ctx,
+			&api.CreateDeviceLoRaWANRequest{Id: dev.Id,
+				TypeOneof: &api.CreateDeviceLoRaWANRequest_DeviceLorawanType{
+					DeviceLorawanType: &api.CreateDeviceLoRaWANRequest_DeviceLoRaWANType{
+						AppKey: appKey}}})
+		t.Logf("err: %v", err)
 		require.Equal(t, status.Error(codes.InvalidArgument, "invalid format"),
 			err)
 	})
@@ -128,10 +250,7 @@ func TestGetDevice(t *testing.T) {
 
 		dev := random.Device("api-device", uuid.NewString())
 
-		ctrl := gomock.NewController(t)
-		defer ctrl.Finish()
-
-		devicer := NewMockDevicer(ctrl)
+		devicer := NewMockDevicer(gomock.NewController(t))
 		devicer.EXPECT().Read(gomock.Any(), dev.Id, dev.OrgId).Return(dev, nil).
 			Times(1)
 
@@ -140,7 +259,7 @@ func TestGetDevice(t *testing.T) {
 				Role: common.Role_ADMIN}), testTimeout)
 		defer cancel()
 
-		devSvc := NewDevice(devicer)
+		devSvc := NewDevice(devicer, nil)
 		getDev, err := devSvc.GetDevice(ctx, &api.GetDeviceRequest{Id: dev.Id})
 		t.Logf("getDev, err: %+v, %v", getDev, err)
 		require.NoError(t, err)
@@ -155,16 +274,11 @@ func TestGetDevice(t *testing.T) {
 	t.Run("Get device with invalid session", func(t *testing.T) {
 		t.Parallel()
 
-		ctrl := gomock.NewController(t)
-		defer ctrl.Finish()
-		devicer := NewMockDevicer(ctrl)
-
 		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
 		defer cancel()
 
-		devSvc := NewDevice(devicer)
-		getDev, err := devSvc.GetDevice(ctx, &api.GetDeviceRequest{
-			Id: uuid.NewString()})
+		devSvc := NewDevice(nil, nil)
+		getDev, err := devSvc.GetDevice(ctx, &api.GetDeviceRequest{})
 		t.Logf("getDev, err: %+v, %v", getDev, err)
 		require.Nil(t, getDev)
 		require.Equal(t, errPerm(common.Role_VIEWER), err)
@@ -173,18 +287,13 @@ func TestGetDevice(t *testing.T) {
 	t.Run("Get device with insufficient role", func(t *testing.T) {
 		t.Parallel()
 
-		ctrl := gomock.NewController(t)
-		defer ctrl.Finish()
-		devicer := NewMockDevicer(ctrl)
-
 		ctx, cancel := context.WithTimeout(session.NewContext(
 			context.Background(), &session.Session{OrgID: uuid.NewString(),
 				Role: common.Role_CONTACT}), testTimeout)
 		defer cancel()
 
-		devSvc := NewDevice(devicer)
-		getDev, err := devSvc.GetDevice(ctx, &api.GetDeviceRequest{
-			Id: uuid.NewString()})
+		devSvc := NewDevice(nil, nil)
+		getDev, err := devSvc.GetDevice(ctx, &api.GetDeviceRequest{})
 		t.Logf("getDev, err: %+v, %v", getDev, err)
 		require.Nil(t, getDev)
 		require.Equal(t, errPerm(common.Role_VIEWER), err)
@@ -193,10 +302,7 @@ func TestGetDevice(t *testing.T) {
 	t.Run("Get device by unknown ID", func(t *testing.T) {
 		t.Parallel()
 
-		ctrl := gomock.NewController(t)
-		defer ctrl.Finish()
-
-		devicer := NewMockDevicer(ctrl)
+		devicer := NewMockDevicer(gomock.NewController(t))
 		devicer.EXPECT().Read(gomock.Any(), gomock.Any(), gomock.Any()).
 			Return(nil, dao.ErrNotFound).Times(1)
 
@@ -205,7 +311,7 @@ func TestGetDevice(t *testing.T) {
 				Role: common.Role_ADMIN}), testTimeout)
 		defer cancel()
 
-		devSvc := NewDevice(devicer)
+		devSvc := NewDevice(devicer, nil)
 		getDev, err := devSvc.GetDevice(ctx, &api.GetDeviceRequest{
 			Id: uuid.NewString()})
 		t.Logf("getDev, err: %+v, %v", getDev, err)
@@ -222,10 +328,7 @@ func TestUpdateDevice(t *testing.T) {
 
 		dev := random.Device("api-device", uuid.NewString())
 
-		ctrl := gomock.NewController(t)
-		defer ctrl.Finish()
-
-		devicer := NewMockDevicer(ctrl)
+		devicer := NewMockDevicer(gomock.NewController(t))
 		devicer.EXPECT().Update(gomock.Any(), dev).Return(dev, nil).Times(1)
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
@@ -233,7 +336,7 @@ func TestUpdateDevice(t *testing.T) {
 				Role: common.Role_ADMIN}), testTimeout)
 		defer cancel()
 
-		devSvc := NewDevice(devicer)
+		devSvc := NewDevice(devicer, nil)
 		updateDev, err := devSvc.UpdateDevice(ctx, &api.UpdateDeviceRequest{
 			Device: dev})
 		t.Logf("updateDev, err: %+v, %v", updateDev, err)
@@ -256,10 +359,7 @@ func TestUpdateDevice(t *testing.T) {
 			Status: api.Status_ACTIVE, Decoder: api.Decoder_GATEWAY,
 			Token: dev.Token}
 
-		ctrl := gomock.NewController(t)
-		defer ctrl.Finish()
-
-		devicer := NewMockDevicer(ctrl)
+		devicer := NewMockDevicer(gomock.NewController(t))
 		devicer.EXPECT().Read(gomock.Any(), dev.Id, dev.OrgId).Return(dev, nil).
 			Times(1)
 		devicer.EXPECT().Update(gomock.Any(), matcher.NewProtoMatcher(merged)).
@@ -270,7 +370,7 @@ func TestUpdateDevice(t *testing.T) {
 				Role: common.Role_ADMIN}), testTimeout)
 		defer cancel()
 
-		devSvc := NewDevice(devicer)
+		devSvc := NewDevice(devicer, nil)
 		updateDev, err := devSvc.UpdateDevice(ctx, &api.UpdateDeviceRequest{
 			Device: part, UpdateMask: &fieldmaskpb.FieldMask{
 				Paths: []string{"status", "decoder"}}})
@@ -287,16 +387,11 @@ func TestUpdateDevice(t *testing.T) {
 	t.Run("Update device with invalid session", func(t *testing.T) {
 		t.Parallel()
 
-		ctrl := gomock.NewController(t)
-		defer ctrl.Finish()
-		devicer := NewMockDevicer(ctrl)
-
 		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
 		defer cancel()
 
-		devSvc := NewDevice(devicer)
-		updateDev, err := devSvc.UpdateDevice(ctx, &api.UpdateDeviceRequest{
-			Device: nil})
+		devSvc := NewDevice(nil, nil)
+		updateDev, err := devSvc.UpdateDevice(ctx, &api.UpdateDeviceRequest{})
 		t.Logf("updateDev, err: %+v, %v", updateDev, err)
 		require.Nil(t, updateDev)
 		require.Equal(t, errPerm(common.Role_BUILDER), err)
@@ -305,18 +400,13 @@ func TestUpdateDevice(t *testing.T) {
 	t.Run("Update device with insufficient role", func(t *testing.T) {
 		t.Parallel()
 
-		ctrl := gomock.NewController(t)
-		defer ctrl.Finish()
-		devicer := NewMockDevicer(ctrl)
-
 		ctx, cancel := context.WithTimeout(session.NewContext(
 			context.Background(), &session.Session{OrgID: uuid.NewString(),
 				Role: common.Role_VIEWER}), testTimeout)
 		defer cancel()
 
-		devSvc := NewDevice(devicer)
-		updateDev, err := devSvc.UpdateDevice(ctx, &api.UpdateDeviceRequest{
-			Device: nil})
+		devSvc := NewDevice(nil, nil)
+		updateDev, err := devSvc.UpdateDevice(ctx, &api.UpdateDeviceRequest{})
 		t.Logf("updateDev, err: %+v, %v", updateDev, err)
 		require.Nil(t, updateDev)
 		require.Equal(t, errPerm(common.Role_BUILDER), err)
@@ -325,16 +415,12 @@ func TestUpdateDevice(t *testing.T) {
 	t.Run("Update nil device", func(t *testing.T) {
 		t.Parallel()
 
-		ctrl := gomock.NewController(t)
-		defer ctrl.Finish()
-		devicer := NewMockDevicer(ctrl)
-
 		ctx, cancel := context.WithTimeout(session.NewContext(
 			context.Background(), &session.Session{OrgID: uuid.NewString(),
 				Role: common.Role_ADMIN}), testTimeout)
 		defer cancel()
 
-		devSvc := NewDevice(devicer)
+		devSvc := NewDevice(nil, nil)
 		updateDev, err := devSvc.UpdateDevice(ctx, &api.UpdateDeviceRequest{
 			Device: nil})
 		t.Logf("updateDev, err: %+v, %v", updateDev, err)
@@ -348,16 +434,12 @@ func TestUpdateDevice(t *testing.T) {
 
 		dev := random.Device("api-device", uuid.NewString())
 
-		ctrl := gomock.NewController(t)
-		defer ctrl.Finish()
-		devicer := NewMockDevicer(ctrl)
-
 		ctx, cancel := context.WithTimeout(session.NewContext(
 			context.Background(), &session.Session{OrgID: uuid.NewString(),
 				Role: common.Role_ADMIN}), testTimeout)
 		defer cancel()
 
-		devSvc := NewDevice(devicer)
+		devSvc := NewDevice(nil, nil)
 		updateDev, err := devSvc.UpdateDevice(ctx, &api.UpdateDeviceRequest{
 			Device: dev, UpdateMask: &fieldmaskpb.FieldMask{
 				Paths: []string{"aaa"}}})
@@ -373,10 +455,7 @@ func TestUpdateDevice(t *testing.T) {
 		orgID := uuid.NewString()
 		part := &api.Device{Id: uuid.NewString(), Status: api.Status_ACTIVE}
 
-		ctrl := gomock.NewController(t)
-		defer ctrl.Finish()
-
-		devicer := NewMockDevicer(ctrl)
+		devicer := NewMockDevicer(gomock.NewController(t))
 		devicer.EXPECT().Read(gomock.Any(), part.Id, orgID).
 			Return(nil, dao.ErrNotFound).Times(1)
 
@@ -385,7 +464,7 @@ func TestUpdateDevice(t *testing.T) {
 				Role: common.Role_ADMIN}), testTimeout)
 		defer cancel()
 
-		devSvc := NewDevice(devicer)
+		devSvc := NewDevice(devicer, nil)
 		updateDev, err := devSvc.UpdateDevice(ctx, &api.UpdateDeviceRequest{
 			Device: part, UpdateMask: &fieldmaskpb.FieldMask{
 				Paths: []string{"status"}}})
@@ -400,16 +479,12 @@ func TestUpdateDevice(t *testing.T) {
 		dev := random.Device("api-device", uuid.NewString())
 		dev.UniqId = random.String(41)
 
-		ctrl := gomock.NewController(t)
-		defer ctrl.Finish()
-		devicer := NewMockDevicer(ctrl)
-
 		ctx, cancel := context.WithTimeout(session.NewContext(
 			context.Background(), &session.Session{OrgID: dev.OrgId,
 				Role: common.Role_ADMIN}), testTimeout)
 		defer cancel()
 
-		devSvc := NewDevice(devicer)
+		devSvc := NewDevice(nil, nil)
 		updateDev, err := devSvc.UpdateDevice(ctx, &api.UpdateDeviceRequest{
 			Device: dev})
 		t.Logf("updateDev, err: %+v, %v", updateDev, err)
@@ -425,10 +500,7 @@ func TestUpdateDevice(t *testing.T) {
 
 		dev := random.Device("api-device", uuid.NewString())
 
-		ctrl := gomock.NewController(t)
-		defer ctrl.Finish()
-
-		devicer := NewMockDevicer(ctrl)
+		devicer := NewMockDevicer(gomock.NewController(t))
 		devicer.EXPECT().Update(gomock.Any(), dev).Return(nil,
 			dao.ErrInvalidFormat).Times(1)
 
@@ -437,11 +509,172 @@ func TestUpdateDevice(t *testing.T) {
 				Role: common.Role_ADMIN}), testTimeout)
 		defer cancel()
 
-		devSvc := NewDevice(devicer)
+		devSvc := NewDevice(devicer, nil)
 		updateDev, err := devSvc.UpdateDevice(ctx, &api.UpdateDeviceRequest{
 			Device: dev})
 		t.Logf("updateDev, err: %+v, %v", updateDev, err)
 		require.Nil(t, updateDev)
+		require.Equal(t, status.Error(codes.InvalidArgument, "invalid format"),
+			err)
+	})
+}
+
+func TestDeleteDeviceLoRaWAN(t *testing.T) {
+	t.Parallel()
+
+	t.Run("Delete valid configurations by valid ID", func(t *testing.T) {
+		t.Parallel()
+
+		dev := random.Device("api-device", uuid.NewString())
+
+		ctrl := gomock.NewController(t)
+		devicer := NewMockDevicer(ctrl)
+		devicer.EXPECT().Read(gomock.Any(), dev.Id, dev.OrgId).Return(dev, nil).
+			Times(1)
+		loraer := lora.NewMockLoraer(ctrl)
+		loraer.EXPECT().DeleteGateway(gomock.Any(), dev.UniqId).Return(nil).
+			Times(1)
+		loraer.EXPECT().DeleteDevice(gomock.Any(), dev.UniqId).Return(nil).
+			Times(1)
+
+		ctx, cancel := context.WithTimeout(session.NewContext(
+			context.Background(), &session.Session{OrgID: dev.OrgId,
+				Role: common.Role_ADMIN}), testTimeout)
+		defer cancel()
+
+		devSvc := NewDevice(devicer, loraer)
+		_, err := devSvc.DeleteDeviceLoRaWAN(ctx,
+			&api.DeleteDeviceLoRaWANRequest{Id: dev.Id})
+		t.Logf("err: %v", err)
+		require.NoError(t, err)
+	})
+
+	t.Run("Delete unknown configurations by valid ID", func(t *testing.T) {
+		t.Parallel()
+
+		dev := random.Device("api-device", uuid.NewString())
+
+		ctrl := gomock.NewController(t)
+		devicer := NewMockDevicer(ctrl)
+		devicer.EXPECT().Read(gomock.Any(), dev.Id, dev.OrgId).Return(dev, nil).
+			Times(1)
+		loraer := lora.NewMockLoraer(ctrl)
+		loraer.EXPECT().DeleteGateway(gomock.Any(), dev.UniqId).
+			Return(status.Error(codes.Unauthenticated,
+				"authentication failed: not authorized")).Times(1)
+		loraer.EXPECT().DeleteDevice(gomock.Any(), dev.UniqId).
+			Return(status.Error(codes.Unauthenticated,
+				"authentication failed: not authorized")).Times(1)
+
+		ctx, cancel := context.WithTimeout(session.NewContext(
+			context.Background(), &session.Session{OrgID: dev.OrgId,
+				Role: common.Role_ADMIN}), testTimeout)
+		defer cancel()
+
+		devSvc := NewDevice(devicer, loraer)
+		_, err := devSvc.DeleteDeviceLoRaWAN(ctx,
+			&api.DeleteDeviceLoRaWANRequest{Id: dev.Id})
+		t.Logf("err: %v", err)
+		require.NoError(t, err)
+	})
+
+	t.Run("Delete configurations with invalid session", func(t *testing.T) {
+		t.Parallel()
+
+		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
+		defer cancel()
+
+		devSvc := NewDevice(nil, nil)
+		_, err := devSvc.DeleteDeviceLoRaWAN(ctx,
+			&api.DeleteDeviceLoRaWANRequest{})
+		t.Logf("err: %v", err)
+		require.Equal(t, errPerm(common.Role_BUILDER), err)
+	})
+
+	t.Run("Delete configurations with insufficient role", func(t *testing.T) {
+		t.Parallel()
+
+		ctx, cancel := context.WithTimeout(session.NewContext(
+			context.Background(), &session.Session{OrgID: uuid.NewString(),
+				Role: common.Role_VIEWER}), testTimeout)
+		defer cancel()
+
+		devSvc := NewDevice(nil, nil)
+		_, err := devSvc.DeleteDeviceLoRaWAN(ctx,
+			&api.DeleteDeviceLoRaWANRequest{})
+		t.Logf("err: %v", err)
+		require.Equal(t, errPerm(common.Role_BUILDER), err)
+	})
+
+	t.Run("Delete configurations by unknown ID", func(t *testing.T) {
+		t.Parallel()
+
+		devicer := NewMockDevicer(gomock.NewController(t))
+		devicer.EXPECT().Read(gomock.Any(), gomock.Any(), gomock.Any()).
+			Return(nil, dao.ErrNotFound).Times(1)
+
+		ctx, cancel := context.WithTimeout(session.NewContext(
+			context.Background(), &session.Session{OrgID: uuid.NewString(),
+				Role: common.Role_ADMIN}), testTimeout)
+		defer cancel()
+
+		devSvc := NewDevice(devicer, nil)
+		_, err := devSvc.DeleteDeviceLoRaWAN(ctx,
+			&api.DeleteDeviceLoRaWANRequest{Id: uuid.NewString()})
+		t.Logf("err: %v", err)
+		require.Equal(t, status.Error(codes.NotFound, "object not found"), err)
+	})
+
+	t.Run("Delete invalid gateway configuration", func(t *testing.T) {
+		t.Parallel()
+
+		dev := random.Device("api-device", uuid.NewString())
+
+		ctrl := gomock.NewController(t)
+		devicer := NewMockDevicer(ctrl)
+		devicer.EXPECT().Read(gomock.Any(), dev.Id, dev.OrgId).Return(dev, nil).
+			Times(1)
+		loraer := lora.NewMockLoraer(ctrl)
+		loraer.EXPECT().DeleteGateway(gomock.Any(), dev.UniqId).
+			Return(dao.ErrInvalidFormat).Times(1)
+
+		ctx, cancel := context.WithTimeout(session.NewContext(
+			context.Background(), &session.Session{OrgID: dev.OrgId,
+				Role: common.Role_ADMIN}), testTimeout)
+		defer cancel()
+
+		devSvc := NewDevice(devicer, loraer)
+		_, err := devSvc.DeleteDeviceLoRaWAN(ctx,
+			&api.DeleteDeviceLoRaWANRequest{Id: dev.Id})
+		t.Logf("err: %v", err)
+		require.Equal(t, status.Error(codes.InvalidArgument, "invalid format"),
+			err)
+	})
+
+	t.Run("Delete invalid device configuration", func(t *testing.T) {
+		t.Parallel()
+
+		dev := random.Device("api-device", uuid.NewString())
+
+		ctrl := gomock.NewController(t)
+		devicer := NewMockDevicer(ctrl)
+		devicer.EXPECT().Read(gomock.Any(), dev.Id, dev.OrgId).Return(dev, nil).
+			Times(1)
+		loraer := lora.NewMockLoraer(ctrl)
+		loraer.EXPECT().DeleteGateway(gomock.Any(), dev.UniqId).Return(nil).
+			Times(1)
+		loraer.EXPECT().DeleteDevice(gomock.Any(), dev.UniqId).
+			Return(dao.ErrInvalidFormat).Times(1)
+
+		ctx, cancel := context.WithTimeout(session.NewContext(
+			context.Background(), &session.Session{OrgID: dev.OrgId,
+				Role: common.Role_ADMIN}), testTimeout)
+		defer cancel()
+
+		devSvc := NewDevice(devicer, loraer)
+		_, err := devSvc.DeleteDeviceLoRaWAN(ctx,
+			&api.DeleteDeviceLoRaWANRequest{Id: dev.Id})
+		t.Logf("err: %v", err)
 		require.Equal(t, status.Error(codes.InvalidArgument, "invalid format"),
 			err)
 	})
@@ -453,10 +686,7 @@ func TestDeleteDevice(t *testing.T) {
 	t.Run("Delete device by valid ID", func(t *testing.T) {
 		t.Parallel()
 
-		ctrl := gomock.NewController(t)
-		defer ctrl.Finish()
-
-		devicer := NewMockDevicer(ctrl)
+		devicer := NewMockDevicer(gomock.NewController(t))
 		devicer.EXPECT().Delete(gomock.Any(), gomock.Any(), gomock.Any()).
 			Return(nil).Times(1)
 
@@ -465,7 +695,7 @@ func TestDeleteDevice(t *testing.T) {
 				Role: common.Role_ADMIN}), testTimeout)
 		defer cancel()
 
-		devSvc := NewDevice(devicer)
+		devSvc := NewDevice(devicer, nil)
 		_, err := devSvc.DeleteDevice(ctx, &api.DeleteDeviceRequest{
 			Id: uuid.NewString()})
 		t.Logf("err: %v", err)
@@ -475,16 +705,11 @@ func TestDeleteDevice(t *testing.T) {
 	t.Run("Delete device with invalid session", func(t *testing.T) {
 		t.Parallel()
 
-		ctrl := gomock.NewController(t)
-		defer ctrl.Finish()
-		devicer := NewMockDevicer(ctrl)
-
 		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
 		defer cancel()
 
-		devSvc := NewDevice(devicer)
-		_, err := devSvc.DeleteDevice(ctx, &api.DeleteDeviceRequest{
-			Id: uuid.NewString()})
+		devSvc := NewDevice(nil, nil)
+		_, err := devSvc.DeleteDevice(ctx, &api.DeleteDeviceRequest{})
 		t.Logf("err: %v", err)
 		require.Equal(t, errPerm(common.Role_BUILDER), err)
 	})
@@ -492,18 +717,13 @@ func TestDeleteDevice(t *testing.T) {
 	t.Run("Delete device with insufficient role", func(t *testing.T) {
 		t.Parallel()
 
-		ctrl := gomock.NewController(t)
-		defer ctrl.Finish()
-		devicer := NewMockDevicer(ctrl)
-
 		ctx, cancel := context.WithTimeout(session.NewContext(
 			context.Background(), &session.Session{OrgID: uuid.NewString(),
 				Role: common.Role_VIEWER}), testTimeout)
 		defer cancel()
 
-		devSvc := NewDevice(devicer)
-		_, err := devSvc.DeleteDevice(ctx, &api.DeleteDeviceRequest{
-			Id: uuid.NewString()})
+		devSvc := NewDevice(nil, nil)
+		_, err := devSvc.DeleteDevice(ctx, &api.DeleteDeviceRequest{})
 		t.Logf("err: %v", err)
 		require.Equal(t, errPerm(common.Role_BUILDER), err)
 	})
@@ -511,10 +731,7 @@ func TestDeleteDevice(t *testing.T) {
 	t.Run("Delete device by unknown ID", func(t *testing.T) {
 		t.Parallel()
 
-		ctrl := gomock.NewController(t)
-		defer ctrl.Finish()
-
-		devicer := NewMockDevicer(ctrl)
+		devicer := NewMockDevicer(gomock.NewController(t))
 		devicer.EXPECT().Delete(gomock.Any(), gomock.Any(), gomock.Any()).
 			Return(dao.ErrNotFound).Times(1)
 
@@ -523,7 +740,7 @@ func TestDeleteDevice(t *testing.T) {
 				Role: common.Role_ADMIN}), testTimeout)
 		defer cancel()
 
-		devSvc := NewDevice(devicer)
+		devSvc := NewDevice(devicer, nil)
 		_, err := devSvc.DeleteDevice(ctx, &api.DeleteDeviceRequest{
 			Id: uuid.NewString()})
 		t.Logf("err: %v", err)
@@ -545,10 +762,7 @@ func TestListDevices(t *testing.T) {
 			random.Device("api-device", uuid.NewString()),
 		}
 
-		ctrl := gomock.NewController(t)
-		defer ctrl.Finish()
-
-		devicer := NewMockDevicer(ctrl)
+		devicer := NewMockDevicer(gomock.NewController(t))
 		devicer.EXPECT().List(gomock.Any(), orgID, time.Time{}, "", int32(51)).
 			Return(devs, int32(3), nil).Times(1)
 
@@ -557,7 +771,7 @@ func TestListDevices(t *testing.T) {
 				Role: common.Role_ADMIN}), testTimeout)
 		defer cancel()
 
-		devSvc := NewDevice(devicer)
+		devSvc := NewDevice(devicer, nil)
 		listDevs, err := devSvc.ListDevices(ctx, &api.ListDevicesRequest{})
 		t.Logf("listDevs, err: %+v, %v", listDevs, err)
 		require.NoError(t, err)
@@ -587,10 +801,7 @@ func TestListDevices(t *testing.T) {
 			devs[1].Id)
 		require.NoError(t, err)
 
-		ctrl := gomock.NewController(t)
-		defer ctrl.Finish()
-
-		devicer := NewMockDevicer(ctrl)
+		devicer := NewMockDevicer(gomock.NewController(t))
 		devicer.EXPECT().List(gomock.Any(), orgID, time.Time{}, "", int32(3)).
 			Return(devs, int32(3), nil).Times(1)
 
@@ -599,7 +810,7 @@ func TestListDevices(t *testing.T) {
 				Role: common.Role_ADMIN}), testTimeout)
 		defer cancel()
 
-		devSvc := NewDevice(devicer)
+		devSvc := NewDevice(devicer, nil)
 		listDevs, err := devSvc.ListDevices(ctx, &api.ListDevicesRequest{
 			PageSize: 2})
 		t.Logf("listDevs, err: %+v, %v", listDevs, err)
@@ -619,14 +830,10 @@ func TestListDevices(t *testing.T) {
 	t.Run("List devices with invalid session", func(t *testing.T) {
 		t.Parallel()
 
-		ctrl := gomock.NewController(t)
-		defer ctrl.Finish()
-		devicer := NewMockDevicer(ctrl)
-
 		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
 		defer cancel()
 
-		devSvc := NewDevice(devicer)
+		devSvc := NewDevice(nil, nil)
 		listDevs, err := devSvc.ListDevices(ctx, &api.ListDevicesRequest{})
 		t.Logf("listDevs, err: %+v, %v", listDevs, err)
 		require.Nil(t, listDevs)
@@ -636,16 +843,12 @@ func TestListDevices(t *testing.T) {
 	t.Run("List devices with insufficient role", func(t *testing.T) {
 		t.Parallel()
 
-		ctrl := gomock.NewController(t)
-		defer ctrl.Finish()
-		devicer := NewMockDevicer(ctrl)
-
 		ctx, cancel := context.WithTimeout(session.NewContext(
 			context.Background(), &session.Session{OrgID: uuid.NewString(),
 				Role: common.Role_CONTACT}), testTimeout)
 		defer cancel()
 
-		devSvc := NewDevice(devicer)
+		devSvc := NewDevice(nil, nil)
 		listDevs, err := devSvc.ListDevices(ctx, &api.ListDevicesRequest{})
 		t.Logf("listDevs, err: %+v, %v", listDevs, err)
 		require.Nil(t, listDevs)
@@ -655,16 +858,12 @@ func TestListDevices(t *testing.T) {
 	t.Run("List devices by invalid page token", func(t *testing.T) {
 		t.Parallel()
 
-		ctrl := gomock.NewController(t)
-		defer ctrl.Finish()
-		devicer := NewMockDevicer(ctrl)
-
 		ctx, cancel := context.WithTimeout(session.NewContext(
 			context.Background(), &session.Session{OrgID: uuid.NewString(),
 				Role: common.Role_ADMIN}), testTimeout)
 		defer cancel()
 
-		devSvc := NewDevice(devicer)
+		devSvc := NewDevice(nil, nil)
 		listDevs, err := devSvc.ListDevices(ctx, &api.ListDevicesRequest{
 			PageToken: badUUID})
 		t.Logf("listDevs, err: %+v, %v", listDevs, err)
@@ -676,10 +875,7 @@ func TestListDevices(t *testing.T) {
 	t.Run("List devices by invalid org ID", func(t *testing.T) {
 		t.Parallel()
 
-		ctrl := gomock.NewController(t)
-		defer ctrl.Finish()
-
-		devicer := NewMockDevicer(ctrl)
+		devicer := NewMockDevicer(gomock.NewController(t))
 		devicer.EXPECT().List(gomock.Any(), "aaa", gomock.Any(), gomock.Any(),
 			gomock.Any()).Return(nil, int32(0), dao.ErrInvalidFormat).Times(1)
 
@@ -688,7 +884,7 @@ func TestListDevices(t *testing.T) {
 				Role: common.Role_ADMIN}), testTimeout)
 		defer cancel()
 
-		devSvc := NewDevice(devicer)
+		devSvc := NewDevice(devicer, nil)
 		listDevs, err := devSvc.ListDevices(ctx, &api.ListDevicesRequest{})
 		t.Logf("listDevs, err: %+v, %v", listDevs, err)
 		require.Nil(t, listDevs)
@@ -708,10 +904,7 @@ func TestListDevices(t *testing.T) {
 		}
 		devs[1].Id = badUUID
 
-		ctrl := gomock.NewController(t)
-		defer ctrl.Finish()
-
-		devicer := NewMockDevicer(ctrl)
+		devicer := NewMockDevicer(gomock.NewController(t))
 		devicer.EXPECT().List(gomock.Any(), orgID, time.Time{}, "", int32(3)).
 			Return(devs, int32(3), nil).Times(1)
 
@@ -720,7 +913,7 @@ func TestListDevices(t *testing.T) {
 				Role: common.Role_ADMIN}), testTimeout)
 		defer cancel()
 
-		devSvc := NewDevice(devicer)
+		devSvc := NewDevice(devicer, nil)
 		listDevs, err := devSvc.ListDevices(ctx, &api.ListDevicesRequest{
 			PageSize: 2})
 		t.Logf("listDevs, err: %+v, %v", listDevs, err)

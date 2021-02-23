@@ -407,6 +407,84 @@
         ]
       }
     },
+    "/v1/devices/{id}/lorawan": {
+      "delete": {
+        "summary": "Remove LoRaWAN configuration from a device.",
+        "operationId": "DeviceService_DeleteDeviceLoRaWAN",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "properties": {}
+            }
+          },
+          "204": {
+            "description": "A successful response.",
+            "schema": {}
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "description": "Device ID (UUID) to remove LoRaWAN configuration.",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "DeviceService"
+        ]
+      },
+      "post": {
+        "summary": "Add LoRaWAN configuration to a device.",
+        "operationId": "DeviceService_CreateDeviceLoRaWAN",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "properties": {}
+            }
+          },
+          "204": {
+            "description": "A successful response.",
+            "schema": {}
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "description": "Device ID (UUID) to add LoRaWAN configuration.",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/apiCreateDeviceLoRaWANRequest"
+            }
+          }
+        ],
+        "tags": [
+          "DeviceService"
+        ]
+      }
+    },
     "/v1/organizations": {
       "get": {
         "summary": "List all orgs.",
@@ -959,6 +1037,45 @@
     }
   },
   "definitions": {
+    "CreateDeviceLoRaWANRequestDeviceLoRaWANType": {
+      "type": "object",
+      "properties": {
+        "appKey": {
+          "type": "string",
+          "description": "Device LoRaWAN 1.0.x application key.",
+          "required": [
+            "app_key"
+          ]
+        }
+      },
+      "description": "DeviceLoRaWANType is sent to add LoRaWAN device configuration.",
+      "required": [
+        "appKey"
+      ]
+    },
+    "CreateDeviceLoRaWANRequestGatewayLoRaWANType": {
+      "type": "object",
+      "description": "GatewayLoRaWANType is sent to add LoRaWAN gateway configuration."
+    },
+    "apiCreateDeviceLoRaWANRequest": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Device ID (UUID) to add LoRaWAN configuration.",
+          "readOnly": true
+        },
+        "gatewayLoRaWANType": {
+          "$ref": "#/definitions/CreateDeviceLoRaWANRequestGatewayLoRaWANType",
+          "description": "Gateway LoRaWAN configuration type."
+        },
+        "deviceLoRaWANType": {
+          "$ref": "#/definitions/CreateDeviceLoRaWANRequestDeviceLoRaWANType",
+          "description": "Device LoRaWAN configuration type."
+        }
+      },
+      "description": "CreateDeviceLoRaWANRequest is sent to add LoRaWAN configuration to a device."
+    },
     "apiDecoder": {
       "type": "string",
       "enum": [
@@ -991,7 +1108,7 @@
           ]
         },
         "status": {
-          "$ref": "#/definitions/apiStatus",
+          "$ref": "#/definitions/thingspectapiStatus",
           "description": "Device status."
         },
         "token": {
@@ -1211,16 +1328,6 @@
         "points"
       ]
     },
-    "apiStatus": {
-      "type": "string",
-      "enum": [
-        "STATUS_UNSPECIFIED",
-        "ACTIVE",
-        "DISABLED"
-      ],
-      "default": "STATUS_UNSPECIFIED",
-      "description": "Status represents the status of a message.\n\n - STATUS_UNSPECIFIED: Status is not specified.\n - ACTIVE: Message subject is active.\n - DISABLED: Message subject is disabled."
-    },
     "apiUpdateUserPasswordRequest": {
       "type": "object",
       "properties": {
@@ -1267,7 +1374,7 @@
           "description": "User role."
         },
         "status": {
-          "$ref": "#/definitions/apiStatus",
+          "$ref": "#/definitions/thingspectapiStatus",
           "description": "User status."
         },
         "createdAt": {
@@ -1392,6 +1499,16 @@
           "format": "byte"
         }
       }
+    },
+    "thingspectapiStatus": {
+      "type": "string",
+      "enum": [
+        "STATUS_UNSPECIFIED",
+        "ACTIVE",
+        "DISABLED"
+      ],
+      "default": "STATUS_UNSPECIFIED",
+      "description": "Status represents the status of a message.\n\n - STATUS_UNSPECIFIED: Status is not specified.\n - ACTIVE: Message subject is active.\n - DISABLED: Message subject is disabled."
     }
   },
   "securityDefinitions": {

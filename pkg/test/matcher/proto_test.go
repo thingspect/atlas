@@ -21,10 +21,7 @@ func runProto(p protoer, vIn *message.ValidatorIn) error {
 }
 
 func TestProtoMatcher(t *testing.T) {
-	ctrl := gomock.NewController(t)
-	defer ctrl.Finish()
-
-	protoer := NewMockprotoer(ctrl)
+	protoer := NewMockprotoer(gomock.NewController(t))
 	protoer.EXPECT().f(NewProtoMatcher(&message.ValidatorIn{})).Return(
 		nil).Times(1)
 

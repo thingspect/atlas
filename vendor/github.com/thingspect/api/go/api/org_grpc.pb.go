@@ -41,7 +41,7 @@ func NewOrgServiceClient(cc grpc.ClientConnInterface) OrgServiceClient {
 
 func (c *orgServiceClient) CreateOrg(ctx context.Context, in *CreateOrgRequest, opts ...grpc.CallOption) (*Org, error) {
 	out := new(Org)
-	err := c.cc.Invoke(ctx, "/api.OrgService/CreateOrg", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/thingspect.api.OrgService/CreateOrg", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -50,7 +50,7 @@ func (c *orgServiceClient) CreateOrg(ctx context.Context, in *CreateOrgRequest, 
 
 func (c *orgServiceClient) GetOrg(ctx context.Context, in *GetOrgRequest, opts ...grpc.CallOption) (*Org, error) {
 	out := new(Org)
-	err := c.cc.Invoke(ctx, "/api.OrgService/GetOrg", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/thingspect.api.OrgService/GetOrg", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -59,7 +59,7 @@ func (c *orgServiceClient) GetOrg(ctx context.Context, in *GetOrgRequest, opts .
 
 func (c *orgServiceClient) UpdateOrg(ctx context.Context, in *UpdateOrgRequest, opts ...grpc.CallOption) (*Org, error) {
 	out := new(Org)
-	err := c.cc.Invoke(ctx, "/api.OrgService/UpdateOrg", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/thingspect.api.OrgService/UpdateOrg", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -68,7 +68,7 @@ func (c *orgServiceClient) UpdateOrg(ctx context.Context, in *UpdateOrgRequest, 
 
 func (c *orgServiceClient) DeleteOrg(ctx context.Context, in *DeleteOrgRequest, opts ...grpc.CallOption) (*empty.Empty, error) {
 	out := new(empty.Empty)
-	err := c.cc.Invoke(ctx, "/api.OrgService/DeleteOrg", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/thingspect.api.OrgService/DeleteOrg", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -77,7 +77,7 @@ func (c *orgServiceClient) DeleteOrg(ctx context.Context, in *DeleteOrgRequest, 
 
 func (c *orgServiceClient) ListOrgs(ctx context.Context, in *ListOrgsRequest, opts ...grpc.CallOption) (*ListOrgsResponse, error) {
 	out := new(ListOrgsResponse)
-	err := c.cc.Invoke(ctx, "/api.OrgService/ListOrgs", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/thingspect.api.OrgService/ListOrgs", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -143,7 +143,7 @@ func _OrgService_CreateOrg_Handler(srv interface{}, ctx context.Context, dec fun
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/api.OrgService/CreateOrg",
+		FullMethod: "/thingspect.api.OrgService/CreateOrg",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(OrgServiceServer).CreateOrg(ctx, req.(*CreateOrgRequest))
@@ -161,7 +161,7 @@ func _OrgService_GetOrg_Handler(srv interface{}, ctx context.Context, dec func(i
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/api.OrgService/GetOrg",
+		FullMethod: "/thingspect.api.OrgService/GetOrg",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(OrgServiceServer).GetOrg(ctx, req.(*GetOrgRequest))
@@ -179,7 +179,7 @@ func _OrgService_UpdateOrg_Handler(srv interface{}, ctx context.Context, dec fun
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/api.OrgService/UpdateOrg",
+		FullMethod: "/thingspect.api.OrgService/UpdateOrg",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(OrgServiceServer).UpdateOrg(ctx, req.(*UpdateOrgRequest))
@@ -197,7 +197,7 @@ func _OrgService_DeleteOrg_Handler(srv interface{}, ctx context.Context, dec fun
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/api.OrgService/DeleteOrg",
+		FullMethod: "/thingspect.api.OrgService/DeleteOrg",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(OrgServiceServer).DeleteOrg(ctx, req.(*DeleteOrgRequest))
@@ -215,7 +215,7 @@ func _OrgService_ListOrgs_Handler(srv interface{}, ctx context.Context, dec func
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/api.OrgService/ListOrgs",
+		FullMethod: "/thingspect.api.OrgService/ListOrgs",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(OrgServiceServer).ListOrgs(ctx, req.(*ListOrgsRequest))
@@ -227,7 +227,7 @@ func _OrgService_ListOrgs_Handler(srv interface{}, ctx context.Context, dec func
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
 var OrgService_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "api.OrgService",
+	ServiceName: "thingspect.api.OrgService",
 	HandlerType: (*OrgServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{

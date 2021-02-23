@@ -231,6 +231,123 @@ var _ interface {
 	ErrorName() string
 } = CreateDeviceRequestValidationError{}
 
+// Validate checks the field values on CreateDeviceLoRaWANRequest with the
+// rules defined in the proto definition for this message. If any rules are
+// violated, an error is returned.
+func (m *CreateDeviceLoRaWANRequest) Validate() error {
+	if m == nil {
+		return nil
+	}
+
+	if err := m._validateUuid(m.GetId()); err != nil {
+		return CreateDeviceLoRaWANRequestValidationError{
+			field:  "Id",
+			reason: "value must be a valid UUID",
+			cause:  err,
+		}
+	}
+
+	switch m.TypeOneof.(type) {
+
+	case *CreateDeviceLoRaWANRequest_GatewayLorawanType:
+
+		if v, ok := interface{}(m.GetGatewayLorawanType()).(interface{ Validate() error }); ok {
+			if err := v.Validate(); err != nil {
+				return CreateDeviceLoRaWANRequestValidationError{
+					field:  "GatewayLorawanType",
+					reason: "embedded message failed validation",
+					cause:  err,
+				}
+			}
+		}
+
+	case *CreateDeviceLoRaWANRequest_DeviceLorawanType:
+
+		if v, ok := interface{}(m.GetDeviceLorawanType()).(interface{ Validate() error }); ok {
+			if err := v.Validate(); err != nil {
+				return CreateDeviceLoRaWANRequestValidationError{
+					field:  "DeviceLorawanType",
+					reason: "embedded message failed validation",
+					cause:  err,
+				}
+			}
+		}
+
+	default:
+		return CreateDeviceLoRaWANRequestValidationError{
+			field:  "TypeOneof",
+			reason: "value is required",
+		}
+
+	}
+
+	return nil
+}
+
+func (m *CreateDeviceLoRaWANRequest) _validateUuid(uuid string) error {
+	if matched := _device_uuidPattern.MatchString(uuid); !matched {
+		return errors.New("invalid uuid format")
+	}
+
+	return nil
+}
+
+// CreateDeviceLoRaWANRequestValidationError is the validation error returned
+// by CreateDeviceLoRaWANRequest.Validate if the designated constraints aren't met.
+type CreateDeviceLoRaWANRequestValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e CreateDeviceLoRaWANRequestValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e CreateDeviceLoRaWANRequestValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e CreateDeviceLoRaWANRequestValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e CreateDeviceLoRaWANRequestValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e CreateDeviceLoRaWANRequestValidationError) ErrorName() string {
+	return "CreateDeviceLoRaWANRequestValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e CreateDeviceLoRaWANRequestValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sCreateDeviceLoRaWANRequest.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = CreateDeviceLoRaWANRequestValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = CreateDeviceLoRaWANRequestValidationError{}
+
 // Validate checks the field values on GetDeviceRequest with the rules defined
 // in the proto definition for this message. If any rules are violated, an
 // error is returned.
@@ -405,6 +522,89 @@ var _ interface {
 	Cause() error
 	ErrorName() string
 } = UpdateDeviceRequestValidationError{}
+
+// Validate checks the field values on DeleteDeviceLoRaWANRequest with the
+// rules defined in the proto definition for this message. If any rules are
+// violated, an error is returned.
+func (m *DeleteDeviceLoRaWANRequest) Validate() error {
+	if m == nil {
+		return nil
+	}
+
+	if err := m._validateUuid(m.GetId()); err != nil {
+		return DeleteDeviceLoRaWANRequestValidationError{
+			field:  "Id",
+			reason: "value must be a valid UUID",
+			cause:  err,
+		}
+	}
+
+	return nil
+}
+
+func (m *DeleteDeviceLoRaWANRequest) _validateUuid(uuid string) error {
+	if matched := _device_uuidPattern.MatchString(uuid); !matched {
+		return errors.New("invalid uuid format")
+	}
+
+	return nil
+}
+
+// DeleteDeviceLoRaWANRequestValidationError is the validation error returned
+// by DeleteDeviceLoRaWANRequest.Validate if the designated constraints aren't met.
+type DeleteDeviceLoRaWANRequestValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e DeleteDeviceLoRaWANRequestValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e DeleteDeviceLoRaWANRequestValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e DeleteDeviceLoRaWANRequestValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e DeleteDeviceLoRaWANRequestValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e DeleteDeviceLoRaWANRequestValidationError) ErrorName() string {
+	return "DeleteDeviceLoRaWANRequestValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e DeleteDeviceLoRaWANRequestValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sDeleteDeviceLoRaWANRequest.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = DeleteDeviceLoRaWANRequestValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = DeleteDeviceLoRaWANRequestValidationError{}
 
 // Validate checks the field values on DeleteDeviceRequest with the rules
 // defined in the proto definition for this message. If any rules are
@@ -650,3 +850,151 @@ var _ interface {
 	Cause() error
 	ErrorName() string
 } = ListDevicesResponseValidationError{}
+
+// Validate checks the field values on
+// CreateDeviceLoRaWANRequest_GatewayLoRaWANType with the rules defined in the
+// proto definition for this message. If any rules are violated, an error is returned.
+func (m *CreateDeviceLoRaWANRequest_GatewayLoRaWANType) Validate() error {
+	if m == nil {
+		return nil
+	}
+
+	return nil
+}
+
+// CreateDeviceLoRaWANRequest_GatewayLoRaWANTypeValidationError is the
+// validation error returned by
+// CreateDeviceLoRaWANRequest_GatewayLoRaWANType.Validate if the designated
+// constraints aren't met.
+type CreateDeviceLoRaWANRequest_GatewayLoRaWANTypeValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e CreateDeviceLoRaWANRequest_GatewayLoRaWANTypeValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e CreateDeviceLoRaWANRequest_GatewayLoRaWANTypeValidationError) Reason() string {
+	return e.reason
+}
+
+// Cause function returns cause value.
+func (e CreateDeviceLoRaWANRequest_GatewayLoRaWANTypeValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e CreateDeviceLoRaWANRequest_GatewayLoRaWANTypeValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e CreateDeviceLoRaWANRequest_GatewayLoRaWANTypeValidationError) ErrorName() string {
+	return "CreateDeviceLoRaWANRequest_GatewayLoRaWANTypeValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e CreateDeviceLoRaWANRequest_GatewayLoRaWANTypeValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sCreateDeviceLoRaWANRequest_GatewayLoRaWANType.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = CreateDeviceLoRaWANRequest_GatewayLoRaWANTypeValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = CreateDeviceLoRaWANRequest_GatewayLoRaWANTypeValidationError{}
+
+// Validate checks the field values on
+// CreateDeviceLoRaWANRequest_DeviceLoRaWANType with the rules defined in the
+// proto definition for this message. If any rules are violated, an error is returned.
+func (m *CreateDeviceLoRaWANRequest_DeviceLoRaWANType) Validate() error {
+	if m == nil {
+		return nil
+	}
+
+	if utf8.RuneCountInString(m.GetAppKey()) != 32 {
+		return CreateDeviceLoRaWANRequest_DeviceLoRaWANTypeValidationError{
+			field:  "AppKey",
+			reason: "value length must be 32 runes",
+		}
+
+	}
+
+	return nil
+}
+
+// CreateDeviceLoRaWANRequest_DeviceLoRaWANTypeValidationError is the
+// validation error returned by
+// CreateDeviceLoRaWANRequest_DeviceLoRaWANType.Validate if the designated
+// constraints aren't met.
+type CreateDeviceLoRaWANRequest_DeviceLoRaWANTypeValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e CreateDeviceLoRaWANRequest_DeviceLoRaWANTypeValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e CreateDeviceLoRaWANRequest_DeviceLoRaWANTypeValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e CreateDeviceLoRaWANRequest_DeviceLoRaWANTypeValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e CreateDeviceLoRaWANRequest_DeviceLoRaWANTypeValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e CreateDeviceLoRaWANRequest_DeviceLoRaWANTypeValidationError) ErrorName() string {
+	return "CreateDeviceLoRaWANRequest_DeviceLoRaWANTypeValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e CreateDeviceLoRaWANRequest_DeviceLoRaWANTypeValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sCreateDeviceLoRaWANRequest_DeviceLoRaWANType.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = CreateDeviceLoRaWANRequest_DeviceLoRaWANTypeValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = CreateDeviceLoRaWANRequest_DeviceLoRaWANTypeValidationError{}

@@ -87,10 +87,7 @@ func TestValidateMessages(t *testing.T) {
 			require.NoError(t, err)
 			vOutPubTopic := "topic-" + random.String(10)
 
-			ctrl := gomock.NewController(t)
-			defer ctrl.Finish()
-
-			devicer := NewMockdevicer(ctrl)
+			devicer := NewMockdevicer(gomock.NewController(t))
 			devicer.EXPECT().ReadByUniqID(gomock.Any(), lTest.inp.Point.UniqId).
 				Return(dev, nil).Times(1)
 
@@ -191,10 +188,7 @@ func TestValidateMessagesError(t *testing.T) {
 			vOutSub, err := vOutQueue.Subscribe("")
 			require.NoError(t, err)
 
-			ctrl := gomock.NewController(t)
-			defer ctrl.Finish()
-
-			devicer := NewMockdevicer(ctrl)
+			devicer := NewMockdevicer(gomock.NewController(t))
 			devicer.EXPECT().ReadByUniqID(gomock.Any(), gomock.Any()).
 				Return(lDev, lTest.inpErr).Times(lTest.inpTimes)
 

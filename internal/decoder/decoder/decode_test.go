@@ -76,10 +76,7 @@ func TestDecodeMessages(t *testing.T) {
 			require.NoError(t, err)
 			decoderPubTopic := "topic-" + random.String(10)
 
-			ctrl := gomock.NewController(t)
-			defer ctrl.Finish()
-
-			devicer := NewMockdevicer(ctrl)
+			devicer := NewMockdevicer(gomock.NewController(t))
 			devicer.EXPECT().ReadByUniqID(gomock.Any(), lTest.inpDIn.UniqId).
 				Return(lDev, nil).Times(1)
 
@@ -166,10 +163,7 @@ func TestDecodeMessagesError(t *testing.T) {
 			decoderSub, err := decoderQueue.Subscribe("")
 			require.NoError(t, err)
 
-			ctrl := gomock.NewController(t)
-			defer ctrl.Finish()
-
-			devicer := NewMockdevicer(ctrl)
+			devicer := NewMockdevicer(gomock.NewController(t))
 			devicer.EXPECT().ReadByUniqID(gomock.Any(), gomock.Any()).
 				Return(lDev, lTest.inpErr).Times(lTest.inpTimes)
 

@@ -6,35 +6,36 @@ package accumulator
 
 import (
 	context "context"
+	reflect "reflect"
+
 	gomock "github.com/golang/mock/gomock"
 	common "github.com/thingspect/api/go/common"
-	reflect "reflect"
 )
 
-// Mockdatapointer is a mock of datapointer interface
+// Mockdatapointer is a mock of datapointer interface.
 type Mockdatapointer struct {
 	ctrl     *gomock.Controller
 	recorder *MockdatapointerMockRecorder
 }
 
-// MockdatapointerMockRecorder is the mock recorder for Mockdatapointer
+// MockdatapointerMockRecorder is the mock recorder for Mockdatapointer.
 type MockdatapointerMockRecorder struct {
 	mock *Mockdatapointer
 }
 
-// NewMockdatapointer creates a new mock instance
+// NewMockdatapointer creates a new mock instance.
 func NewMockdatapointer(ctrl *gomock.Controller) *Mockdatapointer {
 	mock := &Mockdatapointer{ctrl: ctrl}
 	mock.recorder = &MockdatapointerMockRecorder{mock}
 	return mock
 }
 
-// EXPECT returns an object that allows the caller to indicate expected use
+// EXPECT returns an object that allows the caller to indicate expected use.
 func (m *Mockdatapointer) EXPECT() *MockdatapointerMockRecorder {
 	return m.recorder
 }
 
-// Create mocks base method
+// Create mocks base method.
 func (m *Mockdatapointer) Create(ctx context.Context, point *common.DataPoint, orgID string) error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Create", ctx, point, orgID)
@@ -42,7 +43,7 @@ func (m *Mockdatapointer) Create(ctx context.Context, point *common.DataPoint, o
 	return ret0
 }
 
-// Create indicates an expected call of Create
+// Create indicates an expected call of Create.
 func (mr *MockdatapointerMockRecorder) Create(ctx, point, orgID interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Create", reflect.TypeOf((*Mockdatapointer)(nil).Create), ctx, point, orgID)

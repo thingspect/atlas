@@ -37,7 +37,7 @@ func NewDataPointServiceClient(cc grpc.ClientConnInterface) DataPointServiceClie
 
 func (c *dataPointServiceClient) PublishDataPoints(ctx context.Context, in *PublishDataPointsRequest, opts ...grpc.CallOption) (*empty.Empty, error) {
 	out := new(empty.Empty)
-	err := c.cc.Invoke(ctx, "/api.DataPointService/PublishDataPoints", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/thingspect.api.DataPointService/PublishDataPoints", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -46,7 +46,7 @@ func (c *dataPointServiceClient) PublishDataPoints(ctx context.Context, in *Publ
 
 func (c *dataPointServiceClient) ListDataPoints(ctx context.Context, in *ListDataPointsRequest, opts ...grpc.CallOption) (*ListDataPointsResponse, error) {
 	out := new(ListDataPointsResponse)
-	err := c.cc.Invoke(ctx, "/api.DataPointService/ListDataPoints", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/thingspect.api.DataPointService/ListDataPoints", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -55,7 +55,7 @@ func (c *dataPointServiceClient) ListDataPoints(ctx context.Context, in *ListDat
 
 func (c *dataPointServiceClient) LatestDataPoints(ctx context.Context, in *LatestDataPointsRequest, opts ...grpc.CallOption) (*LatestDataPointsResponse, error) {
 	out := new(LatestDataPointsResponse)
-	err := c.cc.Invoke(ctx, "/api.DataPointService/LatestDataPoints", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/thingspect.api.DataPointService/LatestDataPoints", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -111,7 +111,7 @@ func _DataPointService_PublishDataPoints_Handler(srv interface{}, ctx context.Co
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/api.DataPointService/PublishDataPoints",
+		FullMethod: "/thingspect.api.DataPointService/PublishDataPoints",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(DataPointServiceServer).PublishDataPoints(ctx, req.(*PublishDataPointsRequest))
@@ -129,7 +129,7 @@ func _DataPointService_ListDataPoints_Handler(srv interface{}, ctx context.Conte
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/api.DataPointService/ListDataPoints",
+		FullMethod: "/thingspect.api.DataPointService/ListDataPoints",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(DataPointServiceServer).ListDataPoints(ctx, req.(*ListDataPointsRequest))
@@ -147,7 +147,7 @@ func _DataPointService_LatestDataPoints_Handler(srv interface{}, ctx context.Con
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/api.DataPointService/LatestDataPoints",
+		FullMethod: "/thingspect.api.DataPointService/LatestDataPoints",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(DataPointServiceServer).LatestDataPoints(ctx, req.(*LatestDataPointsRequest))
@@ -159,7 +159,7 @@ func _DataPointService_LatestDataPoints_Handler(srv interface{}, ctx context.Con
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
 var DataPointService_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "api.DataPointService",
+	ServiceName: "thingspect.api.DataPointService",
 	HandlerType: (*DataPointServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
