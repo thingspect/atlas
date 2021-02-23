@@ -11,6 +11,7 @@ import (
 	"github.com/thingspect/api/go/common"
 	"github.com/thingspect/atlas/internal/api/session"
 	"github.com/thingspect/atlas/pkg/alog"
+	"github.com/thingspect/atlas/pkg/lora"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
@@ -34,12 +35,14 @@ type Device struct {
 	api.UnimplementedDeviceServiceServer
 
 	devDAO Devicer
+	lora   lora.Loraer
 }
 
 // NewDevice instantiates and returns a new Device service.
-func NewDevice(devDAO Devicer) *Device {
+func NewDevice(devDAO Devicer, lora lora.Loraer) *Device {
 	return &Device{
 		devDAO: devDAO,
+		lora:   lora,
 	}
 }
 
@@ -64,6 +67,38 @@ func (d *Device) CreateDevice(ctx context.Context,
 		logger.Errorf("CreateDevice grpc.SetHeader: %v", err)
 	}
 	return dev, nil
+}
+
+// CreateDeviceLoRaWAN adds LoRaWAN configuration to a device.
+func (d *Device) CreateDeviceLoRaWAN(ctx context.Context,
+	req *api.CreateDeviceLoRaWANRequest) (*emptypb.Empty, error) {
+	logger := alog.FromContext(ctx)
+	sess, ok := session.FromContext(ctx)
+	if !ok || sess.Role < common.Role_BUILDER {
+		return nil, errPerm(common.Role_BUILDER)
+	}
+
+	dev, err := d.devDAO.Read(ctx, req.Id, sess.OrgID)
+	if err != nil {
+		return nil, errToStatus(err)
+	}
+
+	switch v := req.TypeOneof.(type) {
+	case *api.CreateDeviceLoRaWANRequest_GatewayLorawanType:
+		err = d.lora.CreateGateway(ctx, dev.UniqId)
+	case *api.CreateDeviceLoRaWANRequest_DeviceLorawanType:
+		err = d.lora.CreateDevice(ctx, dev.UniqId, v.DeviceLorawanType.AppKey)
+	}
+	if err != nil {
+		logger.Errorf("CreateDeviceLoRaWAN d.lora.CreateX: %v", err)
+		return nil, errToStatus(err)
+	}
+
+	if err := grpc.SetHeader(ctx, metadata.Pairs("atlas-status-code",
+		"204")); err != nil {
+		logger.Errorf("CreateDeviceLoRaWAN grpc.SetHeader: %v", err)
+	}
+	return &emptypb.Empty{}, nil
 }
 
 // GetDevice retrieves a device by ID.
@@ -126,6 +161,43 @@ func (d *Device) UpdateDevice(ctx context.Context,
 	}
 
 	return dev, nil
+}
+
+// DeleteDeviceLoRaWAN removes LoRaWAN configuration from a device.
+func (d *Device) DeleteDeviceLoRaWAN(ctx context.Context,
+	req *api.DeleteDeviceLoRaWANRequest) (*emptypb.Empty, error) {
+	logger := alog.FromContext(ctx)
+	sess, ok := session.FromContext(ctx)
+	if !ok || sess.Role < common.Role_BUILDER {
+		return nil, errPerm(common.Role_BUILDER)
+	}
+
+	dev, err := d.devDAO.Read(ctx, req.Id, sess.OrgID)
+	if err != nil {
+		return nil, errToStatus(err)
+	}
+
+	// Delete any gateways and devices present. 'Unauthenticated' is currently
+	// returned for gateways and devices that do not exist.
+	err = d.lora.DeleteGateway(ctx, dev.UniqId)
+	if code := status.Code(err); code != codes.OK &&
+		code != codes.Unauthenticated {
+		logger.Errorf("DeleteDeviceLoRaWAN d.lora.DeleteGateway: %v", err)
+		return nil, errToStatus(err)
+	}
+
+	err = d.lora.DeleteDevice(ctx, dev.UniqId)
+	if code := status.Code(err); code != codes.OK &&
+		code != codes.Unauthenticated {
+		logger.Errorf("DeleteDeviceLoRaWAN d.lora.DeleteDevice: %v", err)
+		return nil, errToStatus(err)
+	}
+
+	if err := grpc.SetHeader(ctx, metadata.Pairs("atlas-status-code",
+		"204")); err != nil {
+		logger.Errorf("DeleteDeviceLoRaWAN grpc.SetHeader: %v", err)
+	}
+	return &emptypb.Empty{}, nil
 }
 
 // DeleteDevice deletes a device by ID.

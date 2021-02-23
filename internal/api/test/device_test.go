@@ -104,6 +104,105 @@ func TestCreateDevice(t *testing.T) {
 	})
 }
 
+func TestCreateDeviceLoRaWAN(t *testing.T) {
+	t.Parallel()
+
+	t.Run("Create valid gateway configuration", func(t *testing.T) {
+		t.Parallel()
+
+		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
+		defer cancel()
+
+		devCli := api.NewDeviceServiceClient(globalAdminGRPCConn)
+		createDev, err := devCli.CreateDevice(ctx, &api.CreateDeviceRequest{
+			Device: random.Device("api-device", uuid.NewString())})
+		t.Logf("createDev, err: %+v, %v", createDev, err)
+		require.NoError(t, err)
+
+		_, err = devCli.CreateDeviceLoRaWAN(ctx,
+			&api.CreateDeviceLoRaWANRequest{Id: createDev.Id,
+				TypeOneof: &api.CreateDeviceLoRaWANRequest_GatewayLorawanType{},
+			})
+		t.Logf("err: %v", err)
+		require.NoError(t, err)
+	})
+
+	t.Run("Create valid device configuration", func(t *testing.T) {
+		t.Parallel()
+
+		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
+		defer cancel()
+
+		devCli := api.NewDeviceServiceClient(globalAdminGRPCConn)
+		createDev, err := devCli.CreateDevice(ctx, &api.CreateDeviceRequest{
+			Device: random.Device("api-device", uuid.NewString())})
+		t.Logf("createDev, err: %+v, %v", createDev, err)
+		require.NoError(t, err)
+
+		_, err = devCli.CreateDeviceLoRaWAN(ctx,
+			&api.CreateDeviceLoRaWANRequest{Id: createDev.Id,
+				TypeOneof: &api.CreateDeviceLoRaWANRequest_DeviceLorawanType{
+					DeviceLorawanType: &api.CreateDeviceLoRaWANRequest_DeviceLoRaWANType{
+						AppKey: random.String(32)}}})
+		t.Logf("err: %v", err)
+		require.NoError(t, err)
+	})
+
+	t.Run("Create configuration with insufficient role", func(t *testing.T) {
+		t.Parallel()
+
+		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
+		defer cancel()
+
+		devCli := api.NewDeviceServiceClient(secondaryViewerGRPCConn)
+		_, err := devCli.CreateDeviceLoRaWAN(ctx,
+			&api.CreateDeviceLoRaWANRequest{Id: uuid.NewString(),
+				TypeOneof: &api.CreateDeviceLoRaWANRequest_GatewayLorawanType{},
+			})
+		t.Logf("err: %v", err)
+		require.EqualError(t, err, "rpc error: code = PermissionDenied desc = "+
+			"permission denied, BUILDER role required")
+	})
+
+	t.Run("Create configuration by unknown ID", func(t *testing.T) {
+		t.Parallel()
+
+		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
+		defer cancel()
+
+		devCli := api.NewDeviceServiceClient(globalAdminGRPCConn)
+		_, err := devCli.CreateDeviceLoRaWAN(ctx,
+			&api.CreateDeviceLoRaWANRequest{Id: uuid.NewString(),
+				TypeOneof: &api.CreateDeviceLoRaWANRequest_GatewayLorawanType{},
+			})
+		t.Logf("err: %v", err)
+		require.EqualError(t, err, "rpc error: code = NotFound desc = object "+
+			"not found")
+	})
+
+	t.Run("Configurations are isolated by org ID", func(t *testing.T) {
+		t.Parallel()
+
+		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
+		defer cancel()
+
+		devCli := api.NewDeviceServiceClient(globalAdminGRPCConn)
+		createDev, err := devCli.CreateDevice(ctx, &api.CreateDeviceRequest{
+			Device: random.Device("api-device", uuid.NewString())})
+		t.Logf("createDev, err: %+v, %v", createDev, err)
+		require.NoError(t, err)
+
+		secCli := api.NewDeviceServiceClient(secondaryAdminGRPCConn)
+		_, err = secCli.CreateDeviceLoRaWAN(ctx,
+			&api.CreateDeviceLoRaWANRequest{Id: createDev.Id,
+				TypeOneof: &api.CreateDeviceLoRaWANRequest_GatewayLorawanType{},
+			})
+		t.Logf("err: %v", err)
+		require.EqualError(t, err, "rpc error: code = NotFound desc = object "+
+			"not found")
+	})
+}
+
 func TestGetDevice(t *testing.T) {
 	t.Parallel()
 
@@ -241,8 +340,7 @@ func TestUpdateDevice(t *testing.T) {
 		defer cancel()
 
 		devCli := api.NewDeviceServiceClient(secondaryViewerGRPCConn)
-		updateDev, err := devCli.UpdateDevice(ctx, &api.UpdateDeviceRequest{
-			Device: random.Device("api-device", uuid.NewString())})
+		updateDev, err := devCli.UpdateDevice(ctx, &api.UpdateDeviceRequest{})
 		t.Logf("updateDev, err: %+v, %v", updateDev, err)
 		require.Nil(t, updateDev)
 		require.EqualError(t, err, "rpc error: code = PermissionDenied desc = "+
@@ -383,6 +481,101 @@ func TestUpdateDevice(t *testing.T) {
 		require.Nil(t, updateDev)
 		require.EqualError(t, err, "rpc error: code = InvalidArgument desc = "+
 			"invalid format: UUID")
+	})
+}
+
+func TestDeleteDeviceLoRaWAN(t *testing.T) {
+	t.Parallel()
+
+	t.Run("Delete valid configurations by valid ID", func(t *testing.T) {
+		t.Parallel()
+
+		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
+		defer cancel()
+
+		devCli := api.NewDeviceServiceClient(globalAdminGRPCConn)
+		createDev, err := devCli.CreateDevice(ctx, &api.CreateDeviceRequest{
+			Device: random.Device("api-device", uuid.NewString())})
+		t.Logf("createDev, err: %+v, %v", createDev, err)
+		require.NoError(t, err)
+
+		_, err = devCli.CreateDeviceLoRaWAN(ctx,
+			&api.CreateDeviceLoRaWANRequest{Id: createDev.Id,
+				TypeOneof: &api.CreateDeviceLoRaWANRequest_GatewayLorawanType{},
+			})
+		t.Logf("err: %v", err)
+		require.NoError(t, err)
+
+		_, err = devCli.DeleteDeviceLoRaWAN(ctx,
+			&api.DeleteDeviceLoRaWANRequest{Id: createDev.Id})
+		t.Logf("err: %v", err)
+		require.NoError(t, err)
+	})
+
+	t.Run("Delete unknown configurations by valid ID", func(t *testing.T) {
+		t.Parallel()
+
+		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
+		defer cancel()
+
+		devCli := api.NewDeviceServiceClient(globalAdminGRPCConn)
+		createDev, err := devCli.CreateDevice(ctx, &api.CreateDeviceRequest{
+			Device: random.Device("api-device", uuid.NewString())})
+		t.Logf("createDev, err: %+v, %v", createDev, err)
+		require.NoError(t, err)
+
+		_, err = devCli.DeleteDeviceLoRaWAN(ctx,
+			&api.DeleteDeviceLoRaWANRequest{Id: createDev.Id})
+		t.Logf("err: %v", err)
+		require.NoError(t, err)
+	})
+
+	t.Run("Delete configurations with insufficient role", func(t *testing.T) {
+		t.Parallel()
+
+		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
+		defer cancel()
+
+		devCli := api.NewDeviceServiceClient(secondaryViewerGRPCConn)
+		_, err := devCli.DeleteDeviceLoRaWAN(ctx,
+			&api.DeleteDeviceLoRaWANRequest{Id: uuid.NewString()})
+		t.Logf("err: %v", err)
+		require.EqualError(t, err, "rpc error: code = PermissionDenied desc = "+
+			"permission denied, BUILDER role required")
+	})
+
+	t.Run("Delete configurations by unknown ID", func(t *testing.T) {
+		t.Parallel()
+
+		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
+		defer cancel()
+
+		devCli := api.NewDeviceServiceClient(globalAdminGRPCConn)
+		_, err := devCli.DeleteDeviceLoRaWAN(ctx,
+			&api.DeleteDeviceLoRaWANRequest{Id: uuid.NewString()})
+		t.Logf("err: %v", err)
+		require.EqualError(t, err, "rpc error: code = NotFound desc = object "+
+			"not found")
+	})
+
+	t.Run("Configurations are isolated by org ID", func(t *testing.T) {
+		t.Parallel()
+
+		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
+		defer cancel()
+
+		devCli := api.NewDeviceServiceClient(globalAdminGRPCConn)
+		createDev, err := devCli.CreateDevice(ctx, &api.CreateDeviceRequest{
+			Device: random.Device("api-device", uuid.NewString())})
+		t.Logf("createDev, err: %+v, %v", createDev, err)
+		require.NoError(t, err)
+
+		secCli := api.NewDeviceServiceClient(secondaryAdminGRPCConn)
+		_, err = secCli.DeleteDeviceLoRaWAN(ctx,
+			&api.DeleteDeviceLoRaWANRequest{Id: createDev.Id})
+		t.Logf("err: %v", err)
+		require.EqualError(t, err, "rpc error: code = NotFound desc = object "+
+			"not found")
 	})
 }
 

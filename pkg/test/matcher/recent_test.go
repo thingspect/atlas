@@ -21,10 +21,7 @@ func runRecent(r recenter, t time.Time) error {
 }
 
 func TestRecentMatcher(t *testing.T) {
-	ctrl := gomock.NewController(t)
-	defer ctrl.Finish()
-
-	recenter := NewMockrecenter(ctrl)
+	recenter := NewMockrecenter(gomock.NewController(t))
 	recenter.EXPECT().f(NewRecentMatcher(2 * time.Second)).Return(nil).Times(1)
 
 	require.NoError(t, runRecent(recenter, time.Now()))

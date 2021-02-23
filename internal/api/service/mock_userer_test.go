@@ -6,36 +6,37 @@ package service
 
 import (
 	context "context"
-	gomock "github.com/golang/mock/gomock"
-	api "github.com/thingspect/api/go/api"
 	reflect "reflect"
 	time "time"
+
+	gomock "github.com/golang/mock/gomock"
+	api "github.com/thingspect/api/go/api"
 )
 
-// MockUserer is a mock of Userer interface
+// MockUserer is a mock of Userer interface.
 type MockUserer struct {
 	ctrl     *gomock.Controller
 	recorder *MockUsererMockRecorder
 }
 
-// MockUsererMockRecorder is the mock recorder for MockUserer
+// MockUsererMockRecorder is the mock recorder for MockUserer.
 type MockUsererMockRecorder struct {
 	mock *MockUserer
 }
 
-// NewMockUserer creates a new mock instance
+// NewMockUserer creates a new mock instance.
 func NewMockUserer(ctrl *gomock.Controller) *MockUserer {
 	mock := &MockUserer{ctrl: ctrl}
 	mock.recorder = &MockUsererMockRecorder{mock}
 	return mock
 }
 
-// EXPECT returns an object that allows the caller to indicate expected use
+// EXPECT returns an object that allows the caller to indicate expected use.
 func (m *MockUserer) EXPECT() *MockUsererMockRecorder {
 	return m.recorder
 }
 
-// Create mocks base method
+// Create mocks base method.
 func (m *MockUserer) Create(ctx context.Context, user *api.User) (*api.User, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Create", ctx, user)
@@ -44,73 +45,13 @@ func (m *MockUserer) Create(ctx context.Context, user *api.User) (*api.User, err
 	return ret0, ret1
 }
 
-// Create indicates an expected call of Create
+// Create indicates an expected call of Create.
 func (mr *MockUsererMockRecorder) Create(ctx, user interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Create", reflect.TypeOf((*MockUserer)(nil).Create), ctx, user)
 }
 
-// Read mocks base method
-func (m *MockUserer) Read(ctx context.Context, userID, orgID string) (*api.User, error) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Read", ctx, userID, orgID)
-	ret0, _ := ret[0].(*api.User)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// Read indicates an expected call of Read
-func (mr *MockUsererMockRecorder) Read(ctx, userID, orgID interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Read", reflect.TypeOf((*MockUserer)(nil).Read), ctx, userID, orgID)
-}
-
-// ReadByEmail mocks base method
-func (m *MockUserer) ReadByEmail(ctx context.Context, email, orgName string) (*api.User, []byte, error) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "ReadByEmail", ctx, email, orgName)
-	ret0, _ := ret[0].(*api.User)
-	ret1, _ := ret[1].([]byte)
-	ret2, _ := ret[2].(error)
-	return ret0, ret1, ret2
-}
-
-// ReadByEmail indicates an expected call of ReadByEmail
-func (mr *MockUsererMockRecorder) ReadByEmail(ctx, email, orgName interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ReadByEmail", reflect.TypeOf((*MockUserer)(nil).ReadByEmail), ctx, email, orgName)
-}
-
-// Update mocks base method
-func (m *MockUserer) Update(ctx context.Context, user *api.User) (*api.User, error) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Update", ctx, user)
-	ret0, _ := ret[0].(*api.User)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// Update indicates an expected call of Update
-func (mr *MockUsererMockRecorder) Update(ctx, user interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Update", reflect.TypeOf((*MockUserer)(nil).Update), ctx, user)
-}
-
-// UpdatePassword mocks base method
-func (m *MockUserer) UpdatePassword(ctx context.Context, userID, orgID string, passHash []byte) error {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "UpdatePassword", ctx, userID, orgID, passHash)
-	ret0, _ := ret[0].(error)
-	return ret0
-}
-
-// UpdatePassword indicates an expected call of UpdatePassword
-func (mr *MockUsererMockRecorder) UpdatePassword(ctx, userID, orgID, passHash interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdatePassword", reflect.TypeOf((*MockUserer)(nil).UpdatePassword), ctx, userID, orgID, passHash)
-}
-
-// Delete mocks base method
+// Delete mocks base method.
 func (m *MockUserer) Delete(ctx context.Context, userID, orgID string) error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Delete", ctx, userID, orgID)
@@ -118,13 +59,13 @@ func (m *MockUserer) Delete(ctx context.Context, userID, orgID string) error {
 	return ret0
 }
 
-// Delete indicates an expected call of Delete
+// Delete indicates an expected call of Delete.
 func (mr *MockUsererMockRecorder) Delete(ctx, userID, orgID interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Delete", reflect.TypeOf((*MockUserer)(nil).Delete), ctx, userID, orgID)
 }
 
-// List mocks base method
+// List mocks base method.
 func (m *MockUserer) List(ctx context.Context, orgID string, lboundTS time.Time, prevID string, limit int32) ([]*api.User, int32, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "List", ctx, orgID, lboundTS, prevID, limit)
@@ -134,8 +75,68 @@ func (m *MockUserer) List(ctx context.Context, orgID string, lboundTS time.Time,
 	return ret0, ret1, ret2
 }
 
-// List indicates an expected call of List
+// List indicates an expected call of List.
 func (mr *MockUsererMockRecorder) List(ctx, orgID, lboundTS, prevID, limit interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "List", reflect.TypeOf((*MockUserer)(nil).List), ctx, orgID, lboundTS, prevID, limit)
+}
+
+// Read mocks base method.
+func (m *MockUserer) Read(ctx context.Context, userID, orgID string) (*api.User, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "Read", ctx, userID, orgID)
+	ret0, _ := ret[0].(*api.User)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// Read indicates an expected call of Read.
+func (mr *MockUsererMockRecorder) Read(ctx, userID, orgID interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Read", reflect.TypeOf((*MockUserer)(nil).Read), ctx, userID, orgID)
+}
+
+// ReadByEmail mocks base method.
+func (m *MockUserer) ReadByEmail(ctx context.Context, email, orgName string) (*api.User, []byte, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "ReadByEmail", ctx, email, orgName)
+	ret0, _ := ret[0].(*api.User)
+	ret1, _ := ret[1].([]byte)
+	ret2, _ := ret[2].(error)
+	return ret0, ret1, ret2
+}
+
+// ReadByEmail indicates an expected call of ReadByEmail.
+func (mr *MockUsererMockRecorder) ReadByEmail(ctx, email, orgName interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ReadByEmail", reflect.TypeOf((*MockUserer)(nil).ReadByEmail), ctx, email, orgName)
+}
+
+// Update mocks base method.
+func (m *MockUserer) Update(ctx context.Context, user *api.User) (*api.User, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "Update", ctx, user)
+	ret0, _ := ret[0].(*api.User)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// Update indicates an expected call of Update.
+func (mr *MockUsererMockRecorder) Update(ctx, user interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Update", reflect.TypeOf((*MockUserer)(nil).Update), ctx, user)
+}
+
+// UpdatePassword mocks base method.
+func (m *MockUserer) UpdatePassword(ctx context.Context, userID, orgID string, passHash []byte) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "UpdatePassword", ctx, userID, orgID, passHash)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// UpdatePassword indicates an expected call of UpdatePassword.
+func (mr *MockUsererMockRecorder) UpdatePassword(ctx, userID, orgID, passHash interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdatePassword", reflect.TypeOf((*MockUserer)(nil).UpdatePassword), ctx, userID, orgID, passHash)
 }

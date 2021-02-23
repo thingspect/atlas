@@ -6,36 +6,37 @@ package service
 
 import (
 	context "context"
-	gomock "github.com/golang/mock/gomock"
-	api "github.com/thingspect/api/go/api"
 	reflect "reflect"
 	time "time"
+
+	gomock "github.com/golang/mock/gomock"
+	api "github.com/thingspect/api/go/api"
 )
 
-// MockOrger is a mock of Orger interface
+// MockOrger is a mock of Orger interface.
 type MockOrger struct {
 	ctrl     *gomock.Controller
 	recorder *MockOrgerMockRecorder
 }
 
-// MockOrgerMockRecorder is the mock recorder for MockOrger
+// MockOrgerMockRecorder is the mock recorder for MockOrger.
 type MockOrgerMockRecorder struct {
 	mock *MockOrger
 }
 
-// NewMockOrger creates a new mock instance
+// NewMockOrger creates a new mock instance.
 func NewMockOrger(ctrl *gomock.Controller) *MockOrger {
 	mock := &MockOrger{ctrl: ctrl}
 	mock.recorder = &MockOrgerMockRecorder{mock}
 	return mock
 }
 
-// EXPECT returns an object that allows the caller to indicate expected use
+// EXPECT returns an object that allows the caller to indicate expected use.
 func (m *MockOrger) EXPECT() *MockOrgerMockRecorder {
 	return m.recorder
 }
 
-// Create mocks base method
+// Create mocks base method.
 func (m *MockOrger) Create(ctx context.Context, org *api.Org) (*api.Org, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Create", ctx, org)
@@ -44,43 +45,13 @@ func (m *MockOrger) Create(ctx context.Context, org *api.Org) (*api.Org, error) 
 	return ret0, ret1
 }
 
-// Create indicates an expected call of Create
+// Create indicates an expected call of Create.
 func (mr *MockOrgerMockRecorder) Create(ctx, org interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Create", reflect.TypeOf((*MockOrger)(nil).Create), ctx, org)
 }
 
-// Read mocks base method
-func (m *MockOrger) Read(ctx context.Context, orgID string) (*api.Org, error) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Read", ctx, orgID)
-	ret0, _ := ret[0].(*api.Org)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// Read indicates an expected call of Read
-func (mr *MockOrgerMockRecorder) Read(ctx, orgID interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Read", reflect.TypeOf((*MockOrger)(nil).Read), ctx, orgID)
-}
-
-// Update mocks base method
-func (m *MockOrger) Update(ctx context.Context, org *api.Org) (*api.Org, error) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Update", ctx, org)
-	ret0, _ := ret[0].(*api.Org)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// Update indicates an expected call of Update
-func (mr *MockOrgerMockRecorder) Update(ctx, org interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Update", reflect.TypeOf((*MockOrger)(nil).Update), ctx, org)
-}
-
-// Delete mocks base method
+// Delete mocks base method.
 func (m *MockOrger) Delete(ctx context.Context, orgID string) error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Delete", ctx, orgID)
@@ -88,13 +59,13 @@ func (m *MockOrger) Delete(ctx context.Context, orgID string) error {
 	return ret0
 }
 
-// Delete indicates an expected call of Delete
+// Delete indicates an expected call of Delete.
 func (mr *MockOrgerMockRecorder) Delete(ctx, orgID interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Delete", reflect.TypeOf((*MockOrger)(nil).Delete), ctx, orgID)
 }
 
-// List mocks base method
+// List mocks base method.
 func (m *MockOrger) List(ctx context.Context, lboundTS time.Time, prevID string, limit int32) ([]*api.Org, int32, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "List", ctx, lboundTS, prevID, limit)
@@ -104,8 +75,38 @@ func (m *MockOrger) List(ctx context.Context, lboundTS time.Time, prevID string,
 	return ret0, ret1, ret2
 }
 
-// List indicates an expected call of List
+// List indicates an expected call of List.
 func (mr *MockOrgerMockRecorder) List(ctx, lboundTS, prevID, limit interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "List", reflect.TypeOf((*MockOrger)(nil).List), ctx, lboundTS, prevID, limit)
+}
+
+// Read mocks base method.
+func (m *MockOrger) Read(ctx context.Context, orgID string) (*api.Org, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "Read", ctx, orgID)
+	ret0, _ := ret[0].(*api.Org)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// Read indicates an expected call of Read.
+func (mr *MockOrgerMockRecorder) Read(ctx, orgID interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Read", reflect.TypeOf((*MockOrger)(nil).Read), ctx, orgID)
+}
+
+// Update mocks base method.
+func (m *MockOrger) Update(ctx context.Context, org *api.Org) (*api.Org, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "Update", ctx, org)
+	ret0, _ := ret[0].(*api.Org)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// Update indicates an expected call of Update.
+func (mr *MockOrgerMockRecorder) Update(ctx, org interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Update", reflect.TypeOf((*MockOrger)(nil).Update), ctx, org)
 }

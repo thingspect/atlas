@@ -28,10 +28,7 @@ func TestStatusCode(t *testing.T) {
 			"201"}}
 		t.Logf("mdHeader, wHeader: %+v, %+v", mdHeader, wHeader)
 
-		ctrl := gomock.NewController(t)
-		defer ctrl.Finish()
-
-		respWriter := NewMockResponseWriter(ctrl)
+		respWriter := NewMockResponseWriter(gomock.NewController(t))
 		respWriter.EXPECT().Header().Return(wHeader).Times(1)
 		respWriter.EXPECT().WriteHeader(201).Times(1)
 
@@ -56,9 +53,7 @@ func TestStatusCode(t *testing.T) {
 		wHeader := http.Header{}
 		t.Logf("mdHeader, wHeader: %+v, %+v", mdHeader, wHeader)
 
-		ctrl := gomock.NewController(t)
-		defer ctrl.Finish()
-		respWriter := NewMockResponseWriter(ctrl)
+		respWriter := NewMockResponseWriter(gomock.NewController(t))
 
 		ctx, cancel := context.WithTimeout(runtime.NewServerMetadataContext(
 			context.Background(), runtime.ServerMetadata{HeaderMD: mdHeader}),
@@ -81,9 +76,7 @@ func TestStatusCode(t *testing.T) {
 		wHeader := http.Header{}
 		t.Logf("mdHeader, wHeader: %+v, %+v", mdHeader, wHeader)
 
-		ctrl := gomock.NewController(t)
-		defer ctrl.Finish()
-		respWriter := NewMockResponseWriter(ctrl)
+		respWriter := NewMockResponseWriter(gomock.NewController(t))
 
 		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
 		defer cancel()
@@ -105,9 +98,7 @@ func TestStatusCode(t *testing.T) {
 			"201"}}
 		t.Logf("mdHeader, wHeader: %+v, %+v", mdHeader, wHeader)
 
-		ctrl := gomock.NewController(t)
-		defer ctrl.Finish()
-		respWriter := NewMockResponseWriter(ctrl)
+		respWriter := NewMockResponseWriter(gomock.NewController(t))
 
 		ctx, cancel := context.WithTimeout(runtime.NewServerMetadataContext(
 			context.Background(), runtime.ServerMetadata{HeaderMD: mdHeader}),

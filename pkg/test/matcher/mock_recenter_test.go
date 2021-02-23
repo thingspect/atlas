@@ -5,35 +5,36 @@
 package matcher
 
 import (
-	gomock "github.com/golang/mock/gomock"
 	reflect "reflect"
 	time "time"
+
+	gomock "github.com/golang/mock/gomock"
 )
 
-// Mockrecenter is a mock of recenter interface
+// Mockrecenter is a mock of recenter interface.
 type Mockrecenter struct {
 	ctrl     *gomock.Controller
 	recorder *MockrecenterMockRecorder
 }
 
-// MockrecenterMockRecorder is the mock recorder for Mockrecenter
+// MockrecenterMockRecorder is the mock recorder for Mockrecenter.
 type MockrecenterMockRecorder struct {
 	mock *Mockrecenter
 }
 
-// NewMockrecenter creates a new mock instance
+// NewMockrecenter creates a new mock instance.
 func NewMockrecenter(ctrl *gomock.Controller) *Mockrecenter {
 	mock := &Mockrecenter{ctrl: ctrl}
 	mock.recorder = &MockrecenterMockRecorder{mock}
 	return mock
 }
 
-// EXPECT returns an object that allows the caller to indicate expected use
+// EXPECT returns an object that allows the caller to indicate expected use.
 func (m *Mockrecenter) EXPECT() *MockrecenterMockRecorder {
 	return m.recorder
 }
 
-// f mocks base method
+// f mocks base method.
 func (m *Mockrecenter) f(t time.Time) error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "f", t)
@@ -41,7 +42,7 @@ func (m *Mockrecenter) f(t time.Time) error {
 	return ret0
 }
 
-// f indicates an expected call of f
+// f indicates an expected call of f.
 func (mr *MockrecenterMockRecorder) f(t interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "f", reflect.TypeOf((*Mockrecenter)(nil).f), t)

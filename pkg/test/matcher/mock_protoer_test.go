@@ -5,35 +5,36 @@
 package matcher
 
 import (
+	reflect "reflect"
+
 	gomock "github.com/golang/mock/gomock"
 	message "github.com/thingspect/atlas/api/go/message"
-	reflect "reflect"
 )
 
-// Mockprotoer is a mock of protoer interface
+// Mockprotoer is a mock of protoer interface.
 type Mockprotoer struct {
 	ctrl     *gomock.Controller
 	recorder *MockprotoerMockRecorder
 }
 
-// MockprotoerMockRecorder is the mock recorder for Mockprotoer
+// MockprotoerMockRecorder is the mock recorder for Mockprotoer.
 type MockprotoerMockRecorder struct {
 	mock *Mockprotoer
 }
 
-// NewMockprotoer creates a new mock instance
+// NewMockprotoer creates a new mock instance.
 func NewMockprotoer(ctrl *gomock.Controller) *Mockprotoer {
 	mock := &Mockprotoer{ctrl: ctrl}
 	mock.recorder = &MockprotoerMockRecorder{mock}
 	return mock
 }
 
-// EXPECT returns an object that allows the caller to indicate expected use
+// EXPECT returns an object that allows the caller to indicate expected use.
 func (m *Mockprotoer) EXPECT() *MockprotoerMockRecorder {
 	return m.recorder
 }
 
-// f mocks base method
+// f mocks base method.
 func (m *Mockprotoer) f(vIn *message.ValidatorIn) error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "f", vIn)
@@ -41,7 +42,7 @@ func (m *Mockprotoer) f(vIn *message.ValidatorIn) error {
 	return ret0
 }
 
-// f indicates an expected call of f
+// f indicates an expected call of f.
 func (mr *MockprotoerMockRecorder) f(vIn interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "f", reflect.TypeOf((*Mockprotoer)(nil).f), vIn)

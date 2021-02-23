@@ -43,7 +43,7 @@ func NewUserServiceClient(cc grpc.ClientConnInterface) UserServiceClient {
 
 func (c *userServiceClient) CreateUser(ctx context.Context, in *CreateUserRequest, opts ...grpc.CallOption) (*User, error) {
 	out := new(User)
-	err := c.cc.Invoke(ctx, "/api.UserService/CreateUser", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/thingspect.api.UserService/CreateUser", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -52,7 +52,7 @@ func (c *userServiceClient) CreateUser(ctx context.Context, in *CreateUserReques
 
 func (c *userServiceClient) GetUser(ctx context.Context, in *GetUserRequest, opts ...grpc.CallOption) (*User, error) {
 	out := new(User)
-	err := c.cc.Invoke(ctx, "/api.UserService/GetUser", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/thingspect.api.UserService/GetUser", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -61,7 +61,7 @@ func (c *userServiceClient) GetUser(ctx context.Context, in *GetUserRequest, opt
 
 func (c *userServiceClient) UpdateUser(ctx context.Context, in *UpdateUserRequest, opts ...grpc.CallOption) (*User, error) {
 	out := new(User)
-	err := c.cc.Invoke(ctx, "/api.UserService/UpdateUser", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/thingspect.api.UserService/UpdateUser", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -70,7 +70,7 @@ func (c *userServiceClient) UpdateUser(ctx context.Context, in *UpdateUserReques
 
 func (c *userServiceClient) UpdateUserPassword(ctx context.Context, in *UpdateUserPasswordRequest, opts ...grpc.CallOption) (*empty.Empty, error) {
 	out := new(empty.Empty)
-	err := c.cc.Invoke(ctx, "/api.UserService/UpdateUserPassword", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/thingspect.api.UserService/UpdateUserPassword", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -79,7 +79,7 @@ func (c *userServiceClient) UpdateUserPassword(ctx context.Context, in *UpdateUs
 
 func (c *userServiceClient) DeleteUser(ctx context.Context, in *DeleteUserRequest, opts ...grpc.CallOption) (*empty.Empty, error) {
 	out := new(empty.Empty)
-	err := c.cc.Invoke(ctx, "/api.UserService/DeleteUser", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/thingspect.api.UserService/DeleteUser", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -88,7 +88,7 @@ func (c *userServiceClient) DeleteUser(ctx context.Context, in *DeleteUserReques
 
 func (c *userServiceClient) ListUsers(ctx context.Context, in *ListUsersRequest, opts ...grpc.CallOption) (*ListUsersResponse, error) {
 	out := new(ListUsersResponse)
-	err := c.cc.Invoke(ctx, "/api.UserService/ListUsers", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/thingspect.api.UserService/ListUsers", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -159,7 +159,7 @@ func _UserService_CreateUser_Handler(srv interface{}, ctx context.Context, dec f
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/api.UserService/CreateUser",
+		FullMethod: "/thingspect.api.UserService/CreateUser",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(UserServiceServer).CreateUser(ctx, req.(*CreateUserRequest))
@@ -177,7 +177,7 @@ func _UserService_GetUser_Handler(srv interface{}, ctx context.Context, dec func
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/api.UserService/GetUser",
+		FullMethod: "/thingspect.api.UserService/GetUser",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(UserServiceServer).GetUser(ctx, req.(*GetUserRequest))
@@ -195,7 +195,7 @@ func _UserService_UpdateUser_Handler(srv interface{}, ctx context.Context, dec f
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/api.UserService/UpdateUser",
+		FullMethod: "/thingspect.api.UserService/UpdateUser",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(UserServiceServer).UpdateUser(ctx, req.(*UpdateUserRequest))
@@ -213,7 +213,7 @@ func _UserService_UpdateUserPassword_Handler(srv interface{}, ctx context.Contex
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/api.UserService/UpdateUserPassword",
+		FullMethod: "/thingspect.api.UserService/UpdateUserPassword",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(UserServiceServer).UpdateUserPassword(ctx, req.(*UpdateUserPasswordRequest))
@@ -231,7 +231,7 @@ func _UserService_DeleteUser_Handler(srv interface{}, ctx context.Context, dec f
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/api.UserService/DeleteUser",
+		FullMethod: "/thingspect.api.UserService/DeleteUser",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(UserServiceServer).DeleteUser(ctx, req.(*DeleteUserRequest))
@@ -249,7 +249,7 @@ func _UserService_ListUsers_Handler(srv interface{}, ctx context.Context, dec fu
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/api.UserService/ListUsers",
+		FullMethod: "/thingspect.api.UserService/ListUsers",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(UserServiceServer).ListUsers(ctx, req.(*ListUsersRequest))
@@ -261,7 +261,7 @@ func _UserService_ListUsers_Handler(srv interface{}, ctx context.Context, dec fu
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
 var UserService_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "api.UserService",
+	ServiceName: "thingspect.api.UserService",
 	HandlerType: (*UserServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{

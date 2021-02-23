@@ -16,6 +16,13 @@ type Config struct {
 
 	NSQPubAddr  string
 	NSQPubTopic string
+
+	LoRaAddr      string
+	LoRaAPIKey    string
+	LoRaOrgID     int
+	LoRaNSID      int
+	LoRaAppID     int
+	LoRaDevProfID string
 }
 
 // New instantiates a service Config, parses the environment, and returns it.
@@ -30,5 +37,12 @@ func New() *Config {
 
 		NSQPubAddr:  config.String(pref+"NSQ_PUB_ADDR", "127.0.0.1:4150"),
 		NSQPubTopic: config.String(pref+"NSQ_PUB_TOPIC", "ValidatorIn"),
+
+		LoRaAddr:      config.String(pref+"LORA_ADDR", ""),
+		LoRaAPIKey:    config.String(pref+"LORA_API_KEY", ""),
+		LoRaOrgID:     config.Int(pref+"LORA_ORG_ID", 2),
+		LoRaNSID:      config.Int(pref+"LORA_NS_ID", 1),
+		LoRaAppID:     config.Int(pref+"LORA_APP_ID", 1),
+		LoRaDevProfID: config.String(pref+"LORA_DEV_PROF_ID", ""),
 	}
 }
