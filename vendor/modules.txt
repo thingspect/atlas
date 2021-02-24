@@ -94,7 +94,7 @@ github.com/smira/go-statsd
 ## explicit
 github.com/stretchr/testify/assert
 github.com/stretchr/testify/require
-# github.com/thingspect/api/go v0.0.0-20210223040412-c24f12775bb5
+# github.com/thingspect/api/go v0.0.0-20210224023312-9d29ba1c1baa
 ## explicit
 github.com/thingspect/api/go/api
 github.com/thingspect/api/go/common
@@ -105,7 +105,6 @@ golang.org/x/crypto/bcrypt
 golang.org/x/crypto/blowfish
 golang.org/x/crypto/pbkdf2
 # golang.org/x/net v0.0.0-20210222171744-9060382bd457
-## explicit
 golang.org/x/net/http/httpguts
 golang.org/x/net/http2
 golang.org/x/net/http2/hpack
@@ -115,7 +114,6 @@ golang.org/x/net/internal/timeseries
 golang.org/x/net/proxy
 golang.org/x/net/trace
 # golang.org/x/sys v0.0.0-20210223212115-eede4237b368
-## explicit
 golang.org/x/sys/internal/unsafeheader
 golang.org/x/sys/unix
 # golang.org/x/text v0.3.5
@@ -136,7 +134,6 @@ golang.org/x/text/width
 golang.org/x/xerrors
 golang.org/x/xerrors/internal
 # google.golang.org/genproto v0.0.0-20210223151946-22b48be4551b
-## explicit
 google.golang.org/genproto/googleapis/api/annotations
 google.golang.org/genproto/googleapis/api/httpbody
 google.golang.org/genproto/googleapis/rpc/status

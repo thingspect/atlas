@@ -7,9 +7,10 @@ jobs:
     name: Build
     runs-on: ubuntu-latest
     container:
-      image: golang:1.15-alpine
+      image: golang:1.16-alpine
       env:
         DOCKER: "y"
+        # RACE: "y"
         TEST_PG_URI: postgres://postgres:postgres@postgres/atlas_test
         TEST_NSQ_PUB_ADDR: nsqd:4150
         TEST_NSQ_LOOKUP_ADDRS: nsqlookupd:4161
@@ -40,10 +41,10 @@ jobs:
       - name: Deps
         # Names are duplicated as IDs for important steps for use by Notify
         id: Deps
-        # Add packages needed to support PIE builds and tests
+        # Add packages needed to support builds, tests, and optionally -race
         run: |
           apk update && apk upgrade
-          apk add --no-cache make gcc musl-dev git
+          apk add --no-cache make git #gcc musl-dev
           go version
           go env
       - name: Clone
