@@ -1,17 +1,20 @@
-.PHONY: install installrace lint init_db test unit_test integration_test \
-mod generate
+.PHONY: install lint init_db test unit_test integration_test mod generate
 
-RFLAG =
+# Non-cgo DNS is more reliable and faster for non-esoteric uses of resolv.conf
+export CGO_ENABLED = 0
+RFLAG = -buildmode=pie
+
+# Race detector is exclusive of non-cgo and PIE
+# https://github.com/golang/go/issues/6508
 ifneq ($(RACE),)
+export CGO_ENABLED = 1
 RFLAG = -race
-export GORACE = "halt_on_error=1"
+export GORACE = halt_on_error=1
 endif
 
 # Assemble GOBIN until supported: https://github.com/golang/go/issues/23439
-CGO =
 INSTALLPATH = $(shell go env GOPATH)
 ifneq ($(DOCKER),)
-CGO = CGO_ENABLED=0
 INSTALLPATH = .
 endif
 
@@ -19,46 +22,37 @@ ifeq ($(strip $(TEST_PG_URI)),)
 TEST_PG_URI = postgres://postgres:postgres@127.0.0.1/atlas_test
 endif
 
-# Native Go (CGO_ENABLED=0) is faster for non-esoteric uses of DNS/user, but is
-# not currently supported in conjunction with PIE on darwin/amd64:
-# https://github.com/golang/go/issues/42459
 install:
-	for x in $(shell find cmd -mindepth 1 -type d); do $(CGO) go build -o \
-	$(INSTALLPATH)/bin/$${x#cmd/} -ldflags="-w" -buildmode=pie ./$${x}; done
+	for x in $(shell find cmd -mindepth 1 -type d); do go build -ldflags="-w" \
+	-o $(INSTALLPATH)/bin/$${x#cmd/} $(RFLAG) ./$${x}; done
 
-	for x in $(shell find tool -mindepth 1 -type d); do $(CGO) go build -o \
-	$(INSTALLPATH)/bin/$${x#tool/} -ldflags="-w" -buildmode=pie ./$${x}; done
-
-# Race detector is exclusive of non-cgo and PIE
-# https://github.com/golang/go/issues/9918
-installrace:
-	for x in $(shell find cmd -mindepth 1 -type d); do go build -o \
-	$(INSTALLPATH)/bin/$${x#cmd/}.race -ldflags="-w" -race ./$${x}; done
+	for x in $(shell find tool -mindepth 1 -type d); do go build -ldflags="-w" \
+	-o $(INSTALLPATH)/bin/$${x#tool/} $(RFLAG) ./$${x}; done
 
 lint:
-	cd /tmp && GO111MODULE=on go get honnef.co/go/tools/cmd/staticcheck && \
-	cd $(CURDIR)
+	go install honnef.co/go/tools/cmd/staticcheck@latest
+	staticcheck -version
 # staticcheck defaults are all,-ST1000,-ST1003,-ST1016,-ST1020,-ST1021,-ST1022
 	staticcheck -checks all ./...
 
-	cd /tmp && GO111MODULE=on go get \
-	github.com/golangci/golangci-lint/cmd/golangci-lint && cd $(CURDIR)
+	go install github.com/golangci/golangci-lint/cmd/golangci-lint@latest
+	golangci-lint --version
 # unused is included in the newer version of staticcheck above
 	golangci-lint run -D staticcheck,unused -E \
 	goconst,godot,goerr113,gosec,prealloc,scopelint,unconvert,unparam
 
 init_db:
-	cd /tmp && GO111MODULE=on go get -tags postgres \
-	github.com/golang-migrate/migrate/v4/cmd/migrate && cd $(CURDIR)
+	go install -tags postgres \
+	github.com/golang-migrate/migrate/v4/cmd/migrate@latest
 	migrate -path /tmp -database $(TEST_PG_URI)?sslmode=disable drop -f
 	migrate -path config/db/atlas -database $(TEST_PG_URI)?sslmode=disable up
 
-test: install installrace lint unit_test integration_test
+test: install lint unit_test integration_test
 # -count 1 is the idiomatic way to disable test caching in package list mode
 unit_test:
-	go test -count=1 -cover $(RFLAG) -cpu 1,4 -tags unit ./...
+	go test -count=1 -cover -cpu 1,4 -failfast $(RFLAG) -tags unit ./...
 integration_test: init_db
-	go test -count=1 -cover $(RFLAG) -cpu 1,4 -tags integration ./...
+	go test -count=1 -cover -cpu 1,4 -failfast $(RFLAG) -tags integration ./...
 
 mod:
 	go get -t -u ./... || true
@@ -69,6 +63,6 @@ mod:
 	../api/openapi/atlas.swagger.json web/; fi
 
 generate:
-	cd /tmp && GO111MODULE=on go get github.com/golang/mock/mockgen && \
-	cd $(CURDIR)
+	go install github.com/golang/mock/mockgen@latest
+	mockgen -version
 	go generate -x ./...

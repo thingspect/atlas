@@ -3,8 +3,7 @@
 generate: deps message token
 
 deps:
-# Force GO111MODULE on in the absence of a go.mod file
-	GO111MODULE=on go get google.golang.org/protobuf/cmd/protoc-gen-go
+	go install google.golang.org/protobuf/cmd/protoc-gen-go@latest
 
 message:
 	protoc -I=../protobuf -I=/tmp/googleapis -I=/tmp/pgv \

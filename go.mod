@@ -1,6 +1,6 @@
 module github.com/thingspect/atlas
 
-go 1.15
+go 1.16
 
 require (
 	github.com/NYTimes/gziphandler v1.1.1
@@ -20,11 +20,8 @@ require (
 	github.com/rs/zerolog v1.20.0
 	github.com/smira/go-statsd v1.3.2
 	github.com/stretchr/testify v1.7.0
-	github.com/thingspect/api/go v0.0.0-20210223040412-c24f12775bb5
+	github.com/thingspect/api/go v0.0.0-20210224023312-9d29ba1c1baa
 	golang.org/x/crypto v0.0.0-20210220033148-5ea612d1eb83
-	golang.org/x/net v0.0.0-20210222171744-9060382bd457 // indirect
-	golang.org/x/sys v0.0.0-20210223212115-eede4237b368 // indirect
-	google.golang.org/genproto v0.0.0-20210223151946-22b48be4551b // indirect
 	google.golang.org/grpc v1.35.0
 	google.golang.org/protobuf v1.25.0
 	gopkg.in/yaml.v3 v3.0.0-20210107192922-496545a6307b // indirect
