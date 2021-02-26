@@ -14,6 +14,7 @@ import (
 	"github.com/thingspect/api/go/api"
 	"github.com/thingspect/atlas/pkg/dao"
 	"github.com/thingspect/atlas/pkg/test/random"
+	"google.golang.org/protobuf/proto"
 )
 
 func TestCreate(t *testing.T) {
@@ -29,13 +30,15 @@ func TestCreate(t *testing.T) {
 	t.Run("Create valid device", func(t *testing.T) {
 		t.Parallel()
 
+		dev := random.Device("dao-device", createOrg.Id)
+		dev.Tags = nil
+		createDev := proto.Clone(dev).(*api.Device)
+
 		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
 		defer cancel()
 
-		dev := random.Device("dao-device", createOrg.Id)
-		dev.Tags = nil
-		createDev, err := globalDevDAO.Create(ctx, dev)
-		t.Logf("createDev, err: %+v, %v", createDev, err)
+		createDev, err := globalDevDAO.Create(ctx, createDev)
+		t.Logf("dev, createDev, err: %+v, %+v, %v", dev, createDev, err)
 		require.NoError(t, err)
 		require.Equal(t, dev.OrgId, createDev.OrgId)
 		require.Equal(t, dev.UniqId, createDev.UniqId)
@@ -52,12 +55,14 @@ func TestCreate(t *testing.T) {
 	t.Run("Create valid device with tags", func(t *testing.T) {
 		t.Parallel()
 
+		dev := random.Device("dao-device", createOrg.Id)
+		createDev := proto.Clone(dev).(*api.Device)
+
 		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
 		defer cancel()
 
-		dev := random.Device("dao-device", createOrg.Id)
-		createDev, err := globalDevDAO.Create(ctx, dev)
-		t.Logf("createDev, err: %+v, %v", createDev, err)
+		createDev, err := globalDevDAO.Create(ctx, createDev)
+		t.Logf("dev, createDev, err: %+v, %+v, %v", dev, createDev, err)
 		require.NoError(t, err)
 		require.Equal(t, dev.OrgId, createDev.OrgId)
 		require.Equal(t, dev.UniqId, createDev.UniqId)
@@ -74,13 +79,15 @@ func TestCreate(t *testing.T) {
 	t.Run("Create valid device with uppercase UniqId", func(t *testing.T) {
 		t.Parallel()
 
+		dev := random.Device("dao-device", createOrg.Id)
+		dev.UniqId = strings.ToUpper(dev.UniqId)
+		createDev := proto.Clone(dev).(*api.Device)
+
 		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
 		defer cancel()
 
-		dev := random.Device("dao-device", createOrg.Id)
-		dev.UniqId = strings.ToUpper(dev.UniqId)
-		createDev, err := globalDevDAO.Create(ctx, dev)
-		t.Logf("createDev, err: %+v, %v", createDev, err)
+		createDev, err := globalDevDAO.Create(ctx, createDev)
+		t.Logf("dev, createDev, err: %+v, %+v, %v", dev, createDev, err)
 		require.NoError(t, err)
 		require.Equal(t, dev.OrgId, createDev.OrgId)
 		require.Equal(t, strings.ToLower(dev.UniqId), createDev.UniqId)
@@ -97,13 +104,14 @@ func TestCreate(t *testing.T) {
 	t.Run("Create invalid device", func(t *testing.T) {
 		t.Parallel()
 
+		dev := random.Device("dao-device", createOrg.Id)
+		dev.UniqId = "dao-device-" + random.String(40)
+
 		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
 		defer cancel()
 
-		dev := random.Device("dao-device", createOrg.Id)
-		dev.UniqId = "dao-device-" + random.String(40)
 		createDev, err := globalDevDAO.Create(ctx, dev)
-		t.Logf("createDev, err: %+v, %v", createDev, err)
+		t.Logf("dev, createDev, err: %+v, %+v, %v", dev, createDev, err)
 		require.Nil(t, createDev)
 		require.ErrorIs(t, err, dao.ErrInvalidFormat)
 	})
@@ -243,9 +251,11 @@ func TestUpdate(t *testing.T) {
 		createDev.Status = api.Status_DISABLED
 		createDev.Decoder = api.Decoder_GATEWAY
 		createDev.Tags = nil
+		updateDev := proto.Clone(createDev).(*api.Device)
 
-		updateDev, err := globalDevDAO.Update(ctx, createDev)
-		t.Logf("updateDev, err: %+v, %v", updateDev, err)
+		updateDev, err = globalDevDAO.Update(ctx, updateDev)
+		t.Logf("createDev, updateDev, err: %+v, %+v, %v", createDev, updateDev,
+			err)
 		require.NoError(t, err)
 		require.Equal(t, createDev.UniqId, updateDev.UniqId)
 		require.Equal(t, createDev.Name, updateDev.Name)
@@ -288,7 +298,8 @@ func TestUpdate(t *testing.T) {
 		createDev.UniqId = "dao-device-" + random.String(16)
 
 		updateDev, err := globalDevDAO.Update(ctx, createDev)
-		t.Logf("updateDev, err: %+v, %v", updateDev, err)
+		t.Logf("createDev, updateDev, err: %+v, %+v, %v", createDev, updateDev,
+			err)
 		require.Nil(t, updateDev)
 		require.Equal(t, dao.ErrNotFound, err)
 	})
@@ -308,7 +319,8 @@ func TestUpdate(t *testing.T) {
 		createDev.UniqId = "dao-device-" + random.String(40)
 
 		updateDev, err := globalDevDAO.Update(ctx, createDev)
-		t.Logf("updateDev, err: %+v, %v", updateDev, err)
+		t.Logf("createDev, updateDev, err: %+v, %+v, %v", createDev, updateDev,
+			err)
 		require.Nil(t, updateDev)
 		require.ErrorIs(t, err, dao.ErrInvalidFormat)
 	})

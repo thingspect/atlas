@@ -30,9 +30,10 @@ func TestCreateDevice(t *testing.T) {
 		t.Parallel()
 
 		dev := random.Device("api-device", uuid.NewString())
+		retDev := proto.Clone(dev).(*api.Device)
 
 		devicer := NewMockDevicer(gomock.NewController(t))
-		devicer.EXPECT().Create(gomock.Any(), dev).Return(dev, nil).Times(1)
+		devicer.EXPECT().Create(gomock.Any(), dev).Return(retDev, nil).Times(1)
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
 			context.Background(), &session.Session{OrgID: dev.OrgId,
@@ -42,7 +43,7 @@ func TestCreateDevice(t *testing.T) {
 		devSvc := NewDevice(devicer, nil)
 		createDev, err := devSvc.CreateDevice(ctx, &api.CreateDeviceRequest{
 			Device: dev})
-		t.Logf("createDev, err: %+v, %v", createDev, err)
+		t.Logf("dev, createDev, err: %+v, %+v, %v", dev, createDev, err)
 		require.NoError(t, err)
 
 		// Testify does not currently support protobuf equality:
@@ -98,7 +99,7 @@ func TestCreateDevice(t *testing.T) {
 		devSvc := NewDevice(devicer, nil)
 		createDev, err := devSvc.CreateDevice(ctx, &api.CreateDeviceRequest{
 			Device: dev})
-		t.Logf("createDev, err: %+v, %v", createDev, err)
+		t.Logf("dev, createDev, err: %+v, %+v, %v", dev, createDev, err)
 		require.Nil(t, createDev)
 		require.Equal(t, status.Error(codes.InvalidArgument, "invalid format"),
 			err)
@@ -249,10 +250,11 @@ func TestGetDevice(t *testing.T) {
 		t.Parallel()
 
 		dev := random.Device("api-device", uuid.NewString())
+		retDev := proto.Clone(dev).(*api.Device)
 
 		devicer := NewMockDevicer(gomock.NewController(t))
-		devicer.EXPECT().Read(gomock.Any(), dev.Id, dev.OrgId).Return(dev, nil).
-			Times(1)
+		devicer.EXPECT().Read(gomock.Any(), dev.Id, dev.OrgId).Return(retDev,
+			nil).Times(1)
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
 			context.Background(), &session.Session{OrgID: dev.OrgId,
@@ -261,7 +263,7 @@ func TestGetDevice(t *testing.T) {
 
 		devSvc := NewDevice(devicer, nil)
 		getDev, err := devSvc.GetDevice(ctx, &api.GetDeviceRequest{Id: dev.Id})
-		t.Logf("getDev, err: %+v, %v", getDev, err)
+		t.Logf("dev, getDev, err: %+v, %+v, %v", dev, getDev, err)
 		require.NoError(t, err)
 
 		// Testify does not currently support protobuf equality:
@@ -327,9 +329,10 @@ func TestUpdateDevice(t *testing.T) {
 		t.Parallel()
 
 		dev := random.Device("api-device", uuid.NewString())
+		retDev := proto.Clone(dev).(*api.Device)
 
 		devicer := NewMockDevicer(gomock.NewController(t))
-		devicer.EXPECT().Update(gomock.Any(), dev).Return(dev, nil).Times(1)
+		devicer.EXPECT().Update(gomock.Any(), dev).Return(retDev, nil).Times(1)
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
 			context.Background(), &session.Session{OrgID: dev.OrgId,
@@ -339,7 +342,7 @@ func TestUpdateDevice(t *testing.T) {
 		devSvc := NewDevice(devicer, nil)
 		updateDev, err := devSvc.UpdateDevice(ctx, &api.UpdateDeviceRequest{
 			Device: dev})
-		t.Logf("updateDev, err: %+v, %v", updateDev, err)
+		t.Logf("dev, updateDev, err: %+v, %+v, %v", dev, updateDev, err)
 		require.NoError(t, err)
 
 		// Testify does not currently support protobuf equality:
@@ -353,17 +356,19 @@ func TestUpdateDevice(t *testing.T) {
 		t.Parallel()
 
 		dev := random.Device("api-device", uuid.NewString())
+		retDev := proto.Clone(dev).(*api.Device)
 		part := &api.Device{Id: dev.Id, Status: api.Status_ACTIVE,
 			Decoder: api.Decoder_GATEWAY}
 		merged := &api.Device{Id: dev.Id, OrgId: dev.OrgId, UniqId: dev.UniqId,
 			Name: dev.Name, Status: api.Status_ACTIVE, Token: dev.Token,
 			Decoder: api.Decoder_GATEWAY, Tags: dev.Tags}
+		retMerged := proto.Clone(merged).(*api.Device)
 
 		devicer := NewMockDevicer(gomock.NewController(t))
-		devicer.EXPECT().Read(gomock.Any(), dev.Id, dev.OrgId).Return(dev, nil).
-			Times(1)
+		devicer.EXPECT().Read(gomock.Any(), dev.Id, dev.OrgId).Return(retDev,
+			nil).Times(1)
 		devicer.EXPECT().Update(gomock.Any(), matcher.NewProtoMatcher(merged)).
-			Return(merged, nil).Times(1)
+			Return(retMerged, nil).Times(1)
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
 			context.Background(), &session.Session{OrgID: dev.OrgId,
@@ -374,7 +379,7 @@ func TestUpdateDevice(t *testing.T) {
 		updateDev, err := devSvc.UpdateDevice(ctx, &api.UpdateDeviceRequest{
 			Device: part, UpdateMask: &fieldmaskpb.FieldMask{
 				Paths: []string{"status", "decoder"}}})
-		t.Logf("updateDev, err: %+v, %v", updateDev, err)
+		t.Logf("merged, updateDev, err: %+v, %+v, %v", merged, updateDev, err)
 		require.NoError(t, err)
 
 		// Testify does not currently support protobuf equality:
@@ -443,7 +448,7 @@ func TestUpdateDevice(t *testing.T) {
 		updateDev, err := devSvc.UpdateDevice(ctx, &api.UpdateDeviceRequest{
 			Device: dev, UpdateMask: &fieldmaskpb.FieldMask{
 				Paths: []string{"aaa"}}})
-		t.Logf("updateDev, err: %+v, %v", updateDev, err)
+		t.Logf("dev, updateDev, err: %+v, %+v, %v", dev, updateDev, err)
 		require.Nil(t, updateDev)
 		require.Equal(t, status.Error(codes.InvalidArgument,
 			"invalid field mask"), err)
@@ -468,7 +473,7 @@ func TestUpdateDevice(t *testing.T) {
 		updateDev, err := devSvc.UpdateDevice(ctx, &api.UpdateDeviceRequest{
 			Device: part, UpdateMask: &fieldmaskpb.FieldMask{
 				Paths: []string{"status"}}})
-		t.Logf("updateDev, err: %+v, %v", updateDev, err)
+		t.Logf("part, updateDev, err: %+v, %+v, %v", part, updateDev, err)
 		require.Nil(t, updateDev)
 		require.Equal(t, status.Error(codes.NotFound, "object not found"), err)
 	})
@@ -487,7 +492,7 @@ func TestUpdateDevice(t *testing.T) {
 		devSvc := NewDevice(nil, nil)
 		updateDev, err := devSvc.UpdateDevice(ctx, &api.UpdateDeviceRequest{
 			Device: dev})
-		t.Logf("updateDev, err: %+v, %v", updateDev, err)
+		t.Logf("dev, updateDev, err: %+v, %+v, %v", dev, updateDev, err)
 		require.Nil(t, updateDev)
 		require.Equal(t, status.Error(codes.InvalidArgument,
 			"invalid UpdateDeviceRequest.Device: embedded message failed "+
@@ -512,7 +517,7 @@ func TestUpdateDevice(t *testing.T) {
 		devSvc := NewDevice(devicer, nil)
 		updateDev, err := devSvc.UpdateDevice(ctx, &api.UpdateDeviceRequest{
 			Device: dev})
-		t.Logf("updateDev, err: %+v, %v", updateDev, err)
+		t.Logf("dev, updateDev, err: %+v, %+v, %v", dev, updateDev, err)
 		require.Nil(t, updateDev)
 		require.Equal(t, status.Error(codes.InvalidArgument, "invalid format"),
 			err)

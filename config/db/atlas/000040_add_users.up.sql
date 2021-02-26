@@ -8,6 +8,7 @@ CREATE TABLE users (
   password_hash bytea NOT NULL DEFAULT '',
   role role NOT NULL,
   status status NOT NULL,
+  -- Nullable to match protobuf deserialization of slices
   tags varchar(255)[],
   created_at timestamptz NOT NULL,
   updated_at timestamptz NOT NULL

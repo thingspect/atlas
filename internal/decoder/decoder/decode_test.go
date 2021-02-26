@@ -27,7 +27,7 @@ var errTestProc = errors.New("decoder: test processor error")
 func TestDecodeMessages(t *testing.T) {
 	t.Parallel()
 
-	dev := random.Device("dec", uuid.NewString())
+	uniqID := "dec-" + random.String(16)
 	now := timestamppb.New(time.Now().Add(-15 * time.Minute))
 	traceID := uuid.NewString()
 
@@ -36,23 +36,23 @@ func TestDecodeMessages(t *testing.T) {
 		inpDecoder api.Decoder
 		res        []*message.ValidatorIn
 	}{
-		{&message.DecoderIn{UniqId: dev.UniqId, Data: []byte{0x19, 0x03, 0x01},
+		{&message.DecoderIn{UniqId: uniqID, Data: []byte{0x19, 0x03, 0x01},
 			Ts: now, TraceId: traceID}, api.Decoder_RADIO_BRIDGE_DOOR_V1,
 			[]*message.ValidatorIn{
-				{Point: &common.DataPoint{UniqId: dev.UniqId, Attr: "count",
+				{Point: &common.DataPoint{UniqId: uniqID, Attr: "count",
 					ValOneof: &common.DataPoint_IntVal{IntVal: 9}, Ts: now,
 					TraceId: traceID}, SkipToken: true},
-				{Point: &common.DataPoint{UniqId: dev.UniqId, Attr: "open",
+				{Point: &common.DataPoint{UniqId: uniqID, Attr: "open",
 					ValOneof: &common.DataPoint_BoolVal{BoolVal: true}, Ts: now,
 					TraceId: traceID}, SkipToken: true},
 			}},
-		{&message.DecoderIn{UniqId: dev.UniqId, Data: []byte{0x1a, 0x03, 0x00},
+		{&message.DecoderIn{UniqId: uniqID, Data: []byte{0x1a, 0x03, 0x00},
 			Ts: now, TraceId: traceID}, api.Decoder_RADIO_BRIDGE_DOOR_V2,
 			[]*message.ValidatorIn{
-				{Point: &common.DataPoint{UniqId: dev.UniqId, Attr: "count",
+				{Point: &common.DataPoint{UniqId: uniqID, Attr: "count",
 					ValOneof: &common.DataPoint_IntVal{IntVal: 10}, Ts: now,
 					TraceId: traceID}, SkipToken: true},
-				{Point: &common.DataPoint{UniqId: dev.UniqId, Attr: "open",
+				{Point: &common.DataPoint{UniqId: uniqID, Attr: "open",
 					ValOneof: &common.DataPoint_BoolVal{BoolVal: false},
 					Ts:       now, TraceId: traceID}, SkipToken: true},
 			}},
@@ -64,8 +64,9 @@ func TestDecodeMessages(t *testing.T) {
 		t.Run(fmt.Sprintf("Can decode %+v", lTest), func(t *testing.T) {
 			t.Parallel()
 
-			lDev := proto.Clone(dev).(*api.Device)
-			lDev.Decoder = lTest.inpDecoder
+			dev := random.Device("dec", uuid.NewString())
+			dev.UniqId = uniqID
+			dev.Decoder = lTest.inpDecoder
 
 			dInQueue := queue.NewFake()
 			dInSub, err := dInQueue.Subscribe("")
@@ -78,7 +79,7 @@ func TestDecodeMessages(t *testing.T) {
 
 			devicer := NewMockdevicer(gomock.NewController(t))
 			devicer.EXPECT().ReadByUniqID(gomock.Any(), lTest.inpDIn.UniqId).
-				Return(lDev, nil).Times(1)
+				Return(dev, nil).Times(1)
 
 			dec := Decoder{
 				devDAO:   devicer,
@@ -126,8 +127,6 @@ func TestDecodeMessages(t *testing.T) {
 func TestDecodeMessagesError(t *testing.T) {
 	t.Parallel()
 
-	dev := random.Device("dec", uuid.NewString())
-
 	tests := []struct {
 		inpDIn     *message.DecoderIn
 		inpDecoder api.Decoder
@@ -152,8 +151,8 @@ func TestDecodeMessagesError(t *testing.T) {
 		t.Run(fmt.Sprintf("Cannot decode %+v", lTest), func(t *testing.T) {
 			t.Parallel()
 
-			lDev := proto.Clone(dev).(*api.Device)
-			lDev.Decoder = lTest.inpDecoder
+			dev := random.Device("dec", uuid.NewString())
+			dev.Decoder = lTest.inpDecoder
 
 			dInQueue := queue.NewFake()
 			dInSub, err := dInQueue.Subscribe("")
@@ -165,7 +164,7 @@ func TestDecodeMessagesError(t *testing.T) {
 
 			devicer := NewMockdevicer(gomock.NewController(t))
 			devicer.EXPECT().ReadByUniqID(gomock.Any(), gomock.Any()).
-				Return(lDev, lTest.inpErr).Times(lTest.inpTimes)
+				Return(dev, lTest.inpErr).Times(lTest.inpTimes)
 
 			dec := Decoder{
 				devDAO:   devicer,

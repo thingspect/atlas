@@ -164,13 +164,14 @@ func TestListDataPoints(t *testing.T) {
 		point := &common.DataPoint{UniqId: "api-point-" + random.String(16),
 			Attr: "motion", ValOneof: &common.DataPoint_IntVal{IntVal: 123},
 			Ts: timestamppb.Now(), TraceId: uuid.NewString()}
+		retPoint := proto.Clone(point).(*common.DataPoint)
 		orgID := uuid.NewString()
 		end := time.Now().UTC()
 		start := time.Now().UTC().Add(-15 * time.Minute)
 
 		datapointer := NewMockDataPointer(gomock.NewController(t))
 		datapointer.EXPECT().List(gomock.Any(), orgID, point.UniqId, "", "",
-			end, start).Return([]*common.DataPoint{point}, nil).Times(1)
+			end, start).Return([]*common.DataPoint{retPoint}, nil).Times(1)
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
 			context.Background(), &session.Session{OrgID: orgID,
@@ -183,7 +184,7 @@ func TestListDataPoints(t *testing.T) {
 				IdOneof: &api.ListDataPointsRequest_UniqId{
 					UniqId: point.UniqId}, EndTime: timestamppb.New(end),
 				StartTime: timestamppb.New(start)})
-		t.Logf("listPoints, err: %+v, %v", listPoints, err)
+		t.Logf("point, listPoints, err: %+v, %+v, %v", point, listPoints, err)
 		require.NoError(t, err)
 
 		// Testify does not currently support protobuf equality:
@@ -202,6 +203,7 @@ func TestListDataPoints(t *testing.T) {
 		point := &common.DataPoint{UniqId: "api-point-" + random.String(16),
 			Attr: "motion", ValOneof: &common.DataPoint_IntVal{IntVal: 123},
 			Ts: timestamppb.Now(), TraceId: uuid.NewString()}
+		retPoint := proto.Clone(point).(*common.DataPoint)
 		orgID := uuid.NewString()
 		devID := uuid.NewString()
 
@@ -209,7 +211,7 @@ func TestListDataPoints(t *testing.T) {
 		datapointer.EXPECT().List(gomock.Any(), orgID, "", devID, point.Attr,
 			matcher.NewRecentMatcher(2*time.Second),
 			matcher.NewRecentMatcher(24*time.Hour+2*time.Second)).
-			Return([]*common.DataPoint{point}, nil).Times(1)
+			Return([]*common.DataPoint{retPoint}, nil).Times(1)
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
 			context.Background(), &session.Session{OrgID: orgID,
@@ -221,7 +223,7 @@ func TestListDataPoints(t *testing.T) {
 			&api.ListDataPointsRequest{
 				IdOneof: &api.ListDataPointsRequest_DevId{DevId: devID},
 				Attr:    point.Attr})
-		t.Logf("listPoints, err: %+v, %v", listPoints, err)
+		t.Logf("point, listPoints, err: %+v, %+v, %v", point, listPoints, err)
 		require.NoError(t, err)
 
 		// Testify does not currently support protobuf equality:
@@ -319,11 +321,12 @@ func TestLatestDataPoints(t *testing.T) {
 		point := &common.DataPoint{UniqId: "api-point-" + random.String(16),
 			Attr: "motion", ValOneof: &common.DataPoint_IntVal{IntVal: 123},
 			Ts: timestamppb.Now(), TraceId: uuid.NewString()}
+		retPoint := proto.Clone(point).(*common.DataPoint)
 		orgID := uuid.NewString()
 
 		datapointer := NewMockDataPointer(gomock.NewController(t))
 		datapointer.EXPECT().Latest(gomock.Any(), orgID, point.UniqId, "").
-			Return([]*common.DataPoint{point}, nil).Times(1)
+			Return([]*common.DataPoint{retPoint}, nil).Times(1)
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
 			context.Background(), &session.Session{OrgID: orgID,
@@ -335,7 +338,7 @@ func TestLatestDataPoints(t *testing.T) {
 			&api.LatestDataPointsRequest{
 				IdOneof: &api.LatestDataPointsRequest_UniqId{
 					UniqId: point.UniqId}})
-		t.Logf("latPoints, err: %+v, %v", latPoints, err)
+		t.Logf("point, latPoints, err: %+v, %+v, %v", point, latPoints, err)
 		require.NoError(t, err)
 
 		// Testify does not currently support protobuf equality:
@@ -354,12 +357,13 @@ func TestLatestDataPoints(t *testing.T) {
 		point := &common.DataPoint{UniqId: "api-point-" + random.String(16),
 			Attr: "motion", ValOneof: &common.DataPoint_IntVal{IntVal: 123},
 			Ts: timestamppb.Now(), TraceId: uuid.NewString()}
+		retPoint := proto.Clone(point).(*common.DataPoint)
 		orgID := uuid.NewString()
 		devID := uuid.NewString()
 
 		datapointer := NewMockDataPointer(gomock.NewController(t))
 		datapointer.EXPECT().Latest(gomock.Any(), orgID, "", devID).
-			Return([]*common.DataPoint{point}, nil).Times(1)
+			Return([]*common.DataPoint{retPoint}, nil).Times(1)
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
 			context.Background(), &session.Session{OrgID: orgID,
@@ -370,7 +374,7 @@ func TestLatestDataPoints(t *testing.T) {
 		latPoints, err := dpSvc.LatestDataPoints(ctx,
 			&api.LatestDataPointsRequest{
 				IdOneof: &api.LatestDataPointsRequest_DevId{DevId: devID}})
-		t.Logf("latPoints, err: %+v, %v", latPoints, err)
+		t.Logf("point, latPoints, err: %+v, %+v, %v", point, latPoints, err)
 		require.NoError(t, err)
 
 		// Testify does not currently support protobuf equality:
