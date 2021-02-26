@@ -30,13 +30,15 @@ func TestCreate(t *testing.T) {
 	t.Run("Create valid user", func(t *testing.T) {
 		t.Parallel()
 
+		user := random.User("dao-user", createOrg.Id)
+		user.Tags = nil
+		createUser := proto.Clone(user).(*api.User)
+
 		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
 		defer cancel()
 
-		user := random.User("dao-user", createOrg.Id)
-		user.Tags = nil
-		createUser, err := globalUserDAO.Create(ctx, user)
-		t.Logf("createUser, err: %+v, %v", createUser, err)
+		createUser, err := globalUserDAO.Create(ctx, createUser)
+		t.Logf("user, createUser, err: %+v, %+v, %v", user, createUser, err)
 		require.NoError(t, err)
 		require.Equal(t, user.OrgId, createUser.OrgId)
 		require.Equal(t, user.Email, createUser.Email)
@@ -52,12 +54,14 @@ func TestCreate(t *testing.T) {
 	t.Run("Create valid user with tags", func(t *testing.T) {
 		t.Parallel()
 
+		user := random.User("dao-user", createOrg.Id)
+		createUser := proto.Clone(user).(*api.User)
+
 		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
 		defer cancel()
 
-		user := random.User("dao-user", createOrg.Id)
-		createUser, err := globalUserDAO.Create(ctx, user)
-		t.Logf("createUser, err: %+v, %v", createUser, err)
+		createUser, err := globalUserDAO.Create(ctx, createUser)
+		t.Logf("user, createUser, err: %+v, %+v, %v", user, createUser, err)
 		require.NoError(t, err)
 		require.Equal(t, user.OrgId, createUser.OrgId)
 		require.Equal(t, user.Email, createUser.Email)
@@ -73,13 +77,15 @@ func TestCreate(t *testing.T) {
 	t.Run("Create invalid user", func(t *testing.T) {
 		t.Parallel()
 
+		user := random.User("dao-user", createOrg.Id)
+		user.Email = "dao-user-" + random.String(80)
+		createUser := proto.Clone(user).(*api.User)
+
 		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
 		defer cancel()
 
-		user := random.User("dao-user", createOrg.Id)
-		user.Email = "dao-user-" + random.String(80)
-		createUser, err := globalUserDAO.Create(ctx, user)
-		t.Logf("createUser, err: %+v, %v", createUser, err)
+		createUser, err := globalUserDAO.Create(ctx, createUser)
+		t.Logf("user, createUser, err: %+v, %+v, %v", user, createUser, err)
 		require.Nil(t, createUser)
 		require.ErrorIs(t, err, dao.ErrInvalidFormat)
 	})
@@ -254,9 +260,11 @@ func TestUpdate(t *testing.T) {
 		createUser.Role = common.Role_ADMIN
 		createUser.Status = api.Status_DISABLED
 		createUser.Tags = nil
+		updateUser := proto.Clone(createUser).(*api.User)
 
-		updateUser, err := globalUserDAO.Update(ctx, createUser)
-		t.Logf("updateUser, err: %+v, %v", updateUser, err)
+		updateUser, err = globalUserDAO.Update(ctx, updateUser)
+		t.Logf("createUser, updateUser, err: %+v, %+v, %v", createUser,
+			updateUser, err)
 		require.NoError(t, err)
 		require.Equal(t, createUser.Email, updateUser.Email)
 		require.Equal(t, createUser.Role, updateUser.Role)
@@ -296,9 +304,11 @@ func TestUpdate(t *testing.T) {
 		// Update user fields.
 		createUser.OrgId = uuid.NewString()
 		createUser.Email = "dao-user-" + random.Email()
+		updateUser := proto.Clone(createUser).(*api.User)
 
-		updateUser, err := globalUserDAO.Update(ctx, createUser)
-		t.Logf("updateUser, err: %+v, %v", updateUser, err)
+		updateUser, err = globalUserDAO.Update(ctx, updateUser)
+		t.Logf("createUser, updateUser, err: %+v, %+v, %v", createUser,
+			updateUser, err)
 		require.Nil(t, updateUser)
 		require.Equal(t, dao.ErrNotFound, err)
 	})
@@ -317,9 +327,11 @@ func TestUpdate(t *testing.T) {
 		// Update user fields.
 		createUser.Email = "dao-user-" + random.String(80)
 		createUser.Status = api.Status_DISABLED
+		updateUser := proto.Clone(createUser).(*api.User)
 
-		updateUser, err := globalUserDAO.Update(ctx, createUser)
-		t.Logf("updateUser, err: %+v, %v", updateUser, err)
+		updateUser, err = globalUserDAO.Update(ctx, updateUser)
+		t.Logf("createUser, updateUser, err: %+v, %+v, %v", createUser,
+			updateUser, err)
 		require.Nil(t, updateUser)
 		require.ErrorIs(t, err, dao.ErrInvalidFormat)
 	})

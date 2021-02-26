@@ -4,6 +4,7 @@ package service
 
 import (
 	"context"
+	"strings"
 	"testing"
 	"time"
 
@@ -31,9 +32,12 @@ func TestCreateUser(t *testing.T) {
 
 		user := random.User("api-user", uuid.NewString())
 		user.Role = common.Role_BUILDER
+		retUser := proto.Clone(user).(*api.User)
+		retUser.Tags = append(retUser.Tags,
+			strings.ToLower(common.Role_BUILDER.String()))
 
 		userer := NewMockUserer(gomock.NewController(t))
-		userer.EXPECT().Create(gomock.Any(), user).Return(user, nil).Times(1)
+		userer.EXPECT().Create(gomock.Any(), user).Return(retUser, nil).Times(1)
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
 			context.Background(), &session.Session{OrgID: user.OrgId,
@@ -43,7 +47,7 @@ func TestCreateUser(t *testing.T) {
 		userSvc := NewUser(userer)
 		createUser, err := userSvc.CreateUser(ctx, &api.CreateUserRequest{
 			User: user})
-		t.Logf("createUser, err: %+v, %v", createUser, err)
+		t.Logf("user, createUser, err: %+v, %+v, %v", user, createUser, err)
 		require.NoError(t, err)
 
 		// Testify does not currently support protobuf equality:
@@ -95,7 +99,7 @@ func TestCreateUser(t *testing.T) {
 		userSvc := NewUser(nil)
 		createUser, err := userSvc.CreateUser(ctx, &api.CreateUserRequest{
 			User: user})
-		t.Logf("createUser, err: %+v, %v", createUser, err)
+		t.Logf("user, createUser, err: %+v, %+v, %v", user, createUser, err)
 		require.Nil(t, createUser)
 		require.Equal(t, status.Error(codes.PermissionDenied, "permission "+
 			"denied, role modification not allowed"), err)
@@ -119,7 +123,7 @@ func TestCreateUser(t *testing.T) {
 		userSvc := NewUser(userer)
 		createUser, err := userSvc.CreateUser(ctx, &api.CreateUserRequest{
 			User: user})
-		t.Logf("createUser, err: %+v, %v", createUser, err)
+		t.Logf("user, createUser, err: %+v, %+v, %v", user, createUser, err)
 		require.Nil(t, createUser)
 		require.Equal(t, status.Error(codes.InvalidArgument, "invalid format"),
 			err)
@@ -133,9 +137,10 @@ func TestGetUser(t *testing.T) {
 		t.Parallel()
 
 		user := random.User("api-user", uuid.NewString())
+		retUser := proto.Clone(user).(*api.User)
 
 		userer := NewMockUserer(gomock.NewController(t))
-		userer.EXPECT().Read(gomock.Any(), user.Id, user.OrgId).Return(user,
+		userer.EXPECT().Read(gomock.Any(), user.Id, user.OrgId).Return(retUser,
 			nil).Times(1)
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
@@ -145,7 +150,7 @@ func TestGetUser(t *testing.T) {
 
 		userSvc := NewUser(userer)
 		getUser, err := userSvc.GetUser(ctx, &api.GetUserRequest{Id: user.Id})
-		t.Logf("getUser, err: %+v, %v", getUser, err)
+		t.Logf("user, getUser, err: %+v, %+v, %v", user, getUser, err)
 		require.NoError(t, err)
 
 		// Testify does not currently support protobuf equality:
@@ -213,9 +218,10 @@ func TestUpdateUser(t *testing.T) {
 
 		user := random.User("api-user", uuid.NewString())
 		user.Role = common.Role_ADMIN
+		retUser := proto.Clone(user).(*api.User)
 
 		userer := NewMockUserer(gomock.NewController(t))
-		userer.EXPECT().Update(gomock.Any(), user).Return(user, nil).Times(1)
+		userer.EXPECT().Update(gomock.Any(), user).Return(retUser, nil).Times(1)
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
 			context.Background(), &session.Session{OrgID: user.OrgId,
@@ -225,7 +231,7 @@ func TestUpdateUser(t *testing.T) {
 		userSvc := NewUser(userer)
 		updateUser, err := userSvc.UpdateUser(ctx, &api.UpdateUserRequest{
 			User: user})
-		t.Logf("updateUser, err: %+v, %v", updateUser, err)
+		t.Logf("user, updateUser, err: %+v, %+v, %v", user, updateUser, err)
 		require.NoError(t, err)
 
 		// Testify does not currently support protobuf equality:
@@ -240,15 +246,17 @@ func TestUpdateUser(t *testing.T) {
 
 		user := random.User("api-user", uuid.NewString())
 		user.Role = common.Role_ADMIN
+		retUser := proto.Clone(user).(*api.User)
 		part := &api.User{Id: user.Id, Status: api.Status_ACTIVE}
 		merged := &api.User{Id: user.Id, OrgId: user.OrgId, Email: user.Email,
 			Role: user.Role, Status: api.Status_ACTIVE, Tags: user.Tags}
+		retMerged := proto.Clone(merged).(*api.User)
 
 		userer := NewMockUserer(gomock.NewController(t))
-		userer.EXPECT().Read(gomock.Any(), user.Id, user.OrgId).Return(user,
+		userer.EXPECT().Read(gomock.Any(), user.Id, user.OrgId).Return(retUser,
 			nil).Times(1)
 		userer.EXPECT().Update(gomock.Any(), matcher.NewProtoMatcher(merged)).
-			Return(merged, nil).Times(1)
+			Return(retMerged, nil).Times(1)
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
 			context.Background(), &session.Session{OrgID: user.OrgId,
@@ -259,7 +267,7 @@ func TestUpdateUser(t *testing.T) {
 		updateUser, err := userSvc.UpdateUser(ctx, &api.UpdateUserRequest{
 			User: part, UpdateMask: &fieldmaskpb.FieldMask{
 				Paths: []string{"status"}}})
-		t.Logf("updateUser, err: %+v, %v", updateUser, err)
+		t.Logf("merged, updateUser, err: %+v, %+v, %v", merged, updateUser, err)
 		require.NoError(t, err)
 
 		// Testify does not currently support protobuf equality:
@@ -330,7 +338,7 @@ func TestUpdateUser(t *testing.T) {
 		updateUser, err := userSvc.UpdateUser(ctx, &api.UpdateUserRequest{
 			User: user, UpdateMask: &fieldmaskpb.FieldMask{
 				Paths: []string{"aaa"}}})
-		t.Logf("updateUser, err: %+v, %v", updateUser, err)
+		t.Logf("user, updateUser, err: %+v, %+v, %v", user, updateUser, err)
 		require.Nil(t, updateUser)
 		require.Equal(t, status.Error(codes.InvalidArgument,
 			"invalid field mask"), err)
@@ -355,7 +363,7 @@ func TestUpdateUser(t *testing.T) {
 		updateUser, err := userSvc.UpdateUser(ctx, &api.UpdateUserRequest{
 			User: part, UpdateMask: &fieldmaskpb.FieldMask{
 				Paths: []string{"status"}}})
-		t.Logf("updateUser, err: %+v, %v", updateUser, err)
+		t.Logf("part, updateUser, err: %+v, %+v, %v", part, updateUser, err)
 		require.Nil(t, updateUser)
 		require.Equal(t, status.Error(codes.NotFound, "object not found"), err)
 	})
@@ -374,7 +382,7 @@ func TestUpdateUser(t *testing.T) {
 		userSvc := NewUser(nil)
 		updateUser, err := userSvc.UpdateUser(ctx, &api.UpdateUserRequest{
 			User: user})
-		t.Logf("updateUser, err: %+v, %v", updateUser, err)
+		t.Logf("user, updateUser, err: %+v, %+v, %v", user, updateUser, err)
 		require.Nil(t, updateUser)
 		require.Equal(t, status.Error(codes.InvalidArgument, "invalid "+
 			"UpdateUserRequest.User: embedded message failed validation | "+
@@ -396,7 +404,7 @@ func TestUpdateUser(t *testing.T) {
 		userSvc := NewUser(nil)
 		updateUser, err := userSvc.UpdateUser(ctx, &api.UpdateUserRequest{
 			User: user})
-		t.Logf("updateUser, err: %+v, %v", updateUser, err)
+		t.Logf("user, updateUser, err: %+v, %+v, %v", user, updateUser, err)
 		require.Nil(t, updateUser)
 		require.Equal(t, status.Error(codes.PermissionDenied, "permission "+
 			"denied, role modification not allowed"), err)
@@ -416,7 +424,7 @@ func TestUpdateUser(t *testing.T) {
 		userSvc := NewUser(nil)
 		updateUser, err := userSvc.UpdateUser(ctx, &api.UpdateUserRequest{
 			User: user})
-		t.Logf("updateUser, err: %+v, %v", updateUser, err)
+		t.Logf("user, updateUser, err: %+v, %+v, %v", user, updateUser, err)
 		require.Nil(t, updateUser)
 		require.Equal(t, status.Error(codes.PermissionDenied, "permission "+
 			"denied, role modification not allowed"), err)
@@ -441,7 +449,7 @@ func TestUpdateUser(t *testing.T) {
 		userSvc := NewUser(userer)
 		updateUser, err := userSvc.UpdateUser(ctx, &api.UpdateUserRequest{
 			User: user})
-		t.Logf("updateUser, err: %+v, %v", updateUser, err)
+		t.Logf("user, updateUser, err: %+v, %+v, %v", user, updateUser, err)
 		require.Nil(t, updateUser)
 		require.Equal(t, status.Error(codes.InvalidArgument, "invalid format"),
 			err)

@@ -133,7 +133,7 @@ func TestValidateMessages(t *testing.T) {
 func TestValidateMessagesError(t *testing.T) {
 	t.Parallel()
 
-	dev := random.Device("val", uuid.NewString())
+	orgID := uuid.NewString()
 
 	tests := []struct {
 		inpVIn    *message.ValidatorIn
@@ -162,13 +162,13 @@ func TestValidateMessagesError(t *testing.T) {
 		// Device status.
 		{&message.ValidatorIn{Point: &common.DataPoint{
 			UniqId: random.String(16), Attr: random.String(10),
-			ValOneof: &common.DataPoint_IntVal{}}, OrgId: dev.OrgId},
+			ValOneof: &common.DataPoint_IntVal{}}, OrgId: orgID},
 			api.Status_DISABLED, nil, 1},
 		// Invalid token.
 		{&message.ValidatorIn{Point: &common.DataPoint{
 			UniqId: random.String(16), Attr: random.String(10),
 			ValOneof: &common.DataPoint_IntVal{}, Token: "val-aaa"},
-			OrgId: dev.OrgId}, api.Status_ACTIVE, nil, 1},
+			OrgId: orgID}, api.Status_ACTIVE, nil, 1},
 	}
 
 	for _, test := range tests {
@@ -177,8 +177,8 @@ func TestValidateMessagesError(t *testing.T) {
 		t.Run(fmt.Sprintf("Cannot validate %+v", lTest), func(t *testing.T) {
 			t.Parallel()
 
-			lDev := proto.Clone(dev).(*api.Device)
-			lDev.Status = lTest.inpStatus
+			dev := random.Device("val", orgID)
+			dev.Status = lTest.inpStatus
 
 			vInQueue := queue.NewFake()
 			vInSub, err := vInQueue.Subscribe("")
@@ -190,7 +190,7 @@ func TestValidateMessagesError(t *testing.T) {
 
 			devicer := NewMockdevicer(gomock.NewController(t))
 			devicer.EXPECT().ReadByUniqID(gomock.Any(), gomock.Any()).
-				Return(lDev, lTest.inpErr).Times(lTest.inpTimes)
+				Return(dev, lTest.inpErr).Times(lTest.inpTimes)
 
 			val := Validator{
 				devDAO:       devicer,

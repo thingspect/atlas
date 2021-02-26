@@ -29,9 +29,10 @@ func TestCreateOrg(t *testing.T) {
 		t.Parallel()
 
 		org := random.Org("api-org")
+		retOrg := proto.Clone(org).(*api.Org)
 
 		orger := NewMockOrger(gomock.NewController(t))
-		orger.EXPECT().Create(gomock.Any(), org).Return(org, nil).Times(1)
+		orger.EXPECT().Create(gomock.Any(), org).Return(retOrg, nil).Times(1)
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
 			context.Background(), &session.Session{OrgID: org.Id,
@@ -41,7 +42,7 @@ func TestCreateOrg(t *testing.T) {
 		orgSvc := NewOrg(orger)
 		createOrg, err := orgSvc.CreateOrg(ctx, &api.CreateOrgRequest{
 			Org: org})
-		t.Logf("createOrg, err: %+v, %v", createOrg, err)
+		t.Logf("org, createOrg, err: %+v, %+v, %v", org, createOrg, err)
 		require.NoError(t, err)
 
 		// Testify does not currently support protobuf equality:
@@ -96,7 +97,7 @@ func TestCreateOrg(t *testing.T) {
 		orgSvc := NewOrg(orger)
 		createOrg, err := orgSvc.CreateOrg(ctx, &api.CreateOrgRequest{
 			Org: org})
-		t.Logf("createOrg, err: %+v, %v", createOrg, err)
+		t.Logf("org, createOrg, err: %+v, %+v, %v", org, createOrg, err)
 		require.Nil(t, createOrg)
 		require.Equal(t, status.Error(codes.InvalidArgument, "invalid format"),
 			err)
@@ -110,9 +111,10 @@ func TestGetOrg(t *testing.T) {
 		t.Parallel()
 
 		org := random.Org("api-org")
+		retOrg := proto.Clone(org).(*api.Org)
 
 		orger := NewMockOrger(gomock.NewController(t))
-		orger.EXPECT().Read(gomock.Any(), org.Id).Return(org, nil).Times(1)
+		orger.EXPECT().Read(gomock.Any(), org.Id).Return(retOrg, nil).Times(1)
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
 			context.Background(), &session.Session{OrgID: org.Id,
@@ -121,7 +123,7 @@ func TestGetOrg(t *testing.T) {
 
 		orgSvc := NewOrg(orger)
 		getOrg, err := orgSvc.GetOrg(ctx, &api.GetOrgRequest{Id: org.Id})
-		t.Logf("getOrg, err: %+v, %v", getOrg, err)
+		t.Logf("org, getOrg, err: %+v, %+v, %v", org, getOrg, err)
 		require.NoError(t, err)
 
 		// Testify does not currently support protobuf equality:
@@ -188,9 +190,10 @@ func TestUpdateOrg(t *testing.T) {
 		t.Parallel()
 
 		org := random.Org("api-org")
+		retOrg := proto.Clone(org).(*api.Org)
 
 		orger := NewMockOrger(gomock.NewController(t))
-		orger.EXPECT().Update(gomock.Any(), org).Return(org, nil).Times(1)
+		orger.EXPECT().Update(gomock.Any(), org).Return(retOrg, nil).Times(1)
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
 			context.Background(), &session.Session{OrgID: org.Id,
@@ -200,7 +203,7 @@ func TestUpdateOrg(t *testing.T) {
 		orgSvc := NewOrg(orger)
 		updateOrg, err := orgSvc.UpdateOrg(ctx, &api.UpdateOrgRequest{
 			Org: org})
-		t.Logf("updateOrg, err: %+v, %v", updateOrg, err)
+		t.Logf("org, updateOrg, err: %+v, %+v, %v", org, updateOrg, err)
 		require.NoError(t, err)
 
 		// Testify does not currently support protobuf equality:
@@ -214,13 +217,15 @@ func TestUpdateOrg(t *testing.T) {
 		t.Parallel()
 
 		org := random.Org("api-org")
+		retOrg := proto.Clone(org).(*api.Org)
 		part := &api.Org{Id: org.Id, Name: random.String(10)}
 		merged := &api.Org{Id: org.Id, Name: part.Name}
+		retMerged := proto.Clone(merged).(*api.Org)
 
 		orger := NewMockOrger(gomock.NewController(t))
-		orger.EXPECT().Read(gomock.Any(), org.Id).Return(org, nil).Times(1)
+		orger.EXPECT().Read(gomock.Any(), org.Id).Return(retOrg, nil).Times(1)
 		orger.EXPECT().Update(gomock.Any(), matcher.NewProtoMatcher(merged)).
-			Return(merged, nil).Times(1)
+			Return(retMerged, nil).Times(1)
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
 			context.Background(), &session.Session{OrgID: org.Id,
@@ -231,7 +236,7 @@ func TestUpdateOrg(t *testing.T) {
 		updateOrg, err := orgSvc.UpdateOrg(ctx, &api.UpdateOrgRequest{
 			Org: part, UpdateMask: &fieldmaskpb.FieldMask{
 				Paths: []string{"name"}}})
-		t.Logf("updateOrg, err: %+v, %v", updateOrg, err)
+		t.Logf("merged, updateOrg, err: %+v, %+v, %v", merged, updateOrg, err)
 		require.NoError(t, err)
 
 		// Testify does not currently support protobuf equality:
@@ -284,7 +289,7 @@ func TestUpdateOrg(t *testing.T) {
 		orgSvc := NewOrg(nil)
 		updateOrg, err := orgSvc.UpdateOrg(ctx, &api.UpdateOrgRequest{
 			Org: org})
-		t.Logf("updateOrg, err: %+v, %v", updateOrg, err)
+		t.Logf("org, updateOrg, err: %+v, %+v, %v", org, updateOrg, err)
 		require.Nil(t, updateOrg)
 		require.Equal(t, errPerm(common.Role_SYS_ADMIN), err)
 	})
@@ -320,7 +325,7 @@ func TestUpdateOrg(t *testing.T) {
 		updateOrg, err := orgSvc.UpdateOrg(ctx, &api.UpdateOrgRequest{
 			Org: org, UpdateMask: &fieldmaskpb.FieldMask{
 				Paths: []string{"aaa"}}})
-		t.Logf("updateOrg, err: %+v, %v", updateOrg, err)
+		t.Logf("org, updateOrg, err: %+v, %+v, %v", org, updateOrg, err)
 		require.Nil(t, updateOrg)
 		require.Equal(t, status.Error(codes.InvalidArgument,
 			"invalid field mask"), err)
@@ -345,7 +350,7 @@ func TestUpdateOrg(t *testing.T) {
 		updateOrg, err := orgSvc.UpdateOrg(ctx, &api.UpdateOrgRequest{
 			Org: part, UpdateMask: &fieldmaskpb.FieldMask{
 				Paths: []string{"name"}}})
-		t.Logf("updateOrg, err: %+v, %v", updateOrg, err)
+		t.Logf("part, updateOrg, err: %+v, %+v, %v", part, updateOrg, err)
 		require.Nil(t, updateOrg)
 		require.Equal(t, status.Error(codes.NotFound, "object not found"), err)
 	})
@@ -364,7 +369,7 @@ func TestUpdateOrg(t *testing.T) {
 		orgSvc := NewOrg(nil)
 		updateOrg, err := orgSvc.UpdateOrg(ctx, &api.UpdateOrgRequest{
 			Org: org})
-		t.Logf("updateOrg, err: %+v, %v", updateOrg, err)
+		t.Logf("org, updateOrg, err: %+v, %+v, %v", org, updateOrg, err)
 		require.Nil(t, updateOrg)
 		require.Equal(t, status.Error(codes.InvalidArgument, "invalid "+
 			"UpdateOrgRequest.Org: embedded message failed validation | "+
@@ -389,7 +394,7 @@ func TestUpdateOrg(t *testing.T) {
 		orgSvc := NewOrg(orger)
 		updateOrg, err := orgSvc.UpdateOrg(ctx, &api.UpdateOrgRequest{
 			Org: org})
-		t.Logf("updateOrg, err: %+v, %v", updateOrg, err)
+		t.Logf("org, updateOrg, err: %+v, %+v, %v", org, updateOrg, err)
 		require.Nil(t, updateOrg)
 		require.Equal(t, status.Error(codes.InvalidArgument, "invalid format"),
 			err)
