@@ -6,6 +6,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/jackc/pgtype"
 	"github.com/thingspect/api/go/api"
 	"github.com/thingspect/atlas/pkg/alog"
 	"github.com/thingspect/atlas/pkg/dao"
@@ -13,8 +14,9 @@ import (
 )
 
 const createDevice = `
-INSERT INTO devices (org_id, uniq_id, status, decoder, created_at, updated_at)
-VALUES ($1, $2, $3, $4, $5, $6)
+INSERT INTO devices (org_id, uniq_id, name, status, decoder, tags, created_at,
+updated_at)
+VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
 RETURNING id, token
 `
 
@@ -22,20 +24,27 @@ RETURNING id, token
 func (d *DAO) Create(ctx context.Context, dev *api.Device) (*api.Device,
 	error) {
 	dev.UniqId = strings.ToLower(dev.UniqId)
+
+	var tags pgtype.VarcharArray
+	if err := tags.Set(dev.Tags); err != nil {
+		return nil, dao.DBToSentinel(err)
+	}
+
 	now := time.Now().UTC().Truncate(time.Microsecond)
 	dev.CreatedAt = timestamppb.New(now)
 	dev.UpdatedAt = timestamppb.New(now)
 
 	if err := d.pg.QueryRowContext(ctx, createDevice, dev.OrgId, dev.UniqId,
-		dev.Status.String(), dev.Decoder.String(), now, now).Scan(&dev.Id,
-		&dev.Token); err != nil {
+		dev.Name, dev.Status.String(), dev.Decoder.String(), tags, now,
+		now).Scan(&dev.Id, &dev.Token); err != nil {
 		return nil, dao.DBToSentinel(err)
 	}
 	return dev, nil
 }
 
 const readDevice = `
-SELECT id, org_id, uniq_id, status, token, decoder, created_at, updated_at
+SELECT id, org_id, uniq_id, name, status, token, decoder, tags, created_at,
+updated_at
 FROM devices
 WHERE (id, org_id) = ($1, $2)
 `
@@ -44,25 +53,29 @@ WHERE (id, org_id) = ($1, $2)
 func (d *DAO) Read(ctx context.Context, devID, orgID string) (*api.Device,
 	error) {
 	dev := &api.Device{}
-	var status string
-	var decoder string
+	var status, decoder string
+	var tags pgtype.VarcharArray
 	var createdAt, updatedAt time.Time
 
 	if err := d.pg.QueryRowContext(ctx, readDevice, devID, orgID).Scan(&dev.Id,
-		&dev.OrgId, &dev.UniqId, &status, &dev.Token, &decoder, &createdAt,
-		&updatedAt); err != nil {
+		&dev.OrgId, &dev.UniqId, &dev.Name, &status, &dev.Token, &decoder,
+		&tags, &createdAt, &updatedAt); err != nil {
 		return nil, dao.DBToSentinel(err)
 	}
 
 	dev.Status = api.Status(api.Status_value[status])
 	dev.Decoder = api.Decoder(api.Decoder_value[decoder])
+	if err := tags.AssignTo(&dev.Tags); err != nil {
+		return nil, dao.DBToSentinel(err)
+	}
 	dev.CreatedAt = timestamppb.New(createdAt)
 	dev.UpdatedAt = timestamppb.New(updatedAt)
 	return dev, nil
 }
 
 const readDeviceByUniqID = `
-SELECT id, org_id, uniq_id, status, token, decoder, created_at, updated_at
+SELECT id, org_id, uniq_id, name, status, token, decoder, tags, created_at,
+updated_at
 FROM devices
 WHERE uniq_id = $1
 `
@@ -72,18 +85,21 @@ WHERE uniq_id = $1
 func (d *DAO) ReadByUniqID(ctx context.Context, uniqID string) (*api.Device,
 	error) {
 	dev := &api.Device{}
-	var decoder string
-	var status string
+	var status, decoder string
+	var tags pgtype.VarcharArray
 	var createdAt, updatedAt time.Time
 
 	if err := d.pg.QueryRowContext(ctx, readDeviceByUniqID, uniqID).Scan(
-		&dev.Id, &dev.OrgId, &dev.UniqId, &status, &dev.Token, &decoder,
-		&createdAt, &updatedAt); err != nil {
+		&dev.Id, &dev.OrgId, &dev.UniqId, &dev.Name, &status, &dev.Token,
+		&decoder, &tags, &createdAt, &updatedAt); err != nil {
 		return nil, dao.DBToSentinel(err)
 	}
 
 	dev.Status = api.Status(api.Status_value[status])
 	dev.Decoder = api.Decoder(api.Decoder_value[decoder])
+	if err := tags.AssignTo(&dev.Tags); err != nil {
+		return nil, dao.DBToSentinel(err)
+	}
 	dev.CreatedAt = timestamppb.New(createdAt)
 	dev.UpdatedAt = timestamppb.New(updatedAt)
 	return dev, nil
@@ -91,8 +107,9 @@ func (d *DAO) ReadByUniqID(ctx context.Context, uniqID string) (*api.Device,
 
 const updateDevice = `
 UPDATE devices
-SET uniq_id = $1, status = $2, token = $3, decoder = $4, updated_at = $5
-WHERE (id, org_id) = ($6, $7)
+SET uniq_id = $1, status = $2, token = $3, decoder = $4, tags = $5,
+updated_at = $6
+WHERE (id, org_id) = ($7, $8)
 RETURNING created_at
 `
 
@@ -101,13 +118,19 @@ RETURNING created_at
 func (d *DAO) Update(ctx context.Context, dev *api.Device) (*api.Device,
 	error) {
 	dev.UniqId = strings.ToLower(dev.UniqId)
+
+	var tags pgtype.VarcharArray
+	if err := tags.Set(dev.Tags); err != nil {
+		return nil, dao.DBToSentinel(err)
+	}
+
 	var createdAt time.Time
 	updatedAt := time.Now().UTC().Truncate(time.Microsecond)
 	dev.UpdatedAt = timestamppb.New(updatedAt)
 
 	if err := d.pg.QueryRowContext(ctx, updateDevice, dev.UniqId,
-		dev.Status.String(), dev.Token, dev.Decoder.String(), updatedAt, dev.Id,
-		dev.OrgId).Scan(&createdAt); err != nil {
+		dev.Status.String(), dev.Token, dev.Decoder.String(), tags, updatedAt,
+		dev.Id, dev.OrgId).Scan(&createdAt); err != nil {
 		return nil, dao.DBToSentinel(err)
 	}
 
@@ -138,17 +161,25 @@ FROM devices
 WHERE org_id = $1
 `
 
+const countDevicesTag = `
+AND $2 = ANY (tags)
+`
+
 const listDevices = `
-SELECT id, org_id, uniq_id, status, token, decoder, created_at, updated_at
+SELECT id, org_id, uniq_id, status, token, decoder, tags, created_at, updated_at
 FROM devices
 WHERE org_id = $1
 `
 
 const listDevicesTSAndID = `
-AND (created_at > $2
-OR (created_at = $2
-AND id > $3
+AND (created_at > $%d
+OR (created_at = $%d
+AND id > $%d
 ))
+`
+
+const listDevicesTag = `
+AND $%d = ANY (tags)
 `
 
 const listDevicesLimit = `
@@ -156,36 +187,53 @@ ORDER BY created_at ASC, id ASC
 LIMIT %d
 `
 
-// List retrieves all devices by org ID. If lBoundTS and prevID are zero values,
-// the first page of results is returned. Limits of 0 or less do not apply a
-// limit. List returns a slice of devices, a total count, and an error value.
+// List retrieves all devices by org ID with pagination and optional tag filter.
+// If lBoundTS and prevID are zero values, the first page of results is
+// returned. Limits of 0 or less do not apply a limit. List returns a slice of
+// devices, a total count, and an error value.
 func (d *DAO) List(ctx context.Context, orgID string, lBoundTS time.Time,
-	prevID string, limit int32) ([]*api.Device, int32, error) {
+	prevID string, limit int32, tag string) ([]*api.Device, int32, error) {
+	// Build count query.
+	cQuery := countDevices
+	cArgs := []interface{}{orgID}
+
+	if tag != "" {
+		cQuery += countDevicesTag
+		cArgs = append(cArgs, tag)
+	}
+
 	// Run count query.
 	var count int32
-	if err := d.pg.QueryRowContext(ctx, countDevices, orgID).Scan(
+	if err := d.pg.QueryRowContext(ctx, cQuery, cArgs...).Scan(
 		&count); err != nil {
 		return nil, 0, dao.DBToSentinel(err)
 	}
 
 	// Build list query.
-	query := listDevices
-	args := []interface{}{orgID}
+	lQuery := listDevices
+	lArgs := []interface{}{orgID}
 
 	if prevID != "" && !lBoundTS.IsZero() {
-		query += listDevicesTSAndID
-		args = append(args, lBoundTS, prevID)
+		lQuery += fmt.Sprintf(listDevicesTSAndID, 2, 2, 3)
+		lArgs = append(lArgs, lBoundTS, prevID)
+
+		if tag != "" {
+			lQuery += fmt.Sprintf(listDevicesTag, 4)
+			lArgs = append(lArgs, tag)
+		}
+	} else if tag != "" {
+		lQuery += fmt.Sprintf(listDevicesTag, 2)
+		lArgs = append(lArgs, tag)
 	}
 
 	// Ordering is applied with the limit, which will always be present for API
 	// usage, whereas lBoundTS and prevID will not for first pages.
 	if limit > 0 {
-		query += fmt.Sprintf(listDevicesLimit, limit)
+		lQuery += fmt.Sprintf(listDevicesLimit, limit)
 	}
 
 	// Run list query.
-	var devs []*api.Device
-	rows, err := d.pg.QueryContext(ctx, query, args...)
+	rows, err := d.pg.QueryContext(ctx, lQuery, lArgs...)
 	if err != nil {
 		return nil, 0, dao.DBToSentinel(err)
 	}
@@ -196,19 +244,23 @@ func (d *DAO) List(ctx context.Context, orgID string, lBoundTS time.Time,
 		}
 	}()
 
+	var devs []*api.Device
 	for rows.Next() {
 		dev := &api.Device{}
-		var status string
-		var decoder string
+		var status, decoder string
+		var tags pgtype.VarcharArray
 		var createdAt, updatedAt time.Time
 
 		if err = rows.Scan(&dev.Id, &dev.OrgId, &dev.UniqId, &status,
-			&dev.Token, &decoder, &createdAt, &updatedAt); err != nil {
+			&dev.Token, &decoder, &tags, &createdAt, &updatedAt); err != nil {
 			return nil, 0, dao.DBToSentinel(err)
 		}
 
 		dev.Status = api.Status(api.Status_value[status])
 		dev.Decoder = api.Decoder(api.Decoder_value[decoder])
+		if err := tags.AssignTo(&dev.Tags); err != nil {
+			return nil, 0, dao.DBToSentinel(err)
+		}
 		dev.CreatedAt = timestamppb.New(createdAt)
 		dev.UpdatedAt = timestamppb.New(updatedAt)
 		devs = append(devs, dev)

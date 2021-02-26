@@ -73,6 +73,29 @@ func (m *User) Validate() error {
 		}
 	}
 
+	_User_Tags_Unique := make(map[string]struct{}, len(m.GetTags()))
+
+	for idx, item := range m.GetTags() {
+		_, _ = idx, item
+
+		if _, exists := _User_Tags_Unique[item]; exists {
+			return UserValidationError{
+				field:  fmt.Sprintf("Tags[%v]", idx),
+				reason: "repeated value must contain unique items",
+			}
+		} else {
+			_User_Tags_Unique[item] = struct{}{}
+		}
+
+		if utf8.RuneCountInString(item) > 255 {
+			return UserValidationError{
+				field:  fmt.Sprintf("Tags[%v]", idx),
+				reason: "value length must be at most 255 runes",
+			}
+		}
+
+	}
+
 	if v, ok := interface{}(m.GetCreatedAt()).(interface{ Validate() error }); ok {
 		if err := v.Validate(); err != nil {
 			return UserValidationError{
@@ -661,6 +684,8 @@ func (m *ListUsersRequest) Validate() error {
 	}
 
 	// no validation rules for PageToken
+
+	// no validation rules for Tag
 
 	return nil
 }

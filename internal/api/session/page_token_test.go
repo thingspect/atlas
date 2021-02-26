@@ -71,7 +71,7 @@ func TestParsePageToken(t *testing.T) {
 		{prevID.String(), time.Time{}, "...",
 			"illegal base64 data at input byte 0"},
 		{prevID.String(), time.Time{}, base64.RawURLEncoding.EncodeToString(
-			[]byte("aaa")), "unexpected EOF"},
+			[]byte("aaa")), "cannot parse invalid wire-format data"},
 		{prevID.String(), time.Time{}, base64.RawURLEncoding.EncodeToString(
 			bNilTSPT), ""},
 		{prevID.String(), time.Time{}, base64.RawURLEncoding.EncodeToString(
@@ -103,7 +103,7 @@ func TestParsePageToken(t *testing.T) {
 			if lTest.err == "" {
 				require.NoError(t, err)
 			} else {
-				require.EqualError(t, err, lTest.err)
+				require.Contains(t, err.Error(), lTest.err)
 			}
 		})
 	}

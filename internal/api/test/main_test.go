@@ -25,7 +25,7 @@ import (
 )
 
 const (
-	testTimeout = 8 * time.Second
+	testTimeout = 12 * time.Second
 	badUUID     = "..."
 )
 

@@ -242,7 +242,8 @@ func TestList(t *testing.T) {
 		defer cancel()
 
 		listOrgs, listCount, err := globalOrgDAO.List(ctx, time.Time{}, "", 0)
-		t.Logf("listOrgs, err: %+v, %v", listOrgs, err)
+		t.Logf("listOrgs, listCount, err: %+v, %v, %v", listOrgs, listCount,
+			err)
 		require.NoError(t, err)
 		require.GreaterOrEqual(t, len(listOrgs), 3)
 		require.GreaterOrEqual(t, listCount, int32(3))
@@ -265,7 +266,8 @@ func TestList(t *testing.T) {
 
 		listOrgs, listCount, err := globalOrgDAO.List(ctx, orgTSes[1],
 			orgIDs[1], 1)
-		t.Logf("listOrgs, err: %+v, %v", listOrgs, err)
+		t.Logf("listOrgs, listCount, err: %+v, %v, %v", listOrgs, listCount,
+			err)
 		require.NoError(t, err)
 		require.Len(t, listOrgs, 1)
 		require.GreaterOrEqual(t, listCount, int32(3))
@@ -278,7 +280,8 @@ func TestList(t *testing.T) {
 		defer cancel()
 
 		listOrgs, listCount, err := globalOrgDAO.List(ctx, time.Time{}, "", 2)
-		t.Logf("listOrgs, err: %+v, %v", listOrgs, err)
+		t.Logf("listOrgs, listCount, err: %+v, %v, %v", listOrgs, listCount,
+			err)
 		require.NoError(t, err)
 		require.Len(t, listOrgs, 2)
 		require.GreaterOrEqual(t, listCount, int32(3))

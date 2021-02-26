@@ -54,6 +54,13 @@ func (m *Device) Validate() error {
 		}
 	}
 
+	if l := utf8.RuneCountInString(m.GetName()); l < 5 || l > 80 {
+		return DeviceValidationError{
+			field:  "Name",
+			reason: "value length must be between 5 and 80 runes, inclusive",
+		}
+	}
+
 	if _, ok := _Device_Status_InLookup[m.GetStatus()]; !ok {
 		return DeviceValidationError{
 			field:  "Status",
@@ -64,6 +71,29 @@ func (m *Device) Validate() error {
 	// no validation rules for Token
 
 	// no validation rules for Decoder
+
+	_Device_Tags_Unique := make(map[string]struct{}, len(m.GetTags()))
+
+	for idx, item := range m.GetTags() {
+		_, _ = idx, item
+
+		if _, exists := _Device_Tags_Unique[item]; exists {
+			return DeviceValidationError{
+				field:  fmt.Sprintf("Tags[%v]", idx),
+				reason: "repeated value must contain unique items",
+			}
+		} else {
+			_Device_Tags_Unique[item] = struct{}{}
+		}
+
+		if utf8.RuneCountInString(item) > 255 {
+			return DeviceValidationError{
+				field:  fmt.Sprintf("Tags[%v]", idx),
+				reason: "value length must be at most 255 runes",
+			}
+		}
+
+	}
 
 	if v, ok := interface{}(m.GetCreatedAt()).(interface{ Validate() error }); ok {
 		if err := v.Validate(); err != nil {
@@ -705,6 +735,8 @@ func (m *ListDevicesRequest) Validate() error {
 	}
 
 	// no validation rules for PageToken
+
+	// no validation rules for Tag
 
 	return nil
 }

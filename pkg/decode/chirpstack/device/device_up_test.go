@@ -81,7 +81,7 @@ func TestDeviceUp(t *testing.T) {
 			{Attr: "confirmed", Value: true},
 		}, now, bData, ""},
 		// Device Uplink bad length.
-		{nil, nil, time.Time{}, nil, "unexpected EOF"},
+		{nil, nil, time.Time{}, nil, "cannot parse invalid wire-format data"},
 	}
 
 	for _, test := range tests {
@@ -106,7 +106,7 @@ func TestDeviceUp(t *testing.T) {
 			}
 			require.Equal(t, lTest.resData, data)
 			if lTest.err != "" {
-				require.EqualError(t, err, lTest.err)
+				require.Contains(t, err.Error(), lTest.err)
 			}
 		})
 	}

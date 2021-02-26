@@ -23,6 +23,9 @@
       "name": "SessionService"
     },
     {
+      "name": "TagService"
+    },
+    {
       "name": "UserService"
     }
   ],
@@ -199,6 +202,13 @@
           {
             "name": "pageToken",
             "description": "Token of the page to retrieve. If not specified, the first page of results will be returned. To request the next page of results, use next_page_token from the previous response.",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "tag",
+            "description": "Filter devices by specified tag.",
             "in": "query",
             "required": false,
             "type": "string"
@@ -757,6 +767,29 @@
         "security": []
       }
     },
+    "/v1/tags": {
+      "get": {
+        "summary": "List all tags.",
+        "operationId": "TagService_ListTags",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/apiListTagsResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          }
+        },
+        "tags": [
+          "TagService"
+        ]
+      }
+    },
     "/v1/users": {
       "get": {
         "summary": "List all users.",
@@ -787,6 +820,13 @@
           {
             "name": "pageToken",
             "description": "Token of the page to retrieve. If not specified, the first page of results will be returned. To request the next page of results, use next_page_token from the previous response.",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "tag",
+            "description": "Filter users by specified tag.",
             "in": "query",
             "required": false,
             "type": "string"
@@ -1107,17 +1147,31 @@
             "uniq_id"
           ]
         },
+        "name": {
+          "type": "string",
+          "description": "Device name.",
+          "required": [
+            "name"
+          ]
+        },
         "status": {
           "$ref": "#/definitions/thingspectapiStatus",
           "description": "Device status."
         },
         "token": {
           "type": "string",
-          "description": "Authentication token (UUID)."
+          "description": "Authentication token (UUID). Will be generated at creation time, but can be updated afterward."
         },
         "decoder": {
           "$ref": "#/definitions/apiDecoder",
           "description": "Device data payload decoder."
+        },
+        "tags": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Device tags. Nested tags should be delimited by '/'."
         },
         "createdAt": {
           "type": "string",
@@ -1134,7 +1188,8 @@
       },
       "description": "Device represents a device as stored in the database.",
       "required": [
-        "uniqID"
+        "uniqID",
+        "name"
       ]
     },
     "apiLatestDataPointsResponse": {
@@ -1206,6 +1261,19 @@
         }
       },
       "description": "ListOrgsResponse is sent in response to an organization list."
+    },
+    "apiListTagsResponse": {
+      "type": "object",
+      "properties": {
+        "tags": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Tag array, ordered by ascending name."
+        }
+      },
+      "description": "ListTagsResponse is sent in response to a tag list."
     },
     "apiListUsersResponse": {
       "type": "object",
@@ -1376,6 +1444,13 @@
         "status": {
           "$ref": "#/definitions/thingspectapiStatus",
           "description": "User status."
+        },
+        "tags": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "User tags. Nested tags should be delimited by '/'."
         },
         "createdAt": {
           "type": "string",

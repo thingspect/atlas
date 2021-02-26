@@ -242,7 +242,7 @@ func TestUpdateUser(t *testing.T) {
 		user.Role = common.Role_ADMIN
 		part := &api.User{Id: user.Id, Status: api.Status_ACTIVE}
 		merged := &api.User{Id: user.Id, OrgId: user.OrgId, Email: user.Email,
-			Role: user.Role, Status: api.Status_ACTIVE}
+			Role: user.Role, Status: api.Status_ACTIVE, Tags: user.Tags}
 
 		userer := NewMockUserer(gomock.NewController(t))
 		userer.EXPECT().Read(gomock.Any(), user.Id, user.OrgId).Return(user,
@@ -621,8 +621,8 @@ func TestListUsers(t *testing.T) {
 		}
 
 		userer := NewMockUserer(gomock.NewController(t))
-		userer.EXPECT().List(gomock.Any(), orgID, time.Time{}, "", int32(51)).
-			Return(users, int32(3), nil).Times(1)
+		userer.EXPECT().List(gomock.Any(), orgID, time.Time{}, "", int32(51),
+			"").Return(users, int32(3), nil).Times(1)
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
 			context.Background(), &session.Session{OrgID: orgID,
@@ -660,8 +660,8 @@ func TestListUsers(t *testing.T) {
 		require.NoError(t, err)
 
 		userer := NewMockUserer(gomock.NewController(t))
-		userer.EXPECT().List(gomock.Any(), orgID, time.Time{}, "", int32(3)).
-			Return(users, int32(3), nil).Times(1)
+		userer.EXPECT().List(gomock.Any(), orgID, time.Time{}, "", int32(3),
+			"").Return(users, int32(3), nil).Times(1)
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
 			context.Background(), &session.Session{OrgID: orgID,
@@ -769,7 +769,8 @@ func TestListUsers(t *testing.T) {
 
 		userer := NewMockUserer(gomock.NewController(t))
 		userer.EXPECT().List(gomock.Any(), "aaa", gomock.Any(), gomock.Any(),
-			gomock.Any()).Return(nil, int32(0), dao.ErrInvalidFormat).Times(1)
+			gomock.Any(), gomock.Any()).Return(nil, int32(0),
+			dao.ErrInvalidFormat).Times(1)
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
 			context.Background(), &session.Session{OrgID: "aaa",
@@ -797,8 +798,8 @@ func TestListUsers(t *testing.T) {
 		users[1].Id = badUUID
 
 		userer := NewMockUserer(gomock.NewController(t))
-		userer.EXPECT().List(gomock.Any(), orgID, time.Time{}, "", int32(3)).
-			Return(users, int32(3), nil).Times(1)
+		userer.EXPECT().List(gomock.Any(), orgID, time.Time{}, "", int32(3),
+			"").Return(users, int32(3), nil).Times(1)
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
 			context.Background(), &session.Session{OrgID: orgID,

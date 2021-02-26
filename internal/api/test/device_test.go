@@ -4,6 +4,7 @@ package test
 
 import (
 	"context"
+	"reflect"
 	"strings"
 	"testing"
 	"time"
@@ -23,6 +24,7 @@ func TestCreateDevice(t *testing.T) {
 		t.Parallel()
 
 		dev := random.Device("api-device", uuid.NewString())
+		dev.Tags = nil
 
 		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
 		defer cancel()
@@ -35,8 +37,36 @@ func TestCreateDevice(t *testing.T) {
 		require.NotNil(t, createDev)
 		require.Equal(t, globalAdminOrgID, createDev.OrgId)
 		require.Equal(t, dev.UniqId, createDev.UniqId)
+		require.Equal(t, dev.Name, createDev.Name)
 		require.Equal(t, dev.Status, createDev.Status)
 		require.Equal(t, dev.Decoder, createDev.Decoder)
+		require.Equal(t, dev.Tags, createDev.Tags)
+		require.WithinDuration(t, time.Now(), createDev.CreatedAt.AsTime(),
+			2*time.Second)
+		require.WithinDuration(t, time.Now(), createDev.UpdatedAt.AsTime(),
+			2*time.Second)
+	})
+
+	t.Run("Create valid device with tags", func(t *testing.T) {
+		t.Parallel()
+
+		dev := random.Device("api-device", uuid.NewString())
+
+		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
+		defer cancel()
+
+		devCli := api.NewDeviceServiceClient(globalAdminGRPCConn)
+		createDev, err := devCli.CreateDevice(ctx, &api.CreateDeviceRequest{
+			Device: dev})
+		t.Logf("createDev, err: %+v, %v", createDev, err)
+		require.NoError(t, err)
+		require.NotNil(t, createDev)
+		require.Equal(t, globalAdminOrgID, createDev.OrgId)
+		require.Equal(t, dev.UniqId, createDev.UniqId)
+		require.Equal(t, dev.Name, createDev.Name)
+		require.Equal(t, dev.Status, createDev.Status)
+		require.Equal(t, dev.Decoder, createDev.Decoder)
+		require.Equal(t, dev.Tags, createDev.Tags)
 		require.WithinDuration(t, time.Now(), createDev.CreatedAt.AsTime(),
 			2*time.Second)
 		require.WithinDuration(t, time.Now(), createDev.UpdatedAt.AsTime(),
@@ -60,8 +90,10 @@ func TestCreateDevice(t *testing.T) {
 		require.NotNil(t, createDev)
 		require.Equal(t, globalAdminOrgID, createDev.OrgId)
 		require.Equal(t, strings.ToLower(dev.UniqId), createDev.UniqId)
+		require.Equal(t, dev.Name, createDev.Name)
 		require.Equal(t, dev.Status, createDev.Status)
 		require.Equal(t, dev.Decoder, createDev.Decoder)
+		require.Equal(t, dev.Tags, createDev.Tags)
 		require.WithinDuration(t, time.Now(), createDev.CreatedAt.AsTime(),
 			2*time.Second)
 		require.WithinDuration(t, time.Now(), createDev.UpdatedAt.AsTime(),
@@ -282,16 +314,20 @@ func TestUpdateDevice(t *testing.T) {
 
 		// Update device fields.
 		createDev.UniqId = "api-device-" + random.String(16)
+		createDev.Name = "api-device-" + random.String(10)
 		createDev.Status = api.Status_DISABLED
 		createDev.Decoder = api.Decoder_GATEWAY
+		createDev.Tags = []string{"api-device-" + random.String(10)}
 
 		updateDev, err := devCli.UpdateDevice(ctx, &api.UpdateDeviceRequest{
 			Device: createDev})
 		t.Logf("updateDev, err: %+v, %v", updateDev, err)
 		require.NoError(t, err)
 		require.Equal(t, createDev.UniqId, updateDev.UniqId)
+		require.Equal(t, createDev.Name, updateDev.Name)
 		require.Equal(t, createDev.Status, updateDev.Status)
 		require.Equal(t, createDev.Decoder, updateDev.Decoder)
+		require.Equal(t, createDev.Tags, updateDev.Tags)
 		require.Equal(t, createDev.CreatedAt.AsTime(),
 			updateDev.CreatedAt.AsTime())
 		require.True(t, updateDev.UpdatedAt.AsTime().After(
@@ -674,6 +710,7 @@ func TestListDevices(t *testing.T) {
 	devIDs := []string{}
 	devStatuses := []api.Status{}
 	devDecoders := []api.Decoder{}
+	devTags := [][]string{}
 	for i := 0; i < 3; i++ {
 		devCli := api.NewDeviceServiceClient(globalAdminGRPCConn)
 		createDev, err := devCli.CreateDevice(ctx, &api.CreateDeviceRequest{
@@ -684,6 +721,7 @@ func TestListDevices(t *testing.T) {
 		devIDs = append(devIDs, createDev.Id)
 		devStatuses = append(devStatuses, createDev.Status)
 		devDecoders = append(devDecoders, createDev.Decoder)
+		devTags = append(devTags, createDev.Tags)
 	}
 
 	t.Run("List devices by valid org ID", func(t *testing.T) {
@@ -703,7 +741,8 @@ func TestListDevices(t *testing.T) {
 		for _, dev := range listDevs.Devices {
 			if dev.Id == devIDs[len(devIDs)-1] &&
 				dev.Status == devStatuses[len(devIDs)-1] &&
-				dev.Decoder == devDecoders[len(devIDs)-1] {
+				dev.Decoder == devDecoders[len(devIDs)-1] &&
+				reflect.DeepEqual(dev.Tags, devTags[len(devIDs)-1]) {
 				found = true
 			}
 		}
@@ -731,6 +770,27 @@ func TestListDevices(t *testing.T) {
 		require.NoError(t, err)
 		require.GreaterOrEqual(t, len(nextDevs.Devices), 1)
 		require.GreaterOrEqual(t, nextDevs.TotalSize, int32(3))
+	})
+
+	t.Run("List devices with tag filter", func(t *testing.T) {
+		t.Parallel()
+
+		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
+		defer cancel()
+
+		devCli := api.NewDeviceServiceClient(globalAdminGRPCConn)
+		listDevs, err := devCli.ListDevices(ctx, &api.ListDevicesRequest{
+			Tag: devTags[2][0]})
+		t.Logf("listDevs, err: %+v, %v", listDevs, err)
+		require.NoError(t, err)
+		require.Len(t, listDevs.Devices, 1)
+		require.Equal(t, int32(1), listDevs.TotalSize)
+
+		require.Equal(t, devIDs[len(devIDs)-1], listDevs.Devices[0].Id)
+		require.Equal(t, devStatuses[len(devIDs)-1], listDevs.Devices[0].Status)
+		require.Equal(t, devDecoders[len(devIDs)-1],
+			listDevs.Devices[0].Decoder)
+		require.Equal(t, devTags[len(devIDs)-1], listDevs.Devices[0].Tags)
 	})
 
 	t.Run("Lists are isolated by org ID", func(t *testing.T) {

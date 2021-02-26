@@ -8,9 +8,11 @@ CREATE TABLE users (
   password_hash bytea NOT NULL DEFAULT '',
   role role NOT NULL,
   status status NOT NULL,
+  tags varchar(255)[],
   created_at timestamptz NOT NULL,
   updated_at timestamptz NOT NULL
 );
 
 CREATE UNIQUE INDEX users_read_and_email_idx ON users (org_id, email);
 CREATE INDEX users_read_and_paginate_idx ON users (org_id, created_at, id);
+CREATE INDEX users_read_and_paginate_filter_tags_idx ON users (org_id, tags, created_at, id);

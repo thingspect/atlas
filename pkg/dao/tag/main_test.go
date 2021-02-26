@@ -1,0 +1,42 @@
+// +build !unit
+
+package tag
+
+import (
+	"log"
+	"os"
+	"testing"
+	"time"
+
+	"github.com/thingspect/atlas/pkg/dao/device"
+	"github.com/thingspect/atlas/pkg/dao/org"
+	"github.com/thingspect/atlas/pkg/dao/user"
+	"github.com/thingspect/atlas/pkg/postgres"
+	"github.com/thingspect/atlas/pkg/test/config"
+)
+
+const testTimeout = 14 * time.Second
+
+var (
+	globalOrgDAO  *org.DAO
+	globalDevDAO  *device.DAO
+	globalUserDAO *user.DAO
+	globalTagDAO  *DAO
+)
+
+func TestMain(m *testing.M) {
+	// Set up Config.
+	testConfig := config.New()
+
+	// Set up database connection.
+	pg, err := postgres.New(testConfig.PgURI)
+	if err != nil {
+		log.Fatalf("TestMain postgres.New: %v", err)
+	}
+	globalOrgDAO = org.NewDAO(pg)
+	globalDevDAO = device.NewDAO(pg)
+	globalUserDAO = user.NewDAO(pg)
+	globalTagDAO = NewDAO(pg)
+
+	os.Exit(m.Run())
+}

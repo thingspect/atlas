@@ -1,3 +1,4 @@
+DROP INDEX IF EXISTS devices_read_and_paginate_filter_tags_idx;
 DROP INDEX IF EXISTS devices_read_and_paginate_idx;
 DROP TABLE IF EXISTS devices;
 DROP INDEX IF EXISTS orgs_paginate_idx;
