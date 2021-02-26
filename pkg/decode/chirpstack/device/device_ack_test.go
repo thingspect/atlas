@@ -33,7 +33,7 @@ func TestDeviceAck(t *testing.T) {
 			{Attr: "ack", Value: ackOK},
 		}, ""},
 		// Device ACK bad length.
-		{nil, nil, "unexpected EOF"},
+		{nil, nil, "cannot parse invalid wire-format data"},
 	}
 
 	for _, test := range tests {
@@ -53,7 +53,7 @@ func TestDeviceAck(t *testing.T) {
 			t.Logf("res, err: %#v, %v", res, err)
 			require.Equal(t, lTest.res, res)
 			if lTest.err != "" {
-				require.EqualError(t, err, lTest.err)
+				require.Contains(t, err.Error(), lTest.err)
 			}
 		})
 	}

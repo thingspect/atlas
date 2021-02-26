@@ -27,7 +27,7 @@ type Devicer interface {
 	Update(ctx context.Context, dev *api.Device) (*api.Device, error)
 	Delete(ctx context.Context, devID, orgID string) error
 	List(ctx context.Context, orgID string, lboundTS time.Time, prevID string,
-		limit int32) ([]*api.Device, int32, error)
+		limit int32, tag string) ([]*api.Device, int32, error)
 }
 
 // Device service contains functions to query and modify devices.
@@ -240,7 +240,7 @@ func (d *Device) ListDevices(ctx context.Context,
 
 	// Retrieve PageSize+1 entries to find last page.
 	devs, count, err := d.devDAO.List(ctx, sess.OrgID, lboundTS, prevID,
-		req.PageSize+1)
+		req.PageSize+1, req.Tag)
 	if err != nil {
 		return nil, errToStatus(err)
 	}

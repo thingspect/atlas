@@ -4,6 +4,7 @@ package user
 
 import (
 	"context"
+	"reflect"
 	"testing"
 	"time"
 
@@ -33,6 +34,7 @@ func TestCreate(t *testing.T) {
 		defer cancel()
 
 		user := random.User("dao-user", createOrg.Id)
+		user.Tags = nil
 		createUser, err := globalUserDAO.Create(ctx, user)
 		t.Logf("createUser, err: %+v, %v", createUser, err)
 		require.NoError(t, err)
@@ -40,6 +42,28 @@ func TestCreate(t *testing.T) {
 		require.Equal(t, user.Email, createUser.Email)
 		require.Equal(t, user.Role, createUser.Role)
 		require.Equal(t, user.Status, createUser.Status)
+		require.Equal(t, user.Tags, createUser.Tags)
+		require.WithinDuration(t, time.Now(), createUser.CreatedAt.AsTime(),
+			2*time.Second)
+		require.WithinDuration(t, time.Now(), createUser.UpdatedAt.AsTime(),
+			2*time.Second)
+	})
+
+	t.Run("Create valid user with tags", func(t *testing.T) {
+		t.Parallel()
+
+		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
+		defer cancel()
+
+		user := random.User("dao-user", createOrg.Id)
+		createUser, err := globalUserDAO.Create(ctx, user)
+		t.Logf("createUser, err: %+v, %v", createUser, err)
+		require.NoError(t, err)
+		require.Equal(t, user.OrgId, createUser.OrgId)
+		require.Equal(t, user.Email, createUser.Email)
+		require.Equal(t, user.Role, createUser.Role)
+		require.Equal(t, user.Status, createUser.Status)
+		require.Equal(t, user.Tags, createUser.Tags)
 		require.WithinDuration(t, time.Now(), createUser.CreatedAt.AsTime(),
 			2*time.Second)
 		require.WithinDuration(t, time.Now(), createUser.UpdatedAt.AsTime(),
@@ -229,6 +253,7 @@ func TestUpdate(t *testing.T) {
 		createUser.Email = "dao-user-" + random.Email()
 		createUser.Role = common.Role_ADMIN
 		createUser.Status = api.Status_DISABLED
+		createUser.Tags = nil
 
 		updateUser, err := globalUserDAO.Update(ctx, createUser)
 		t.Logf("updateUser, err: %+v, %v", updateUser, err)
@@ -236,6 +261,7 @@ func TestUpdate(t *testing.T) {
 		require.Equal(t, createUser.Email, updateUser.Email)
 		require.Equal(t, createUser.Role, updateUser.Role)
 		require.Equal(t, createUser.Status, updateUser.Status)
+		require.Equal(t, createUser.Tags, updateUser.Tags)
 		require.Equal(t, createUser.CreatedAt, updateUser.CreatedAt)
 		require.True(t, updateUser.UpdatedAt.AsTime().After(
 			updateUser.CreatedAt.AsTime()))
@@ -437,6 +463,7 @@ func TestList(t *testing.T) {
 	userIDs := []string{}
 	userRoles := []common.Role{}
 	userStatuses := []api.Status{}
+	userTags := [][]string{}
 	userTSes := []time.Time{}
 	for i := 0; i < 3; i++ {
 		createUser, err := globalUserDAO.Create(ctx, random.User("dao-user",
@@ -447,6 +474,7 @@ func TestList(t *testing.T) {
 		userIDs = append(userIDs, createUser.Id)
 		userRoles = append(userRoles, createUser.Role)
 		userStatuses = append(userStatuses, createUser.Status)
+		userTags = append(userTags, createUser.Tags)
 		userTSes = append(userTSes, createUser.CreatedAt.AsTime())
 	}
 
@@ -457,8 +485,9 @@ func TestList(t *testing.T) {
 		defer cancel()
 
 		listUsers, listCount, err := globalUserDAO.List(ctx, createOrg.Id,
-			time.Time{}, "", 0)
-		t.Logf("listUsers, err: %+v, %v", listUsers, err)
+			time.Time{}, "", 0, "")
+		t.Logf("listUsers, listCount, err: %+v, %v, %v", listUsers, listCount,
+			err)
 		require.NoError(t, err)
 		require.Len(t, listUsers, 3)
 		require.Equal(t, int32(3), listCount)
@@ -467,7 +496,8 @@ func TestList(t *testing.T) {
 		for _, user := range listUsers {
 			if user.Id == userIDs[len(userIDs)-1] &&
 				user.Role == userRoles[len(userIDs)-1] &&
-				user.Status == userStatuses[len(userIDs)-1] {
+				user.Status == userStatuses[len(userIDs)-1] &&
+				reflect.DeepEqual(user.Tags, userTags[len(userIDs)-1]) {
 				found = true
 			}
 		}
@@ -481,8 +511,9 @@ func TestList(t *testing.T) {
 		defer cancel()
 
 		listUsers, listCount, err := globalUserDAO.List(ctx, createOrg.Id,
-			userTSes[0], userIDs[0], 5)
-		t.Logf("listUsers, err: %+v, %v", listUsers, err)
+			userTSes[0], userIDs[0], 5, "")
+		t.Logf("listUsers, listCount, err: %+v, %v, %v", listUsers, listCount,
+			err)
 		require.NoError(t, err)
 		require.Len(t, listUsers, 2)
 		require.Equal(t, int32(3), listCount)
@@ -491,7 +522,8 @@ func TestList(t *testing.T) {
 		for _, user := range listUsers {
 			if user.Id == userIDs[len(userIDs)-1] &&
 				user.Role == userRoles[len(userIDs)-1] &&
-				user.Status == userStatuses[len(userIDs)-1] {
+				user.Status == userStatuses[len(userIDs)-1] &&
+				reflect.DeepEqual(user.Tags, userTags[len(userIDs)-1]) {
 				found = true
 			}
 		}
@@ -505,11 +537,52 @@ func TestList(t *testing.T) {
 		defer cancel()
 
 		listUsers, listCount, err := globalUserDAO.List(ctx, createOrg.Id,
-			time.Time{}, "", 1)
-		t.Logf("listUsers, err: %+v, %v", listUsers, err)
+			time.Time{}, "", 1, "")
+		t.Logf("listUsers, listCount, err: %+v, %v, %v", listUsers, listCount,
+			err)
 		require.NoError(t, err)
 		require.Len(t, listUsers, 1)
 		require.Equal(t, int32(3), listCount)
+	})
+
+	t.Run("List users with tag filter", func(t *testing.T) {
+		t.Parallel()
+
+		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
+		defer cancel()
+
+		listUsers, listCount, err := globalUserDAO.List(ctx, createOrg.Id,
+			time.Time{}, "", 5, userTags[2][0])
+		t.Logf("listUsers, listCount, err: %+v, %v, %v", listUsers, listCount,
+			err)
+		require.NoError(t, err)
+		require.Len(t, listUsers, 1)
+		require.Equal(t, int32(1), listCount)
+
+		require.Equal(t, userIDs[len(userIDs)-1], listUsers[0].Id)
+		require.Equal(t, userStatuses[len(userIDs)-1], listUsers[0].Status)
+		require.Equal(t, userRoles[len(userIDs)-1], listUsers[0].Role)
+		require.Equal(t, userTags[len(userIDs)-1], listUsers[0].Tags)
+	})
+
+	t.Run("List users with tag filter and pagination", func(t *testing.T) {
+		t.Parallel()
+
+		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
+		defer cancel()
+
+		listUsers, listCount, err := globalUserDAO.List(ctx, createOrg.Id,
+			userTSes[0], userIDs[0], 5, userTags[2][0])
+		t.Logf("listUsers, listCount, err: %+v, %v, %v", listUsers, listCount,
+			err)
+		require.NoError(t, err)
+		require.Len(t, listUsers, 1)
+		require.Equal(t, int32(1), listCount)
+
+		require.Equal(t, userIDs[len(userIDs)-1], listUsers[0].Id)
+		require.Equal(t, userStatuses[len(userIDs)-1], listUsers[0].Status)
+		require.Equal(t, userRoles[len(userIDs)-1], listUsers[0].Role)
+		require.Equal(t, userTags[len(userIDs)-1], listUsers[0].Tags)
 	})
 
 	t.Run("Lists are isolated by org ID", func(t *testing.T) {
@@ -519,8 +592,9 @@ func TestList(t *testing.T) {
 		defer cancel()
 
 		listUsers, listCount, err := globalUserDAO.List(ctx,
-			uuid.NewString(), time.Time{}, "", 0)
-		t.Logf("listUsers, err: %+v, %v", listUsers, err)
+			uuid.NewString(), time.Time{}, "", 0, "")
+		t.Logf("listUsers, listCount, err: %+v, %v, %v", listUsers, listCount,
+			err)
 		require.NoError(t, err)
 		require.Len(t, listUsers, 0)
 		require.Equal(t, int32(0), listCount)
@@ -533,8 +607,9 @@ func TestList(t *testing.T) {
 		defer cancel()
 
 		listUsers, listCount, err := globalUserDAO.List(ctx, random.String(10),
-			time.Time{}, "", 0)
-		t.Logf("listUsers, err: %+v, %v", listUsers, err)
+			time.Time{}, "", 0, "")
+		t.Logf("listUsers, listCount, err: %+v, %v, %v", listUsers, listCount,
+			err)
 		require.Nil(t, listUsers)
 		require.Equal(t, int32(0), listCount)
 		require.ErrorIs(t, err, dao.ErrInvalidFormat)

@@ -5,6 +5,7 @@ import (
 	"flag"
 	"fmt"
 	"os"
+	"strings"
 	"time"
 
 	"github.com/google/uuid"
@@ -89,6 +90,7 @@ func main() {
 			Email:  flag.Arg(2),
 			Role:   common.Role_ADMIN,
 			Status: api.Status_ACTIVE,
+			Tags:   []string{strings.ToLower(common.Role_ADMIN.String())},
 		}
 		createUser, err := userDAO.Create(ctx, user)
 		checkErr(err)

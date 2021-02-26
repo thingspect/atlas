@@ -20,6 +20,7 @@ import (
 	"github.com/thingspect/atlas/pkg/dao/datapoint"
 	"github.com/thingspect/atlas/pkg/dao/device"
 	"github.com/thingspect/atlas/pkg/dao/org"
+	"github.com/thingspect/atlas/pkg/dao/tag"
 	"github.com/thingspect/atlas/pkg/dao/user"
 	"github.com/thingspect/atlas/pkg/lora"
 	"github.com/thingspect/atlas/pkg/postgres"
@@ -102,6 +103,7 @@ func New(cfg *config.Config) (*API, error) {
 	api.RegisterOrgServiceServer(srv, service.NewOrg(org.NewDAO(pg)))
 	api.RegisterSessionServiceServer(srv, service.NewSession(user.NewDAO(pg),
 		cfg.PWTKey))
+	api.RegisterTagServiceServer(srv, service.NewTag(tag.NewDAO(pg)))
 	api.RegisterUserServiceServer(srv, service.NewUser(user.NewDAO(pg)))
 
 	// Register gRPC-Gateway handlers.
@@ -134,6 +136,13 @@ func New(cfg *config.Config) (*API, error) {
 
 	// Session.
 	if err := api.RegisterSessionServiceHandlerFromEndpoint(ctx, gwMux,
+		GRPCHost+GRPCPort, opts); err != nil {
+		cancel()
+		return nil, err
+	}
+
+	// Tag.
+	if err := api.RegisterTagServiceHandlerFromEndpoint(ctx, gwMux,
 		GRPCHost+GRPCPort, opts); err != nil {
 		cancel()
 		return nil, err

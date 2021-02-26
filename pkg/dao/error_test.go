@@ -30,6 +30,8 @@ func TestDBToSentinel(t *testing.T) {
 			ErrInvalidFormat)},
 		{&pgconn.PgError{Code: "23514", ConstraintName: "constraint_name"},
 			fmt.Errorf("%w: constraint_name", ErrInvalidFormat)},
+		{&pgconn.PgError{Code: "23502", ColumnName: "column_name"},
+			fmt.Errorf("%w: column_name", ErrInvalidFormat)},
 		{&pgconn.PgError{Code: "23503"}, &pgconn.PgError{Code: "23503"}},
 		{io.EOF, io.EOF},
 	}

@@ -4,6 +4,7 @@ package service
 
 import (
 	"context"
+	"strings"
 	"time"
 
 	"github.com/mennanov/fmutils"
@@ -31,7 +32,7 @@ type Userer interface {
 		passHash []byte) error
 	Delete(ctx context.Context, userID, orgID string) error
 	List(ctx context.Context, orgID string, lboundTS time.Time, prevID string,
-		limit int32) ([]*api.User, int32, error)
+		limit int32, tag string) ([]*api.User, int32, error)
 }
 
 // User service contains functions to query and modify users.
@@ -64,6 +65,8 @@ func (u *User) CreateUser(ctx context.Context,
 	}
 
 	req.User.OrgId = sess.OrgID
+	req.User.Tags = append(req.User.Tags,
+		strings.ToLower(req.User.Role.String()))
 
 	user, err := u.userDAO.Create(ctx, req.User)
 	if err != nil {
@@ -232,7 +235,7 @@ func (u *User) ListUsers(ctx context.Context,
 
 	// Retrieve PageSize+1 entries to find last page.
 	users, count, err := u.userDAO.List(ctx, sess.OrgID, lboundTS, prevID,
-		req.PageSize+1)
+		req.PageSize+1, req.Tag)
 	if err != nil {
 		return nil, errToStatus(err)
 	}

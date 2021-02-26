@@ -86,7 +86,7 @@ func TestGatewayStats(t *testing.T) {
 				{Attr: "uptime", Value: 13379004.3},
 			}, ""},
 		// Gateway Stats bad length.
-		{nil, nil, "unexpected EOF"},
+		{nil, nil, "cannot parse invalid wire-format data"},
 		// Gateway Stats bad metadata int conversion.
 		{&gw.GatewayStats{MetaData: map[string]string{"int_hour": "aaa"}},
 			[]*decode.Point{
@@ -117,7 +117,7 @@ func TestGatewayStats(t *testing.T) {
 			t.Logf("res, err: %#v, %v", res, err)
 			require.Equal(t, lTest.res, res)
 			if lTest.err != "" {
-				require.EqualError(t, err, lTest.err)
+				require.Contains(t, err.Error(), lTest.err)
 			}
 		})
 	}

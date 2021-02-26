@@ -51,6 +51,9 @@ func DBToSentinel(err error) error {
 		// check_violation
 		case "23514":
 			return fmt.Errorf("%w: %s", ErrInvalidFormat, pgErr.ConstraintName)
+		// not_null_violation
+		case "23502":
+			return fmt.Errorf("%w: %s", ErrInvalidFormat, pgErr.ColumnName)
 		default:
 			alog.Errorf("DBToSentinel unmatched PgError: %#v", pgErr)
 			return err

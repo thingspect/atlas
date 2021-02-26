@@ -91,7 +91,7 @@ func TestDeviceJoin(t *testing.T) {
 			{Attr: "data_rate", Value: int32(3)},
 		}, now, ""},
 		// Device Join bad length.
-		{nil, nil, time.Time{}, "unexpected EOF"},
+		{nil, nil, time.Time{}, "cannot parse invalid wire-format data"},
 	}
 
 	for _, test := range tests {
@@ -115,7 +115,7 @@ func TestDeviceJoin(t *testing.T) {
 					2*time.Second)
 			}
 			if lTest.err != "" {
-				require.EqualError(t, err, lTest.err)
+				require.Contains(t, err.Error(), lTest.err)
 			}
 		})
 	}

@@ -103,7 +103,6 @@ func (d *DAO) List(ctx context.Context, orgID, uniqID, devID, attr string, end,
 	query += listDataPointsOrder
 
 	// Run list query.
-	var points []*common.DataPoint
 	rows, err := d.pg.QueryContext(ctx, query, args...)
 	if err != nil {
 		return nil, dao.DBToSentinel(err)
@@ -115,6 +114,7 @@ func (d *DAO) List(ctx context.Context, orgID, uniqID, devID, attr string, end,
 		}
 	}()
 
+	var points []*common.DataPoint
 	for rows.Next() {
 		point := &common.DataPoint{}
 		var intVal *int32
@@ -251,8 +251,6 @@ func (d *DAO) Latest(ctx context.Context, orgID, uniqID,
 	}
 
 	// Run latest query.
-	var points []*common.DataPoint
-
 	rows, err := d.pg.QueryContext(ctx, query, args...)
 	if err != nil {
 		return nil, dao.DBToSentinel(err)
@@ -264,6 +262,7 @@ func (d *DAO) Latest(ctx context.Context, orgID, uniqID,
 		}
 	}()
 
+	var points []*common.DataPoint
 	for rows.Next() {
 		point := &common.DataPoint{}
 		var intVal *int32

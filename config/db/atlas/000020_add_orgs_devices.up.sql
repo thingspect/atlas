@@ -14,11 +14,14 @@ CREATE TABLE devices (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   org_id uuid NOT NULL REFERENCES orgs (id),
   uniq_id varchar(40) UNIQUE NOT NULL CHECK (uniq_id = lower(uniq_id)),
+  name varchar(80) NOT NULL,
   status status NOT NULL,
   token uuid UNIQUE NOT NULL DEFAULT gen_random_uuid(),
   decoder varchar(40) NOT NULL,
+  tags varchar(255)[],
   created_at timestamptz NOT NULL,
   updated_at timestamptz NOT NULL
 );
 
 CREATE INDEX devices_read_and_paginate_idx ON devices (org_id, created_at, id);
+CREATE INDEX devices_read_and_paginate_filter_tags_idx ON devices (org_id, tags, created_at, id);

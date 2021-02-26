@@ -356,8 +356,8 @@ func TestUpdateDevice(t *testing.T) {
 		part := &api.Device{Id: dev.Id, Status: api.Status_ACTIVE,
 			Decoder: api.Decoder_GATEWAY}
 		merged := &api.Device{Id: dev.Id, OrgId: dev.OrgId, UniqId: dev.UniqId,
-			Status: api.Status_ACTIVE, Decoder: api.Decoder_GATEWAY,
-			Token: dev.Token}
+			Name: dev.Name, Status: api.Status_ACTIVE, Token: dev.Token,
+			Decoder: api.Decoder_GATEWAY, Tags: dev.Tags}
 
 		devicer := NewMockDevicer(gomock.NewController(t))
 		devicer.EXPECT().Read(gomock.Any(), dev.Id, dev.OrgId).Return(dev, nil).
@@ -763,8 +763,8 @@ func TestListDevices(t *testing.T) {
 		}
 
 		devicer := NewMockDevicer(gomock.NewController(t))
-		devicer.EXPECT().List(gomock.Any(), orgID, time.Time{}, "", int32(51)).
-			Return(devs, int32(3), nil).Times(1)
+		devicer.EXPECT().List(gomock.Any(), orgID, time.Time{}, "", int32(51),
+			"").Return(devs, int32(3), nil).Times(1)
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
 			context.Background(), &session.Session{OrgID: orgID,
@@ -802,8 +802,8 @@ func TestListDevices(t *testing.T) {
 		require.NoError(t, err)
 
 		devicer := NewMockDevicer(gomock.NewController(t))
-		devicer.EXPECT().List(gomock.Any(), orgID, time.Time{}, "", int32(3)).
-			Return(devs, int32(3), nil).Times(1)
+		devicer.EXPECT().List(gomock.Any(), orgID, time.Time{}, "", int32(3),
+			"").Return(devs, int32(3), nil).Times(1)
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
 			context.Background(), &session.Session{OrgID: orgID,
@@ -877,7 +877,8 @@ func TestListDevices(t *testing.T) {
 
 		devicer := NewMockDevicer(gomock.NewController(t))
 		devicer.EXPECT().List(gomock.Any(), "aaa", gomock.Any(), gomock.Any(),
-			gomock.Any()).Return(nil, int32(0), dao.ErrInvalidFormat).Times(1)
+			gomock.Any(), gomock.Any()).Return(nil, int32(0),
+			dao.ErrInvalidFormat).Times(1)
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
 			context.Background(), &session.Session{OrgID: "aaa",
@@ -905,8 +906,8 @@ func TestListDevices(t *testing.T) {
 		devs[1].Id = badUUID
 
 		devicer := NewMockDevicer(gomock.NewController(t))
-		devicer.EXPECT().List(gomock.Any(), orgID, time.Time{}, "", int32(3)).
-			Return(devs, int32(3), nil).Times(1)
+		devicer.EXPECT().List(gomock.Any(), orgID, time.Time{}, "", int32(3),
+			"").Return(devs, int32(3), nil).Times(1)
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
 			context.Background(), &session.Session{OrgID: orgID,

@@ -93,7 +93,7 @@ func TestValidateToken(t *testing.T) {
 		{key, "...", "illegal base64 data at input byte 0"},
 		{key, random.String(10), "crypto: malformed ciphertext"},
 		{key, base64.RawStdEncoding.EncodeToString(badCipher),
-			"unexpected EOF"},
+			"cannot parse invalid wire-format data"},
 		{key, base64.RawStdEncoding.EncodeToString(eOldToken),
 			errWebTokenExp.Error()},
 	}
@@ -125,7 +125,7 @@ func TestValidateToken(t *testing.T) {
 			if lTest.err == "" {
 				require.NoError(t, err)
 			} else {
-				require.EqualError(t, err, lTest.err)
+				require.Contains(t, err.Error(), lTest.err)
 			}
 		})
 	}

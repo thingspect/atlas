@@ -143,7 +143,6 @@ func (d *DAO) List(ctx context.Context, lboundTS time.Time, prevID string,
 	}
 
 	// Run list query.
-	var orgs []*api.Org
 	rows, err := d.pg.QueryContext(ctx, query, args...)
 	if err != nil {
 		return nil, 0, dao.DBToSentinel(err)
@@ -155,6 +154,7 @@ func (d *DAO) List(ctx context.Context, lboundTS time.Time, prevID string,
 		}
 	}()
 
+	var orgs []*api.Org
 	for rows.Next() {
 		org := &api.Org{}
 		var createdAt, updatedAt time.Time

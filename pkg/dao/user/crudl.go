@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/jackc/pgtype"
 	"github.com/thingspect/api/go/api"
 	"github.com/thingspect/api/go/common"
 	"github.com/thingspect/atlas/pkg/alog"
@@ -13,19 +14,24 @@ import (
 )
 
 const createUser = `
-INSERT INTO users (org_id, email, role, status, created_at, updated_at)
-VALUES ($1, $2, $3, $4, $5, $6)
+INSERT INTO users (org_id, email, role, status, tags, created_at, updated_at)
+VALUES ($1, $2, $3, $4, $5, $6, $7)
 RETURNING id
 `
 
 // Create creates a user in the database.
 func (d *DAO) Create(ctx context.Context, user *api.User) (*api.User, error) {
+	var tags pgtype.VarcharArray
+	if err := tags.Set(user.Tags); err != nil {
+		return nil, dao.DBToSentinel(err)
+	}
+
 	now := time.Now().UTC().Truncate(time.Microsecond)
 	user.CreatedAt = timestamppb.New(now)
 	user.UpdatedAt = timestamppb.New(now)
 
 	if err := d.pg.QueryRowContext(ctx, createUser, user.OrgId, user.Email,
-		user.Role.String(), user.Status.String(), now,
+		user.Role.String(), user.Status.String(), tags, now,
 		now).Scan(&user.Id); err != nil {
 		return nil, dao.DBToSentinel(err)
 	}
@@ -33,7 +39,7 @@ func (d *DAO) Create(ctx context.Context, user *api.User) (*api.User, error) {
 }
 
 const readUser = `
-SELECT id, org_id, email, role, status, created_at, updated_at
+SELECT id, org_id, email, role, status, tags, created_at, updated_at
 FROM users
 WHERE (id, org_id) = ($1, $2)
 `
@@ -43,24 +49,28 @@ func (d *DAO) Read(ctx context.Context, userID, orgID string) (*api.User,
 	error) {
 	user := &api.User{}
 	var role, status string
+	var tags pgtype.VarcharArray
 	var createdAt, updatedAt time.Time
 
 	if err := d.pg.QueryRowContext(ctx, readUser, userID, orgID).Scan(&user.Id,
-		&user.OrgId, &user.Email, &role, &status, &createdAt,
+		&user.OrgId, &user.Email, &role, &status, &tags, &createdAt,
 		&updatedAt); err != nil {
 		return nil, dao.DBToSentinel(err)
 	}
 
 	user.Role = common.Role(common.Role_value[role])
 	user.Status = api.Status(api.Status_value[status])
+	if err := tags.AssignTo(&user.Tags); err != nil {
+		return nil, dao.DBToSentinel(err)
+	}
 	user.CreatedAt = timestamppb.New(createdAt)
 	user.UpdatedAt = timestamppb.New(updatedAt)
 	return user, nil
 }
 
 const readUserByEmail = `
-SELECT u.id, u.org_id, u.email, u.password_hash, u.role, u.status, u.created_at,
-u.updated_at
+SELECT u.id, u.org_id, u.email, u.password_hash, u.role, u.status, u.tags,
+u.created_at, u.updated_at
 FROM users u
 INNER JOIN orgs o ON u.org_id = o.id
 WHERE (u.email, o.name) = ($1, $2)
@@ -72,16 +82,20 @@ func (d *DAO) ReadByEmail(ctx context.Context, email,
 	user := &api.User{}
 	var passHash []byte
 	var role, status string
+	var tags pgtype.VarcharArray
 	var createdAt, updatedAt time.Time
 
 	if err := d.pg.QueryRowContext(ctx, readUserByEmail, email, orgName).Scan(
-		&user.Id, &user.OrgId, &user.Email, &passHash, &role, &status,
+		&user.Id, &user.OrgId, &user.Email, &passHash, &role, &status, &tags,
 		&createdAt, &updatedAt); err != nil {
 		return nil, nil, dao.DBToSentinel(err)
 	}
 
 	user.Role = common.Role(common.Role_value[role])
 	user.Status = api.Status(api.Status_value[status])
+	if err := tags.AssignTo(&user.Tags); err != nil {
+		return nil, nil, dao.DBToSentinel(err)
+	}
 	user.CreatedAt = timestamppb.New(createdAt)
 	user.UpdatedAt = timestamppb.New(updatedAt)
 	return user, passHash, nil
@@ -89,20 +103,25 @@ func (d *DAO) ReadByEmail(ctx context.Context, email,
 
 const updateUser = `
 UPDATE users
-SET email = $1, role = $2, status = $3, updated_at = $4
-WHERE (id, org_id) = ($5, $6)
+SET email = $1, role = $2, status = $3, tags = $4, updated_at = $5
+WHERE (id, org_id) = ($6, $7)
 RETURNING created_at
 `
 
 // Update updates a user in the database. CreatedAt should not update, so it is
 // safe to override it at the DAO level.
 func (d *DAO) Update(ctx context.Context, user *api.User) (*api.User, error) {
+	var tags pgtype.VarcharArray
+	if err := tags.Set(user.Tags); err != nil {
+		return nil, dao.DBToSentinel(err)
+	}
+
 	var createdAt time.Time
 	updatedAt := time.Now().UTC().Truncate(time.Microsecond)
 	user.UpdatedAt = timestamppb.New(updatedAt)
 
 	if err := d.pg.QueryRowContext(ctx, updateUser, user.Email,
-		user.Role.String(), user.Status.String(), updatedAt, user.Id,
+		user.Role.String(), user.Status.String(), tags, updatedAt, user.Id,
 		user.OrgId).Scan(&createdAt); err != nil {
 		return nil, dao.DBToSentinel(err)
 	}
@@ -155,17 +174,25 @@ FROM users
 WHERE org_id = $1
 `
 
+const countUsersTag = `
+AND $2 = ANY (tags)
+`
+
 const listUsers = `
-SELECT id, org_id, email, role, status, created_at, updated_at
+SELECT id, org_id, email, role, status, tags, created_at, updated_at
 FROM users
 WHERE org_id = $1
 `
 
 const listUsersTSAndID = `
-AND (created_at > $2
-OR (created_at = $2
-AND id > $3
+AND (created_at > $%d
+OR (created_at = $%d
+AND id > $%d
 ))
+`
+
+const listUsersTag = `
+AND $%d = ANY (tags)
 `
 
 const listUsersLimit = `
@@ -173,36 +200,53 @@ ORDER BY created_at ASC, id ASC
 LIMIT %d
 `
 
-// List retrieves all users by org ID. If lboundTS and prevID are zero values,
-// the first page of results is returned. Limits of 0 or less do not apply a
-// limit. List returns a slice of users, a total count, and an error value.
+// List retrieves all users by org ID with pagination and optional tag filter.
+// If lboundTS and prevID are zero values, the first page of results is
+// returned. Limits of 0 or less do not apply a limit. List returns a slice of
+// users, a total count, and an error value.
 func (d *DAO) List(ctx context.Context, orgID string, lboundTS time.Time,
-	prevID string, limit int32) ([]*api.User, int32, error) {
+	prevID string, limit int32, tag string) ([]*api.User, int32, error) {
+	// Build count query.
+	cQuery := countUsers
+	cArgs := []interface{}{orgID}
+
+	if tag != "" {
+		cQuery += countUsersTag
+		cArgs = append(cArgs, tag)
+	}
+
 	// Run count query.
 	var count int32
-	if err := d.pg.QueryRowContext(ctx, countUsers, orgID).Scan(
+	if err := d.pg.QueryRowContext(ctx, cQuery, cArgs...).Scan(
 		&count); err != nil {
 		return nil, 0, dao.DBToSentinel(err)
 	}
 
 	// Build list query.
-	query := listUsers
-	args := []interface{}{orgID}
+	lQuery := listUsers
+	lArgs := []interface{}{orgID}
 
 	if prevID != "" && !lboundTS.IsZero() {
-		query += listUsersTSAndID
-		args = append(args, lboundTS, prevID)
+		lQuery += fmt.Sprintf(listUsersTSAndID, 2, 2, 3)
+		lArgs = append(lArgs, lboundTS, prevID)
+
+		if tag != "" {
+			lQuery += fmt.Sprintf(listUsersTag, 4)
+			lArgs = append(lArgs, tag)
+		}
+	} else if tag != "" {
+		lQuery += fmt.Sprintf(listUsersTag, 2)
+		lArgs = append(lArgs, tag)
 	}
 
 	// Ordering is applied with the limit, which will always be present for API
 	// usage, whereas lboundTS and prevID will not for first pages.
 	if limit > 0 {
-		query += fmt.Sprintf(listUsersLimit, limit)
+		lQuery += fmt.Sprintf(listUsersLimit, limit)
 	}
 
 	// Run list query.
-	var users []*api.User
-	rows, err := d.pg.QueryContext(ctx, query, args...)
+	rows, err := d.pg.QueryContext(ctx, lQuery, lArgs...)
 	if err != nil {
 		return nil, 0, dao.DBToSentinel(err)
 	}
@@ -213,18 +257,23 @@ func (d *DAO) List(ctx context.Context, orgID string, lboundTS time.Time,
 		}
 	}()
 
+	var users []*api.User
 	for rows.Next() {
 		user := &api.User{}
 		var role, status string
+		var tags pgtype.VarcharArray
 		var createdAt, updatedAt time.Time
 
 		if err = rows.Scan(&user.Id, &user.OrgId, &user.Email, &role, &status,
-			&createdAt, &updatedAt); err != nil {
+			&tags, &createdAt, &updatedAt); err != nil {
 			return nil, 0, dao.DBToSentinel(err)
 		}
 
 		user.Role = common.Role(common.Role_value[role])
 		user.Status = api.Status(api.Status_value[status])
+		if err := tags.AssignTo(&user.Tags); err != nil {
+			return nil, 0, dao.DBToSentinel(err)
+		}
 		user.CreatedAt = timestamppb.New(createdAt)
 		user.UpdatedAt = timestamppb.New(updatedAt)
 		users = append(users, user)
