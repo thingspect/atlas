@@ -1,5 +1,5 @@
-// Package dao provides errors and helper functions for use by data access
-// object packages.
+// Package dao provides sentinel errors and helper functions for use by data
+// access object packages.
 package dao
 
 import (

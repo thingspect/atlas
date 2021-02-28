@@ -1,6 +1,6 @@
 // +build !unit
 
-package postgres
+package dao
 
 import (
 	"fmt"
@@ -10,7 +10,7 @@ import (
 	"github.com/thingspect/atlas/pkg/test/config"
 )
 
-func TestNew(t *testing.T) {
+func TestNewPgDB(t *testing.T) {
 	t.Parallel()
 
 	testConfig := config.New()
@@ -33,7 +33,7 @@ func TestNew(t *testing.T) {
 		t.Run(fmt.Sprintf("Can connect %+v", lTest), func(t *testing.T) {
 			t.Parallel()
 
-			res, err := New(lTest.inp)
+			res, err := NewPgDB(lTest.inp)
 			t.Logf("res, err: %+v, %#v", res, err)
 			if lTest.err == "" {
 				require.NotNil(t, res)

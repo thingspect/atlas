@@ -10,9 +10,9 @@ import (
 
 	"github.com/thingspect/atlas/internal/validator/config"
 	"github.com/thingspect/atlas/internal/validator/validator"
+	"github.com/thingspect/atlas/pkg/dao"
 	"github.com/thingspect/atlas/pkg/dao/device"
 	"github.com/thingspect/atlas/pkg/dao/org"
-	"github.com/thingspect/atlas/pkg/postgres"
 	"github.com/thingspect/atlas/pkg/queue"
 	testconfig "github.com/thingspect/atlas/pkg/test/config"
 	"github.com/thingspect/atlas/pkg/test/random"
@@ -79,9 +79,9 @@ func TestMain(m *testing.M) {
 	}()
 
 	// Set up database connection.
-	pg, err := postgres.New(cfg.PgURI)
+	pg, err := dao.NewPgDB(cfg.PgURI)
 	if err != nil {
-		log.Fatalf("TestMain postgres.New: %v", err)
+		log.Fatalf("TestMain dao.NewPgDB: %v", err)
 	}
 	globalOrgDAO = org.NewDAO(pg)
 	globalDevDAO = device.NewDAO(pg)

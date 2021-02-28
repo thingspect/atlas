@@ -5,9 +5,9 @@ import (
 
 	"github.com/thingspect/api/go/api"
 	"github.com/thingspect/api/go/common"
+	"github.com/thingspect/atlas/internal/api/crypto"
 	"github.com/thingspect/atlas/internal/api/session"
 	"github.com/thingspect/atlas/pkg/alog"
-	"github.com/thingspect/atlas/pkg/crypto"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )

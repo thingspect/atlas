@@ -10,8 +10,8 @@ import (
 
 	"github.com/thingspect/atlas/internal/accumulator/accumulator"
 	"github.com/thingspect/atlas/internal/accumulator/config"
+	"github.com/thingspect/atlas/pkg/dao"
 	"github.com/thingspect/atlas/pkg/dao/datapoint"
-	"github.com/thingspect/atlas/pkg/postgres"
 	"github.com/thingspect/atlas/pkg/queue"
 	testconfig "github.com/thingspect/atlas/pkg/test/config"
 	"github.com/thingspect/atlas/pkg/test/random"
@@ -70,9 +70,9 @@ func TestMain(m *testing.M) {
 	}()
 
 	// Set up database connection.
-	pg, err := postgres.New(cfg.PgURI)
+	pg, err := dao.NewPgDB(cfg.PgURI)
 	if err != nil {
-		log.Fatalf("TestMain postgres.New: %v", err)
+		log.Fatalf("TestMain dao.NewPgDB: %v", err)
 	}
 	globalDPDAO = datapoint.NewDAO(pg)
 

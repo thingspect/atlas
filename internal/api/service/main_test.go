@@ -8,7 +8,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/thingspect/atlas/pkg/crypto"
+	"github.com/thingspect/atlas/internal/api/crypto"
 	"github.com/thingspect/atlas/pkg/test/random"
 )
 

@@ -12,8 +12,8 @@ import (
 	"github.com/thingspect/api/go/api"
 	"github.com/thingspect/atlas/internal/validator/config"
 	"github.com/thingspect/atlas/pkg/alog"
+	"github.com/thingspect/atlas/pkg/dao"
 	"github.com/thingspect/atlas/pkg/dao/device"
-	"github.com/thingspect/atlas/pkg/postgres"
 	"github.com/thingspect/atlas/pkg/queue"
 )
 
@@ -37,7 +37,7 @@ type Validator struct {
 // New builds a new Validator and returns a reference to it and an error value.
 func New(cfg *config.Config) (*Validator, error) {
 	// Set up database connection.
-	pg, err := postgres.New(cfg.PgURI)
+	pg, err := dao.NewPgDB(cfg.PgURI)
 	if err != nil {
 		return nil, err
 	}

@@ -11,10 +11,10 @@ import (
 	"github.com/google/uuid"
 	"github.com/thingspect/api/go/api"
 	"github.com/thingspect/api/go/common"
-	"github.com/thingspect/atlas/pkg/crypto"
+	"github.com/thingspect/atlas/internal/api/crypto"
+	"github.com/thingspect/atlas/pkg/dao"
 	"github.com/thingspect/atlas/pkg/dao/org"
 	"github.com/thingspect/atlas/pkg/dao/user"
-	"github.com/thingspect/atlas/pkg/postgres"
 	"github.com/thingspect/atlas/pkg/test/random"
 )
 
@@ -60,7 +60,7 @@ func main() {
 	}
 
 	// Set up database connection.
-	pg, err := postgres.New(*pgURI)
+	pg, err := dao.NewPgDB(*pgURI)
 	checkErr(err)
 	orgDAO := org.NewDAO(pg)
 	userDAO := user.NewDAO(pg)
