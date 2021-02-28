@@ -8,9 +8,9 @@ import (
 	"testing"
 	"time"
 
+	"github.com/thingspect/atlas/pkg/dao"
 	"github.com/thingspect/atlas/pkg/dao/device"
 	"github.com/thingspect/atlas/pkg/dao/org"
-	"github.com/thingspect/atlas/pkg/postgres"
 	"github.com/thingspect/atlas/pkg/test/config"
 )
 
@@ -27,9 +27,9 @@ func TestMain(m *testing.M) {
 	testConfig := config.New()
 
 	// Set up database connection.
-	pg, err := postgres.New(testConfig.PgURI)
+	pg, err := dao.NewPgDB(testConfig.PgURI)
 	if err != nil {
-		log.Fatalf("TestMain postgres.New: %v", err)
+		log.Fatalf("TestMain dao.NewPgDB: %v", err)
 	}
 	globalDPDAO = NewDAO(pg)
 	globalOrgDAO = org.NewDAO(pg)

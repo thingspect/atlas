@@ -14,7 +14,7 @@ import (
 	"github.com/thingspect/api/go/api"
 	"github.com/thingspect/api/go/common"
 	"github.com/thingspect/atlas/api/go/token"
-	"github.com/thingspect/atlas/pkg/crypto"
+	"github.com/thingspect/atlas/internal/api/crypto"
 	"github.com/thingspect/atlas/pkg/test/random"
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/known/timestamppb"

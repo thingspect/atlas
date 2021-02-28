@@ -162,6 +162,8 @@ func TestRead(t *testing.T) {
 func TestReadByEmail(t *testing.T) {
 	t.Parallel()
 
+	hash := random.Bytes(60)
+
 	ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
 	defer cancel()
 
@@ -175,7 +177,7 @@ func TestReadByEmail(t *testing.T) {
 	require.NoError(t, err)
 
 	err = globalUserDAO.UpdatePassword(ctx, createUser.Id, createOrg.Id,
-		globalHash)
+		hash)
 	t.Logf("err: %v", err)
 	require.NoError(t, err)
 
@@ -189,7 +191,7 @@ func TestReadByEmail(t *testing.T) {
 			createUser.Email, createOrg.Name)
 		t.Logf("readUser, readHash, err: %+v, %s, %v", readUser, readHash, err)
 		require.NoError(t, err)
-		require.Equal(t, globalHash, readHash)
+		require.Equal(t, hash, readHash)
 
 		// Normalize timestamps.
 		require.True(t, readUser.UpdatedAt.AsTime().After(
@@ -340,6 +342,8 @@ func TestUpdate(t *testing.T) {
 func TestUpdatePassword(t *testing.T) {
 	t.Parallel()
 
+	hash := random.Bytes(60)
+
 	ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
 	defer cancel()
 
@@ -359,7 +363,7 @@ func TestUpdatePassword(t *testing.T) {
 		require.NoError(t, err)
 
 		err = globalUserDAO.UpdatePassword(ctx, createUser.Id, createOrg.Id,
-			globalHash)
+			hash)
 		t.Logf("err: %v", err)
 		require.NoError(t, err)
 	})
@@ -371,7 +375,7 @@ func TestUpdatePassword(t *testing.T) {
 		defer cancel()
 
 		err := globalUserDAO.UpdatePassword(ctx, uuid.NewString(),
-			createOrg.Id, globalHash)
+			createOrg.Id, hash)
 		t.Logf("err: %v", err)
 		require.Equal(t, dao.ErrNotFound, err)
 	})
@@ -388,7 +392,7 @@ func TestUpdatePassword(t *testing.T) {
 		require.NoError(t, err)
 
 		err = globalUserDAO.UpdatePassword(ctx, createUser.Id,
-			uuid.NewString(), globalHash)
+			uuid.NewString(), hash)
 		t.Logf("err: %v", err)
 		require.Equal(t, dao.ErrNotFound, err)
 	})

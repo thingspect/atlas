@@ -12,11 +12,11 @@ import (
 	"github.com/thingspect/api/go/common"
 	"github.com/thingspect/atlas/internal/api/api"
 	"github.com/thingspect/atlas/internal/api/config"
-	"github.com/thingspect/atlas/pkg/crypto"
+	"github.com/thingspect/atlas/internal/api/crypto"
+	"github.com/thingspect/atlas/pkg/dao"
 	"github.com/thingspect/atlas/pkg/dao/datapoint"
 	"github.com/thingspect/atlas/pkg/dao/org"
 	"github.com/thingspect/atlas/pkg/dao/user"
-	"github.com/thingspect/atlas/pkg/postgres"
 	"github.com/thingspect/atlas/pkg/queue"
 	testconfig "github.com/thingspect/atlas/pkg/test/config"
 	"github.com/thingspect/atlas/pkg/test/random"
@@ -79,9 +79,9 @@ func TestMain(m *testing.M) {
 	}()
 
 	// Set up database connection.
-	pg, err := postgres.New(cfg.PgURI)
+	pg, err := dao.NewPgDB(cfg.PgURI)
 	if err != nil {
-		log.Fatalf("TestMain postgres.New: %v", err)
+		log.Fatalf("TestMain dao.NewPgDB: %v", err)
 	}
 	globalOrgDAO = org.NewDAO(pg)
 	globalUserDAO = user.NewDAO(pg)

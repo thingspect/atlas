@@ -12,9 +12,9 @@ import (
 	"github.com/thingspect/api/go/api"
 	"github.com/thingspect/atlas/internal/decoder/config"
 	"github.com/thingspect/atlas/pkg/alog"
+	"github.com/thingspect/atlas/pkg/dao"
 	"github.com/thingspect/atlas/pkg/dao/device"
 	"github.com/thingspect/atlas/pkg/decode/registry"
-	"github.com/thingspect/atlas/pkg/postgres"
 	"github.com/thingspect/atlas/pkg/queue"
 )
 
@@ -40,7 +40,7 @@ type Decoder struct {
 // New builds a new Decoder and returns a reference to it and an error decue.
 func New(cfg *config.Config) (*Decoder, error) {
 	// Set up database connection.
-	pg, err := postgres.New(cfg.PgURI)
+	pg, err := dao.NewPgDB(cfg.PgURI)
 	if err != nil {
 		return nil, err
 	}

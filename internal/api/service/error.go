@@ -6,8 +6,8 @@ import (
 	"fmt"
 
 	"github.com/thingspect/api/go/common"
+	"github.com/thingspect/atlas/internal/api/crypto"
 	"github.com/thingspect/atlas/pkg/alog"
-	"github.com/thingspect/atlas/pkg/crypto"
 	"github.com/thingspect/atlas/pkg/dao"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"

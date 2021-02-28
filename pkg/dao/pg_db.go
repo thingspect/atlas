@@ -1,6 +1,4 @@
-// Package postgres provides a wrapper for setting up, configuring, and
-// verifying a database/sql connection to PostgreSQL.
-package postgres
+package dao
 
 import (
 	"context"
@@ -11,8 +9,9 @@ import (
 	_ "github.com/jackc/pgx/v4/stdlib"
 )
 
-// New creates a new database/sql DB using the pgx driver.
-func New(uri string) (*sql.DB, error) {
+// NewPgDB builds, configures, and verifies a new database/sql DB using the pgx
+// driver.
+func NewPgDB(uri string) (*sql.DB, error) {
 	db, err := sql.Open("pgx", uri)
 	if err != nil {
 		return nil, err

@@ -15,15 +15,15 @@ import (
 	"github.com/thingspect/api/go/api"
 	"github.com/thingspect/atlas/internal/api/config"
 	"github.com/thingspect/atlas/internal/api/interceptor"
+	"github.com/thingspect/atlas/internal/api/lora"
 	"github.com/thingspect/atlas/internal/api/service"
 	"github.com/thingspect/atlas/pkg/alog"
+	"github.com/thingspect/atlas/pkg/dao"
 	"github.com/thingspect/atlas/pkg/dao/datapoint"
 	"github.com/thingspect/atlas/pkg/dao/device"
 	"github.com/thingspect/atlas/pkg/dao/org"
 	"github.com/thingspect/atlas/pkg/dao/tag"
 	"github.com/thingspect/atlas/pkg/dao/user"
-	"github.com/thingspect/atlas/pkg/lora"
-	"github.com/thingspect/atlas/pkg/postgres"
 	"github.com/thingspect/atlas/pkg/queue"
 	"google.golang.org/grpc"
 
@@ -55,7 +55,7 @@ func New(cfg *config.Config) (*API, error) {
 	}
 
 	// Set up database connection.
-	pg, err := postgres.New(cfg.PgURI)
+	pg, err := dao.NewPgDB(cfg.PgURI)
 	if err != nil {
 		return nil, err
 	}

@@ -8,7 +8,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/thingspect/api/go/api"
 	"github.com/thingspect/atlas/api/go/token"
-	"github.com/thingspect/atlas/pkg/crypto"
+	"github.com/thingspect/atlas/internal/api/crypto"
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
