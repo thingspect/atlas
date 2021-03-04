@@ -68,6 +68,7 @@ func TestAccumulateMessages(t *testing.T) {
 				matcher.NewProtoMatcher(lTest.inp.Point), lTest.inp.OrgId).
 				DoAndReturn(func(_ ...interface{}) error {
 					defer wg.Done()
+
 					return nil
 				}).Times(1)
 
@@ -129,6 +130,7 @@ func TestAccumulateMessagesError(t *testing.T) {
 			datapointer.EXPECT().Create(gomock.Any(), gomock.Any(), "").
 				DoAndReturn(func(_ ...interface{}) error {
 					defer wg.Done()
+
 					return lTest.inpErr
 				}).Times(lTest.inpTimes)
 

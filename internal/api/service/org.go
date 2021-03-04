@@ -25,7 +25,7 @@ type Orger interface {
 	Read(ctx context.Context, orgID string) (*api.Org, error)
 	Update(ctx context.Context, org *api.Org) (*api.Org, error)
 	Delete(ctx context.Context, orgID string) error
-	List(ctx context.Context, lboundTS time.Time, prevID string,
+	List(ctx context.Context, lBoundTS time.Time, prevID string,
 		limit int32) ([]*api.Org, int32, error)
 }
 
@@ -44,7 +44,7 @@ func NewOrg(orgDAO Orger) *Org {
 }
 
 // CreateOrg creates an organization.
-func (u *Org) CreateOrg(ctx context.Context,
+func (o *Org) CreateOrg(ctx context.Context,
 	req *api.CreateOrgRequest) (*api.Org, error) {
 	logger := alog.FromContext(ctx)
 	sess, ok := session.FromContext(ctx)
@@ -52,7 +52,7 @@ func (u *Org) CreateOrg(ctx context.Context,
 		return nil, errPerm(common.Role_SYS_ADMIN)
 	}
 
-	org, err := u.orgDAO.Create(ctx, req.Org)
+	org, err := o.orgDAO.Create(ctx, req.Org)
 	if err != nil {
 		return nil, errToStatus(err)
 	}
@@ -61,18 +61,19 @@ func (u *Org) CreateOrg(ctx context.Context,
 		"201")); err != nil {
 		logger.Errorf("CreateOrg grpc.SetHeader: %v", err)
 	}
+
 	return org, nil
 }
 
 // GetOrg retrieves an organization by ID.
-func (u *Org) GetOrg(ctx context.Context, req *api.GetOrgRequest) (*api.Org,
+func (o *Org) GetOrg(ctx context.Context, req *api.GetOrgRequest) (*api.Org,
 	error) {
 	sess, ok := session.FromContext(ctx)
 	if !ok || (sess.Role < common.Role_SYS_ADMIN && req.Id != sess.OrgID) {
 		return nil, errPerm(common.Role_SYS_ADMIN)
 	}
 
-	org, err := u.orgDAO.Read(ctx, req.Id)
+	org, err := o.orgDAO.Read(ctx, req.Id)
 	if err != nil {
 		return nil, errToStatus(err)
 	}
@@ -82,7 +83,7 @@ func (u *Org) GetOrg(ctx context.Context, req *api.GetOrgRequest) (*api.Org,
 
 // UpdateOrg updates an organization. Update actions validate after merge to
 // support partial updates.
-func (u *Org) UpdateOrg(ctx context.Context,
+func (o *Org) UpdateOrg(ctx context.Context,
 	req *api.UpdateOrgRequest) (*api.Org, error) {
 	sess, ok := session.FromContext(ctx)
 	if !ok {
@@ -108,7 +109,7 @@ func (u *Org) UpdateOrg(ctx context.Context,
 				"invalid field mask")
 		}
 
-		org, err := u.orgDAO.Read(ctx, req.Org.Id)
+		org, err := o.orgDAO.Read(ctx, req.Org.Id)
 		if err != nil {
 			return nil, errToStatus(err)
 		}
@@ -123,7 +124,7 @@ func (u *Org) UpdateOrg(ctx context.Context,
 		return nil, status.Error(codes.InvalidArgument, err.Error())
 	}
 
-	org, err := u.orgDAO.Update(ctx, req.Org)
+	org, err := o.orgDAO.Update(ctx, req.Org)
 	if err != nil {
 		return nil, errToStatus(err)
 	}
@@ -132,7 +133,7 @@ func (u *Org) UpdateOrg(ctx context.Context,
 }
 
 // DeleteOrg deletes an organization by ID.
-func (u *Org) DeleteOrg(ctx context.Context,
+func (o *Org) DeleteOrg(ctx context.Context,
 	req *api.DeleteOrgRequest) (*emptypb.Empty, error) {
 	logger := alog.FromContext(ctx)
 	sess, ok := session.FromContext(ctx)
@@ -140,7 +141,7 @@ func (u *Org) DeleteOrg(ctx context.Context,
 		return nil, errPerm(common.Role_SYS_ADMIN)
 	}
 
-	if err := u.orgDAO.Delete(ctx, req.Id); err != nil {
+	if err := o.orgDAO.Delete(ctx, req.Id); err != nil {
 		return nil, errToStatus(err)
 	}
 
@@ -148,11 +149,12 @@ func (u *Org) DeleteOrg(ctx context.Context,
 		"204")); err != nil {
 		logger.Errorf("DeleteOrg grpc.SetHeader: %v", err)
 	}
+
 	return &emptypb.Empty{}, nil
 }
 
 // ListOrgs retrieves all orgs.
-func (u *Org) ListOrgs(ctx context.Context,
+func (o *Org) ListOrgs(ctx context.Context,
 	req *api.ListOrgsRequest) (*api.ListOrgsResponse, error) {
 	logger := alog.FromContext(ctx)
 	sess, ok := session.FromContext(ctx)
@@ -162,7 +164,7 @@ func (u *Org) ListOrgs(ctx context.Context,
 
 	// If the org does not have sufficient role, return only their org.
 	if sess.Role < common.Role_SYS_ADMIN {
-		org, err := u.orgDAO.Read(ctx, sess.OrgID)
+		org, err := o.orgDAO.Read(ctx, sess.OrgID)
 		if err != nil {
 			return nil, errToStatus(err)
 		}
@@ -177,13 +179,13 @@ func (u *Org) ListOrgs(ctx context.Context,
 		req.PageSize = defaultPageSize
 	}
 
-	lboundTS, prevID, err := session.ParsePageToken(req.PageToken)
+	lBoundTS, prevID, err := session.ParsePageToken(req.PageToken)
 	if err != nil {
 		return nil, status.Error(codes.InvalidArgument, "invalid page token")
 	}
 
 	// Retrieve PageSize+1 entries to find last page.
-	orgs, count, err := u.orgDAO.List(ctx, lboundTS, prevID, req.PageSize+1)
+	orgs, count, err := o.orgDAO.List(ctx, lBoundTS, prevID, req.PageSize+1)
 	if err != nil {
 		return nil, errToStatus(err)
 	}

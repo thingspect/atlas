@@ -20,6 +20,9 @@
       "name": "OrgService"
     },
     {
+      "name": "RuleService"
+    },
+    {
       "name": "SessionService"
     },
     {
@@ -733,6 +736,277 @@
         ]
       }
     },
+    "/v1/rules": {
+      "get": {
+        "summary": "List all rules. Rules define how events are generated.",
+        "operationId": "RuleService_ListRules",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/apiListRulesResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "pageSize",
+            "description": "Number of rules to retrieve in a single page. Defaults to 50 if not specified, with a maximum of 250.",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
+          },
+          {
+            "name": "pageToken",
+            "description": "Token of the page to retrieve. If not specified, the first page of results will be returned. To request the next page of results, use next_page_token from the previous response.",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "RuleService"
+        ]
+      },
+      "post": {
+        "summary": "Create a rule. Rules define how events are generated.",
+        "operationId": "RuleService_CreateRule",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/apiRule"
+            }
+          },
+          "201": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/apiRule"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "description": "Rule message to create.",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/apiRule"
+            }
+          }
+        ],
+        "tags": [
+          "RuleService"
+        ]
+      }
+    },
+    "/v1/rules/test": {
+      "post": {
+        "summary": "Test a rule. Rules define how events are generated.",
+        "operationId": "RuleService_TestRule",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/apiTestRuleResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/apiTestRuleRequest"
+            }
+          }
+        ],
+        "tags": [
+          "RuleService"
+        ]
+      }
+    },
+    "/v1/rules/{id}": {
+      "get": {
+        "summary": "Get a rule by ID. Rules define how events are generated.",
+        "operationId": "RuleService_GetRule",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/apiRule"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "description": "Rule ID (UUID) to get.",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "RuleService"
+        ]
+      },
+      "delete": {
+        "summary": "Delete a rule by ID. Rules define how events are generated.",
+        "operationId": "RuleService_DeleteRule",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "properties": {}
+            }
+          },
+          "204": {
+            "description": "A successful response.",
+            "schema": {}
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "description": "Rule ID (UUID) to delete.",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "RuleService"
+        ]
+      }
+    },
+    "/v1/rules/{rule.id}": {
+      "put": {
+        "summary": "Update a rule. Rules define how events are generated.",
+        "operationId": "RuleService_UpdateRule",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/apiRule"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "rule.id",
+            "description": "Rule ID (UUID).",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "description": "Rule message to update.",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/apiRule"
+            }
+          },
+          {
+            "name": "updateMask",
+            "description": "Fields to update. Automatically populated by a PATCH request. If not present, a full resource update is performed.",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "RuleService"
+        ]
+      },
+      "patch": {
+        "summary": "Update a rule. Rules define how events are generated.",
+        "operationId": "RuleService_UpdateRule2",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/apiRule"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "rule.id",
+            "description": "Rule ID (UUID).",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "description": "Rule message to update.",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/apiRule"
+            }
+          },
+          {
+            "name": "updateMask",
+            "description": "Fields to update. Automatically populated by a PATCH request. If not present, a full resource update is performed.",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "RuleService"
+        ]
+      }
+    },
     "/v1/sessions/login": {
       "post": {
         "summary": "Log in a user.",
@@ -1262,6 +1536,28 @@
       },
       "description": "ListOrgsResponse is sent in response to an organization list."
     },
+    "apiListRulesResponse": {
+      "type": "object",
+      "properties": {
+        "rules": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/apiRule"
+          },
+          "description": "Rule array, ordered by ascending created_at timestamp."
+        },
+        "nextPageToken": {
+          "type": "string",
+          "description": "Pagination token used to retrieve the next page of results. Not returned for the last page."
+        },
+        "totalSize": {
+          "type": "integer",
+          "format": "int32",
+          "description": "Total number of rules available."
+        }
+      },
+      "description": "ListRulesResponse is sent in response to a rule list."
+    },
     "apiListTagsResponse": {
       "type": "object",
       "properties": {
@@ -1395,6 +1691,96 @@
       "required": [
         "points"
       ]
+    },
+    "apiRule": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Rule ID (UUID).",
+          "readOnly": true
+        },
+        "orgID": {
+          "type": "string",
+          "description": "Organization ID (UUID).",
+          "readOnly": true
+        },
+        "name": {
+          "type": "string",
+          "description": "Rule name.",
+          "required": [
+            "name"
+          ]
+        },
+        "status": {
+          "$ref": "#/definitions/thingspectapiStatus",
+          "description": "Rule status."
+        },
+        "tag": {
+          "type": "string",
+          "description": "Device tag that the rule applies to.",
+          "required": [
+            "tag"
+          ]
+        },
+        "attr": {
+          "type": "string",
+          "description": "Device attribute that the rule applies to.",
+          "required": [
+            "attr"
+          ]
+        },
+        "expr": {
+          "type": "string",
+          "description": "Rule expression. The rules engine evaluates a boolean expression using the [Expr language](https://github.com/antonmedv/expr/blob/master/docs/Language-Definition.md).",
+          "required": [
+            "expr"
+          ]
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Rule creation timestamp.",
+          "readOnly": true
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Rule modification timestamp.",
+          "readOnly": true
+        }
+      },
+      "description": "Rule represents a rule as stored in the database.",
+      "required": [
+        "name",
+        "tag",
+        "attr",
+        "expr"
+      ]
+    },
+    "apiTestRuleRequest": {
+      "type": "object",
+      "properties": {
+        "point": {
+          "$ref": "#/definitions/commonDataPoint",
+          "description": "Data point to test against a rule."
+        },
+        "rule": {
+          "$ref": "#/definitions/apiRule",
+          "description": "Rule message to test."
+        }
+      },
+      "description": "TestRuleRequest is sent to test a rule."
+    },
+    "apiTestRuleResponse": {
+      "type": "object",
+      "properties": {
+        "result": {
+          "type": "boolean",
+          "description": "Result of the rule evaluation."
+        }
+      },
+      "description": "TestRuleResponse is sent in response to a rule test."
     },
     "apiUpdateUserPasswordRequest": {
       "type": "object",

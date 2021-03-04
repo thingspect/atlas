@@ -31,7 +31,7 @@ type Userer interface {
 	UpdatePassword(ctx context.Context, userID, orgID string,
 		passHash []byte) error
 	Delete(ctx context.Context, userID, orgID string) error
-	List(ctx context.Context, orgID string, lboundTS time.Time, prevID string,
+	List(ctx context.Context, orgID string, lBoundTS time.Time, prevID string,
 		limit int32, tag string) ([]*api.User, int32, error)
 }
 
@@ -77,6 +77,7 @@ func (u *User) CreateUser(ctx context.Context,
 		"201")); err != nil {
 		logger.Errorf("CreateUser grpc.SetHeader: %v", err)
 	}
+
 	return user, nil
 }
 
@@ -171,6 +172,7 @@ func (u *User) UpdateUserPassword(ctx context.Context,
 	hash, err := crypto.HashPass(req.Password)
 	if err != nil {
 		logger.Errorf("UpdateUserPassword crypto.HashPass: %v", err)
+
 		return nil, errToStatus(crypto.ErrWeakPass)
 	}
 
@@ -199,6 +201,7 @@ func (u *User) DeleteUser(ctx context.Context,
 		"204")); err != nil {
 		logger.Errorf("DeleteUser grpc.SetHeader: %v", err)
 	}
+
 	return &emptypb.Empty{}, nil
 }
 
@@ -228,13 +231,13 @@ func (u *User) ListUsers(ctx context.Context,
 		req.PageSize = defaultPageSize
 	}
 
-	lboundTS, prevID, err := session.ParsePageToken(req.PageToken)
+	lBoundTS, prevID, err := session.ParsePageToken(req.PageToken)
 	if err != nil {
 		return nil, status.Error(codes.InvalidArgument, "invalid page token")
 	}
 
 	// Retrieve PageSize+1 entries to find last page.
-	users, count, err := u.userDAO.List(ctx, sess.OrgID, lboundTS, prevID,
+	users, count, err := u.userDAO.List(ctx, sess.OrgID, lBoundTS, prevID,
 		req.PageSize+1, req.Tag)
 	if err != nil {
 		return nil, errToStatus(err)

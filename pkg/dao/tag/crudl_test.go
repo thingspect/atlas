@@ -5,12 +5,15 @@ package tag
 import (
 	"context"
 	"testing"
+	"time"
 
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/require"
 	"github.com/thingspect/atlas/pkg/dao"
 	"github.com/thingspect/atlas/pkg/test/random"
 )
+
+const testTimeout = 14 * time.Second
 
 func TestList(t *testing.T) {
 	t.Parallel()

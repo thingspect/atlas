@@ -114,7 +114,9 @@ func TestDeviceJoin(t *testing.T) {
 				require.WithinDuration(t, lTest.resTime, ts.AsTime(),
 					2*time.Second)
 			}
-			if lTest.err != "" {
+			if lTest.err == "" {
+				require.NoError(t, err)
+			} else {
 				require.Contains(t, err.Error(), lTest.err)
 			}
 		})

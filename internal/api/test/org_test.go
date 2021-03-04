@@ -4,6 +4,7 @@ package test
 
 import (
 	"context"
+	"strings"
 	"testing"
 	"time"
 
@@ -31,8 +32,30 @@ func TestCreateOrg(t *testing.T) {
 			Org: org})
 		t.Logf("createOrg, err: %+v, %v", createOrg, err)
 		require.NoError(t, err)
-		require.NotNil(t, createOrg)
+		require.NotEqual(t, org.Id, createOrg.Id)
 		require.Equal(t, org.Name, createOrg.Name)
+		require.WithinDuration(t, time.Now(), createOrg.CreatedAt.AsTime(),
+			2*time.Second)
+		require.WithinDuration(t, time.Now(), createOrg.UpdatedAt.AsTime(),
+			2*time.Second)
+	})
+
+	t.Run("Create valid org with uppercase name", func(t *testing.T) {
+		t.Parallel()
+
+		org := random.Org("api-org")
+		org.Name = strings.ToUpper(org.Name)
+
+		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
+		defer cancel()
+
+		orgCli := api.NewOrgServiceClient(secondarySysAdminGRPCConn)
+		createOrg, err := orgCli.CreateOrg(ctx, &api.CreateOrgRequest{
+			Org: org})
+		t.Logf("createOrg, err: %+v, %v", createOrg, err)
+		require.NoError(t, err)
+		require.NotEqual(t, org.Id, createOrg.Id)
+		require.Equal(t, strings.ToLower(org.Name), createOrg.Name)
 		require.WithinDuration(t, time.Now(), createOrg.CreatedAt.AsTime(),
 			2*time.Second)
 		require.WithinDuration(t, time.Now(), createOrg.UpdatedAt.AsTime(),
@@ -166,6 +189,17 @@ func TestUpdateOrg(t *testing.T) {
 			updateOrg.CreatedAt.AsTime()))
 		require.WithinDuration(t, createOrg.CreatedAt.AsTime(),
 			updateOrg.UpdatedAt.AsTime(), 2*time.Second)
+
+		getOrg, err := orgCli.GetOrg(ctx, &api.GetOrgRequest{
+			Id: createOrg.Id})
+		t.Logf("getOrg, err: %+v, %v", getOrg, err)
+		require.NoError(t, err)
+
+		// Testify does not currently support protobuf equality:
+		// https://github.com/stretchr/testify/issues/758
+		if !proto.Equal(updateOrg, getOrg) {
+			t.Fatalf("\nExpect: %+v\nActual: %+v", updateOrg, getOrg)
+		}
 	})
 
 	t.Run("Partial update org by valid org", func(t *testing.T) {
@@ -188,13 +222,23 @@ func TestUpdateOrg(t *testing.T) {
 				Paths: []string{"name"}}})
 		t.Logf("updateOrg, err: %+v, %v", updateOrg, err)
 		require.NoError(t, err)
-		require.Equal(t, part.Name, updateOrg.Name)
 		require.Equal(t, createOrg.CreatedAt.AsTime(),
 			updateOrg.CreatedAt.AsTime())
 		require.True(t, updateOrg.UpdatedAt.AsTime().After(
 			updateOrg.CreatedAt.AsTime()))
 		require.WithinDuration(t, createOrg.CreatedAt.AsTime(),
 			updateOrg.UpdatedAt.AsTime(), 2*time.Second)
+
+		getOrg, err := orgCli.GetOrg(ctx, &api.GetOrgRequest{
+			Id: createOrg.Id})
+		t.Logf("getOrg, err: %+v, %v", getOrg, err)
+		require.NoError(t, err)
+
+		// Testify does not currently support protobuf equality:
+		// https://github.com/stretchr/testify/issues/758
+		if !proto.Equal(updateOrg, getOrg) {
+			t.Fatalf("\nExpect: %+v\nActual: %+v", updateOrg, getOrg)
+		}
 	})
 
 	t.Run("Update nil org", func(t *testing.T) {
@@ -402,7 +446,7 @@ func TestListOrgs(t *testing.T) {
 		var found bool
 		for _, org := range listOrgs.Orgs {
 			if org.Id == orgIDs[len(orgIDs)-1] &&
-				org.Name == orgNames[len(orgIDs)-1] {
+				org.Name == orgNames[len(orgNames)-1] {
 				found = true
 			}
 		}

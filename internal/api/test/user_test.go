@@ -26,7 +26,6 @@ func TestCreateUser(t *testing.T) {
 
 		user := random.User("api-user", uuid.NewString())
 		user.Role = common.Role_BUILDER
-		user.Tags = nil
 
 		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
 		defer cancel()
@@ -36,40 +35,7 @@ func TestCreateUser(t *testing.T) {
 			User: user})
 		t.Logf("createUser, err: %+v, %v", createUser, err)
 		require.NoError(t, err)
-		require.NotNil(t, createUser)
-		require.Equal(t, globalAdminOrgID, createUser.OrgId)
-		require.Equal(t, user.Email, createUser.Email)
-		require.Equal(t, user.Role, createUser.Role)
-		require.Equal(t, user.Status, createUser.Status)
-		// Include role-based tag.
-		require.Len(t, createUser.Tags, 1)
-		require.WithinDuration(t, time.Now(), createUser.CreatedAt.AsTime(),
-			2*time.Second)
-		require.WithinDuration(t, time.Now(), createUser.UpdatedAt.AsTime(),
-			2*time.Second)
-	})
-
-	t.Run("Create valid user with tags", func(t *testing.T) {
-		t.Parallel()
-
-		user := random.User("api-user", uuid.NewString())
-		user.Role = common.Role_BUILDER
-
-		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
-		defer cancel()
-
-		userCli := api.NewUserServiceClient(globalAdminGRPCConn)
-		createUser, err := userCli.CreateUser(ctx, &api.CreateUserRequest{
-			User: user})
-		t.Logf("createUser, err: %+v, %v", createUser, err)
-		require.NoError(t, err)
-		require.NotNil(t, createUser)
-		require.Equal(t, globalAdminOrgID, createUser.OrgId)
-		require.Equal(t, user.Email, createUser.Email)
-		require.Equal(t, user.Role, createUser.Role)
-		require.Equal(t, user.Status, createUser.Status)
-		// Include role-based tag.
-		require.Len(t, createUser.Tags, len(user.Tags)+1)
+		require.NotEqual(t, user.Id, createUser.Id)
 		require.WithinDuration(t, time.Now(), createUser.CreatedAt.AsTime(),
 			2*time.Second)
 		require.WithinDuration(t, time.Now(), createUser.UpdatedAt.AsTime(),
@@ -238,16 +204,23 @@ func TestUpdateUser(t *testing.T) {
 			User: createUser})
 		t.Logf("updateUser, err: %+v, %v", updateUser, err)
 		require.NoError(t, err)
-		require.Equal(t, createUser.Email, updateUser.Email)
-		require.Equal(t, createUser.Role, updateUser.Role)
-		require.Equal(t, createUser.Status, updateUser.Status)
-		require.Equal(t, createUser.Tags, updateUser.Tags)
 		require.Equal(t, createUser.CreatedAt.AsTime(),
 			updateUser.CreatedAt.AsTime())
 		require.True(t, updateUser.UpdatedAt.AsTime().After(
 			updateUser.CreatedAt.AsTime()))
 		require.WithinDuration(t, createUser.CreatedAt.AsTime(),
 			updateUser.UpdatedAt.AsTime(), 2*time.Second)
+
+		getUser, err := userCli.GetUser(ctx, &api.GetUserRequest{
+			Id: createUser.Id})
+		t.Logf("getUser, err: %+v, %v", getUser, err)
+		require.NoError(t, err)
+
+		// Testify does not currently support protobuf equality:
+		// https://github.com/stretchr/testify/issues/758
+		if !proto.Equal(updateUser, getUser) {
+			t.Fatalf("\nExpect: %+v\nActual: %+v", updateUser, getUser)
+		}
 	})
 
 	t.Run("Partial update user by valid user", func(t *testing.T) {
@@ -274,14 +247,23 @@ func TestUpdateUser(t *testing.T) {
 				Paths: []string{"email", "status"}}})
 		t.Logf("updateUser, err: %+v, %v", updateUser, err)
 		require.NoError(t, err)
-		require.Equal(t, part.Email, updateUser.Email)
-		require.Equal(t, part.Status, updateUser.Status)
 		require.Equal(t, createUser.CreatedAt.AsTime(),
 			updateUser.CreatedAt.AsTime())
 		require.True(t, updateUser.UpdatedAt.AsTime().After(
 			updateUser.CreatedAt.AsTime()))
 		require.WithinDuration(t, createUser.CreatedAt.AsTime(),
 			updateUser.UpdatedAt.AsTime(), 2*time.Second)
+
+		getUser, err := userCli.GetUser(ctx, &api.GetUserRequest{
+			Id: createUser.Id})
+		t.Logf("getUser, err: %+v, %v", getUser, err)
+		require.NoError(t, err)
+
+		// Testify does not currently support protobuf equality:
+		// https://github.com/stretchr/testify/issues/758
+		if !proto.Equal(updateUser, getUser) {
+			t.Fatalf("\nExpect: %+v\nActual: %+v", updateUser, getUser)
+		}
 	})
 
 	t.Run("Update nil user", func(t *testing.T) {
@@ -708,9 +690,9 @@ func TestListUsers(t *testing.T) {
 		var found bool
 		for _, user := range listUsers.Users {
 			if user.Id == userIDs[len(userIDs)-1] &&
-				user.Role == userRoles[len(userIDs)-1] &&
-				user.Status == userStatuses[len(userIDs)-1] &&
-				reflect.DeepEqual(user.Tags, userTags[len(userIDs)-1]) {
+				user.Role == userRoles[len(userRoles)-1] &&
+				user.Status == userStatuses[len(userStatuses)-1] &&
+				reflect.DeepEqual(user.Tags, userTags[len(userTags)-1]) {
 				found = true
 			}
 		}
@@ -755,10 +737,10 @@ func TestListUsers(t *testing.T) {
 		require.Equal(t, int32(1), listUsers.TotalSize)
 
 		require.Equal(t, userIDs[len(userIDs)-1], listUsers.Users[0].Id)
-		require.Equal(t, userStatuses[len(userIDs)-1],
+		require.Equal(t, userStatuses[len(userStatuses)-1],
 			listUsers.Users[0].Status)
-		require.Equal(t, userRoles[len(userIDs)-1], listUsers.Users[0].Role)
-		require.Equal(t, userTags[len(userIDs)-1], listUsers.Users[0].Tags)
+		require.Equal(t, userRoles[len(userRoles)-1], listUsers.Users[0].Role)
+		require.Equal(t, userTags[len(userTags)-1], listUsers.Users[0].Tags)
 	})
 
 	t.Run("List users with insufficient role", func(t *testing.T) {

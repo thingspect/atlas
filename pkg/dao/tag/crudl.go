@@ -48,5 +48,6 @@ func (d *DAO) List(ctx context.Context, orgID string) ([]string, error) {
 	if err = rows.Err(); err != nil {
 		return nil, dao.DBToSentinel(err)
 	}
+
 	return tags, nil
 }

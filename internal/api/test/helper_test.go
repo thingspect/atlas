@@ -72,5 +72,6 @@ func authGRPCConn(role common.Role) (string, *grpc.ClientConn, error) {
 	if err != nil {
 		return "", nil, err
 	}
+
 	return createOrg.Id, conn, nil
 }

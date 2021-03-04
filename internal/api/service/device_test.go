@@ -30,7 +30,7 @@ func TestCreateDevice(t *testing.T) {
 		t.Parallel()
 
 		dev := random.Device("api-device", uuid.NewString())
-		retDev := proto.Clone(dev).(*api.Device)
+		retDev, _ := proto.Clone(dev).(*api.Device)
 
 		devicer := NewMockDevicer(gomock.NewController(t))
 		devicer.EXPECT().Create(gomock.Any(), dev).Return(retDev, nil).Times(1)
@@ -250,7 +250,7 @@ func TestGetDevice(t *testing.T) {
 		t.Parallel()
 
 		dev := random.Device("api-device", uuid.NewString())
-		retDev := proto.Clone(dev).(*api.Device)
+		retDev, _ := proto.Clone(dev).(*api.Device)
 
 		devicer := NewMockDevicer(gomock.NewController(t))
 		devicer.EXPECT().Read(gomock.Any(), dev.Id, dev.OrgId).Return(retDev,
@@ -329,7 +329,7 @@ func TestUpdateDevice(t *testing.T) {
 		t.Parallel()
 
 		dev := random.Device("api-device", uuid.NewString())
-		retDev := proto.Clone(dev).(*api.Device)
+		retDev, _ := proto.Clone(dev).(*api.Device)
 
 		devicer := NewMockDevicer(gomock.NewController(t))
 		devicer.EXPECT().Update(gomock.Any(), dev).Return(retDev, nil).Times(1)
@@ -356,13 +356,13 @@ func TestUpdateDevice(t *testing.T) {
 		t.Parallel()
 
 		dev := random.Device("api-device", uuid.NewString())
-		retDev := proto.Clone(dev).(*api.Device)
+		retDev, _ := proto.Clone(dev).(*api.Device)
 		part := &api.Device{Id: dev.Id, Status: api.Status_ACTIVE,
 			Decoder: api.Decoder_GATEWAY}
 		merged := &api.Device{Id: dev.Id, OrgId: dev.OrgId, UniqId: dev.UniqId,
-			Name: dev.Name, Status: api.Status_ACTIVE, Token: dev.Token,
-			Decoder: api.Decoder_GATEWAY, Tags: dev.Tags}
-		retMerged := proto.Clone(merged).(*api.Device)
+			Name: dev.Name, Status: part.Status, Token: dev.Token,
+			Decoder: part.Decoder, Tags: dev.Tags}
+		retMerged, _ := proto.Clone(merged).(*api.Device)
 
 		devicer := NewMockDevicer(gomock.NewController(t))
 		devicer.EXPECT().Read(gomock.Any(), dev.Id, dev.OrgId).Return(retDev,

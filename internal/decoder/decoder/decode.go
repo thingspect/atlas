@@ -29,6 +29,7 @@ func (dec *Decoder) decodeMessages() {
 			metric.Incr("error", map[string]string{"func": "unmarshal"})
 			alog.Errorf("decodeMessages proto.Unmarshal dIn, err: %+v, %v",
 				dIn, err)
+
 			continue
 		}
 
@@ -47,12 +48,14 @@ func (dec *Decoder) decodeMessages() {
 			msg.Ack()
 			metric.Incr("notfound", nil)
 			logger.Debugf("decodeMessages device not found: %+v", dIn)
+
 			continue
 		}
 		if err != nil {
 			msg.Requeue()
 			metric.Incr("error", map[string]string{"func": "readbyuniqid"})
 			logger.Errorf("decodeMessages dec.devDAO.ReadByUniqID: %v", err)
+
 			continue
 		}
 		logger = logger.WithStr("orgID", dev.OrgId)
@@ -76,6 +79,7 @@ func (dec *Decoder) decodeMessages() {
 			if err != nil {
 				metric.Incr("error", map[string]string{"func": "marshal"})
 				logger.Errorf("decodeMessages proto.Marshal: %v", err)
+
 				continue
 			}
 
@@ -84,6 +88,7 @@ func (dec *Decoder) decodeMessages() {
 				metric.Incr("error", map[string]string{"func": "publish"})
 				logger.Errorf("decodeMessages ing.decoderQueue.Publish: %v",
 					err)
+
 				continue
 			}
 

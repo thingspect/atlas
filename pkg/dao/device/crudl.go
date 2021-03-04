@@ -39,6 +39,7 @@ func (d *DAO) Create(ctx context.Context, dev *api.Device) (*api.Device,
 		now).Scan(&dev.Id, &dev.Token); err != nil {
 		return nil, dao.DBToSentinel(err)
 	}
+
 	return dev, nil
 }
 
@@ -70,6 +71,7 @@ func (d *DAO) Read(ctx context.Context, devID, orgID string) (*api.Device,
 	}
 	dev.CreatedAt = timestamppb.New(createdAt)
 	dev.UpdatedAt = timestamppb.New(updatedAt)
+
 	return dev, nil
 }
 
@@ -102,14 +104,15 @@ func (d *DAO) ReadByUniqID(ctx context.Context, uniqID string) (*api.Device,
 	}
 	dev.CreatedAt = timestamppb.New(createdAt)
 	dev.UpdatedAt = timestamppb.New(updatedAt)
+
 	return dev, nil
 }
 
 const updateDevice = `
 UPDATE devices
-SET uniq_id = $1, status = $2, token = $3, decoder = $4, tags = $5,
-updated_at = $6
-WHERE (id, org_id) = ($7, $8)
+SET uniq_id = $1, name = $2, status = $3, token = $4, decoder = $5, tags = $6,
+updated_at = $7
+WHERE (id, org_id) = ($8, $9)
 RETURNING created_at
 `
 
@@ -128,13 +131,14 @@ func (d *DAO) Update(ctx context.Context, dev *api.Device) (*api.Device,
 	updatedAt := time.Now().UTC().Truncate(time.Microsecond)
 	dev.UpdatedAt = timestamppb.New(updatedAt)
 
-	if err := d.pg.QueryRowContext(ctx, updateDevice, dev.UniqId,
+	if err := d.pg.QueryRowContext(ctx, updateDevice, dev.UniqId, dev.Name,
 		dev.Status.String(), dev.Token, dev.Decoder.String(), tags, updatedAt,
 		dev.Id, dev.OrgId).Scan(&createdAt); err != nil {
 		return nil, dao.DBToSentinel(err)
 	}
 
 	dev.CreatedAt = timestamppb.New(createdAt)
+
 	return dev, nil
 }
 
@@ -152,6 +156,7 @@ func (d *DAO) Delete(ctx context.Context, devID, orgID string) error {
 	}
 
 	_, err := d.pg.ExecContext(ctx, deleteDevice, devID, orgID)
+
 	return dao.DBToSentinel(err)
 }
 
@@ -166,7 +171,8 @@ AND $2 = ANY (tags)
 `
 
 const listDevices = `
-SELECT id, org_id, uniq_id, status, token, decoder, tags, created_at, updated_at
+SELECT id, org_id, uniq_id, name, status, token, decoder, tags, created_at,
+updated_at
 FROM devices
 WHERE org_id = $1
 `
@@ -251,7 +257,7 @@ func (d *DAO) List(ctx context.Context, orgID string, lBoundTS time.Time,
 		var tags pgtype.VarcharArray
 		var createdAt, updatedAt time.Time
 
-		if err = rows.Scan(&dev.Id, &dev.OrgId, &dev.UniqId, &status,
+		if err = rows.Scan(&dev.Id, &dev.OrgId, &dev.UniqId, &dev.Name, &status,
 			&dev.Token, &decoder, &tags, &createdAt, &updatedAt); err != nil {
 			return nil, 0, dao.DBToSentinel(err)
 		}
@@ -272,5 +278,6 @@ func (d *DAO) List(ctx context.Context, orgID string, lBoundTS time.Time,
 	if err = rows.Err(); err != nil {
 		return nil, 0, dao.DBToSentinel(err)
 	}
+
 	return devs, count, nil
 }

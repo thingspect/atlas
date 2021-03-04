@@ -43,6 +43,7 @@ func Int(key string, defVal int) int {
 	if err != nil {
 		log.Fatalf("Int strconv.Atoi key, err: %v, %v", key, err)
 	}
+
 	return valInt
 }
 
@@ -58,6 +59,7 @@ func Bool(key string, defVal bool) bool {
 	if err != nil {
 		log.Fatalf("Bool strconv.ParseBool key, err: %v, %v", key, err)
 	}
+
 	return valBool
 }
 
@@ -74,6 +76,7 @@ func Duration(key string, defVal time.Duration) time.Duration {
 	if err != nil {
 		log.Fatalf("Duration time.ParseDuration key, err: %v, %v", key, err)
 	}
+
 	return valDur
 }
 
@@ -93,5 +96,6 @@ func ByteSlice(key string) []byte {
 		log.Fatalf("ByteSlice base64.StdEncoding.DecodeString key, err: %v, %v",
 			key, err)
 	}
+
 	return valByte
 }

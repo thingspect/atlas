@@ -29,6 +29,7 @@ func (cs *Chirpstack) CreateDevice(ctx context.Context, uniqID,
 		// Perform a best-effort rollback in the event of application key
 		// failure, but return original error.
 		_ = cs.DeleteDevice(ctx, uniqID)
+
 		return err
 	}
 

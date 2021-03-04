@@ -18,6 +18,8 @@ import (
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
+const testTimeout = 4 * time.Second
+
 func TestCreate(t *testing.T) {
 	t.Parallel()
 

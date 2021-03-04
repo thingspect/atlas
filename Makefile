@@ -37,9 +37,8 @@ lint:
 
 	go install github.com/golangci/golangci-lint/cmd/golangci-lint@latest
 	golangci-lint --version
-# unused is included in the newer version of staticcheck above
-	golangci-lint run -D staticcheck,unused -E \
-	goconst,godot,goerr113,gosec,prealloc,scopelint,unconvert,unparam
+	golangci-lint run -D staticcheck -E forcetypeassert,goconst,godot,goerr113 \
+	-E gosec,nlreturn,prealloc,scopelint,unconvert,unparam
 
 init_db:
 	go install -tags postgres \

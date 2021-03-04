@@ -33,6 +33,7 @@ func (pm *recentMatcher) Matches(x interface{}) bool {
 		time.Until(t) < pm.d) {
 		return true
 	}
+
 	return false
 }
 

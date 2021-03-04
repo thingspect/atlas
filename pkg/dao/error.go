@@ -41,12 +41,14 @@ func DBToSentinel(err error) error {
 			if strings.Contains(pgErr.Message, "value too long") {
 				return fmt.Errorf("%w: value too long", ErrInvalidFormat)
 			}
+
 			return ErrInvalidFormat
 		// invalid_text_representation
 		case "22P02":
 			if pgErr.File == "uuid.c" {
 				return fmt.Errorf("%w: UUID", ErrInvalidFormat)
 			}
+
 			return ErrInvalidFormat
 		// check_violation
 		case "23514":
@@ -56,10 +58,12 @@ func DBToSentinel(err error) error {
 			return fmt.Errorf("%w: %s", ErrInvalidFormat, pgErr.ColumnName)
 		default:
 			alog.Errorf("DBToSentinel unmatched PgError: %#v", pgErr)
+
 			return err
 		}
 	}
 
 	alog.Errorf("DBToSentinel unmatched error: %#v", err)
+
 	return err
 }

@@ -9,16 +9,18 @@ import (
 	"github.com/thingspect/atlas/internal/api/crypto"
 	"github.com/thingspect/atlas/pkg/alog"
 	"github.com/thingspect/atlas/pkg/dao"
+	"github.com/thingspect/atlas/pkg/rule"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )
 
 // errToCode maps DAO errors to gRPC error codes.
 var errToCode = map[error]codes.Code{
+	crypto.ErrWeakPass:   codes.InvalidArgument,
 	dao.ErrAlreadyExists: codes.AlreadyExists,
 	dao.ErrInvalidFormat: codes.InvalidArgument,
 	dao.ErrNotFound:      codes.NotFound,
-	crypto.ErrWeakPass:   codes.InvalidArgument,
+	rule.ErrNotBool:      codes.InvalidArgument,
 }
 
 // errToStatus maps DAO errors to gRPC status errors. This function is

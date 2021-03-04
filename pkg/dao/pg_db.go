@@ -28,5 +28,6 @@ func NewPgDB(uri string) (*sql.DB, error) {
 	if err = db.PingContext(ctx); err != nil {
 		return nil, err
 	}
+
 	return db, nil
 }

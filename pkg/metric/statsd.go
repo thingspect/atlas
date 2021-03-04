@@ -21,6 +21,7 @@ var _ Metricer = &statsD{}
 func SetStatsD(addr, prefix string) {
 	if addr == "" {
 		alog.Error("SetStatsD addr not found, continuing to use noOpMetric")
+
 		return
 	}
 

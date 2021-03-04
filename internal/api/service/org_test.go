@@ -29,7 +29,7 @@ func TestCreateOrg(t *testing.T) {
 		t.Parallel()
 
 		org := random.Org("api-org")
-		retOrg := proto.Clone(org).(*api.Org)
+		retOrg, _ := proto.Clone(org).(*api.Org)
 
 		orger := NewMockOrger(gomock.NewController(t))
 		orger.EXPECT().Create(gomock.Any(), org).Return(retOrg, nil).Times(1)
@@ -111,7 +111,7 @@ func TestGetOrg(t *testing.T) {
 		t.Parallel()
 
 		org := random.Org("api-org")
-		retOrg := proto.Clone(org).(*api.Org)
+		retOrg, _ := proto.Clone(org).(*api.Org)
 
 		orger := NewMockOrger(gomock.NewController(t))
 		orger.EXPECT().Read(gomock.Any(), org.Id).Return(retOrg, nil).Times(1)
@@ -190,7 +190,7 @@ func TestUpdateOrg(t *testing.T) {
 		t.Parallel()
 
 		org := random.Org("api-org")
-		retOrg := proto.Clone(org).(*api.Org)
+		retOrg, _ := proto.Clone(org).(*api.Org)
 
 		orger := NewMockOrger(gomock.NewController(t))
 		orger.EXPECT().Update(gomock.Any(), org).Return(retOrg, nil).Times(1)
@@ -217,10 +217,10 @@ func TestUpdateOrg(t *testing.T) {
 		t.Parallel()
 
 		org := random.Org("api-org")
-		retOrg := proto.Clone(org).(*api.Org)
+		retOrg, _ := proto.Clone(org).(*api.Org)
 		part := &api.Org{Id: org.Id, Name: random.String(10)}
 		merged := &api.Org{Id: org.Id, Name: part.Name}
-		retMerged := proto.Clone(merged).(*api.Org)
+		retMerged, _ := proto.Clone(merged).(*api.Org)
 
 		orger := NewMockOrger(gomock.NewController(t))
 		orger.EXPECT().Read(gomock.Any(), org.Id).Return(retOrg, nil).Times(1)

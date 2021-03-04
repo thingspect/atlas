@@ -46,6 +46,7 @@ func (fm *fakeMessage) Requeue() {}
 // Publish publishes a message to a Queue and returns an error value.
 func (f *fakeQueue) Publish(topic string, payload []byte) error {
 	f.msgChan <- &fakeMessage{topic: topic, payload: payload}
+
 	return nil
 }
 

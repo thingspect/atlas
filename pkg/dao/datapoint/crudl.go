@@ -46,6 +46,7 @@ func (d *DAO) Create(ctx context.Context, point *common.DataPoint,
 	_, err := d.pg.ExecContext(ctx, createDataPoint, orgID,
 		strings.ToLower(point.UniqId), point.Attr, intVal, fl64Val, strVal,
 		boolVal, bytesVal, createdAt, point.TraceId)
+
 	return dao.DBToSentinel(err)
 }
 
@@ -153,6 +154,7 @@ func (d *DAO) List(ctx context.Context, orgID, uniqID, devID, attr string, end,
 	if err = rows.Err(); err != nil {
 		return nil, dao.DBToSentinel(err)
 	}
+
 	return points, nil
 }
 
@@ -301,5 +303,6 @@ func (d *DAO) Latest(ctx context.Context, orgID, uniqID,
 	if err = rows.Err(); err != nil {
 		return nil, dao.DBToSentinel(err)
 	}
+
 	return points, nil
 }

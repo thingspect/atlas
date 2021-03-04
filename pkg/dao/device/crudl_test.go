@@ -17,6 +17,8 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
+const testTimeout = 8 * time.Second
+
 func TestCreate(t *testing.T) {
 	t.Parallel()
 
@@ -31,8 +33,7 @@ func TestCreate(t *testing.T) {
 		t.Parallel()
 
 		dev := random.Device("dao-device", createOrg.Id)
-		dev.Tags = nil
-		createDev := proto.Clone(dev).(*api.Device)
+		createDev, _ := proto.Clone(dev).(*api.Device)
 
 		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
 		defer cancel()
@@ -40,36 +41,9 @@ func TestCreate(t *testing.T) {
 		createDev, err := globalDevDAO.Create(ctx, createDev)
 		t.Logf("dev, createDev, err: %+v, %+v, %v", dev, createDev, err)
 		require.NoError(t, err)
-		require.Equal(t, dev.OrgId, createDev.OrgId)
+		require.NotEqual(t, dev.Id, createDev.Id)
 		require.Equal(t, dev.UniqId, createDev.UniqId)
-		require.Equal(t, dev.Name, createDev.Name)
-		require.Equal(t, dev.Status, createDev.Status)
-		require.Equal(t, dev.Decoder, createDev.Decoder)
-		require.Equal(t, dev.Tags, createDev.Tags)
-		require.WithinDuration(t, time.Now(), createDev.CreatedAt.AsTime(),
-			2*time.Second)
-		require.WithinDuration(t, time.Now(), createDev.UpdatedAt.AsTime(),
-			2*time.Second)
-	})
-
-	t.Run("Create valid device with tags", func(t *testing.T) {
-		t.Parallel()
-
-		dev := random.Device("dao-device", createOrg.Id)
-		createDev := proto.Clone(dev).(*api.Device)
-
-		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
-		defer cancel()
-
-		createDev, err := globalDevDAO.Create(ctx, createDev)
-		t.Logf("dev, createDev, err: %+v, %+v, %v", dev, createDev, err)
-		require.NoError(t, err)
-		require.Equal(t, dev.OrgId, createDev.OrgId)
-		require.Equal(t, dev.UniqId, createDev.UniqId)
-		require.Equal(t, dev.Name, createDev.Name)
-		require.Equal(t, dev.Status, createDev.Status)
-		require.Equal(t, dev.Decoder, createDev.Decoder)
-		require.Equal(t, dev.Tags, createDev.Tags)
+		require.NotEqual(t, dev.Token, createDev.Token)
 		require.WithinDuration(t, time.Now(), createDev.CreatedAt.AsTime(),
 			2*time.Second)
 		require.WithinDuration(t, time.Now(), createDev.UpdatedAt.AsTime(),
@@ -81,7 +55,7 @@ func TestCreate(t *testing.T) {
 
 		dev := random.Device("dao-device", createOrg.Id)
 		dev.UniqId = strings.ToUpper(dev.UniqId)
-		createDev := proto.Clone(dev).(*api.Device)
+		createDev, _ := proto.Clone(dev).(*api.Device)
 
 		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
 		defer cancel()
@@ -89,12 +63,9 @@ func TestCreate(t *testing.T) {
 		createDev, err := globalDevDAO.Create(ctx, createDev)
 		t.Logf("dev, createDev, err: %+v, %+v, %v", dev, createDev, err)
 		require.NoError(t, err)
-		require.Equal(t, dev.OrgId, createDev.OrgId)
+		require.NotEqual(t, dev.Id, createDev.Id)
 		require.Equal(t, strings.ToLower(dev.UniqId), createDev.UniqId)
-		require.Equal(t, dev.Name, createDev.Name)
-		require.Equal(t, dev.Status, createDev.Status)
-		require.Equal(t, dev.Decoder, createDev.Decoder)
-		require.Equal(t, dev.Tags, createDev.Tags)
+		require.NotEqual(t, dev.Token, createDev.Token)
 		require.WithinDuration(t, time.Now(), createDev.CreatedAt.AsTime(),
 			2*time.Second)
 		require.WithinDuration(t, time.Now(), createDev.UpdatedAt.AsTime(),
@@ -251,22 +222,22 @@ func TestUpdate(t *testing.T) {
 		createDev.Status = api.Status_DISABLED
 		createDev.Decoder = api.Decoder_GATEWAY
 		createDev.Tags = nil
-		updateDev := proto.Clone(createDev).(*api.Device)
+		updateDev, _ := proto.Clone(createDev).(*api.Device)
 
 		updateDev, err = globalDevDAO.Update(ctx, updateDev)
 		t.Logf("createDev, updateDev, err: %+v, %+v, %v", createDev, updateDev,
 			err)
 		require.NoError(t, err)
 		require.Equal(t, createDev.UniqId, updateDev.UniqId)
-		require.Equal(t, createDev.Name, updateDev.Name)
-		require.Equal(t, createDev.Status, updateDev.Status)
-		require.Equal(t, createDev.Decoder, updateDev.Decoder)
-		require.Equal(t, createDev.Tags, updateDev.Tags)
-		require.Equal(t, createDev.CreatedAt, updateDev.CreatedAt)
 		require.True(t, updateDev.UpdatedAt.AsTime().After(
 			updateDev.CreatedAt.AsTime()))
 		require.WithinDuration(t, createDev.CreatedAt.AsTime(),
 			updateDev.UpdatedAt.AsTime(), 2*time.Second)
+
+		readDev, err := globalDevDAO.Read(ctx, createDev.Id, createDev.OrgId)
+		t.Logf("readDev, err: %+v, %v", readDev, err)
+		require.NoError(t, err)
+		require.Equal(t, updateDev, readDev)
 	})
 
 	t.Run("Update unknown device", func(t *testing.T) {
@@ -405,6 +376,7 @@ func TestList(t *testing.T) {
 	require.NoError(t, err)
 
 	devIDs := []string{}
+	devNames := []string{}
 	devStatuses := []api.Status{}
 	devDecoders := []api.Decoder{}
 	devTags := [][]string{}
@@ -416,6 +388,7 @@ func TestList(t *testing.T) {
 		require.NoError(t, err)
 
 		devIDs = append(devIDs, createDev.Id)
+		devNames = append(devNames, createDev.Name)
 		devStatuses = append(devStatuses, createDev.Status)
 		devDecoders = append(devDecoders, createDev.Decoder)
 		devTags = append(devTags, createDev.Tags)
@@ -439,9 +412,10 @@ func TestList(t *testing.T) {
 		var found bool
 		for _, dev := range listDevs {
 			if dev.Id == devIDs[len(devIDs)-1] &&
-				dev.Status == devStatuses[len(devIDs)-1] &&
-				dev.Decoder == devDecoders[len(devIDs)-1] &&
-				reflect.DeepEqual(dev.Tags, devTags[len(devIDs)-1]) {
+				dev.Name == devNames[len(devNames)-1] &&
+				dev.Status == devStatuses[len(devStatuses)-1] &&
+				dev.Decoder == devDecoders[len(devDecoders)-1] &&
+				reflect.DeepEqual(dev.Tags, devTags[len(devTags)-1]) {
 				found = true
 			}
 		}
@@ -465,9 +439,10 @@ func TestList(t *testing.T) {
 		var found bool
 		for _, dev := range listDevs {
 			if dev.Id == devIDs[len(devIDs)-1] &&
-				dev.Status == devStatuses[len(devIDs)-1] &&
-				dev.Decoder == devDecoders[len(devIDs)-1] &&
-				reflect.DeepEqual(dev.Tags, devTags[len(devIDs)-1]) {
+				dev.Name == devNames[len(devNames)-1] &&
+				dev.Status == devStatuses[len(devStatuses)-1] &&
+				dev.Decoder == devDecoders[len(devDecoders)-1] &&
+				reflect.DeepEqual(dev.Tags, devTags[len(devTags)-1]) {
 				found = true
 			}
 		}
@@ -504,9 +479,10 @@ func TestList(t *testing.T) {
 		require.Equal(t, int32(1), listCount)
 
 		require.Equal(t, devIDs[len(devIDs)-1], listDevs[0].Id)
-		require.Equal(t, devStatuses[len(devIDs)-1], listDevs[0].Status)
-		require.Equal(t, devDecoders[len(devIDs)-1], listDevs[0].Decoder)
-		require.Equal(t, devTags[len(devIDs)-1], listDevs[0].Tags)
+		require.Equal(t, devNames[len(devNames)-1], listDevs[0].Name)
+		require.Equal(t, devStatuses[len(devStatuses)-1], listDevs[0].Status)
+		require.Equal(t, devDecoders[len(devDecoders)-1], listDevs[0].Decoder)
+		require.Equal(t, devTags[len(devTags)-1], listDevs[0].Tags)
 	})
 
 	t.Run("List devices with tag filter and pagination", func(t *testing.T) {
@@ -524,9 +500,10 @@ func TestList(t *testing.T) {
 		require.Equal(t, int32(1), listCount)
 
 		require.Equal(t, devIDs[len(devIDs)-1], listDevs[0].Id)
-		require.Equal(t, devStatuses[len(devIDs)-1], listDevs[0].Status)
-		require.Equal(t, devDecoders[len(devIDs)-1], listDevs[0].Decoder)
-		require.Equal(t, devTags[len(devIDs)-1], listDevs[0].Tags)
+		require.Equal(t, devNames[len(devNames)-1], listDevs[0].Name)
+		require.Equal(t, devStatuses[len(devStatuses)-1], listDevs[0].Status)
+		require.Equal(t, devDecoders[len(devDecoders)-1], listDevs[0].Decoder)
+		require.Equal(t, devTags[len(devTags)-1], listDevs[0].Tags)
 	})
 
 	t.Run("Lists are isolated by org ID", func(t *testing.T) {

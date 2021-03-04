@@ -48,6 +48,7 @@ func (z *zlog) WithLevel(level string) Logger {
 	zlevel, err := zerolog.ParseLevel(strings.ToLower(level))
 	if err != nil {
 		z.zl.Error().Msgf("SetLevel unknown level, using INFO: %v", level)
+
 		return &zlog{zl: z.zl.Level(zerolog.InfoLevel)}
 	}
 

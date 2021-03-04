@@ -16,6 +16,8 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
+const testTimeout = 8 * time.Second
+
 func TestCreate(t *testing.T) {
 	t.Parallel()
 
@@ -23,7 +25,7 @@ func TestCreate(t *testing.T) {
 		t.Parallel()
 
 		org := random.Org("dao-org")
-		createOrg := proto.Clone(org).(*api.Org)
+		createOrg, _ := proto.Clone(org).(*api.Org)
 
 		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
 		defer cancel()
@@ -31,6 +33,7 @@ func TestCreate(t *testing.T) {
 		createOrg, err := globalOrgDAO.Create(ctx, createOrg)
 		t.Logf("org, createOrg, err: %+v, %+v, %v", org, createOrg, err)
 		require.NoError(t, err)
+		require.NotEqual(t, org.Id, createOrg.Id)
 		require.Equal(t, org.Name, createOrg.Name)
 		require.WithinDuration(t, time.Now(), createOrg.CreatedAt.AsTime(),
 			2*time.Second)
@@ -43,7 +46,7 @@ func TestCreate(t *testing.T) {
 
 		org := random.Org("dao-org")
 		org.Name = strings.ToUpper(org.Name)
-		createOrg := proto.Clone(org).(*api.Org)
+		createOrg, _ := proto.Clone(org).(*api.Org)
 
 		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
 		defer cancel()
@@ -51,6 +54,7 @@ func TestCreate(t *testing.T) {
 		createOrg, err := globalOrgDAO.Create(ctx, createOrg)
 		t.Logf("org, createOrg, err: %+v, %+v, %v", org, createOrg, err)
 		require.NoError(t, err)
+		require.NotEqual(t, org.Id, createOrg.Id)
 		require.Equal(t, strings.ToLower(org.Name), createOrg.Name)
 		require.WithinDuration(t, time.Now(), createOrg.CreatedAt.AsTime(),
 			2*time.Second)
@@ -136,7 +140,7 @@ func TestUpdate(t *testing.T) {
 
 		// Update org fields.
 		createOrg.Name = "dao-org-" + random.String(10)
-		updateOrg := proto.Clone(createOrg).(*api.Org)
+		updateOrg, _ := proto.Clone(createOrg).(*api.Org)
 
 		updateOrg, err = globalOrgDAO.Update(ctx, updateOrg)
 		t.Logf("createOrg, updateOrg, err: %+v, %+v, %v", createOrg, updateOrg,
@@ -148,6 +152,11 @@ func TestUpdate(t *testing.T) {
 			updateOrg.CreatedAt.AsTime()))
 		require.WithinDuration(t, createOrg.CreatedAt.AsTime(),
 			updateOrg.UpdatedAt.AsTime(), 2*time.Second)
+
+		readOrg, err := globalOrgDAO.Read(ctx, createOrg.Id)
+		t.Logf("readOrg, err: %+v, %v", readOrg, err)
+		require.NoError(t, err)
+		require.Equal(t, updateOrg, readOrg)
 	})
 
 	t.Run("Update unknown org", func(t *testing.T) {
@@ -174,7 +183,7 @@ func TestUpdate(t *testing.T) {
 
 		// Update org fields.
 		createOrg.Name = "dao-org-" + random.String(40)
-		updateOrg := proto.Clone(createOrg).(*api.Org)
+		updateOrg, _ := proto.Clone(createOrg).(*api.Org)
 
 		updateOrg, err = globalOrgDAO.Update(ctx, updateOrg)
 		t.Logf("createOrg, updateOrg, err: %+v, %+v, %v", createOrg, updateOrg,
@@ -262,7 +271,7 @@ func TestList(t *testing.T) {
 		var found bool
 		for _, org := range listOrgs {
 			if org.Id == orgIDs[len(orgIDs)-1] &&
-				org.Name == orgNames[len(orgIDs)-1] {
+				org.Name == orgNames[len(orgNames)-1] {
 				found = true
 			}
 		}

@@ -38,6 +38,7 @@ func (ing *Ingestor) decodeGateways() {
 			topicParts[1] != "gateway" || topicParts[3] != "event" {
 			metric.Incr("error", map[string]string{"func": "topic"})
 			logger.Errorf("decodeGateways malformed topic: %v", topic)
+
 			continue
 		}
 		logger = logger.WithStr("uniqID", topicParts[2])
@@ -62,6 +63,7 @@ func (ing *Ingestor) decodeGateways() {
 			if err != nil {
 				metric.Incr("error", map[string]string{"func": "marshal"})
 				logger.Errorf("decodeGateways proto.Marshal: %v", err)
+
 				continue
 			}
 
@@ -70,6 +72,7 @@ func (ing *Ingestor) decodeGateways() {
 				metric.Incr("error", map[string]string{"func": "publish"})
 				logger.Errorf("decodeGateways ing.decoderQueue.Publish: %v",
 					err)
+
 				continue
 			}
 
@@ -110,6 +113,7 @@ func (ing *Ingestor) decodeDevices() {
 			topicParts[5] != "event" {
 			metric.Incr("error", map[string]string{"func": "topic"})
 			logger.Errorf("decodeDevices malformed topic: %v", topic)
+
 			continue
 		}
 		logger = logger.WithStr("uniqID", topicParts[4])
@@ -133,6 +137,7 @@ func (ing *Ingestor) decodeDevices() {
 			if err != nil {
 				metric.Incr("error", map[string]string{"func": "marshal"})
 				logger.Errorf("decodeDevices point proto.Marshal: %v", err)
+
 				continue
 			}
 
@@ -141,6 +146,7 @@ func (ing *Ingestor) decodeDevices() {
 				metric.Incr("error", map[string]string{"func": "publish"})
 				logger.Errorf("decodeDevices point ing.decoderQueue.Publish: "+
 					"%v", err)
+
 				continue
 			}
 
@@ -161,6 +167,7 @@ func (ing *Ingestor) decodeDevices() {
 			if err != nil {
 				metric.Incr("error", map[string]string{"func": "marshal"})
 				logger.Errorf("decodeDevices data proto.Marshal: %v", err)
+
 				continue
 			}
 
@@ -169,6 +176,7 @@ func (ing *Ingestor) decodeDevices() {
 				metric.Incr("error", map[string]string{"func": "publish"})
 				logger.Errorf("decodeDevices data ing.decoderQueue.Publish: %v",
 					err)
+
 				continue
 			}
 

@@ -51,6 +51,7 @@ func Auth(skipPaths map[string]struct{},
 			sess.OrgID)
 
 		ctx = session.NewContext(ctx, sess)
+
 		return handler(ctx, req)
 	}
 }
