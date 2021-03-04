@@ -19,15 +19,19 @@ func Device(event string, body []byte) ([]*decode.Point, *timestamppb.Timestamp,
 		return deviceUp(body)
 	case "join":
 		msgs, ts, err := deviceJoin(body)
+
 		return msgs, ts, nil, err
 	case "ack":
 		msgs, err := deviceAck(body)
+
 		return msgs, timestamppb.Now(), nil, err
 	case "error":
 		msgs, err := deviceError(body)
+
 		return msgs, timestamppb.Now(), nil, err
 	case "txack":
 		msgs, err := deviceTxAck(body)
+
 		return msgs, timestamppb.Now(), nil, err
 	default:
 		return nil, nil, nil, fmt.Errorf("%w: %s, %x", decode.ErrUnknownEvent,

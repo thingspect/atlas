@@ -42,6 +42,7 @@ func (s *Session) Login(ctx context.Context,
 		_, hashErr := crypto.HashPass(req.Password)
 		logger.Debugf("Login s.userDAO.ReadByEmail Email, OrgName, err, "+
 			"hashErr: %v, %v, %v, %v", req.Email, req.OrgName, err, hashErr)
+
 		return nil, status.Error(codes.Unauthenticated, "unauthorized")
 	}
 
@@ -52,12 +53,14 @@ func (s *Session) Login(ctx context.Context,
 		user.Status != api.Status_ACTIVE || user.Role < common.Role_VIEWER {
 		logger.Debugf("Login crypto.CompareHashPass err, user.Status: %v, %s",
 			err, user.Status)
+
 		return nil, status.Error(codes.Unauthenticated, "unauthorized")
 	}
 
 	token, exp, err := session.GenerateWebToken(s.pwtKey, user)
 	if err != nil {
 		logger.Errorf("Login crypto.GenerateToken: %v", err)
+
 		return nil, status.Error(codes.Unauthenticated, "unauthorized")
 	}
 

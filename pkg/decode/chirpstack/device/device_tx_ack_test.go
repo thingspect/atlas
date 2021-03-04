@@ -3,6 +3,8 @@
 package device
 
 import (
+	"encoding/base64"
+	"encoding/hex"
 	"fmt"
 	"testing"
 
@@ -12,10 +14,19 @@ import (
 	"github.com/golang/protobuf/proto"
 	"github.com/stretchr/testify/require"
 	"github.com/thingspect/atlas/pkg/decode"
+	"github.com/thingspect/atlas/pkg/test/random"
 )
 
 func TestDeviceTxAck(t *testing.T) {
 	t.Parallel()
+
+	gatewayID := random.String(16)
+	bGatewayID, err := hex.DecodeString(gatewayID)
+	require.NoError(t, err)
+	t.Logf("bGatewayID: %x", bGatewayID)
+
+	b64GatewayID := base64.StdEncoding.EncodeToString(bGatewayID)
+	t.Logf("b64GatewayID: %v", b64GatewayID)
 
 	// Device TX ACK payloads, see deviceTxAck() for format description.
 	tests := []struct {
@@ -27,6 +38,12 @@ func TestDeviceTxAck(t *testing.T) {
 		{&as.TxAckEvent{}, []*decode.Point{
 			{Attr: "raw_device", Value: `{}`},
 			{Attr: "ack_gateway_tx", Value: true},
+		}, ""},
+		{&as.TxAckEvent{GatewayId: bGatewayID}, []*decode.Point{
+			{Attr: "raw_device", Value: fmt.Sprintf(`{"gatewayID":"%s"}`,
+				b64GatewayID)},
+			{Attr: "ack_gateway_tx", Value: true},
+			{Attr: "gateway_id", Value: gatewayID},
 		}, ""},
 		// Device TX ACK bad length.
 		{nil, nil, "cannot parse invalid wire-format data"},
@@ -48,7 +65,9 @@ func TestDeviceTxAck(t *testing.T) {
 			res, err := deviceTxAck(bInp)
 			t.Logf("res, err: %#v, %v", res, err)
 			require.Equal(t, lTest.res, res)
-			if lTest.err != "" {
+			if lTest.err == "" {
+				require.NoError(t, err)
+			} else {
 				require.Contains(t, err.Error(), lTest.err)
 			}
 		})

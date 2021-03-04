@@ -17,6 +17,8 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
+const testTimeout = 8 * time.Second
+
 func TestCreate(t *testing.T) {
 	t.Parallel()
 
@@ -31,8 +33,7 @@ func TestCreate(t *testing.T) {
 		t.Parallel()
 
 		user := random.User("dao-user", createOrg.Id)
-		user.Tags = nil
-		createUser := proto.Clone(user).(*api.User)
+		createUser, _ := proto.Clone(user).(*api.User)
 
 		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
 		defer cancel()
@@ -40,34 +41,7 @@ func TestCreate(t *testing.T) {
 		createUser, err := globalUserDAO.Create(ctx, createUser)
 		t.Logf("user, createUser, err: %+v, %+v, %v", user, createUser, err)
 		require.NoError(t, err)
-		require.Equal(t, user.OrgId, createUser.OrgId)
-		require.Equal(t, user.Email, createUser.Email)
-		require.Equal(t, user.Role, createUser.Role)
-		require.Equal(t, user.Status, createUser.Status)
-		require.Equal(t, user.Tags, createUser.Tags)
-		require.WithinDuration(t, time.Now(), createUser.CreatedAt.AsTime(),
-			2*time.Second)
-		require.WithinDuration(t, time.Now(), createUser.UpdatedAt.AsTime(),
-			2*time.Second)
-	})
-
-	t.Run("Create valid user with tags", func(t *testing.T) {
-		t.Parallel()
-
-		user := random.User("dao-user", createOrg.Id)
-		createUser := proto.Clone(user).(*api.User)
-
-		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
-		defer cancel()
-
-		createUser, err := globalUserDAO.Create(ctx, createUser)
-		t.Logf("user, createUser, err: %+v, %+v, %v", user, createUser, err)
-		require.NoError(t, err)
-		require.Equal(t, user.OrgId, createUser.OrgId)
-		require.Equal(t, user.Email, createUser.Email)
-		require.Equal(t, user.Role, createUser.Role)
-		require.Equal(t, user.Status, createUser.Status)
-		require.Equal(t, user.Tags, createUser.Tags)
+		require.NotEqual(t, user.Id, createUser.Id)
 		require.WithinDuration(t, time.Now(), createUser.CreatedAt.AsTime(),
 			2*time.Second)
 		require.WithinDuration(t, time.Now(), createUser.UpdatedAt.AsTime(),
@@ -79,7 +53,7 @@ func TestCreate(t *testing.T) {
 
 		user := random.User("dao-user", createOrg.Id)
 		user.Email = "dao-user-" + random.String(80)
-		createUser := proto.Clone(user).(*api.User)
+		createUser, _ := proto.Clone(user).(*api.User)
 
 		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
 		defer cancel()
@@ -262,21 +236,22 @@ func TestUpdate(t *testing.T) {
 		createUser.Role = common.Role_ADMIN
 		createUser.Status = api.Status_DISABLED
 		createUser.Tags = nil
-		updateUser := proto.Clone(createUser).(*api.User)
+		updateUser, _ := proto.Clone(createUser).(*api.User)
 
 		updateUser, err = globalUserDAO.Update(ctx, updateUser)
 		t.Logf("createUser, updateUser, err: %+v, %+v, %v", createUser,
 			updateUser, err)
 		require.NoError(t, err)
-		require.Equal(t, createUser.Email, updateUser.Email)
-		require.Equal(t, createUser.Role, updateUser.Role)
-		require.Equal(t, createUser.Status, updateUser.Status)
-		require.Equal(t, createUser.Tags, updateUser.Tags)
-		require.Equal(t, createUser.CreatedAt, updateUser.CreatedAt)
 		require.True(t, updateUser.UpdatedAt.AsTime().After(
 			updateUser.CreatedAt.AsTime()))
 		require.WithinDuration(t, createUser.CreatedAt.AsTime(),
 			updateUser.UpdatedAt.AsTime(), 2*time.Second)
+
+		readUser, err := globalUserDAO.Read(ctx, createUser.Id,
+			createUser.OrgId)
+		t.Logf("readUser, err: %+v, %v", readUser, err)
+		require.NoError(t, err)
+		require.Equal(t, updateUser, readUser)
 	})
 
 	t.Run("Update unknown user", func(t *testing.T) {
@@ -306,7 +281,7 @@ func TestUpdate(t *testing.T) {
 		// Update user fields.
 		createUser.OrgId = uuid.NewString()
 		createUser.Email = "dao-user-" + random.Email()
-		updateUser := proto.Clone(createUser).(*api.User)
+		updateUser, _ := proto.Clone(createUser).(*api.User)
 
 		updateUser, err = globalUserDAO.Update(ctx, updateUser)
 		t.Logf("createUser, updateUser, err: %+v, %+v, %v", createUser,
@@ -329,7 +304,7 @@ func TestUpdate(t *testing.T) {
 		// Update user fields.
 		createUser.Email = "dao-user-" + random.String(80)
 		createUser.Status = api.Status_DISABLED
-		updateUser := proto.Clone(createUser).(*api.User)
+		updateUser, _ := proto.Clone(createUser).(*api.User)
 
 		updateUser, err = globalUserDAO.Update(ctx, updateUser)
 		t.Logf("createUser, updateUser, err: %+v, %+v, %v", createUser,
@@ -511,9 +486,9 @@ func TestList(t *testing.T) {
 		var found bool
 		for _, user := range listUsers {
 			if user.Id == userIDs[len(userIDs)-1] &&
-				user.Role == userRoles[len(userIDs)-1] &&
-				user.Status == userStatuses[len(userIDs)-1] &&
-				reflect.DeepEqual(user.Tags, userTags[len(userIDs)-1]) {
+				user.Role == userRoles[len(userRoles)-1] &&
+				user.Status == userStatuses[len(userStatuses)-1] &&
+				reflect.DeepEqual(user.Tags, userTags[len(userTags)-1]) {
 				found = true
 			}
 		}
@@ -537,9 +512,9 @@ func TestList(t *testing.T) {
 		var found bool
 		for _, user := range listUsers {
 			if user.Id == userIDs[len(userIDs)-1] &&
-				user.Role == userRoles[len(userIDs)-1] &&
-				user.Status == userStatuses[len(userIDs)-1] &&
-				reflect.DeepEqual(user.Tags, userTags[len(userIDs)-1]) {
+				user.Role == userRoles[len(userRoles)-1] &&
+				user.Status == userStatuses[len(userStatuses)-1] &&
+				reflect.DeepEqual(user.Tags, userTags[len(userTags)-1]) {
 				found = true
 			}
 		}
@@ -576,9 +551,9 @@ func TestList(t *testing.T) {
 		require.Equal(t, int32(1), listCount)
 
 		require.Equal(t, userIDs[len(userIDs)-1], listUsers[0].Id)
-		require.Equal(t, userStatuses[len(userIDs)-1], listUsers[0].Status)
-		require.Equal(t, userRoles[len(userIDs)-1], listUsers[0].Role)
-		require.Equal(t, userTags[len(userIDs)-1], listUsers[0].Tags)
+		require.Equal(t, userStatuses[len(userStatuses)-1], listUsers[0].Status)
+		require.Equal(t, userRoles[len(userRoles)-1], listUsers[0].Role)
+		require.Equal(t, userTags[len(userTags)-1], listUsers[0].Tags)
 	})
 
 	t.Run("List users with tag filter and pagination", func(t *testing.T) {
@@ -596,9 +571,9 @@ func TestList(t *testing.T) {
 		require.Equal(t, int32(1), listCount)
 
 		require.Equal(t, userIDs[len(userIDs)-1], listUsers[0].Id)
-		require.Equal(t, userStatuses[len(userIDs)-1], listUsers[0].Status)
-		require.Equal(t, userRoles[len(userIDs)-1], listUsers[0].Role)
-		require.Equal(t, userTags[len(userIDs)-1], listUsers[0].Tags)
+		require.Equal(t, userStatuses[len(userStatuses)-1], listUsers[0].Status)
+		require.Equal(t, userRoles[len(userRoles)-1], listUsers[0].Role)
+		require.Equal(t, userTags[len(userTags)-1], listUsers[0].Tags)
 	})
 
 	t.Run("Lists are isolated by org ID", func(t *testing.T) {

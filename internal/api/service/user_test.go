@@ -32,7 +32,7 @@ func TestCreateUser(t *testing.T) {
 
 		user := random.User("api-user", uuid.NewString())
 		user.Role = common.Role_BUILDER
-		retUser := proto.Clone(user).(*api.User)
+		retUser, _ := proto.Clone(user).(*api.User)
 		retUser.Tags = append(retUser.Tags,
 			strings.ToLower(common.Role_BUILDER.String()))
 
@@ -137,7 +137,7 @@ func TestGetUser(t *testing.T) {
 		t.Parallel()
 
 		user := random.User("api-user", uuid.NewString())
-		retUser := proto.Clone(user).(*api.User)
+		retUser, _ := proto.Clone(user).(*api.User)
 
 		userer := NewMockUserer(gomock.NewController(t))
 		userer.EXPECT().Read(gomock.Any(), user.Id, user.OrgId).Return(retUser,
@@ -218,7 +218,7 @@ func TestUpdateUser(t *testing.T) {
 
 		user := random.User("api-user", uuid.NewString())
 		user.Role = common.Role_ADMIN
-		retUser := proto.Clone(user).(*api.User)
+		retUser, _ := proto.Clone(user).(*api.User)
 
 		userer := NewMockUserer(gomock.NewController(t))
 		userer.EXPECT().Update(gomock.Any(), user).Return(retUser, nil).Times(1)
@@ -246,11 +246,11 @@ func TestUpdateUser(t *testing.T) {
 
 		user := random.User("api-user", uuid.NewString())
 		user.Role = common.Role_ADMIN
-		retUser := proto.Clone(user).(*api.User)
+		retUser, _ := proto.Clone(user).(*api.User)
 		part := &api.User{Id: user.Id, Status: api.Status_ACTIVE}
 		merged := &api.User{Id: user.Id, OrgId: user.OrgId, Email: user.Email,
-			Role: user.Role, Status: api.Status_ACTIVE, Tags: user.Tags}
-		retMerged := proto.Clone(merged).(*api.User)
+			Role: user.Role, Status: part.Status, Tags: user.Tags}
+		retMerged, _ := proto.Clone(merged).(*api.User)
 
 		userer := NewMockUserer(gomock.NewController(t))
 		userer.EXPECT().Read(gomock.Any(), user.Id, user.OrgId).Return(retUser,

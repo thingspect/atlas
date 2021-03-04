@@ -60,6 +60,31 @@ func TestDevice(t *testing.T) {
 	}
 }
 
+func TestRule(t *testing.T) {
+	t.Parallel()
+
+	for i := 0; i < 5; i++ {
+		lTest := i
+
+		t.Run(fmt.Sprintf("Can generate %v", lTest), func(t *testing.T) {
+			t.Parallel()
+
+			prefix := String(10)
+			orgID := uuid.NewString()
+
+			r1 := Rule(prefix, orgID)
+			r2 := Rule(prefix, orgID)
+			t.Logf("r1, r2: %+v, %+v", r1, r2)
+
+			require.NotEqual(t, r1, r2)
+			require.True(t, strings.HasPrefix(r1.Name, prefix))
+			require.True(t, strings.HasPrefix(r2.Name, prefix))
+			require.True(t, strings.HasPrefix(r1.Tag, prefix))
+			require.True(t, strings.HasPrefix(r2.Tag, prefix))
+		})
+	}
+}
+
 func TestUser(t *testing.T) {
 	t.Parallel()
 

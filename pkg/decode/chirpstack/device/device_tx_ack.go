@@ -1,6 +1,8 @@
 package device
 
 import (
+	"encoding/hex"
+
 	as "github.com/brocaar/chirpstack-api/go/v3/as/integration"
 
 	//lint:ignore SA1019 // third-party dependency
@@ -29,6 +31,10 @@ func deviceTxAck(body []byte) ([]*decode.Point, error) {
 
 	// Parse TxAckEvent.
 	msgs = append(msgs, &decode.Point{Attr: "ack_gateway_tx", Value: true})
+	if len(txAckMsg.GatewayId) != 0 {
+		msgs = append(msgs, &decode.Point{Attr: "gateway_id",
+			Value: hex.EncodeToString(txAckMsg.GatewayId)})
+	}
 
 	return msgs, nil
 }

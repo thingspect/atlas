@@ -35,6 +35,7 @@ func (d *DAO) Create(ctx context.Context, user *api.User) (*api.User, error) {
 		now).Scan(&user.Id); err != nil {
 		return nil, dao.DBToSentinel(err)
 	}
+
 	return user, nil
 }
 
@@ -65,6 +66,7 @@ func (d *DAO) Read(ctx context.Context, userID, orgID string) (*api.User,
 	}
 	user.CreatedAt = timestamppb.New(createdAt)
 	user.UpdatedAt = timestamppb.New(updatedAt)
+
 	return user, nil
 }
 
@@ -98,6 +100,7 @@ func (d *DAO) ReadByEmail(ctx context.Context, email,
 	}
 	user.CreatedAt = timestamppb.New(createdAt)
 	user.UpdatedAt = timestamppb.New(updatedAt)
+
 	return user, passHash, nil
 }
 
@@ -127,6 +130,7 @@ func (d *DAO) Update(ctx context.Context, user *api.User) (*api.User, error) {
 	}
 
 	user.CreatedAt = timestamppb.New(createdAt)
+
 	return user, nil
 }
 
@@ -148,6 +152,7 @@ func (d *DAO) UpdatePassword(ctx context.Context, userID, orgID string,
 
 	_, err := d.pg.ExecContext(ctx, updateUserPassword, passHash,
 		time.Now().UTC().Truncate(time.Microsecond), userID, orgID)
+
 	return dao.DBToSentinel(err)
 }
 
@@ -165,6 +170,7 @@ func (d *DAO) Delete(ctx context.Context, userID, orgID string) error {
 	}
 
 	_, err := d.pg.ExecContext(ctx, deleteUser, userID, orgID)
+
 	return dao.DBToSentinel(err)
 }
 
@@ -201,10 +207,10 @@ LIMIT %d
 `
 
 // List retrieves all users by org ID with pagination and optional tag filter.
-// If lboundTS and prevID are zero values, the first page of results is
+// If lBoundTS and prevID are zero values, the first page of results is
 // returned. Limits of 0 or less do not apply a limit. List returns a slice of
 // users, a total count, and an error value.
-func (d *DAO) List(ctx context.Context, orgID string, lboundTS time.Time,
+func (d *DAO) List(ctx context.Context, orgID string, lBoundTS time.Time,
 	prevID string, limit int32, tag string) ([]*api.User, int32, error) {
 	// Build count query.
 	cQuery := countUsers
@@ -226,9 +232,9 @@ func (d *DAO) List(ctx context.Context, orgID string, lboundTS time.Time,
 	lQuery := listUsers
 	lArgs := []interface{}{orgID}
 
-	if prevID != "" && !lboundTS.IsZero() {
+	if prevID != "" && !lBoundTS.IsZero() {
 		lQuery += fmt.Sprintf(listUsersTSAndID, 2, 2, 3)
-		lArgs = append(lArgs, lboundTS, prevID)
+		lArgs = append(lArgs, lBoundTS, prevID)
 
 		if tag != "" {
 			lQuery += fmt.Sprintf(listUsersTag, 4)
@@ -240,7 +246,7 @@ func (d *DAO) List(ctx context.Context, orgID string, lboundTS time.Time,
 	}
 
 	// Ordering is applied with the limit, which will always be present for API
-	// usage, whereas lboundTS and prevID will not for first pages.
+	// usage, whereas lBoundTS and prevID will not for first pages.
 	if limit > 0 {
 		lQuery += fmt.Sprintf(listUsersLimit, limit)
 	}
@@ -285,5 +291,6 @@ func (d *DAO) List(ctx context.Context, orgID string, lboundTS time.Time,
 	if err = rows.Err(); err != nil {
 		return nil, 0, dao.DBToSentinel(err)
 	}
+
 	return users, count, nil
 }

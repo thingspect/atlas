@@ -105,7 +105,9 @@ func TestDeviceUp(t *testing.T) {
 					2*time.Second)
 			}
 			require.Equal(t, lTest.resData, data)
-			if lTest.err != "" {
+			if lTest.err == "" {
+				require.NoError(t, err)
+			} else {
 				require.Contains(t, err.Error(), lTest.err)
 			}
 		})

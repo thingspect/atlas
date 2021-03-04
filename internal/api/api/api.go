@@ -22,6 +22,7 @@ import (
 	"github.com/thingspect/atlas/pkg/dao/datapoint"
 	"github.com/thingspect/atlas/pkg/dao/device"
 	"github.com/thingspect/atlas/pkg/dao/org"
+	"github.com/thingspect/atlas/pkg/dao/rule"
 	"github.com/thingspect/atlas/pkg/dao/tag"
 	"github.com/thingspect/atlas/pkg/dao/user"
 	"github.com/thingspect/atlas/pkg/queue"
@@ -88,6 +89,7 @@ func New(cfg *config.Config) (*API, error) {
 		// Update actions validate after merge to support partial updates.
 		"/thingspect.api.DeviceService/UpdateDevice": {},
 		"/thingspect.api.OrgService/UpdateOrg":       {},
+		"/thingspect.api.RuleService/UpdateRule":     {},
 		"/thingspect.api.UserService/UpdateUser":     {},
 	}
 
@@ -101,6 +103,7 @@ func New(cfg *config.Config) (*API, error) {
 	api.RegisterDeviceServiceServer(srv, service.NewDevice(device.NewDAO(pg),
 		cs))
 	api.RegisterOrgServiceServer(srv, service.NewOrg(org.NewDAO(pg)))
+	api.RegisterRuleServiceServer(srv, service.NewRule(rule.NewDAO(pg)))
 	api.RegisterSessionServiceServer(srv, service.NewSession(user.NewDAO(pg),
 		cfg.PWTKey))
 	api.RegisterTagServiceServer(srv, service.NewTag(tag.NewDAO(pg)))
@@ -117,6 +120,7 @@ func New(cfg *config.Config) (*API, error) {
 	if err := api.RegisterDataPointServiceHandlerFromEndpoint(ctx, gwMux,
 		GRPCHost+GRPCPort, opts); err != nil {
 		cancel()
+
 		return nil, err
 	}
 
@@ -124,6 +128,7 @@ func New(cfg *config.Config) (*API, error) {
 	if err := api.RegisterDeviceServiceHandlerFromEndpoint(ctx, gwMux,
 		GRPCHost+GRPCPort, opts); err != nil {
 		cancel()
+
 		return nil, err
 	}
 
@@ -131,6 +136,15 @@ func New(cfg *config.Config) (*API, error) {
 	if err := api.RegisterOrgServiceHandlerFromEndpoint(ctx, gwMux,
 		GRPCHost+GRPCPort, opts); err != nil {
 		cancel()
+
+		return nil, err
+	}
+
+	// Rule.
+	if err := api.RegisterRuleServiceHandlerFromEndpoint(ctx, gwMux,
+		GRPCHost+GRPCPort, opts); err != nil {
+		cancel()
+
 		return nil, err
 	}
 
@@ -138,6 +152,7 @@ func New(cfg *config.Config) (*API, error) {
 	if err := api.RegisterSessionServiceHandlerFromEndpoint(ctx, gwMux,
 		GRPCHost+GRPCPort, opts); err != nil {
 		cancel()
+
 		return nil, err
 	}
 
@@ -145,6 +160,7 @@ func New(cfg *config.Config) (*API, error) {
 	if err := api.RegisterTagServiceHandlerFromEndpoint(ctx, gwMux,
 		GRPCHost+GRPCPort, opts); err != nil {
 		cancel()
+
 		return nil, err
 	}
 
@@ -152,6 +168,7 @@ func New(cfg *config.Config) (*API, error) {
 	if err := api.RegisterUserServiceHandlerFromEndpoint(ctx, gwMux,
 		GRPCHost+GRPCPort, opts); err != nil {
 		cancel()
+
 		return nil, err
 	}
 

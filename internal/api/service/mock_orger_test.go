@@ -66,9 +66,9 @@ func (mr *MockOrgerMockRecorder) Delete(ctx, orgID interface{}) *gomock.Call {
 }
 
 // List mocks base method.
-func (m *MockOrger) List(ctx context.Context, lboundTS time.Time, prevID string, limit int32) ([]*api.Org, int32, error) {
+func (m *MockOrger) List(ctx context.Context, lBoundTS time.Time, prevID string, limit int32) ([]*api.Org, int32, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "List", ctx, lboundTS, prevID, limit)
+	ret := m.ctrl.Call(m, "List", ctx, lBoundTS, prevID, limit)
 	ret0, _ := ret[0].([]*api.Org)
 	ret1, _ := ret[1].(int32)
 	ret2, _ := ret[2].(error)
@@ -76,9 +76,9 @@ func (m *MockOrger) List(ctx context.Context, lboundTS time.Time, prevID string,
 }
 
 // List indicates an expected call of List.
-func (mr *MockOrgerMockRecorder) List(ctx, lboundTS, prevID, limit interface{}) *gomock.Call {
+func (mr *MockOrgerMockRecorder) List(ctx, lBoundTS, prevID, limit interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "List", reflect.TypeOf((*MockOrger)(nil).List), ctx, lboundTS, prevID, limit)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "List", reflect.TypeOf((*MockOrger)(nil).List), ctx, lBoundTS, prevID, limit)
 }
 
 // Read mocks base method.

@@ -52,10 +52,12 @@ func main() {
 	// Generate UUID and return.
 	case "uuid":
 		fmt.Fprintln(os.Stdout, uuid.NewString())
+
 		return
 	// Generate UniqID and return.
 	case "uniqid":
 		fmt.Fprintln(os.Stdout, random.String(16))
+
 		return
 	}
 
@@ -76,6 +78,7 @@ func main() {
 		checkErr(err)
 		orgID = createOrg.Id
 		fmt.Fprintf(os.Stdout, "Org: %+v\n", createOrg)
+
 		fallthrough
 	// Create user.
 	case "user":

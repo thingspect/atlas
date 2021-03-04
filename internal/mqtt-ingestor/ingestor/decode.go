@@ -33,6 +33,7 @@ func (ing *Ingestor) decodeMessages() {
 		if len(topicParts) < 2 || len(topicParts) > 4 || topicParts[0] != "v1" {
 			metric.Incr("error", map[string]string{"func": "topic"})
 			logger.Errorf("decodeMessages malformed topic: %v", topic)
+
 			continue
 		}
 		logger = logger.WithStr("orgID", topicParts[1])
@@ -52,6 +53,7 @@ func (ing *Ingestor) decodeMessages() {
 		if err != nil {
 			metric.Incr("error", map[string]string{"func": "unmarshal"})
 			logger.Errorf("decodeMessages proto.Unmarshal: %v", err)
+
 			continue
 		}
 		metric.Incr("processed", nil)
@@ -65,6 +67,7 @@ func (ing *Ingestor) decodeMessages() {
 			if err != nil {
 				metric.Incr("error", map[string]string{"func": "marshal"})
 				logger.Errorf("decodeMessages proto.Marshal: %v", err)
+
 				continue
 			}
 
@@ -73,6 +76,7 @@ func (ing *Ingestor) decodeMessages() {
 				metric.Incr("error", map[string]string{"func": "publish"})
 				logger.Errorf("decodeMessages ing.decoderQueue.Publish: %v",
 					err)
+
 				continue
 			}
 
@@ -114,5 +118,6 @@ func dataPointToVIn(traceID, paylToken string, topicParts []string,
 	if paylToken != "" {
 		vIn.Point.Token = paylToken
 	}
+
 	return vIn
 }

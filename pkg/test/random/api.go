@@ -36,6 +36,22 @@ func Device(prefix, orgID string) *api.Device {
 	}
 }
 
+// Rule generates a random rule with prefixed identifiers.
+func Rule(prefix, orgID string) *api.Rule {
+	return &api.Rule{
+		Id:    uuid.NewString(),
+		OrgId: orgID,
+		Name:  prefix + "-" + String(10),
+		Status: []api.Status{
+			api.Status_ACTIVE,
+			api.Status_DISABLED,
+		}[Intn(2)],
+		Tag:  prefix + "-" + String(10),
+		Attr: prefix + "-" + String(10),
+		Expr: []string{`true`, `false`}[Intn(2)],
+	}
+}
+
 // User generates a random user with prefixed identifiers.
 func User(prefix, orgID string) *api.User {
 	return &api.User{

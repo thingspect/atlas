@@ -78,6 +78,7 @@ func (ns *nsqSub) Unsubscribe() error {
 	select {
 	case <-ns.consumer.StopChan:
 		close(ns.msgChan)
+
 		return nil
 	case <-time.After(nsqDisconnectTimeout):
 		return ErrTimeout
@@ -133,8 +134,8 @@ func (n *nsqQueue) Subscribe(topic string) (Subber, error) {
 	consumer.SetLoggerLevel(nsq.LogLevelWarning)
 	consumer.AddHandler(nsq.HandlerFunc(func(m *nsq.Message) error {
 		m.DisableAutoResponse()
-
 		msgs <- &nsqMessage{topic: topic, msg: m}
+
 		return nil
 	}))
 

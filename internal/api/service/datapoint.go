@@ -83,11 +83,13 @@ func (d *DataPoint) PublishDataPoints(ctx context.Context,
 		bVIn, err := proto.Marshal(vIn)
 		if err != nil {
 			logger.Errorf("PublishDataPoints proto.Marshal: %v", err)
+
 			return nil, status.Error(codes.Internal, "publish failure")
 		}
 
 		if err = d.pubQueue.Publish(d.pubTopic, bVIn); err != nil {
 			logger.Errorf("PublishDataPoints d.pubQueue.Publish: %v", err)
+
 			return nil, status.Error(codes.Internal, "publish failure")
 		}
 
@@ -98,6 +100,7 @@ func (d *DataPoint) PublishDataPoints(ctx context.Context,
 		"202")); err != nil {
 		logger.Errorf("PublishDataPoints grpc.SetHeader: %v", err)
 	}
+
 	return &emptypb.Empty{}, nil
 }
 

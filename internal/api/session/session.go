@@ -28,5 +28,6 @@ func NewContext(ctx context.Context, sess *Session) context.Context {
 // FromContext returns the Session value stored in a Context, if any.
 func FromContext(ctx context.Context) (*Session, bool) {
 	sess, ok := ctx.Value(sessionKey{}).(*Session)
+
 	return sess, ok
 }

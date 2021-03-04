@@ -26,7 +26,7 @@ type Devicer interface {
 	Read(ctx context.Context, devID, orgID string) (*api.Device, error)
 	Update(ctx context.Context, dev *api.Device) (*api.Device, error)
 	Delete(ctx context.Context, devID, orgID string) error
-	List(ctx context.Context, orgID string, lboundTS time.Time, prevID string,
+	List(ctx context.Context, orgID string, lBoundTS time.Time, prevID string,
 		limit int32, tag string) ([]*api.Device, int32, error)
 }
 
@@ -66,6 +66,7 @@ func (d *Device) CreateDevice(ctx context.Context,
 		"201")); err != nil {
 		logger.Errorf("CreateDevice grpc.SetHeader: %v", err)
 	}
+
 	return dev, nil
 }
 
@@ -91,6 +92,7 @@ func (d *Device) CreateDeviceLoRaWAN(ctx context.Context,
 	}
 	if err != nil {
 		logger.Errorf("CreateDeviceLoRaWAN d.lora.CreateX: %v", err)
+
 		return nil, errToStatus(err)
 	}
 
@@ -98,6 +100,7 @@ func (d *Device) CreateDeviceLoRaWAN(ctx context.Context,
 		"204")); err != nil {
 		logger.Errorf("CreateDeviceLoRaWAN grpc.SetHeader: %v", err)
 	}
+
 	return &emptypb.Empty{}, nil
 }
 
@@ -183,6 +186,7 @@ func (d *Device) DeleteDeviceLoRaWAN(ctx context.Context,
 	if code := status.Code(err); code != codes.OK &&
 		code != codes.Unauthenticated {
 		logger.Errorf("DeleteDeviceLoRaWAN d.lora.DeleteGateway: %v", err)
+
 		return nil, errToStatus(err)
 	}
 
@@ -190,6 +194,7 @@ func (d *Device) DeleteDeviceLoRaWAN(ctx context.Context,
 	if code := status.Code(err); code != codes.OK &&
 		code != codes.Unauthenticated {
 		logger.Errorf("DeleteDeviceLoRaWAN d.lora.DeleteDevice: %v", err)
+
 		return nil, errToStatus(err)
 	}
 
@@ -197,6 +202,7 @@ func (d *Device) DeleteDeviceLoRaWAN(ctx context.Context,
 		"204")); err != nil {
 		logger.Errorf("DeleteDeviceLoRaWAN grpc.SetHeader: %v", err)
 	}
+
 	return &emptypb.Empty{}, nil
 }
 
@@ -217,6 +223,7 @@ func (d *Device) DeleteDevice(ctx context.Context,
 		"204")); err != nil {
 		logger.Errorf("DeleteDevice grpc.SetHeader: %v", err)
 	}
+
 	return &emptypb.Empty{}, nil
 }
 
@@ -233,13 +240,13 @@ func (d *Device) ListDevices(ctx context.Context,
 		req.PageSize = defaultPageSize
 	}
 
-	lboundTS, prevID, err := session.ParsePageToken(req.PageToken)
+	lBoundTS, prevID, err := session.ParsePageToken(req.PageToken)
 	if err != nil {
 		return nil, status.Error(codes.InvalidArgument, "invalid page token")
 	}
 
 	// Retrieve PageSize+1 entries to find last page.
-	devs, count, err := d.devDAO.List(ctx, sess.OrgID, lboundTS, prevID,
+	devs, count, err := d.devDAO.List(ctx, sess.OrgID, lBoundTS, prevID,
 		req.PageSize+1, req.Tag)
 	if err != nil {
 		return nil, errToStatus(err)

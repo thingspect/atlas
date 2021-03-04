@@ -29,6 +29,7 @@ func (d *DAO) Create(ctx context.Context, org *api.Org) (*api.Org, error) {
 		now).Scan(&org.Id); err != nil {
 		return nil, dao.DBToSentinel(err)
 	}
+
 	return org, nil
 }
 
@@ -50,6 +51,7 @@ func (d *DAO) Read(ctx context.Context, orgID string) (*api.Org, error) {
 
 	org.CreatedAt = timestamppb.New(createdAt)
 	org.UpdatedAt = timestamppb.New(updatedAt)
+
 	return org, nil
 }
 
@@ -74,6 +76,7 @@ func (d *DAO) Update(ctx context.Context, org *api.Org) (*api.Org, error) {
 	}
 
 	org.CreatedAt = timestamppb.New(createdAt)
+
 	return org, nil
 }
 
@@ -91,6 +94,7 @@ func (d *DAO) Delete(ctx context.Context, orgID string) error {
 	}
 
 	_, err := d.pg.ExecContext(ctx, deleteOrg, orgID)
+
 	return dao.DBToSentinel(err)
 }
 
@@ -116,10 +120,10 @@ ORDER BY created_at ASC, id ASC
 LIMIT %d
 `
 
-// List retrieves all organizations. If lboundTS and prevID are zero values,
+// List retrieves all organizations. If lBoundTS and prevID are zero values,
 // the first page of results is returned. Limits of 0 or less do not apply a
-// limit. List returns a slice of users, a total count, and an error value.
-func (d *DAO) List(ctx context.Context, lboundTS time.Time, prevID string,
+// limit. List returns a slice of orgs, a total count, and an error value.
+func (d *DAO) List(ctx context.Context, lBoundTS time.Time, prevID string,
 	limit int32) ([]*api.Org, int32, error) {
 	// Run count query.
 	var count int32
@@ -131,13 +135,13 @@ func (d *DAO) List(ctx context.Context, lboundTS time.Time, prevID string,
 	query := listOrgs
 	args := []interface{}{}
 
-	if prevID != "" && !lboundTS.IsZero() {
+	if prevID != "" && !lBoundTS.IsZero() {
 		query += listOrgsTSAndID
-		args = append(args, lboundTS, prevID)
+		args = append(args, lBoundTS, prevID)
 	}
 
 	// Ordering is applied with the limit, which will always be present for API
-	// usage, whereas lboundTS and prevID will not for first pages.
+	// usage, whereas lBoundTS and prevID will not for first pages.
 	if limit > 0 {
 		query += fmt.Sprintf(listOrgsLimit, limit)
 	}
@@ -175,5 +179,6 @@ func (d *DAO) List(ctx context.Context, lboundTS time.Time, prevID string,
 	if err = rows.Err(); err != nil {
 		return nil, 0, dao.DBToSentinel(err)
 	}
+
 	return orgs, count, nil
 }

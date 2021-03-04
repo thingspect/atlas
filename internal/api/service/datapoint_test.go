@@ -164,7 +164,7 @@ func TestListDataPoints(t *testing.T) {
 		point := &common.DataPoint{UniqId: "api-point-" + random.String(16),
 			Attr: "motion", ValOneof: &common.DataPoint_IntVal{IntVal: 123},
 			Ts: timestamppb.Now(), TraceId: uuid.NewString()}
-		retPoint := proto.Clone(point).(*common.DataPoint)
+		retPoint, _ := proto.Clone(point).(*common.DataPoint)
 		orgID := uuid.NewString()
 		end := time.Now().UTC()
 		start := time.Now().UTC().Add(-15 * time.Minute)
@@ -203,7 +203,7 @@ func TestListDataPoints(t *testing.T) {
 		point := &common.DataPoint{UniqId: "api-point-" + random.String(16),
 			Attr: "motion", ValOneof: &common.DataPoint_IntVal{IntVal: 123},
 			Ts: timestamppb.Now(), TraceId: uuid.NewString()}
-		retPoint := proto.Clone(point).(*common.DataPoint)
+		retPoint, _ := proto.Clone(point).(*common.DataPoint)
 		orgID := uuid.NewString()
 		devID := uuid.NewString()
 
@@ -321,7 +321,7 @@ func TestLatestDataPoints(t *testing.T) {
 		point := &common.DataPoint{UniqId: "api-point-" + random.String(16),
 			Attr: "motion", ValOneof: &common.DataPoint_IntVal{IntVal: 123},
 			Ts: timestamppb.Now(), TraceId: uuid.NewString()}
-		retPoint := proto.Clone(point).(*common.DataPoint)
+		retPoint, _ := proto.Clone(point).(*common.DataPoint)
 		orgID := uuid.NewString()
 
 		datapointer := NewMockDataPointer(gomock.NewController(t))
@@ -357,7 +357,7 @@ func TestLatestDataPoints(t *testing.T) {
 		point := &common.DataPoint{UniqId: "api-point-" + random.String(16),
 			Attr: "motion", ValOneof: &common.DataPoint_IntVal{IntVal: 123},
 			Ts: timestamppb.Now(), TraceId: uuid.NewString()}
-		retPoint := proto.Clone(point).(*common.DataPoint)
+		retPoint, _ := proto.Clone(point).(*common.DataPoint)
 		orgID := uuid.NewString()
 		devID := uuid.NewString()
 

@@ -49,7 +49,9 @@ func TestTamper(t *testing.T) {
 			res, err := tamper(bInp)
 			t.Logf("res, err: %#v, %v", res, err)
 			require.Equal(t, lTest.res, res)
-			if lTest.err != "" {
+			if lTest.err == "" {
+				require.NoError(t, err)
+			} else {
 				require.EqualError(t, err, lTest.err)
 			}
 		})

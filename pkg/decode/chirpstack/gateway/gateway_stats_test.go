@@ -116,7 +116,9 @@ func TestGatewayStats(t *testing.T) {
 			res, err := gatewayStats(bInp)
 			t.Logf("res, err: %#v, %v", res, err)
 			require.Equal(t, lTest.res, res)
-			if lTest.err != "" {
+			if lTest.err == "" {
+				require.NoError(t, err)
+			} else {
 				require.Contains(t, err.Error(), lTest.err)
 			}
 		})

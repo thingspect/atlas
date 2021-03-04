@@ -24,7 +24,6 @@ func TestCreateDevice(t *testing.T) {
 		t.Parallel()
 
 		dev := random.Device("api-device", uuid.NewString())
-		dev.Tags = nil
 
 		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
 		defer cancel()
@@ -34,39 +33,9 @@ func TestCreateDevice(t *testing.T) {
 			Device: dev})
 		t.Logf("createDev, err: %+v, %v", createDev, err)
 		require.NoError(t, err)
-		require.NotNil(t, createDev)
-		require.Equal(t, globalAdminOrgID, createDev.OrgId)
+		require.NotEqual(t, dev.Id, createDev.Id)
 		require.Equal(t, dev.UniqId, createDev.UniqId)
-		require.Equal(t, dev.Name, createDev.Name)
-		require.Equal(t, dev.Status, createDev.Status)
-		require.Equal(t, dev.Decoder, createDev.Decoder)
-		require.Equal(t, dev.Tags, createDev.Tags)
-		require.WithinDuration(t, time.Now(), createDev.CreatedAt.AsTime(),
-			2*time.Second)
-		require.WithinDuration(t, time.Now(), createDev.UpdatedAt.AsTime(),
-			2*time.Second)
-	})
-
-	t.Run("Create valid device with tags", func(t *testing.T) {
-		t.Parallel()
-
-		dev := random.Device("api-device", uuid.NewString())
-
-		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
-		defer cancel()
-
-		devCli := api.NewDeviceServiceClient(globalAdminGRPCConn)
-		createDev, err := devCli.CreateDevice(ctx, &api.CreateDeviceRequest{
-			Device: dev})
-		t.Logf("createDev, err: %+v, %v", createDev, err)
-		require.NoError(t, err)
-		require.NotNil(t, createDev)
-		require.Equal(t, globalAdminOrgID, createDev.OrgId)
-		require.Equal(t, dev.UniqId, createDev.UniqId)
-		require.Equal(t, dev.Name, createDev.Name)
-		require.Equal(t, dev.Status, createDev.Status)
-		require.Equal(t, dev.Decoder, createDev.Decoder)
-		require.Equal(t, dev.Tags, createDev.Tags)
+		require.NotEqual(t, dev.Token, createDev.Token)
 		require.WithinDuration(t, time.Now(), createDev.CreatedAt.AsTime(),
 			2*time.Second)
 		require.WithinDuration(t, time.Now(), createDev.UpdatedAt.AsTime(),
@@ -87,13 +56,9 @@ func TestCreateDevice(t *testing.T) {
 			Device: dev})
 		t.Logf("createDev, err: %+v, %v", createDev, err)
 		require.NoError(t, err)
-		require.NotNil(t, createDev)
-		require.Equal(t, globalAdminOrgID, createDev.OrgId)
+		require.NotEqual(t, dev.Id, createDev.Id)
 		require.Equal(t, strings.ToLower(dev.UniqId), createDev.UniqId)
-		require.Equal(t, dev.Name, createDev.Name)
-		require.Equal(t, dev.Status, createDev.Status)
-		require.Equal(t, dev.Decoder, createDev.Decoder)
-		require.Equal(t, dev.Tags, createDev.Tags)
+		require.NotEqual(t, dev.Token, createDev.Token)
 		require.WithinDuration(t, time.Now(), createDev.CreatedAt.AsTime(),
 			2*time.Second)
 		require.WithinDuration(t, time.Now(), createDev.UpdatedAt.AsTime(),
@@ -324,16 +289,23 @@ func TestUpdateDevice(t *testing.T) {
 		t.Logf("updateDev, err: %+v, %v", updateDev, err)
 		require.NoError(t, err)
 		require.Equal(t, createDev.UniqId, updateDev.UniqId)
-		require.Equal(t, createDev.Name, updateDev.Name)
-		require.Equal(t, createDev.Status, updateDev.Status)
-		require.Equal(t, createDev.Decoder, updateDev.Decoder)
-		require.Equal(t, createDev.Tags, updateDev.Tags)
 		require.Equal(t, createDev.CreatedAt.AsTime(),
 			updateDev.CreatedAt.AsTime())
 		require.True(t, updateDev.UpdatedAt.AsTime().After(
 			updateDev.CreatedAt.AsTime()))
 		require.WithinDuration(t, createDev.CreatedAt.AsTime(),
 			updateDev.UpdatedAt.AsTime(), 2*time.Second)
+
+		getDev, err := devCli.GetDevice(ctx, &api.GetDeviceRequest{
+			Id: createDev.Id})
+		t.Logf("getDev, err: %+v, %v", getDev, err)
+		require.NoError(t, err)
+
+		// Testify does not currently support protobuf equality:
+		// https://github.com/stretchr/testify/issues/758
+		if !proto.Equal(updateDev, getDev) {
+			t.Fatalf("\nExpect: %+v\nActual: %+v", updateDev, getDev)
+		}
 	})
 
 	t.Run("Partial update device by valid device", func(t *testing.T) {
@@ -350,23 +322,32 @@ func TestUpdateDevice(t *testing.T) {
 
 		// Update device fields.
 		part := &api.Device{Id: createDev.Id, UniqId: "api-device-" +
-			random.String(16), Status: api.Status_DISABLED,
-			Decoder: api.Decoder_GATEWAY}
+			random.String(16), Name: "api-device-" + random.String(10),
+			Status: api.Status_DISABLED, Decoder: api.Decoder_GATEWAY}
 
 		updateDev, err := devCli.UpdateDevice(ctx, &api.UpdateDeviceRequest{
 			Device: part, UpdateMask: &fieldmaskpb.FieldMask{
-				Paths: []string{"uniq_id", "status", "decoder"}}})
+				Paths: []string{"uniq_id", "name", "status", "decoder"}}})
 		t.Logf("updateDev, err: %+v, %v", updateDev, err)
 		require.NoError(t, err)
 		require.Equal(t, part.UniqId, updateDev.UniqId)
-		require.Equal(t, part.Status, updateDev.Status)
-		require.Equal(t, part.Decoder, updateDev.Decoder)
 		require.Equal(t, createDev.CreatedAt.AsTime(),
 			updateDev.CreatedAt.AsTime())
 		require.True(t, updateDev.UpdatedAt.AsTime().After(
 			updateDev.CreatedAt.AsTime()))
 		require.WithinDuration(t, createDev.CreatedAt.AsTime(),
 			updateDev.UpdatedAt.AsTime(), 2*time.Second)
+
+		getDev, err := devCli.GetDevice(ctx, &api.GetDeviceRequest{
+			Id: createDev.Id})
+		t.Logf("getDev, err: %+v, %v", getDev, err)
+		require.NoError(t, err)
+
+		// Testify does not currently support protobuf equality:
+		// https://github.com/stretchr/testify/issues/758
+		if !proto.Equal(updateDev, getDev) {
+			t.Fatalf("\nExpect: %+v\nActual: %+v", updateDev, getDev)
+		}
 	})
 
 	t.Run("Update device with insufficient role", func(t *testing.T) {
@@ -708,6 +689,7 @@ func TestListDevices(t *testing.T) {
 	defer cancel()
 
 	devIDs := []string{}
+	devNames := []string{}
 	devStatuses := []api.Status{}
 	devDecoders := []api.Decoder{}
 	devTags := [][]string{}
@@ -719,6 +701,7 @@ func TestListDevices(t *testing.T) {
 		require.NoError(t, err)
 
 		devIDs = append(devIDs, createDev.Id)
+		devNames = append(devNames, createDev.Name)
 		devStatuses = append(devStatuses, createDev.Status)
 		devDecoders = append(devDecoders, createDev.Decoder)
 		devTags = append(devTags, createDev.Tags)
@@ -740,9 +723,10 @@ func TestListDevices(t *testing.T) {
 		var found bool
 		for _, dev := range listDevs.Devices {
 			if dev.Id == devIDs[len(devIDs)-1] &&
-				dev.Status == devStatuses[len(devIDs)-1] &&
-				dev.Decoder == devDecoders[len(devIDs)-1] &&
-				reflect.DeepEqual(dev.Tags, devTags[len(devIDs)-1]) {
+				dev.Name == devNames[len(devNames)-1] &&
+				dev.Status == devStatuses[len(devStatuses)-1] &&
+				dev.Decoder == devDecoders[len(devDecoders)-1] &&
+				reflect.DeepEqual(dev.Tags, devTags[len(devTags)-1]) {
 				found = true
 			}
 		}
@@ -787,10 +771,12 @@ func TestListDevices(t *testing.T) {
 		require.Equal(t, int32(1), listDevs.TotalSize)
 
 		require.Equal(t, devIDs[len(devIDs)-1], listDevs.Devices[0].Id)
-		require.Equal(t, devStatuses[len(devIDs)-1], listDevs.Devices[0].Status)
-		require.Equal(t, devDecoders[len(devIDs)-1],
+		require.Equal(t, devNames[len(devNames)-1], listDevs.Devices[0].Name)
+		require.Equal(t, devStatuses[len(devStatuses)-1],
+			listDevs.Devices[0].Status)
+		require.Equal(t, devDecoders[len(devDecoders)-1],
 			listDevs.Devices[0].Decoder)
-		require.Equal(t, devTags[len(devIDs)-1], listDevs.Devices[0].Tags)
+		require.Equal(t, devTags[len(devTags)-1], listDevs.Devices[0].Tags)
 	})
 
 	t.Run("Lists are isolated by org ID", func(t *testing.T) {
