@@ -92,7 +92,7 @@ func main() {
 			OrgId:  orgID,
 			Email:  flag.Arg(2),
 			Role:   common.Role_ADMIN,
-			Status: api.Status_ACTIVE,
+			Status: common.Status_ACTIVE,
 			Tags:   []string{strings.ToLower(common.Role_ADMIN.String())},
 		}
 		createUser, err := userDAO.Create(ctx, user)

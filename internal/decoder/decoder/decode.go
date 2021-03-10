@@ -63,7 +63,7 @@ func (dec *Decoder) decodeMessages() {
 
 		// Decode data payload. Continue execution in the presence of errors, as
 		// valid points may be returned.
-		points, err := dec.registry.Decode(dev.Decoder, dIn.Data)
+		points, err := dec.reg.Decode(dev.Decoder, dIn.Data)
 		if err != nil {
 			metric.Incr("error", map[string]string{"func": "decode"})
 			logger.Errorf("decodeMessages dec.registry.Decode: %v", err)
@@ -83,7 +83,7 @@ func (dec *Decoder) decodeMessages() {
 				continue
 			}
 
-			if err = dec.decoderQueue.Publish(dec.decoderPubTopic,
+			if err = dec.decQueue.Publish(dec.vInPubTopic,
 				bVIn); err != nil {
 				metric.Incr("error", map[string]string{"func": "publish"})
 				logger.Errorf("decodeMessages ing.decoderQueue.Publish: %v",

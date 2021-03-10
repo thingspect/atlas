@@ -7,7 +7,7 @@ import (
 	"time"
 
 	"github.com/jackc/pgtype"
-	"github.com/thingspect/api/go/api"
+	"github.com/thingspect/api/go/common"
 	"github.com/thingspect/atlas/pkg/alog"
 	"github.com/thingspect/atlas/pkg/dao"
 	"google.golang.org/protobuf/types/known/timestamppb"
@@ -21,7 +21,7 @@ RETURNING id, token
 `
 
 // Create creates a device in the database.
-func (d *DAO) Create(ctx context.Context, dev *api.Device) (*api.Device,
+func (d *DAO) Create(ctx context.Context, dev *common.Device) (*common.Device,
 	error) {
 	dev.UniqId = strings.ToLower(dev.UniqId)
 
@@ -51,9 +51,9 @@ WHERE (id, org_id) = ($1, $2)
 `
 
 // Read retrieves a device by ID and org ID.
-func (d *DAO) Read(ctx context.Context, devID, orgID string) (*api.Device,
+func (d *DAO) Read(ctx context.Context, devID, orgID string) (*common.Device,
 	error) {
-	dev := &api.Device{}
+	dev := &common.Device{}
 	var status, decoder string
 	var tags pgtype.VarcharArray
 	var createdAt, updatedAt time.Time
@@ -64,8 +64,8 @@ func (d *DAO) Read(ctx context.Context, devID, orgID string) (*api.Device,
 		return nil, dao.DBToSentinel(err)
 	}
 
-	dev.Status = api.Status(api.Status_value[status])
-	dev.Decoder = api.Decoder(api.Decoder_value[decoder])
+	dev.Status = common.Status(common.Status_value[status])
+	dev.Decoder = common.Decoder(common.Decoder_value[decoder])
 	if err := tags.AssignTo(&dev.Tags); err != nil {
 		return nil, dao.DBToSentinel(err)
 	}
@@ -84,9 +84,9 @@ WHERE uniq_id = $1
 
 // ReadByUniqID retrieves a device by UniqID. This method does not limit by org
 // ID and should only be used in the service layer.
-func (d *DAO) ReadByUniqID(ctx context.Context, uniqID string) (*api.Device,
+func (d *DAO) ReadByUniqID(ctx context.Context, uniqID string) (*common.Device,
 	error) {
-	dev := &api.Device{}
+	dev := &common.Device{}
 	var status, decoder string
 	var tags pgtype.VarcharArray
 	var createdAt, updatedAt time.Time
@@ -97,8 +97,8 @@ func (d *DAO) ReadByUniqID(ctx context.Context, uniqID string) (*api.Device,
 		return nil, dao.DBToSentinel(err)
 	}
 
-	dev.Status = api.Status(api.Status_value[status])
-	dev.Decoder = api.Decoder(api.Decoder_value[decoder])
+	dev.Status = common.Status(common.Status_value[status])
+	dev.Decoder = common.Decoder(common.Decoder_value[decoder])
 	if err := tags.AssignTo(&dev.Tags); err != nil {
 		return nil, dao.DBToSentinel(err)
 	}
@@ -118,7 +118,7 @@ RETURNING created_at
 
 // Update updates a device in the database. CreatedAt should not update, so it
 // is safe to override it at the DAO level.
-func (d *DAO) Update(ctx context.Context, dev *api.Device) (*api.Device,
+func (d *DAO) Update(ctx context.Context, dev *common.Device) (*common.Device,
 	error) {
 	dev.UniqId = strings.ToLower(dev.UniqId)
 
@@ -198,7 +198,7 @@ LIMIT %d
 // returned. Limits of 0 or less do not apply a limit. List returns a slice of
 // devices, a total count, and an error value.
 func (d *DAO) List(ctx context.Context, orgID string, lBoundTS time.Time,
-	prevID string, limit int32, tag string) ([]*api.Device, int32, error) {
+	prevID string, limit int32, tag string) ([]*common.Device, int32, error) {
 	// Build count query.
 	cQuery := countDevices
 	cArgs := []interface{}{orgID}
@@ -250,9 +250,9 @@ func (d *DAO) List(ctx context.Context, orgID string, lBoundTS time.Time,
 		}
 	}()
 
-	var devs []*api.Device
+	var devs []*common.Device
 	for rows.Next() {
-		dev := &api.Device{}
+		dev := &common.Device{}
 		var status, decoder string
 		var tags pgtype.VarcharArray
 		var createdAt, updatedAt time.Time
@@ -262,8 +262,8 @@ func (d *DAO) List(ctx context.Context, orgID string, lBoundTS time.Time,
 			return nil, 0, dao.DBToSentinel(err)
 		}
 
-		dev.Status = api.Status(api.Status_value[status])
-		dev.Decoder = api.Decoder(api.Decoder_value[decoder])
+		dev.Status = common.Status(common.Status_value[status])
+		dev.Decoder = common.Decoder(common.Decoder_value[decoder])
 		if err := tags.AssignTo(&dev.Tags); err != nil {
 			return nil, 0, dao.DBToSentinel(err)
 		}

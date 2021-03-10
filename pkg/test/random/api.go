@@ -15,22 +15,22 @@ func Org(prefix string) *api.Org {
 }
 
 // Device generates a random device with prefixed identifiers.
-func Device(prefix, orgID string) *api.Device {
-	return &api.Device{
+func Device(prefix, orgID string) *common.Device {
+	return &common.Device{
 		Id:     uuid.NewString(),
 		OrgId:  orgID,
 		UniqId: prefix + "-" + String(16),
 		Name:   prefix + "-" + String(10),
-		Status: []api.Status{
-			api.Status_ACTIVE,
-			api.Status_DISABLED,
+		Status: []common.Status{
+			common.Status_ACTIVE,
+			common.Status_DISABLED,
 		}[Intn(2)],
 		Token: uuid.NewString(),
-		Decoder: []api.Decoder{
-			api.Decoder_RAW,
-			api.Decoder_GATEWAY,
-			api.Decoder_RADIO_BRIDGE_DOOR_V1,
-			api.Decoder_RADIO_BRIDGE_DOOR_V2,
+		Decoder: []common.Decoder{
+			common.Decoder_RAW,
+			common.Decoder_GATEWAY,
+			common.Decoder_RADIO_BRIDGE_DOOR_V1,
+			common.Decoder_RADIO_BRIDGE_DOOR_V2,
 		}[Intn(4)],
 		Tags: Tags(prefix, Intn(4)+1),
 	}
@@ -42,9 +42,9 @@ func Rule(prefix, orgID string) *api.Rule {
 		Id:    uuid.NewString(),
 		OrgId: orgID,
 		Name:  prefix + "-" + String(10),
-		Status: []api.Status{
-			api.Status_ACTIVE,
-			api.Status_DISABLED,
+		Status: []common.Status{
+			common.Status_ACTIVE,
+			common.Status_DISABLED,
 		}[Intn(2)],
 		Tag:  prefix + "-" + String(10),
 		Attr: prefix + "-" + String(10),
@@ -65,9 +65,9 @@ func User(prefix, orgID string) *api.User {
 			common.Role_ADMIN,
 			common.Role_SYS_ADMIN,
 		}[Intn(5)],
-		Status: []api.Status{
-			api.Status_ACTIVE,
-			api.Status_DISABLED,
+		Status: []common.Status{
+			common.Status_ACTIVE,
+			common.Status_DISABLED,
 		}[Intn(2)],
 		Tags: Tags(prefix, Intn(4)+1),
 	}

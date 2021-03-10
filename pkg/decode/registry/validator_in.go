@@ -8,7 +8,7 @@ import (
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
-// PointToVIn maps a Point to ValidatorIn.
+// PointToVIn converts a parsed Point to ValidatorIn.
 func PointToVIn(traceID, uniqID string, point *decode.Point,
 	ts *timestamppb.Timestamp) *message.ValidatorIn {
 	vIn := &message.ValidatorIn{

@@ -18,7 +18,7 @@ import (
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
-const testTimeout = 4 * time.Second
+const testTimeout = 6 * time.Second
 
 func TestCreate(t *testing.T) {
 	t.Parallel()
@@ -26,31 +26,34 @@ func TestCreate(t *testing.T) {
 	t.Run("Create valid data points", func(t *testing.T) {
 		t.Parallel()
 
+		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
+		defer cancel()
+
+		createOrg, err := globalOrgDAO.Create(ctx, random.Org("dao-point"))
+		t.Logf("createOrg, err: %+v, %v", createOrg, err)
+		require.NoError(t, err)
+
 		tests := []struct {
 			inpPoint *common.DataPoint
-			inpOrgID string
 		}{
 			{&common.DataPoint{UniqId: "dao-point-" + random.String(16),
 				Attr: "motion", ValOneof: &common.DataPoint_IntVal{IntVal: 123},
-				Ts: timestamppb.Now(), TraceId: uuid.NewString()},
-				uuid.NewString()},
+				Ts: timestamppb.Now(), TraceId: uuid.NewString()}},
 			{&common.DataPoint{UniqId: "dao-point-" + random.String(16),
 				Attr: "temp", ValOneof: &common.DataPoint_Fl64Val{Fl64Val: 9.3},
-				Ts: timestamppb.Now(), TraceId: uuid.NewString()},
-				uuid.NewString()},
+				Ts: timestamppb.Now(), TraceId: uuid.NewString()}},
 			{&common.DataPoint{UniqId: "dao-point-" + random.String(16),
 				Attr: "power", ValOneof: &common.DataPoint_StrVal{
 					StrVal: "batt"}, Ts: timestamppb.Now(),
-				TraceId: uuid.NewString()}, uuid.NewString()},
+				TraceId: uuid.NewString()}},
 			{&common.DataPoint{UniqId: "dao-point-" + random.String(16),
 				Attr: "leak", ValOneof: &common.DataPoint_BoolVal{
 					BoolVal: []bool{true, false}[random.Intn(2)]},
-				Ts: timestamppb.Now(), TraceId: uuid.NewString()},
-				uuid.NewString()},
+				Ts: timestamppb.Now(), TraceId: uuid.NewString()}},
 			{&common.DataPoint{UniqId: "dao-point-" + random.String(16),
 				Attr: "raw", ValOneof: &common.DataPoint_BytesVal{
 					BytesVal: random.Bytes(10)}, Ts: timestamppb.Now(),
-				TraceId: uuid.NewString()}, uuid.NewString()},
+				TraceId: uuid.NewString()}},
 		}
 
 		for _, test := range tests {
@@ -63,7 +66,7 @@ func TestCreate(t *testing.T) {
 					testTimeout)
 				defer cancel()
 
-				err := globalDPDAO.Create(ctx, lTest.inpPoint, lTest.inpOrgID)
+				err := globalDPDAO.Create(ctx, lTest.inpPoint, createOrg.Id)
 				t.Logf("err: %v", err)
 				require.NoError(t, err)
 			})
@@ -110,19 +113,22 @@ func TestCreate(t *testing.T) {
 	t.Run("Dedupe data point", func(t *testing.T) {
 		t.Parallel()
 
-		point := &common.DataPoint{UniqId: "dao-point-" + random.String(16),
-			Attr: "motion", ValOneof: &common.DataPoint_IntVal{IntVal: 123},
-			Ts: timestamppb.Now(), TraceId: uuid.NewString()}
-		orgID := uuid.NewString()
-
 		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
 		defer cancel()
 
-		err := globalDPDAO.Create(ctx, point, orgID)
+		createOrg, err := globalOrgDAO.Create(ctx, random.Org("dao-point"))
+		t.Logf("createOrg, err: %+v, %v", createOrg, err)
+		require.NoError(t, err)
+
+		point := &common.DataPoint{UniqId: "dao-point-" + random.String(16),
+			Attr: "motion", ValOneof: &common.DataPoint_IntVal{IntVal: 123},
+			Ts: timestamppb.Now(), TraceId: uuid.NewString()}
+
+		err = globalDPDAO.Create(ctx, point, createOrg.Id)
 		t.Logf("err: %#v", err)
 		require.NoError(t, err)
 
-		err = globalDPDAO.Create(ctx, point, orgID)
+		err = globalDPDAO.Create(ctx, point, createOrg.Id)
 		t.Logf("err: %#v", err)
 		require.Equal(t, dao.ErrAlreadyExists, err)
 	})
@@ -137,7 +143,7 @@ func TestList(t *testing.T) {
 		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
 		defer cancel()
 
-		createOrg, err := globalOrgDAO.Create(ctx, random.Org("dao-device"))
+		createOrg, err := globalOrgDAO.Create(ctx, random.Org("dao-point"))
 		t.Logf("createOrg, err: %+v, %v", createOrg, err)
 		require.NoError(t, err)
 
@@ -175,11 +181,11 @@ func TestList(t *testing.T) {
 			// Set a new in-place timestamp.
 			point.Ts = timestamppb.New(time.Now().UTC().Truncate(
 				time.Millisecond))
-			time.Sleep(time.Millisecond)
 
 			err := globalDPDAO.Create(ctx, point, createOrg.Id)
 			t.Logf("err: %v", err)
 			require.NoError(t, err)
+			time.Sleep(time.Millisecond)
 		}
 
 		sort.Slice(points, func(i, j int) bool {
@@ -248,20 +254,24 @@ func TestList(t *testing.T) {
 	t.Run("Lists are isolated by org ID", func(t *testing.T) {
 		t.Parallel()
 
-		point := &common.DataPoint{UniqId: "dao-point-" + random.String(16),
-			Attr: "motion", ValOneof: &common.DataPoint_IntVal{IntVal: 123},
-			Ts: timestamppb.Now(), TraceId: uuid.NewString()}
-		orgID := uuid.NewString()
-
 		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
 		defer cancel()
 
-		err := globalDPDAO.Create(ctx, point, orgID)
+		createOrg, err := globalOrgDAO.Create(ctx, random.Org("dao-point"))
+		t.Logf("createOrg, err: %+v, %v", createOrg, err)
+		require.NoError(t, err)
+
+		point := &common.DataPoint{UniqId: "dao-point-" + random.String(16),
+			Attr: "motion", ValOneof: &common.DataPoint_IntVal{IntVal: 123},
+			Ts: timestamppb.Now(), TraceId: uuid.NewString()}
+
+		err = globalDPDAO.Create(ctx, point, createOrg.Id)
 		t.Logf("err: %#v", err)
 		require.NoError(t, err)
 
 		listPoints, err := globalDPDAO.List(ctx, uuid.NewString(),
-			point.UniqId, "", "", point.Ts.AsTime(), point.Ts.AsTime())
+			point.UniqId, "", "", point.Ts.AsTime(),
+			point.Ts.AsTime().Add(-time.Millisecond))
 		t.Logf("listPoints, err: %+v, %v", listPoints, err)
 		require.NoError(t, err)
 		require.Len(t, listPoints, 0)
@@ -290,7 +300,7 @@ func TestLatest(t *testing.T) {
 		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
 		defer cancel()
 
-		createOrg, err := globalOrgDAO.Create(ctx, random.Org("dao-device"))
+		createOrg, err := globalOrgDAO.Create(ctx, random.Org("dao-point"))
 		t.Logf("createOrg, err: %+v, %v", createOrg, err)
 		require.NoError(t, err)
 
@@ -326,11 +336,11 @@ func TestLatest(t *testing.T) {
 				// Set a new in-place timestamp each pass.
 				point.Ts = timestamppb.New(time.Now().UTC().Truncate(
 					time.Millisecond))
-				time.Sleep(time.Millisecond)
 
 				err := globalDPDAO.Create(ctx, point, createOrg.Id)
 				t.Logf("err: %v", err)
 				require.NoError(t, err)
+				time.Sleep(time.Millisecond)
 			}
 		}
 
@@ -376,14 +386,18 @@ func TestLatest(t *testing.T) {
 	t.Run("Latest data points are isolated by org ID", func(t *testing.T) {
 		t.Parallel()
 
+		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
+		defer cancel()
+
+		createOrg, err := globalOrgDAO.Create(ctx, random.Org("dao-point"))
+		t.Logf("createOrg, err: %+v, %v", createOrg, err)
+		require.NoError(t, err)
+
 		point := &common.DataPoint{UniqId: "dao-point-" + random.String(16),
 			Attr: "motion", ValOneof: &common.DataPoint_IntVal{IntVal: 123},
 			Ts: timestamppb.Now(), TraceId: uuid.NewString()}
 
-		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
-		defer cancel()
-
-		err := globalDPDAO.Create(ctx, point, uuid.NewString())
+		err = globalDPDAO.Create(ctx, point, createOrg.Id)
 		t.Logf("err: %#v", err)
 		require.NoError(t, err)
 

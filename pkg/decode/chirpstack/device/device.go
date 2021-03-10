@@ -8,11 +8,11 @@ import (
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
-// Device parses a device payload from a []byte according to the spec. Points,
+// Parse parses a device payload from a []byte according to the spec. Points,
 // optional data []byte, and a timestamp are built from successful parse
 // results. If a fatal error is encountered, it is returned along with any valid
 // points.
-func Device(event string, body []byte) ([]*decode.Point, *timestamppb.Timestamp,
+func Parse(event string, body []byte) ([]*decode.Point, *timestamppb.Timestamp,
 	[]byte, error) {
 	switch event {
 	case "up":

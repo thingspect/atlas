@@ -63,10 +63,7 @@ const listDataPointsByDevID = `
 SELECT d.uniq_id, d.attr, d.int_val, d.fl64_val, d.str_val, d.bool_val,
 d.bytes_val, d.created_at, d.trace_id
 FROM data_points d
-INNER JOIN devices de ON (
-  d.org_id = de.org_id
-  AND d.uniq_id = de.uniq_id
-)
+INNER JOIN devices de ON (d.org_id, d.uniq_id) = (de.org_id, de.uniq_id)
 WHERE (d.org_id, de.id) = ($1, $2)
 AND d.created_at <= $3
 AND d.created_at > $4
@@ -186,11 +183,7 @@ FROM
       uniq_id,
       attr
   ) m ON (d.org_id, d.uniq_id, d.attr, d.created_at) = (
-    m.org_id,
-    m.uniq_id,
-    m.attr,
-    m.created_at
-  )
+    m.org_id, m.uniq_id, m.attr, m.created_at)
 ORDER BY
   d.attr ASC
 `
@@ -227,11 +220,7 @@ FROM
       id.uniq_id,
       id.attr
   ) m ON (d.org_id, d.uniq_id, d.attr, d.created_at) = (
-    m.org_id,
-    m.uniq_id,
-    m.attr,
-    m.created_at
-  )
+    m.org_id, m.uniq_id, m.attr, m.created_at)
 ORDER BY
   d.attr ASC
 `

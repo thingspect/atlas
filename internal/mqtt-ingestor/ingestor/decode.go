@@ -71,7 +71,7 @@ func (ing *Ingestor) decodeMessages() {
 				continue
 			}
 
-			if err = ing.decoderQueue.Publish(ing.decoderPubTopic,
+			if err = ing.ingQueue.Publish(ing.vInPubTopic,
 				bVIn); err != nil {
 				metric.Incr("error", map[string]string{"func": "publish"})
 				logger.Errorf("decodeMessages ing.decoderQueue.Publish: %v",
@@ -91,8 +91,8 @@ func (ing *Ingestor) decodeMessages() {
 	}
 }
 
-// dataPointToVIn maps a DataPoint to ValidatorIn. The DataPoint is embedded in
-// ValidatorIn to avoid copying or use of Clone/reflection. Tests should take
+// dataPointToVIn converts a DataPoint to ValidatorIn. The DataPoint is embedded
+// in ValidatorIn to avoid copying or use of Clone/reflection. Tests should take
 // this into account.
 func dataPointToVIn(traceID, paylToken string, topicParts []string,
 	point *common.DataPoint) *message.ValidatorIn {

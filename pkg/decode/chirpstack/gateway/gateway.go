@@ -7,10 +7,10 @@ import (
 	"github.com/thingspect/atlas/pkg/decode"
 )
 
-// Gateway parses a gateway payload from a []byte according to the spec. Points
+// Parse parses a gateway payload from a []byte according to the spec. Points
 // are built from successful parse results. If a fatal error is encountered, it
 // is returned along with any valid points.
-func Gateway(event string, body []byte) ([]*decode.Point, error) {
+func Parse(event string, body []byte) ([]*decode.Point, error) {
 	switch event {
 	case "up":
 		return gatewayUp(body)

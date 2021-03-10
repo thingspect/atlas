@@ -1,5 +1,6 @@
+-- data_points is lightly linked to non-org tables for retention purposes
 CREATE TABLE data_points (
-  org_id uuid NOT NULL,
+  org_id uuid NOT NULL REFERENCES orgs (id),
   uniq_id varchar(40) NOT NULL CHECK (uniq_id = lower(uniq_id)),
   attr varchar(40) NOT NULL,
   int_val integer,

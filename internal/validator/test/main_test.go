@@ -18,11 +18,9 @@ import (
 	"github.com/thingspect/atlas/pkg/test/random"
 )
 
-const testTimeout = 6 * time.Second
-
 var (
 	globalVInSubTopic string
-	globalVInQueue    queue.Queuer
+	globalValQueue    queue.Queuer
 
 	globalVOutPubTopic string
 	globalVOutSub      queue.Subber
@@ -52,7 +50,7 @@ func TestMain(m *testing.M) {
 
 	// Set up NSQ queue to publish test payloads.
 	var err error
-	globalVInQueue, err = queue.NewNSQ(cfg.NSQPubAddr, nil, "",
+	globalValQueue, err = queue.NewNSQ(cfg.NSQPubAddr, nil, cfg.NSQSubChannel,
 		queue.DefaultNSQRequeueDelay)
 	if err != nil {
 		log.Fatalf("TestMain globalVInQueue queue.NewNSQ: %v", err)
@@ -60,7 +58,7 @@ func TestMain(m *testing.M) {
 
 	// Publish a throwaway message before subscribe to allow for discovery by
 	// nsqlookupd.
-	if err = globalVInQueue.Publish(cfg.NSQSubTopic,
+	if err = globalValQueue.Publish(cfg.NSQSubTopic,
 		[]byte("val-aaa")); err != nil {
 		log.Fatalf("TestMain globalVInQueue.Publish: %v", err)
 	}
@@ -87,15 +85,9 @@ func TestMain(m *testing.M) {
 	globalDevDAO = device.NewDAO(pg)
 
 	// Set up NSQ subscription to verify published messages.
-	vOutQueue, err := queue.NewNSQ(cfg.NSQPubAddr, nil, cfg.NSQSubChannel,
-		queue.DefaultNSQRequeueDelay)
+	globalVOutSub, err = globalValQueue.Subscribe(cfg.NSQPubTopic)
 	if err != nil {
-		log.Fatalf("TestMain vOutQueue queue.NewNSQ: %v", err)
-	}
-
-	globalVOutSub, err = vOutQueue.Subscribe(cfg.NSQPubTopic)
-	if err != nil {
-		log.Fatalf("TestMain vOutQueue.Subscribe: %v", err)
+		log.Fatalf("TestMain globalValQueue.Subscribe: %v", err)
 	}
 	log.Printf("TestMain connected as NSQ sub channel: %v", cfg.NSQSubChannel)
 

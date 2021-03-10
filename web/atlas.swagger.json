@@ -11,10 +11,10 @@
   },
   "tags": [
     {
-      "name": "DeviceService"
+      "name": "DataPointService"
     },
     {
-      "name": "DataPointService"
+      "name": "DeviceService"
     },
     {
       "name": "OrgService"
@@ -41,7 +41,7 @@
   "paths": {
     "/v1/datapoints": {
       "get": {
-        "summary": "List all data points within a [end, start) time range in descending timestamp order.",
+        "summary": "List all data points for a device in a [end, start) time range, in descending timestamp order.",
         "operationId": "DataPointService_ListDataPoints",
         "responses": {
           "200": {
@@ -60,14 +60,14 @@
         "parameters": [
           {
             "name": "uniqID",
-            "description": "Device unique ID.",
+            "description": "Device unique ID. Either unique ID or device ID must be provided.",
             "in": "query",
             "required": false,
             "type": "string"
           },
           {
             "name": "devID",
-            "description": "Device ID (UUID).",
+            "description": "Device ID (UUID). Either unique ID or device ID must be provided.",
             "in": "query",
             "required": false,
             "type": "string"
@@ -138,7 +138,7 @@
     },
     "/v1/datapoints/latest": {
       "get": {
-        "summary": "List latest data point for each of a device's attributes.",
+        "summary": "List the latest data point for each of a device's attributes.",
         "operationId": "DataPointService_LatestDataPoints",
         "responses": {
           "200": {
@@ -157,14 +157,14 @@
         "parameters": [
           {
             "name": "uniqID",
-            "description": "Device unique ID.",
+            "description": "Device unique ID. Either unique ID or device ID must be provided.",
             "in": "query",
             "required": false,
             "type": "string"
           },
           {
             "name": "devID",
-            "description": "Device ID (UUID).",
+            "description": "Device ID (UUID). Either unique ID or device ID must be provided.",
             "in": "query",
             "required": false,
             "type": "string"
@@ -228,13 +228,13 @@
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/apiDevice"
+              "$ref": "#/definitions/commonDevice"
             }
           },
           "201": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/apiDevice"
+              "$ref": "#/definitions/commonDevice"
             }
           },
           "default": {
@@ -251,7 +251,7 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/apiDevice"
+              "$ref": "#/definitions/commonDevice"
             }
           }
         ],
@@ -268,7 +268,7 @@
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/apiDevice"
+              "$ref": "#/definitions/commonDevice"
             }
           },
           "default": {
@@ -292,7 +292,7 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/apiDevice"
+              "$ref": "#/definitions/commonDevice"
             }
           },
           {
@@ -314,7 +314,7 @@
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/apiDevice"
+              "$ref": "#/definitions/commonDevice"
             }
           },
           "default": {
@@ -338,7 +338,7 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/apiDevice"
+              "$ref": "#/definitions/commonDevice"
             }
           },
           {
@@ -362,7 +362,7 @@
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/apiDevice"
+              "$ref": "#/definitions/commonDevice"
             }
           },
           "default": {
@@ -1390,82 +1390,6 @@
       },
       "description": "CreateDeviceLoRaWANRequest is sent to add LoRaWAN configuration to a device."
     },
-    "apiDecoder": {
-      "type": "string",
-      "enum": [
-        "RAW",
-        "GATEWAY",
-        "RADIO_BRIDGE_DOOR_V1",
-        "RADIO_BRIDGE_DOOR_V2"
-      ],
-      "default": "RAW",
-      "description": "Decoder represents the data payload decoder for a device.\n\n - RAW: Payloads will be passed through without decoding. Appropriate for devices that do not use decoders (MQTT, API, etc.).\n - GATEWAY: LoRaWAN gateway. Acts as a pass-through in the absence of device data payloads.\n - RADIO_BRIDGE_DOOR_V1: Radio Bridge Door/Window sensor with V1 firmware.\n - RADIO_BRIDGE_DOOR_V2: Radio Bridge Door/Window sensor with V2 firmware."
-    },
-    "apiDevice": {
-      "type": "object",
-      "properties": {
-        "id": {
-          "type": "string",
-          "description": "Device ID (UUID).",
-          "readOnly": true
-        },
-        "orgID": {
-          "type": "string",
-          "description": "Organization ID (UUID).",
-          "readOnly": true
-        },
-        "uniqID": {
-          "type": "string",
-          "description": "Device unique ID.",
-          "required": [
-            "uniq_id"
-          ]
-        },
-        "name": {
-          "type": "string",
-          "description": "Device name.",
-          "required": [
-            "name"
-          ]
-        },
-        "status": {
-          "$ref": "#/definitions/thingspectapiStatus",
-          "description": "Device status."
-        },
-        "token": {
-          "type": "string",
-          "description": "Authentication token (UUID). Will be generated at creation time, but can be updated afterward."
-        },
-        "decoder": {
-          "$ref": "#/definitions/apiDecoder",
-          "description": "Device data payload decoder."
-        },
-        "tags": {
-          "type": "array",
-          "items": {
-            "type": "string"
-          },
-          "description": "Device tags. Nested tags should be delimited by '/'."
-        },
-        "createdAt": {
-          "type": "string",
-          "format": "date-time",
-          "description": "Device creation timestamp.",
-          "readOnly": true
-        },
-        "updatedAt": {
-          "type": "string",
-          "format": "date-time",
-          "description": "Device modification timestamp.",
-          "readOnly": true
-        }
-      },
-      "description": "Device represents a device as stored in the database.",
-      "required": [
-        "uniqID",
-        "name"
-      ]
-    },
     "apiLatestDataPointsResponse": {
       "type": "object",
       "properties": {
@@ -1498,7 +1422,7 @@
         "devices": {
           "type": "array",
           "items": {
-            "$ref": "#/definitions/apiDevice"
+            "$ref": "#/definitions/commonDevice"
           },
           "description": "Device array, ordered by ascending created_at timestamp."
         },
@@ -1713,7 +1637,7 @@
           ]
         },
         "status": {
-          "$ref": "#/definitions/thingspectapiStatus",
+          "$ref": "#/definitions/thingspectcommonStatus",
           "description": "Rule status."
         },
         "tag": {
@@ -1828,7 +1752,7 @@
           "description": "User role."
         },
         "status": {
-          "$ref": "#/definitions/thingspectapiStatus",
+          "$ref": "#/definitions/thingspectcommonStatus",
           "description": "User status."
         },
         "tags": {
@@ -1918,6 +1842,82 @@
         "attr"
       ]
     },
+    "commonDecoder": {
+      "type": "string",
+      "enum": [
+        "RAW",
+        "GATEWAY",
+        "RADIO_BRIDGE_DOOR_V1",
+        "RADIO_BRIDGE_DOOR_V2"
+      ],
+      "default": "RAW",
+      "description": "Decoder represents the data payload decoder for a device.\n\n - RAW: Payloads will be passed through without decoding. Appropriate for devices that do not use decoders (MQTT, API, etc.).\n - GATEWAY: LoRaWAN gateway. Acts as a pass-through in the absence of device data payloads.\n - RADIO_BRIDGE_DOOR_V1: Radio Bridge Door/Window sensor with V1 firmware.\n - RADIO_BRIDGE_DOOR_V2: Radio Bridge Door/Window sensor with V2 firmware."
+    },
+    "commonDevice": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Device ID (UUID).",
+          "readOnly": true
+        },
+        "orgID": {
+          "type": "string",
+          "description": "Organization ID (UUID).",
+          "readOnly": true
+        },
+        "uniqID": {
+          "type": "string",
+          "description": "Device unique ID.",
+          "required": [
+            "uniq_id"
+          ]
+        },
+        "name": {
+          "type": "string",
+          "description": "Device name.",
+          "required": [
+            "name"
+          ]
+        },
+        "status": {
+          "$ref": "#/definitions/thingspectcommonStatus",
+          "description": "Device status."
+        },
+        "token": {
+          "type": "string",
+          "description": "Authentication token (UUID). Will be generated at creation time, but can be updated afterward."
+        },
+        "decoder": {
+          "$ref": "#/definitions/commonDecoder",
+          "description": "Device data payload decoder."
+        },
+        "tags": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Device tags. Nested tags should be delimited by '/'."
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Device creation timestamp.",
+          "readOnly": true
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Device modification timestamp.",
+          "readOnly": true
+        }
+      },
+      "description": "Device represents a device as stored in the database.",
+      "required": [
+        "uniqID",
+        "name"
+      ]
+    },
     "commonRole": {
       "type": "string",
       "enum": [
@@ -1961,7 +1961,7 @@
         }
       }
     },
-    "thingspectapiStatus": {
+    "thingspectcommonStatus": {
       "type": "string",
       "enum": [
         "STATUS_UNSPECIFIED",

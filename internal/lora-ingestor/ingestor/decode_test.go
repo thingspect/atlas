@@ -84,16 +84,16 @@ func TestDecodeGateways(t *testing.T) {
 			mqttGWSub, err := mqttGWQueue.Subscribe("")
 			require.NoError(t, err)
 
-			decoderQueue := queue.NewFake()
-			decoderSub, err := decoderQueue.Subscribe("")
+			ingQueue := queue.NewFake()
+			vInSub, err := ingQueue.Subscribe("")
 			require.NoError(t, err)
-			decoderPubGWTopic := "topic-" + random.String(10)
+			vInGWPubTopic := "topic-" + random.String(10)
 
 			ing := Ingestor{
 				mqttGWSub: mqttGWSub,
 
-				decoderQueue:      decoderQueue,
-				decoderPubGWTopic: decoderPubGWTopic,
+				ingQueue:      ingQueue,
+				vInGWPubTopic: vInGWPubTopic,
 			}
 			go func() {
 				ing.decodeGateways()
@@ -107,11 +107,11 @@ func TestDecodeGateways(t *testing.T) {
 
 			for _, res := range lTest.res {
 				select {
-				case msg := <-decoderSub.C():
+				case msg := <-vInSub.C():
 					msg.Ack()
 					t.Logf("msg.Topic, msg.Payload: %v, %s", msg.Topic(),
 						msg.Payload())
-					require.Equal(t, decoderPubGWTopic, msg.Topic())
+					require.Equal(t, vInGWPubTopic, msg.Topic())
 
 					vIn := &message.ValidatorIn{}
 					require.NoError(t, proto.Unmarshal(msg.Payload(), vIn))
@@ -162,16 +162,16 @@ func TestDecodeGatewaysError(t *testing.T) {
 			mqttGWSub, err := mqttGWQueue.Subscribe("")
 			require.NoError(t, err)
 
-			decoderQueue := queue.NewFake()
-			decoderSub, err := decoderQueue.Subscribe("")
+			ingQueue := queue.NewFake()
+			vInSub, err := ingQueue.Subscribe("")
 			require.NoError(t, err)
-			decoderPubGWTopic := "topic-" + random.String(10)
+			vInGWPubTopic := "topic-" + random.String(10)
 
 			ing := Ingestor{
 				mqttGWSub: mqttGWSub,
 
-				decoderQueue:      decoderQueue,
-				decoderPubGWTopic: decoderPubGWTopic,
+				ingQueue:      ingQueue,
+				vInGWPubTopic: vInGWPubTopic,
 			}
 			go func() {
 				ing.decodeGateways()
@@ -181,7 +181,7 @@ func TestDecodeGatewaysError(t *testing.T) {
 				lTest.inpPayl))
 
 			select {
-			case msg := <-decoderSub.C():
+			case msg := <-vInSub.C():
 				t.Fatalf("Received unexpected msg.Topic, msg.Payload: %v, %s",
 					msg.Topic(), msg.Payload())
 			case <-time.After(100 * time.Millisecond):
@@ -277,18 +277,18 @@ func TestDecodeDevices(t *testing.T) {
 			mqttDevSub, err := mqttDevQueue.Subscribe("")
 			require.NoError(t, err)
 
-			decoderQueue := queue.NewFake()
-			decoderSub, err := decoderQueue.Subscribe("")
+			ingQueue := queue.NewFake()
+			vInSub, err := ingQueue.Subscribe("")
 			require.NoError(t, err)
-			decoderPubDevTopic := "topic-" + random.String(10)
-			decoderPubDataTopic := "topic-" + random.String(10)
+			vInDevPubTopic := "topic-" + random.String(10)
+			dInPubTopic := "topic-" + random.String(10)
 
 			ing := Ingestor{
 				mqttDevSub: mqttDevSub,
 
-				decoderQueue:        decoderQueue,
-				decoderPubDevTopic:  decoderPubDevTopic,
-				decoderPubDataTopic: decoderPubDataTopic,
+				ingQueue:       ingQueue,
+				vInDevPubTopic: vInDevPubTopic,
+				dInPubTopic:    dInPubTopic,
 			}
 			go func() {
 				ing.decodeDevices()
@@ -302,11 +302,11 @@ func TestDecodeDevices(t *testing.T) {
 
 			for _, res := range lTest.res {
 				select {
-				case msg := <-decoderSub.C():
+				case msg := <-vInSub.C():
 					msg.Ack()
 					t.Logf("msg.Topic, msg.Payload: %v, %s", msg.Topic(),
 						msg.Payload())
-					require.Equal(t, decoderPubDevTopic, msg.Topic())
+					require.Equal(t, vInDevPubTopic, msg.Topic())
 
 					vIn := &message.ValidatorIn{}
 					require.NoError(t, proto.Unmarshal(msg.Payload(), vIn))
@@ -358,18 +358,18 @@ func TestDecodeDevicesError(t *testing.T) {
 			mqttDevSub, err := mqttDevQueue.Subscribe("")
 			require.NoError(t, err)
 
-			decoderQueue := queue.NewFake()
-			decoderSub, err := decoderQueue.Subscribe("")
+			ingQueue := queue.NewFake()
+			vInSub, err := ingQueue.Subscribe("")
 			require.NoError(t, err)
-			decoderPubDevTopic := "topic-" + random.String(10)
-			decoderPubDataTopic := "topic-" + random.String(10)
+			vInDevPubTopic := "topic-" + random.String(10)
+			dInPubTopic := "topic-" + random.String(10)
 
 			ing := Ingestor{
 				mqttDevSub: mqttDevSub,
 
-				decoderQueue:        decoderQueue,
-				decoderPubDevTopic:  decoderPubDevTopic,
-				decoderPubDataTopic: decoderPubDataTopic,
+				ingQueue:       ingQueue,
+				vInDevPubTopic: vInDevPubTopic,
+				dInPubTopic:    dInPubTopic,
 			}
 			go func() {
 				ing.decodeDevices()
@@ -379,7 +379,7 @@ func TestDecodeDevicesError(t *testing.T) {
 				lTest.inpPayl))
 
 			select {
-			case msg := <-decoderSub.C():
+			case msg := <-vInSub.C():
 				t.Fatalf("Received unexpected msg.Topic, msg.Payload: %v, %s",
 					msg.Topic(), msg.Payload())
 			case <-time.After(100 * time.Millisecond):

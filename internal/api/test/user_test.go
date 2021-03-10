@@ -197,8 +197,8 @@ func TestUpdateUser(t *testing.T) {
 		// Update user fields.
 		createUser.Email = "api-user-" + random.Email()
 		createUser.Role = common.Role_ADMIN
-		createUser.Status = api.Status_DISABLED
-		createUser.Tags = []string{"api-user-" + random.String(10)}
+		createUser.Status = common.Status_DISABLED
+		createUser.Tags = random.Tags("api-user-", 2)
 
 		updateUser, err := userCli.UpdateUser(ctx, &api.UpdateUserRequest{
 			User: createUser})
@@ -240,7 +240,7 @@ func TestUpdateUser(t *testing.T) {
 
 		// Update user fields.
 		part := &api.User{Id: createUser.Id, Email: "api-user-" +
-			random.Email(), Status: api.Status_DISABLED}
+			random.Email(), Status: common.Status_DISABLED}
 
 		updateUser, err := userCli.UpdateUser(ctx, &api.UpdateUserRequest{
 			User: part, UpdateMask: &fieldmaskpb.FieldMask{
@@ -656,7 +656,7 @@ func TestListUsers(t *testing.T) {
 
 	userIDs := []string{}
 	userRoles := []common.Role{}
-	userStatuses := []api.Status{}
+	userStatuses := []common.Status{}
 	userTags := [][]string{}
 	for i := 0; i < 3; i++ {
 		user := random.User("api-user", uuid.NewString())

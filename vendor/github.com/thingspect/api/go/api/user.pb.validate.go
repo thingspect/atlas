@@ -35,6 +35,8 @@ var (
 	_ = ptypes.DynamicAny{}
 
 	_ = common.Role(0)
+
+	_ = common.Status(0)
 )
 
 // define the regex for a UUID once up-front
@@ -231,7 +233,7 @@ var _User_Role_InLookup = map[common.Role]struct{}{
 	15: {},
 }
 
-var _User_Status_InLookup = map[Status]struct{}{
+var _User_Status_InLookup = map[common.Status]struct{}{
 	3: {},
 	6: {},
 }

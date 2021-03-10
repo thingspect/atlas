@@ -5,7 +5,9 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/jackc/pgtype"
 	"github.com/thingspect/api/go/api"
+	"github.com/thingspect/api/go/common"
 	"github.com/thingspect/atlas/pkg/alog"
 	"github.com/thingspect/atlas/pkg/dao"
 	"google.golang.org/protobuf/types/known/timestamppb"
@@ -52,7 +54,7 @@ func (d *DAO) Read(ctx context.Context, ruleID, orgID string) (*api.Rule,
 		return nil, dao.DBToSentinel(err)
 	}
 
-	rule.Status = api.Status(api.Status_value[status])
+	rule.Status = common.Status(common.Status_value[status])
 	rule.CreatedAt = timestamppb.New(createdAt)
 	rule.UpdatedAt = timestamppb.New(updatedAt)
 
@@ -178,7 +180,7 @@ func (d *DAO) List(ctx context.Context, orgID string, lBoundTS time.Time,
 			return nil, 0, dao.DBToSentinel(err)
 		}
 
-		rule.Status = api.Status(api.Status_value[status])
+		rule.Status = common.Status(common.Status_value[status])
 		rule.CreatedAt = timestamppb.New(createdAt)
 		rule.UpdatedAt = timestamppb.New(updatedAt)
 		rules = append(rules, rule)
@@ -192,4 +194,61 @@ func (d *DAO) List(ctx context.Context, orgID string, lBoundTS time.Time,
 	}
 
 	return rules, count, nil
+}
+
+const listByTags = `
+SELECT id, org_id, name, status, tag, attr, expr, created_at, updated_at
+FROM rules
+WHERE org_id = $1
+AND status = 'ACTIVE'
+AND tag = ANY ($2::varchar(255)[])
+AND attr = $3
+ORDER BY created_at
+`
+
+// ListByTags retrieves all active rules by org ID, tags, and attribute.
+func (d *DAO) ListByTags(ctx context.Context, orgID string, tags []string,
+	attr string) ([]*api.Rule, error) {
+	var tagArr pgtype.VarcharArray
+	if err := tagArr.Set(tags); err != nil {
+		return nil, dao.DBToSentinel(err)
+	}
+
+	rows, err := d.pg.QueryContext(ctx, listByTags, orgID, tagArr, attr)
+	if err != nil {
+		return nil, dao.DBToSentinel(err)
+	}
+	defer func() {
+		if err = rows.Close(); err != nil {
+			logger := alog.FromContext(ctx)
+			logger.Errorf("ListByTags rows.Close: %v", err)
+		}
+	}()
+
+	var rules []*api.Rule
+	for rows.Next() {
+		rule := &api.Rule{}
+		var status string
+		var createdAt, updatedAt time.Time
+
+		if err = rows.Scan(&rule.Id, &rule.OrgId, &rule.Name, &status,
+			&rule.Tag, &rule.Attr, &rule.Expr, &createdAt,
+			&updatedAt); err != nil {
+			return nil, dao.DBToSentinel(err)
+		}
+
+		rule.Status = common.Status(common.Status_value[status])
+		rule.CreatedAt = timestamppb.New(createdAt)
+		rule.UpdatedAt = timestamppb.New(updatedAt)
+		rules = append(rules, rule)
+	}
+
+	if err = rows.Close(); err != nil {
+		return nil, dao.DBToSentinel(err)
+	}
+	if err = rows.Err(); err != nil {
+		return nil, dao.DBToSentinel(err)
+	}
+
+	return rules, nil
 }

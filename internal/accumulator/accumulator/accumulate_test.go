@@ -27,6 +27,8 @@ var errTestProc = errors.New("accumulator: test processor error")
 func TestAccumulateMessages(t *testing.T) {
 	t.Parallel()
 
+	dev := random.Device("val", uuid.NewString())
+
 	tests := []struct {
 		inp *message.ValidatorOut
 	}{
@@ -35,19 +37,19 @@ func TestAccumulateMessages(t *testing.T) {
 			ValOneof: &common.DataPoint_IntVal{IntVal: 123},
 			Ts:       timestamppb.New(time.Now().Add(-15 * time.Minute)),
 			Token:    uuid.NewString(), TraceId: uuid.NewString()},
-			OrgId: uuid.NewString()}},
+			Device: dev}},
 		{&message.ValidatorOut{Point: &common.DataPoint{
 			UniqId: random.String(16), Attr: "temp",
 			ValOneof: &common.DataPoint_Fl64Val{Fl64Val: 9.3},
 			Ts:       timestamppb.New(time.Now().Add(-15 * time.Minute)),
 			Token:    uuid.NewString(), TraceId: uuid.NewString()},
-			OrgId: uuid.NewString()}},
+			Device: dev}},
 		{&message.ValidatorOut{Point: &common.DataPoint{
 			UniqId: random.String(16), Attr: "power",
 			ValOneof: &common.DataPoint_StrVal{StrVal: "batt"},
 			Ts:       timestamppb.New(time.Now().Add(-15 * time.Minute)),
 			Token:    uuid.NewString(), TraceId: uuid.NewString()},
-			OrgId: uuid.NewString()}},
+			Device: dev}},
 	}
 
 	for _, test := range tests {
@@ -64,8 +66,8 @@ func TestAccumulateMessages(t *testing.T) {
 			wg.Add(1)
 
 			datapointer := NewMockdatapointer(gomock.NewController(t))
-			datapointer.EXPECT().Create(gomock.Any(),
-				matcher.NewProtoMatcher(lTest.inp.Point), lTest.inp.OrgId).
+			datapointer.EXPECT().Create(gomock.Any(), matcher.NewProtoMatcher(
+				lTest.inp.Point), lTest.inp.Device.OrgId).
 				DoAndReturn(func(_ ...interface{}) error {
 					defer wg.Done()
 
@@ -73,9 +75,10 @@ func TestAccumulateMessages(t *testing.T) {
 				}).Times(1)
 
 			acc := Accumulator{
-				dpDAO:     datapointer,
-				vOutQueue: vOutQueue,
-				vOutSub:   vOutSub,
+				dpDAO: datapointer,
+
+				accQueue: vOutQueue,
+				vOutSub:  vOutSub,
 			}
 			go func() {
 				acc.accumulateMessages()
@@ -103,14 +106,17 @@ func TestAccumulateMessagesError(t *testing.T) {
 		{nil, nil, 0},
 		// Missing data point.
 		{&message.ValidatorOut{}, nil, 0},
+		// Missing device.
+		{&message.ValidatorOut{Point: &common.DataPoint{}}, nil, 0},
 		// Duplicate data point.
-		{&message.ValidatorOut{Point: &common.DataPoint{}},
-			dao.ErrAlreadyExists, 1},
+		{&message.ValidatorOut{Point: &common.DataPoint{},
+			Device: &common.Device{}}, dao.ErrAlreadyExists, 1},
 		// Invalid data point.
-		{&message.ValidatorOut{Point: &common.DataPoint{}},
-			dao.ErrInvalidFormat, 1},
+		{&message.ValidatorOut{Point: &common.DataPoint{},
+			Device: &common.Device{}}, dao.ErrInvalidFormat, 1},
 		// DataPointer error.
-		{&message.ValidatorOut{Point: &common.DataPoint{}}, errTestProc, 1},
+		{&message.ValidatorOut{Point: &common.DataPoint{},
+			Device: &common.Device{}}, errTestProc, 1},
 	}
 
 	for _, test := range tests {
@@ -135,9 +141,10 @@ func TestAccumulateMessagesError(t *testing.T) {
 				}).Times(lTest.inpTimes)
 
 			acc := Accumulator{
-				dpDAO:     datapointer,
-				vOutQueue: vOutQueue,
-				vOutSub:   vOutSub,
+				dpDAO: datapointer,
+
+				accQueue: vOutQueue,
+				vOutSub:  vOutSub,
 			}
 			go func() {
 				acc.accumulateMessages()
@@ -155,7 +162,7 @@ func TestAccumulateMessagesError(t *testing.T) {
 			if lTest.inpTimes > 0 {
 				wg.Wait()
 			} else {
-				// If the failure mode isn't supported WaitGroup operation,
+				// If the failure mode isn't supported by WaitGroup operation,
 				// give it time to traverse the code.
 				time.Sleep(100 * time.Millisecond)
 			}

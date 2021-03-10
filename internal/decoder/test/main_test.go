@@ -18,14 +18,12 @@ import (
 	"github.com/thingspect/atlas/pkg/test/random"
 )
 
-const testTimeout = 6 * time.Second
-
 var (
 	globalDInSubTopic string
-	globalDInQueue    queue.Queuer
+	globalDecQueue    queue.Queuer
 
-	globalDecoderPubTopic string
-	globalDecoderSub      queue.Subber
+	globalVInPubTopic string
+	globalVInSub      queue.Subber
 
 	globalOrgDAO *org.DAO
 	globalDevDAO *device.DAO
@@ -47,12 +45,12 @@ func TestMain(m *testing.M) {
 
 	cfg.NSQPubAddr = testConfig.NSQPubAddr
 	cfg.NSQPubTopic += "-test-" + random.String(10)
-	globalDecoderPubTopic = cfg.NSQPubTopic
+	globalVInPubTopic = cfg.NSQPubTopic
 	log.Printf("TestMain cfg.NSQPubTopic: %v", cfg.NSQPubTopic)
 
 	// Set up NSQ queue to publish test payloads.
 	var err error
-	globalDInQueue, err = queue.NewNSQ(cfg.NSQPubAddr, nil, "",
+	globalDecQueue, err = queue.NewNSQ(cfg.NSQPubAddr, nil, cfg.NSQSubChannel,
 		queue.DefaultNSQRequeueDelay)
 	if err != nil {
 		log.Fatalf("TestMain globalDInQueue queue.NewNSQ: %v", err)
@@ -60,7 +58,7 @@ func TestMain(m *testing.M) {
 
 	// Publish a throwaway message before subscribe to allow for discovery by
 	// nsqlookupd.
-	if err = globalDInQueue.Publish(cfg.NSQSubTopic,
+	if err = globalDecQueue.Publish(cfg.NSQSubTopic,
 		[]byte("dec-aaa")); err != nil {
 		log.Fatalf("TestMain globalDInQueue.Publish: %v", err)
 	}
@@ -87,15 +85,9 @@ func TestMain(m *testing.M) {
 	globalDevDAO = device.NewDAO(pg)
 
 	// Set up NSQ subscription to verify published messages.
-	decoderQueue, err := queue.NewNSQ(cfg.NSQPubAddr, nil, cfg.NSQSubChannel,
-		queue.DefaultNSQRequeueDelay)
+	globalVInSub, err = globalDecQueue.Subscribe(cfg.NSQPubTopic)
 	if err != nil {
-		log.Fatalf("TestMain decoderQueue queue.NewNSQ: %v", err)
-	}
-
-	globalDecoderSub, err = decoderQueue.Subscribe(cfg.NSQPubTopic)
-	if err != nil {
-		log.Fatalf("TestMain decoderQueue.Subscribe: %v", err)
+		log.Fatalf("TestMain globalDecQueue.Subscribe: %v", err)
 	}
 	log.Printf("TestMain connected as NSQ sub channel: %v", cfg.NSQSubChannel)
 

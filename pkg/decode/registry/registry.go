@@ -5,7 +5,7 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/thingspect/api/go/api"
+	"github.com/thingspect/api/go/common"
 	"github.com/thingspect/atlas/pkg/decode"
 	"github.com/thingspect/atlas/pkg/decode/radiobridge"
 )
@@ -14,7 +14,7 @@ var ErrNotFound = errors.New("decoder function not found")
 
 // Registry holds decoder-function mappings.
 type Registry struct {
-	funcs map[api.Decoder]func(body []byte) ([]*decode.Point, error)
+	funcs map[common.Decoder]func(body []byte) ([]*decode.Point, error)
 }
 
 // noOpDecoder passes through data payloads without decoding. This is for
@@ -24,18 +24,18 @@ func noOpDecoder(body []byte) ([]*decode.Point, error) { return nil, nil }
 // New returns a Registry with all decoder function mappings loaded.
 func New() *Registry {
 	return &Registry{
-		funcs: map[api.Decoder]func(body []byte) ([]*decode.Point, error){
-			api.Decoder_RAW:                  noOpDecoder,
-			api.Decoder_GATEWAY:              noOpDecoder,
-			api.Decoder_RADIO_BRIDGE_DOOR_V1: radiobridge.Door,
-			api.Decoder_RADIO_BRIDGE_DOOR_V2: radiobridge.Door,
+		funcs: map[common.Decoder]func(body []byte) ([]*decode.Point, error){
+			common.Decoder_RAW:                  noOpDecoder,
+			common.Decoder_GATEWAY:              noOpDecoder,
+			common.Decoder_RADIO_BRIDGE_DOOR_V1: radiobridge.Door,
+			common.Decoder_RADIO_BRIDGE_DOOR_V2: radiobridge.Door,
 		},
 	}
 }
 
 // Decode parses a device data payload by matching Registry function.
-func (reg Registry) Decode(decoder api.Decoder, body []byte) ([]*decode.Point,
-	error) {
+func (reg Registry) Decode(decoder common.Decoder,
+	body []byte) ([]*decode.Point, error) {
 	decFunc, ok := reg.funcs[decoder]
 	if !ok {
 		return nil, fmt.Errorf("%w: %s", ErrNotFound, decoder)

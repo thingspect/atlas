@@ -184,11 +184,11 @@ func TestListDataPoints(t *testing.T) {
 			// Set a new in-place timestamp.
 			point.Ts = timestamppb.New(time.Now().UTC().Truncate(
 				time.Millisecond))
-			time.Sleep(time.Millisecond)
 
 			err := globalDPDAO.Create(ctx, point, globalAdminOrgID)
 			t.Logf("err: %v", err)
 			require.NoError(t, err)
+			time.Sleep(time.Millisecond)
 		}
 
 		sort.Slice(points, func(i, j int) bool {
@@ -269,7 +269,11 @@ func TestListDataPoints(t *testing.T) {
 		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
 		defer cancel()
 
-		err := globalDPDAO.Create(ctx, point, uuid.NewString())
+		createOrg, err := globalOrgDAO.Create(ctx, random.Org("api-point"))
+		t.Logf("createOrg, err: %+v, %v", createOrg, err)
+		require.NoError(t, err)
+
+		err = globalDPDAO.Create(ctx, point, createOrg.Id)
 		t.Logf("err: %#v", err)
 		require.NoError(t, err)
 
@@ -277,7 +281,7 @@ func TestListDataPoints(t *testing.T) {
 		listPoints, err := dpCli.ListDataPoints(ctx,
 			&api.ListDataPointsRequest{
 				IdOneof: &api.ListDataPointsRequest_UniqId{
-					UniqId: uuid.NewString()}})
+					UniqId: point.UniqId}})
 		t.Logf("listPoints, err: %+v, %v", listPoints, err)
 		require.NoError(t, err)
 		require.Len(t, listPoints.Points, 0)
@@ -364,11 +368,11 @@ func TestLatestDataPoints(t *testing.T) {
 				// Set a new in-place timestamp each pass.
 				point.Ts = timestamppb.New(time.Now().UTC().Truncate(
 					time.Millisecond))
-				time.Sleep(time.Millisecond)
 
 				err := globalDPDAO.Create(ctx, point, globalAdminOrgID)
 				t.Logf("err: %v", err)
 				require.NoError(t, err)
+				time.Sleep(time.Millisecond)
 			}
 		}
 
@@ -424,7 +428,11 @@ func TestLatestDataPoints(t *testing.T) {
 		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
 		defer cancel()
 
-		err := globalDPDAO.Create(ctx, point, uuid.NewString())
+		createOrg, err := globalOrgDAO.Create(ctx, random.Org("api-point"))
+		t.Logf("createOrg, err: %+v, %v", createOrg, err)
+		require.NoError(t, err)
+
+		err = globalDPDAO.Create(ctx, point, createOrg.Id)
 		t.Logf("err: %#v", err)
 		require.NoError(t, err)
 
@@ -432,7 +440,7 @@ func TestLatestDataPoints(t *testing.T) {
 		latPoints, err := dpCli.LatestDataPoints(ctx,
 			&api.LatestDataPointsRequest{
 				IdOneof: &api.LatestDataPointsRequest_UniqId{
-					UniqId: uuid.NewString()}})
+					UniqId: point.UniqId}})
 		t.Logf("latPoints, err: %+v, %v", latPoints, err)
 		require.NoError(t, err)
 		require.Len(t, latPoints.Points, 0)

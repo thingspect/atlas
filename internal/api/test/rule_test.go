@@ -159,7 +159,7 @@ func TestUpdateRule(t *testing.T) {
 
 		// Update rule fields.
 		createRule.Name = "api-rule-" + random.String(10)
-		createRule.Status = api.Status_DISABLED
+		createRule.Status = common.Status_DISABLED
 
 		updateRule, err := ruleCli.UpdateRule(ctx, &api.UpdateRuleRequest{
 			Rule: createRule})
@@ -198,7 +198,7 @@ func TestUpdateRule(t *testing.T) {
 
 		// Update rule fields.
 		part := &api.Rule{Id: createRule.Id, Name: "api-rule-" +
-			random.String(10), Status: api.Status_DISABLED, Expr: `false`}
+			random.String(10), Status: common.Status_DISABLED, Expr: `false`}
 
 		updateRule, err := ruleCli.UpdateRule(ctx, &api.UpdateRuleRequest{
 			Rule: part, UpdateMask: &fieldmaskpb.FieldMask{
@@ -446,7 +446,7 @@ func TestListRules(t *testing.T) {
 
 	ruleIDs := []string{}
 	ruleNames := []string{}
-	ruleStatuses := []api.Status{}
+	ruleStatuses := []common.Status{}
 	for i := 0; i < 3; i++ {
 		ruleCli := api.NewRuleServiceClient(globalAdminGRPCConn)
 		createRule, err := ruleCli.CreateRule(ctx, &api.CreateRuleRequest{

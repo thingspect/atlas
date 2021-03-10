@@ -179,12 +179,12 @@ type isListDataPointsRequest_IdOneof interface {
 }
 
 type ListDataPointsRequest_UniqId struct {
-	// Device unique ID.
+	// Device unique ID. Either unique ID or device ID must be provided.
 	UniqId string `protobuf:"bytes,1,opt,name=uniq_id,json=uniqID,proto3,oneof"`
 }
 
 type ListDataPointsRequest_DevId struct {
-	// Device ID (UUID).
+	// Device ID (UUID). Either unique ID or device ID must be provided.
 	DevId string `protobuf:"bytes,2,opt,name=dev_id,json=devID,proto3,oneof"`
 }
 
@@ -313,12 +313,12 @@ type isLatestDataPointsRequest_IdOneof interface {
 }
 
 type LatestDataPointsRequest_UniqId struct {
-	// Device unique ID.
+	// Device unique ID. Either unique ID or device ID must be provided.
 	UniqId string `protobuf:"bytes,1,opt,name=uniq_id,json=uniqID,proto3,oneof"`
 }
 
 type LatestDataPointsRequest_DevId struct {
-	// Device ID (UUID).
+	// Device ID (UUID). Either unique ID or device ID must be provided.
 	DevId string `protobuf:"bytes,2,opt,name=dev_id,json=devID,proto3,oneof"`
 }
 

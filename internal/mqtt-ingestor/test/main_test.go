@@ -7,7 +7,6 @@ import (
 	"log"
 	"os"
 	"testing"
-	"time"
 
 	"github.com/thingspect/atlas/internal/mqtt-ingestor/config"
 	"github.com/thingspect/atlas/internal/mqtt-ingestor/ingestor"
@@ -16,13 +15,11 @@ import (
 	"github.com/thingspect/atlas/pkg/test/random"
 )
 
-const testTimeout = 6 * time.Second
-
 var (
 	globalMQTTQueue queue.Queuer
 
-	globalDecoderPubTopic string
-	globalDecoderSub      queue.Subber
+	globalVInPubTopic string
+	globalVInSub      queue.Subber
 )
 
 func TestMain(m *testing.M) {
@@ -33,7 +30,7 @@ func TestMain(m *testing.M) {
 
 	cfg.NSQPubAddr = testConfig.NSQPubAddr
 	cfg.NSQPubTopic += "-test-" + random.String(10)
-	globalDecoderPubTopic = cfg.NSQPubTopic
+	globalVInPubTopic = cfg.NSQPubTopic
 	log.Printf("TestMain cfg.NSQPubTopic: %v", cfg.NSQPubTopic)
 
 	// Set up MQTT client connection to publish test payloads.
@@ -68,7 +65,7 @@ func TestMain(m *testing.M) {
 		log.Fatalf("TestMain queue.NewNSQ: %v", err)
 	}
 
-	globalDecoderSub, err = nsq.Subscribe(cfg.NSQPubTopic)
+	globalVInSub, err = nsq.Subscribe(cfg.NSQPubTopic)
 	if err != nil {
 		log.Fatalf("TestMain nsq.Subscribe: %v", err)
 	}

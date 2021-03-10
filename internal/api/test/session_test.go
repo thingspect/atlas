@@ -26,7 +26,7 @@ func TestLogin(t *testing.T) {
 
 	user := random.User("api-session", createOrg.Id)
 	user.Role = common.Role_ADMIN
-	user.Status = api.Status_ACTIVE
+	user.Status = common.Status_ACTIVE
 	createUser, err := globalUserDAO.Create(ctx, user)
 	t.Logf("createUser, err: %+v, %v", createUser, err)
 	require.NoError(t, err)
@@ -37,7 +37,7 @@ func TestLogin(t *testing.T) {
 	require.NoError(t, err)
 
 	disUser := random.User("api-session", createOrg.Id)
-	disUser.Status = api.Status_DISABLED
+	disUser.Status = common.Status_DISABLED
 	createDisUser, err := globalUserDAO.Create(ctx, disUser)
 	t.Logf("createDisUser, err: %+v, %v", createDisUser, err)
 	require.NoError(t, err)
@@ -49,7 +49,7 @@ func TestLogin(t *testing.T) {
 
 	contUser := random.User("api-session", createOrg.Id)
 	contUser.Role = common.Role_CONTACT
-	contUser.Status = api.Status_ACTIVE
+	contUser.Status = common.Status_ACTIVE
 	createContUser, err := globalUserDAO.Create(ctx, contUser)
 	t.Logf("createContUser, err: %+v, %v", createContUser, err)
 	require.NoError(t, err)

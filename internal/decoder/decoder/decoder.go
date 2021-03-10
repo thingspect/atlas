@@ -9,7 +9,7 @@ import (
 	"os/signal"
 	"syscall"
 
-	"github.com/thingspect/api/go/api"
+	"github.com/thingspect/api/go/common"
 	"github.com/thingspect/atlas/internal/decoder/config"
 	"github.com/thingspect/atlas/pkg/alog"
 	"github.com/thingspect/atlas/pkg/dao"
@@ -24,17 +24,17 @@ const (
 
 // devicer defines the methods provided by a device.DAO.
 type devicer interface {
-	ReadByUniqID(ctx context.Context, uniqID string) (*api.Device, error)
+	ReadByUniqID(ctx context.Context, uniqID string) (*common.Device, error)
 }
 
 // Decoder holds references to the database and message broker connections.
 type Decoder struct {
-	devDAO   devicer
-	registry *registry.Registry
+	devDAO devicer
+	reg    *registry.Registry
 
-	dInSub          queue.Subber
-	decoderQueue    queue.Queuer
-	decoderPubTopic string
+	decQueue    queue.Queuer
+	dInSub      queue.Subber
+	vInPubTopic string
 }
 
 // New builds a new Decoder and returns a reference to it and an error decue.
@@ -59,12 +59,12 @@ func New(cfg *config.Config) (*Decoder, error) {
 	}
 
 	return &Decoder{
-		devDAO:   device.NewDAO(pg),
-		registry: registry.New(),
+		devDAO: device.NewDAO(pg),
+		reg:    registry.New(),
 
-		dInSub:          dInSub,
-		decoderQueue:    nsq,
-		decoderPubTopic: cfg.NSQPubTopic,
+		decQueue:    nsq,
+		dInSub:      dInSub,
+		vInPubTopic: cfg.NSQPubTopic,
 	}, nil
 }
 
@@ -83,5 +83,5 @@ func (dec *Decoder) Serve(concurrency int) {
 	if err := dec.dInSub.Unsubscribe(); err != nil {
 		alog.Errorf("Serve dec.subber.Unsubscribe: %v", err)
 	}
-	dec.decoderQueue.Disconnect()
+	dec.decQueue.Disconnect()
 }

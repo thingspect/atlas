@@ -12,6 +12,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/require"
 	"github.com/thingspect/api/go/api"
+	"github.com/thingspect/api/go/common"
 	"github.com/thingspect/atlas/pkg/test/random"
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/known/fieldmaskpb"
@@ -280,9 +281,9 @@ func TestUpdateDevice(t *testing.T) {
 		// Update device fields.
 		createDev.UniqId = "api-device-" + random.String(16)
 		createDev.Name = "api-device-" + random.String(10)
-		createDev.Status = api.Status_DISABLED
-		createDev.Decoder = api.Decoder_GATEWAY
-		createDev.Tags = []string{"api-device-" + random.String(10)}
+		createDev.Status = common.Status_DISABLED
+		createDev.Decoder = common.Decoder_GATEWAY
+		createDev.Tags = random.Tags("api-device-", 2)
 
 		updateDev, err := devCli.UpdateDevice(ctx, &api.UpdateDeviceRequest{
 			Device: createDev})
@@ -321,9 +322,9 @@ func TestUpdateDevice(t *testing.T) {
 		require.NoError(t, err)
 
 		// Update device fields.
-		part := &api.Device{Id: createDev.Id, UniqId: "api-device-" +
+		part := &common.Device{Id: createDev.Id, UniqId: "api-device-" +
 			random.String(16), Name: "api-device-" + random.String(10),
-			Status: api.Status_DISABLED, Decoder: api.Decoder_GATEWAY}
+			Status: common.Status_DISABLED, Decoder: common.Decoder_GATEWAY}
 
 		updateDev, err := devCli.UpdateDevice(ctx, &api.UpdateDeviceRequest{
 			Device: part, UpdateMask: &fieldmaskpb.FieldMask{
@@ -690,8 +691,8 @@ func TestListDevices(t *testing.T) {
 
 	devIDs := []string{}
 	devNames := []string{}
-	devStatuses := []api.Status{}
-	devDecoders := []api.Decoder{}
+	devStatuses := []common.Status{}
+	devDecoders := []common.Decoder{}
 	devTags := [][]string{}
 	for i := 0; i < 3; i++ {
 		devCli := api.NewDeviceServiceClient(globalAdminGRPCConn)

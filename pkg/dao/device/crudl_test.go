@@ -11,7 +11,7 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/require"
-	"github.com/thingspect/api/go/api"
+	"github.com/thingspect/api/go/common"
 	"github.com/thingspect/atlas/pkg/dao"
 	"github.com/thingspect/atlas/pkg/test/random"
 	"google.golang.org/protobuf/proto"
@@ -33,7 +33,7 @@ func TestCreate(t *testing.T) {
 		t.Parallel()
 
 		dev := random.Device("dao-device", createOrg.Id)
-		createDev, _ := proto.Clone(dev).(*api.Device)
+		createDev, _ := proto.Clone(dev).(*common.Device)
 
 		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
 		defer cancel()
@@ -55,7 +55,7 @@ func TestCreate(t *testing.T) {
 
 		dev := random.Device("dao-device", createOrg.Id)
 		dev.UniqId = strings.ToUpper(dev.UniqId)
-		createDev, _ := proto.Clone(dev).(*api.Device)
+		createDev, _ := proto.Clone(dev).(*common.Device)
 
 		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
 		defer cancel()
@@ -219,10 +219,10 @@ func TestUpdate(t *testing.T) {
 		// Update device fields.
 		createDev.UniqId = "dao-device-" + random.String(16)
 		createDev.Name = "dao-device-" + random.String(10)
-		createDev.Status = api.Status_DISABLED
-		createDev.Decoder = api.Decoder_GATEWAY
+		createDev.Status = common.Status_DISABLED
+		createDev.Decoder = common.Decoder_GATEWAY
 		createDev.Tags = nil
-		updateDev, _ := proto.Clone(createDev).(*api.Device)
+		updateDev, _ := proto.Clone(createDev).(*common.Device)
 
 		updateDev, err = globalDevDAO.Update(ctx, updateDev)
 		t.Logf("createDev, updateDev, err: %+v, %+v, %v", createDev, updateDev,
@@ -377,8 +377,8 @@ func TestList(t *testing.T) {
 
 	devIDs := []string{}
 	devNames := []string{}
-	devStatuses := []api.Status{}
-	devDecoders := []api.Decoder{}
+	devStatuses := []common.Status{}
+	devDecoders := []common.Decoder{}
 	devTags := [][]string{}
 	devTSes := []time.Time{}
 	for i := 0; i < 3; i++ {

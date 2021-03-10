@@ -247,7 +247,7 @@ func TestUpdateUser(t *testing.T) {
 		user := random.User("api-user", uuid.NewString())
 		user.Role = common.Role_ADMIN
 		retUser, _ := proto.Clone(user).(*api.User)
-		part := &api.User{Id: user.Id, Status: api.Status_ACTIVE}
+		part := &api.User{Id: user.Id, Status: common.Status_ACTIVE}
 		merged := &api.User{Id: user.Id, OrgId: user.OrgId, Email: user.Email,
 			Role: user.Role, Status: part.Status, Tags: user.Tags}
 		retMerged, _ := proto.Clone(merged).(*api.User)
@@ -348,7 +348,7 @@ func TestUpdateUser(t *testing.T) {
 		t.Parallel()
 
 		orgID := uuid.NewString()
-		part := &api.User{Id: uuid.NewString(), Status: api.Status_ACTIVE}
+		part := &api.User{Id: uuid.NewString(), Status: common.Status_ACTIVE}
 
 		userer := NewMockUserer(gomock.NewController(t))
 		userer.EXPECT().Read(gomock.Any(), part.Id, orgID).
