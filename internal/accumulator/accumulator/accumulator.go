@@ -77,7 +77,7 @@ func (acc *Accumulator) Serve(concurrency int) {
 
 	alog.Info("Serve received signal, exiting")
 	if err := acc.vOutSub.Unsubscribe(); err != nil {
-		alog.Errorf("Serve acc.subber.Unsubscribe: %v", err)
+		alog.Errorf("Serve acc.vOutSub.Unsubscribe: %v", err)
 	}
 	acc.accQueue.Disconnect()
 }

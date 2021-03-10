@@ -87,7 +87,7 @@ func (ev *Eventer) Serve(concurrency int) {
 
 	alog.Info("Serve received signal, exiting")
 	if err := ev.vOutSub.Unsubscribe(); err != nil {
-		alog.Errorf("Serve ev.subber.Unsubscribe: %v", err)
+		alog.Errorf("Serve ev.vOutSub.Unsubscribe: %v", err)
 	}
 	ev.evQueue.Disconnect()
 }

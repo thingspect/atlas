@@ -81,7 +81,7 @@ func (dec *Decoder) Serve(concurrency int) {
 
 	alog.Info("Serve received signal, exiting")
 	if err := dec.dInSub.Unsubscribe(); err != nil {
-		alog.Errorf("Serve dec.subber.Unsubscribe: %v", err)
+		alog.Errorf("Serve dec.dInSub.Unsubscribe: %v", err)
 	}
 	dec.decQueue.Disconnect()
 }

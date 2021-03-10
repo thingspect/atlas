@@ -78,7 +78,7 @@ func (val *Validator) Serve(concurrency int) {
 
 	alog.Info("Serve received signal, exiting")
 	if err := val.vInSub.Unsubscribe(); err != nil {
-		alog.Errorf("Serve val.subber.Unsubscribe: %v", err)
+		alog.Errorf("Serve val.vInSub.Unsubscribe: %v", err)
 	}
 	val.valQueue.Disconnect()
 }
