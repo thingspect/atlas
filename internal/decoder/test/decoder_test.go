@@ -11,13 +11,14 @@ import (
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	"github.com/thingspect/api/go/api"
 	"github.com/thingspect/api/go/common"
 	"github.com/thingspect/atlas/api/go/message"
 	"github.com/thingspect/atlas/pkg/test/random"
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
+
+const testTimeout = 6 * time.Second
 
 func TestDecodeMessages(t *testing.T) {
 	now := timestamppb.New(time.Now().Add(-15 * time.Minute))
@@ -31,8 +32,8 @@ func TestDecodeMessages(t *testing.T) {
 	require.NoError(t, err)
 
 	dev := random.Device("dec", createOrg.Id)
-	dev.Status = api.Status_ACTIVE
-	dev.Decoder = api.Decoder_RADIO_BRIDGE_DOOR_V2
+	dev.Status = common.Status_ACTIVE
+	dev.Decoder = common.Decoder_RADIO_BRIDGE_DOOR_V2
 	createDev, err := globalDevDAO.Create(ctx, dev)
 	t.Logf("createDev, err: %+v, %v", createDev, err)
 	require.NoError(t, err)
@@ -69,17 +70,17 @@ func TestDecodeMessages(t *testing.T) {
 			require.NoError(t, err)
 			t.Logf("bDIn: %s", bDIn)
 
-			require.NoError(t, globalDInQueue.Publish(globalDInSubTopic, bDIn))
+			require.NoError(t, globalDecQueue.Publish(globalDInSubTopic, bDIn))
 
 			// Don't stop the flow of execution (assert) to avoid leaving
 			// messages orphaned in the queue.
 			for _, res := range lTest.res {
 				select {
-				case msg := <-globalDecoderSub.C():
+				case msg := <-globalVInSub.C():
 					msg.Ack()
 					t.Logf("msg.Topic, msg.Payload: %v, %s", msg.Topic(),
 						msg.Payload())
-					assert.Equal(t, globalDecoderPubTopic, msg.Topic())
+					assert.Equal(t, globalVInPubTopic, msg.Topic())
 
 					vIn := &message.ValidatorIn{}
 					assert.NoError(t, proto.Unmarshal(msg.Payload(), vIn))
@@ -110,15 +111,15 @@ func TestDecodeMessagesError(t *testing.T) {
 	require.NoError(t, err)
 
 	dev := random.Device("dec", createOrg.Id)
-	dev.Status = api.Status_ACTIVE
-	dev.Decoder = api.Decoder_RAW
+	dev.Status = common.Status_ACTIVE
+	dev.Decoder = common.Decoder_RAW
 	createDev, err := globalDevDAO.Create(ctx, dev)
 	t.Logf("createDev, err: %+v, %v", createDev, err)
 	require.NoError(t, err)
 
 	invDev := random.Device("dec", createOrg.Id)
-	invDev.Status = api.Status_ACTIVE
-	invDev.Decoder = api.Decoder(999)
+	invDev.Status = common.Status_ACTIVE
+	invDev.Decoder = common.Decoder(999)
 	createInvDev, err := globalDevDAO.Create(ctx, invDev)
 	t.Logf("createInvDev, err: %+v, %v", createInvDev, err)
 	require.NoError(t, err)
@@ -153,10 +154,10 @@ func TestDecodeMessagesError(t *testing.T) {
 				t.Logf("bDIn: %s", bDIn)
 			}
 
-			require.NoError(t, globalDInQueue.Publish(globalDInSubTopic, bDIn))
+			require.NoError(t, globalDecQueue.Publish(globalDInSubTopic, bDIn))
 
 			select {
-			case msg := <-globalDecoderSub.C():
+			case msg := <-globalVInSub.C():
 				t.Fatalf("Received unexpected msg.Topic, msg.Payload: %v, %s",
 					msg.Topic(), msg.Payload())
 			case <-time.After(500 * time.Millisecond):

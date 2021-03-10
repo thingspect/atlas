@@ -20,6 +20,8 @@ import (
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
+const testTimeout = 6 * time.Second
+
 func TestDecodeMessages(t *testing.T) {
 	orgID := uuid.NewString()
 	uniqIDPoint := "ing-" + random.String(16)
@@ -91,11 +93,11 @@ func TestDecodeMessages(t *testing.T) {
 			// messages orphaned in the queue.
 			for i, res := range lTest.res {
 				select {
-				case msg := <-globalDecoderSub.C():
+				case msg := <-globalVInSub.C():
 					msg.Ack()
 					t.Logf("msg.Topic, msg.Payload: %v, %s", msg.Topic(),
 						msg.Payload())
-					assert.Equal(t, globalDecoderPubTopic, msg.Topic())
+					assert.Equal(t, globalVInPubTopic, msg.Topic())
 
 					vIn := &message.ValidatorIn{}
 					assert.NoError(t, proto.Unmarshal(msg.Payload(), vIn))
@@ -150,7 +152,7 @@ func TestDecodeMessagesError(t *testing.T) {
 				lTest.inpPayl))
 
 			select {
-			case msg := <-globalDecoderSub.C():
+			case msg := <-globalVInSub.C():
 				t.Fatalf("Received unexpected msg.Topic, msg.Payload: %v, %s",
 					msg.Topic(), msg.Payload())
 			case <-time.After(500 * time.Millisecond):

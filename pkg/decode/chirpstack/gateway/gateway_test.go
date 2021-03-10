@@ -12,12 +12,12 @@ import (
 	"github.com/thingspect/atlas/pkg/test/random"
 )
 
-func TestGateway(t *testing.T) {
+func TestParse(t *testing.T) {
 	t.Parallel()
 
 	badEvent := random.String(10)
 
-	// Trivial gateway payloads, see Gateway() for format description. Parsers
+	// Trivial gateway payloads, see Parse() for format description. Parsers
 	// are exercised more thoroughly in their respective tests.
 	tests := []struct {
 		inpEvent string
@@ -52,7 +52,7 @@ func TestGateway(t *testing.T) {
 			bInpBody, err := hex.DecodeString(lTest.inpBody)
 			require.NoError(t, err)
 
-			res, err := Gateway(lTest.inpEvent, bInpBody)
+			res, err := Parse(lTest.inpEvent, bInpBody)
 			t.Logf("res, err: %#v, %v", res, err)
 			require.Equal(t, lTest.res, res)
 			require.Equal(t, lTest.err, err)

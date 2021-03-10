@@ -8,7 +8,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/require"
-	"github.com/thingspect/api/go/api"
+	"github.com/thingspect/api/go/common"
 	"github.com/thingspect/atlas/pkg/decode"
 )
 
@@ -26,19 +26,19 @@ func TestDecode(t *testing.T) {
 	reg := New()
 
 	tests := []struct {
-		inpDecoder api.Decoder
+		inpDecoder common.Decoder
 		inpBody    string
 		res        []*decode.Point
 		err        error
 	}{
 		// Decoder.
-		{api.Decoder_RAW, "", nil, nil},
-		{api.Decoder_RADIO_BRIDGE_DOOR_V2, "190301", []*decode.Point{
+		{common.Decoder_RAW, "", nil, nil},
+		{common.Decoder_RADIO_BRIDGE_DOOR_V2, "190301", []*decode.Point{
 			{Attr: "count", Value: int32(9)},
 			{Attr: "open", Value: true},
 		}, nil},
 		// Decoder function not found.
-		{api.Decoder(999), "", nil, fmt.Errorf("%w: 999", ErrNotFound)},
+		{common.Decoder(999), "", nil, fmt.Errorf("%w: 999", ErrNotFound)},
 	}
 
 	for _, test := range tests {

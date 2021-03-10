@@ -34,8 +34,8 @@ type DataPointer interface {
 type DataPoint struct {
 	api.UnimplementedDataPointServiceServer
 
-	pubQueue queue.Queuer
-	pubTopic string
+	dpQueue     queue.Queuer
+	vInPubTopic string
 
 	dpDAO DataPointer
 }
@@ -44,8 +44,8 @@ type DataPoint struct {
 func NewDataPoint(pubQueue queue.Queuer, pubTopic string,
 	dpDAO DataPointer) *DataPoint {
 	return &DataPoint{
-		pubQueue: pubQueue,
-		pubTopic: pubTopic,
+		dpQueue:     pubQueue,
+		vInPubTopic: pubTopic,
 
 		dpDAO: dpDAO,
 	}
@@ -87,7 +87,7 @@ func (d *DataPoint) PublishDataPoints(ctx context.Context,
 			return nil, status.Error(codes.Internal, "publish failure")
 		}
 
-		if err = d.pubQueue.Publish(d.pubTopic, bVIn); err != nil {
+		if err = d.dpQueue.Publish(d.vInPubTopic, bVIn); err != nil {
 			logger.Errorf("PublishDataPoints d.pubQueue.Publish: %v", err)
 
 			return nil, status.Error(codes.Internal, "publish failure")

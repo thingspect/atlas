@@ -234,7 +234,7 @@ func TestUpdate(t *testing.T) {
 		// Update user fields.
 		createUser.Email = "dao-user-" + random.Email()
 		createUser.Role = common.Role_ADMIN
-		createUser.Status = api.Status_DISABLED
+		createUser.Status = common.Status_DISABLED
 		createUser.Tags = nil
 		updateUser, _ := proto.Clone(createUser).(*api.User)
 
@@ -303,7 +303,7 @@ func TestUpdate(t *testing.T) {
 
 		// Update user fields.
 		createUser.Email = "dao-user-" + random.String(80)
-		createUser.Status = api.Status_DISABLED
+		createUser.Status = common.Status_DISABLED
 		updateUser, _ := proto.Clone(createUser).(*api.User)
 
 		updateUser, err = globalUserDAO.Update(ctx, updateUser)
@@ -453,7 +453,7 @@ func TestList(t *testing.T) {
 
 	userIDs := []string{}
 	userRoles := []common.Role{}
-	userStatuses := []api.Status{}
+	userStatuses := []common.Status{}
 	userTags := [][]string{}
 	userTSes := []time.Time{}
 	for i := 0; i < 3; i++ {

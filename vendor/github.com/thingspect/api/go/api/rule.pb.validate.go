@@ -16,6 +16,8 @@ import (
 	"unicode/utf8"
 
 	"github.com/golang/protobuf/ptypes"
+
+	common "github.com/thingspect/api/go/common"
 )
 
 // ensure the imports are used
@@ -31,6 +33,8 @@ var (
 	_ = (*url.URL)(nil)
 	_ = (*mail.Address)(nil)
 	_ = ptypes.DynamicAny{}
+
+	_ = common.Status(0)
 )
 
 // define the regex for a UUID once up-front
@@ -159,7 +163,7 @@ var _ interface {
 	ErrorName() string
 } = RuleValidationError{}
 
-var _Rule_Status_InLookup = map[Status]struct{}{
+var _Rule_Status_InLookup = map[common.Status]struct{}{
 	3: {},
 	6: {},
 }

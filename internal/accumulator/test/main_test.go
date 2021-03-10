@@ -12,18 +12,20 @@ import (
 	"github.com/thingspect/atlas/internal/accumulator/config"
 	"github.com/thingspect/atlas/pkg/dao"
 	"github.com/thingspect/atlas/pkg/dao/datapoint"
+	"github.com/thingspect/atlas/pkg/dao/device"
+	"github.com/thingspect/atlas/pkg/dao/org"
 	"github.com/thingspect/atlas/pkg/queue"
 	testconfig "github.com/thingspect/atlas/pkg/test/config"
 	"github.com/thingspect/atlas/pkg/test/random"
 )
 
-const testTimeout = 2 * time.Second
-
 var (
 	globalVOutSubTopic string
-	globalVOutQueue    queue.Queuer
+	globalAccQueue     queue.Queuer
 
-	globalDPDAO *datapoint.DAO
+	globalOrgDAO *org.DAO
+	globalDevDAO *device.DAO
+	globalDPDAO  *datapoint.DAO
 )
 
 func TestMain(m *testing.M) {
@@ -43,7 +45,7 @@ func TestMain(m *testing.M) {
 
 	// Set up NSQ queue to publish test payloads.
 	var err error
-	globalVOutQueue, err = queue.NewNSQ(cfg.NSQPubAddr, nil, "",
+	globalAccQueue, err = queue.NewNSQ(cfg.NSQPubAddr, nil, "",
 		queue.DefaultNSQRequeueDelay)
 	if err != nil {
 		log.Fatalf("TestMain globalVOutQueue queue.NewNSQ: %v", err)
@@ -51,7 +53,7 @@ func TestMain(m *testing.M) {
 
 	// Publish a throwaway message before subscribe to allow for discovery by
 	// nsqlookupd.
-	if err = globalVOutQueue.Publish(cfg.NSQSubTopic,
+	if err = globalAccQueue.Publish(cfg.NSQSubTopic,
 		[]byte("acc-aaa")); err != nil {
 		log.Fatalf("TestMain globalVOutQueue.Publish: %v", err)
 	}
@@ -74,6 +76,8 @@ func TestMain(m *testing.M) {
 	if err != nil {
 		log.Fatalf("TestMain dao.NewPgDB: %v", err)
 	}
+	globalOrgDAO = org.NewDAO(pg)
+	globalDevDAO = device.NewDAO(pg)
 	globalDPDAO = datapoint.NewDAO(pg)
 
 	os.Exit(m.Run())

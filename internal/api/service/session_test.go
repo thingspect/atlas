@@ -28,7 +28,7 @@ func TestLogin(t *testing.T) {
 		org := random.Org("api-session")
 		user := random.User("api-session", org.Id)
 		user.Role = common.Role_ADMIN
-		user.Status = api.Status_ACTIVE
+		user.Status = common.Status_ACTIVE
 
 		userer := NewMockUserer(gomock.NewController(t))
 		userer.EXPECT().ReadByEmail(gomock.Any(), user.Email, org.Name).
@@ -57,7 +57,7 @@ func TestLogin(t *testing.T) {
 
 		org := random.Org("api-session")
 		user := random.User("api-session", org.Id)
-		user.Status = api.Status_ACTIVE
+		user.Status = common.Status_ACTIVE
 
 		userer := NewMockUserer(gomock.NewController(t))
 		userer.EXPECT().ReadByEmail(gomock.Any(), user.Email, org.Name).
@@ -84,7 +84,7 @@ func TestLogin(t *testing.T) {
 
 		org := random.Org("api-session")
 		user := random.User("api-session", org.Id)
-		user.Status = api.Status_ACTIVE
+		user.Status = common.Status_ACTIVE
 
 		userer := NewMockUserer(gomock.NewController(t))
 		userer.EXPECT().ReadByEmail(gomock.Any(), user.Email, org.Name).
@@ -111,7 +111,7 @@ func TestLogin(t *testing.T) {
 
 		org := random.Org("api-session")
 		user := random.User("api-session", org.Id)
-		user.Status = api.Status_DISABLED
+		user.Status = common.Status_DISABLED
 
 		userer := NewMockUserer(gomock.NewController(t))
 		userer.EXPECT().ReadByEmail(gomock.Any(), user.Email, org.Name).
@@ -139,7 +139,7 @@ func TestLogin(t *testing.T) {
 		org := random.Org("api-session")
 		user := random.User("api-session", org.Id)
 		user.Role = common.Role_CONTACT
-		user.Status = api.Status_ACTIVE
+		user.Status = common.Status_ACTIVE
 
 		userer := NewMockUserer(gomock.NewController(t))
 		userer.EXPECT().ReadByEmail(gomock.Any(), user.Email, org.Name).
@@ -167,7 +167,7 @@ func TestLogin(t *testing.T) {
 		org := random.Org("api-session")
 		user := random.User("api-session", org.Id)
 		user.Role = common.Role_ADMIN
-		user.Status = api.Status_ACTIVE
+		user.Status = common.Status_ACTIVE
 
 		userer := NewMockUserer(gomock.NewController(t))
 		userer.EXPECT().ReadByEmail(gomock.Any(), user.Email, org.Name).

@@ -17,30 +17,43 @@ import (
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
+const testTimeout = 4 * time.Second
+
 func TestAccumulateMessages(t *testing.T) {
 	t.Parallel()
+
+	now := timestamppb.New(time.Now().Add(-15 * time.Minute))
+
+	ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
+	defer cancel()
+
+	createOrg, err := globalOrgDAO.Create(ctx, random.Org("acc"))
+	t.Logf("createOrg, err: %+v, %v", createOrg, err)
+	require.NoError(t, err)
+
+	createDev, err := globalDevDAO.Create(ctx, random.Device("acc",
+		createOrg.Id))
+	t.Logf("createDev, err: %+v, %v", createDev, err)
+	require.NoError(t, err)
 
 	tests := []struct {
 		inp *message.ValidatorOut
 	}{
 		{&message.ValidatorOut{Point: &common.DataPoint{
 			UniqId: "acc-" + random.String(16), Attr: "acc-motion",
-			ValOneof: &common.DataPoint_IntVal{IntVal: 123},
-			Ts:       timestamppb.New(time.Now().Add(-15 * time.Minute)),
-			Token:    uuid.NewString(), TraceId: uuid.NewString()},
-			OrgId: uuid.NewString()}},
+			ValOneof: &common.DataPoint_IntVal{IntVal: 123}, Ts: now,
+			Token: uuid.NewString(), TraceId: uuid.NewString()},
+			Device: createDev}},
 		{&message.ValidatorOut{Point: &common.DataPoint{
 			UniqId: "acc-" + random.String(16), Attr: "acc-temp",
-			ValOneof: &common.DataPoint_Fl64Val{Fl64Val: 9.3},
-			Ts:       timestamppb.New(time.Now().Add(-15 * time.Minute)),
-			Token:    uuid.NewString(), TraceId: uuid.NewString()},
-			OrgId: uuid.NewString()}},
+			ValOneof: &common.DataPoint_Fl64Val{Fl64Val: 9.3}, Ts: now,
+			Token: uuid.NewString(), TraceId: uuid.NewString()},
+			Device: createDev}},
 		{&message.ValidatorOut{Point: &common.DataPoint{
 			UniqId: "acc-" + random.String(16), Attr: "acc-power",
-			ValOneof: &common.DataPoint_StrVal{StrVal: "batt"},
-			Ts:       timestamppb.New(time.Now().Add(-15 * time.Minute)),
-			Token:    uuid.NewString(), TraceId: uuid.NewString()},
-			OrgId: uuid.NewString()}},
+			ValOneof: &common.DataPoint_StrVal{StrVal: "batt"}, Ts: now,
+			Token: uuid.NewString(), TraceId: uuid.NewString()},
+			Device: createDev}},
 	}
 
 	for _, test := range tests {
@@ -53,7 +66,7 @@ func TestAccumulateMessages(t *testing.T) {
 			require.NoError(t, err)
 			t.Logf("bVOut: %s", bVOut)
 
-			require.NoError(t, globalVOutQueue.Publish(globalVOutSubTopic,
+			require.NoError(t, globalAccQueue.Publish(globalVOutSubTopic,
 				bVOut))
 			time.Sleep(2 * time.Second)
 
@@ -61,7 +74,7 @@ func TestAccumulateMessages(t *testing.T) {
 				testTimeout)
 			defer cancel()
 
-			listPoints, err := globalDPDAO.List(ctx, lTest.inp.OrgId,
+			listPoints, err := globalDPDAO.List(ctx, lTest.inp.Device.OrgId,
 				lTest.inp.Point.UniqId, "", "", lTest.inp.Point.Ts.AsTime(),
 				lTest.inp.Point.Ts.AsTime().Add(-time.Millisecond))
 			t.Logf("listPoints, err: %+v, %v", listPoints, err)
@@ -90,26 +103,35 @@ func TestAccumulateMessagesDuplicate(t *testing.T) {
 	ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
 	defer cancel()
 
+	createOrg, err := globalOrgDAO.Create(ctx, random.Org("acc"))
+	t.Logf("createOrg, err: %+v, %v", createOrg, err)
+	require.NoError(t, err)
+
+	createDev, err := globalDevDAO.Create(ctx, random.Device("acc",
+		createOrg.Id))
+	t.Logf("createDev, err: %+v, %v", createDev, err)
+	require.NoError(t, err)
+
 	duplicateVOut := &message.ValidatorOut{Point: &common.DataPoint{
 		UniqId: "acc-" + random.String(16), Attr: "acc-motion",
 		ValOneof: &common.DataPoint_IntVal{IntVal: 123},
 		Ts:       timestamppb.New(time.Now().Add(-15 * time.Minute)),
 		Token:    uuid.NewString(), TraceId: uuid.NewString()},
-		OrgId: uuid.NewString()}
+		Device: createDev}
 	require.NoError(t, globalDPDAO.Create(ctx, duplicateVOut.Point,
-		duplicateVOut.OrgId))
+		duplicateVOut.Device.OrgId))
 
 	bVOut, err := proto.Marshal(duplicateVOut)
 	require.NoError(t, err)
 	t.Logf("bVOut: %s", bVOut)
 
-	require.NoError(t, globalVOutQueue.Publish(globalVOutSubTopic, bVOut))
+	require.NoError(t, globalAccQueue.Publish(globalVOutSubTopic, bVOut))
 	time.Sleep(2 * time.Second)
 
 	ctx, cancel = context.WithTimeout(context.Background(), testTimeout)
 	defer cancel()
 
-	listPoints, err := globalDPDAO.List(ctx, duplicateVOut.OrgId,
+	listPoints, err := globalDPDAO.List(ctx, duplicateVOut.Device.OrgId,
 		duplicateVOut.Point.UniqId, "", "", duplicateVOut.Point.Ts.AsTime(),
 		duplicateVOut.Point.Ts.AsTime().Add(-time.Millisecond))
 	t.Logf("listPoints, err: %+v, %v", listPoints, err)
@@ -133,24 +155,36 @@ func TestAccumulateMessagesDuplicate(t *testing.T) {
 func TestAccumulateMessagesInvalid(t *testing.T) {
 	t.Parallel()
 
+	ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
+	defer cancel()
+
+	createOrg, err := globalOrgDAO.Create(ctx, random.Org("acc"))
+	t.Logf("createOrg, err: %+v, %v", createOrg, err)
+	require.NoError(t, err)
+
+	createDev, err := globalDevDAO.Create(ctx, random.Device("acc",
+		createOrg.Id))
+	t.Logf("createDev, err: %+v, %v", createDev, err)
+	require.NoError(t, err)
+
 	invalidVOut := &message.ValidatorOut{Point: &common.DataPoint{
 		UniqId: "acc-" + random.String(16), Attr: "acc-raw",
 		ValOneof: &common.DataPoint_BytesVal{BytesVal: random.Bytes(3000)},
 		Ts:       timestamppb.New(time.Now().Add(-15 * time.Minute)),
 		Token:    uuid.NewString(), TraceId: uuid.NewString()},
-		OrgId: uuid.NewString()}
+		Device: createDev}
 
 	bVOut, err := proto.Marshal(invalidVOut)
 	require.NoError(t, err)
 	t.Logf("bVOut: %s", bVOut)
 
-	require.NoError(t, globalVOutQueue.Publish(globalVOutSubTopic, bVOut))
+	require.NoError(t, globalAccQueue.Publish(globalVOutSubTopic, bVOut))
 	time.Sleep(2 * time.Second)
 
-	ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
+	ctx, cancel = context.WithTimeout(context.Background(), testTimeout)
 	defer cancel()
 
-	listPoints, err := globalDPDAO.List(ctx, invalidVOut.OrgId,
+	listPoints, err := globalDPDAO.List(ctx, invalidVOut.Device.OrgId,
 		invalidVOut.Point.UniqId, "", "", invalidVOut.Point.Ts.AsTime(),
 		invalidVOut.Point.Ts.AsTime().Add(-time.Millisecond))
 	t.Logf("listPoints, err: %+v, %v", listPoints, err)

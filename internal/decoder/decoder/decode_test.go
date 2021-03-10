@@ -11,7 +11,6 @@ import (
 	"github.com/golang/mock/gomock"
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/require"
-	"github.com/thingspect/api/go/api"
 	"github.com/thingspect/api/go/common"
 	"github.com/thingspect/atlas/api/go/message"
 	"github.com/thingspect/atlas/pkg/dao"
@@ -33,11 +32,11 @@ func TestDecodeMessages(t *testing.T) {
 
 	tests := []struct {
 		inpDIn     *message.DecoderIn
-		inpDecoder api.Decoder
+		inpDecoder common.Decoder
 		res        []*message.ValidatorIn
 	}{
 		{&message.DecoderIn{UniqId: uniqID, Data: []byte{0x19, 0x03, 0x01},
-			Ts: now, TraceId: traceID}, api.Decoder_RADIO_BRIDGE_DOOR_V1,
+			Ts: now, TraceId: traceID}, common.Decoder_RADIO_BRIDGE_DOOR_V1,
 			[]*message.ValidatorIn{
 				{Point: &common.DataPoint{UniqId: uniqID, Attr: "count",
 					ValOneof: &common.DataPoint_IntVal{IntVal: 9}, Ts: now,
@@ -47,7 +46,7 @@ func TestDecodeMessages(t *testing.T) {
 					TraceId: traceID}, SkipToken: true},
 			}},
 		{&message.DecoderIn{UniqId: uniqID, Data: []byte{0x1a, 0x03, 0x00},
-			Ts: now, TraceId: traceID}, api.Decoder_RADIO_BRIDGE_DOOR_V2,
+			Ts: now, TraceId: traceID}, common.Decoder_RADIO_BRIDGE_DOOR_V2,
 			[]*message.ValidatorIn{
 				{Point: &common.DataPoint{UniqId: uniqID, Attr: "count",
 					ValOneof: &common.DataPoint_IntVal{IntVal: 10}, Ts: now,
@@ -72,22 +71,22 @@ func TestDecodeMessages(t *testing.T) {
 			dInSub, err := dInQueue.Subscribe("")
 			require.NoError(t, err)
 
-			decoderQueue := queue.NewFake()
-			decoderSub, err := decoderQueue.Subscribe("")
+			decQueue := queue.NewFake()
+			vInSub, err := decQueue.Subscribe("")
 			require.NoError(t, err)
-			decoderPubTopic := "topic-" + random.String(10)
+			vInPubTopic := "topic-" + random.String(10)
 
 			devicer := NewMockdevicer(gomock.NewController(t))
 			devicer.EXPECT().ReadByUniqID(gomock.Any(), lTest.inpDIn.UniqId).
 				Return(dev, nil).Times(1)
 
 			dec := Decoder{
-				devDAO:   devicer,
-				registry: registry.New(),
+				devDAO: devicer,
+				reg:    registry.New(),
 
-				dInSub:          dInSub,
-				decoderQueue:    decoderQueue,
-				decoderPubTopic: decoderPubTopic,
+				decQueue:    decQueue,
+				dInSub:      dInSub,
+				vInPubTopic: vInPubTopic,
 			}
 			go func() {
 				dec.decodeMessages()
@@ -101,11 +100,11 @@ func TestDecodeMessages(t *testing.T) {
 
 			for _, res := range lTest.res {
 				select {
-				case msg := <-decoderSub.C():
+				case msg := <-vInSub.C():
 					msg.Ack()
 					t.Logf("msg.Topic, msg.Payload: %v, %s", msg.Topic(),
 						msg.Payload())
-					require.Equal(t, decoderPubTopic, msg.Topic())
+					require.Equal(t, vInPubTopic, msg.Topic())
 
 					vIn := &message.ValidatorIn{}
 					require.NoError(t, proto.Unmarshal(msg.Payload(), vIn))
@@ -129,20 +128,20 @@ func TestDecodeMessagesError(t *testing.T) {
 
 	tests := []struct {
 		inpDIn     *message.DecoderIn
-		inpDecoder api.Decoder
+		inpDecoder common.Decoder
 		inpErr     error
 		inpTimes   int
 	}{
 		// Empty data.
-		{&message.DecoderIn{}, api.Decoder_RAW, nil, 1},
+		{&message.DecoderIn{}, common.Decoder_RAW, nil, 1},
 		// Bad payload.
-		{nil, api.Decoder_RAW, nil, 0},
+		{nil, common.Decoder_RAW, nil, 0},
 		// Device not found.
-		{&message.DecoderIn{}, api.Decoder_RAW, dao.ErrNotFound, 1},
+		{&message.DecoderIn{}, common.Decoder_RAW, dao.ErrNotFound, 1},
 		// Devicer error.
-		{&message.DecoderIn{}, api.Decoder_RAW, errTestProc, 1},
+		{&message.DecoderIn{}, common.Decoder_RAW, errTestProc, 1},
 		// Decode error.
-		{&message.DecoderIn{}, api.Decoder(999), nil, 1},
+		{&message.DecoderIn{}, common.Decoder(999), nil, 1},
 	}
 
 	for _, test := range tests {
@@ -158,8 +157,8 @@ func TestDecodeMessagesError(t *testing.T) {
 			dInSub, err := dInQueue.Subscribe("")
 			require.NoError(t, err)
 
-			decoderQueue := queue.NewFake()
-			decoderSub, err := decoderQueue.Subscribe("")
+			decQueue := queue.NewFake()
+			vInSub, err := decQueue.Subscribe("")
 			require.NoError(t, err)
 
 			devicer := NewMockdevicer(gomock.NewController(t))
@@ -167,12 +166,12 @@ func TestDecodeMessagesError(t *testing.T) {
 				Return(dev, lTest.inpErr).Times(lTest.inpTimes)
 
 			dec := Decoder{
-				devDAO:   devicer,
-				registry: registry.New(),
+				devDAO: devicer,
+				reg:    registry.New(),
 
-				dInSub:          dInSub,
-				decoderQueue:    decoderQueue,
-				decoderPubTopic: "topic-" + random.String(10),
+				decQueue:    decQueue,
+				dInSub:      dInSub,
+				vInPubTopic: "topic-" + random.String(10),
 			}
 			go func() {
 				dec.decodeMessages()
@@ -189,7 +188,7 @@ func TestDecodeMessagesError(t *testing.T) {
 			require.NoError(t, dInQueue.Publish("", bDIn))
 
 			select {
-			case msg := <-decoderSub.C():
+			case msg := <-vInSub.C():
 				t.Fatalf("Received unexpected msg.Topic, msg.Payload: %v, %s",
 					msg.Topic(), msg.Payload())
 			case <-time.After(100 * time.Millisecond):

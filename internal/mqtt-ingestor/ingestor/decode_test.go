@@ -79,15 +79,16 @@ func TestDecodeMessages(t *testing.T) {
 			mqttSub, err := mqttQueue.Subscribe("")
 			require.NoError(t, err)
 
-			decoderQueue := queue.NewFake()
-			decoderSub, err := decoderQueue.Subscribe("")
+			ingQueue := queue.NewFake()
+			vInSub, err := ingQueue.Subscribe("")
 			require.NoError(t, err)
-			decoderPubTopic := "topic-" + random.String(10)
+			vInPubTopic := "topic-" + random.String(10)
 
 			ing := Ingestor{
-				mqttSub:         mqttSub,
-				decoderQueue:    decoderQueue,
-				decoderPubTopic: decoderPubTopic,
+				mqttSub: mqttSub,
+
+				ingQueue:    ingQueue,
+				vInPubTopic: vInPubTopic,
 			}
 			go func() {
 				ing.decodeMessages()
@@ -110,11 +111,11 @@ func TestDecodeMessages(t *testing.T) {
 
 			for i, res := range lTest.res {
 				select {
-				case msg := <-decoderSub.C():
+				case msg := <-vInSub.C():
 					msg.Ack()
 					t.Logf("msg.Topic, msg.Payload: %v, %s", msg.Topic(),
 						msg.Payload())
-					require.Equal(t, decoderPubTopic, msg.Topic())
+					require.Equal(t, vInPubTopic, msg.Topic())
 
 					vIn := &message.ValidatorIn{}
 					require.NoError(t, proto.Unmarshal(msg.Payload(), vIn))
@@ -171,14 +172,15 @@ func TestDecodeMessagesError(t *testing.T) {
 			mqttSub, err := mqttQueue.Subscribe("")
 			require.NoError(t, err)
 
-			decoderQueue := queue.NewFake()
-			decoderSub, err := decoderQueue.Subscribe("")
+			ingQueue := queue.NewFake()
+			vInSub, err := ingQueue.Subscribe("")
 			require.NoError(t, err)
 
 			ing := Ingestor{
-				mqttSub:         mqttSub,
-				decoderQueue:    decoderQueue,
-				decoderPubTopic: "topic-" + random.String(10),
+				mqttSub: mqttSub,
+
+				ingQueue:    ingQueue,
+				vInPubTopic: "topic-" + random.String(10),
 			}
 			go func() {
 				ing.decodeMessages()
@@ -188,7 +190,7 @@ func TestDecodeMessagesError(t *testing.T) {
 				lTest.inpTopicParts, "/"), lTest.inpPayl))
 
 			select {
-			case msg := <-decoderSub.C():
+			case msg := <-vInSub.C():
 				t.Fatalf("Received unexpected msg.Topic, msg.Payload: %v, %s",
 					msg.Topic(), msg.Payload())
 			case <-time.After(100 * time.Millisecond):

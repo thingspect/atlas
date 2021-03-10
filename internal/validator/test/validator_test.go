@@ -10,13 +10,14 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/require"
-	"github.com/thingspect/api/go/api"
 	"github.com/thingspect/api/go/common"
 	"github.com/thingspect/atlas/api/go/message"
 	"github.com/thingspect/atlas/pkg/test/random"
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
+
+const testTimeout = 6 * time.Second
 
 func TestValidateMessages(t *testing.T) {
 	now := timestamppb.New(time.Now().Add(-15 * time.Minute))
@@ -32,7 +33,7 @@ func TestValidateMessages(t *testing.T) {
 	require.NoError(t, err)
 
 	dev := random.Device("val", createOrg.Id)
-	dev.Status = api.Status_ACTIVE
+	dev.Status = common.Status_ACTIVE
 	createDev, err := globalDevDAO.Create(ctx, dev)
 	t.Logf("createDev, err: %+v, %v", createDev, err)
 	require.NoError(t, err)
@@ -48,8 +49,7 @@ func TestValidateMessages(t *testing.T) {
 			&message.ValidatorOut{Point: &common.DataPoint{
 				UniqId: createDev.UniqId, Attr: "val-motion",
 				ValOneof: &common.DataPoint_IntVal{IntVal: 123}, Ts: now,
-				Token: createDev.Token, TraceId: traceID}, OrgId: createOrg.Id,
-				DevId: createDev.Id}},
+				Token: createDev.Token, TraceId: traceID}, Device: dev}},
 		{&message.ValidatorIn{Point: &common.DataPoint{UniqId: createDev.UniqId,
 			Attr: "val-temp", ValOneof: &common.DataPoint_Fl64Val{Fl64Val: 9.3},
 			Ts: now, Token: createDev.Token, TraceId: traceID},
@@ -57,8 +57,7 @@ func TestValidateMessages(t *testing.T) {
 			&message.ValidatorOut{Point: &common.DataPoint{
 				UniqId: createDev.UniqId, Attr: "val-temp",
 				ValOneof: &common.DataPoint_Fl64Val{Fl64Val: 9.3}, Ts: now,
-				Token: createDev.Token, TraceId: traceID}, OrgId: createOrg.Id,
-				DevId: createDev.Id}},
+				Token: createDev.Token, TraceId: traceID}, Device: dev}},
 		{&message.ValidatorIn{Point: &common.DataPoint{UniqId: createDev.UniqId,
 			Attr: "val-power", ValOneof: &common.DataPoint_StrVal{
 				StrVal: "batt"}, Ts: now, Token: createDev.Token,
@@ -66,22 +65,19 @@ func TestValidateMessages(t *testing.T) {
 			&message.ValidatorOut{Point: &common.DataPoint{
 				UniqId: createDev.UniqId, Attr: "val-power",
 				ValOneof: &common.DataPoint_StrVal{StrVal: "batt"}, Ts: now,
-				Token: createDev.Token, TraceId: traceID}, OrgId: createOrg.Id,
-				DevId: createDev.Id}},
+				Token: createDev.Token, TraceId: traceID}, Device: dev}},
 		{&message.ValidatorIn{Point: &common.DataPoint{UniqId: createDev.UniqId,
 			Attr: "val-leak", ValOneof: boolVal, Ts: now, TraceId: traceID},
 			OrgId: createOrg.Id, SkipToken: true},
 			&message.ValidatorOut{Point: &common.DataPoint{
 				UniqId: createDev.UniqId, Attr: "val-leak",
-				ValOneof: boolVal, Ts: now, TraceId: traceID},
-				OrgId: createOrg.Id, DevId: createDev.Id}},
+				ValOneof: boolVal, Ts: now, TraceId: traceID}, Device: dev}},
 		{&message.ValidatorIn{Point: &common.DataPoint{UniqId: createDev.UniqId,
 			Attr: "val-leak", ValOneof: boolVal, Ts: now, TraceId: traceID},
 			SkipToken: true},
 			&message.ValidatorOut{Point: &common.DataPoint{
 				UniqId: createDev.UniqId, Attr: "val-leak",
-				ValOneof: boolVal, Ts: now, TraceId: traceID},
-				OrgId: createOrg.Id, DevId: createDev.Id}},
+				ValOneof: boolVal, Ts: now, TraceId: traceID}, Device: dev}},
 	}
 
 	for _, test := range tests {
@@ -92,7 +88,7 @@ func TestValidateMessages(t *testing.T) {
 			require.NoError(t, err)
 			t.Logf("bVIn: %s", bVIn)
 
-			require.NoError(t, globalVInQueue.Publish(globalVInSubTopic, bVIn))
+			require.NoError(t, globalValQueue.Publish(globalVInSubTopic, bVIn))
 
 			select {
 			case msg := <-globalVOutSub.C():
@@ -126,13 +122,13 @@ func TestValidateMessagesError(t *testing.T) {
 	require.NoError(t, err)
 
 	dev := random.Device("val", createOrg.Id)
-	dev.Status = api.Status_ACTIVE
+	dev.Status = common.Status_ACTIVE
 	createDev, err := globalDevDAO.Create(ctx, dev)
 	t.Logf("createDev, err: %+v, %v", createDev, err)
 	require.NoError(t, err)
 
 	disDev := random.Device("val", createOrg.Id)
-	disDev.Status = api.Status_DISABLED
+	disDev.Status = common.Status_DISABLED
 	createDisDev, err := globalDevDAO.Create(ctx, disDev)
 	t.Logf("createDisDev, err: %+v, %v", createDisDev, err)
 	require.NoError(t, err)
@@ -177,7 +173,7 @@ func TestValidateMessagesError(t *testing.T) {
 				t.Logf("bVIn: %s", bVIn)
 			}
 
-			require.NoError(t, globalVInQueue.Publish(globalVInSubTopic, bVIn))
+			require.NoError(t, globalValQueue.Publish(globalVInSubTopic, bVIn))
 
 			select {
 			case msg := <-globalVOutSub.C():

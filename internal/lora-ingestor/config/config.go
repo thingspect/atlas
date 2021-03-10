@@ -17,9 +17,9 @@ type Config struct {
 	MQTTShared bool
 
 	NSQPubAddr      string
-	NSQPubGWTopic   string
-	NSQPubDevTopic  string
-	NSQPubDataTopic string
+	NSQGWPubTopic   string
+	NSQDevPubTopic  string
+	NSQDataPubTopic string
 	Concurrency     int
 }
 
@@ -35,9 +35,9 @@ func New() *Config {
 		MQTTShared: config.Bool(pref+"MQTT_SHARED", true),
 
 		NSQPubAddr:      config.String(pref+"NSQ_PUB_ADDR", "127.0.0.1:4150"),
-		NSQPubGWTopic:   config.String(pref+"NSQ_PUB_GW_TOPIC", "ValidatorIn"),
-		NSQPubDevTopic:  config.String(pref+"NSQ_PUB_DEV_TOPIC", "ValidatorIn"),
-		NSQPubDataTopic: config.String(pref+"NSQ_PUB_DATA_TOPIC", "DecoderIn"),
+		NSQGWPubTopic:   config.String(pref+"NSQ_GW_PUB_TOPIC", "ValidatorIn"),
+		NSQDevPubTopic:  config.String(pref+"NSQ_DEV_PUB_TOPIC", "ValidatorIn"),
+		NSQDataPubTopic: config.String(pref+"NSQ_DATA_PUB_TOPIC", "DecoderIn"),
 		Concurrency:     config.Int(pref+"CONCURRENCY", 5),
 	}
 }

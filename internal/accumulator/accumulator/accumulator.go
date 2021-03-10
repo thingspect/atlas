@@ -28,9 +28,10 @@ type datapointer interface {
 
 // Accumulator holds references to the database and message broker connections.
 type Accumulator struct {
-	dpDAO     datapointer
-	vOutQueue queue.Queuer
-	vOutSub   queue.Subber
+	dpDAO datapointer
+
+	accQueue queue.Queuer
+	vOutSub  queue.Subber
 }
 
 // New builds a new Accumulator and returns a reference to it and an error
@@ -56,9 +57,10 @@ func New(cfg *config.Config) (*Accumulator, error) {
 	}
 
 	return &Accumulator{
-		dpDAO:     datapoint.NewDAO(pg),
-		vOutQueue: nsq,
-		vOutSub:   vOutSub,
+		dpDAO: datapoint.NewDAO(pg),
+
+		accQueue: nsq,
+		vOutSub:  vOutSub,
 	}, nil
 }
 
@@ -77,5 +79,5 @@ func (acc *Accumulator) Serve(concurrency int) {
 	if err := acc.vOutSub.Unsubscribe(); err != nil {
 		alog.Errorf("Serve acc.subber.Unsubscribe: %v", err)
 	}
-	acc.vOutQueue.Disconnect()
+	acc.accQueue.Disconnect()
 }

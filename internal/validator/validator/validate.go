@@ -5,7 +5,7 @@ import (
 	"errors"
 	"time"
 
-	"github.com/thingspect/api/go/api"
+	"github.com/thingspect/api/go/common"
 	"github.com/thingspect/atlas/api/go/message"
 	"github.com/thingspect/atlas/pkg/alog"
 	"github.com/thingspect/atlas/pkg/dao"
@@ -76,7 +76,7 @@ func (val *Validator) validateMessages() {
 				"actual: %v", dev.OrgId, vIn.OrgId)
 
 			continue
-		case dev.Status != api.Status_ACTIVE:
+		case dev.Status != common.Status_ACTIVE:
 			msg.Ack()
 			metric.Incr("invalid", map[string]string{"func": "disabled"})
 			logger.Debugf("validateMessages device disabled: %+v", vIn)
@@ -93,9 +93,8 @@ func (val *Validator) validateMessages() {
 
 		// Build and publish ValidatorOut message.
 		vOut := &message.ValidatorOut{
-			Point: vIn.Point,
-			OrgId: dev.OrgId,
-			DevId: dev.Id,
+			Point:  vIn.Point,
+			Device: dev,
 		}
 
 		bVOut, err := proto.Marshal(vOut)
@@ -107,13 +106,14 @@ func (val *Validator) validateMessages() {
 			continue
 		}
 
-		if err = val.vOutQueue.Publish(val.vOutPubTopic, bVOut); err != nil {
+		if err = val.valQueue.Publish(val.vOutPubTopic, bVOut); err != nil {
 			msg.Requeue()
 			metric.Incr("error", map[string]string{"func": "publish"})
 			logger.Errorf("validateMessages val.pub.Publish: %v", err)
 
 			continue
 		}
+
 		msg.Ack()
 		metric.Incr("published", nil)
 		logger.Debugf("validateMessages published: %+v", vOut)

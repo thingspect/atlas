@@ -10,7 +10,7 @@ import (
 	time "time"
 
 	gomock "github.com/golang/mock/gomock"
-	api "github.com/thingspect/api/go/api"
+	common "github.com/thingspect/api/go/common"
 )
 
 // MockDevicer is a mock of Devicer interface.
@@ -37,10 +37,10 @@ func (m *MockDevicer) EXPECT() *MockDevicerMockRecorder {
 }
 
 // Create mocks base method.
-func (m *MockDevicer) Create(ctx context.Context, dev *api.Device) (*api.Device, error) {
+func (m *MockDevicer) Create(ctx context.Context, dev *common.Device) (*common.Device, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Create", ctx, dev)
-	ret0, _ := ret[0].(*api.Device)
+	ret0, _ := ret[0].(*common.Device)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
@@ -66,10 +66,10 @@ func (mr *MockDevicerMockRecorder) Delete(ctx, devID, orgID interface{}) *gomock
 }
 
 // List mocks base method.
-func (m *MockDevicer) List(ctx context.Context, orgID string, lBoundTS time.Time, prevID string, limit int32, tag string) ([]*api.Device, int32, error) {
+func (m *MockDevicer) List(ctx context.Context, orgID string, lBoundTS time.Time, prevID string, limit int32, tag string) ([]*common.Device, int32, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "List", ctx, orgID, lBoundTS, prevID, limit, tag)
-	ret0, _ := ret[0].([]*api.Device)
+	ret0, _ := ret[0].([]*common.Device)
 	ret1, _ := ret[1].(int32)
 	ret2, _ := ret[2].(error)
 	return ret0, ret1, ret2
@@ -82,10 +82,10 @@ func (mr *MockDevicerMockRecorder) List(ctx, orgID, lBoundTS, prevID, limit, tag
 }
 
 // Read mocks base method.
-func (m *MockDevicer) Read(ctx context.Context, devID, orgID string) (*api.Device, error) {
+func (m *MockDevicer) Read(ctx context.Context, devID, orgID string) (*common.Device, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Read", ctx, devID, orgID)
-	ret0, _ := ret[0].(*api.Device)
+	ret0, _ := ret[0].(*common.Device)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
@@ -97,10 +97,10 @@ func (mr *MockDevicerMockRecorder) Read(ctx, devID, orgID interface{}) *gomock.C
 }
 
 // Update mocks base method.
-func (m *MockDevicer) Update(ctx context.Context, dev *api.Device) (*api.Device, error) {
+func (m *MockDevicer) Update(ctx context.Context, dev *common.Device) (*common.Device, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Update", ctx, dev)
-	ret0, _ := ret[0].(*api.Device)
+	ret0, _ := ret[0].(*common.Device)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }

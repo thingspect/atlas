@@ -9,7 +9,7 @@ import (
 	"os/signal"
 	"syscall"
 
-	"github.com/thingspect/api/go/api"
+	"github.com/thingspect/api/go/common"
 	"github.com/thingspect/atlas/internal/validator/config"
 	"github.com/thingspect/atlas/pkg/alog"
 	"github.com/thingspect/atlas/pkg/dao"
@@ -23,14 +23,15 @@ const (
 
 // devicer defines the methods provided by a device.DAO.
 type devicer interface {
-	ReadByUniqID(ctx context.Context, uniqID string) (*api.Device, error)
+	ReadByUniqID(ctx context.Context, uniqID string) (*common.Device, error)
 }
 
 // Validator holds references to the database and message broker connections.
 type Validator struct {
-	devDAO       devicer
+	devDAO devicer
+
+	valQueue     queue.Queuer
 	vInSub       queue.Subber
-	vOutQueue    queue.Queuer
 	vOutPubTopic string
 }
 
@@ -56,9 +57,10 @@ func New(cfg *config.Config) (*Validator, error) {
 	}
 
 	return &Validator{
-		devDAO:       device.NewDAO(pg),
+		devDAO: device.NewDAO(pg),
+
+		valQueue:     nsq,
 		vInSub:       vInSub,
-		vOutQueue:    nsq,
 		vOutPubTopic: cfg.NSQPubTopic,
 	}, nil
 }
@@ -78,5 +80,5 @@ func (val *Validator) Serve(concurrency int) {
 	if err := val.vInSub.Unsubscribe(); err != nil {
 		alog.Errorf("Serve val.subber.Unsubscribe: %v", err)
 	}
-	val.vOutQueue.Disconnect()
+	val.valQueue.Disconnect()
 }

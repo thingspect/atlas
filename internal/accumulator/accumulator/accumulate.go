@@ -22,7 +22,7 @@ func (acc *Accumulator) accumulateMessages() {
 		metric.Incr("received", nil)
 		vOut := &message.ValidatorOut{}
 		err := proto.Unmarshal(msg.Payload(), vOut)
-		if err != nil || vOut.Point == nil {
+		if err != nil || vOut.Point == nil || vOut.Device == nil {
 			msg.Ack()
 			metric.Incr("error", map[string]string{"func": "unmarshal"})
 			alog.Errorf("accumulateMessages proto.Unmarshal vOut, err: %+v, %v",
@@ -34,15 +34,15 @@ func (acc *Accumulator) accumulateMessages() {
 		// Set up logging fields.
 		logFields := map[string]interface{}{
 			"traceID": vOut.Point.TraceId,
-			"orgID":   vOut.OrgId,
+			"orgID":   vOut.Device.OrgId,
 			"uniqID":  vOut.Point.UniqId,
-			"devID":   vOut.DevId,
+			"devID":   vOut.Device.Id,
 		}
 		logger := alog.WithFields(logFields)
 
 		// Create data point.
 		ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
-		err = acc.dpDAO.Create(ctx, vOut.Point, vOut.OrgId)
+		err = acc.dpDAO.Create(ctx, vOut.Point, vOut.Device.OrgId)
 		cancel()
 		if errors.Is(err, dao.ErrAlreadyExists) {
 			msg.Ack()

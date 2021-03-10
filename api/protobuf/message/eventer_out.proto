@@ -1,0 +1,19 @@
+syntax = "proto3";
+package thingspect.int.message;
+
+import "common/datapoint.proto";
+import "common/device.proto";
+
+option go_package = "github.com/thingspect/atlas/api/go/message";
+
+// EventerOut represents a data point and associated metadata as used in message queues.
+message EventerOut {
+  // Data point.
+  common.DataPoint point = 1;
+
+  // Device.
+  common.Device device = 2;
+
+  // Rule ID (UUID).
+  string rule_id = 3;
+}

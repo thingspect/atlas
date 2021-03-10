@@ -222,7 +222,7 @@ func TestUpdateRule(t *testing.T) {
 
 		rule := random.Rule("api-rule", uuid.NewString())
 		retRule, _ := proto.Clone(rule).(*api.Rule)
-		part := &api.Rule{Id: rule.Id, Status: api.Status_ACTIVE, Expr: `true`}
+		part := &api.Rule{Id: rule.Id, Status: common.Status_ACTIVE, Expr: `true`}
 		merged := &api.Rule{Id: rule.Id, OrgId: rule.OrgId, Name: rule.Name,
 			Status: part.Status, Tag: rule.Tag, Attr: rule.Attr,
 			Expr: part.Expr}
@@ -322,7 +322,7 @@ func TestUpdateRule(t *testing.T) {
 		t.Parallel()
 
 		orgID := uuid.NewString()
-		part := &api.Rule{Id: uuid.NewString(), Status: api.Status_ACTIVE}
+		part := &api.Rule{Id: uuid.NewString(), Status: common.Status_ACTIVE}
 
 		ruler := NewMockRuler(gomock.NewController(t))
 		ruler.EXPECT().Read(gomock.Any(), part.Id, orgID).

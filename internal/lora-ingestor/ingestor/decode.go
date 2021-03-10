@@ -46,7 +46,7 @@ func (ing *Ingestor) decodeGateways() {
 
 		// Decode payload. Continue execution in the presence of errors, as
 		// valid points may be returned.
-		points, err := gateway.Gateway(topicParts[4], msg.Payload())
+		points, err := gateway.Parse(topicParts[4], msg.Payload())
 		if err != nil {
 			metric.Incr("error", map[string]string{"func": "decode"})
 			logger.Errorf("decodeGateways gateway.Gateway: %v", err)
@@ -67,7 +67,7 @@ func (ing *Ingestor) decodeGateways() {
 				continue
 			}
 
-			if err = ing.decoderQueue.Publish(ing.decoderPubGWTopic,
+			if err = ing.ingQueue.Publish(ing.vInGWPubTopic,
 				bVIn); err != nil {
 				metric.Incr("error", map[string]string{"func": "publish"})
 				logger.Errorf("decodeGateways ing.decoderQueue.Publish: %v",
@@ -121,7 +121,7 @@ func (ing *Ingestor) decodeDevices() {
 
 		// Decode payload. Continue execution in the presence of errors, as
 		// valid points may be included.
-		points, ts, data, err := device.Device(topicParts[6], msg.Payload())
+		points, ts, data, err := device.Parse(topicParts[6], msg.Payload())
 		if err != nil {
 			metric.Incr("error", map[string]string{"func": "decode"})
 			logger.Errorf("decodeDevices device.Device: %v", err)
@@ -141,7 +141,7 @@ func (ing *Ingestor) decodeDevices() {
 				continue
 			}
 
-			if err = ing.decoderQueue.Publish(ing.decoderPubDevTopic,
+			if err = ing.ingQueue.Publish(ing.vInDevPubTopic,
 				bVIn); err != nil {
 				metric.Incr("error", map[string]string{"func": "publish"})
 				logger.Errorf("decodeDevices point ing.decoderQueue.Publish: "+
@@ -171,7 +171,7 @@ func (ing *Ingestor) decodeDevices() {
 				continue
 			}
 
-			if err = ing.decoderQueue.Publish(ing.decoderPubDataTopic,
+			if err = ing.ingQueue.Publish(ing.dInPubTopic,
 				bPIn); err != nil {
 				metric.Incr("error", map[string]string{"func": "publish"})
 				logger.Errorf("decodeDevices data ing.decoderQueue.Publish: %v",

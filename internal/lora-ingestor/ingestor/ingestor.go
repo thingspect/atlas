@@ -26,10 +26,10 @@ type Ingestor struct {
 	mqttGWSub  queue.Subber
 	mqttDevSub queue.Subber
 
-	decoderQueue        queue.Queuer
-	decoderPubGWTopic   string
-	decoderPubDevTopic  string
-	decoderPubDataTopic string
+	ingQueue       queue.Queuer
+	vInGWPubTopic  string
+	vInDevPubTopic string
+	dInPubTopic    string
 }
 
 // New builds a new Ingestor and returns a reference to it and an error value.
@@ -78,10 +78,10 @@ func New(cfg *config.Config) (*Ingestor, error) {
 		mqttGWSub:  mqttGWSub,
 		mqttDevSub: mqttDevSub,
 
-		decoderQueue:        nsq,
-		decoderPubGWTopic:   cfg.NSQPubGWTopic,
-		decoderPubDevTopic:  cfg.NSQPubDevTopic,
-		decoderPubDataTopic: cfg.NSQPubDataTopic,
+		ingQueue:       nsq,
+		vInGWPubTopic:  cfg.NSQGWPubTopic,
+		vInDevPubTopic: cfg.NSQDevPubTopic,
+		dInPubTopic:    cfg.NSQDataPubTopic,
 	}, nil
 }
 
@@ -104,5 +104,5 @@ func (ing *Ingestor) Serve(concurrency int) {
 	if err := ing.mqttDevSub.Unsubscribe(); err != nil {
 		alog.Errorf("Serve ing.mqttDevSub.Unsubscribe: %v", err)
 	}
-	ing.decoderQueue.Disconnect()
+	ing.ingQueue.Disconnect()
 }

@@ -13,12 +13,12 @@ import (
 	"github.com/thingspect/atlas/pkg/test/random"
 )
 
-func TestDevice(t *testing.T) {
+func TestParse(t *testing.T) {
 	t.Parallel()
 
 	badEvent := random.String(10)
 
-	// Trivial device payloads, see Device() for format description. Parsers
+	// Trivial device payloads, see Parse() for format description. Parsers
 	// are exercised more thoroughly in their respective tests.
 	tests := []struct {
 		inpEvent string
@@ -64,7 +64,7 @@ func TestDevice(t *testing.T) {
 			bInpBody, err := hex.DecodeString(lTest.inpBody)
 			require.NoError(t, err)
 
-			res, ts, data, err := Device(lTest.inpEvent, bInpBody)
+			res, ts, data, err := Parse(lTest.inpEvent, bInpBody)
 			t.Logf("res, ts, data, err: %#v, %v, %x, %v", res, ts, data, err)
 			require.Equal(t, lTest.res, res)
 			if ts != nil {

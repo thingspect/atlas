@@ -35,27 +35,27 @@ func TestPublishDataPoints(t *testing.T) {
 			ValOneof: &common.DataPoint_IntVal{IntVal: 123},
 			Ts:       timestamppb.New(time.Now().Add(-15 * time.Minute))}
 
-		pubQueue := queue.NewFake()
-		pubSub, err := pubQueue.Subscribe("")
+		dpQueue := queue.NewFake()
+		vInSub, err := dpQueue.Subscribe("")
 		require.NoError(t, err)
-		pubTopic := "topic-" + random.String(10)
+		vInPubTopic := "topic-" + random.String(10)
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
 			context.Background(), &session.Session{OrgID: orgID,
 				Role: common.Role_ADMIN}), testTimeout)
 		defer cancel()
 
-		dpSvc := NewDataPoint(pubQueue, pubTopic, nil)
+		dpSvc := NewDataPoint(dpQueue, vInPubTopic, nil)
 		_, err = dpSvc.PublishDataPoints(ctx, &api.PublishDataPointsRequest{
 			Points: []*common.DataPoint{point}})
 		t.Logf("err: %v", err)
 		require.NoError(t, err)
 
 		select {
-		case msg := <-pubSub.C():
+		case msg := <-vInSub.C():
 			msg.Ack()
 			t.Logf("msg.Topic, msg.Payload: %v, %s", msg.Topic(), msg.Payload())
-			require.Equal(t, pubTopic, msg.Topic())
+			require.Equal(t, vInPubTopic, msg.Topic())
 
 			vIn := &message.ValidatorIn{}
 			require.NoError(t, proto.Unmarshal(msg.Payload(), vIn))

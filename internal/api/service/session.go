@@ -50,7 +50,7 @@ func (s *Session) Login(ctx context.Context,
 		user.OrgId)
 
 	if err := crypto.CompareHashPass(hash, req.Password); err != nil ||
-		user.Status != api.Status_ACTIVE || user.Role < common.Role_VIEWER {
+		user.Status != common.Status_ACTIVE || user.Role < common.Role_VIEWER {
 		logger.Debugf("Login crypto.CompareHashPass err, user.Status: %v, %s",
 			err, user.Status)
 

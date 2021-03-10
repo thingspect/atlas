@@ -11,7 +11,6 @@ import (
 	"github.com/golang/mock/gomock"
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/require"
-	"github.com/thingspect/api/go/api"
 	"github.com/thingspect/api/go/common"
 	"github.com/thingspect/atlas/api/go/message"
 	"github.com/thingspect/atlas/pkg/dao"
@@ -27,8 +26,8 @@ func TestValidateMessages(t *testing.T) {
 	t.Parallel()
 
 	dev := random.Device("val", uuid.NewString())
+	dev.Status = common.Status_ACTIVE
 	now := timestamppb.New(time.Now().Add(-15 * time.Minute))
-	dev.Status = api.Status_ACTIVE
 	traceID := uuid.NewString()
 	boolVal := &common.DataPoint_BoolVal{BoolVal: []bool{true,
 		false}[random.Intn(2)]}
@@ -42,34 +41,32 @@ func TestValidateMessages(t *testing.T) {
 			Ts: now, Token: dev.Token, TraceId: traceID}, OrgId: dev.OrgId},
 			&message.ValidatorOut{Point: &common.DataPoint{UniqId: dev.UniqId,
 				Attr: "motion", ValOneof: &common.DataPoint_IntVal{IntVal: 123},
-				Ts: now, Token: dev.Token, TraceId: traceID}, OrgId: dev.OrgId,
-				DevId: dev.Id}},
+				Ts: now, Token: dev.Token, TraceId: traceID}, Device: dev}},
 		{&message.ValidatorIn{Point: &common.DataPoint{UniqId: dev.UniqId,
 			Attr: "temp", ValOneof: &common.DataPoint_Fl64Val{Fl64Val: 9.3},
 			Ts: now, Token: dev.Token, TraceId: traceID}, OrgId: dev.OrgId},
 			&message.ValidatorOut{Point: &common.DataPoint{UniqId: dev.UniqId,
 				Attr: "temp", ValOneof: &common.DataPoint_Fl64Val{Fl64Val: 9.3},
-				Ts: now, Token: dev.Token, TraceId: traceID}, OrgId: dev.OrgId,
-				DevId: dev.Id}},
+				Ts: now, Token: dev.Token, TraceId: traceID}, Device: dev}},
 		{&message.ValidatorIn{Point: &common.DataPoint{UniqId: dev.UniqId,
 			Attr: "power", ValOneof: &common.DataPoint_StrVal{StrVal: "batt"},
 			Ts: now, Token: dev.Token, TraceId: traceID}, OrgId: dev.OrgId},
 			&message.ValidatorOut{Point: &common.DataPoint{UniqId: dev.UniqId,
 				Attr: "power", ValOneof: &common.DataPoint_StrVal{
 					StrVal: "batt"}, Ts: now, Token: dev.Token,
-				TraceId: traceID}, OrgId: dev.OrgId, DevId: dev.Id}},
+				TraceId: traceID}, Device: dev}},
 		{&message.ValidatorIn{Point: &common.DataPoint{UniqId: dev.UniqId,
 			Attr: "leak", ValOneof: boolVal, Ts: now, TraceId: traceID},
 			OrgId: dev.OrgId, SkipToken: true},
 			&message.ValidatorOut{Point: &common.DataPoint{UniqId: dev.UniqId,
 				Attr: "leak", ValOneof: boolVal, Ts: now, TraceId: traceID},
-				OrgId: dev.OrgId, DevId: dev.Id}},
+				Device: dev}},
 		{&message.ValidatorIn{Point: &common.DataPoint{UniqId: dev.UniqId,
 			Attr: "leak", ValOneof: boolVal, Ts: now, TraceId: traceID},
 			SkipToken: true},
 			&message.ValidatorOut{Point: &common.DataPoint{UniqId: dev.UniqId,
 				Attr: "leak", ValOneof: boolVal, Ts: now, TraceId: traceID},
-				OrgId: dev.OrgId, DevId: dev.Id}},
+				Device: dev}},
 	}
 
 	for _, test := range tests {
@@ -82,8 +79,8 @@ func TestValidateMessages(t *testing.T) {
 			vInSub, err := vInQueue.Subscribe("")
 			require.NoError(t, err)
 
-			vOutQueue := queue.NewFake()
-			vOutSub, err := vOutQueue.Subscribe("")
+			valQueue := queue.NewFake()
+			vOutSub, err := valQueue.Subscribe("")
 			require.NoError(t, err)
 			vOutPubTopic := "topic-" + random.String(10)
 
@@ -92,9 +89,10 @@ func TestValidateMessages(t *testing.T) {
 				Return(dev, nil).Times(1)
 
 			val := Validator{
-				devDAO:       devicer,
+				devDAO: devicer,
+
+				valQueue:     valQueue,
 				vInSub:       vInSub,
-				vOutQueue:    vOutQueue,
 				vOutPubTopic: vOutPubTopic,
 			}
 			go func() {
@@ -137,38 +135,38 @@ func TestValidateMessagesError(t *testing.T) {
 
 	tests := []struct {
 		inpVIn    *message.ValidatorIn
-		inpStatus api.Status
+		inpStatus common.Status
 		inpErr    error
 		inpTimes  int
 	}{
 		// Bad payload.
-		{nil, api.Status_ACTIVE, nil, 0},
+		{nil, common.Status_ACTIVE, nil, 0},
 		// Missing data point.
-		{&message.ValidatorIn{}, api.Status_ACTIVE, nil, 0},
+		{&message.ValidatorIn{}, common.Status_ACTIVE, nil, 0},
 		// Device not found.
-		{&message.ValidatorIn{Point: &common.DataPoint{}}, api.Status_ACTIVE,
+		{&message.ValidatorIn{Point: &common.DataPoint{}}, common.Status_ACTIVE,
 			dao.ErrNotFound, 1},
 		// Devicer error.
-		{&message.ValidatorIn{Point: &common.DataPoint{}}, api.Status_ACTIVE,
+		{&message.ValidatorIn{Point: &common.DataPoint{}}, common.Status_ACTIVE,
 			errTestProc, 1},
 		// Missing value.
-		{&message.ValidatorIn{Point: &common.DataPoint{}}, api.Status_ACTIVE,
+		{&message.ValidatorIn{Point: &common.DataPoint{}}, common.Status_ACTIVE,
 			nil, 1},
 		// Invalid org ID.
 		{&message.ValidatorIn{Point: &common.DataPoint{
 			UniqId: random.String(16), Attr: random.String(10),
 			ValOneof: &common.DataPoint_IntVal{}}, OrgId: "val-aaa"},
-			api.Status_ACTIVE, nil, 1},
+			common.Status_ACTIVE, nil, 1},
 		// Device status.
 		{&message.ValidatorIn{Point: &common.DataPoint{
 			UniqId: random.String(16), Attr: random.String(10),
 			ValOneof: &common.DataPoint_IntVal{}}, OrgId: orgID},
-			api.Status_DISABLED, nil, 1},
+			common.Status_DISABLED, nil, 1},
 		// Invalid token.
 		{&message.ValidatorIn{Point: &common.DataPoint{
 			UniqId: random.String(16), Attr: random.String(10),
 			ValOneof: &common.DataPoint_IntVal{}, Token: "val-aaa"},
-			OrgId: orgID}, api.Status_ACTIVE, nil, 1},
+			OrgId: orgID}, common.Status_ACTIVE, nil, 1},
 	}
 
 	for _, test := range tests {
@@ -184,8 +182,8 @@ func TestValidateMessagesError(t *testing.T) {
 			vInSub, err := vInQueue.Subscribe("")
 			require.NoError(t, err)
 
-			vOutQueue := queue.NewFake()
-			vOutSub, err := vOutQueue.Subscribe("")
+			valQueue := queue.NewFake()
+			vOutSub, err := valQueue.Subscribe("")
 			require.NoError(t, err)
 
 			devicer := NewMockdevicer(gomock.NewController(t))
@@ -193,9 +191,10 @@ func TestValidateMessagesError(t *testing.T) {
 				Return(dev, lTest.inpErr).Times(lTest.inpTimes)
 
 			val := Validator{
-				devDAO:       devicer,
+				devDAO: devicer,
+
+				valQueue:     valQueue,
 				vInSub:       vInSub,
-				vOutQueue:    vOutQueue,
 				vOutPubTopic: "topic-" + random.String(10),
 			}
 			go func() {

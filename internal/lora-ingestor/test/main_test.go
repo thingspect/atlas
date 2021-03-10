@@ -7,7 +7,6 @@ import (
 	"log"
 	"os"
 	"testing"
-	"time"
 
 	"github.com/thingspect/atlas/internal/lora-ingestor/config"
 	"github.com/thingspect/atlas/internal/lora-ingestor/ingestor"
@@ -16,17 +15,15 @@ import (
 	"github.com/thingspect/atlas/pkg/test/random"
 )
 
-const testTimeout = 6 * time.Second
-
 var (
 	globalMQTTQueue queue.Queuer
 
-	globalDecoderPubGWTopic   string
-	globalDecoderPubDevTopic  string
-	globalDecoderPubDataTopic string
-	globalDecoderGWSub        queue.Subber
-	globalDecoderDevSub       queue.Subber
-	globalDecoderDataSub      queue.Subber
+	globalVInGWPubTopic  string
+	globalVInDevPubTopic string
+	globalDInPubTopic    string
+	globalVInGWSub       queue.Subber
+	globalVInDevSub      queue.Subber
+	globalDInDataSub     queue.Subber
 )
 
 func TestMain(m *testing.M) {
@@ -36,15 +33,15 @@ func TestMain(m *testing.M) {
 	cfg.MQTTAddr = testConfig.MQTTAddr
 
 	cfg.NSQPubAddr = testConfig.NSQPubAddr
-	cfg.NSQPubGWTopic += "-test-" + random.String(10)
-	globalDecoderPubGWTopic = cfg.NSQPubGWTopic
-	log.Printf("TestMain cfg.NSQPubGWTopic: %v", cfg.NSQPubGWTopic)
-	cfg.NSQPubDevTopic += "-test-" + random.String(10)
-	globalDecoderPubDevTopic = cfg.NSQPubDevTopic
-	log.Printf("TestMain cfg.NSQPubDevTopic: %v", cfg.NSQPubDevTopic)
-	cfg.NSQPubDataTopic += "-test-" + random.String(10)
-	globalDecoderPubDataTopic = cfg.NSQPubDataTopic
-	log.Printf("TestMain cfg.NSQPubDataTopic: %v", cfg.NSQPubDataTopic)
+	cfg.NSQGWPubTopic += "-test-" + random.String(10)
+	globalVInGWPubTopic = cfg.NSQGWPubTopic
+	log.Printf("TestMain cfg.NSQPubGWTopic: %v", cfg.NSQGWPubTopic)
+	cfg.NSQDevPubTopic += "-test-" + random.String(10)
+	globalVInDevPubTopic = cfg.NSQDevPubTopic
+	log.Printf("TestMain cfg.NSQPubDevTopic: %v", cfg.NSQDevPubTopic)
+	cfg.NSQDataPubTopic += "-test-" + random.String(10)
+	globalDInPubTopic = cfg.NSQDataPubTopic
+	log.Printf("TestMain cfg.NSQPubDataTopic: %v", cfg.NSQDataPubTopic)
 
 	// Set up MQTT client connection to publish test payloads.
 	var err error
@@ -78,15 +75,15 @@ func TestMain(m *testing.M) {
 		log.Fatalf("TestMain queue.NewNSQ: %v", err)
 	}
 
-	globalDecoderGWSub, err = nsq.Subscribe(cfg.NSQPubGWTopic)
+	globalVInGWSub, err = nsq.Subscribe(cfg.NSQGWPubTopic)
 	if err != nil {
 		log.Fatalf("TestMain GW nsq.Subscribe: %v", err)
 	}
-	globalDecoderDevSub, err = nsq.Subscribe(cfg.NSQPubDevTopic)
+	globalVInDevSub, err = nsq.Subscribe(cfg.NSQDevPubTopic)
 	if err != nil {
 		log.Fatalf("TestMain Dev nsq.Subscribe: %v", err)
 	}
-	globalDecoderDataSub, err = nsq.Subscribe(cfg.NSQPubDataTopic)
+	globalDInDataSub, err = nsq.Subscribe(cfg.NSQDataPubTopic)
 	if err != nil {
 		log.Fatalf("TestMain Data nsq.Subscribe: %v", err)
 	}

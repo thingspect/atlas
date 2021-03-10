@@ -44,7 +44,7 @@ func authGRPCConn(role common.Role) (string, *grpc.ClientConn, error) {
 
 	user := random.User("api-helper", createOrg.Id)
 	user.Role = role
-	user.Status = api.Status_ACTIVE
+	user.Status = common.Status_ACTIVE
 	createUser, err := globalUserDAO.Create(ctx, user)
 	if err != nil {
 		return "", nil, err

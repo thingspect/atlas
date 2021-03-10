@@ -21,6 +21,8 @@ import (
 	"github.com/thingspect/atlas/pkg/test/random"
 )
 
+const testTimeout = 6 * time.Second
+
 func TestDecodeGateways(t *testing.T) {
 	uniqID := random.String(16)
 
@@ -87,11 +89,11 @@ func TestDecodeGateways(t *testing.T) {
 			// messages orphaned in the queue.
 			for _, res := range lTest.res {
 				select {
-				case msg := <-globalDecoderGWSub.C():
+				case msg := <-globalVInGWSub.C():
 					msg.Ack()
 					t.Logf("GW msg.Topic, msg.Payload: %v, %s", msg.Topic(),
 						msg.Payload())
-					assert.Equal(t, globalDecoderPubGWTopic, msg.Topic())
+					assert.Equal(t, globalVInGWPubTopic, msg.Topic())
 
 					vIn := &message.ValidatorIn{}
 					assert.NoError(t, proto.Unmarshal(msg.Payload(), vIn))
@@ -207,11 +209,11 @@ func TestDecodeDevices(t *testing.T) {
 			// messages orphaned in the queue.
 			for _, res := range lTest.resVIn {
 				select {
-				case msg := <-globalDecoderDevSub.C():
+				case msg := <-globalVInDevSub.C():
 					msg.Ack()
 					t.Logf("Dev msg.Topic, msg.Payload: %v, %s", msg.Topic(),
 						msg.Payload())
-					assert.Equal(t, globalDecoderPubDevTopic, msg.Topic())
+					assert.Equal(t, globalVInDevPubTopic, msg.Topic())
 
 					vIn := &message.ValidatorIn{}
 					assert.NoError(t, proto.Unmarshal(msg.Payload(), vIn))
@@ -237,11 +239,11 @@ func TestDecodeDevices(t *testing.T) {
 
 			if lTest.resPIn != nil {
 				select {
-				case msg := <-globalDecoderDataSub.C():
+				case msg := <-globalDInDataSub.C():
 					msg.Ack()
 					t.Logf("Data msg.Topic, msg.Payload: %v, %s", msg.Topic(),
 						msg.Payload())
-					require.Equal(t, globalDecoderPubDataTopic, msg.Topic())
+					require.Equal(t, globalDInPubTopic, msg.Topic())
 
 					pIn := &message.DecoderIn{}
 					require.NoError(t, proto.Unmarshal(msg.Payload(), pIn))
@@ -293,10 +295,10 @@ func TestDecodeGatewaysDevicesError(t *testing.T) {
 				lTest.inpPayl))
 
 			select {
-			case msg := <-globalDecoderGWSub.C():
+			case msg := <-globalVInGWSub.C():
 				t.Fatalf("Received unexpected msg.Topic, msg.Payload: %v, %s",
 					msg.Topic(), msg.Payload())
-			case msg := <-globalDecoderDevSub.C():
+			case msg := <-globalVInDevSub.C():
 				t.Fatalf("Received unexpected msg.Topic, msg.Payload: %v, %s",
 					msg.Topic(), msg.Payload())
 			case <-time.After(500 * time.Millisecond):

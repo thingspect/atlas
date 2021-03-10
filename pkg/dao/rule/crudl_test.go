@@ -10,6 +10,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/require"
 	"github.com/thingspect/api/go/api"
+	"github.com/thingspect/api/go/common"
 	"github.com/thingspect/atlas/pkg/dao"
 	"github.com/thingspect/atlas/pkg/test/random"
 	"google.golang.org/protobuf/proto"
@@ -153,7 +154,7 @@ func TestUpdate(t *testing.T) {
 
 		// Update rule fields.
 		createRule.Name = "dao-rule-" + random.String(10)
-		createRule.Status = api.Status_DISABLED
+		createRule.Status = common.Status_DISABLED
 		updateRule, _ := proto.Clone(createRule).(*api.Rule)
 
 		updateRule, err = globalRuleDAO.Update(ctx, updateRule)
@@ -309,7 +310,7 @@ func TestList(t *testing.T) {
 
 	ruleIDs := []string{}
 	ruleNames := []string{}
-	ruleStatuses := []api.Status{}
+	ruleStatuses := []common.Status{}
 	ruleTSes := []time.Time{}
 	for i := 0; i < 3; i++ {
 		createRule, err := globalRuleDAO.Create(ctx, random.Rule("dao-rule",
@@ -415,6 +416,101 @@ func TestList(t *testing.T) {
 			err)
 		require.Nil(t, listRules)
 		require.Equal(t, int32(0), listCount)
+		require.ErrorIs(t, err, dao.ErrInvalidFormat)
+	})
+}
+
+func TestListByTags(t *testing.T) {
+	t.Parallel()
+
+	ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
+	defer cancel()
+
+	createOrg, err := globalOrgDAO.Create(ctx, random.Org("dao-rule"))
+	t.Logf("createOrg, err: %+v, %v", createOrg, err)
+	require.NoError(t, err)
+
+	ruleIDs := []string{}
+	ruleTags := []string{}
+	ruleAttrs := []string{}
+	for i := 0; i < 3; i++ {
+		rule := random.Rule("dao-rule", createOrg.Id)
+		rule.Status = common.Status_ACTIVE
+		createRule, err := globalRuleDAO.Create(ctx, rule)
+		t.Logf("createRule, err: %+v, %v", createRule, err)
+		require.NoError(t, err)
+
+		ruleIDs = append(ruleIDs, createRule.Id)
+		ruleTags = append(ruleTags, createRule.Tag)
+		ruleAttrs = append(ruleAttrs, createRule.Attr)
+	}
+
+	t.Run("List rules by valid org ID and unique attr", func(t *testing.T) {
+		t.Parallel()
+
+		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
+		defer cancel()
+
+		listRules, err := globalRuleDAO.ListByTags(ctx, createOrg.Id, ruleTags,
+			ruleAttrs[len(ruleAttrs)-1])
+		t.Logf("listRules, err: %+v, %v", listRules, err)
+		require.NoError(t, err)
+		require.Len(t, listRules, 1)
+		require.Equal(t, listRules[0].Id, ruleIDs[len(ruleIDs)-1])
+		require.Equal(t, listRules[0].Tag, ruleTags[len(ruleTags)-1])
+		require.Equal(t, listRules[0].Attr, ruleAttrs[len(ruleAttrs)-1])
+	})
+
+	t.Run("List rules by valid org ID and common attr", func(t *testing.T) {
+		t.Parallel()
+
+		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
+		defer cancel()
+
+		rule := random.Rule("dao-rule", createOrg.Id)
+		rule.Status = common.Status_ACTIVE
+		rule.Attr = ruleAttrs[0]
+
+		createRule, err := globalRuleDAO.Create(ctx, rule)
+		t.Logf("createRule, err: %+v, %v", createRule, err)
+		require.NoError(t, err)
+
+		lRuleTags := append(ruleTags, createRule.Tag)
+
+		listRules, err := globalRuleDAO.ListByTags(ctx, createOrg.Id, lRuleTags,
+			ruleAttrs[0])
+		t.Logf("listRules, err: %+v, %v", listRules, err)
+		require.NoError(t, err)
+		require.Len(t, listRules, 2)
+		for _, rule := range listRules {
+			require.Contains(t, lRuleTags, rule.Tag)
+			require.Equal(t, ruleAttrs[0], rule.Attr)
+		}
+	})
+
+	t.Run("Lists are isolated by org ID", func(t *testing.T) {
+		t.Parallel()
+
+		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
+		defer cancel()
+
+		listRules, err := globalRuleDAO.ListByTags(ctx, uuid.NewString(),
+			ruleTags, ruleAttrs[len(ruleAttrs)-1])
+		t.Logf("listRules, err: %+v, %v", listRules, err)
+		require.NoError(t, err)
+		require.Len(t, listRules, 0)
+	})
+
+	t.Run("List rules by invalid org ID", func(t *testing.T) {
+		t.Parallel()
+
+		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
+		defer cancel()
+
+		listRules, err := globalRuleDAO.ListByTags(ctx, random.String(10),
+			ruleTags, ruleAttrs[len(ruleAttrs)-1])
+		t.Logf("listRules, err: %+v, %v", listRules, err)
+		require.Nil(t, listRules)
 		require.ErrorIs(t, err, dao.ErrInvalidFormat)
 	})
 }

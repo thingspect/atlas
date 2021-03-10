@@ -60,7 +60,7 @@ func (d *DAO) Read(ctx context.Context, userID, orgID string) (*api.User,
 	}
 
 	user.Role = common.Role(common.Role_value[role])
-	user.Status = api.Status(api.Status_value[status])
+	user.Status = common.Status(common.Status_value[status])
 	if err := tags.AssignTo(&user.Tags); err != nil {
 		return nil, dao.DBToSentinel(err)
 	}
@@ -94,7 +94,7 @@ func (d *DAO) ReadByEmail(ctx context.Context, email,
 	}
 
 	user.Role = common.Role(common.Role_value[role])
-	user.Status = api.Status(api.Status_value[status])
+	user.Status = common.Status(common.Status_value[status])
 	if err := tags.AssignTo(&user.Tags); err != nil {
 		return nil, nil, dao.DBToSentinel(err)
 	}
@@ -276,7 +276,7 @@ func (d *DAO) List(ctx context.Context, orgID string, lBoundTS time.Time,
 		}
 
 		user.Role = common.Role(common.Role_value[role])
-		user.Status = api.Status(api.Status_value[status])
+		user.Status = common.Status(common.Status_value[status])
 		if err := tags.AssignTo(&user.Tags); err != nil {
 			return nil, 0, dao.DBToSentinel(err)
 		}
