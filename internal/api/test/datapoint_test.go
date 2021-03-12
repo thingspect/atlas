@@ -153,8 +153,6 @@ func TestListDataPoints(t *testing.T) {
 		t.Logf("createDev, err: %+v, %v", createDev, err)
 		require.NoError(t, err)
 
-		dpCli := api.NewDataPointServiceClient(globalAdminGRPCConn)
-
 		points := []*common.DataPoint{
 			{UniqId: createDev.UniqId, Attr: "motion",
 				ValOneof: &common.DataPoint_IntVal{IntVal: 123},
@@ -199,6 +197,7 @@ func TestListDataPoints(t *testing.T) {
 		defer cancel()
 
 		// Verify results by UniqID.
+		dpCli := api.NewDataPointServiceClient(globalAdminGRPCConn)
 		listPointsUniqID, err := dpCli.ListDataPoints(ctx,
 			&api.ListDataPointsRequest{
 				IdOneof: &api.ListDataPointsRequest_UniqId{
@@ -339,8 +338,6 @@ func TestLatestDataPoints(t *testing.T) {
 		t.Logf("createDev, err: %+v, %v", createDev, err)
 		require.NoError(t, err)
 
-		dpCli := api.NewDataPointServiceClient(globalAdminGRPCConn)
-
 		points := []*common.DataPoint{
 			{UniqId: createDev.UniqId, Attr: "motion",
 				ValOneof: &common.DataPoint_IntVal{IntVal: 123},
@@ -384,6 +381,7 @@ func TestLatestDataPoints(t *testing.T) {
 		defer cancel()
 
 		// Verify results by UniqID.
+		dpCli := api.NewDataPointServiceClient(globalAdminGRPCConn)
 		latPointsUniqID, err := dpCli.LatestDataPoints(ctx,
 			&api.LatestDataPointsRequest{
 				IdOneof: &api.LatestDataPointsRequest_UniqId{

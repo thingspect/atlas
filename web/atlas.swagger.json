@@ -17,6 +17,9 @@
       "name": "DeviceService"
     },
     {
+      "name": "EventService"
+    },
+    {
       "name": "OrgService"
     },
     {
@@ -74,7 +77,7 @@
           },
           {
             "name": "attr",
-            "description": "Device attribute. If not specified, all attributes are returned.",
+            "description": "Device attribute. If not specified, all attributes are included.",
             "in": "query",
             "required": false,
             "type": "string"
@@ -495,6 +498,100 @@
         ],
         "tags": [
           "DeviceService"
+        ]
+      }
+    },
+    "/v1/events": {
+      "get": {
+        "summary": "List all events for a device in a [end, start) time range, in descending timestamp order.",
+        "operationId": "EventService_ListEvents",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/apiListEventsResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "uniqID",
+            "description": "Device unique ID. Either unique ID or device ID must be provided.",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "devID",
+            "description": "Device ID (UUID). Either unique ID or device ID must be provided.",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "ruleID",
+            "description": "Rule ID (UUID). If not specified, all rules are included.",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "endTime",
+            "description": "Events range end time. Defaults to current time if not specified. Maximum supported time range is 90 days.",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "format": "date-time"
+          },
+          {
+            "name": "startTime",
+            "description": "Events range start time. Defaults to end_time - 24 hours if not specified or after end_time. Maximum supported time range is 90 days.",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "format": "date-time"
+          }
+        ],
+        "tags": [
+          "EventService"
+        ]
+      }
+    },
+    "/v1/events/latest": {
+      "get": {
+        "summary": "List the latest event for each of an organization's devices.",
+        "operationId": "EventService_LatestEvents",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/apiLatestEventsResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "ruleID",
+            "description": "Rule ID (UUID). If not specified, all rules are included.",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "EventService"
         ]
       }
     },
@@ -1390,6 +1487,33 @@
       },
       "description": "CreateDeviceLoRaWANRequest is sent to add LoRaWAN configuration to a device."
     },
+    "apiEvent": {
+      "type": "object",
+      "properties": {
+        "orgID": {
+          "type": "string",
+          "description": "Organization ID (UUID)."
+        },
+        "ruleID": {
+          "type": "string",
+          "description": "Rule ID (UUID)."
+        },
+        "uniqID": {
+          "type": "string",
+          "description": "Device unique ID."
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Event creation timestamp."
+        },
+        "traceId": {
+          "type": "string",
+          "description": "Trace ID (UUID)."
+        }
+      },
+      "description": "Event represents an event as stored in the database."
+    },
     "apiLatestDataPointsResponse": {
       "type": "object",
       "properties": {
@@ -1402,6 +1526,19 @@
         }
       },
       "description": "LatestDataPointsResponse is sent in response to a device latest list."
+    },
+    "apiLatestEventsResponse": {
+      "type": "object",
+      "properties": {
+        "events": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/apiEvent"
+          },
+          "description": "Event array, ordered by descending created_at timestamp."
+        }
+      },
+      "description": "LatestEventsResponse is sent in response to an organization latest list."
     },
     "apiListDataPointsResponse": {
       "type": "object",
@@ -1437,6 +1574,19 @@
         }
       },
       "description": "ListDevicesResponse is sent in response to a device list."
+    },
+    "apiListEventsResponse": {
+      "type": "object",
+      "properties": {
+        "events": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/apiEvent"
+          },
+          "description": "Event array, ordered by descending created_at timestamp."
+        }
+      },
+      "description": "ListEventsResponse is sent in response to a device events list."
     },
     "apiListOrgsResponse": {
       "type": "object",

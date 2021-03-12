@@ -104,7 +104,8 @@ func (d *DataPoint) PublishDataPoints(ctx context.Context,
 	return &emptypb.Empty{}, nil
 }
 
-// ListDataPoints retrieves all data points within a time range.
+// ListDataPoints retrieves all data points for a device in a [end, start) time
+// range, in descending timestamp order.
 func (d *DataPoint) ListDataPoints(ctx context.Context,
 	req *api.ListDataPointsRequest) (*api.ListDataPointsResponse, error) {
 	sess, ok := session.FromContext(ctx)

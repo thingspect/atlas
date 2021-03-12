@@ -359,9 +359,9 @@ func TestUpdateDevice(t *testing.T) {
 		retDev, _ := proto.Clone(dev).(*common.Device)
 		part := &common.Device{Id: dev.Id, Status: common.Status_ACTIVE,
 			Decoder: common.Decoder_GATEWAY}
-		merged := &common.Device{Id: dev.Id, OrgId: dev.OrgId, UniqId: dev.UniqId,
-			Name: dev.Name, Status: part.Status, Token: dev.Token,
-			Decoder: part.Decoder, Tags: dev.Tags}
+		merged := &common.Device{Id: dev.Id, OrgId: dev.OrgId,
+			UniqId: dev.UniqId, Name: dev.Name, Status: part.Status,
+			Token: dev.Token, Decoder: part.Decoder, Tags: dev.Tags}
 		retMerged, _ := proto.Clone(merged).(*common.Device)
 
 		devicer := NewMockDevicer(gomock.NewController(t))

@@ -21,6 +21,7 @@ import (
 	"github.com/thingspect/atlas/pkg/dao"
 	"github.com/thingspect/atlas/pkg/dao/datapoint"
 	"github.com/thingspect/atlas/pkg/dao/device"
+	"github.com/thingspect/atlas/pkg/dao/event"
 	"github.com/thingspect/atlas/pkg/dao/org"
 	"github.com/thingspect/atlas/pkg/dao/rule"
 	"github.com/thingspect/atlas/pkg/dao/tag"
@@ -102,6 +103,7 @@ func New(cfg *config.Config) (*API, error) {
 		cfg.NSQPubTopic, datapoint.NewDAO(pg)))
 	api.RegisterDeviceServiceServer(srv, service.NewDevice(device.NewDAO(pg),
 		cs))
+	api.RegisterEventServiceServer(srv, service.NewEvent(event.NewDAO(pg)))
 	api.RegisterOrgServiceServer(srv, service.NewOrg(org.NewDAO(pg)))
 	api.RegisterRuleServiceServer(srv, service.NewRule(rule.NewDAO(pg)))
 	api.RegisterSessionServiceServer(srv, service.NewSession(user.NewDAO(pg),
@@ -126,6 +128,14 @@ func New(cfg *config.Config) (*API, error) {
 
 	// Device.
 	if err := api.RegisterDeviceServiceHandlerFromEndpoint(ctx, gwMux,
+		GRPCHost+GRPCPort, opts); err != nil {
+		cancel()
+
+		return nil, err
+	}
+
+	// Event.
+	if err := api.RegisterEventServiceHandlerFromEndpoint(ctx, gwMux,
 		GRPCHost+GRPCPort, opts); err != nil {
 		cancel()
 

@@ -48,7 +48,7 @@ func TestCreate(t *testing.T) {
 					testTimeout)
 				defer cancel()
 
-				err := globalEventDAO.Create(ctx, event)
+				err := globalEvDAO.Create(ctx, event)
 				t.Logf("err: %v", err)
 				require.NoError(t, err)
 			})
@@ -89,7 +89,7 @@ func TestCreate(t *testing.T) {
 					testTimeout)
 				defer cancel()
 
-				err := globalEventDAO.Create(ctx, lTest.inpEvent)
+				err := globalEvDAO.Create(ctx, lTest.inpEvent)
 				t.Logf("err: %#v", err)
 				require.ErrorIs(t, err, lTest.err)
 			})
@@ -110,11 +110,11 @@ func TestCreate(t *testing.T) {
 			UniqId:    "dao-event-" + random.String(16),
 			CreatedAt: timestamppb.Now(), TraceId: uuid.NewString()}
 
-		err = globalEventDAO.Create(ctx, event)
+		err = globalEvDAO.Create(ctx, event)
 		t.Logf("err: %#v", err)
 		require.NoError(t, err)
 
-		err = globalEventDAO.Create(ctx, event)
+		err = globalEvDAO.Create(ctx, event)
 		t.Logf("err: %#v", err)
 		require.Equal(t, dao.ErrAlreadyExists, err)
 	})
@@ -123,7 +123,7 @@ func TestCreate(t *testing.T) {
 func TestList(t *testing.T) {
 	t.Parallel()
 
-	t.Run("List events by UniqID, dev ID, and attr", func(t *testing.T) {
+	t.Run("List events by UniqID, dev ID, and rule ID", func(t *testing.T) {
 		t.Parallel()
 
 		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
@@ -151,7 +151,7 @@ func TestList(t *testing.T) {
 				testTimeout)
 			defer cancel()
 
-			err := globalEventDAO.Create(ctx, event)
+			err := globalEvDAO.Create(ctx, event)
 			t.Logf("err: %v", err)
 			require.NoError(t, err)
 			time.Sleep(time.Millisecond)
@@ -166,7 +166,7 @@ func TestList(t *testing.T) {
 		defer cancel()
 
 		// Verify results by UniqID.
-		listEventsUniqID, err := globalEventDAO.List(ctx, createOrg.Id,
+		listEventsUniqID, err := globalEvDAO.List(ctx, createOrg.Id,
 			createDev.UniqId, "", "", events[0].CreatedAt.AsTime(),
 			events[len(events)-1].CreatedAt.AsTime().Add(-time.Millisecond))
 		t.Logf("listEventsUniqID, err: %+v, %v", listEventsUniqID, err)
@@ -183,7 +183,7 @@ func TestList(t *testing.T) {
 		}
 
 		// Verify results by dev ID without oldest event.
-		listEventsDevID, err := globalEventDAO.List(ctx, createOrg.Id, "",
+		listEventsDevID, err := globalEvDAO.List(ctx, createOrg.Id, "",
 			createDev.Id, "", events[0].CreatedAt.AsTime(),
 			events[len(events)-1].CreatedAt.AsTime())
 		t.Logf("listEventsDevID, err: %+v, %v", listEventsDevID, err)
@@ -200,7 +200,7 @@ func TestList(t *testing.T) {
 		}
 
 		// Verify results by UniqID and rule ID.
-		listEventsUniqID, err = globalEventDAO.List(ctx, createOrg.Id,
+		listEventsUniqID, err = globalEvDAO.List(ctx, createOrg.Id,
 			createDev.UniqId, "", events[len(events)-1].RuleId,
 			events[0].CreatedAt.AsTime(),
 			events[len(events)-1].CreatedAt.AsTime().Add(-time.Millisecond))
@@ -231,11 +231,11 @@ func TestList(t *testing.T) {
 			CreatedAt: timestamppb.New(time.Now().UTC().Truncate(
 				time.Millisecond)), TraceId: uuid.NewString()}
 
-		err = globalEventDAO.Create(ctx, event)
+		err = globalEvDAO.Create(ctx, event)
 		t.Logf("err: %#v", err)
 		require.NoError(t, err)
 
-		listEvents, err := globalEventDAO.List(ctx, uuid.NewString(),
+		listEvents, err := globalEvDAO.List(ctx, uuid.NewString(),
 			event.UniqId, "", "", event.CreatedAt.AsTime(),
 			event.CreatedAt.AsTime().Add(-time.Millisecond))
 		t.Logf("listEvents, err: %+v, %v", listEvents, err)
@@ -249,7 +249,7 @@ func TestList(t *testing.T) {
 		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
 		defer cancel()
 
-		listEvents, err := globalEventDAO.List(ctx, random.String(10),
+		listEvents, err := globalEvDAO.List(ctx, random.String(10),
 			uuid.NewString(), "", "", time.Now(), time.Now())
 		t.Logf("listEvents, err: %+v, %v", listEvents, err)
 		require.Nil(t, listEvents)
@@ -283,7 +283,7 @@ func TestLatest(t *testing.T) {
 				testTimeout)
 			defer cancel()
 
-			err := globalEventDAO.Create(ctx, event)
+			err := globalEvDAO.Create(ctx, event)
 			t.Logf("err: %v", err)
 			require.NoError(t, err)
 			time.Sleep(time.Millisecond)
@@ -298,32 +298,32 @@ func TestLatest(t *testing.T) {
 		defer cancel()
 
 		// Verify results.
-		latEventsUniqID, err := globalEventDAO.Latest(ctx, createOrg.Id, "")
-		t.Logf("latEventsUniqID, err: %+v, %v", latEventsUniqID, err)
+		latEvents, err := globalEvDAO.Latest(ctx, createOrg.Id, "")
+		t.Logf("latEvents, err: %+v, %v", latEvents, err)
 		require.NoError(t, err)
-		require.Len(t, latEventsUniqID, len(events))
+		require.Len(t, latEvents, len(events))
 
 		// Testify does not currently support protobuf equality:
 		// https://github.com/stretchr/testify/issues/758
 		for i, event := range events {
-			if !proto.Equal(event, latEventsUniqID[i]) {
+			if !proto.Equal(event, latEvents[i]) {
 				t.Fatalf("\nExpect: %+v\nActual: %+v", event,
-					latEventsUniqID[i])
+					latEvents[i])
 			}
 		}
 
 		// Verify results by rule ID.
-		latEventsUniqID, err = globalEventDAO.Latest(ctx, createOrg.Id,
+		latEventsRuleID, err := globalEvDAO.Latest(ctx, createOrg.Id,
 			events[len(events)-1].RuleId)
-		t.Logf("latEventsUniqID, err: %+v, %v", latEventsUniqID, err)
+		t.Logf("latEventsRuleID, err: %+v, %v", latEventsRuleID, err)
 		require.NoError(t, err)
-		require.Len(t, latEventsUniqID, 1)
+		require.Len(t, latEventsRuleID, 1)
 
 		// Testify does not currently support protobuf equality:
 		// https://github.com/stretchr/testify/issues/758
-		if !proto.Equal(events[len(events)-1], latEventsUniqID[0]) {
+		if !proto.Equal(events[len(events)-1], latEventsRuleID[0]) {
 			t.Fatalf("\nExpect: %+v\nActual: %+v", events[len(events)-1],
-				latEventsUniqID[0])
+				latEventsRuleID[0])
 		}
 	})
 
@@ -342,23 +342,24 @@ func TestLatest(t *testing.T) {
 			CreatedAt: timestamppb.New(time.Now().UTC().Truncate(
 				time.Millisecond)), TraceId: uuid.NewString()}
 
-		err = globalEventDAO.Create(ctx, event)
+		err = globalEvDAO.Create(ctx, event)
 		t.Logf("err: %#v", err)
 		require.NoError(t, err)
 
-		latEvents, err := globalEventDAO.Latest(ctx, uuid.NewString(), "")
+		latEvents, err := globalEvDAO.Latest(ctx, uuid.NewString(), "")
 		t.Logf("latEvents, err: %+v, %v", latEvents, err)
 		require.NoError(t, err)
 		require.Len(t, latEvents, 0)
 	})
 
-	t.Run("Latest events by invalid org ID", func(t *testing.T) {
+	t.Run("Latest events by invalid rule ID", func(t *testing.T) {
 		t.Parallel()
 
 		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
 		defer cancel()
 
-		latEvents, err := globalEventDAO.Latest(ctx, random.String(10), "")
+		latEvents, err := globalEvDAO.Latest(ctx, uuid.NewString(),
+			random.String(10))
 		t.Logf("latEvents, err: %+v, %v", latEvents, err)
 		require.Nil(t, latEvents)
 		require.ErrorIs(t, err, dao.ErrInvalidFormat)
