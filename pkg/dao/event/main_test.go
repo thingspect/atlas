@@ -14,9 +14,9 @@ import (
 )
 
 var (
-	globalEventDAO *DAO
-	globalOrgDAO   *org.DAO
-	globalDevDAO   *device.DAO
+	globalOrgDAO *org.DAO
+	globalDevDAO *device.DAO
+	globalEvDAO  *DAO
 )
 
 func TestMain(m *testing.M) {
@@ -28,9 +28,9 @@ func TestMain(m *testing.M) {
 	if err != nil {
 		log.Fatalf("TestMain dao.NewPgDB: %v", err)
 	}
-	globalEventDAO = NewDAO(pg)
 	globalOrgDAO = org.NewDAO(pg)
 	globalDevDAO = device.NewDAO(pg)
+	globalEvDAO = NewDAO(pg)
 
 	os.Exit(m.Run())
 }

@@ -80,7 +80,7 @@ func (x *PublishDataPointsRequest) GetPoints() []*common.DataPoint {
 	return nil
 }
 
-// ListDataPointsRequest is sent to list device data points within a [end, start) time range in descending timestamp order.
+// ListDataPointsRequest is sent to list device data points in a [end, start) time range, in descending timestamp order.
 type ListDataPointsRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -92,7 +92,7 @@ type ListDataPointsRequest struct {
 	//	*ListDataPointsRequest_UniqId
 	//	*ListDataPointsRequest_DevId
 	IdOneof isListDataPointsRequest_IdOneof `protobuf_oneof:"id_oneof"`
-	// Device attribute. If not specified, all attributes are returned.
+	// Device attribute. If not specified, all attributes are included.
 	Attr string `protobuf:"bytes,3,opt,name=attr,proto3" json:"attr,omitempty"`
 	// Data points range end time. Defaults to current time if not specified. Maximum supported time range is 90 days.
 	EndTime *timestamp.Timestamp `protobuf:"bytes,4,opt,name=end_time,json=endTime,proto3" json:"end_time,omitempty"`

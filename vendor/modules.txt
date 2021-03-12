@@ -107,7 +107,7 @@ github.com/smira/go-statsd
 ## explicit
 github.com/stretchr/testify/assert
 github.com/stretchr/testify/require
-# github.com/thingspect/api/go v0.0.0-20210310032821-c00b041e9d94
+# github.com/thingspect/api/go v0.0.0-20210312045235-9242471ae3cc
 ## explicit
 github.com/thingspect/api/go/api
 github.com/thingspect/api/go/common
@@ -146,7 +146,7 @@ golang.org/x/text/width
 # golang.org/x/xerrors v0.0.0-20200804184101-5ec99f83aff1
 golang.org/x/xerrors
 golang.org/x/xerrors/internal
-# google.golang.org/genproto v0.0.0-20210309190941-1aeedc14537d
+# google.golang.org/genproto v0.0.0-20210311153111-e2979279ddde
 google.golang.org/genproto/googleapis/api/annotations
 google.golang.org/genproto/googleapis/api/httpbody
 google.golang.org/genproto/googleapis/rpc/status

@@ -27,10 +27,10 @@ var (
 	globalEOutPubTopic string
 	globalEOutSub      queue.Subber
 
-	globalOrgDAO   *org.DAO
-	globalDevDAO   *device.DAO
-	globalRuleDAO  *rule.DAO
-	globalEventDAO *event.DAO
+	globalOrgDAO  *org.DAO
+	globalDevDAO  *device.DAO
+	globalRuleDAO *rule.DAO
+	globalEvDAO   *event.DAO
 )
 
 func TestMain(m *testing.M) {
@@ -88,7 +88,7 @@ func TestMain(m *testing.M) {
 	globalOrgDAO = org.NewDAO(pg)
 	globalDevDAO = device.NewDAO(pg)
 	globalRuleDAO = rule.NewDAO(pg)
-	globalEventDAO = event.NewDAO(pg)
+	globalEvDAO = event.NewDAO(pg)
 
 	// Set up NSQ subscription to verify published messages.
 	globalEOutSub, err = globalEvQueue.Subscribe(cfg.NSQPubTopic)

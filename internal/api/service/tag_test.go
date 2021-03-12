@@ -28,15 +28,15 @@ func TestListTags(t *testing.T) {
 		orgID := uuid.NewString()
 		tags := random.Tags("api-tag", 5)
 
-		tager := NewMockTager(gomock.NewController(t))
-		tager.EXPECT().List(gomock.Any(), orgID).Return(tags, nil).Times(1)
+		tagger := NewMockTagger(gomock.NewController(t))
+		tagger.EXPECT().List(gomock.Any(), orgID).Return(tags, nil).Times(1)
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
 			context.Background(), &session.Session{OrgID: orgID,
 				Role: common.Role_ADMIN}), testTimeout)
 		defer cancel()
 
-		tagSvc := NewTag(tager)
+		tagSvc := NewTag(tagger)
 		listTags, err := tagSvc.ListTags(ctx, &api.ListTagsRequest{})
 		t.Logf("listTags, err: %+v, %v", listTags, err)
 		require.NoError(t, err)
@@ -80,8 +80,8 @@ func TestListTags(t *testing.T) {
 	t.Run("List tags by invalid org ID", func(t *testing.T) {
 		t.Parallel()
 
-		tager := NewMockTager(gomock.NewController(t))
-		tager.EXPECT().List(gomock.Any(), "aaa").Return(nil,
+		tagger := NewMockTagger(gomock.NewController(t))
+		tagger.EXPECT().List(gomock.Any(), "aaa").Return(nil,
 			dao.ErrInvalidFormat).Times(1)
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
@@ -89,7 +89,7 @@ func TestListTags(t *testing.T) {
 				Role: common.Role_ADMIN}), testTimeout)
 		defer cancel()
 
-		tagSvc := NewTag(tager)
+		tagSvc := NewTag(tagger)
 		listTags, err := tagSvc.ListTags(ctx, &api.ListTagsRequest{})
 		t.Logf("listTags, err: %+v, %v", listTags, err)
 		require.Nil(t, listTags)

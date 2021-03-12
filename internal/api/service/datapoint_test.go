@@ -31,9 +31,9 @@ func TestPublishDataPoints(t *testing.T) {
 		t.Parallel()
 
 		orgID := uuid.NewString()
-		point := &common.DataPoint{UniqId: random.String(16), Attr: "motion",
-			ValOneof: &common.DataPoint_IntVal{IntVal: 123},
-			Ts:       timestamppb.New(time.Now().Add(-15 * time.Minute))}
+		point := &common.DataPoint{UniqId: "api-point-" + random.String(16),
+			Attr: "motion", ValOneof: &common.DataPoint_IntVal{IntVal: 123},
+			Ts: timestamppb.New(time.Now().Add(-15 * time.Minute))}
 
 		dpQueue := queue.NewFake()
 		vInSub, err := dpQueue.Subscribe("")
@@ -80,8 +80,8 @@ func TestPublishDataPoints(t *testing.T) {
 		t.Parallel()
 
 		orgID := uuid.NewString()
-		point := &common.DataPoint{UniqId: random.String(16), Attr: "motion",
-			ValOneof: &common.DataPoint_IntVal{IntVal: 123}}
+		point := &common.DataPoint{UniqId: "api-point-" + random.String(16),
+			Attr: "motion", ValOneof: &common.DataPoint_IntVal{IntVal: 123}}
 
 		pubQueue := queue.NewFake()
 		pubSub, err := pubQueue.Subscribe("")
@@ -278,7 +278,8 @@ func TestListDataPoints(t *testing.T) {
 		listPoints, err := dpSvc.ListDataPoints(ctx,
 			&api.ListDataPointsRequest{
 				IdOneof: &api.ListDataPointsRequest_UniqId{
-					UniqId: random.String(16)}, EndTime: timestamppb.Now(),
+					UniqId: "api-point-" + random.String(16)},
+				EndTime: timestamppb.Now(),
 				StartTime: timestamppb.New(time.Now().Add(
 					-91 * 24 * time.Hour))})
 		t.Logf("listPoints, err: %+v, %v", listPoints, err)
@@ -304,7 +305,7 @@ func TestListDataPoints(t *testing.T) {
 		listPoints, err := dpSvc.ListDataPoints(ctx,
 			&api.ListDataPointsRequest{
 				IdOneof: &api.ListDataPointsRequest_UniqId{
-					UniqId: random.String(16)}})
+					UniqId: "api-point-" + random.String(16)}})
 		t.Logf("listPoints, err: %+v, %v", listPoints, err)
 		require.Nil(t, listPoints)
 		require.Equal(t, status.Error(codes.InvalidArgument, "invalid format"),
@@ -433,7 +434,7 @@ func TestLatestDataPoints(t *testing.T) {
 		latPoints, err := dpSvc.LatestDataPoints(ctx,
 			&api.LatestDataPointsRequest{
 				IdOneof: &api.LatestDataPointsRequest_UniqId{
-					UniqId: random.String(16)}})
+					UniqId: "api-point-" + random.String(16)}})
 		t.Logf("latPoints, err: %+v, %v", latPoints, err)
 		require.Nil(t, latPoints)
 		require.Equal(t, status.Error(codes.InvalidArgument, "invalid format"),

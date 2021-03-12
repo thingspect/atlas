@@ -131,7 +131,7 @@ func TestEventMessages(t *testing.T) {
 					testTimeout)
 				defer cancel()
 
-				listEvents, err := globalEventDAO.List(ctx, createOrg.Id,
+				listEvents, err := globalEvDAO.List(ctx, createOrg.Id,
 					lTest.inp.Device.UniqId, "", res.RuleId, now.AsTime(),
 					now.AsTime().Add(-time.Millisecond))
 				t.Logf("listEvents, err: %+v, %v", listEvents, err)

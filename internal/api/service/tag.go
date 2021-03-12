@@ -1,6 +1,6 @@
 package service
 
-//go:generate mockgen -source tag.go -destination mock_tager_test.go -package service
+//go:generate mockgen -source tag.go -destination mock_tagger_test.go -package service
 
 import (
 	"context"
@@ -10,8 +10,8 @@ import (
 	"github.com/thingspect/atlas/internal/api/session"
 )
 
-// Tager defines the methods provided by a tag.DAO.
-type Tager interface {
+// Tagger defines the methods provided by a tag.DAO.
+type Tagger interface {
 	List(ctx context.Context, orgID string) ([]string, error)
 }
 
@@ -19,11 +19,11 @@ type Tager interface {
 type Tag struct {
 	api.UnimplementedTagServiceServer
 
-	tagDAO Tager
+	tagDAO Tagger
 }
 
 // NewTag instantiates and returns a new Tag service.
-func NewTag(tagDAO Tager) *Tag {
+func NewTag(tagDAO Tagger) *Tag {
 	return &Tag{
 		tagDAO: tagDAO,
 	}
