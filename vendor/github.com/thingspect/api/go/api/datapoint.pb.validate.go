@@ -33,9 +33,6 @@ var (
 	_ = ptypes.DynamicAny{}
 )
 
-// define the regex for a UUID once up-front
-var _datapoint_uuidPattern = regexp.MustCompile("^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$")
-
 // Validate checks the field values on PublishDataPointsRequest with the rules
 // defined in the proto definition for this message. If any rules are
 // violated, an error is returned.
@@ -165,8 +162,8 @@ func (m *ListDataPointsRequest) Validate() error {
 	case *ListDataPointsRequest_UniqId:
 		// no validation rules for UniqId
 
-	case *ListDataPointsRequest_DevId:
-		// no validation rules for DevId
+	case *ListDataPointsRequest_DeviceId:
+		// no validation rules for DeviceId
 
 	default:
 		return ListDataPointsRequestValidationError{
@@ -330,8 +327,8 @@ func (m *LatestDataPointsRequest) Validate() error {
 	case *LatestDataPointsRequest_UniqId:
 		// no validation rules for UniqId
 
-	case *LatestDataPointsRequest_DevId:
-		// no validation rules for DevId
+	case *LatestDataPointsRequest_DeviceId:
+		// no validation rules for DeviceId
 
 	default:
 		return LatestDataPointsRequestValidationError{

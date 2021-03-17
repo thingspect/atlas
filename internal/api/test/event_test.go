@@ -79,7 +79,7 @@ func TestListEvents(t *testing.T) {
 
 		// Verify results by dev ID without oldest event.
 		listEventsDevID, err := evCli.ListEvents(ctx, &api.ListEventsRequest{
-			IdOneof:   &api.ListEventsRequest_DevId{DevId: createDev.Id},
+			IdOneof:   &api.ListEventsRequest_DeviceId{DeviceId: createDev.Id},
 			StartTime: events[len(events)-1].CreatedAt})
 		t.Logf("listEventsDevID, err: %+v, %v", listEventsDevID, err)
 		require.NoError(t, err)
@@ -146,9 +146,9 @@ func TestListEvents(t *testing.T) {
 
 		evCli := api.NewEventServiceClient(globalAdminGRPCConn)
 		listEvents, err := evCli.ListEvents(ctx, &api.ListEventsRequest{
-			IdOneof: &api.ListEventsRequest_DevId{DevId: random.String(10)},
-			EndTime: timestamppb.Now(), StartTime: timestamppb.New(
-				time.Now().Add(-91 * 24 * time.Hour))})
+			IdOneof: &api.ListEventsRequest_DeviceId{
+				DeviceId: random.String(10)}, EndTime: timestamppb.Now(),
+			StartTime: timestamppb.New(time.Now().Add(-91 * 24 * time.Hour))})
 		t.Logf("listEvents, err: %+v, %v", listEvents, err)
 		require.Nil(t, listEvents)
 		require.EqualError(t, err, "rpc error: code = InvalidArgument desc = "+
@@ -163,7 +163,8 @@ func TestListEvents(t *testing.T) {
 
 		evCli := api.NewEventServiceClient(globalAdminGRPCConn)
 		listEvents, err := evCli.ListEvents(ctx, &api.ListEventsRequest{
-			IdOneof: &api.ListEventsRequest_DevId{DevId: random.String(10)}})
+			IdOneof: &api.ListEventsRequest_DeviceId{
+				DeviceId: random.String(10)}})
 		t.Logf("listEvents, err: %+v, %v", listEvents, err)
 		require.Nil(t, listEvents)
 		require.EqualError(t, err, "rpc error: code = InvalidArgument desc = "+

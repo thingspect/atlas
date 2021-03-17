@@ -14,7 +14,7 @@ import (
 )
 
 const createRule = `
-INSERT INTO rules (org_id, name, status, tag, attr, expr, created_at,
+INSERT INTO rules (org_id, name, status, device_tag, attr, expr, created_at,
 updated_at)
 VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
 RETURNING id
@@ -27,7 +27,7 @@ func (d *DAO) Create(ctx context.Context, rule *api.Rule) (*api.Rule, error) {
 	rule.UpdatedAt = timestamppb.New(now)
 
 	if err := d.pg.QueryRowContext(ctx, createRule, rule.OrgId, rule.Name,
-		rule.Status.String(), rule.Tag, rule.Attr, rule.Expr, now,
+		rule.Status.String(), rule.DeviceTag, rule.Attr, rule.Expr, now,
 		now).Scan(&rule.Id); err != nil {
 		return nil, dao.DBToSentinel(err)
 	}
@@ -36,7 +36,7 @@ func (d *DAO) Create(ctx context.Context, rule *api.Rule) (*api.Rule, error) {
 }
 
 const readRule = `
-SELECT id, org_id, name, status, tag, attr, expr, created_at, updated_at
+SELECT id, org_id, name, status, device_tag, attr, expr, created_at, updated_at
 FROM rules
 WHERE (id, org_id) = ($1, $2)
 `
@@ -49,8 +49,8 @@ func (d *DAO) Read(ctx context.Context, ruleID, orgID string) (*api.Rule,
 	var createdAt, updatedAt time.Time
 
 	if err := d.pg.QueryRowContext(ctx, readRule, ruleID, orgID).Scan(&rule.Id,
-		&rule.OrgId, &rule.Name, &status, &rule.Tag, &rule.Attr, &rule.Expr,
-		&createdAt, &updatedAt); err != nil {
+		&rule.OrgId, &rule.Name, &status, &rule.DeviceTag, &rule.Attr,
+		&rule.Expr, &createdAt, &updatedAt); err != nil {
 		return nil, dao.DBToSentinel(err)
 	}
 
@@ -63,7 +63,8 @@ func (d *DAO) Read(ctx context.Context, ruleID, orgID string) (*api.Rule,
 
 const updateRule = `
 UPDATE rules
-SET name = $1, status = $2, tag = $3, attr = $4, expr = $5, updated_at = $6
+SET name = $1, status = $2, device_tag = $3, attr = $4, expr = $5,
+updated_at = $6
 WHERE (id, org_id) = ($7, $8)
 RETURNING created_at
 `
@@ -76,7 +77,7 @@ func (d *DAO) Update(ctx context.Context, rule *api.Rule) (*api.Rule, error) {
 	rule.UpdatedAt = timestamppb.New(updatedAt)
 
 	if err := d.pg.QueryRowContext(ctx, updateRule, rule.Name,
-		rule.Status.String(), rule.Tag, rule.Attr, rule.Expr, updatedAt,
+		rule.Status.String(), rule.DeviceTag, rule.Attr, rule.Expr, updatedAt,
 		rule.Id, rule.OrgId).Scan(&createdAt); err != nil {
 		return nil, dao.DBToSentinel(err)
 	}
@@ -111,7 +112,7 @@ WHERE org_id = $1
 `
 
 const listRules = `
-SELECT id, org_id, name, status, tag, attr, expr, created_at, updated_at
+SELECT id, org_id, name, status, device_tag, attr, expr, created_at, updated_at
 FROM rules
 WHERE org_id = $1
 `
@@ -175,7 +176,7 @@ func (d *DAO) List(ctx context.Context, orgID string, lBoundTS time.Time,
 		var createdAt, updatedAt time.Time
 
 		if err = rows.Scan(&rule.Id, &rule.OrgId, &rule.Name, &status,
-			&rule.Tag, &rule.Attr, &rule.Expr, &createdAt,
+			&rule.DeviceTag, &rule.Attr, &rule.Expr, &createdAt,
 			&updatedAt); err != nil {
 			return nil, 0, dao.DBToSentinel(err)
 		}
@@ -197,24 +198,24 @@ func (d *DAO) List(ctx context.Context, orgID string, lBoundTS time.Time,
 }
 
 const listByTags = `
-SELECT id, org_id, name, status, tag, attr, expr, created_at, updated_at
+SELECT id, org_id, name, status, device_tag, attr, expr, created_at, updated_at
 FROM rules
 WHERE org_id = $1
 AND status = 'ACTIVE'
-AND tag = ANY ($2::varchar(255)[])
+AND device_tag = ANY ($2::varchar(255)[])
 AND attr = $3
 ORDER BY created_at
 `
 
-// ListByTags retrieves all active rules by org ID, tags, and attribute.
-func (d *DAO) ListByTags(ctx context.Context, orgID string, tags []string,
+// ListByTags retrieves all active rules by org ID, device tags, and attribute.
+func (d *DAO) ListByTags(ctx context.Context, orgID string, deviceTags []string,
 	attr string) ([]*api.Rule, error) {
-	var tagArr pgtype.VarcharArray
-	if err := tagArr.Set(tags); err != nil {
+	var tags pgtype.VarcharArray
+	if err := tags.Set(deviceTags); err != nil {
 		return nil, dao.DBToSentinel(err)
 	}
 
-	rows, err := d.pg.QueryContext(ctx, listByTags, orgID, tagArr, attr)
+	rows, err := d.pg.QueryContext(ctx, listByTags, orgID, tags, attr)
 	if err != nil {
 		return nil, dao.DBToSentinel(err)
 	}
@@ -232,7 +233,7 @@ func (d *DAO) ListByTags(ctx context.Context, orgID string, tags []string,
 		var createdAt, updatedAt time.Time
 
 		if err = rows.Scan(&rule.Id, &rule.OrgId, &rule.Name, &status,
-			&rule.Tag, &rule.Attr, &rule.Expr, &createdAt,
+			&rule.DeviceTag, &rule.Attr, &rule.Expr, &createdAt,
 			&updatedAt); err != nil {
 			return nil, dao.DBToSentinel(err)
 		}

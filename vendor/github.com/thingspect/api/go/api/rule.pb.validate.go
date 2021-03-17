@@ -65,9 +65,9 @@ func (m *Rule) Validate() error {
 		}
 	}
 
-	if utf8.RuneCountInString(m.GetTag()) > 255 {
+	if utf8.RuneCountInString(m.GetDeviceTag()) > 255 {
 		return RuleValidationError{
-			field:  "Tag",
+			field:  "DeviceTag",
 			reason: "value length must be at most 255 runes",
 		}
 	}

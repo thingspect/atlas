@@ -33,9 +33,6 @@ var (
 	_ = ptypes.DynamicAny{}
 )
 
-// define the regex for a UUID once up-front
-var _event_uuidPattern = regexp.MustCompile("^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$")
-
 // Validate checks the field values on Event with the rules defined in the
 // proto definition for this message. If any rules are violated, an error is returned.
 func (m *Event) Validate() error {
@@ -153,8 +150,8 @@ func (m *ListEventsRequest) Validate() error {
 	case *ListEventsRequest_UniqId:
 		// no validation rules for UniqId
 
-	case *ListEventsRequest_DevId:
-		// no validation rules for DevId
+	case *ListEventsRequest_DeviceId:
+		// no validation rules for DeviceId
 
 	default:
 		return ListEventsRequestValidationError{

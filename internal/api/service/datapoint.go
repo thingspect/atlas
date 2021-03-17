@@ -119,8 +119,8 @@ func (d *DataPoint) ListDataPoints(ctx context.Context,
 	switch v := req.IdOneof.(type) {
 	case *api.ListDataPointsRequest_UniqId:
 		uniqID = v.UniqId
-	case *api.ListDataPointsRequest_DevId:
-		devID = v.DevId
+	case *api.ListDataPointsRequest_DeviceId:
+		devID = v.DeviceId
 	}
 
 	end := time.Now().UTC()
@@ -162,8 +162,8 @@ func (d *DataPoint) LatestDataPoints(ctx context.Context,
 	switch v := req.IdOneof.(type) {
 	case *api.LatestDataPointsRequest_UniqId:
 		uniqID = v.UniqId
-	case *api.LatestDataPointsRequest_DevId:
-		devID = v.DevId
+	case *api.LatestDataPointsRequest_DeviceId:
+		devID = v.DeviceId
 	}
 
 	points, err := d.dpDAO.Latest(ctx, sess.OrgID, uniqID, devID)

@@ -222,9 +222,10 @@ func TestUpdateRule(t *testing.T) {
 
 		rule := random.Rule("api-rule", uuid.NewString())
 		retRule, _ := proto.Clone(rule).(*api.Rule)
-		part := &api.Rule{Id: rule.Id, Status: common.Status_ACTIVE, Expr: `true`}
+		part := &api.Rule{Id: rule.Id, Status: common.Status_ACTIVE,
+			Expr: `true`}
 		merged := &api.Rule{Id: rule.Id, OrgId: rule.OrgId, Name: rule.Name,
-			Status: part.Status, Tag: rule.Tag, Attr: rule.Attr,
+			Status: part.Status, DeviceTag: rule.DeviceTag, Attr: rule.Attr,
 			Expr: part.Expr}
 		retMerged, _ := proto.Clone(merged).(*api.Rule)
 
