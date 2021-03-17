@@ -84,7 +84,7 @@ func TestListEvents(t *testing.T) {
 
 		evSvc := NewEvent(eventer)
 		listEvents, err := evSvc.ListEvents(ctx, &api.ListEventsRequest{
-			IdOneof: &api.ListEventsRequest_DevId{DevId: devID},
+			IdOneof: &api.ListEventsRequest_DeviceId{DeviceId: devID},
 			RuleId:  event.RuleId})
 		t.Logf("event, listEvents, err: %+v, %+v, %v", event, listEvents, err)
 		require.NoError(t, err)

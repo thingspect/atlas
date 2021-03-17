@@ -44,7 +44,7 @@ func (ev *Eventer) eventMessages() {
 		}
 		logger := alog.WithFields(logFields)
 
-		// Retrieve rules. Only active rules with matching tags and attribues
+		// Retrieve rules. Only active rules with matching tags and attributes
 		// will be returned.
 		ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 		rules, err := ev.ruleDAO.ListByTags(ctx, vOut.Device.OrgId,

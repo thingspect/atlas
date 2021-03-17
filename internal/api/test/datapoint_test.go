@@ -219,8 +219,9 @@ func TestListDataPoints(t *testing.T) {
 		// Verify results by dev ID without oldest point.
 		listPointsDevID, err := dpCli.ListDataPoints(ctx,
 			&api.ListDataPointsRequest{
-				IdOneof: &api.ListDataPointsRequest_DevId{
-					DevId: createDev.Id}, StartTime: points[len(points)-1].Ts})
+				IdOneof: &api.ListDataPointsRequest_DeviceId{
+					DeviceId: createDev.Id},
+				StartTime: points[len(points)-1].Ts})
 		t.Logf("listPointsDevID, err: %+v, %v", listPointsDevID, err)
 		require.NoError(t, err)
 		require.Len(t, listPointsDevID.Points, len(points)-1)
@@ -295,8 +296,8 @@ func TestListDataPoints(t *testing.T) {
 		dpCli := api.NewDataPointServiceClient(globalAdminGRPCConn)
 		listPoints, err := dpCli.ListDataPoints(ctx,
 			&api.ListDataPointsRequest{
-				IdOneof: &api.ListDataPointsRequest_DevId{
-					DevId: random.String(10)}, EndTime: timestamppb.Now(),
+				IdOneof: &api.ListDataPointsRequest_DeviceId{
+					DeviceId: random.String(10)}, EndTime: timestamppb.Now(),
 				StartTime: timestamppb.New(time.Now().Add(
 					-91 * 24 * time.Hour))})
 		t.Logf("listPoints, err: %+v, %v", listPoints, err)
@@ -314,8 +315,8 @@ func TestListDataPoints(t *testing.T) {
 		dpCli := api.NewDataPointServiceClient(globalAdminGRPCConn)
 		listPoints, err := dpCli.ListDataPoints(ctx,
 			&api.ListDataPointsRequest{
-				IdOneof: &api.ListDataPointsRequest_DevId{
-					DevId: random.String(10)}})
+				IdOneof: &api.ListDataPointsRequest_DeviceId{
+					DeviceId: random.String(10)}})
 		t.Logf("listPoints, err: %+v, %v", listPoints, err)
 		require.Nil(t, listPoints)
 		require.EqualError(t, err, "rpc error: code = InvalidArgument desc = "+
@@ -401,8 +402,8 @@ func TestLatestDataPoints(t *testing.T) {
 		// Verify results by dev ID.
 		latPointsDevID, err := dpCli.LatestDataPoints(ctx,
 			&api.LatestDataPointsRequest{
-				IdOneof: &api.LatestDataPointsRequest_DevId{
-					DevId: createDev.Id}})
+				IdOneof: &api.LatestDataPointsRequest_DeviceId{
+					DeviceId: createDev.Id}})
 		t.Logf("latPointsDevID, err: %+v, %v", latPointsDevID, err)
 		require.NoError(t, err)
 		require.Len(t, latPointsDevID.Points, len(points))
@@ -453,8 +454,8 @@ func TestLatestDataPoints(t *testing.T) {
 		dpCli := api.NewDataPointServiceClient(globalAdminGRPCConn)
 		latPoints, err := dpCli.LatestDataPoints(ctx,
 			&api.LatestDataPointsRequest{
-				IdOneof: &api.LatestDataPointsRequest_DevId{
-					DevId: random.String(10)}})
+				IdOneof: &api.LatestDataPointsRequest_DeviceId{
+					DeviceId: random.String(10)}})
 		t.Logf("latPoints, err: %+v, %v", latPoints, err)
 		require.Nil(t, latPoints)
 		require.EqualError(t, err, "rpc error: code = InvalidArgument desc = "+

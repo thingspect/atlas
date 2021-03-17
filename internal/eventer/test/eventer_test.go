@@ -39,7 +39,7 @@ func TestEventMessages(t *testing.T) {
 
 	sRule := random.Rule("ev", createOrg.Id)
 	sRule.Status = common.Status_ACTIVE
-	sRule.Tag = singleDev.Tags[0]
+	sRule.DeviceTag = singleDev.Tags[0]
 	sRule.Attr = "ev-motion"
 	sRule.Expr = `true`
 	singleRule, err := globalRuleDAO.Create(ctx, sRule)
@@ -54,7 +54,7 @@ func TestEventMessages(t *testing.T) {
 
 	dRule1 := random.Rule("ev", createOrg.Id)
 	dRule1.Status = common.Status_ACTIVE
-	dRule1.Tag = doubleDev.Tags[0]
+	dRule1.DeviceTag = doubleDev.Tags[0]
 	dRule1.Attr = "ev-temp"
 	dRule1.Expr = `true`
 	doubleRule1, err := globalRuleDAO.Create(ctx, dRule1)
@@ -62,7 +62,7 @@ func TestEventMessages(t *testing.T) {
 	require.NoError(t, err)
 
 	dRule2, _ := proto.Clone(dRule1).(*api.Rule)
-	dRule2.Tag = doubleDev.Tags[1]
+	dRule2.DeviceTag = doubleDev.Tags[1]
 	doubleRule2, err := globalRuleDAO.Create(ctx, dRule2)
 	t.Logf("doubleRule2, err: %+v, %v", doubleRule2, err)
 	require.NoError(t, err)
@@ -174,7 +174,7 @@ func TestEventMessagesError(t *testing.T) {
 
 	rule := random.Rule("ev", createOrg.Id)
 	rule.Status = common.Status_ACTIVE
-	rule.Tag = createDev.Tags[0]
+	rule.DeviceTag = createDev.Tags[0]
 	rule.Attr = "ev-motion"
 	rule.Expr = `1 + "aaa"`
 	createRule, err := globalRuleDAO.Create(ctx, rule)

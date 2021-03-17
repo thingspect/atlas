@@ -79,8 +79,8 @@ func TestRule(t *testing.T) {
 			require.NotEqual(t, r1, r2)
 			require.True(t, strings.HasPrefix(r1.Name, prefix))
 			require.True(t, strings.HasPrefix(r2.Name, prefix))
-			require.True(t, strings.HasPrefix(r1.Tag, prefix))
-			require.True(t, strings.HasPrefix(r2.Tag, prefix))
+			require.True(t, strings.HasPrefix(r1.DeviceTag, prefix))
+			require.True(t, strings.HasPrefix(r2.DeviceTag, prefix))
 		})
 	}
 }

@@ -49,8 +49,8 @@ func (e *Event) ListEvents(ctx context.Context,
 	switch v := req.IdOneof.(type) {
 	case *api.ListEventsRequest_UniqId:
 		uniqID = v.UniqId
-	case *api.ListEventsRequest_DevId:
-		devID = v.DevId
+	case *api.ListEventsRequest_DeviceId:
+		devID = v.DeviceId
 	}
 
 	end := time.Now().UTC()

@@ -189,7 +189,7 @@ type DataPoint_BoolVal struct {
 }
 
 type DataPoint_BytesVal struct {
-	// Bytes value. When used with JSON, the value will be represented as a base64 string.
+	// Bytes value. When used in JSON, the value will be represented as a base64 string.
 	BytesVal []byte `protobuf:"bytes,16,opt,name=bytes_val,json=bytesVal,proto3,oneof"`
 }
 

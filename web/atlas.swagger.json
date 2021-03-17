@@ -69,7 +69,7 @@
             "type": "string"
           },
           {
-            "name": "devID",
+            "name": "deviceID",
             "description": "Device ID (UUID). Either unique ID or device ID must be provided.",
             "in": "query",
             "required": false,
@@ -166,7 +166,7 @@
             "type": "string"
           },
           {
-            "name": "devID",
+            "name": "deviceID",
             "description": "Device ID (UUID). Either unique ID or device ID must be provided.",
             "in": "query",
             "required": false,
@@ -528,7 +528,7 @@
             "type": "string"
           },
           {
-            "name": "devID",
+            "name": "deviceID",
             "description": "Device ID (UUID). Either unique ID or device ID must be provided.",
             "in": "query",
             "required": false,
@@ -1790,16 +1790,16 @@
           "$ref": "#/definitions/thingspectcommonStatus",
           "description": "Rule status."
         },
-        "tag": {
+        "deviceTag": {
           "type": "string",
-          "description": "Device tag that the rule applies to.",
+          "description": "Device tag to which the rule applies.",
           "required": [
-            "tag"
+            "device_tag"
           ]
         },
         "attr": {
           "type": "string",
-          "description": "Device attribute that the rule applies to.",
+          "description": "Device and data point attribute to which the rule applies.",
           "required": [
             "attr"
           ]
@@ -1827,7 +1827,7 @@
       "description": "Rule represents a rule as stored in the database.",
       "required": [
         "name",
-        "tag",
+        "deviceTag",
         "attr",
         "expr"
       ]
@@ -1968,7 +1968,7 @@
         "bytesVal": {
           "type": "string",
           "format": "byte",
-          "description": "Bytes value. When used with JSON, the value will be represented as a base64 string."
+          "description": "Bytes value. When used in JSON, the value will be represented as a base64 string."
         },
         "ts": {
           "type": "string",

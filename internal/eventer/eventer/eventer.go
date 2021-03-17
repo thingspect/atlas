@@ -24,7 +24,7 @@ const (
 
 // ruler defines the methods provided by a rule.DAO.
 type ruler interface {
-	ListByTags(ctx context.Context, orgID string, tags []string,
+	ListByTags(ctx context.Context, orgID string, deviceTags []string,
 		attr string) ([]*api.Rule, error)
 }
 

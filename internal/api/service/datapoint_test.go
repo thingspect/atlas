@@ -221,7 +221,7 @@ func TestListDataPoints(t *testing.T) {
 		dpSvc := NewDataPoint(nil, "", datapointer)
 		listPoints, err := dpSvc.ListDataPoints(ctx,
 			&api.ListDataPointsRequest{
-				IdOneof: &api.ListDataPointsRequest_DevId{DevId: devID},
+				IdOneof: &api.ListDataPointsRequest_DeviceId{DeviceId: devID},
 				Attr:    point.Attr})
 		t.Logf("point, listPoints, err: %+v, %+v, %v", point, listPoints, err)
 		require.NoError(t, err)
@@ -374,7 +374,8 @@ func TestLatestDataPoints(t *testing.T) {
 		dpSvc := NewDataPoint(nil, "", datapointer)
 		latPoints, err := dpSvc.LatestDataPoints(ctx,
 			&api.LatestDataPointsRequest{
-				IdOneof: &api.LatestDataPointsRequest_DevId{DevId: devID}})
+				IdOneof: &api.LatestDataPointsRequest_DeviceId{
+					DeviceId: devID}})
 		t.Logf("point, latPoints, err: %+v, %+v, %v", point, latPoints, err)
 		require.NoError(t, err)
 

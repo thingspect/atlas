@@ -46,9 +46,9 @@ func Rule(prefix, orgID string) *api.Rule {
 			common.Status_ACTIVE,
 			common.Status_DISABLED,
 		}[Intn(2)],
-		Tag:  prefix + "-" + String(10),
-		Attr: prefix + "-" + String(10),
-		Expr: []string{`true`, `false`}[Intn(2)],
+		DeviceTag: prefix + "-" + String(10),
+		Attr:      prefix + "-" + String(10),
+		Expr:      []string{`true`, `false`}[Intn(2)],
 	}
 }
 
