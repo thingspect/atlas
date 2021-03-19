@@ -32,3 +32,7 @@ services:
       - "127.0.0.1:1883:1883"
     volumes:
       - ./volume/mosquitto:/mosquitto/config
+  redis:
+    image: redis:6-alpine
+    ports:
+      - "127.0.0.1:6379:6379"

@@ -8,7 +8,8 @@ const pref = "TEST_"
 
 // Config holds settings used by test implementations.
 type Config struct {
-	PgURI string
+	PgURI     string
+	RedisHost string
 
 	NSQPubAddr     string
 	NSQLookupAddrs []string
@@ -22,8 +23,9 @@ type Config struct {
 func New() *Config {
 	return &Config{
 		PgURI: config.String(pref+"PG_URI",
-
 			"postgres://postgres:postgres@127.0.0.1/atlas_test"),
+		RedisHost: config.String(pref+"REDIS_HOST", "127.0.0.1"),
+
 		NSQPubAddr: config.String(pref+"NSQ_PUB_ADDR", "127.0.0.1:4150"),
 		NSQLookupAddrs: config.StringSlice(pref+"NSQ_LOOKUP_ADDRS",
 			[]string{"127.0.0.1:4161"}),

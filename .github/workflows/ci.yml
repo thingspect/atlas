@@ -11,6 +11,7 @@ jobs:
       env:
         DOCKER: "y"
         # RACE: "y"
+        TEST_REDIS_HOST: redis
         TEST_PG_URI: postgres://postgres:postgres@postgres/atlas_test
         TEST_NSQ_PUB_ADDR: nsqd:4150
         TEST_NSQ_LOOKUP_ADDRS: nsqlookupd:4161
@@ -37,6 +38,8 @@ jobs:
         volumes:
           - ${{ github.workspace }}/build/volume/mosquitto:/mosquitto/config
         options: --name mqtt
+      redis:
+        image: redis:6-alpine
     steps:
       - name: Deps
         # Names are duplicated as IDs for important steps for use by Notify

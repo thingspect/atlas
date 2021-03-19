@@ -4,11 +4,13 @@ go 1.16
 
 require (
 	github.com/NYTimes/gziphandler v1.1.1
+	github.com/ReneKroon/ttlcache/v2 v2.3.0
 	github.com/antonmedv/expr v1.8.9
 	github.com/brocaar/chirpstack-api/go/v3 v3.9.4
 	github.com/eclipse/paho.mqtt.golang v1.3.2
+	github.com/go-redis/redis/v8 v8.7.1
 	github.com/golang/mock v1.5.0
-	github.com/golang/protobuf v1.4.3
+	github.com/golang/protobuf v1.5.1
 	github.com/golang/snappy v0.0.3 // indirect
 	github.com/google/uuid v1.2.0
 	github.com/grpc-ecosystem/grpc-gateway v1.16.0 // indirect
@@ -22,8 +24,8 @@ require (
 	github.com/rs/zerolog v1.20.0
 	github.com/smira/go-statsd v1.3.2
 	github.com/stretchr/testify v1.7.0
-	github.com/thingspect/api/go v0.0.0-20210317042225-e5503a5442af
-	golang.org/x/crypto v0.0.0-20210314154223-e6e6c4f2bb5b
+	github.com/thingspect/api/go v0.0.0-20210319033106-225e7a082f6a
+	golang.org/x/crypto v0.0.0-20210317152858-513c2a44f670
 	google.golang.org/grpc v1.36.0
-	google.golang.org/protobuf v1.25.1-0.20201208041424-160c7477e0e8
+	google.golang.org/protobuf v1.26.0
 )
