@@ -9,6 +9,7 @@ import (
 	"testing"
 
 	as "github.com/brocaar/chirpstack-api/go/v3/as/integration"
+	"github.com/brocaar/chirpstack-api/go/v3/gw"
 
 	//lint:ignore SA1019 // third-party dependency
 	"github.com/golang/protobuf/proto"
@@ -39,11 +40,13 @@ func TestDeviceTxAck(t *testing.T) {
 			{Attr: "raw_device", Value: `{}`},
 			{Attr: "ack_gateway_tx", Value: true},
 		}, ""},
-		{&as.TxAckEvent{GatewayId: bGatewayID}, []*decode.Point{
-			{Attr: "raw_device", Value: fmt.Sprintf(`{"gatewayID":"%s"}`,
-				b64GatewayID)},
+		{&as.TxAckEvent{GatewayId: bGatewayID, TxInfo: &gw.DownlinkTXInfo{
+			Frequency: 902700000}}, []*decode.Point{
+			{Attr: "raw_device", Value: fmt.Sprintf(`{"gatewayID":"%s",`+
+				`"txInfo":{"frequency":902700000}}`, b64GatewayID)},
 			{Attr: "ack_gateway_tx", Value: true},
 			{Attr: "gateway_id", Value: gatewayID},
+			{Attr: "frequency", Value: int32(902700000)},
 		}, ""},
 		// Device TX ACK bad length.
 		{nil, nil, "cannot parse invalid wire-format data"},
