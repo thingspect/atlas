@@ -18,6 +18,10 @@ ifneq ($(DOCKER),)
 INSTALLPATH = .
 endif
 
+ifeq ($(strip $(TEST_REDIS_HOST)),)
+TEST_REDIS_HOST = 127.0.0.1
+endif
+
 ifeq ($(strip $(TEST_PG_URI)),)
 TEST_PG_URI = postgres://postgres:postgres@127.0.0.1/atlas_test
 endif
@@ -41,6 +45,8 @@ lint:
 	-E gosec,nlreturn,prealloc,scopelint,unconvert,unparam
 
 init_db:
+	echo FLUSHALL|nc -w 2 $(TEST_REDIS_HOST) 6379
+
 	go install -tags postgres \
 	github.com/golang-migrate/migrate/v4/cmd/migrate@latest
 	migrate -path /tmp -database $(TEST_PG_URI)?sslmode=disable drop -f
