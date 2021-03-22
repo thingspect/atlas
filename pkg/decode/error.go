@@ -1,11 +1,12 @@
 package decode
 
 import (
-	"errors"
 	"fmt"
+
+	"github.com/thingspect/atlas/pkg/consterr"
 )
 
-var errFormat = errors.New("format")
+const errFormat consterr.Error = "format"
 
 // ErrFormat returns an error due to a malformed payload.
 func ErrFormat(function string, reason string, body []byte) error {

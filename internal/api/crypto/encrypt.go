@@ -4,21 +4,18 @@ import (
 	"crypto/aes"
 	"crypto/cipher"
 	"crypto/rand"
-	"errors"
+
+	"github.com/thingspect/atlas/pkg/consterr"
 )
 
-var (
-	ErrKeyLength = errors.New("crypto: incorrect key length")
-	ErrMalformed = errors.New("crypto: malformed ciphertext")
+const (
+	ErrKeyLength consterr.Error = "crypto: incorrect key length"
+	ErrMalformed consterr.Error = "crypto: malformed ciphertext"
 )
 
 // Encrypt encrypts data using 256-bit AES-GCM, providing authenticated
 // encryption with associated data.
-//
-// Resources:
-//
 // https://github.com/gtank/cryptopasta
-//
 // https://golang.org/pkg/crypto/cipher/#NewGCM
 func Encrypt(key []byte, plaintext []byte) ([]byte, error) {
 	if len(key) != 32 {

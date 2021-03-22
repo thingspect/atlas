@@ -1,19 +1,19 @@
 package queue
 
 import (
-	"errors"
 	"log"
 	"time"
 
 	mqtt "github.com/eclipse/paho.mqtt.golang"
+	"github.com/thingspect/atlas/pkg/consterr"
 )
 
 const (
 	DefaultMQTTConnectTimeout = 5 * time.Second
 	mqttPublishTimeout        = 30 * time.Second
-)
 
-var ErrTimeout = errors.New("queue: timed out")
+	ErrTimeout consterr.Error = "queue: timed out"
+)
 
 // mqttQueue contains methods to publish and subscribe to MQTT and implements
 // the Queuer interface.

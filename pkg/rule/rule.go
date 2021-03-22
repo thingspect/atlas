@@ -2,16 +2,16 @@
 package rule
 
 import (
-	"errors"
 	"time"
 
 	"github.com/antonmedv/expr"
 	"github.com/thingspect/api/go/common"
+	"github.com/thingspect/atlas/pkg/consterr"
 )
 
-var ErrNotBool = errors.New("not a boolean expression")
+const ErrNotBool consterr.Error = "not a boolean expression"
 
-// Eval evaluates a boolean expression using the Expr language.
+// Eval evaluates a boolean expression using the Expr language:
 // https://github.com/antonmedv/expr/blob/master/docs/Language-Definition.md
 func Eval(point *common.DataPoint, ruleExpr string) (bool, error) {
 	env := map[string]interface{}{
