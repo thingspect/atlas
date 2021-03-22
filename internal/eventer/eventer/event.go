@@ -104,7 +104,7 @@ func (ev *Eventer) eventMessages() {
 				eOut := &message.EventerOut{
 					Point:  vOut.Point,
 					Device: vOut.Device,
-					RuleId: r.Id,
+					Rule:   r,
 				}
 				bEOut, err := proto.Marshal(eOut)
 				if err != nil {

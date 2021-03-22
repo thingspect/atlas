@@ -3,6 +3,7 @@ package thingspect.int.message;
 
 import "common/datapoint.proto";
 import "common/device.proto";
+import "common/rule.proto";
 
 option go_package = "github.com/thingspect/atlas/api/go/message";
 
@@ -14,6 +15,6 @@ message EventerOut {
   // Device.
   common.Device device = 2;
 
-  // Rule ID (UUID).
-  string rule_id = 3;
+  // Rule.
+  common.Rule rule = 3;
 }

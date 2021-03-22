@@ -32,7 +32,7 @@ func TestCreateRule(t *testing.T) {
 		t.Parallel()
 
 		rule := random.Rule("api-rule", uuid.NewString())
-		retRule, _ := proto.Clone(rule).(*api.Rule)
+		retRule, _ := proto.Clone(rule).(*common.Rule)
 
 		ruler := NewMockRuler(gomock.NewController(t))
 		ruler.EXPECT().Create(gomock.Any(), rule).Return(retRule, nil).Times(1)
@@ -115,7 +115,7 @@ func TestGetRule(t *testing.T) {
 		t.Parallel()
 
 		rule := random.Rule("api-rule", uuid.NewString())
-		retRule, _ := proto.Clone(rule).(*api.Rule)
+		retRule, _ := proto.Clone(rule).(*common.Rule)
 
 		ruler := NewMockRuler(gomock.NewController(t))
 		ruler.EXPECT().Read(gomock.Any(), rule.Id, rule.OrgId).Return(retRule,
@@ -194,7 +194,7 @@ func TestUpdateRule(t *testing.T) {
 		t.Parallel()
 
 		rule := random.Rule("api-rule", uuid.NewString())
-		retRule, _ := proto.Clone(rule).(*api.Rule)
+		retRule, _ := proto.Clone(rule).(*common.Rule)
 
 		ruler := NewMockRuler(gomock.NewController(t))
 		ruler.EXPECT().Update(gomock.Any(), rule).Return(retRule, nil).Times(1)
@@ -221,13 +221,13 @@ func TestUpdateRule(t *testing.T) {
 		t.Parallel()
 
 		rule := random.Rule("api-rule", uuid.NewString())
-		retRule, _ := proto.Clone(rule).(*api.Rule)
-		part := &api.Rule{Id: rule.Id, Status: common.Status_ACTIVE,
+		retRule, _ := proto.Clone(rule).(*common.Rule)
+		part := &common.Rule{Id: rule.Id, Status: common.Status_ACTIVE,
 			Expr: `true`}
-		merged := &api.Rule{Id: rule.Id, OrgId: rule.OrgId, Name: rule.Name,
+		merged := &common.Rule{Id: rule.Id, OrgId: rule.OrgId, Name: rule.Name,
 			Status: part.Status, DeviceTag: rule.DeviceTag, Attr: rule.Attr,
 			Expr: part.Expr}
-		retMerged, _ := proto.Clone(merged).(*api.Rule)
+		retMerged, _ := proto.Clone(merged).(*common.Rule)
 
 		ruler := NewMockRuler(gomock.NewController(t))
 		ruler.EXPECT().Read(gomock.Any(), rule.Id, rule.OrgId).Return(retRule,
@@ -323,7 +323,7 @@ func TestUpdateRule(t *testing.T) {
 		t.Parallel()
 
 		orgID := uuid.NewString()
-		part := &api.Rule{Id: uuid.NewString(), Status: common.Status_ACTIVE}
+		part := &common.Rule{Id: uuid.NewString(), Status: common.Status_ACTIVE}
 
 		ruler := NewMockRuler(gomock.NewController(t))
 		ruler.EXPECT().Read(gomock.Any(), part.Id, orgID).
@@ -465,7 +465,7 @@ func TestListRules(t *testing.T) {
 
 		orgID := uuid.NewString()
 
-		rules := []*api.Rule{
+		rules := []*common.Rule{
 			random.Rule("api-rule", uuid.NewString()),
 			random.Rule("api-rule", uuid.NewString()),
 			random.Rule("api-rule", uuid.NewString()),
@@ -500,7 +500,7 @@ func TestListRules(t *testing.T) {
 
 		orgID := uuid.NewString()
 
-		rules := []*api.Rule{
+		rules := []*common.Rule{
 			random.Rule("api-rule", uuid.NewString()),
 			random.Rule("api-rule", uuid.NewString()),
 			random.Rule("api-rule", uuid.NewString()),
@@ -606,7 +606,7 @@ func TestListRules(t *testing.T) {
 
 		orgID := uuid.NewString()
 
-		rules := []*api.Rule{
+		rules := []*common.Rule{
 			random.Rule("api-rule", uuid.NewString()),
 			random.Rule("api-rule", uuid.NewString()),
 			random.Rule("api-rule", uuid.NewString()),
@@ -688,7 +688,7 @@ func TestTestRule(t *testing.T) {
 
 				ruleSvc := NewRule(nil)
 				testRes, err := ruleSvc.TestRule(ctx, &api.TestRuleRequest{
-					Point: lTest.inpPoint, Rule: &api.Rule{
+					Point: lTest.inpPoint, Rule: &common.Rule{
 						Attr: lTest.inpPoint.Attr, Expr: lTest.inpRuleExpr}})
 				t.Logf("testRes, err: %+v, %v", testRes, err)
 				if lTest.err == "" {

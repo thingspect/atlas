@@ -197,7 +197,7 @@ func TestUpdateRule(t *testing.T) {
 		require.NoError(t, err)
 
 		// Update rule fields.
-		part := &api.Rule{Id: createRule.Id, Name: "api-rule-" +
+		part := &common.Rule{Id: createRule.Id, Name: "api-rule-" +
 			random.String(10), Status: common.Status_DISABLED, Expr: `false`}
 
 		updateRule, err := ruleCli.UpdateRule(ctx, &api.UpdateRuleRequest{

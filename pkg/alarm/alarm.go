@@ -5,13 +5,12 @@ import (
 	"html/template"
 	"strings"
 
-	"github.com/thingspect/api/go/api"
 	"github.com/thingspect/api/go/common"
 )
 
 // Generate generates HTML-safe output from templates using the Go template
 // engine: https://golang.org/pkg/html/template/
-func Generate(point *common.DataPoint, rule *api.Rule, dev *common.Device,
+func Generate(point *common.DataPoint, rule *common.Rule, dev *common.Device,
 	templ string) (string, error) {
 	env := map[string]interface{}{
 		"point":  point,
