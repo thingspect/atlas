@@ -20,7 +20,8 @@ func Eval(point *common.DataPoint, ruleExpr string) (bool, error) {
 		"currTS":  time.Now().Unix(),
 	}
 
-	// Populate point value for convenience. []byte is not supported.
+	// Populate point value for convenience. []byte is not supported. If point
+	// doesn't validate, pointVal remains unset.
 	switch v := point.ValOneof.(type) {
 	case *common.DataPoint_IntVal:
 		env["pointVal"] = v.IntVal
