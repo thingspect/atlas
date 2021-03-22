@@ -7,7 +7,6 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/require"
-	"github.com/thingspect/api/go/api"
 	"github.com/thingspect/api/go/common"
 )
 
@@ -16,7 +15,7 @@ func TestGenerate(t *testing.T) {
 
 	tests := []struct {
 		inpPoint *common.DataPoint
-		inpRule  *api.Rule
+		inpRule  *common.Rule
 		inpDev   *common.Device
 		inpTempl string
 		res      string
@@ -24,9 +23,9 @@ func TestGenerate(t *testing.T) {
 	}{
 		{&common.DataPoint{}, nil, nil, `test`, "test", ""},
 		{&common.DataPoint{ValOneof: &common.DataPoint_IntVal{IntVal: 40}},
-			&api.Rule{Name: "test rule"}, nil, `point value is an integer: ` +
-				`{{.pointVal}}, rule name is: {{.rule.Name}}`, "point value " +
-				"is an integer: 40, rule name is: test rule", ""},
+			&common.Rule{Name: "test rule"}, nil, `point value is an ` +
+				`integer: {{.pointVal}}, rule name is: {{.rule.Name}}`,
+			"point value is an integer: 40, rule name is: test rule", ""},
 		{&common.DataPoint{ValOneof: &common.DataPoint_Fl64Val{Fl64Val: 37.7}},
 			nil, &common.Device{Status: common.Status_ACTIVE}, `point value ` +
 				`is a float: {{.pointVal}}, device status is: ` +

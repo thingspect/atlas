@@ -9,7 +9,6 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/require"
-	"github.com/thingspect/api/go/api"
 	"github.com/thingspect/api/go/common"
 	"github.com/thingspect/atlas/pkg/dao"
 	"github.com/thingspect/atlas/pkg/test/random"
@@ -32,7 +31,7 @@ func TestCreate(t *testing.T) {
 		t.Parallel()
 
 		rule := random.Rule("dao-rule", createOrg.Id)
-		createRule, _ := proto.Clone(rule).(*api.Rule)
+		createRule, _ := proto.Clone(rule).(*common.Rule)
 
 		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
 		defer cancel()
@@ -155,7 +154,7 @@ func TestUpdate(t *testing.T) {
 		// Update rule fields.
 		createRule.Name = "dao-rule-" + random.String(10)
 		createRule.Status = common.Status_DISABLED
-		updateRule, _ := proto.Clone(createRule).(*api.Rule)
+		updateRule, _ := proto.Clone(createRule).(*common.Rule)
 
 		updateRule, err = globalRuleDAO.Update(ctx, updateRule)
 		t.Logf("createRule, updateRule, err: %+v, %+v, %v", createRule,

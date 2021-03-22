@@ -37,8 +37,8 @@ func Device(prefix, orgID string) *common.Device {
 }
 
 // Rule generates a random rule with prefixed identifiers.
-func Rule(prefix, orgID string) *api.Rule {
-	return &api.Rule{
+func Rule(prefix, orgID string) *common.Rule {
+	return &common.Rule{
 		Id:    uuid.NewString(),
 		OrgId: orgID,
 		Name:  prefix + "-" + String(10),

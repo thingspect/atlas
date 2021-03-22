@@ -23,12 +23,12 @@ import (
 
 // Ruler defines the methods provided by a rule.DAO.
 type Ruler interface {
-	Create(ctx context.Context, rule *api.Rule) (*api.Rule, error)
-	Read(ctx context.Context, ruleID, orgID string) (*api.Rule, error)
-	Update(ctx context.Context, rule *api.Rule) (*api.Rule, error)
+	Create(ctx context.Context, rule *common.Rule) (*common.Rule, error)
+	Read(ctx context.Context, ruleID, orgID string) (*common.Rule, error)
+	Update(ctx context.Context, rule *common.Rule) (*common.Rule, error)
 	Delete(ctx context.Context, ruleID, orgID string) error
 	List(ctx context.Context, orgID string, lBoundTS time.Time, prevID string,
-		limit int32) ([]*api.Rule, int32, error)
+		limit int32) ([]*common.Rule, int32, error)
 }
 
 // Rule service contains functions to query and modify rules.
@@ -47,7 +47,7 @@ func NewRule(ruleDAO Ruler) *Rule {
 
 // CreateRule creates a rule.
 func (r *Rule) CreateRule(ctx context.Context,
-	req *api.CreateRuleRequest) (*api.Rule, error) {
+	req *api.CreateRuleRequest) (*common.Rule, error) {
 	logger := alog.FromContext(ctx)
 	sess, ok := session.FromContext(ctx)
 	if !ok || sess.Role < common.Role_BUILDER {
@@ -71,7 +71,7 @@ func (r *Rule) CreateRule(ctx context.Context,
 
 // GetRule retrieves a rule by ID.
 func (r *Rule) GetRule(ctx context.Context,
-	req *api.GetRuleRequest) (*api.Rule, error) {
+	req *api.GetRuleRequest) (*common.Rule, error) {
 	sess, ok := session.FromContext(ctx)
 	if !ok || sess.Role < common.Role_VIEWER {
 		return nil, errPerm(common.Role_VIEWER)
@@ -88,7 +88,7 @@ func (r *Rule) GetRule(ctx context.Context,
 // UpdateRule updates a rule. Update actions validate after merge to support
 // partial updates.
 func (r *Rule) UpdateRule(ctx context.Context,
-	req *api.UpdateRuleRequest) (*api.Rule, error) {
+	req *api.UpdateRuleRequest) (*common.Rule, error) {
 	sess, ok := session.FromContext(ctx)
 	if !ok || sess.Role < common.Role_BUILDER {
 		return nil, errPerm(common.Role_BUILDER)

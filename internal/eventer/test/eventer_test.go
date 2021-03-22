@@ -61,7 +61,7 @@ func TestEventMessages(t *testing.T) {
 	t.Logf("doubleRule1, err: %+v, %v", doubleRule1, err)
 	require.NoError(t, err)
 
-	dRule2, _ := proto.Clone(dRule1).(*api.Rule)
+	dRule2, _ := proto.Clone(dRule1).(*common.Rule)
 	dRule2.DeviceTag = doubleDev.Tags[1]
 	doubleRule2, err := globalRuleDAO.Create(ctx, dRule2)
 	t.Logf("doubleRule2, err: %+v, %v", doubleRule2, err)
@@ -75,14 +75,14 @@ func TestEventMessages(t *testing.T) {
 			Ts: now, TraceId: traceID}, Device: singleDev},
 			[]*message.EventerOut{{Point: &common.DataPoint{Attr: "ev-motion",
 				Ts: now, TraceId: traceID}, Device: singleDev,
-				RuleId: singleRule.Id}}},
+				Rule: singleRule}}},
 		{&message.ValidatorOut{Point: &common.DataPoint{Attr: "ev-temp",
 			Ts: now, TraceId: traceID}, Device: doubleDev},
 			[]*message.EventerOut{{Point: &common.DataPoint{Attr: "ev-temp",
 				Ts: now, TraceId: traceID}, Device: doubleDev,
-				RuleId: doubleRule1.Id}, {Point: &common.DataPoint{
-				Attr: "ev-temp", Ts: now, TraceId: traceID}, Device: doubleDev,
-				RuleId: doubleRule2.Id}}},
+				Rule: doubleRule1}, {Point: &common.DataPoint{Attr: "ev-temp",
+				Ts: now, TraceId: traceID}, Device: doubleDev,
+				Rule: doubleRule2}}},
 		{&message.ValidatorOut{Point: &common.DataPoint{Attr: "ev-power",
 			Ts: now, TraceId: traceID}, Device: singleDev}, nil},
 	}
@@ -122,7 +122,7 @@ func TestEventMessages(t *testing.T) {
 				}
 
 				// Verify events by rule ID.
-				event := &api.Event{OrgId: createOrg.Id, RuleId: res.RuleId,
+				event := &api.Event{OrgId: createOrg.Id, RuleId: res.Rule.Id,
 					UniqId: lTest.inp.Device.UniqId,
 					CreatedAt: timestamppb.New(now.AsTime().UTC().Truncate(
 						time.Millisecond)), TraceId: traceID}
@@ -132,7 +132,7 @@ func TestEventMessages(t *testing.T) {
 				defer cancel()
 
 				listEvents, err := globalEvDAO.List(ctx, createOrg.Id,
-					lTest.inp.Device.UniqId, "", res.RuleId, now.AsTime(),
+					lTest.inp.Device.UniqId, "", res.Rule.Id, now.AsTime(),
 					now.AsTime().Add(-time.Millisecond))
 				t.Logf("listEvents, err: %+v, %v", listEvents, err)
 				assert.NoError(t, err)

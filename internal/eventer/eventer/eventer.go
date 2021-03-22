@@ -10,6 +10,7 @@ import (
 	"syscall"
 
 	"github.com/thingspect/api/go/api"
+	"github.com/thingspect/api/go/common"
 	"github.com/thingspect/atlas/internal/eventer/config"
 	"github.com/thingspect/atlas/pkg/alog"
 	"github.com/thingspect/atlas/pkg/dao"
@@ -25,7 +26,7 @@ const (
 // ruler defines the methods provided by a rule.DAO.
 type ruler interface {
 	ListByTags(ctx context.Context, orgID string, deviceTags []string,
-		attr string) ([]*api.Rule, error)
+		attr string) ([]*common.Rule, error)
 }
 
 // eventer defines the methods provided by an event.DAO.

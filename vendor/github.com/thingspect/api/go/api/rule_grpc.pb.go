@@ -5,6 +5,7 @@ package api
 import (
 	context "context"
 	empty "github.com/golang/protobuf/ptypes/empty"
+	common "github.com/thingspect/api/go/common"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
@@ -20,11 +21,11 @@ const _ = grpc.SupportPackageIsVersion7
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type RuleServiceClient interface {
 	// Create a rule. Rules define how events are generated.
-	CreateRule(ctx context.Context, in *CreateRuleRequest, opts ...grpc.CallOption) (*Rule, error)
+	CreateRule(ctx context.Context, in *CreateRuleRequest, opts ...grpc.CallOption) (*common.Rule, error)
 	// Get a rule by ID. Rules define how events are generated.
-	GetRule(ctx context.Context, in *GetRuleRequest, opts ...grpc.CallOption) (*Rule, error)
+	GetRule(ctx context.Context, in *GetRuleRequest, opts ...grpc.CallOption) (*common.Rule, error)
 	// Update a rule. Rules define how events are generated.
-	UpdateRule(ctx context.Context, in *UpdateRuleRequest, opts ...grpc.CallOption) (*Rule, error)
+	UpdateRule(ctx context.Context, in *UpdateRuleRequest, opts ...grpc.CallOption) (*common.Rule, error)
 	// Delete a rule by ID. Rules define how events are generated.
 	DeleteRule(ctx context.Context, in *DeleteRuleRequest, opts ...grpc.CallOption) (*empty.Empty, error)
 	// List all rules. Rules define how events are generated.
@@ -41,8 +42,8 @@ func NewRuleServiceClient(cc grpc.ClientConnInterface) RuleServiceClient {
 	return &ruleServiceClient{cc}
 }
 
-func (c *ruleServiceClient) CreateRule(ctx context.Context, in *CreateRuleRequest, opts ...grpc.CallOption) (*Rule, error) {
-	out := new(Rule)
+func (c *ruleServiceClient) CreateRule(ctx context.Context, in *CreateRuleRequest, opts ...grpc.CallOption) (*common.Rule, error) {
+	out := new(common.Rule)
 	err := c.cc.Invoke(ctx, "/thingspect.api.RuleService/CreateRule", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -50,8 +51,8 @@ func (c *ruleServiceClient) CreateRule(ctx context.Context, in *CreateRuleReques
 	return out, nil
 }
 
-func (c *ruleServiceClient) GetRule(ctx context.Context, in *GetRuleRequest, opts ...grpc.CallOption) (*Rule, error) {
-	out := new(Rule)
+func (c *ruleServiceClient) GetRule(ctx context.Context, in *GetRuleRequest, opts ...grpc.CallOption) (*common.Rule, error) {
+	out := new(common.Rule)
 	err := c.cc.Invoke(ctx, "/thingspect.api.RuleService/GetRule", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -59,8 +60,8 @@ func (c *ruleServiceClient) GetRule(ctx context.Context, in *GetRuleRequest, opt
 	return out, nil
 }
 
-func (c *ruleServiceClient) UpdateRule(ctx context.Context, in *UpdateRuleRequest, opts ...grpc.CallOption) (*Rule, error) {
-	out := new(Rule)
+func (c *ruleServiceClient) UpdateRule(ctx context.Context, in *UpdateRuleRequest, opts ...grpc.CallOption) (*common.Rule, error) {
+	out := new(common.Rule)
 	err := c.cc.Invoke(ctx, "/thingspect.api.RuleService/UpdateRule", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -100,11 +101,11 @@ func (c *ruleServiceClient) TestRule(ctx context.Context, in *TestRuleRequest, o
 // for forward compatibility
 type RuleServiceServer interface {
 	// Create a rule. Rules define how events are generated.
-	CreateRule(context.Context, *CreateRuleRequest) (*Rule, error)
+	CreateRule(context.Context, *CreateRuleRequest) (*common.Rule, error)
 	// Get a rule by ID. Rules define how events are generated.
-	GetRule(context.Context, *GetRuleRequest) (*Rule, error)
+	GetRule(context.Context, *GetRuleRequest) (*common.Rule, error)
 	// Update a rule. Rules define how events are generated.
-	UpdateRule(context.Context, *UpdateRuleRequest) (*Rule, error)
+	UpdateRule(context.Context, *UpdateRuleRequest) (*common.Rule, error)
 	// Delete a rule by ID. Rules define how events are generated.
 	DeleteRule(context.Context, *DeleteRuleRequest) (*empty.Empty, error)
 	// List all rules. Rules define how events are generated.
@@ -118,13 +119,13 @@ type RuleServiceServer interface {
 type UnimplementedRuleServiceServer struct {
 }
 
-func (UnimplementedRuleServiceServer) CreateRule(context.Context, *CreateRuleRequest) (*Rule, error) {
+func (UnimplementedRuleServiceServer) CreateRule(context.Context, *CreateRuleRequest) (*common.Rule, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateRule not implemented")
 }
-func (UnimplementedRuleServiceServer) GetRule(context.Context, *GetRuleRequest) (*Rule, error) {
+func (UnimplementedRuleServiceServer) GetRule(context.Context, *GetRuleRequest) (*common.Rule, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetRule not implemented")
 }
-func (UnimplementedRuleServiceServer) UpdateRule(context.Context, *UpdateRuleRequest) (*Rule, error) {
+func (UnimplementedRuleServiceServer) UpdateRule(context.Context, *UpdateRuleRequest) (*common.Rule, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateRule not implemented")
 }
 func (UnimplementedRuleServiceServer) DeleteRule(context.Context, *DeleteRuleRequest) (*empty.Empty, error) {

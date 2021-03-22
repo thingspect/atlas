@@ -879,13 +879,13 @@
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/apiRule"
+              "$ref": "#/definitions/commonRule"
             }
           },
           "201": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/apiRule"
+              "$ref": "#/definitions/commonRule"
             }
           },
           "default": {
@@ -902,7 +902,7 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/apiRule"
+              "$ref": "#/definitions/commonRule"
             }
           }
         ],
@@ -952,7 +952,7 @@
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/apiRule"
+              "$ref": "#/definitions/commonRule"
             }
           },
           "default": {
@@ -1018,7 +1018,7 @@
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/apiRule"
+              "$ref": "#/definitions/commonRule"
             }
           },
           "default": {
@@ -1042,7 +1042,7 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/apiRule"
+              "$ref": "#/definitions/commonRule"
             }
           },
           {
@@ -1064,7 +1064,7 @@
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/apiRule"
+              "$ref": "#/definitions/commonRule"
             }
           },
           "default": {
@@ -1088,7 +1088,7 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/apiRule"
+              "$ref": "#/definitions/commonRule"
             }
           },
           {
@@ -1616,7 +1616,7 @@
         "rules": {
           "type": "array",
           "items": {
-            "$ref": "#/definitions/apiRule"
+            "$ref": "#/definitions/commonRule"
           },
           "description": "Rule array, ordered by ascending created_at timestamp."
         },
@@ -1766,72 +1766,6 @@
         "points"
       ]
     },
-    "apiRule": {
-      "type": "object",
-      "properties": {
-        "id": {
-          "type": "string",
-          "description": "Rule ID (UUID).",
-          "readOnly": true
-        },
-        "orgID": {
-          "type": "string",
-          "description": "Organization ID (UUID).",
-          "readOnly": true
-        },
-        "name": {
-          "type": "string",
-          "description": "Rule name.",
-          "required": [
-            "name"
-          ]
-        },
-        "status": {
-          "$ref": "#/definitions/thingspectcommonStatus",
-          "description": "Rule status."
-        },
-        "deviceTag": {
-          "type": "string",
-          "description": "Device tag to which the rule applies.",
-          "required": [
-            "device_tag"
-          ]
-        },
-        "attr": {
-          "type": "string",
-          "description": "Device and data point attribute to which the rule applies.",
-          "required": [
-            "attr"
-          ]
-        },
-        "expr": {
-          "type": "string",
-          "description": "Rule expression. The rules engine evaluates a boolean expression using the [Expr language](https://github.com/antonmedv/expr/blob/master/docs/Language-Definition.md).",
-          "required": [
-            "expr"
-          ]
-        },
-        "createdAt": {
-          "type": "string",
-          "format": "date-time",
-          "description": "Rule creation timestamp.",
-          "readOnly": true
-        },
-        "updatedAt": {
-          "type": "string",
-          "format": "date-time",
-          "description": "Rule modification timestamp.",
-          "readOnly": true
-        }
-      },
-      "description": "Rule represents a rule as stored in the database.",
-      "required": [
-        "name",
-        "deviceTag",
-        "attr",
-        "expr"
-      ]
-    },
     "apiTestRuleRequest": {
       "type": "object",
       "properties": {
@@ -1840,7 +1774,7 @@
           "description": "Data point to test against a rule."
         },
         "rule": {
-          "$ref": "#/definitions/apiRule",
+          "$ref": "#/definitions/commonRule",
           "description": "Rule message to test."
         }
       },
@@ -2080,6 +2014,72 @@
       ],
       "default": "ROLE_UNSPECIFIED",
       "description": "Role represents the role of a user.\n\n - ROLE_UNSPECIFIED: Role is not specified.\n - CONTACT: Contacts are not allowed to log in to the system, but can receive and respond to alerts from their organization.\n - VIEWER: Viewers can only read resources in their organization, but can update their own user.\n - BUILDER: Builders can read and modify resources in their organization, but can only update their own user.\n - ADMIN: Admins can read and modify anything in their organization, including creating users of an equal or lesser role.\n - SYS_ADMIN: System admins can create organizations and modify anything in their organization."
+    },
+    "commonRule": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Rule ID (UUID).",
+          "readOnly": true
+        },
+        "orgID": {
+          "type": "string",
+          "description": "Organization ID (UUID).",
+          "readOnly": true
+        },
+        "name": {
+          "type": "string",
+          "description": "Rule name.",
+          "required": [
+            "name"
+          ]
+        },
+        "status": {
+          "$ref": "#/definitions/thingspectcommonStatus",
+          "description": "Rule status."
+        },
+        "deviceTag": {
+          "type": "string",
+          "description": "Device tag to which the rule applies.",
+          "required": [
+            "device_tag"
+          ]
+        },
+        "attr": {
+          "type": "string",
+          "description": "Device and data point attribute to which the rule applies.",
+          "required": [
+            "attr"
+          ]
+        },
+        "expr": {
+          "type": "string",
+          "description": "Rule expression. The rules engine evaluates a boolean expression using the [Expr language](https://github.com/antonmedv/expr/blob/master/docs/Language-Definition.md).",
+          "required": [
+            "expr"
+          ]
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Rule creation timestamp.",
+          "readOnly": true
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Rule modification timestamp.",
+          "readOnly": true
+        }
+      },
+      "description": "Rule represents a rule as stored in the database.",
+      "required": [
+        "name",
+        "deviceTag",
+        "attr",
+        "expr"
+      ]
     },
     "googlerpcStatus": {
       "type": "object",
