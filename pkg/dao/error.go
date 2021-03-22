@@ -10,13 +10,14 @@ import (
 
 	"github.com/jackc/pgconn"
 	"github.com/thingspect/atlas/pkg/alog"
+	"github.com/thingspect/atlas/pkg/consterr"
 )
 
 // Sentinel errors for DAO packages.
-var (
-	ErrAlreadyExists = errors.New("object already exists")
-	ErrInvalidFormat = errors.New("invalid format")
-	ErrNotFound      = errors.New("object not found")
+const (
+	ErrAlreadyExists consterr.Error = "object already exists"
+	ErrInvalidFormat consterr.Error = "invalid format"
+	ErrNotFound      consterr.Error = "object not found"
 )
 
 // DBToSentinel maps database/sql or driver errors to sentinel errors. This

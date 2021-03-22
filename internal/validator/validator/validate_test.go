@@ -3,7 +3,6 @@
 package validator
 
 import (
-	"errors"
 	"fmt"
 	"testing"
 	"time"
@@ -13,6 +12,7 @@ import (
 	"github.com/stretchr/testify/require"
 	"github.com/thingspect/api/go/common"
 	"github.com/thingspect/atlas/api/go/message"
+	"github.com/thingspect/atlas/pkg/consterr"
 	"github.com/thingspect/atlas/pkg/dao"
 	"github.com/thingspect/atlas/pkg/queue"
 	"github.com/thingspect/atlas/pkg/test/random"
@@ -20,7 +20,7 @@ import (
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
-var errTestProc = errors.New("validator: test processor error")
+const errTestProc consterr.Error = "validator: test processor error"
 
 func TestValidateMessages(t *testing.T) {
 	t.Parallel()

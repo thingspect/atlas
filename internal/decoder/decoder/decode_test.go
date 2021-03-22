@@ -3,7 +3,6 @@
 package decoder
 
 import (
-	"errors"
 	"fmt"
 	"testing"
 	"time"
@@ -13,6 +12,7 @@ import (
 	"github.com/stretchr/testify/require"
 	"github.com/thingspect/api/go/common"
 	"github.com/thingspect/atlas/api/go/message"
+	"github.com/thingspect/atlas/pkg/consterr"
 	"github.com/thingspect/atlas/pkg/dao"
 	"github.com/thingspect/atlas/pkg/decode/registry"
 	"github.com/thingspect/atlas/pkg/queue"
@@ -21,7 +21,7 @@ import (
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
-var errTestProc = errors.New("decoder: test processor error")
+const errTestProc consterr.Error = "decoder: test processor error"
 
 func TestDecodeMessages(t *testing.T) {
 	t.Parallel()

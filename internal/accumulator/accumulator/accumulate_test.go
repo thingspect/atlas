@@ -3,7 +3,6 @@
 package accumulator
 
 import (
-	"errors"
 	"fmt"
 	"sync"
 	"testing"
@@ -14,6 +13,7 @@ import (
 	"github.com/stretchr/testify/require"
 	"github.com/thingspect/api/go/common"
 	"github.com/thingspect/atlas/api/go/message"
+	"github.com/thingspect/atlas/pkg/consterr"
 	"github.com/thingspect/atlas/pkg/dao"
 	"github.com/thingspect/atlas/pkg/queue"
 	"github.com/thingspect/atlas/pkg/test/matcher"
@@ -22,7 +22,7 @@ import (
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
-var errTestProc = errors.New("accumulator: test processor error")
+const errTestProc consterr.Error = "accumulator: test processor error"
 
 func TestAccumulateMessages(t *testing.T) {
 	t.Parallel()

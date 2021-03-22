@@ -2,13 +2,13 @@
 package crypto
 
 import (
-	"errors"
 	"strings"
 
+	"github.com/thingspect/atlas/pkg/consterr"
 	"golang.org/x/crypto/bcrypt"
 )
 
-var ErrWeakPass = errors.New("weak password, see NIST password guidelines")
+const ErrWeakPass consterr.Error = "weak password, see NIST password guidelines"
 
 // CheckPass checks whether a password is weak or disallowed.
 func CheckPass(pass string) error {

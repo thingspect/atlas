@@ -2,21 +2,24 @@ package session
 
 import (
 	"encoding/base64"
-	"errors"
 	"time"
 
 	"github.com/google/uuid"
 	"github.com/thingspect/api/go/api"
 	"github.com/thingspect/atlas/api/go/token"
 	"github.com/thingspect/atlas/internal/api/crypto"
+	"github.com/thingspect/atlas/pkg/consterr"
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
-// WebTokenExp represents the lifetime of a web token in seconds.
-const WebTokenExp = 10 * 60
+const (
+	// WebTokenExp represents the lifetime of a web token in seconds.
+	WebTokenExp = 10 * 60
 
-var errWebTokenExp = errors.New("crypto: token expired")
+	//#nosec G101 // false positive for hardcoded credentials
+	errWebTokenExp consterr.Error = "crypto: token expired"
+)
 
 // GenerateWebToken generates an encrypted protobuf web token in raw (no
 // padding) base64 format. It returns the token, expiration time, and an error

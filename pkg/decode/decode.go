@@ -3,8 +3,9 @@
 package decode
 
 import (
-	"errors"
 	"time"
+
+	"github.com/thingspect/atlas/pkg/consterr"
 )
 
 // ValidWindow is the window that a payload's timestamp is considered valid.
@@ -13,7 +14,7 @@ import (
 // has bogus time.
 const ValidWindow = 4 * time.Hour
 
-var ErrUnknownEvent = errors.New("unknown event type")
+const ErrUnknownEvent consterr.Error = "unknown event type"
 
 // Point represents an attribute-value pair as produced by a decoder function.
 // Values should conform to common.DataPoint types, specifically int32, float64,

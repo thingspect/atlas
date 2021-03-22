@@ -2,15 +2,15 @@
 package registry
 
 import (
-	"errors"
 	"fmt"
 
 	"github.com/thingspect/api/go/common"
+	"github.com/thingspect/atlas/pkg/consterr"
 	"github.com/thingspect/atlas/pkg/decode"
 	"github.com/thingspect/atlas/pkg/decode/radiobridge"
 )
 
-var ErrNotFound = errors.New("decoder function not found")
+const ErrNotFound consterr.Error = "decoder function not found"
 
 // Registry holds decoder-function mappings.
 type Registry struct {

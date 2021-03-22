@@ -3,7 +3,6 @@ package api
 
 import (
 	"context"
-	"errors"
 	"net"
 	"net/http"
 	"os"
@@ -18,6 +17,7 @@ import (
 	"github.com/thingspect/atlas/internal/api/lora"
 	"github.com/thingspect/atlas/internal/api/service"
 	"github.com/thingspect/atlas/pkg/alog"
+	"github.com/thingspect/atlas/pkg/consterr"
 	"github.com/thingspect/atlas/pkg/dao"
 	"github.com/thingspect/atlas/pkg/dao/datapoint"
 	"github.com/thingspect/atlas/pkg/dao/device"
@@ -38,9 +38,9 @@ const (
 	GRPCHost    = "127.0.0.1"
 	GRPCPort    = ":50051"
 	httpPort    = ":8000"
-)
 
-var errPWTLength = errors.New("pwt key must be 32 bytes")
+	errPWTLength consterr.Error = "pwt key must be 32 bytes"
+)
 
 // API holds references to the gRPC and HTTP servers.
 type API struct {
