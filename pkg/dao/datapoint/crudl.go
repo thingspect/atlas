@@ -30,6 +30,7 @@ func (d *DAO) Create(ctx context.Context, point *common.DataPoint,
 	var boolVal *bool
 	var bytesVal []byte
 
+	// If point doesn't validate, all values remain nil and query will error.
 	switch v := point.ValOneof.(type) {
 	case *common.DataPoint_IntVal:
 		intVal = &v.IntVal
