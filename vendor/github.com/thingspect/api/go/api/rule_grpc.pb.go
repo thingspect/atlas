@@ -22,16 +22,28 @@ const _ = grpc.SupportPackageIsVersion7
 type RuleServiceClient interface {
 	// Create a rule. Rules define how events are generated.
 	CreateRule(ctx context.Context, in *CreateRuleRequest, opts ...grpc.CallOption) (*common.Rule, error)
+	// Create an alarm. Alarms define how alerts are generated.
+	CreateAlarm(ctx context.Context, in *CreateAlarmRequest, opts ...grpc.CallOption) (*Alarm, error)
 	// Get a rule by ID. Rules define how events are generated.
 	GetRule(ctx context.Context, in *GetRuleRequest, opts ...grpc.CallOption) (*common.Rule, error)
+	// Get an alarm by ID. Alarms define how alerts are generated.
+	GetAlarm(ctx context.Context, in *GetAlarmRequest, opts ...grpc.CallOption) (*Alarm, error)
 	// Update a rule. Rules define how events are generated.
 	UpdateRule(ctx context.Context, in *UpdateRuleRequest, opts ...grpc.CallOption) (*common.Rule, error)
+	// Update an alarm. Alarms define how alerts are generated.
+	UpdateAlarm(ctx context.Context, in *UpdateAlarmRequest, opts ...grpc.CallOption) (*Alarm, error)
 	// Delete a rule by ID. Rules define how events are generated.
 	DeleteRule(ctx context.Context, in *DeleteRuleRequest, opts ...grpc.CallOption) (*empty.Empty, error)
+	// Delete an alarm by ID. Alarms define how alerts are generated.
+	DeleteAlarm(ctx context.Context, in *DeleteAlarmRequest, opts ...grpc.CallOption) (*empty.Empty, error)
 	// List all rules. Rules define how events are generated.
 	ListRules(ctx context.Context, in *ListRulesRequest, opts ...grpc.CallOption) (*ListRulesResponse, error)
+	// List alarms. Alarms define how alerts are generated.
+	ListAlarms(ctx context.Context, in *ListAlarmsRequest, opts ...grpc.CallOption) (*ListAlarmsResponse, error)
 	// Test a rule. Rules define how events are generated.
 	TestRule(ctx context.Context, in *TestRuleRequest, opts ...grpc.CallOption) (*TestRuleResponse, error)
+	// Test an alarm. Alarms define how alerts are generated.
+	TestAlarm(ctx context.Context, in *TestAlarmRequest, opts ...grpc.CallOption) (*TestAlarmResponse, error)
 }
 
 type ruleServiceClient struct {
@@ -51,9 +63,27 @@ func (c *ruleServiceClient) CreateRule(ctx context.Context, in *CreateRuleReques
 	return out, nil
 }
 
+func (c *ruleServiceClient) CreateAlarm(ctx context.Context, in *CreateAlarmRequest, opts ...grpc.CallOption) (*Alarm, error) {
+	out := new(Alarm)
+	err := c.cc.Invoke(ctx, "/thingspect.api.RuleService/CreateAlarm", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *ruleServiceClient) GetRule(ctx context.Context, in *GetRuleRequest, opts ...grpc.CallOption) (*common.Rule, error) {
 	out := new(common.Rule)
 	err := c.cc.Invoke(ctx, "/thingspect.api.RuleService/GetRule", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *ruleServiceClient) GetAlarm(ctx context.Context, in *GetAlarmRequest, opts ...grpc.CallOption) (*Alarm, error) {
+	out := new(Alarm)
+	err := c.cc.Invoke(ctx, "/thingspect.api.RuleService/GetAlarm", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -69,9 +99,27 @@ func (c *ruleServiceClient) UpdateRule(ctx context.Context, in *UpdateRuleReques
 	return out, nil
 }
 
+func (c *ruleServiceClient) UpdateAlarm(ctx context.Context, in *UpdateAlarmRequest, opts ...grpc.CallOption) (*Alarm, error) {
+	out := new(Alarm)
+	err := c.cc.Invoke(ctx, "/thingspect.api.RuleService/UpdateAlarm", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *ruleServiceClient) DeleteRule(ctx context.Context, in *DeleteRuleRequest, opts ...grpc.CallOption) (*empty.Empty, error) {
 	out := new(empty.Empty)
 	err := c.cc.Invoke(ctx, "/thingspect.api.RuleService/DeleteRule", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *ruleServiceClient) DeleteAlarm(ctx context.Context, in *DeleteAlarmRequest, opts ...grpc.CallOption) (*empty.Empty, error) {
+	out := new(empty.Empty)
+	err := c.cc.Invoke(ctx, "/thingspect.api.RuleService/DeleteAlarm", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -87,9 +135,27 @@ func (c *ruleServiceClient) ListRules(ctx context.Context, in *ListRulesRequest,
 	return out, nil
 }
 
+func (c *ruleServiceClient) ListAlarms(ctx context.Context, in *ListAlarmsRequest, opts ...grpc.CallOption) (*ListAlarmsResponse, error) {
+	out := new(ListAlarmsResponse)
+	err := c.cc.Invoke(ctx, "/thingspect.api.RuleService/ListAlarms", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *ruleServiceClient) TestRule(ctx context.Context, in *TestRuleRequest, opts ...grpc.CallOption) (*TestRuleResponse, error) {
 	out := new(TestRuleResponse)
 	err := c.cc.Invoke(ctx, "/thingspect.api.RuleService/TestRule", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *ruleServiceClient) TestAlarm(ctx context.Context, in *TestAlarmRequest, opts ...grpc.CallOption) (*TestAlarmResponse, error) {
+	out := new(TestAlarmResponse)
+	err := c.cc.Invoke(ctx, "/thingspect.api.RuleService/TestAlarm", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -102,16 +168,28 @@ func (c *ruleServiceClient) TestRule(ctx context.Context, in *TestRuleRequest, o
 type RuleServiceServer interface {
 	// Create a rule. Rules define how events are generated.
 	CreateRule(context.Context, *CreateRuleRequest) (*common.Rule, error)
+	// Create an alarm. Alarms define how alerts are generated.
+	CreateAlarm(context.Context, *CreateAlarmRequest) (*Alarm, error)
 	// Get a rule by ID. Rules define how events are generated.
 	GetRule(context.Context, *GetRuleRequest) (*common.Rule, error)
+	// Get an alarm by ID. Alarms define how alerts are generated.
+	GetAlarm(context.Context, *GetAlarmRequest) (*Alarm, error)
 	// Update a rule. Rules define how events are generated.
 	UpdateRule(context.Context, *UpdateRuleRequest) (*common.Rule, error)
+	// Update an alarm. Alarms define how alerts are generated.
+	UpdateAlarm(context.Context, *UpdateAlarmRequest) (*Alarm, error)
 	// Delete a rule by ID. Rules define how events are generated.
 	DeleteRule(context.Context, *DeleteRuleRequest) (*empty.Empty, error)
+	// Delete an alarm by ID. Alarms define how alerts are generated.
+	DeleteAlarm(context.Context, *DeleteAlarmRequest) (*empty.Empty, error)
 	// List all rules. Rules define how events are generated.
 	ListRules(context.Context, *ListRulesRequest) (*ListRulesResponse, error)
+	// List alarms. Alarms define how alerts are generated.
+	ListAlarms(context.Context, *ListAlarmsRequest) (*ListAlarmsResponse, error)
 	// Test a rule. Rules define how events are generated.
 	TestRule(context.Context, *TestRuleRequest) (*TestRuleResponse, error)
+	// Test an alarm. Alarms define how alerts are generated.
+	TestAlarm(context.Context, *TestAlarmRequest) (*TestAlarmResponse, error)
 	mustEmbedUnimplementedRuleServiceServer()
 }
 
@@ -122,20 +200,38 @@ type UnimplementedRuleServiceServer struct {
 func (UnimplementedRuleServiceServer) CreateRule(context.Context, *CreateRuleRequest) (*common.Rule, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateRule not implemented")
 }
+func (UnimplementedRuleServiceServer) CreateAlarm(context.Context, *CreateAlarmRequest) (*Alarm, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CreateAlarm not implemented")
+}
 func (UnimplementedRuleServiceServer) GetRule(context.Context, *GetRuleRequest) (*common.Rule, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetRule not implemented")
+}
+func (UnimplementedRuleServiceServer) GetAlarm(context.Context, *GetAlarmRequest) (*Alarm, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetAlarm not implemented")
 }
 func (UnimplementedRuleServiceServer) UpdateRule(context.Context, *UpdateRuleRequest) (*common.Rule, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateRule not implemented")
 }
+func (UnimplementedRuleServiceServer) UpdateAlarm(context.Context, *UpdateAlarmRequest) (*Alarm, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdateAlarm not implemented")
+}
 func (UnimplementedRuleServiceServer) DeleteRule(context.Context, *DeleteRuleRequest) (*empty.Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteRule not implemented")
+}
+func (UnimplementedRuleServiceServer) DeleteAlarm(context.Context, *DeleteAlarmRequest) (*empty.Empty, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DeleteAlarm not implemented")
 }
 func (UnimplementedRuleServiceServer) ListRules(context.Context, *ListRulesRequest) (*ListRulesResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ListRules not implemented")
 }
+func (UnimplementedRuleServiceServer) ListAlarms(context.Context, *ListAlarmsRequest) (*ListAlarmsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ListAlarms not implemented")
+}
 func (UnimplementedRuleServiceServer) TestRule(context.Context, *TestRuleRequest) (*TestRuleResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method TestRule not implemented")
+}
+func (UnimplementedRuleServiceServer) TestAlarm(context.Context, *TestAlarmRequest) (*TestAlarmResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method TestAlarm not implemented")
 }
 func (UnimplementedRuleServiceServer) mustEmbedUnimplementedRuleServiceServer() {}
 
@@ -168,6 +264,24 @@ func _RuleService_CreateRule_Handler(srv interface{}, ctx context.Context, dec f
 	return interceptor(ctx, in, info, handler)
 }
 
+func _RuleService_CreateAlarm_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CreateAlarmRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(RuleServiceServer).CreateAlarm(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/thingspect.api.RuleService/CreateAlarm",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(RuleServiceServer).CreateAlarm(ctx, req.(*CreateAlarmRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _RuleService_GetRule_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(GetRuleRequest)
 	if err := dec(in); err != nil {
@@ -182,6 +296,24 @@ func _RuleService_GetRule_Handler(srv interface{}, ctx context.Context, dec func
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(RuleServiceServer).GetRule(ctx, req.(*GetRuleRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _RuleService_GetAlarm_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetAlarmRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(RuleServiceServer).GetAlarm(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/thingspect.api.RuleService/GetAlarm",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(RuleServiceServer).GetAlarm(ctx, req.(*GetAlarmRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -204,6 +336,24 @@ func _RuleService_UpdateRule_Handler(srv interface{}, ctx context.Context, dec f
 	return interceptor(ctx, in, info, handler)
 }
 
+func _RuleService_UpdateAlarm_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UpdateAlarmRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(RuleServiceServer).UpdateAlarm(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/thingspect.api.RuleService/UpdateAlarm",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(RuleServiceServer).UpdateAlarm(ctx, req.(*UpdateAlarmRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _RuleService_DeleteRule_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(DeleteRuleRequest)
 	if err := dec(in); err != nil {
@@ -218,6 +368,24 @@ func _RuleService_DeleteRule_Handler(srv interface{}, ctx context.Context, dec f
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(RuleServiceServer).DeleteRule(ctx, req.(*DeleteRuleRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _RuleService_DeleteAlarm_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DeleteAlarmRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(RuleServiceServer).DeleteAlarm(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/thingspect.api.RuleService/DeleteAlarm",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(RuleServiceServer).DeleteAlarm(ctx, req.(*DeleteAlarmRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -240,6 +408,24 @@ func _RuleService_ListRules_Handler(srv interface{}, ctx context.Context, dec fu
 	return interceptor(ctx, in, info, handler)
 }
 
+func _RuleService_ListAlarms_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ListAlarmsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(RuleServiceServer).ListAlarms(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/thingspect.api.RuleService/ListAlarms",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(RuleServiceServer).ListAlarms(ctx, req.(*ListAlarmsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _RuleService_TestRule_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(TestRuleRequest)
 	if err := dec(in); err != nil {
@@ -258,6 +444,24 @@ func _RuleService_TestRule_Handler(srv interface{}, ctx context.Context, dec fun
 	return interceptor(ctx, in, info, handler)
 }
 
+func _RuleService_TestAlarm_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(TestAlarmRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(RuleServiceServer).TestAlarm(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/thingspect.api.RuleService/TestAlarm",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(RuleServiceServer).TestAlarm(ctx, req.(*TestAlarmRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // RuleService_ServiceDesc is the grpc.ServiceDesc for RuleService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -270,24 +474,48 @@ var RuleService_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _RuleService_CreateRule_Handler,
 		},
 		{
+			MethodName: "CreateAlarm",
+			Handler:    _RuleService_CreateAlarm_Handler,
+		},
+		{
 			MethodName: "GetRule",
 			Handler:    _RuleService_GetRule_Handler,
+		},
+		{
+			MethodName: "GetAlarm",
+			Handler:    _RuleService_GetAlarm_Handler,
 		},
 		{
 			MethodName: "UpdateRule",
 			Handler:    _RuleService_UpdateRule_Handler,
 		},
 		{
+			MethodName: "UpdateAlarm",
+			Handler:    _RuleService_UpdateAlarm_Handler,
+		},
+		{
 			MethodName: "DeleteRule",
 			Handler:    _RuleService_DeleteRule_Handler,
+		},
+		{
+			MethodName: "DeleteAlarm",
+			Handler:    _RuleService_DeleteAlarm_Handler,
 		},
 		{
 			MethodName: "ListRules",
 			Handler:    _RuleService_ListRules_Handler,
 		},
 		{
+			MethodName: "ListAlarms",
+			Handler:    _RuleService_ListAlarms_Handler,
+		},
+		{
 			MethodName: "TestRule",
 			Handler:    _RuleService_TestRule_Handler,
+		},
+		{
+			MethodName: "TestAlarm",
+			Handler:    _RuleService_TestAlarm_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

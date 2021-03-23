@@ -18,7 +18,7 @@ CREATE TABLE devices (
   status status NOT NULL,
   token uuid UNIQUE NOT NULL DEFAULT gen_random_uuid(),
   decoder varchar(40) NOT NULL,
-  -- Nullable to match protobuf deserialization of slices
+  -- Nullable to match protobuf deserialization of empty slices
   tags varchar(255)[],
   created_at timestamptz NOT NULL,
   updated_at timestamptz NOT NULL

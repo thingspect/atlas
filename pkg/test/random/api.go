@@ -52,6 +52,24 @@ func Rule(prefix, orgID string) *common.Rule {
 	}
 }
 
+// Alarm generates a random alarm with prefixed identifiers.
+func Alarm(prefix, orgID, ruleID string) *api.Alarm {
+	return &api.Alarm{
+		Id:     uuid.NewString(),
+		OrgId:  orgID,
+		RuleId: ruleID,
+		Name:   prefix + "-" + String(10),
+		Status: []common.Status{
+			common.Status_ACTIVE,
+			common.Status_DISABLED,
+		}[Intn(2)],
+		UserTags:        Tags(prefix, Intn(4)+1),
+		SubjectTemplate: `rule name is: {{.rule.Name}}`,
+		BodyTemplate:    `device status is: {{.device.Status}}`,
+		RepeatInterval:  int32(Intn(99)),
+	}
+}
+
 // User generates a random user with prefixed identifiers.
 func User(prefix, orgID string) *api.User {
 	return &api.User{
