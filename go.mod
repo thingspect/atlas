@@ -24,7 +24,7 @@ require (
 	github.com/rs/zerolog v1.20.0
 	github.com/smira/go-statsd v1.3.2
 	github.com/stretchr/testify v1.7.0
-	github.com/thingspect/api/go v0.0.0-20210322164641-eecee32ba37f
+	github.com/thingspect/api/go v0.0.0-20210323143750-ff31fe29e764
 	go.opentelemetry.io/otel v0.19.0 // indirect
 	golang.org/x/crypto v0.0.0-20210322153248-0c34fe9e7dc2
 	google.golang.org/grpc v1.36.0

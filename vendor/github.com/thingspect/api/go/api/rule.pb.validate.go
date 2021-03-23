@@ -16,6 +16,8 @@ import (
 	"unicode/utf8"
 
 	"github.com/golang/protobuf/ptypes"
+
+	common "github.com/thingspect/api/go/common"
 )
 
 // ensure the imports are used
@@ -31,6 +33,8 @@ var (
 	_ = (*url.URL)(nil)
 	_ = (*mail.Address)(nil)
 	_ = ptypes.DynamicAny{}
+
+	_ = common.Status(0)
 )
 
 // define the regex for a UUID once up-front
@@ -703,3 +707,887 @@ var _ interface {
 	Cause() error
 	ErrorName() string
 } = TestRuleResponseValidationError{}
+
+// Validate checks the field values on Alarm with the rules defined in the
+// proto definition for this message. If any rules are violated, an error is returned.
+func (m *Alarm) Validate() error {
+	if m == nil {
+		return nil
+	}
+
+	// no validation rules for Id
+
+	// no validation rules for OrgId
+
+	// no validation rules for RuleId
+
+	if l := utf8.RuneCountInString(m.GetName()); l < 5 || l > 80 {
+		return AlarmValidationError{
+			field:  "Name",
+			reason: "value length must be between 5 and 80 runes, inclusive",
+		}
+	}
+
+	if _, ok := _Alarm_Status_InLookup[m.GetStatus()]; !ok {
+		return AlarmValidationError{
+			field:  "Status",
+			reason: "value must be in list [3 6]",
+		}
+	}
+
+	if len(m.GetUserTags()) < 1 {
+		return AlarmValidationError{
+			field:  "UserTags",
+			reason: "value must contain at least 1 item(s)",
+		}
+	}
+
+	_Alarm_UserTags_Unique := make(map[string]struct{}, len(m.GetUserTags()))
+
+	for idx, item := range m.GetUserTags() {
+		_, _ = idx, item
+
+		if _, exists := _Alarm_UserTags_Unique[item]; exists {
+			return AlarmValidationError{
+				field:  fmt.Sprintf("UserTags[%v]", idx),
+				reason: "repeated value must contain unique items",
+			}
+		} else {
+			_Alarm_UserTags_Unique[item] = struct{}{}
+		}
+
+		if utf8.RuneCountInString(item) > 255 {
+			return AlarmValidationError{
+				field:  fmt.Sprintf("UserTags[%v]", idx),
+				reason: "value length must be at most 255 runes",
+			}
+		}
+
+	}
+
+	if utf8.RuneCountInString(m.GetSubjectTemplate()) > 1024 {
+		return AlarmValidationError{
+			field:  "SubjectTemplate",
+			reason: "value length must be at most 1024 runes",
+		}
+	}
+
+	if utf8.RuneCountInString(m.GetBodyTemplate()) > 4096 {
+		return AlarmValidationError{
+			field:  "BodyTemplate",
+			reason: "value length must be at most 4096 runes",
+		}
+	}
+
+	if val := m.GetRepeatInterval(); val < 1 || val > 20160 {
+		return AlarmValidationError{
+			field:  "RepeatInterval",
+			reason: "value must be inside range [1, 20160]",
+		}
+	}
+
+	if v, ok := interface{}(m.GetCreatedAt()).(interface{ Validate() error }); ok {
+		if err := v.Validate(); err != nil {
+			return AlarmValidationError{
+				field:  "CreatedAt",
+				reason: "embedded message failed validation",
+				cause:  err,
+			}
+		}
+	}
+
+	if v, ok := interface{}(m.GetUpdatedAt()).(interface{ Validate() error }); ok {
+		if err := v.Validate(); err != nil {
+			return AlarmValidationError{
+				field:  "UpdatedAt",
+				reason: "embedded message failed validation",
+				cause:  err,
+			}
+		}
+	}
+
+	return nil
+}
+
+// AlarmValidationError is the validation error returned by Alarm.Validate if
+// the designated constraints aren't met.
+type AlarmValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e AlarmValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e AlarmValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e AlarmValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e AlarmValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e AlarmValidationError) ErrorName() string { return "AlarmValidationError" }
+
+// Error satisfies the builtin error interface
+func (e AlarmValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sAlarm.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = AlarmValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = AlarmValidationError{}
+
+var _Alarm_Status_InLookup = map[common.Status]struct{}{
+	3: {},
+	6: {},
+}
+
+// Validate checks the field values on CreateAlarmRequest with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, an error is returned.
+func (m *CreateAlarmRequest) Validate() error {
+	if m == nil {
+		return nil
+	}
+
+	if m.GetAlarm() == nil {
+		return CreateAlarmRequestValidationError{
+			field:  "Alarm",
+			reason: "value is required",
+		}
+	}
+
+	if v, ok := interface{}(m.GetAlarm()).(interface{ Validate() error }); ok {
+		if err := v.Validate(); err != nil {
+			return CreateAlarmRequestValidationError{
+				field:  "Alarm",
+				reason: "embedded message failed validation",
+				cause:  err,
+			}
+		}
+	}
+
+	return nil
+}
+
+// CreateAlarmRequestValidationError is the validation error returned by
+// CreateAlarmRequest.Validate if the designated constraints aren't met.
+type CreateAlarmRequestValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e CreateAlarmRequestValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e CreateAlarmRequestValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e CreateAlarmRequestValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e CreateAlarmRequestValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e CreateAlarmRequestValidationError) ErrorName() string {
+	return "CreateAlarmRequestValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e CreateAlarmRequestValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sCreateAlarmRequest.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = CreateAlarmRequestValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = CreateAlarmRequestValidationError{}
+
+// Validate checks the field values on GetAlarmRequest with the rules defined
+// in the proto definition for this message. If any rules are violated, an
+// error is returned.
+func (m *GetAlarmRequest) Validate() error {
+	if m == nil {
+		return nil
+	}
+
+	if err := m._validateUuid(m.GetId()); err != nil {
+		return GetAlarmRequestValidationError{
+			field:  "Id",
+			reason: "value must be a valid UUID",
+			cause:  err,
+		}
+	}
+
+	if err := m._validateUuid(m.GetRuleId()); err != nil {
+		return GetAlarmRequestValidationError{
+			field:  "RuleId",
+			reason: "value must be a valid UUID",
+			cause:  err,
+		}
+	}
+
+	return nil
+}
+
+func (m *GetAlarmRequest) _validateUuid(uuid string) error {
+	if matched := _rule_uuidPattern.MatchString(uuid); !matched {
+		return errors.New("invalid uuid format")
+	}
+
+	return nil
+}
+
+// GetAlarmRequestValidationError is the validation error returned by
+// GetAlarmRequest.Validate if the designated constraints aren't met.
+type GetAlarmRequestValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e GetAlarmRequestValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e GetAlarmRequestValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e GetAlarmRequestValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e GetAlarmRequestValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e GetAlarmRequestValidationError) ErrorName() string { return "GetAlarmRequestValidationError" }
+
+// Error satisfies the builtin error interface
+func (e GetAlarmRequestValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sGetAlarmRequest.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = GetAlarmRequestValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = GetAlarmRequestValidationError{}
+
+// Validate checks the field values on UpdateAlarmRequest with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, an error is returned.
+func (m *UpdateAlarmRequest) Validate() error {
+	if m == nil {
+		return nil
+	}
+
+	if m.GetAlarm() == nil {
+		return UpdateAlarmRequestValidationError{
+			field:  "Alarm",
+			reason: "value is required",
+		}
+	}
+
+	if v, ok := interface{}(m.GetAlarm()).(interface{ Validate() error }); ok {
+		if err := v.Validate(); err != nil {
+			return UpdateAlarmRequestValidationError{
+				field:  "Alarm",
+				reason: "embedded message failed validation",
+				cause:  err,
+			}
+		}
+	}
+
+	if v, ok := interface{}(m.GetUpdateMask()).(interface{ Validate() error }); ok {
+		if err := v.Validate(); err != nil {
+			return UpdateAlarmRequestValidationError{
+				field:  "UpdateMask",
+				reason: "embedded message failed validation",
+				cause:  err,
+			}
+		}
+	}
+
+	return nil
+}
+
+// UpdateAlarmRequestValidationError is the validation error returned by
+// UpdateAlarmRequest.Validate if the designated constraints aren't met.
+type UpdateAlarmRequestValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e UpdateAlarmRequestValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e UpdateAlarmRequestValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e UpdateAlarmRequestValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e UpdateAlarmRequestValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e UpdateAlarmRequestValidationError) ErrorName() string {
+	return "UpdateAlarmRequestValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e UpdateAlarmRequestValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sUpdateAlarmRequest.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = UpdateAlarmRequestValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = UpdateAlarmRequestValidationError{}
+
+// Validate checks the field values on DeleteAlarmRequest with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, an error is returned.
+func (m *DeleteAlarmRequest) Validate() error {
+	if m == nil {
+		return nil
+	}
+
+	if err := m._validateUuid(m.GetId()); err != nil {
+		return DeleteAlarmRequestValidationError{
+			field:  "Id",
+			reason: "value must be a valid UUID",
+			cause:  err,
+		}
+	}
+
+	if err := m._validateUuid(m.GetRuleId()); err != nil {
+		return DeleteAlarmRequestValidationError{
+			field:  "RuleId",
+			reason: "value must be a valid UUID",
+			cause:  err,
+		}
+	}
+
+	return nil
+}
+
+func (m *DeleteAlarmRequest) _validateUuid(uuid string) error {
+	if matched := _rule_uuidPattern.MatchString(uuid); !matched {
+		return errors.New("invalid uuid format")
+	}
+
+	return nil
+}
+
+// DeleteAlarmRequestValidationError is the validation error returned by
+// DeleteAlarmRequest.Validate if the designated constraints aren't met.
+type DeleteAlarmRequestValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e DeleteAlarmRequestValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e DeleteAlarmRequestValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e DeleteAlarmRequestValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e DeleteAlarmRequestValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e DeleteAlarmRequestValidationError) ErrorName() string {
+	return "DeleteAlarmRequestValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e DeleteAlarmRequestValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sDeleteAlarmRequest.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = DeleteAlarmRequestValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = DeleteAlarmRequestValidationError{}
+
+// Validate checks the field values on ListAlarmsRequest with the rules defined
+// in the proto definition for this message. If any rules are violated, an
+// error is returned.
+func (m *ListAlarmsRequest) Validate() error {
+	if m == nil {
+		return nil
+	}
+
+	if val := m.GetPageSize(); val < 0 || val > 250 {
+		return ListAlarmsRequestValidationError{
+			field:  "PageSize",
+			reason: "value must be inside range [0, 250]",
+		}
+	}
+
+	// no validation rules for PageToken
+
+	// no validation rules for RuleId
+
+	return nil
+}
+
+// ListAlarmsRequestValidationError is the validation error returned by
+// ListAlarmsRequest.Validate if the designated constraints aren't met.
+type ListAlarmsRequestValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e ListAlarmsRequestValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e ListAlarmsRequestValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e ListAlarmsRequestValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e ListAlarmsRequestValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e ListAlarmsRequestValidationError) ErrorName() string {
+	return "ListAlarmsRequestValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e ListAlarmsRequestValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sListAlarmsRequest.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = ListAlarmsRequestValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = ListAlarmsRequestValidationError{}
+
+// Validate checks the field values on ListAlarmsResponse with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, an error is returned.
+func (m *ListAlarmsResponse) Validate() error {
+	if m == nil {
+		return nil
+	}
+
+	for idx, item := range m.GetAlarms() {
+		_, _ = idx, item
+
+		if v, ok := interface{}(item).(interface{ Validate() error }); ok {
+			if err := v.Validate(); err != nil {
+				return ListAlarmsResponseValidationError{
+					field:  fmt.Sprintf("Alarms[%v]", idx),
+					reason: "embedded message failed validation",
+					cause:  err,
+				}
+			}
+		}
+
+	}
+
+	// no validation rules for NextPageToken
+
+	// no validation rules for TotalSize
+
+	return nil
+}
+
+// ListAlarmsResponseValidationError is the validation error returned by
+// ListAlarmsResponse.Validate if the designated constraints aren't met.
+type ListAlarmsResponseValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e ListAlarmsResponseValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e ListAlarmsResponseValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e ListAlarmsResponseValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e ListAlarmsResponseValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e ListAlarmsResponseValidationError) ErrorName() string {
+	return "ListAlarmsResponseValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e ListAlarmsResponseValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sListAlarmsResponse.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = ListAlarmsResponseValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = ListAlarmsResponseValidationError{}
+
+// Validate checks the field values on TestAlarmRequest with the rules defined
+// in the proto definition for this message. If any rules are violated, an
+// error is returned.
+func (m *TestAlarmRequest) Validate() error {
+	if m == nil {
+		return nil
+	}
+
+	if m.GetPoint() == nil {
+		return TestAlarmRequestValidationError{
+			field:  "Point",
+			reason: "value is required",
+		}
+	}
+
+	if v, ok := interface{}(m.GetPoint()).(interface{ Validate() error }); ok {
+		if err := v.Validate(); err != nil {
+			return TestAlarmRequestValidationError{
+				field:  "Point",
+				reason: "embedded message failed validation",
+				cause:  err,
+			}
+		}
+	}
+
+	if m.GetRule() == nil {
+		return TestAlarmRequestValidationError{
+			field:  "Rule",
+			reason: "value is required",
+		}
+	}
+
+	if v, ok := interface{}(m.GetRule()).(interface{ Validate() error }); ok {
+		if err := v.Validate(); err != nil {
+			return TestAlarmRequestValidationError{
+				field:  "Rule",
+				reason: "embedded message failed validation",
+				cause:  err,
+			}
+		}
+	}
+
+	if m.GetDevice() == nil {
+		return TestAlarmRequestValidationError{
+			field:  "Device",
+			reason: "value is required",
+		}
+	}
+
+	if v, ok := interface{}(m.GetDevice()).(interface{ Validate() error }); ok {
+		if err := v.Validate(); err != nil {
+			return TestAlarmRequestValidationError{
+				field:  "Device",
+				reason: "embedded message failed validation",
+				cause:  err,
+			}
+		}
+	}
+
+	if m.GetAlarm() == nil {
+		return TestAlarmRequestValidationError{
+			field:  "Alarm",
+			reason: "value is required",
+		}
+	}
+
+	if v, ok := interface{}(m.GetAlarm()).(interface{ Validate() error }); ok {
+		if err := v.Validate(); err != nil {
+			return TestAlarmRequestValidationError{
+				field:  "Alarm",
+				reason: "embedded message failed validation",
+				cause:  err,
+			}
+		}
+	}
+
+	return nil
+}
+
+// TestAlarmRequestValidationError is the validation error returned by
+// TestAlarmRequest.Validate if the designated constraints aren't met.
+type TestAlarmRequestValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e TestAlarmRequestValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e TestAlarmRequestValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e TestAlarmRequestValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e TestAlarmRequestValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e TestAlarmRequestValidationError) ErrorName() string { return "TestAlarmRequestValidationError" }
+
+// Error satisfies the builtin error interface
+func (e TestAlarmRequestValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sTestAlarmRequest.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = TestAlarmRequestValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = TestAlarmRequestValidationError{}
+
+// Validate checks the field values on TestAlarmResponse with the rules defined
+// in the proto definition for this message. If any rules are violated, an
+// error is returned.
+func (m *TestAlarmResponse) Validate() error {
+	if m == nil {
+		return nil
+	}
+
+	// no validation rules for Result
+
+	return nil
+}
+
+// TestAlarmResponseValidationError is the validation error returned by
+// TestAlarmResponse.Validate if the designated constraints aren't met.
+type TestAlarmResponseValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e TestAlarmResponseValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e TestAlarmResponseValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e TestAlarmResponseValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e TestAlarmResponseValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e TestAlarmResponseValidationError) ErrorName() string {
+	return "TestAlarmResponseValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e TestAlarmResponseValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sTestAlarmResponse.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = TestAlarmResponseValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = TestAlarmResponseValidationError{}

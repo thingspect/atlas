@@ -384,7 +384,7 @@ type ListDevicesRequest struct {
 	PageSize int32 `protobuf:"varint,1,opt,name=page_size,json=pageSize,proto3" json:"page_size,omitempty"`
 	// Token of the page to retrieve. If not specified, the first page of results will be returned. To request the next page of results, use next_page_token from the previous response.
 	PageToken string `protobuf:"bytes,2,opt,name=page_token,json=pageToken,proto3" json:"page_token,omitempty"`
-	// Filter devices by specified tag.
+	// Device tag. If not specified, all tags are included.
 	Tag string `protobuf:"bytes,3,opt,name=tag,proto3" json:"tag,omitempty"`
 }
 

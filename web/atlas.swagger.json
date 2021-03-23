@@ -214,7 +214,7 @@
           },
           {
             "name": "tag",
-            "description": "Filter devices by specified tag.",
+            "description": "Device tag. If not specified, all tags are included.",
             "in": "query",
             "required": false,
             "type": "string"
@@ -911,6 +911,86 @@
         ]
       }
     },
+    "/v1/rules/alarms": {
+      "get": {
+        "summary": "List alarms. Alarms define how alerts are generated.",
+        "operationId": "RuleService_ListAlarms2",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/apiListAlarmsResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "pageSize",
+            "description": "Number of alarms to retrieve in a single page. Defaults to 50 if not specified, with a maximum of 250.",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
+          },
+          {
+            "name": "pageToken",
+            "description": "Token of the page to retrieve. If not specified, the first page of results will be returned. To request the next page of results, use next_page_token from the previous response.",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "ruleID",
+            "description": "Rule ID (UUID). If not specified, all rules are included.",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "RuleService"
+        ]
+      }
+    },
+    "/v1/rules/alarms/test": {
+      "post": {
+        "summary": "Test an alarm. Alarms define how alerts are generated.",
+        "operationId": "RuleService_TestAlarm",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/apiTestAlarmResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/apiTestAlarmRequest"
+            }
+          }
+        ],
+        "tags": [
+          "RuleService"
+        ]
+      }
+    },
     "/v1/rules/test": {
       "post": {
         "summary": "Test a rule. Rules define how events are generated.",
@@ -937,6 +1017,161 @@
             "schema": {
               "$ref": "#/definitions/apiTestRuleRequest"
             }
+          }
+        ],
+        "tags": [
+          "RuleService"
+        ]
+      }
+    },
+    "/v1/rules/{alarm.ruleID}/alarms": {
+      "post": {
+        "summary": "Create an alarm. Alarms define how alerts are generated.",
+        "operationId": "RuleService_CreateAlarm",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/apiAlarm"
+            }
+          },
+          "201": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/apiAlarm"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "alarm.ruleID",
+            "description": "Rule ID (UUID).",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "description": "Alarm message to create.",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/apiAlarm"
+            }
+          }
+        ],
+        "tags": [
+          "RuleService"
+        ]
+      }
+    },
+    "/v1/rules/{alarm.ruleID}/alarms/{alarm.id}": {
+      "put": {
+        "summary": "Update an alarm. Alarms define how alerts are generated.",
+        "operationId": "RuleService_UpdateAlarm",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/apiAlarm"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "alarm.ruleID",
+            "description": "Rule ID (UUID).",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "alarm.id",
+            "description": "Alarm ID (UUID).",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "description": "Alarm message to update.",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/apiAlarm"
+            }
+          },
+          {
+            "name": "updateMask",
+            "description": "Fields to update. Automatically populated by a PATCH request. If not present, a full resource update is performed.",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "RuleService"
+        ]
+      },
+      "patch": {
+        "summary": "Update an alarm. Alarms define how alerts are generated.",
+        "operationId": "RuleService_UpdateAlarm2",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/apiAlarm"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "alarm.ruleID",
+            "description": "Rule ID (UUID).",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "alarm.id",
+            "description": "Alarm ID (UUID).",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "description": "Alarm message to update.",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/apiAlarm"
+            }
+          },
+          {
+            "name": "updateMask",
+            "description": "Fields to update. Automatically populated by a PATCH request. If not present, a full resource update is performed.",
+            "in": "query",
+            "required": false,
+            "type": "string"
           }
         ],
         "tags": [
@@ -1104,6 +1339,133 @@
         ]
       }
     },
+    "/v1/rules/{ruleID}/alarms": {
+      "get": {
+        "summary": "List alarms. Alarms define how alerts are generated.",
+        "operationId": "RuleService_ListAlarms",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/apiListAlarmsResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "ruleID",
+            "description": "Rule ID (UUID). If not specified, all rules are included.",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "pageSize",
+            "description": "Number of alarms to retrieve in a single page. Defaults to 50 if not specified, with a maximum of 250.",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
+          },
+          {
+            "name": "pageToken",
+            "description": "Token of the page to retrieve. If not specified, the first page of results will be returned. To request the next page of results, use next_page_token from the previous response.",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "RuleService"
+        ]
+      }
+    },
+    "/v1/rules/{ruleID}/alarms/{id}": {
+      "get": {
+        "summary": "Get an alarm by ID. Alarms define how alerts are generated.",
+        "operationId": "RuleService_GetAlarm",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/apiAlarm"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "ruleID",
+            "description": "Rule ID (UUID).",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "id",
+            "description": "Alarm ID (UUID) to get.",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "RuleService"
+        ]
+      },
+      "delete": {
+        "summary": "Delete an alarm by ID. Alarms define how alerts are generated.",
+        "operationId": "RuleService_DeleteAlarm",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "properties": {}
+            }
+          },
+          "204": {
+            "description": "A successful response.",
+            "schema": {}
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "ruleID",
+            "description": "Rule ID (UUID).",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "id",
+            "description": "Alarm ID (UUID) to delete.",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "RuleService"
+        ]
+      }
+    },
     "/v1/sessions/login": {
       "post": {
         "summary": "Log in a user.",
@@ -1197,7 +1559,7 @@
           },
           {
             "name": "tag",
-            "description": "Filter users by specified tag.",
+            "description": "User tag. If not specified, all tags are included.",
             "in": "query",
             "required": false,
             "type": "string"
@@ -1468,6 +1830,89 @@
       "type": "object",
       "description": "GatewayLoRaWANType is sent to add LoRaWAN gateway configuration."
     },
+    "apiAlarm": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Alarm ID (UUID).",
+          "readOnly": true
+        },
+        "orgID": {
+          "type": "string",
+          "description": "Organization ID (UUID).",
+          "readOnly": true
+        },
+        "ruleID": {
+          "type": "string",
+          "description": "Rule ID (UUID).",
+          "readOnly": true
+        },
+        "name": {
+          "type": "string",
+          "description": "Alarm name.",
+          "required": [
+            "name"
+          ]
+        },
+        "status": {
+          "$ref": "#/definitions/thingspectcommonStatus",
+          "description": "Alarm status."
+        },
+        "userTags": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "User tags to whom alerts are sent.",
+          "required": [
+            "user_tags"
+          ]
+        },
+        "subjectTemplate": {
+          "type": "string",
+          "description": "Alarm subject template. Templates generate HTML-safe output using the [Go template engine](https://golang.org/pkg/html/template/).",
+          "required": [
+            "subject_template"
+          ]
+        },
+        "bodyTemplate": {
+          "type": "string",
+          "description": "Alarm body template. Templates generate HTML-safe output using the [Go template engine](https://golang.org/pkg/html/template/).",
+          "required": [
+            "body_template"
+          ]
+        },
+        "repeatInterval": {
+          "type": "integer",
+          "format": "int32",
+          "description": "Alarm repeat interval, in minutes. Duration after which a duplicate event, if not previously cleared, will cause an alert to be sent. Minimum is 1 minute, maximum is 14 days.",
+          "required": [
+            "repeat_interval"
+          ]
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Alarm creation timestamp.",
+          "readOnly": true
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Alarm modification timestamp.",
+          "readOnly": true
+        }
+      },
+      "description": "Alarm represents an alarm as stored in the database.",
+      "required": [
+        "name",
+        "userTags",
+        "subjectTemplate",
+        "bodyTemplate",
+        "repeatInterval"
+      ]
+    },
     "apiCreateDeviceLoRaWANRequest": {
       "type": "object",
       "properties": {
@@ -1539,6 +1984,28 @@
         }
       },
       "description": "LatestEventsResponse is sent in response to an organization latest list."
+    },
+    "apiListAlarmsResponse": {
+      "type": "object",
+      "properties": {
+        "alarms": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/apiAlarm"
+          },
+          "description": "Alarm array, ordered by ascending created_at timestamp."
+        },
+        "nextPageToken": {
+          "type": "string",
+          "description": "Pagination token used to retrieve the next page of results. Not returned for the last page."
+        },
+        "totalSize": {
+          "type": "integer",
+          "format": "int32",
+          "description": "Total number of alarms available."
+        }
+      },
+      "description": "ListAlarmsResponse is sent in response to an alarm list."
     },
     "apiListDataPointsResponse": {
       "type": "object",
@@ -1765,6 +2232,38 @@
       "required": [
         "points"
       ]
+    },
+    "apiTestAlarmRequest": {
+      "type": "object",
+      "properties": {
+        "point": {
+          "$ref": "#/definitions/commonDataPoint",
+          "description": "Data point to test against an alarm."
+        },
+        "rule": {
+          "$ref": "#/definitions/commonRule",
+          "description": "Rule to test against an alarm."
+        },
+        "device": {
+          "$ref": "#/definitions/commonDevice",
+          "description": "Device to test against an alarm."
+        },
+        "alarm": {
+          "$ref": "#/definitions/apiAlarm",
+          "description": "Alarm message to test."
+        }
+      },
+      "description": "TestAlarmRequest is sent to test an alarm."
+    },
+    "apiTestAlarmResponse": {
+      "type": "object",
+      "properties": {
+        "result": {
+          "type": "string",
+          "description": "Result of the alarm generation."
+        }
+      },
+      "description": "TestAlarmResponse is sent in response to an alarm test."
     },
     "apiTestRuleRequest": {
       "type": "object",
