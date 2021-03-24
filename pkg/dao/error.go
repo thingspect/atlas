@@ -57,6 +57,9 @@ func DBToSentinel(err error) error {
 		// not_null_violation
 		case "23502":
 			return fmt.Errorf("%w: %s", ErrInvalidFormat, pgErr.ColumnName)
+		// foreign_key_violation
+		case "23503":
+			return fmt.Errorf("%w: %s", ErrInvalidFormat, pgErr.ConstraintName)
 		default:
 			alog.Errorf("DBToSentinel unmatched PgError: %#v", pgErr)
 

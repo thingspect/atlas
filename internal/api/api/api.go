@@ -19,6 +19,7 @@ import (
 	"github.com/thingspect/atlas/pkg/alog"
 	"github.com/thingspect/atlas/pkg/consterr"
 	"github.com/thingspect/atlas/pkg/dao"
+	"github.com/thingspect/atlas/pkg/dao/alarm"
 	"github.com/thingspect/atlas/pkg/dao/datapoint"
 	"github.com/thingspect/atlas/pkg/dao/device"
 	"github.com/thingspect/atlas/pkg/dao/event"
@@ -91,6 +92,7 @@ func New(cfg *config.Config) (*API, error) {
 		"/thingspect.api.DeviceService/UpdateDevice": {},
 		"/thingspect.api.OrgService/UpdateOrg":       {},
 		"/thingspect.api.RuleService/UpdateRule":     {},
+		"/thingspect.api.RuleService/UpdateAlarm":    {},
 		"/thingspect.api.UserService/UpdateUser":     {},
 	}
 
@@ -105,7 +107,8 @@ func New(cfg *config.Config) (*API, error) {
 		cs))
 	api.RegisterEventServiceServer(srv, service.NewEvent(event.NewDAO(pg)))
 	api.RegisterOrgServiceServer(srv, service.NewOrg(org.NewDAO(pg)))
-	api.RegisterRuleServiceServer(srv, service.NewRule(rule.NewDAO(pg)))
+	api.RegisterRuleServiceServer(srv, service.NewRule(rule.NewDAO(pg),
+		alarm.NewDAO(pg)))
 	api.RegisterSessionServiceServer(srv, service.NewSession(user.NewDAO(pg),
 		cfg.PWTKey))
 	api.RegisterTagServiceServer(srv, service.NewTag(tag.NewDAO(pg)))

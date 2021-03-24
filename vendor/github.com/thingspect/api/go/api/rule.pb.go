@@ -1042,7 +1042,7 @@ type TestAlarmResponse struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// Result of the alarm generation.
+	// Result of the alarm generation. Subjects and bodies will be concatenated with ' - '.
 	Result string `protobuf:"bytes,1,opt,name=result,proto3" json:"result,omitempty"`
 }
 

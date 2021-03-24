@@ -66,6 +66,19 @@ func TestCreate(t *testing.T) {
 		require.Nil(t, createAlarm)
 		require.ErrorIs(t, err, dao.ErrInvalidFormat)
 	})
+
+	t.Run("Create valid alarm by unknown rule", func(t *testing.T) {
+		t.Parallel()
+
+		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
+		defer cancel()
+
+		createAlarm, err := globalAlarmDAO.Create(ctx, random.Alarm("dao-alarm",
+			createOrg.Id, uuid.NewString()))
+		t.Logf("createAlarm, err: %+v, %v", createAlarm, err)
+		require.Nil(t, createAlarm)
+		require.ErrorIs(t, err, dao.ErrInvalidFormat)
+	})
 }
 
 func TestRead(t *testing.T) {
@@ -108,7 +121,20 @@ func TestRead(t *testing.T) {
 		defer cancel()
 
 		readAlarm, err := globalAlarmDAO.Read(ctx, uuid.NewString(),
-			uuid.NewString(), uuid.NewString())
+			createAlarm.OrgId, createRule.Id)
+		t.Logf("readAlarm, err: %+v, %v", readAlarm, err)
+		require.Nil(t, readAlarm)
+		require.Equal(t, dao.ErrNotFound, err)
+	})
+
+	t.Run("Read alarm by unknown rule", func(t *testing.T) {
+		t.Parallel()
+
+		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
+		defer cancel()
+
+		readAlarm, err := globalAlarmDAO.Read(ctx, createAlarm.Id,
+			createAlarm.OrgId, uuid.NewString())
 		t.Logf("readAlarm, err: %+v, %v", readAlarm, err)
 		require.Nil(t, readAlarm)
 		require.Equal(t, dao.ErrNotFound, err)
@@ -198,6 +224,27 @@ func TestUpdate(t *testing.T) {
 
 		updateAlarm, err := globalAlarmDAO.Update(ctx, random.Alarm("dao-alarm",
 			createOrg.Id, createRule.Id))
+		t.Logf("updateAlarm, err: %+v, %v", updateAlarm, err)
+		require.Nil(t, updateAlarm)
+		require.Equal(t, dao.ErrNotFound, err)
+	})
+
+	t.Run("Update alarm by unknown rule", func(t *testing.T) {
+		t.Parallel()
+
+		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
+		defer cancel()
+
+		createAlarm, err := globalAlarmDAO.Create(ctx, random.Alarm("dao-alarm",
+			createOrg.Id, createRule.Id))
+		t.Logf("createAlarm, err: %+v, %v", createAlarm, err)
+		require.NoError(t, err)
+
+		// Update alarm fields.
+		createAlarm.RuleId = uuid.NewString()
+		updateAlarm, _ := proto.Clone(createAlarm).(*api.Alarm)
+
+		updateAlarm, err = globalAlarmDAO.Update(ctx, updateAlarm)
 		t.Logf("updateAlarm, err: %+v, %v", updateAlarm, err)
 		require.Nil(t, updateAlarm)
 		require.Equal(t, dao.ErrNotFound, err)
@@ -301,6 +348,23 @@ func TestDelete(t *testing.T) {
 
 		err := globalAlarmDAO.Delete(ctx, uuid.NewString(), createOrg.Id,
 			createRule.Id)
+		t.Logf("err: %v", err)
+		require.Equal(t, dao.ErrNotFound, err)
+	})
+
+	t.Run("Delete alarm by unknown rule", func(t *testing.T) {
+		t.Parallel()
+
+		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
+		defer cancel()
+
+		createAlarm, err := globalAlarmDAO.Create(ctx, random.Alarm("dao-alarm",
+			createOrg.Id, createRule.Id))
+		t.Logf("createAlarm, err: %+v, %v", createAlarm, err)
+		require.NoError(t, err)
+
+		err = globalAlarmDAO.Delete(ctx, createAlarm.Id, createOrg.Id,
+			uuid.NewString())
 		t.Logf("err: %v", err)
 		require.Equal(t, dao.ErrNotFound, err)
 	})
@@ -467,6 +531,21 @@ func TestList(t *testing.T) {
 			}
 		}
 		require.True(t, found)
+	})
+
+	t.Run("List alarms by unknown rule", func(t *testing.T) {
+		t.Parallel()
+
+		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
+		defer cancel()
+
+		listAlarms, listCount, err := globalAlarmDAO.List(ctx, uuid.NewString(),
+			time.Time{}, "", 0, uuid.NewString())
+		t.Logf("listAlarms, listCount, err: %+v, %v, %v", listAlarms, listCount,
+			err)
+		require.NoError(t, err)
+		require.Len(t, listAlarms, 0)
+		require.Equal(t, int32(0), listCount)
 	})
 
 	t.Run("Lists are isolated by org ID", func(t *testing.T) {

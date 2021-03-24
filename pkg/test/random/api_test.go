@@ -107,6 +107,8 @@ func TestAlarm(t *testing.T) {
 			require.True(t, strings.HasPrefix(a2.Name, prefix))
 			require.GreaterOrEqual(t, len(a1.UserTags), 1)
 			require.GreaterOrEqual(t, len(a2.UserTags), 1)
+			require.GreaterOrEqual(t, a1.RepeatInterval, int32(1))
+			require.GreaterOrEqual(t, a2.RepeatInterval, int32(1))
 		})
 	}
 }
