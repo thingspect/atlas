@@ -16,7 +16,7 @@ import (
 const createDevice = `
 INSERT INTO devices (org_id, uniq_id, name, status, decoder, tags, created_at,
 updated_at)
-VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+VALUES ($1, $2, $3, $4, $5, $6, $7, $7)
 RETURNING id, token
 `
 
@@ -35,8 +35,8 @@ func (d *DAO) Create(ctx context.Context, dev *common.Device) (*common.Device,
 	dev.UpdatedAt = timestamppb.New(now)
 
 	if err := d.pg.QueryRowContext(ctx, createDevice, dev.OrgId, dev.UniqId,
-		dev.Name, dev.Status.String(), dev.Decoder.String(), tags, now,
-		now).Scan(&dev.Id, &dev.Token); err != nil {
+		dev.Name, dev.Status.String(), dev.Decoder.String(), tags, now).Scan(
+		&dev.Id, &dev.Token); err != nil {
 		return nil, dao.DBToSentinel(err)
 	}
 

@@ -486,7 +486,7 @@ type Alarm struct {
 	SubjectTemplate string `protobuf:"bytes,7,opt,name=subject_template,json=subjectTemplate,proto3" json:"subject_template,omitempty"`
 	// Alarm body template. Templates generate HTML-safe output using the [Go template engine](https://golang.org/pkg/html/template/).
 	BodyTemplate string `protobuf:"bytes,8,opt,name=body_template,json=bodyTemplate,proto3" json:"body_template,omitempty"`
-	// Alarm repeat interval, in minutes. Duration after which a duplicate event, if not previously cleared, will cause an alert to be sent. Minimum is 1 minute, maximum is 14 days.
+	// Alarm repeat interval, in minutes. Duration after which a duplicate event will cause an alert to be sent. Minimum is 1 minute, maximum is 14 days.
 	RepeatInterval int32 `protobuf:"varint,9,opt,name=repeat_interval,json=repeatInterval,proto3" json:"repeat_interval,omitempty"`
 	// Alarm creation timestamp.
 	CreatedAt *timestamp.Timestamp `protobuf:"bytes,10,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`

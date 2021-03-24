@@ -15,7 +15,7 @@ import (
 const createRule = `
 INSERT INTO rules (org_id, name, status, device_tag, attr, expr, created_at,
 updated_at)
-VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+VALUES ($1, $2, $3, $4, $5, $6, $7, $7)
 RETURNING id
 `
 
@@ -27,8 +27,8 @@ func (d *DAO) Create(ctx context.Context, rule *common.Rule) (*common.Rule,
 	rule.UpdatedAt = timestamppb.New(now)
 
 	if err := d.pg.QueryRowContext(ctx, createRule, rule.OrgId, rule.Name,
-		rule.Status.String(), rule.DeviceTag, rule.Attr, rule.Expr, now,
-		now).Scan(&rule.Id); err != nil {
+		rule.Status.String(), rule.DeviceTag, rule.Attr, rule.Expr, now).Scan(
+		&rule.Id); err != nil {
 		return nil, dao.DBToSentinel(err)
 	}
 

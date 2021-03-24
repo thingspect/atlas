@@ -1,9 +1,12 @@
 package random
 
 import (
+	"time"
+
 	"github.com/google/uuid"
 	"github.com/thingspect/api/go/api"
 	"github.com/thingspect/api/go/common"
+	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 // Org generates a random org with prefixed identifiers.
@@ -52,6 +55,17 @@ func Rule(prefix, orgID string) *common.Rule {
 	}
 }
 
+// Event generates a random event with prefixed identifiers.
+func Event(prefix, orgID string) *api.Event {
+	return &api.Event{
+		OrgId:     orgID,
+		UniqId:    prefix + "-" + String(16),
+		RuleId:    uuid.NewString(),
+		CreatedAt: timestamppb.New(time.Now().UTC().Truncate(time.Millisecond)),
+		TraceId:   uuid.NewString(),
+	}
+}
+
 // Alarm generates a random alarm with prefixed identifiers.
 func Alarm(prefix, orgID, ruleID string) *api.Alarm {
 	return &api.Alarm{
@@ -67,6 +81,17 @@ func Alarm(prefix, orgID, ruleID string) *api.Alarm {
 		SubjectTemplate: `rule name is: {{.rule.Name}}`,
 		BodyTemplate:    `device status is: {{.device.Status}}`,
 		RepeatInterval:  int32(Intn(99) + 1),
+	}
+}
+
+// Alert generates a random alert with prefixed identifiers.
+func Alert(prefix, orgID string) *api.Alert {
+	return &api.Alert{
+		OrgId:   orgID,
+		UniqId:  prefix + "-" + String(16),
+		AlarmId: uuid.NewString(),
+		UserId:  uuid.NewString(),
+		TraceId: uuid.NewString(),
 	}
 }
 

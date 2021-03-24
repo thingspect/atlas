@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"strings"
 	"testing"
+	"time"
 
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/require"
@@ -85,6 +86,33 @@ func TestRule(t *testing.T) {
 	}
 }
 
+func TestEvent(t *testing.T) {
+	t.Parallel()
+
+	for i := 0; i < 5; i++ {
+		lTest := i
+
+		t.Run(fmt.Sprintf("Can generate %v", lTest), func(t *testing.T) {
+			t.Parallel()
+
+			prefix := String(10)
+			orgID := uuid.NewString()
+
+			e1 := Event(prefix, orgID)
+			e2 := Event(prefix, orgID)
+			t.Logf("e1, e2: %+v, %+v", e1, e2)
+
+			require.NotEqual(t, e1, e2)
+			require.True(t, strings.HasPrefix(e1.UniqId, prefix))
+			require.True(t, strings.HasPrefix(e2.UniqId, prefix))
+			require.WithinDuration(t, time.Now(), e1.CreatedAt.AsTime(),
+				2*time.Second)
+			require.WithinDuration(t, time.Now(), e2.CreatedAt.AsTime(),
+				2*time.Second)
+		})
+	}
+}
+
 func TestAlarm(t *testing.T) {
 	t.Parallel()
 
@@ -109,6 +137,29 @@ func TestAlarm(t *testing.T) {
 			require.GreaterOrEqual(t, len(a2.UserTags), 1)
 			require.GreaterOrEqual(t, a1.RepeatInterval, int32(1))
 			require.GreaterOrEqual(t, a2.RepeatInterval, int32(1))
+		})
+	}
+}
+
+func TestAlert(t *testing.T) {
+	t.Parallel()
+
+	for i := 0; i < 5; i++ {
+		lTest := i
+
+		t.Run(fmt.Sprintf("Can generate %v", lTest), func(t *testing.T) {
+			t.Parallel()
+
+			prefix := String(10)
+			orgID := uuid.NewString()
+
+			a1 := Alert(prefix, orgID)
+			a2 := Alert(prefix, orgID)
+			t.Logf("a1, a2: %+v, %+v", a1, a2)
+
+			require.NotEqual(t, a1, a2)
+			require.True(t, strings.HasPrefix(a1.UniqId, prefix))
+			require.True(t, strings.HasPrefix(a2.UniqId, prefix))
 		})
 	}
 }

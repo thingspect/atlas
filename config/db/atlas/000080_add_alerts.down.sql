@@ -1,0 +1,2 @@
+DROP INDEX IF EXISTS alerts_list_idx;
+DROP TABLE IF EXISTS alerts;

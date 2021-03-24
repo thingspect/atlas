@@ -28,9 +28,7 @@ func TestListEvents(t *testing.T) {
 	t.Run("List events by valid UniqID with ts", func(t *testing.T) {
 		t.Parallel()
 
-		event := &api.Event{OrgId: uuid.NewString(), RuleId: uuid.NewString(),
-			UniqId:    "api-event-" + random.String(16),
-			CreatedAt: timestamppb.Now(), TraceId: uuid.NewString()}
+		event := random.Event("dao-event", uuid.NewString())
 		retEvent, _ := proto.Clone(event).(*api.Event)
 		end := time.Now().UTC()
 		start := time.Now().UTC().Add(-15 * time.Minute)
@@ -64,9 +62,7 @@ func TestListEvents(t *testing.T) {
 	t.Run("List events by valid dev ID with rule ID", func(t *testing.T) {
 		t.Parallel()
 
-		event := &api.Event{OrgId: uuid.NewString(), RuleId: uuid.NewString(),
-			UniqId:    "api-event-" + random.String(16),
-			CreatedAt: timestamppb.Now(), TraceId: uuid.NewString()}
+		event := random.Event("dao-event", uuid.NewString())
 		retEvent, _ := proto.Clone(event).(*api.Event)
 		// orgID := uuid.NewString()
 		devID := uuid.NewString()
@@ -176,9 +172,7 @@ func TestLatestEvents(t *testing.T) {
 	t.Run("Latest events by valid rule ID", func(t *testing.T) {
 		t.Parallel()
 
-		event := &api.Event{OrgId: uuid.NewString(), RuleId: uuid.NewString(),
-			UniqId:    "api-event-" + random.String(16),
-			CreatedAt: timestamppb.Now(), TraceId: uuid.NewString()}
+		event := random.Event("dao-event", uuid.NewString())
 		retEvent, _ := proto.Clone(event).(*api.Event)
 		orgID := uuid.NewString()
 

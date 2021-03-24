@@ -34,10 +34,8 @@ func TestListEvents(t *testing.T) {
 		events := []*api.Event{}
 
 		for i := 0; i < 5; i++ {
-			event := &api.Event{OrgId: globalAdminOrgID,
-				RuleId: uuid.NewString(), UniqId: createDev.UniqId,
-				CreatedAt: timestamppb.New(time.Now().UTC().Truncate(
-					time.Millisecond)), TraceId: uuid.NewString()}
+			event := random.Event("dao-event", globalAdminOrgID)
+			event.UniqId = createDev.UniqId
 			events = append(events, event)
 
 			ctx, cancel := context.WithTimeout(context.Background(),
@@ -122,9 +120,7 @@ func TestListEvents(t *testing.T) {
 		t.Logf("createOrg, err: %+v, %v", createOrg, err)
 		require.NoError(t, err)
 
-		event := &api.Event{OrgId: createOrg.Id, RuleId: uuid.NewString(),
-			UniqId:    "api-event-" + random.String(16),
-			CreatedAt: timestamppb.Now(), TraceId: uuid.NewString()}
+		event := random.Event("dao-event", createOrg.Id)
 
 		err = globalEvDAO.Create(ctx, event)
 		t.Logf("err: %#v", err)
@@ -181,11 +177,7 @@ func TestLatestEvents(t *testing.T) {
 		events := []*api.Event{}
 
 		for i := 0; i < 5; i++ {
-			event := &api.Event{OrgId: globalAdminOrgID,
-				RuleId: uuid.NewString(), UniqId: "api-event-" +
-					random.String(16), CreatedAt: timestamppb.New(
-					time.Now().UTC().Truncate(time.Millisecond)),
-				TraceId: uuid.NewString()}
+			event := random.Event("dao-event", globalAdminOrgID)
 			events = append(events, event)
 
 			ctx, cancel := context.WithTimeout(context.Background(),
@@ -249,9 +241,7 @@ func TestLatestEvents(t *testing.T) {
 		t.Logf("createOrg, err: %+v, %v", createOrg, err)
 		require.NoError(t, err)
 
-		event := &api.Event{OrgId: createOrg.Id, RuleId: uuid.NewString(),
-			UniqId:    "api-event-" + random.String(16),
-			CreatedAt: timestamppb.Now(), TraceId: uuid.NewString()}
+		event := random.Event("dao-event", createOrg.Id)
 
 		err = globalEvDAO.Create(ctx, event)
 		t.Logf("err: %#v", err)
