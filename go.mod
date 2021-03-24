@@ -21,10 +21,10 @@ require (
 	github.com/jackc/pgx/v4 v4.10.1
 	github.com/mennanov/fmutils v0.0.3
 	github.com/nsqio/go-nsq v1.0.8
-	github.com/rs/zerolog v1.20.0
+	github.com/rs/zerolog v1.21.0
 	github.com/smira/go-statsd v1.3.2
 	github.com/stretchr/testify v1.7.0
-	github.com/thingspect/api/go v0.0.0-20210324020851-f1881a5c00f2
+	github.com/thingspect/api/go v0.0.0-20210324180454-b7c65eac1618
 	golang.org/x/crypto v0.0.0-20210322153248-0c34fe9e7dc2
 	google.golang.org/grpc v1.36.0
 	google.golang.org/protobuf v1.26.0

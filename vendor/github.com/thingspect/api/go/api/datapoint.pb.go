@@ -81,7 +81,7 @@ type ListDataPointsRequest struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// Identifier.
+	// Device identifier.
 	//
 	// Types that are assignable to IdOneof:
 	//	*ListDataPointsRequest_UniqId
@@ -242,7 +242,7 @@ type LatestDataPointsRequest struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// Identifier.
+	// Device identifier.
 	//
 	// Types that are assignable to IdOneof:
 	//	*LatestDataPointsRequest_UniqId

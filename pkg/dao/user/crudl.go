@@ -15,7 +15,7 @@ import (
 
 const createUser = `
 INSERT INTO users (org_id, email, role, status, tags, created_at, updated_at)
-VALUES ($1, $2, $3, $4, $5, $6, $7)
+VALUES ($1, $2, $3, $4, $5, $6, $6)
 RETURNING id
 `
 
@@ -31,8 +31,8 @@ func (d *DAO) Create(ctx context.Context, user *api.User) (*api.User, error) {
 	user.UpdatedAt = timestamppb.New(now)
 
 	if err := d.pg.QueryRowContext(ctx, createUser, user.OrgId, user.Email,
-		user.Role.String(), user.Status.String(), tags, now,
-		now).Scan(&user.Id); err != nil {
+		user.Role.String(), user.Status.String(), tags, now).Scan(
+		&user.Id); err != nil {
 		return nil, dao.DBToSentinel(err)
 	}
 

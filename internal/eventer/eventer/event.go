@@ -74,8 +74,8 @@ func (ev *Eventer) eventMessages() {
 			if res {
 				event := &api.Event{
 					OrgId:     vOut.Device.OrgId,
-					RuleId:    r.Id,
 					UniqId:    vOut.Device.UniqId,
+					RuleId:    r.Id,
 					CreatedAt: vOut.Point.Ts,
 					TraceId:   vOut.Point.TraceId,
 				}

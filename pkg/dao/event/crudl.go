@@ -12,7 +12,7 @@ import (
 )
 
 const createEvent = `
-INSERT INTO events (org_id, rule_id, uniq_id, created_at, trace_id)
+INSERT INTO events (org_id, uniq_id, rule_id, created_at, trace_id)
 VALUES ($1, $2, $3, $4, $5)
 `
 
@@ -22,14 +22,14 @@ func (d *DAO) Create(ctx context.Context, event *api.Event) error {
 	// Truncate timestamp to milliseconds for deduplication.
 	createdAt := event.CreatedAt.AsTime().UTC().Truncate(time.Millisecond)
 
-	_, err := d.pg.ExecContext(ctx, createEvent, event.OrgId, event.RuleId,
-		strings.ToLower(event.UniqId), createdAt, event.TraceId)
+	_, err := d.pg.ExecContext(ctx, createEvent, event.OrgId,
+		strings.ToLower(event.UniqId), event.RuleId, createdAt, event.TraceId)
 
 	return dao.DBToSentinel(err)
 }
 
 const listEventsByUniqID = `
-SELECT e.org_id, e.rule_id, e.uniq_id, e.created_at, e.trace_id
+SELECT e.org_id, e.uniq_id, e.rule_id, e.created_at, e.trace_id
 FROM events e
 WHERE (e.org_id, e.uniq_id) = ($1, $2)
 AND e.created_at <= $3
@@ -37,7 +37,7 @@ AND e.created_at > $4
 `
 
 const listEventsByDevID = `
-SELECT e.org_id, e.rule_id, e.uniq_id, e.created_at, e.trace_id
+SELECT e.org_id, e.uniq_id, e.rule_id, e.created_at, e.trace_id
 FROM events e
 INNER JOIN devices d ON (e.org_id, e.uniq_id) = (d.org_id, d.uniq_id)
 WHERE (e.org_id, d.id) = ($1, $2)
@@ -93,7 +93,7 @@ func (d *DAO) List(ctx context.Context, orgID, uniqID, devID, ruleID string,
 		event := &api.Event{}
 		var createdAt time.Time
 
-		if err = rows.Scan(&event.OrgId, &event.RuleId, &event.UniqId,
+		if err = rows.Scan(&event.OrgId, &event.UniqId, &event.RuleId,
 			&createdAt, &event.TraceId); err != nil {
 			return nil, dao.DBToSentinel(err)
 		}
@@ -115,8 +115,8 @@ func (d *DAO) List(ctx context.Context, orgID, uniqID, devID, ruleID string,
 const latestEvents = `
 SELECT
   e.org_id,
-  e.rule_id,
   e.uniq_id,
+  e.rule_id,
   e.created_at,
   e.trace_id
 FROM
@@ -177,7 +177,7 @@ func (d *DAO) Latest(ctx context.Context, orgID, ruleID string) ([]*api.Event,
 		event := &api.Event{}
 		var createdAt time.Time
 
-		if err = rows.Scan(&event.OrgId, &event.RuleId, &event.UniqId,
+		if err = rows.Scan(&event.OrgId, &event.UniqId, &event.RuleId,
 			&createdAt, &event.TraceId); err != nil {
 			return nil, dao.DBToSentinel(err)
 		}

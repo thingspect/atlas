@@ -14,7 +14,7 @@ import (
 
 const createOrg = `
 INSERT INTO orgs (name, created_at, updated_at)
-VALUES ($1, $2, $3)
+VALUES ($1, $2, $2)
 RETURNING id
 `
 
@@ -25,8 +25,8 @@ func (d *DAO) Create(ctx context.Context, org *api.Org) (*api.Org, error) {
 	org.CreatedAt = timestamppb.New(now)
 	org.UpdatedAt = timestamppb.New(now)
 
-	if err := d.pg.QueryRowContext(ctx, createOrg, org.Name, now,
-		now).Scan(&org.Id); err != nil {
+	if err := d.pg.QueryRowContext(ctx, createOrg, org.Name, now).Scan(
+		&org.Id); err != nil {
 		return nil, dao.DBToSentinel(err)
 	}
 

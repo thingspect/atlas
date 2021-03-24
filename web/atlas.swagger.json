@@ -1886,7 +1886,7 @@
         "repeatInterval": {
           "type": "integer",
           "format": "int32",
-          "description": "Alarm repeat interval, in minutes. Duration after which a duplicate event, if not previously cleared, will cause an alert to be sent. Minimum is 1 minute, maximum is 14 days.",
+          "description": "Alarm repeat interval, in minutes. Duration after which a duplicate event will cause an alert to be sent. Minimum is 1 minute, maximum is 14 days.",
           "required": [
             "repeat_interval"
           ]
@@ -1939,13 +1939,13 @@
           "type": "string",
           "description": "Organization ID (UUID)."
         },
-        "ruleID": {
-          "type": "string",
-          "description": "Rule ID (UUID)."
-        },
         "uniqID": {
           "type": "string",
           "description": "Device unique ID."
+        },
+        "ruleID": {
+          "type": "string",
+          "description": "Rule ID (UUID)."
         },
         "createdAt": {
           "type": "string",

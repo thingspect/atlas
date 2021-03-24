@@ -42,9 +42,9 @@ func (m *Event) Validate() error {
 
 	// no validation rules for OrgId
 
-	// no validation rules for RuleId
-
 	// no validation rules for UniqId
+
+	// no validation rules for RuleId
 
 	if v, ok := interface{}(m.GetCreatedAt()).(interface{ Validate() error }); ok {
 		if err := v.Validate(); err != nil {

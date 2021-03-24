@@ -15,10 +15,9 @@ import (
 	"github.com/thingspect/atlas/pkg/dao"
 	"github.com/thingspect/atlas/pkg/test/random"
 	"google.golang.org/protobuf/proto"
-	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
-const testTimeout = 8 * time.Second
+const testTimeout = 6 * time.Second
 
 func TestCreate(t *testing.T) {
 	t.Parallel()
@@ -33,26 +32,9 @@ func TestCreate(t *testing.T) {
 		t.Logf("createOrg, err: %+v, %v", createOrg, err)
 		require.NoError(t, err)
 
-		for i := 0; i < 5; i++ {
-			lTest := i
-
-			t.Run(fmt.Sprintf("Can create %v", lTest), func(t *testing.T) {
-				t.Parallel()
-
-				event := &api.Event{OrgId: createOrg.Id,
-					RuleId: uuid.NewString(), UniqId: "dao-event-" +
-						random.String(16), CreatedAt: timestamppb.Now(),
-					TraceId: uuid.NewString()}
-
-				ctx, cancel := context.WithTimeout(context.Background(),
-					testTimeout)
-				defer cancel()
-
-				err := globalEvDAO.Create(ctx, event)
-				t.Logf("err: %v", err)
-				require.NoError(t, err)
-			})
-		}
+		err = globalEvDAO.Create(ctx, random.Event("dao-event", createOrg.Id))
+		t.Logf("err: %v", err)
+		require.NoError(t, err)
 	})
 
 	t.Run("Create invalid event", func(t *testing.T) {
@@ -65,18 +47,18 @@ func TestCreate(t *testing.T) {
 		t.Logf("createOrg, err: %+v, %v", createOrg, err)
 		require.NoError(t, err)
 
+		badUniqID := random.Event("dao-event", createOrg.Id)
+		badUniqID.UniqId = "dao-event-" + random.String(40)
+
+		badTraceID := random.Event("dao-event", createOrg.Id)
+		badTraceID.TraceId = random.String(10)
+
 		tests := []struct {
 			inpEvent *api.Event
 			err      error
 		}{
-			{&api.Event{OrgId: createOrg.Id, RuleId: uuid.NewString(),
-				UniqId:    "dao-event-" + random.String(40),
-				CreatedAt: timestamppb.Now(), TraceId: uuid.NewString()},
-				dao.ErrInvalidFormat},
-			{&api.Event{OrgId: createOrg.Id, RuleId: uuid.NewString(),
-				UniqId:    "dao-event-" + random.String(16),
-				CreatedAt: timestamppb.Now(), TraceId: random.String(10)},
-				dao.ErrInvalidFormat},
+			{badUniqID, dao.ErrInvalidFormat},
+			{badTraceID, dao.ErrInvalidFormat},
 		}
 
 		for _, test := range tests {
@@ -106,9 +88,7 @@ func TestCreate(t *testing.T) {
 		t.Logf("createOrg, err: %+v, %v", createOrg, err)
 		require.NoError(t, err)
 
-		event := &api.Event{OrgId: createOrg.Id, RuleId: uuid.NewString(),
-			UniqId:    "dao-event-" + random.String(16),
-			CreatedAt: timestamppb.Now(), TraceId: uuid.NewString()}
+		event := random.Event("dao-event", createOrg.Id)
 
 		err = globalEvDAO.Create(ctx, event)
 		t.Logf("err: %#v", err)
@@ -141,10 +121,8 @@ func TestList(t *testing.T) {
 		events := []*api.Event{}
 
 		for i := 0; i < 5; i++ {
-			event := &api.Event{OrgId: createOrg.Id, RuleId: uuid.NewString(),
-				UniqId: createDev.UniqId, CreatedAt: timestamppb.New(
-					time.Now().UTC().Truncate(time.Millisecond)),
-				TraceId: uuid.NewString()}
+			event := random.Event("dao-event", createOrg.Id)
+			event.UniqId = createDev.UniqId
 			events = append(events, event)
 
 			ctx, cancel := context.WithTimeout(context.Background(),
@@ -226,10 +204,7 @@ func TestList(t *testing.T) {
 		t.Logf("createOrg, err: %+v, %v", createOrg, err)
 		require.NoError(t, err)
 
-		event := &api.Event{OrgId: createOrg.Id, RuleId: uuid.NewString(),
-			UniqId: "dao-event-" + random.String(16),
-			CreatedAt: timestamppb.New(time.Now().UTC().Truncate(
-				time.Millisecond)), TraceId: uuid.NewString()}
+		event := random.Event("dao-event", createOrg.Id)
 
 		err = globalEvDAO.Create(ctx, event)
 		t.Logf("err: %#v", err)
@@ -273,10 +248,7 @@ func TestLatest(t *testing.T) {
 		events := []*api.Event{}
 
 		for i := 0; i < 5; i++ {
-			event := &api.Event{OrgId: createOrg.Id, RuleId: uuid.NewString(),
-				UniqId: "dao-event-" + random.String(16),
-				CreatedAt: timestamppb.New(time.Now().UTC().Truncate(
-					time.Millisecond)), TraceId: uuid.NewString()}
+			event := random.Event("dao-event", createOrg.Id)
 			events = append(events, event)
 
 			ctx, cancel := context.WithTimeout(context.Background(),
@@ -337,10 +309,7 @@ func TestLatest(t *testing.T) {
 		t.Logf("createOrg, err: %+v, %v", createOrg, err)
 		require.NoError(t, err)
 
-		event := &api.Event{OrgId: createOrg.Id, RuleId: uuid.NewString(),
-			UniqId: "dao-event-" + random.String(16),
-			CreatedAt: timestamppb.New(time.Now().UTC().Truncate(
-				time.Millisecond)), TraceId: uuid.NewString()}
+		event := random.Event("dao-event", createOrg.Id)
 
 		err = globalEvDAO.Create(ctx, event)
 		t.Logf("err: %#v", err)
