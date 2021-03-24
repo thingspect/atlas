@@ -163,14 +163,14 @@ LIMIT %d
 // returned. Limits of 0 or less do not apply a limit. List returns a slice of
 // alarms, a total count, and an error value.
 func (d *DAO) List(ctx context.Context, orgID string, lBoundTS time.Time,
-	prevID string, limit int32, rule string) ([]*api.Alarm, int32, error) {
+	prevID string, limit int32, ruleID string) ([]*api.Alarm, int32, error) {
 	// Build count query.
 	cQuery := countAlarms
 	cArgs := []interface{}{orgID}
 
-	if rule != "" {
+	if ruleID != "" {
 		cQuery += countAlarmsRule
-		cArgs = append(cArgs, rule)
+		cArgs = append(cArgs, ruleID)
 	}
 
 	// Run count query.
@@ -188,13 +188,13 @@ func (d *DAO) List(ctx context.Context, orgID string, lBoundTS time.Time,
 		lQuery += fmt.Sprintf(listAlarmsTSAndID, 2, 2, 3)
 		lArgs = append(lArgs, lBoundTS, prevID)
 
-		if rule != "" {
+		if ruleID != "" {
 			lQuery += fmt.Sprintf(listAlarmsRule, 4)
-			lArgs = append(lArgs, rule)
+			lArgs = append(lArgs, ruleID)
 		}
-	} else if rule != "" {
+	} else if ruleID != "" {
 		lQuery += fmt.Sprintf(listAlarmsRule, 2)
-		lArgs = append(lArgs, rule)
+		lArgs = append(lArgs, ruleID)
 	}
 
 	// Ordering is applied with the limit, which will always be present for API

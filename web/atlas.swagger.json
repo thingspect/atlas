@@ -2260,7 +2260,7 @@
       "properties": {
         "result": {
           "type": "string",
-          "description": "Result of the alarm generation."
+          "description": "Result of the alarm generation. Subjects and bodies will be concatenated with ' - '."
         }
       },
       "description": "TestAlarmResponse is sent in response to an alarm test."
