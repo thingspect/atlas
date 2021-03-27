@@ -4,6 +4,7 @@ import (
 	"context"
 	"crypto/tls"
 	"crypto/x509"
+	"errors"
 	"fmt"
 	"io"
 	"io/ioutil"
@@ -11,7 +12,6 @@ import (
 	"net"
 	"net/url"
 	"os"
-	"os/user"
 	"path/filepath"
 	"strconv"
 	"strings"
@@ -21,7 +21,6 @@ import (
 	"github.com/jackc/pgpassfile"
 	"github.com/jackc/pgproto3/v2"
 	"github.com/jackc/pgservicefile"
-	errors "golang.org/x/xerrors"
 )
 
 type AfterConnectFunc func(ctx context.Context, pgconn *PgConn) error
@@ -113,9 +112,10 @@ func NetworkAddress(host string, port uint16) (network, address string) {
 }
 
 // ParseConfig builds a *Config with similar behavior to the PostgreSQL standard C library libpq. It uses the same
-// defaults as libpq (e.g. port=5432) and understands most PG* environment variables. connString may be a URL or a DSN.
-// It also may be empty to only read from the environment. If a password is not supplied it will attempt to read the
-// .pgpass file.
+// defaults as libpq (e.g. port=5432) and understands most PG* environment variables. ParseConfig closely matches
+// the parsing behavior of libpq. connString may either be in URL format or keyword = value format (DSN style). See
+// https://www.postgresql.org/docs/current/libpq-connect.html#LIBPQ-CONNSTRING for details. connString also may be
+// empty to only read from the environment. If a password is not supplied it will attempt to read the .pgpass file.
 //
 //   # Example DSN
 //   user=jack password=secret host=pg.example.com port=5432 dbname=mydb sslmode=verify-ca
@@ -338,48 +338,6 @@ func ParseConfig(connString string) (*Config, error) {
 	return config, nil
 }
 
-func defaultSettings() map[string]string {
-	settings := make(map[string]string)
-
-	settings["host"] = defaultHost()
-	settings["port"] = "5432"
-
-	// Default to the OS user name. Purposely ignoring err getting user name from
-	// OS. The client application will simply have to specify the user in that
-	// case (which they typically will be doing anyway).
-	user, err := user.Current()
-	if err == nil {
-		settings["user"] = user.Username
-		settings["passfile"] = filepath.Join(user.HomeDir, ".pgpass")
-		settings["servicefile"] = filepath.Join(user.HomeDir, ".pg_service.conf")
-	}
-
-	settings["target_session_attrs"] = "any"
-
-	settings["min_read_buffer_size"] = "8192"
-
-	return settings
-}
-
-// defaultHost attempts to mimic libpq's default host. libpq uses the default unix socket location on *nix and localhost
-// on Windows. The default socket location is compiled into libpq. Since pgx does not have access to that default it
-// checks the existence of common locations.
-func defaultHost() string {
-	candidatePaths := []string{
-		"/var/run/postgresql", // Debian
-		"/private/tmp",        // OSX - homebrew
-		"/tmp",                // standard PostgreSQL
-	}
-
-	for _, path := range candidatePaths {
-		if _, err := os.Stat(path); err == nil {
-			return path
-		}
-	}
-
-	return "localhost"
-}
-
 func mergeSettings(settingSets ...map[string]string) map[string]string {
 	settings := make(map[string]string)
 
@@ -451,7 +409,7 @@ func parseURLSettings(connString string) (map[string]string, error) {
 		}
 		h, p, err := net.SplitHostPort(host)
 		if err != nil {
-			return nil, errors.Errorf("failed to split host:port in '%s', err: %w", host, err)
+			return nil, fmt.Errorf("failed to split host:port in '%s', err: %w", host, err)
 		}
 		hosts = append(hosts, h)
 		ports = append(ports, p)
@@ -659,7 +617,7 @@ func configTLS(settings map[string]string) ([]*tls.Config, error) {
 		caPath := sslrootcert
 		caCert, err := ioutil.ReadFile(caPath)
 		if err != nil {
-			return nil, errors.Errorf("unable to read CA file: %w", err)
+			return nil, fmt.Errorf("unable to read CA file: %w", err)
 		}
 
 		if !caCertPool.AppendCertsFromPEM(caCert) {
@@ -677,7 +635,7 @@ func configTLS(settings map[string]string) ([]*tls.Config, error) {
 	if sslcert != "" && sslkey != "" {
 		cert, err := tls.LoadX509KeyPair(sslcert, sslkey)
 		if err != nil {
-			return nil, errors.Errorf("unable to read cert: %w", err)
+			return nil, fmt.Errorf("unable to read cert: %w", err)
 		}
 
 		tlsConfig.Certificates = []tls.Certificate{cert}

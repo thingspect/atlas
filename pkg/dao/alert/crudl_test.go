@@ -32,7 +32,7 @@ func TestCreate(t *testing.T) {
 		t.Logf("createOrg, err: %+v, %v", createOrg, err)
 		require.NoError(t, err)
 
-		err = globalAlertDAO.Create(ctx, random.Alert("dao-alert", createOrg.Id))
+		err = globalAleDAO.Create(ctx, random.Alert("dao-alert", createOrg.Id))
 		t.Logf("err: %v", err)
 		require.NoError(t, err)
 	})
@@ -71,7 +71,7 @@ func TestCreate(t *testing.T) {
 					testTimeout)
 				defer cancel()
 
-				err := globalAlertDAO.Create(ctx, lTest.inpAlert)
+				err := globalAleDAO.Create(ctx, lTest.inpAlert)
 				t.Logf("err: %#v", err)
 				require.ErrorIs(t, err, lTest.err)
 			})
@@ -108,7 +108,7 @@ func TestList(t *testing.T) {
 				testTimeout)
 			defer cancel()
 
-			err := globalAlertDAO.Create(ctx, alert)
+			err := globalAleDAO.Create(ctx, alert)
 			t.Logf("err: %v", err)
 			require.NoError(t, err)
 			time.Sleep(time.Millisecond)
@@ -123,7 +123,7 @@ func TestList(t *testing.T) {
 		defer cancel()
 
 		// Verify results by UniqID.
-		listAlertsUniqID, err := globalAlertDAO.List(ctx, createOrg.Id,
+		listAlertsUniqID, err := globalAleDAO.List(ctx, createOrg.Id,
 			createDev.UniqId, "", "", "", alerts[0].CreatedAt.AsTime(),
 			alerts[len(alerts)-1].CreatedAt.AsTime().Add(-time.Millisecond))
 		t.Logf("listAlertsUniqID, err: %+v, %v", listAlertsUniqID, err)
@@ -140,7 +140,7 @@ func TestList(t *testing.T) {
 		}
 
 		// Verify results by dev ID without oldest alert.
-		listAlertsDevID, err := globalAlertDAO.List(ctx, createOrg.Id, "",
+		listAlertsDevID, err := globalAleDAO.List(ctx, createOrg.Id, "",
 			createDev.Id, "", "", alerts[0].CreatedAt.AsTime(),
 			alerts[len(alerts)-1].CreatedAt.AsTime())
 		t.Logf("listAlertsDevID, err: %+v, %v", listAlertsDevID, err)
@@ -157,7 +157,7 @@ func TestList(t *testing.T) {
 		}
 
 		// Verify results by alarm ID and user ID.
-		listAlertsAlarmID, err := globalAlertDAO.List(ctx, createOrg.Id, "", "",
+		listAlertsAlarmID, err := globalAleDAO.List(ctx, createOrg.Id, "", "",
 			alerts[len(alerts)-1].AlarmId, alerts[len(alerts)-1].UserId,
 			alerts[0].CreatedAt.AsTime(),
 			alerts[len(alerts)-1].CreatedAt.AsTime().Add(-time.Millisecond))
@@ -185,11 +185,11 @@ func TestList(t *testing.T) {
 
 		alert := random.Alert("dao-alert", createOrg.Id)
 
-		err = globalAlertDAO.Create(ctx, alert)
+		err = globalAleDAO.Create(ctx, alert)
 		t.Logf("err: %#v", err)
 		require.NoError(t, err)
 
-		listAlerts, err := globalAlertDAO.List(ctx, uuid.NewString(),
+		listAlerts, err := globalAleDAO.List(ctx, uuid.NewString(),
 			alert.UniqId, "", "", "", alert.CreatedAt.AsTime(),
 			alert.CreatedAt.AsTime().Add(-time.Millisecond))
 		t.Logf("listAlerts, err: %+v, %v", listAlerts, err)
@@ -203,7 +203,7 @@ func TestList(t *testing.T) {
 		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
 		defer cancel()
 
-		listAlerts, err := globalAlertDAO.List(ctx, random.String(10),
+		listAlerts, err := globalAleDAO.List(ctx, random.String(10),
 			uuid.NewString(), "", "", "", time.Now(), time.Now())
 		t.Logf("listAlerts, err: %+v, %v", listAlerts, err)
 		require.Nil(t, listAlerts)

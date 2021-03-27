@@ -48,7 +48,7 @@ func (ev *Eventer) eventMessages() {
 		// will be returned.
 		ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 		rules, err := ev.ruleDAO.ListByTags(ctx, vOut.Device.OrgId,
-			vOut.Device.Tags, vOut.Point.Attr)
+			vOut.Point.Attr, vOut.Device.Tags)
 		cancel()
 		if err != nil {
 			msg.Requeue()
@@ -69,7 +69,7 @@ func (ev *Eventer) eventMessages() {
 				continue
 			}
 			metric.Incr("evaluated", map[string]string{
-				"func": strconv.FormatBool(res)})
+				"result": strconv.FormatBool(res)})
 
 			if res {
 				event := &api.Event{

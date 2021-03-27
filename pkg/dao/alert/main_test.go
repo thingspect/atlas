@@ -14,9 +14,9 @@ import (
 )
 
 var (
-	globalOrgDAO   *org.DAO
-	globalDevDAO   *device.DAO
-	globalAlertDAO *DAO
+	globalOrgDAO *org.DAO
+	globalDevDAO *device.DAO
+	globalAleDAO *DAO
 )
 
 func TestMain(m *testing.M) {
@@ -30,7 +30,7 @@ func TestMain(m *testing.M) {
 	}
 	globalOrgDAO = org.NewDAO(pg)
 	globalDevDAO = device.NewDAO(pg)
-	globalAlertDAO = NewDAO(pg)
+	globalAleDAO = NewDAO(pg)
 
 	os.Exit(m.Run())
 }

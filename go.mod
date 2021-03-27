@@ -15,10 +15,10 @@ require (
 	github.com/google/uuid v1.2.0
 	github.com/grpc-ecosystem/grpc-gateway v1.16.0 // indirect
 	github.com/grpc-ecosystem/grpc-gateway/v2 v2.3.0
-	github.com/jackc/pgconn v1.8.0
+	github.com/jackc/pgconn v1.8.1
 	github.com/jackc/pgproto3/v2 v2.0.7 // indirect
-	github.com/jackc/pgtype v1.6.2
-	github.com/jackc/pgx/v4 v4.10.1
+	github.com/jackc/pgtype v1.7.0
+	github.com/jackc/pgx/v4 v4.11.0
 	github.com/mennanov/fmutils v0.0.3
 	github.com/nsqio/go-nsq v1.0.8
 	github.com/rs/zerolog v1.21.0
@@ -26,6 +26,9 @@ require (
 	github.com/stretchr/testify v1.7.0
 	github.com/thingspect/api/go v0.0.0-20210324180454-b7c65eac1618
 	golang.org/x/crypto v0.0.0-20210322153248-0c34fe9e7dc2
-	google.golang.org/grpc v1.36.0
+	golang.org/x/net v0.0.0-20210326220855-61e056675ecf // indirect
+	golang.org/x/sys v0.0.0-20210326220804-49726bf1d181 // indirect
+	google.golang.org/genproto v0.0.0-20210325224202-eed09b1b5210 // indirect
+	google.golang.org/grpc v1.36.1
 	google.golang.org/protobuf v1.26.0
 )

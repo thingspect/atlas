@@ -294,3 +294,62 @@ func (d *DAO) List(ctx context.Context, orgID string, lBoundTS time.Time,
 
 	return users, count, nil
 }
+
+const listByTags = `
+SELECT id, org_id, email, role, status, tags, created_at, updated_at
+FROM users
+WHERE (org_id, status) = ($1, 'ACTIVE')
+AND tags && $2::varchar(255)[]
+ORDER BY created_at
+`
+
+// ListByTags retrieves all active users by org ID and any matching tags.
+func (d *DAO) ListByTags(ctx context.Context, orgID string,
+	tags []string) ([]*api.User, error) {
+	var tagArr pgtype.VarcharArray
+	if err := tagArr.Set(tags); err != nil {
+		return nil, dao.DBToSentinel(err)
+	}
+
+	rows, err := d.pg.QueryContext(ctx, listByTags, orgID, tagArr)
+	if err != nil {
+		return nil, dao.DBToSentinel(err)
+	}
+	defer func() {
+		if err = rows.Close(); err != nil {
+			logger := alog.FromContext(ctx)
+			logger.Errorf("ListByTags rows.Close: %v", err)
+		}
+	}()
+
+	var users []*api.User
+	for rows.Next() {
+		user := &api.User{}
+		var role, status string
+		var tags pgtype.VarcharArray
+		var createdAt, updatedAt time.Time
+
+		if err = rows.Scan(&user.Id, &user.OrgId, &user.Email, &role, &status,
+			&tags, &createdAt, &updatedAt); err != nil {
+			return nil, dao.DBToSentinel(err)
+		}
+
+		user.Role = common.Role(common.Role_value[role])
+		user.Status = common.Status(common.Status_value[status])
+		if err := tags.AssignTo(&user.Tags); err != nil {
+			return nil, dao.DBToSentinel(err)
+		}
+		user.CreatedAt = timestamppb.New(createdAt)
+		user.UpdatedAt = timestamppb.New(updatedAt)
+		users = append(users, user)
+	}
+
+	if err = rows.Close(); err != nil {
+		return nil, dao.DBToSentinel(err)
+	}
+	if err = rows.Err(); err != nil {
+		return nil, dao.DBToSentinel(err)
+	}
+
+	return users, nil
+}
