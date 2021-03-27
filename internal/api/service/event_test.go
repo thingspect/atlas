@@ -64,7 +64,6 @@ func TestListEvents(t *testing.T) {
 
 		event := random.Event("dao-event", uuid.NewString())
 		retEvent, _ := proto.Clone(event).(*api.Event)
-		// orgID := uuid.NewString()
 		devID := uuid.NewString()
 
 		eventer := NewMockEventer(gomock.NewController(t))

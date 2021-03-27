@@ -201,22 +201,21 @@ func (d *DAO) List(ctx context.Context, orgID string, lBoundTS time.Time,
 const listByTags = `
 SELECT id, org_id, name, status, device_tag, attr, expr, created_at, updated_at
 FROM rules
-WHERE org_id = $1
-AND status = 'ACTIVE'
-AND device_tag = ANY ($2::varchar(255)[])
-AND attr = $3
+WHERE (org_id, status, attr) = ($1, 'ACTIVE', $2)
+AND device_tag = ANY ($3::varchar(255)[])
 ORDER BY created_at
 `
 
-// ListByTags retrieves all active rules by org ID, device tags, and attribute.
-func (d *DAO) ListByTags(ctx context.Context, orgID string, deviceTags []string,
-	attr string) ([]*common.Rule, error) {
+// ListByTags retrieves all active rules by org ID, attribute, and any matching
+// device tags.
+func (d *DAO) ListByTags(ctx context.Context, orgID string, attr string,
+	deviceTags []string) ([]*common.Rule, error) {
 	var tags pgtype.VarcharArray
 	if err := tags.Set(deviceTags); err != nil {
 		return nil, dao.DBToSentinel(err)
 	}
 
-	rows, err := d.pg.QueryContext(ctx, listByTags, orgID, tags, attr)
+	rows, err := d.pg.QueryContext(ctx, listByTags, orgID, attr, tags)
 	if err != nil {
 		return nil, dao.DBToSentinel(err)
 	}

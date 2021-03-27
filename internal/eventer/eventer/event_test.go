@@ -27,7 +27,7 @@ const errTestProc consterr.Error = "eventer: test processor error"
 func TestEventMessages(t *testing.T) {
 	t.Parallel()
 
-	orgID := "ev-" + random.String(10)
+	orgID := uuid.NewString()
 	now := timestamppb.New(time.Now().Add(-15 * time.Minute))
 	traceID := uuid.NewString()
 	ruleID := uuid.NewString()
@@ -78,7 +78,7 @@ func TestEventMessages(t *testing.T) {
 
 			ruler := NewMockruler(gomock.NewController(t))
 			ruler.EXPECT().ListByTags(gomock.Any(), lTest.inpVOut.Device.OrgId,
-				lTest.inpVOut.Device.Tags, lTest.inpVOut.Point.Attr).
+				lTest.inpVOut.Point.Attr, lTest.inpVOut.Device.Tags).
 				Return(lTest.inpRules, nil).Times(1)
 
 			// Reuse ruleID for less branching in the mocking paths.

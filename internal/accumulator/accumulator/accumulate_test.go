@@ -27,7 +27,7 @@ const errTestProc consterr.Error = "accumulator: test processor error"
 func TestAccumulateMessages(t *testing.T) {
 	t.Parallel()
 
-	dev := random.Device("val", uuid.NewString())
+	dev := random.Device("acc", uuid.NewString())
 
 	tests := []struct {
 		inp *message.ValidatorOut
@@ -150,7 +150,7 @@ func TestAccumulateMessagesError(t *testing.T) {
 				acc.accumulateMessages()
 			}()
 
-			bVOut := []byte("val-aaa")
+			bVOut := []byte("acc-aaa")
 			if lTest.inpVOut != nil {
 				var err error
 				bVOut, err = proto.Marshal(lTest.inpVOut)

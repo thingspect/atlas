@@ -25,8 +25,8 @@ const (
 
 // ruler defines the methods provided by a rule.DAO.
 type ruler interface {
-	ListByTags(ctx context.Context, orgID string, deviceTags []string,
-		attr string) ([]*common.Rule, error)
+	ListByTags(ctx context.Context, orgID string, attr string,
+		deviceTags []string) ([]*common.Rule, error)
 }
 
 // eventer defines the methods provided by an event.DAO.

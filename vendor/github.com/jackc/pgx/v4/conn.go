@@ -2,11 +2,11 @@ package pgx
 
 import (
 	"context"
+	"errors"
+	"fmt"
 	"strconv"
 	"strings"
 	"time"
-
-	errors "golang.org/x/xerrors"
 
 	"github.com/jackc/pgconn"
 	"github.com/jackc/pgconn/stmtcache"
@@ -124,6 +124,9 @@ func ConnectConfig(ctx context.Context, connConfig *ConnConfig) (*Conn, error) {
 // 		"describe" will use the anonymous prepared statement to describe a statement without creating a statement on the
 // 		server. "describe" is primarily useful when the environment does not allow prepared statements such as when
 // 		running a connection pooler like PgBouncer. Default: "prepare"
+//
+//	prefer_simple_protocol
+//		Possible values: "true" and "false". Use the simple protocol instead of extended protocol. Default: false
 func ParseConfig(connString string) (*ConnConfig, error) {
 	config, err := pgconn.ParseConfig(connString)
 	if err != nil {
@@ -137,7 +140,7 @@ func ParseConfig(connString string) (*ConnConfig, error) {
 		delete(config.RuntimeParams, "statement_cache_capacity")
 		n, err := strconv.ParseInt(s, 10, 32)
 		if err != nil {
-			return nil, errors.Errorf("cannot parse statement_cache_capacity: %w", err)
+			return nil, fmt.Errorf("cannot parse statement_cache_capacity: %w", err)
 		}
 		statementCacheCapacity = int(n)
 	}
@@ -150,7 +153,7 @@ func ParseConfig(connString string) (*ConnConfig, error) {
 		case "describe":
 			statementCacheMode = stmtcache.ModeDescribe
 		default:
-			return nil, errors.Errorf("invalid statement_cache_mod: %s", s)
+			return nil, fmt.Errorf("invalid statement_cache_mod: %s", s)
 		}
 	}
 
@@ -160,11 +163,22 @@ func ParseConfig(connString string) (*ConnConfig, error) {
 		}
 	}
 
+	preferSimpleProtocol := false
+	if s, ok := config.RuntimeParams["prefer_simple_protocol"]; ok {
+		delete(config.RuntimeParams, "prefer_simple_protocol")
+		if b, err := strconv.ParseBool(s); err == nil {
+			preferSimpleProtocol = b
+		} else {
+			return nil, fmt.Errorf("invalid prefer_simple_protocol: %v", err)
+		}
+	}
+
 	connConfig := &ConnConfig{
 		Config:               *config,
 		createdByParseConfig: true,
 		LogLevel:             LogLevelInfo,
 		BuildStatementCache:  buildStatementCache,
+		PreferSimpleProtocol: preferSimpleProtocol,
 		connString:           connString,
 	}
 
@@ -472,7 +486,7 @@ func (c *Conn) execSimpleProtocol(ctx context.Context, sql string, arguments []i
 
 func (c *Conn) execParamsAndPreparedPrefix(sd *pgconn.StatementDescription, arguments []interface{}) error {
 	if len(sd.ParamOIDs) != len(arguments) {
-		return errors.Errorf("expected %d arguments, got %d", len(sd.ParamOIDs), len(arguments))
+		return fmt.Errorf("expected %d arguments, got %d", len(sd.ParamOIDs), len(arguments))
 	}
 
 	c.eqb.Reset()
@@ -615,7 +629,7 @@ optionLoop:
 		}
 	}
 	if len(sd.ParamOIDs) != len(args) {
-		rows.fatal(errors.Errorf("expected %d arguments, got %d", len(sd.ParamOIDs), len(args)))
+		rows.fatal(fmt.Errorf("expected %d arguments, got %d", len(sd.ParamOIDs), len(args)))
 		return rows, rows.err
 	}
 
@@ -777,7 +791,7 @@ func (c *Conn) SendBatch(ctx context.Context, b *Batch) BatchResults {
 		}
 
 		if len(sd.ParamOIDs) != len(bi.arguments) {
-			return &batchResults{ctx: ctx, conn: c, err: errors.Errorf("mismatched param and argument count")}
+			return &batchResults{ctx: ctx, conn: c, err: fmt.Errorf("mismatched param and argument count")}
 		}
 
 		args, err := convertDriverValuers(bi.arguments)

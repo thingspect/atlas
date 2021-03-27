@@ -451,7 +451,7 @@ func TestListByTags(t *testing.T) {
 		defer cancel()
 
 		listRules, err := globalRuleDAO.ListByTags(ctx, createOrg.Id,
-			ruleDeviceTags, ruleAttrs[len(ruleAttrs)-1])
+			ruleAttrs[len(ruleAttrs)-1], ruleDeviceTags)
 		t.Logf("listRules, err: %+v, %v", listRules, err)
 		require.NoError(t, err)
 		require.Len(t, listRules, 1)
@@ -478,7 +478,7 @@ func TestListByTags(t *testing.T) {
 		lRuleDeviceTags := append(ruleDeviceTags, createRule.DeviceTag)
 
 		listRules, err := globalRuleDAO.ListByTags(ctx, createOrg.Id,
-			lRuleDeviceTags, ruleAttrs[0])
+			ruleAttrs[0], lRuleDeviceTags)
 		t.Logf("listRules, err: %+v, %v", listRules, err)
 		require.NoError(t, err)
 		require.Len(t, listRules, 2)
@@ -495,7 +495,7 @@ func TestListByTags(t *testing.T) {
 		defer cancel()
 
 		listRules, err := globalRuleDAO.ListByTags(ctx, uuid.NewString(),
-			ruleDeviceTags, ruleAttrs[len(ruleAttrs)-1])
+			ruleAttrs[len(ruleAttrs)-1], ruleDeviceTags)
 		t.Logf("listRules, err: %+v, %v", listRules, err)
 		require.NoError(t, err)
 		require.Len(t, listRules, 0)
@@ -508,7 +508,7 @@ func TestListByTags(t *testing.T) {
 		defer cancel()
 
 		listRules, err := globalRuleDAO.ListByTags(ctx, random.String(10),
-			ruleDeviceTags, ruleAttrs[len(ruleAttrs)-1])
+			ruleAttrs[len(ruleAttrs)-1], ruleDeviceTags)
 		t.Logf("listRules, err: %+v, %v", listRules, err)
 		require.Nil(t, listRules)
 		require.ErrorIs(t, err, dao.ErrInvalidFormat)

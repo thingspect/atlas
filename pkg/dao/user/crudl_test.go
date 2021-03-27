@@ -606,3 +606,94 @@ func TestList(t *testing.T) {
 		require.ErrorIs(t, err, dao.ErrInvalidFormat)
 	})
 }
+
+func TestListByTags(t *testing.T) {
+	t.Parallel()
+
+	ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
+	defer cancel()
+
+	createOrg, err := globalOrgDAO.Create(ctx, random.Org("dao-user"))
+	t.Logf("createOrg, err: %+v, %v", createOrg, err)
+	require.NoError(t, err)
+
+	userIDs := []string{}
+	userTags := [][]string{}
+	for i := 0; i < 3; i++ {
+		user := random.User("dao-user", createOrg.Id)
+		user.Status = common.Status_ACTIVE
+		createUser, err := globalUserDAO.Create(ctx, user)
+		t.Logf("createUser, err: %+v, %v", createUser, err)
+		require.NoError(t, err)
+
+		userIDs = append(userIDs, createUser.Id)
+		userTags = append(userTags, createUser.Tags)
+	}
+
+	t.Run("List users by valid org ID and unique tag", func(t *testing.T) {
+		t.Parallel()
+
+		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
+		defer cancel()
+
+		listUsers, err := globalUserDAO.ListByTags(ctx, createOrg.Id,
+			userTags[len(userTags)-1])
+		t.Logf("listUsers, err: %+v, %v", listUsers, err)
+		require.NoError(t, err)
+		require.Len(t, listUsers, 1)
+		require.Equal(t, listUsers[0].Id, userIDs[len(userIDs)-1])
+		require.Equal(t, listUsers[0].Tags, userTags[len(userTags)-1])
+	})
+
+	t.Run("List users by valid org ID and common tag", func(t *testing.T) {
+		t.Parallel()
+
+		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
+		defer cancel()
+
+		user := random.User("dao-user", createOrg.Id)
+		user.Status = common.Status_ACTIVE
+		user.Tags = []string{userTags[0][0]}
+
+		createUser, err := globalUserDAO.Create(ctx, user)
+		t.Logf("createUser, err: %+v, %v", createUser, err)
+		require.NoError(t, err)
+
+		// lUserDeviceTags := append(userTags, createUser.Tags)
+
+		listUsers, err := globalUserDAO.ListByTags(ctx, createOrg.Id,
+			createUser.Tags)
+		t.Logf("listUsers, err: %+v, %v", listUsers, err)
+		require.NoError(t, err)
+		require.Len(t, listUsers, 2)
+		for _, user := range listUsers {
+			require.Contains(t, user.Tags, createUser.Tags[0])
+		}
+	})
+
+	t.Run("Lists are isolated by org ID", func(t *testing.T) {
+		t.Parallel()
+
+		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
+		defer cancel()
+
+		listUsers, err := globalUserDAO.ListByTags(ctx, uuid.NewString(),
+			userTags[len(userTags)-1])
+		t.Logf("listUsers, err: %+v, %v", listUsers, err)
+		require.NoError(t, err)
+		require.Len(t, listUsers, 0)
+	})
+
+	t.Run("List users by invalid org ID", func(t *testing.T) {
+		t.Parallel()
+
+		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
+		defer cancel()
+
+		listUsers, err := globalUserDAO.ListByTags(ctx, random.String(10),
+			userTags[len(userTags)-1])
+		t.Logf("listUsers, err: %+v, %v", listUsers, err)
+		require.Nil(t, listUsers)
+		require.ErrorIs(t, err, dao.ErrInvalidFormat)
+	})
+}

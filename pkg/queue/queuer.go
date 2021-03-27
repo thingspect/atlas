@@ -21,7 +21,7 @@ type Messager interface {
 type Subber interface {
 	// C returns the channel that carries a Subber's messages.
 	C() <-chan Messager
-	// Unsubscribe unsubscribes to a topic and returns an error value.
+	// Unsubscribe unsubscribes from a topic and returns an error value.
 	Unsubscribe() error
 }
 

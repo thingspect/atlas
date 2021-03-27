@@ -53,14 +53,14 @@ func TestMain(m *testing.M) {
 	globalValQueue, err = queue.NewNSQ(cfg.NSQPubAddr, nil, cfg.NSQSubChannel,
 		queue.DefaultNSQRequeueDelay)
 	if err != nil {
-		log.Fatalf("TestMain globalVInQueue queue.NewNSQ: %v", err)
+		log.Fatalf("TestMain queue.NewNSQ: %v", err)
 	}
 
 	// Publish a throwaway message before subscribe to allow for discovery by
 	// nsqlookupd.
 	if err = globalValQueue.Publish(cfg.NSQSubTopic,
 		[]byte("val-aaa")); err != nil {
-		log.Fatalf("TestMain globalVInQueue.Publish: %v", err)
+		log.Fatalf("TestMain globalValQueue.Publish: %v", err)
 	}
 	time.Sleep(100 * time.Millisecond)
 	log.Print("TestMain published throwaway message")

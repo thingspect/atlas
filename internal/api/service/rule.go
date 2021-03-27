@@ -1,6 +1,6 @@
 package service
 
-//go:generate mockgen -source rule.go -destination mock_ruler_alarmer_test.go -package service
+//go:generate mockgen -source rule.go -destination mock_ruler_test.go -package service
 
 import (
 	"context"

@@ -37,18 +37,18 @@ func (m *Mockruler) EXPECT() *MockrulerMockRecorder {
 }
 
 // ListByTags mocks base method.
-func (m *Mockruler) ListByTags(ctx context.Context, orgID string, deviceTags []string, attr string) ([]*common.Rule, error) {
+func (m *Mockruler) ListByTags(ctx context.Context, orgID, attr string, deviceTags []string) ([]*common.Rule, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "ListByTags", ctx, orgID, deviceTags, attr)
+	ret := m.ctrl.Call(m, "ListByTags", ctx, orgID, attr, deviceTags)
 	ret0, _ := ret[0].([]*common.Rule)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // ListByTags indicates an expected call of ListByTags.
-func (mr *MockrulerMockRecorder) ListByTags(ctx, orgID, deviceTags, attr interface{}) *gomock.Call {
+func (mr *MockrulerMockRecorder) ListByTags(ctx, orgID, attr, deviceTags interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListByTags", reflect.TypeOf((*Mockruler)(nil).ListByTags), ctx, orgID, deviceTags, attr)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListByTags", reflect.TypeOf((*Mockruler)(nil).ListByTags), ctx, orgID, attr, deviceTags)
 }
 
 // Mockeventer is a mock of eventer interface.

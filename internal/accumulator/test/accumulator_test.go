@@ -17,7 +17,7 @@ import (
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
-const testTimeout = 4 * time.Second
+const testTimeout = 6 * time.Second
 
 func TestAccumulateMessages(t *testing.T) {
 	t.Parallel()
@@ -152,7 +152,7 @@ func TestAccumulateMessagesDuplicate(t *testing.T) {
 	}
 }
 
-func TestAccumulateMessagesInvalid(t *testing.T) {
+func TestAccumulateMessagesError(t *testing.T) {
 	t.Parallel()
 
 	ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
