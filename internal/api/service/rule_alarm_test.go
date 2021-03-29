@@ -42,8 +42,8 @@ func TestCreateRule(t *testing.T) {
 				Role: common.Role_ADMIN}), testTimeout)
 		defer cancel()
 
-		ruleSvc := NewRule(ruler, nil)
-		createRule, err := ruleSvc.CreateRule(ctx, &api.CreateRuleRequest{
+		raSvc := NewRuleAlarm(ruler, nil)
+		createRule, err := raSvc.CreateRule(ctx, &api.CreateRuleRequest{
 			Rule: rule})
 		t.Logf("rule, createRule, err: %+v, %+v, %v", rule, createRule, err)
 		require.NoError(t, err)
@@ -61,8 +61,8 @@ func TestCreateRule(t *testing.T) {
 		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
 		defer cancel()
 
-		ruleSvc := NewRule(nil, nil)
-		createRule, err := ruleSvc.CreateRule(ctx, &api.CreateRuleRequest{})
+		raSvc := NewRuleAlarm(nil, nil)
+		createRule, err := raSvc.CreateRule(ctx, &api.CreateRuleRequest{})
 		t.Logf("createRule, err: %+v, %v", createRule, err)
 		require.Nil(t, createRule)
 		require.Equal(t, errPerm(common.Role_BUILDER), err)
@@ -76,8 +76,8 @@ func TestCreateRule(t *testing.T) {
 				Role: common.Role_VIEWER}), testTimeout)
 		defer cancel()
 
-		ruleSvc := NewRule(nil, nil)
-		createRule, err := ruleSvc.CreateRule(ctx, &api.CreateRuleRequest{})
+		raSvc := NewRuleAlarm(nil, nil)
+		createRule, err := raSvc.CreateRule(ctx, &api.CreateRuleRequest{})
 		t.Logf("createRule, err: %+v, %v", createRule, err)
 		require.Nil(t, createRule)
 		require.Equal(t, errPerm(common.Role_BUILDER), err)
@@ -98,8 +98,8 @@ func TestCreateRule(t *testing.T) {
 				Role: common.Role_ADMIN}), testTimeout)
 		defer cancel()
 
-		ruleSvc := NewRule(ruler, nil)
-		createRule, err := ruleSvc.CreateRule(ctx, &api.CreateRuleRequest{
+		raSvc := NewRuleAlarm(ruler, nil)
+		createRule, err := raSvc.CreateRule(ctx, &api.CreateRuleRequest{
 			Rule: rule})
 		t.Logf("rule, createRule, err: %+v, %+v, %v", rule, createRule, err)
 		require.Nil(t, createRule)
@@ -126,8 +126,8 @@ func TestCreateAlarm(t *testing.T) {
 				Role: common.Role_ADMIN}), testTimeout)
 		defer cancel()
 
-		ruleSvc := NewRule(nil, alarmer)
-		createAlarm, err := ruleSvc.CreateAlarm(ctx, &api.CreateAlarmRequest{
+		raSvc := NewRuleAlarm(nil, alarmer)
+		createAlarm, err := raSvc.CreateAlarm(ctx, &api.CreateAlarmRequest{
 			Alarm: alarm})
 		t.Logf("alarm, createAlarm, err: %+v, %+v, %v", alarm, createAlarm, err)
 		require.NoError(t, err)
@@ -145,8 +145,8 @@ func TestCreateAlarm(t *testing.T) {
 		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
 		defer cancel()
 
-		ruleSvc := NewRule(nil, nil)
-		createAlarm, err := ruleSvc.CreateAlarm(ctx, &api.CreateAlarmRequest{})
+		raSvc := NewRuleAlarm(nil, nil)
+		createAlarm, err := raSvc.CreateAlarm(ctx, &api.CreateAlarmRequest{})
 		t.Logf("createAlarm, err: %+v, %v", createAlarm, err)
 		require.Nil(t, createAlarm)
 		require.Equal(t, errPerm(common.Role_BUILDER), err)
@@ -160,8 +160,8 @@ func TestCreateAlarm(t *testing.T) {
 				Role: common.Role_VIEWER}), testTimeout)
 		defer cancel()
 
-		ruleSvc := NewRule(nil, nil)
-		createAlarm, err := ruleSvc.CreateAlarm(ctx, &api.CreateAlarmRequest{})
+		raSvc := NewRuleAlarm(nil, nil)
+		createAlarm, err := raSvc.CreateAlarm(ctx, &api.CreateAlarmRequest{})
 		t.Logf("createAlarm, err: %+v, %v", createAlarm, err)
 		require.Nil(t, createAlarm)
 		require.Equal(t, errPerm(common.Role_BUILDER), err)
@@ -182,8 +182,8 @@ func TestCreateAlarm(t *testing.T) {
 				Role: common.Role_ADMIN}), testTimeout)
 		defer cancel()
 
-		ruleSvc := NewRule(nil, alarmer)
-		createAlarm, err := ruleSvc.CreateAlarm(ctx, &api.CreateAlarmRequest{
+		raSvc := NewRuleAlarm(nil, alarmer)
+		createAlarm, err := raSvc.CreateAlarm(ctx, &api.CreateAlarmRequest{
 			Alarm: alarm})
 		t.Logf("alarm, createAlarm, err: %+v, %+v, %v", alarm, createAlarm, err)
 		require.Nil(t, createAlarm)
@@ -210,8 +210,8 @@ func TestGetRule(t *testing.T) {
 				Role: common.Role_ADMIN}), testTimeout)
 		defer cancel()
 
-		ruleSvc := NewRule(ruler, nil)
-		getRule, err := ruleSvc.GetRule(ctx, &api.GetRuleRequest{Id: rule.Id})
+		raSvc := NewRuleAlarm(ruler, nil)
+		getRule, err := raSvc.GetRule(ctx, &api.GetRuleRequest{Id: rule.Id})
 		t.Logf("rule, getRule, err: %+v, %+v, %v", rule, getRule, err)
 		require.NoError(t, err)
 
@@ -228,8 +228,8 @@ func TestGetRule(t *testing.T) {
 		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
 		defer cancel()
 
-		ruleSvc := NewRule(nil, nil)
-		getRule, err := ruleSvc.GetRule(ctx, &api.GetRuleRequest{})
+		raSvc := NewRuleAlarm(nil, nil)
+		getRule, err := raSvc.GetRule(ctx, &api.GetRuleRequest{})
 		t.Logf("getRule, err: %+v, %v", getRule, err)
 		require.Nil(t, getRule)
 		require.Equal(t, errPerm(common.Role_VIEWER), err)
@@ -243,8 +243,8 @@ func TestGetRule(t *testing.T) {
 				Role: common.Role_CONTACT}), testTimeout)
 		defer cancel()
 
-		ruleSvc := NewRule(nil, nil)
-		getRule, err := ruleSvc.GetRule(ctx, &api.GetRuleRequest{})
+		raSvc := NewRuleAlarm(nil, nil)
+		getRule, err := raSvc.GetRule(ctx, &api.GetRuleRequest{})
 		t.Logf("getRule, err: %+v, %v", getRule, err)
 		require.Nil(t, getRule)
 		require.Equal(t, errPerm(common.Role_VIEWER), err)
@@ -262,8 +262,8 @@ func TestGetRule(t *testing.T) {
 				Role: common.Role_ADMIN}), testTimeout)
 		defer cancel()
 
-		ruleSvc := NewRule(ruler, nil)
-		getRule, err := ruleSvc.GetRule(ctx, &api.GetRuleRequest{
+		raSvc := NewRuleAlarm(ruler, nil)
+		getRule, err := raSvc.GetRule(ctx, &api.GetRuleRequest{
 			Id: uuid.NewString()})
 		t.Logf("getRule, err: %+v, %v", getRule, err)
 		require.Nil(t, getRule)
@@ -289,8 +289,8 @@ func TestGetAlarm(t *testing.T) {
 				Role: common.Role_ADMIN}), testTimeout)
 		defer cancel()
 
-		ruleSvc := NewRule(nil, alarmer)
-		getAlarm, err := ruleSvc.GetAlarm(ctx, &api.GetAlarmRequest{
+		raSvc := NewRuleAlarm(nil, alarmer)
+		getAlarm, err := raSvc.GetAlarm(ctx, &api.GetAlarmRequest{
 			Id: alarm.Id, RuleId: alarm.RuleId})
 		t.Logf("rule, getAlarm, err: %+v, %+v, %v", alarm, getAlarm, err)
 		require.NoError(t, err)
@@ -308,8 +308,8 @@ func TestGetAlarm(t *testing.T) {
 		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
 		defer cancel()
 
-		ruleSvc := NewRule(nil, nil)
-		getAlarm, err := ruleSvc.GetAlarm(ctx, &api.GetAlarmRequest{})
+		raSvc := NewRuleAlarm(nil, nil)
+		getAlarm, err := raSvc.GetAlarm(ctx, &api.GetAlarmRequest{})
 		t.Logf("getAlarm, err: %+v, %v", getAlarm, err)
 		require.Nil(t, getAlarm)
 		require.Equal(t, errPerm(common.Role_VIEWER), err)
@@ -323,8 +323,8 @@ func TestGetAlarm(t *testing.T) {
 				Role: common.Role_CONTACT}), testTimeout)
 		defer cancel()
 
-		ruleSvc := NewRule(nil, nil)
-		getAlarm, err := ruleSvc.GetAlarm(ctx, &api.GetAlarmRequest{})
+		raSvc := NewRuleAlarm(nil, nil)
+		getAlarm, err := raSvc.GetAlarm(ctx, &api.GetAlarmRequest{})
 		t.Logf("getAlarm, err: %+v, %v", getAlarm, err)
 		require.Nil(t, getAlarm)
 		require.Equal(t, errPerm(common.Role_VIEWER), err)
@@ -342,8 +342,8 @@ func TestGetAlarm(t *testing.T) {
 				Role: common.Role_ADMIN}), testTimeout)
 		defer cancel()
 
-		ruleSvc := NewRule(nil, alarmer)
-		getAlarm, err := ruleSvc.GetAlarm(ctx, &api.GetAlarmRequest{
+		raSvc := NewRuleAlarm(nil, alarmer)
+		getAlarm, err := raSvc.GetAlarm(ctx, &api.GetAlarmRequest{
 			Id: uuid.NewString(), RuleId: uuid.NewString()})
 		t.Logf("getAlarm, err: %+v, %v", getAlarm, err)
 		require.Nil(t, getAlarm)
@@ -368,8 +368,8 @@ func TestUpdateRule(t *testing.T) {
 				Role: common.Role_ADMIN}), testTimeout)
 		defer cancel()
 
-		ruleSvc := NewRule(ruler, nil)
-		updateRule, err := ruleSvc.UpdateRule(ctx, &api.UpdateRuleRequest{
+		raSvc := NewRuleAlarm(ruler, nil)
+		updateRule, err := raSvc.UpdateRule(ctx, &api.UpdateRuleRequest{
 			Rule: rule})
 		t.Logf("rule, updateRule, err: %+v, %+v, %v", rule, updateRule, err)
 		require.NoError(t, err)
@@ -404,8 +404,8 @@ func TestUpdateRule(t *testing.T) {
 				Role: common.Role_ADMIN}), testTimeout)
 		defer cancel()
 
-		ruleSvc := NewRule(ruler, nil)
-		updateRule, err := ruleSvc.UpdateRule(ctx, &api.UpdateRuleRequest{
+		raSvc := NewRuleAlarm(ruler, nil)
+		updateRule, err := raSvc.UpdateRule(ctx, &api.UpdateRuleRequest{
 			Rule: part, UpdateMask: &fieldmaskpb.FieldMask{
 				Paths: []string{"status", "expr"}}})
 		t.Logf("merged, updateRule, err: %+v, %+v, %v", merged, updateRule, err)
@@ -424,8 +424,8 @@ func TestUpdateRule(t *testing.T) {
 		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
 		defer cancel()
 
-		ruleSvc := NewRule(nil, nil)
-		updateRule, err := ruleSvc.UpdateRule(ctx, &api.UpdateRuleRequest{})
+		raSvc := NewRuleAlarm(nil, nil)
+		updateRule, err := raSvc.UpdateRule(ctx, &api.UpdateRuleRequest{})
 		t.Logf("updateRule, err: %+v, %v", updateRule, err)
 		require.Nil(t, updateRule)
 		require.Equal(t, errPerm(common.Role_BUILDER), err)
@@ -439,8 +439,8 @@ func TestUpdateRule(t *testing.T) {
 				Role: common.Role_VIEWER}), testTimeout)
 		defer cancel()
 
-		ruleSvc := NewRule(nil, nil)
-		updateRule, err := ruleSvc.UpdateRule(ctx, &api.UpdateRuleRequest{})
+		raSvc := NewRuleAlarm(nil, nil)
+		updateRule, err := raSvc.UpdateRule(ctx, &api.UpdateRuleRequest{})
 		t.Logf("updateRule, err: %+v, %v", updateRule, err)
 		require.Nil(t, updateRule)
 		require.Equal(t, errPerm(common.Role_BUILDER), err)
@@ -454,8 +454,8 @@ func TestUpdateRule(t *testing.T) {
 				Role: common.Role_ADMIN}), testTimeout)
 		defer cancel()
 
-		ruleSvc := NewRule(nil, nil)
-		updateRule, err := ruleSvc.UpdateRule(ctx, &api.UpdateRuleRequest{
+		raSvc := NewRuleAlarm(nil, nil)
+		updateRule, err := raSvc.UpdateRule(ctx, &api.UpdateRuleRequest{
 			Rule: nil})
 		t.Logf("updateRule, err: %+v, %v", updateRule, err)
 		require.Nil(t, updateRule)
@@ -473,8 +473,8 @@ func TestUpdateRule(t *testing.T) {
 				Role: common.Role_ADMIN}), testTimeout)
 		defer cancel()
 
-		ruleSvc := NewRule(nil, nil)
-		updateRule, err := ruleSvc.UpdateRule(ctx, &api.UpdateRuleRequest{
+		raSvc := NewRuleAlarm(nil, nil)
+		updateRule, err := raSvc.UpdateRule(ctx, &api.UpdateRuleRequest{
 			Rule: rule, UpdateMask: &fieldmaskpb.FieldMask{
 				Paths: []string{"aaa"}}})
 		t.Logf("rule, updateRule, err: %+v, %+v, %v", rule, updateRule, err)
@@ -498,8 +498,8 @@ func TestUpdateRule(t *testing.T) {
 				Role: common.Role_ADMIN}), testTimeout)
 		defer cancel()
 
-		ruleSvc := NewRule(ruler, nil)
-		updateRule, err := ruleSvc.UpdateRule(ctx, &api.UpdateRuleRequest{
+		raSvc := NewRuleAlarm(ruler, nil)
+		updateRule, err := raSvc.UpdateRule(ctx, &api.UpdateRuleRequest{
 			Rule: part, UpdateMask: &fieldmaskpb.FieldMask{
 				Paths: []string{"status"}}})
 		t.Logf("part, updateRule, err: %+v, %+v, %v", part, updateRule, err)
@@ -518,8 +518,8 @@ func TestUpdateRule(t *testing.T) {
 				Role: common.Role_ADMIN}), testTimeout)
 		defer cancel()
 
-		ruleSvc := NewRule(nil, nil)
-		updateRule, err := ruleSvc.UpdateRule(ctx, &api.UpdateRuleRequest{
+		raSvc := NewRuleAlarm(nil, nil)
+		updateRule, err := raSvc.UpdateRule(ctx, &api.UpdateRuleRequest{
 			Rule: rule})
 		t.Logf("rule, updateRule, err: %+v, %+v, %v", rule, updateRule, err)
 		require.Nil(t, updateRule)
@@ -543,8 +543,8 @@ func TestUpdateRule(t *testing.T) {
 				Role: common.Role_ADMIN}), testTimeout)
 		defer cancel()
 
-		ruleSvc := NewRule(ruler, nil)
-		updateRule, err := ruleSvc.UpdateRule(ctx, &api.UpdateRuleRequest{
+		raSvc := NewRuleAlarm(ruler, nil)
+		updateRule, err := raSvc.UpdateRule(ctx, &api.UpdateRuleRequest{
 			Rule: rule})
 		t.Logf("rule, updateRule, err: %+v, %+v, %v", rule, updateRule, err)
 		require.Nil(t, updateRule)
@@ -571,8 +571,8 @@ func TestUpdateAlarm(t *testing.T) {
 				Role: common.Role_ADMIN}), testTimeout)
 		defer cancel()
 
-		ruleSvc := NewRule(nil, alarmer)
-		updateAlarm, err := ruleSvc.UpdateAlarm(ctx, &api.UpdateAlarmRequest{
+		raSvc := NewRuleAlarm(nil, alarmer)
+		updateAlarm, err := raSvc.UpdateAlarm(ctx, &api.UpdateAlarmRequest{
 			Alarm: alarm})
 		t.Logf("alarm, updateAlarm, err: %+v, %+v, %v", alarm, updateAlarm, err)
 		require.NoError(t, err)
@@ -610,8 +610,8 @@ func TestUpdateAlarm(t *testing.T) {
 				Role: common.Role_ADMIN}), testTimeout)
 		defer cancel()
 
-		ruleSvc := NewRule(nil, alarmer)
-		updateAlarm, err := ruleSvc.UpdateAlarm(ctx, &api.UpdateAlarmRequest{
+		raSvc := NewRuleAlarm(nil, alarmer)
+		updateAlarm, err := raSvc.UpdateAlarm(ctx, &api.UpdateAlarmRequest{
 			Alarm: part, UpdateMask: &fieldmaskpb.FieldMask{
 				Paths: []string{"status", "subject_template"}}})
 		t.Logf("merged, updateAlarm, err: %+v, %+v, %v", merged, updateAlarm,
@@ -631,8 +631,8 @@ func TestUpdateAlarm(t *testing.T) {
 		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
 		defer cancel()
 
-		ruleSvc := NewRule(nil, nil)
-		updateAlarm, err := ruleSvc.UpdateAlarm(ctx, &api.UpdateAlarmRequest{})
+		raSvc := NewRuleAlarm(nil, nil)
+		updateAlarm, err := raSvc.UpdateAlarm(ctx, &api.UpdateAlarmRequest{})
 		t.Logf("updateAlarm, err: %+v, %v", updateAlarm, err)
 		require.Nil(t, updateAlarm)
 		require.Equal(t, errPerm(common.Role_BUILDER), err)
@@ -646,8 +646,8 @@ func TestUpdateAlarm(t *testing.T) {
 				Role: common.Role_VIEWER}), testTimeout)
 		defer cancel()
 
-		ruleSvc := NewRule(nil, nil)
-		updateAlarm, err := ruleSvc.UpdateAlarm(ctx, &api.UpdateAlarmRequest{})
+		raSvc := NewRuleAlarm(nil, nil)
+		updateAlarm, err := raSvc.UpdateAlarm(ctx, &api.UpdateAlarmRequest{})
 		t.Logf("updateAlarm, err: %+v, %v", updateAlarm, err)
 		require.Nil(t, updateAlarm)
 		require.Equal(t, errPerm(common.Role_BUILDER), err)
@@ -661,8 +661,8 @@ func TestUpdateAlarm(t *testing.T) {
 				Role: common.Role_ADMIN}), testTimeout)
 		defer cancel()
 
-		ruleSvc := NewRule(nil, nil)
-		updateAlarm, err := ruleSvc.UpdateAlarm(ctx, &api.UpdateAlarmRequest{
+		raSvc := NewRuleAlarm(nil, nil)
+		updateAlarm, err := raSvc.UpdateAlarm(ctx, &api.UpdateAlarmRequest{
 			Alarm: nil})
 		t.Logf("updateAlarm, err: %+v, %v", updateAlarm, err)
 		require.Nil(t, updateAlarm)
@@ -680,8 +680,8 @@ func TestUpdateAlarm(t *testing.T) {
 				Role: common.Role_ADMIN}), testTimeout)
 		defer cancel()
 
-		ruleSvc := NewRule(nil, nil)
-		updateAlarm, err := ruleSvc.UpdateAlarm(ctx, &api.UpdateAlarmRequest{
+		raSvc := NewRuleAlarm(nil, nil)
+		updateAlarm, err := raSvc.UpdateAlarm(ctx, &api.UpdateAlarmRequest{
 			Alarm: alarm, UpdateMask: &fieldmaskpb.FieldMask{
 				Paths: []string{"aaa"}}})
 		t.Logf("alarm, updateAlarm, err: %+v, %+v, %v", alarm, updateAlarm, err)
@@ -706,8 +706,8 @@ func TestUpdateAlarm(t *testing.T) {
 				Role: common.Role_ADMIN}), testTimeout)
 		defer cancel()
 
-		ruleSvc := NewRule(nil, alarmer)
-		updateAlarm, err := ruleSvc.UpdateAlarm(ctx, &api.UpdateAlarmRequest{
+		raSvc := NewRuleAlarm(nil, alarmer)
+		updateAlarm, err := raSvc.UpdateAlarm(ctx, &api.UpdateAlarmRequest{
 			Alarm: part, UpdateMask: &fieldmaskpb.FieldMask{
 				Paths: []string{"status"}}})
 		t.Logf("part, updateAlarm, err: %+v, %+v, %v", part, updateAlarm, err)
@@ -726,8 +726,8 @@ func TestUpdateAlarm(t *testing.T) {
 				Role: common.Role_ADMIN}), testTimeout)
 		defer cancel()
 
-		ruleSvc := NewRule(nil, nil)
-		updateAlarm, err := ruleSvc.UpdateAlarm(ctx, &api.UpdateAlarmRequest{
+		raSvc := NewRuleAlarm(nil, nil)
+		updateAlarm, err := raSvc.UpdateAlarm(ctx, &api.UpdateAlarmRequest{
 			Alarm: alarm})
 		t.Logf("alarm, updateAlarm, err: %+v, %+v, %v", alarm, updateAlarm, err)
 		require.Nil(t, updateAlarm)
@@ -751,8 +751,8 @@ func TestUpdateAlarm(t *testing.T) {
 				Role: common.Role_ADMIN}), testTimeout)
 		defer cancel()
 
-		ruleSvc := NewRule(nil, alarmer)
-		updateAlarm, err := ruleSvc.UpdateAlarm(ctx, &api.UpdateAlarmRequest{
+		raSvc := NewRuleAlarm(nil, alarmer)
+		updateAlarm, err := raSvc.UpdateAlarm(ctx, &api.UpdateAlarmRequest{
 			Alarm: alarm})
 		t.Logf("alarm, updateAlarm, err: %+v, %+v, %v", alarm, updateAlarm, err)
 		require.Nil(t, updateAlarm)
@@ -776,8 +776,8 @@ func TestDeleteRule(t *testing.T) {
 				Role: common.Role_ADMIN}), testTimeout)
 		defer cancel()
 
-		ruleSvc := NewRule(ruler, nil)
-		_, err := ruleSvc.DeleteRule(ctx, &api.DeleteRuleRequest{
+		raSvc := NewRuleAlarm(ruler, nil)
+		_, err := raSvc.DeleteRule(ctx, &api.DeleteRuleRequest{
 			Id: uuid.NewString()})
 		t.Logf("err: %v", err)
 		require.NoError(t, err)
@@ -789,8 +789,8 @@ func TestDeleteRule(t *testing.T) {
 		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
 		defer cancel()
 
-		ruleSvc := NewRule(nil, nil)
-		_, err := ruleSvc.DeleteRule(ctx, &api.DeleteRuleRequest{})
+		raSvc := NewRuleAlarm(nil, nil)
+		_, err := raSvc.DeleteRule(ctx, &api.DeleteRuleRequest{})
 		t.Logf("err: %v", err)
 		require.Equal(t, errPerm(common.Role_BUILDER), err)
 	})
@@ -803,8 +803,8 @@ func TestDeleteRule(t *testing.T) {
 				Role: common.Role_VIEWER}), testTimeout)
 		defer cancel()
 
-		ruleSvc := NewRule(nil, nil)
-		_, err := ruleSvc.DeleteRule(ctx, &api.DeleteRuleRequest{})
+		raSvc := NewRuleAlarm(nil, nil)
+		_, err := raSvc.DeleteRule(ctx, &api.DeleteRuleRequest{})
 		t.Logf("err: %v", err)
 		require.Equal(t, errPerm(common.Role_BUILDER), err)
 	})
@@ -821,8 +821,8 @@ func TestDeleteRule(t *testing.T) {
 				Role: common.Role_ADMIN}), testTimeout)
 		defer cancel()
 
-		ruleSvc := NewRule(ruler, nil)
-		_, err := ruleSvc.DeleteRule(ctx, &api.DeleteRuleRequest{
+		raSvc := NewRuleAlarm(ruler, nil)
+		_, err := raSvc.DeleteRule(ctx, &api.DeleteRuleRequest{
 			Id: uuid.NewString()})
 		t.Logf("err: %v", err)
 		require.Equal(t, status.Error(codes.NotFound, "object not found"), err)
@@ -844,8 +844,8 @@ func TestDeleteAlarm(t *testing.T) {
 				Role: common.Role_ADMIN}), testTimeout)
 		defer cancel()
 
-		ruleSvc := NewRule(nil, alarmer)
-		_, err := ruleSvc.DeleteAlarm(ctx, &api.DeleteAlarmRequest{
+		raSvc := NewRuleAlarm(nil, alarmer)
+		_, err := raSvc.DeleteAlarm(ctx, &api.DeleteAlarmRequest{
 			Id: uuid.NewString()})
 		t.Logf("err: %v", err)
 		require.NoError(t, err)
@@ -857,8 +857,8 @@ func TestDeleteAlarm(t *testing.T) {
 		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
 		defer cancel()
 
-		ruleSvc := NewRule(nil, nil)
-		_, err := ruleSvc.DeleteAlarm(ctx, &api.DeleteAlarmRequest{})
+		raSvc := NewRuleAlarm(nil, nil)
+		_, err := raSvc.DeleteAlarm(ctx, &api.DeleteAlarmRequest{})
 		t.Logf("err: %v", err)
 		require.Equal(t, errPerm(common.Role_BUILDER), err)
 	})
@@ -871,8 +871,8 @@ func TestDeleteAlarm(t *testing.T) {
 				Role: common.Role_VIEWER}), testTimeout)
 		defer cancel()
 
-		ruleSvc := NewRule(nil, nil)
-		_, err := ruleSvc.DeleteAlarm(ctx, &api.DeleteAlarmRequest{})
+		raSvc := NewRuleAlarm(nil, nil)
+		_, err := raSvc.DeleteAlarm(ctx, &api.DeleteAlarmRequest{})
 		t.Logf("err: %v", err)
 		require.Equal(t, errPerm(common.Role_BUILDER), err)
 	})
@@ -889,8 +889,8 @@ func TestDeleteAlarm(t *testing.T) {
 				Role: common.Role_ADMIN}), testTimeout)
 		defer cancel()
 
-		ruleSvc := NewRule(nil, alarmer)
-		_, err := ruleSvc.DeleteAlarm(ctx, &api.DeleteAlarmRequest{
+		raSvc := NewRuleAlarm(nil, alarmer)
+		_, err := raSvc.DeleteAlarm(ctx, &api.DeleteAlarmRequest{
 			Id: uuid.NewString()})
 		t.Logf("err: %v", err)
 		require.Equal(t, status.Error(codes.NotFound, "object not found"), err)
@@ -920,8 +920,8 @@ func TestListRules(t *testing.T) {
 				Role: common.Role_ADMIN}), testTimeout)
 		defer cancel()
 
-		ruleSvc := NewRule(ruler, nil)
-		listRules, err := ruleSvc.ListRules(ctx, &api.ListRulesRequest{})
+		raSvc := NewRuleAlarm(ruler, nil)
+		listRules, err := raSvc.ListRules(ctx, &api.ListRulesRequest{})
 		t.Logf("listRules, err: %+v, %v", listRules, err)
 		require.NoError(t, err)
 		require.Equal(t, int32(3), listRules.TotalSize)
@@ -959,8 +959,8 @@ func TestListRules(t *testing.T) {
 				Role: common.Role_ADMIN}), testTimeout)
 		defer cancel()
 
-		ruleSvc := NewRule(ruler, nil)
-		listRules, err := ruleSvc.ListRules(ctx, &api.ListRulesRequest{
+		raSvc := NewRuleAlarm(ruler, nil)
+		listRules, err := raSvc.ListRules(ctx, &api.ListRulesRequest{
 			PageSize: 2})
 		t.Logf("listRules, err: %+v, %v", listRules, err)
 		require.NoError(t, err)
@@ -982,8 +982,8 @@ func TestListRules(t *testing.T) {
 		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
 		defer cancel()
 
-		ruleSvc := NewRule(nil, nil)
-		listRules, err := ruleSvc.ListRules(ctx, &api.ListRulesRequest{})
+		raSvc := NewRuleAlarm(nil, nil)
+		listRules, err := raSvc.ListRules(ctx, &api.ListRulesRequest{})
 		t.Logf("listRules, err: %+v, %v", listRules, err)
 		require.Nil(t, listRules)
 		require.Equal(t, errPerm(common.Role_VIEWER), err)
@@ -997,8 +997,8 @@ func TestListRules(t *testing.T) {
 				Role: common.Role_CONTACT}), testTimeout)
 		defer cancel()
 
-		ruleSvc := NewRule(nil, nil)
-		listRules, err := ruleSvc.ListRules(ctx, &api.ListRulesRequest{})
+		raSvc := NewRuleAlarm(nil, nil)
+		listRules, err := raSvc.ListRules(ctx, &api.ListRulesRequest{})
 		t.Logf("listRules, err: %+v, %v", listRules, err)
 		require.Nil(t, listRules)
 		require.Equal(t, errPerm(common.Role_VIEWER), err)
@@ -1012,8 +1012,8 @@ func TestListRules(t *testing.T) {
 				Role: common.Role_ADMIN}), testTimeout)
 		defer cancel()
 
-		ruleSvc := NewRule(nil, nil)
-		listRules, err := ruleSvc.ListRules(ctx, &api.ListRulesRequest{
+		raSvc := NewRuleAlarm(nil, nil)
+		listRules, err := raSvc.ListRules(ctx, &api.ListRulesRequest{
 			PageToken: badUUID})
 		t.Logf("listRules, err: %+v, %v", listRules, err)
 		require.Nil(t, listRules)
@@ -1033,8 +1033,8 @@ func TestListRules(t *testing.T) {
 				Role: common.Role_ADMIN}), testTimeout)
 		defer cancel()
 
-		ruleSvc := NewRule(ruler, nil)
-		listRules, err := ruleSvc.ListRules(ctx, &api.ListRulesRequest{})
+		raSvc := NewRuleAlarm(ruler, nil)
+		listRules, err := raSvc.ListRules(ctx, &api.ListRulesRequest{})
 		t.Logf("listRules, err: %+v, %v", listRules, err)
 		require.Nil(t, listRules)
 		require.Equal(t, status.Error(codes.InvalidArgument, "invalid format"),
@@ -1062,8 +1062,8 @@ func TestListRules(t *testing.T) {
 				Role: common.Role_ADMIN}), testTimeout)
 		defer cancel()
 
-		ruleSvc := NewRule(ruler, nil)
-		listRules, err := ruleSvc.ListRules(ctx, &api.ListRulesRequest{
+		raSvc := NewRuleAlarm(ruler, nil)
+		listRules, err := raSvc.ListRules(ctx, &api.ListRulesRequest{
 			PageSize: 2})
 		t.Logf("listRules, err: %+v, %v", listRules, err)
 		require.NoError(t, err)
@@ -1103,8 +1103,8 @@ func TestListAlarms(t *testing.T) {
 				Role: common.Role_ADMIN}), testTimeout)
 		defer cancel()
 
-		ruleSvc := NewRule(nil, alarmer)
-		listAlarms, err := ruleSvc.ListAlarms(ctx, &api.ListAlarmsRequest{})
+		raSvc := NewRuleAlarm(nil, alarmer)
+		listAlarms, err := raSvc.ListAlarms(ctx, &api.ListAlarmsRequest{})
 		t.Logf("listAlarms, err: %+v, %v", listAlarms, err)
 		require.NoError(t, err)
 		require.Equal(t, int32(3), listAlarms.TotalSize)
@@ -1143,8 +1143,8 @@ func TestListAlarms(t *testing.T) {
 				Role: common.Role_ADMIN}), testTimeout)
 		defer cancel()
 
-		ruleSvc := NewRule(nil, alarmer)
-		listAlarms, err := ruleSvc.ListAlarms(ctx, &api.ListAlarmsRequest{
+		raSvc := NewRuleAlarm(nil, alarmer)
+		listAlarms, err := raSvc.ListAlarms(ctx, &api.ListAlarmsRequest{
 			PageSize: 2})
 		t.Logf("listAlarms, err: %+v, %v", listAlarms, err)
 		require.NoError(t, err)
@@ -1166,8 +1166,8 @@ func TestListAlarms(t *testing.T) {
 		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
 		defer cancel()
 
-		ruleSvc := NewRule(nil, nil)
-		listAlarms, err := ruleSvc.ListAlarms(ctx, &api.ListAlarmsRequest{})
+		raSvc := NewRuleAlarm(nil, nil)
+		listAlarms, err := raSvc.ListAlarms(ctx, &api.ListAlarmsRequest{})
 		t.Logf("listAlarms, err: %+v, %v", listAlarms, err)
 		require.Nil(t, listAlarms)
 		require.Equal(t, errPerm(common.Role_VIEWER), err)
@@ -1181,8 +1181,8 @@ func TestListAlarms(t *testing.T) {
 				Role: common.Role_CONTACT}), testTimeout)
 		defer cancel()
 
-		ruleSvc := NewRule(nil, nil)
-		listAlarms, err := ruleSvc.ListAlarms(ctx, &api.ListAlarmsRequest{})
+		raSvc := NewRuleAlarm(nil, nil)
+		listAlarms, err := raSvc.ListAlarms(ctx, &api.ListAlarmsRequest{})
 		t.Logf("listAlarms, err: %+v, %v", listAlarms, err)
 		require.Nil(t, listAlarms)
 		require.Equal(t, errPerm(common.Role_VIEWER), err)
@@ -1196,8 +1196,8 @@ func TestListAlarms(t *testing.T) {
 				Role: common.Role_ADMIN}), testTimeout)
 		defer cancel()
 
-		ruleSvc := NewRule(nil, nil)
-		listAlarms, err := ruleSvc.ListAlarms(ctx, &api.ListAlarmsRequest{
+		raSvc := NewRuleAlarm(nil, nil)
+		listAlarms, err := raSvc.ListAlarms(ctx, &api.ListAlarmsRequest{
 			PageToken: badUUID})
 		t.Logf("listAlarms, err: %+v, %v", listAlarms, err)
 		require.Nil(t, listAlarms)
@@ -1218,8 +1218,8 @@ func TestListAlarms(t *testing.T) {
 				Role: common.Role_ADMIN}), testTimeout)
 		defer cancel()
 
-		ruleSvc := NewRule(nil, alarmer)
-		listAlarms, err := ruleSvc.ListAlarms(ctx, &api.ListAlarmsRequest{})
+		raSvc := NewRuleAlarm(nil, alarmer)
+		listAlarms, err := raSvc.ListAlarms(ctx, &api.ListAlarmsRequest{})
 		t.Logf("listAlarms, err: %+v, %v", listAlarms, err)
 		require.Nil(t, listAlarms)
 		require.Equal(t, status.Error(codes.InvalidArgument, "invalid format"),
@@ -1247,8 +1247,8 @@ func TestListAlarms(t *testing.T) {
 				Role: common.Role_ADMIN}), testTimeout)
 		defer cancel()
 
-		ruleSvc := NewRule(nil, alarmer)
-		listAlarms, err := ruleSvc.ListAlarms(ctx, &api.ListAlarmsRequest{
+		raSvc := NewRuleAlarm(nil, alarmer)
+		listAlarms, err := raSvc.ListAlarms(ctx, &api.ListAlarmsRequest{
 			PageSize: 2})
 		t.Logf("listAlarms, err: %+v, %v", listAlarms, err)
 		require.NoError(t, err)
@@ -1311,8 +1311,8 @@ func TestTestRule(t *testing.T) {
 					testTimeout)
 				defer cancel()
 
-				ruleSvc := NewRule(nil, nil)
-				testRes, err := ruleSvc.TestRule(ctx, &api.TestRuleRequest{
+				raSvc := NewRuleAlarm(nil, nil)
+				testRes, err := raSvc.TestRule(ctx, &api.TestRuleRequest{
 					Point: lTest.inpPoint, Rule: &common.Rule{
 						Attr: lTest.inpPoint.Attr, Expr: lTest.inpRuleExpr}})
 				t.Logf("testRes, err: %+v, %v", testRes, err)
@@ -1334,8 +1334,8 @@ func TestTestRule(t *testing.T) {
 		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
 		defer cancel()
 
-		ruleSvc := NewRule(nil, nil)
-		testRes, err := ruleSvc.TestRule(ctx, &api.TestRuleRequest{})
+		raSvc := NewRuleAlarm(nil, nil)
+		testRes, err := raSvc.TestRule(ctx, &api.TestRuleRequest{})
 		t.Logf("testRes, err: %+v, %v", testRes, err)
 		require.Nil(t, testRes)
 		require.Equal(t, errPerm(common.Role_BUILDER), err)
@@ -1349,8 +1349,8 @@ func TestTestRule(t *testing.T) {
 				Role: common.Role_VIEWER}), testTimeout)
 		defer cancel()
 
-		ruleSvc := NewRule(nil, nil)
-		testRes, err := ruleSvc.TestRule(ctx, &api.TestRuleRequest{})
+		raSvc := NewRuleAlarm(nil, nil)
+		testRes, err := raSvc.TestRule(ctx, &api.TestRuleRequest{})
 		t.Logf("testRes, err: %+v, %v", testRes, err)
 		require.Nil(t, testRes)
 		require.Equal(t, errPerm(common.Role_BUILDER), err)
@@ -1367,8 +1367,8 @@ func TestTestRule(t *testing.T) {
 				Role: common.Role_ADMIN}), testTimeout)
 		defer cancel()
 
-		ruleSvc := NewRule(nil, nil)
-		testRes, err := ruleSvc.TestRule(ctx, &api.TestRuleRequest{
+		raSvc := NewRuleAlarm(nil, nil)
+		testRes, err := raSvc.TestRule(ctx, &api.TestRuleRequest{
 			Point: point, Rule: rule})
 		t.Logf("testRes, err: %+v, %v", testRes, err)
 		require.Nil(t, testRes)
@@ -1428,8 +1428,8 @@ func TestTestAlarm(t *testing.T) {
 					testTimeout)
 				defer cancel()
 
-				ruleSvc := NewRule(nil, nil)
-				testRes, err := ruleSvc.TestAlarm(ctx, &api.TestAlarmRequest{
+				raSvc := NewRuleAlarm(nil, nil)
+				testRes, err := raSvc.TestAlarm(ctx, &api.TestAlarmRequest{
 					Point: lTest.inpPoint, Rule: lTest.inpRule,
 					Device: lTest.inpDev, Alarm: &api.Alarm{
 						SubjectTemplate: lTest.inpTempl,
@@ -1453,8 +1453,8 @@ func TestTestAlarm(t *testing.T) {
 		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
 		defer cancel()
 
-		ruleSvc := NewRule(nil, nil)
-		testRes, err := ruleSvc.TestAlarm(ctx, &api.TestAlarmRequest{})
+		raSvc := NewRuleAlarm(nil, nil)
+		testRes, err := raSvc.TestAlarm(ctx, &api.TestAlarmRequest{})
 		t.Logf("testRes, err: %+v, %v", testRes, err)
 		require.Nil(t, testRes)
 		require.Equal(t, errPerm(common.Role_BUILDER), err)
@@ -1468,8 +1468,8 @@ func TestTestAlarm(t *testing.T) {
 				Role: common.Role_VIEWER}), testTimeout)
 		defer cancel()
 
-		ruleSvc := NewRule(nil, nil)
-		testRes, err := ruleSvc.TestAlarm(ctx, &api.TestAlarmRequest{})
+		raSvc := NewRuleAlarm(nil, nil)
+		testRes, err := raSvc.TestAlarm(ctx, &api.TestAlarmRequest{})
 		t.Logf("testRes, err: %+v, %v", testRes, err)
 		require.Nil(t, testRes)
 		require.Equal(t, errPerm(common.Role_BUILDER), err)
@@ -1483,8 +1483,8 @@ func TestTestAlarm(t *testing.T) {
 				Role: common.Role_ADMIN}), testTimeout)
 		defer cancel()
 
-		ruleSvc := NewRule(nil, nil)
-		testRes, err := ruleSvc.TestAlarm(ctx, &api.TestAlarmRequest{
+		raSvc := NewRuleAlarm(nil, nil)
+		testRes, err := raSvc.TestAlarm(ctx, &api.TestAlarmRequest{
 			Point: &common.DataPoint{}, Rule: nil, Device: nil,
 			Alarm: &api.Alarm{SubjectTemplate: `test`, BodyTemplate: `{{if`}})
 		t.Logf("testRes, err: %+v, %v", testRes, err)

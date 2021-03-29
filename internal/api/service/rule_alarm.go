@@ -42,24 +42,24 @@ type Alarmer interface {
 		limit int32, ruleID string) ([]*api.Alarm, int32, error)
 }
 
-// Rule service contains functions to query and modify rules.
-type Rule struct {
-	api.UnimplementedRuleServiceServer
+// RuleAlarm service contains functions to query and modify rules and alarms.
+type RuleAlarm struct {
+	api.UnimplementedRuleAlarmServiceServer
 
 	ruleDAO  Ruler
 	alarmDAO Alarmer
 }
 
-// NewRule instantiates and returns a new Rule service.
-func NewRule(ruleDAO Ruler, alarmDAO Alarmer) *Rule {
-	return &Rule{
+// NewRuleAlarm instantiates and returns a new RuleAlarm service.
+func NewRuleAlarm(ruleDAO Ruler, alarmDAO Alarmer) *RuleAlarm {
+	return &RuleAlarm{
 		ruleDAO:  ruleDAO,
 		alarmDAO: alarmDAO,
 	}
 }
 
 // CreateRule creates a rule.
-func (r *Rule) CreateRule(ctx context.Context,
+func (ra *RuleAlarm) CreateRule(ctx context.Context,
 	req *api.CreateRuleRequest) (*common.Rule, error) {
 	logger := alog.FromContext(ctx)
 	sess, ok := session.FromContext(ctx)
@@ -69,7 +69,7 @@ func (r *Rule) CreateRule(ctx context.Context,
 
 	req.Rule.OrgId = sess.OrgID
 
-	rule, err := r.ruleDAO.Create(ctx, req.Rule)
+	rule, err := ra.ruleDAO.Create(ctx, req.Rule)
 	if err != nil {
 		return nil, errToStatus(err)
 	}
@@ -83,7 +83,7 @@ func (r *Rule) CreateRule(ctx context.Context,
 }
 
 // CreateAlarm creates an alarm.
-func (r *Rule) CreateAlarm(ctx context.Context,
+func (ra *RuleAlarm) CreateAlarm(ctx context.Context,
 	req *api.CreateAlarmRequest) (*api.Alarm, error) {
 	logger := alog.FromContext(ctx)
 	sess, ok := session.FromContext(ctx)
@@ -93,7 +93,7 @@ func (r *Rule) CreateAlarm(ctx context.Context,
 
 	req.Alarm.OrgId = sess.OrgID
 
-	alarm, err := r.alarmDAO.Create(ctx, req.Alarm)
+	alarm, err := ra.alarmDAO.Create(ctx, req.Alarm)
 	if err != nil {
 		return nil, errToStatus(err)
 	}
@@ -107,14 +107,14 @@ func (r *Rule) CreateAlarm(ctx context.Context,
 }
 
 // GetRule retrieves a rule by ID.
-func (r *Rule) GetRule(ctx context.Context,
+func (ra *RuleAlarm) GetRule(ctx context.Context,
 	req *api.GetRuleRequest) (*common.Rule, error) {
 	sess, ok := session.FromContext(ctx)
 	if !ok || sess.Role < common.Role_VIEWER {
 		return nil, errPerm(common.Role_VIEWER)
 	}
 
-	rule, err := r.ruleDAO.Read(ctx, req.Id, sess.OrgID)
+	rule, err := ra.ruleDAO.Read(ctx, req.Id, sess.OrgID)
 	if err != nil {
 		return nil, errToStatus(err)
 	}
@@ -123,14 +123,14 @@ func (r *Rule) GetRule(ctx context.Context,
 }
 
 // GetAlarm retrieves an alarm by ID.
-func (r *Rule) GetAlarm(ctx context.Context,
+func (ra *RuleAlarm) GetAlarm(ctx context.Context,
 	req *api.GetAlarmRequest) (*api.Alarm, error) {
 	sess, ok := session.FromContext(ctx)
 	if !ok || sess.Role < common.Role_VIEWER {
 		return nil, errPerm(common.Role_VIEWER)
 	}
 
-	alarm, err := r.alarmDAO.Read(ctx, req.Id, sess.OrgID, req.RuleId)
+	alarm, err := ra.alarmDAO.Read(ctx, req.Id, sess.OrgID, req.RuleId)
 	if err != nil {
 		return nil, errToStatus(err)
 	}
@@ -140,7 +140,7 @@ func (r *Rule) GetAlarm(ctx context.Context,
 
 // UpdateRule updates a rule. Update actions validate after merge to support
 // partial updates.
-func (r *Rule) UpdateRule(ctx context.Context,
+func (ra *RuleAlarm) UpdateRule(ctx context.Context,
 	req *api.UpdateRuleRequest) (*common.Rule, error) {
 	sess, ok := session.FromContext(ctx)
 	if !ok || sess.Role < common.Role_BUILDER {
@@ -161,7 +161,7 @@ func (r *Rule) UpdateRule(ctx context.Context,
 				"invalid field mask")
 		}
 
-		rule, err := r.ruleDAO.Read(ctx, req.Rule.Id, sess.OrgID)
+		rule, err := ra.ruleDAO.Read(ctx, req.Rule.Id, sess.OrgID)
 		if err != nil {
 			return nil, errToStatus(err)
 		}
@@ -176,7 +176,7 @@ func (r *Rule) UpdateRule(ctx context.Context,
 		return nil, status.Error(codes.InvalidArgument, err.Error())
 	}
 
-	rule, err := r.ruleDAO.Update(ctx, req.Rule)
+	rule, err := ra.ruleDAO.Update(ctx, req.Rule)
 	if err != nil {
 		return nil, errToStatus(err)
 	}
@@ -186,7 +186,7 @@ func (r *Rule) UpdateRule(ctx context.Context,
 
 // UpdateAlarm updates an alarm. Update actions validate after merge to support
 // partial updates.
-func (r *Rule) UpdateAlarm(ctx context.Context,
+func (ra *RuleAlarm) UpdateAlarm(ctx context.Context,
 	req *api.UpdateAlarmRequest) (*api.Alarm, error) {
 	sess, ok := session.FromContext(ctx)
 	if !ok || sess.Role < common.Role_BUILDER {
@@ -207,7 +207,7 @@ func (r *Rule) UpdateAlarm(ctx context.Context,
 				"invalid field mask")
 		}
 
-		alarm, err := r.alarmDAO.Read(ctx, req.Alarm.Id, sess.OrgID,
+		alarm, err := ra.alarmDAO.Read(ctx, req.Alarm.Id, sess.OrgID,
 			req.Alarm.RuleId)
 		if err != nil {
 			return nil, errToStatus(err)
@@ -223,7 +223,7 @@ func (r *Rule) UpdateAlarm(ctx context.Context,
 		return nil, status.Error(codes.InvalidArgument, err.Error())
 	}
 
-	alarm, err := r.alarmDAO.Update(ctx, req.Alarm)
+	alarm, err := ra.alarmDAO.Update(ctx, req.Alarm)
 	if err != nil {
 		return nil, errToStatus(err)
 	}
@@ -232,7 +232,7 @@ func (r *Rule) UpdateAlarm(ctx context.Context,
 }
 
 // DeleteRule deletes a rule by ID.
-func (r *Rule) DeleteRule(ctx context.Context,
+func (ra *RuleAlarm) DeleteRule(ctx context.Context,
 	req *api.DeleteRuleRequest) (*emptypb.Empty, error) {
 	logger := alog.FromContext(ctx)
 	sess, ok := session.FromContext(ctx)
@@ -240,7 +240,7 @@ func (r *Rule) DeleteRule(ctx context.Context,
 		return nil, errPerm(common.Role_BUILDER)
 	}
 
-	if err := r.ruleDAO.Delete(ctx, req.Id, sess.OrgID); err != nil {
+	if err := ra.ruleDAO.Delete(ctx, req.Id, sess.OrgID); err != nil {
 		return nil, errToStatus(err)
 	}
 
@@ -253,7 +253,7 @@ func (r *Rule) DeleteRule(ctx context.Context,
 }
 
 // DeleteAlarm deletes an alarm by ID.
-func (r *Rule) DeleteAlarm(ctx context.Context,
+func (ra *RuleAlarm) DeleteAlarm(ctx context.Context,
 	req *api.DeleteAlarmRequest) (*emptypb.Empty, error) {
 	logger := alog.FromContext(ctx)
 	sess, ok := session.FromContext(ctx)
@@ -261,7 +261,7 @@ func (r *Rule) DeleteAlarm(ctx context.Context,
 		return nil, errPerm(common.Role_BUILDER)
 	}
 
-	if err := r.alarmDAO.Delete(ctx, req.Id, sess.OrgID,
+	if err := ra.alarmDAO.Delete(ctx, req.Id, sess.OrgID,
 		req.RuleId); err != nil {
 		return nil, errToStatus(err)
 	}
@@ -275,7 +275,7 @@ func (r *Rule) DeleteAlarm(ctx context.Context,
 }
 
 // ListRules retrieves all rules.
-func (r *Rule) ListRules(ctx context.Context,
+func (ra *RuleAlarm) ListRules(ctx context.Context,
 	req *api.ListRulesRequest) (*api.ListRulesResponse, error) {
 	logger := alog.FromContext(ctx)
 	sess, ok := session.FromContext(ctx)
@@ -293,7 +293,7 @@ func (r *Rule) ListRules(ctx context.Context,
 	}
 
 	// Retrieve PageSize+1 entries to find last page.
-	rules, count, err := r.ruleDAO.List(ctx, sess.OrgID, lBoundTS, prevID,
+	rules, count, err := ra.ruleDAO.List(ctx, sess.OrgID, lBoundTS, prevID,
 		req.PageSize+1)
 	if err != nil {
 		return nil, errToStatus(err)
@@ -319,7 +319,7 @@ func (r *Rule) ListRules(ctx context.Context,
 }
 
 // ListAlarms retrieves alarms.
-func (r *Rule) ListAlarms(ctx context.Context,
+func (ra *RuleAlarm) ListAlarms(ctx context.Context,
 	req *api.ListAlarmsRequest) (*api.ListAlarmsResponse, error) {
 	logger := alog.FromContext(ctx)
 	sess, ok := session.FromContext(ctx)
@@ -337,7 +337,7 @@ func (r *Rule) ListAlarms(ctx context.Context,
 	}
 
 	// Retrieve PageSize+1 entries to find last page.
-	alarms, count, err := r.alarmDAO.List(ctx, sess.OrgID, lBoundTS, prevID,
+	alarms, count, err := ra.alarmDAO.List(ctx, sess.OrgID, lBoundTS, prevID,
 		req.PageSize+1, req.RuleId)
 	if err != nil {
 		return nil, errToStatus(err)
@@ -363,7 +363,7 @@ func (r *Rule) ListAlarms(ctx context.Context,
 }
 
 // TestRule tests a rule.
-func (r *Rule) TestRule(ctx context.Context,
+func (ra *RuleAlarm) TestRule(ctx context.Context,
 	req *api.TestRuleRequest) (*api.TestRuleResponse, error) {
 	sess, ok := session.FromContext(ctx)
 	if !ok || sess.Role < common.Role_BUILDER {
@@ -391,7 +391,7 @@ func (r *Rule) TestRule(ctx context.Context,
 }
 
 // TestAlarm tests an alarm.
-func (r *Rule) TestAlarm(ctx context.Context,
+func (ra *RuleAlarm) TestAlarm(ctx context.Context,
 	req *api.TestAlarmRequest) (*api.TestAlarmResponse, error) {
 	sess, ok := session.FromContext(ctx)
 	if !ok || sess.Role < common.Role_BUILDER {
