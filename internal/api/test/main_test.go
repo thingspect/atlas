@@ -14,6 +14,7 @@ import (
 	"github.com/thingspect/atlas/internal/api/config"
 	"github.com/thingspect/atlas/internal/api/crypto"
 	"github.com/thingspect/atlas/pkg/dao"
+	"github.com/thingspect/atlas/pkg/dao/alert"
 	"github.com/thingspect/atlas/pkg/dao/datapoint"
 	"github.com/thingspect/atlas/pkg/dao/event"
 	"github.com/thingspect/atlas/pkg/dao/org"
@@ -35,6 +36,7 @@ var (
 	globalUserDAO *user.DAO
 	globalDPDAO   *datapoint.DAO
 	globalEvDAO   *event.DAO
+	globalAleDAO  *alert.DAO
 
 	globalPass string
 	// globalHash is stored globally for test performance under -race.
@@ -89,6 +91,7 @@ func TestMain(m *testing.M) {
 	globalUserDAO = user.NewDAO(pg)
 	globalDPDAO = datapoint.NewDAO(pg)
 	globalEvDAO = event.NewDAO(pg)
+	globalAleDAO = alert.NewDAO(pg)
 
 	globalPass = random.String(10)
 	globalHash, err = crypto.HashPass(globalPass)

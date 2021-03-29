@@ -20,6 +20,7 @@ import (
 	"github.com/thingspect/atlas/pkg/consterr"
 	"github.com/thingspect/atlas/pkg/dao"
 	"github.com/thingspect/atlas/pkg/dao/alarm"
+	"github.com/thingspect/atlas/pkg/dao/alert"
 	"github.com/thingspect/atlas/pkg/dao/datapoint"
 	"github.com/thingspect/atlas/pkg/dao/device"
 	"github.com/thingspect/atlas/pkg/dao/event"
@@ -101,6 +102,7 @@ func New(cfg *config.Config) (*API, error) {
 		interceptor.Auth(skipAuth, cfg.PWTKey),
 		interceptor.Validate(skipValidate),
 	))
+	api.RegisterAlertServiceServer(srv, service.NewAlert(alert.NewDAO(pg)))
 	api.RegisterDataPointServiceServer(srv, service.NewDataPoint(nsq,
 		cfg.NSQPubTopic, datapoint.NewDAO(pg)))
 	api.RegisterDeviceServiceServer(srv, service.NewDevice(device.NewDAO(pg),
@@ -119,6 +121,14 @@ func New(cfg *config.Config) (*API, error) {
 	gwMux := runtime.NewServeMux(runtime.WithForwardResponseOption(statusCode))
 	opts := []grpc.DialOption{
 		grpc.WithInsecure(),
+	}
+
+	// Alert.
+	if err := api.RegisterAlertServiceHandlerFromEndpoint(ctx, gwMux,
+		GRPCHost+GRPCPort, opts); err != nil {
+		cancel()
+
+		return nil, err
 	}
 
 	// DataPoint.
