@@ -89,11 +89,11 @@ func New(cfg *config.Config) (*API, error) {
 	}
 	skipValidate := map[string]struct{}{
 		// Update actions validate after merge to support partial updates.
-		"/thingspect.api.DeviceService/UpdateDevice": {},
-		"/thingspect.api.OrgService/UpdateOrg":       {},
-		"/thingspect.api.RuleService/UpdateRule":     {},
-		"/thingspect.api.RuleService/UpdateAlarm":    {},
-		"/thingspect.api.UserService/UpdateUser":     {},
+		"/thingspect.api.DeviceService/UpdateDevice":   {},
+		"/thingspect.api.OrgService/UpdateOrg":         {},
+		"/thingspect.api.RuleAlarmService/UpdateRule":  {},
+		"/thingspect.api.RuleAlarmService/UpdateAlarm": {},
+		"/thingspect.api.UserService/UpdateUser":       {},
 	}
 
 	srv := grpc.NewServer(grpc.ChainUnaryInterceptor(
@@ -107,8 +107,8 @@ func New(cfg *config.Config) (*API, error) {
 		cs))
 	api.RegisterEventServiceServer(srv, service.NewEvent(event.NewDAO(pg)))
 	api.RegisterOrgServiceServer(srv, service.NewOrg(org.NewDAO(pg)))
-	api.RegisterRuleServiceServer(srv, service.NewRule(rule.NewDAO(pg),
-		alarm.NewDAO(pg)))
+	api.RegisterRuleAlarmServiceServer(srv,
+		service.NewRuleAlarm(rule.NewDAO(pg), alarm.NewDAO(pg)))
 	api.RegisterSessionServiceServer(srv, service.NewSession(user.NewDAO(pg),
 		cfg.PWTKey))
 	api.RegisterTagServiceServer(srv, service.NewTag(tag.NewDAO(pg)))
@@ -154,7 +154,7 @@ func New(cfg *config.Config) (*API, error) {
 	}
 
 	// Rule.
-	if err := api.RegisterRuleServiceHandlerFromEndpoint(ctx, gwMux,
+	if err := api.RegisterRuleAlarmServiceHandlerFromEndpoint(ctx, gwMux,
 		GRPCHost+GRPCPort, opts); err != nil {
 		cancel()
 

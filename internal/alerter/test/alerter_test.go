@@ -128,7 +128,7 @@ func TestAlertMessagesRepeat(t *testing.T) {
 	require.NoError(t, err)
 	t.Logf("bEOut: %s", bEOut)
 
-	// Publish twice.
+	// Publish twice. Don't stagger to validate cache locking.
 	require.NoError(t, globalAleQueue.Publish(globalEOutSubTopic, bEOut))
 	require.NoError(t, globalAleQueue.Publish(globalEOutSubTopic, bEOut))
 	time.Sleep(2 * time.Second)

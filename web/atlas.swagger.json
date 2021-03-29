@@ -23,7 +23,7 @@
       "name": "OrgService"
     },
     {
-      "name": "RuleService"
+      "name": "RuleAlarmService"
     },
     {
       "name": "SessionService"
@@ -836,7 +836,7 @@
     "/v1/rules": {
       "get": {
         "summary": "List all rules. Rules define how events are generated.",
-        "operationId": "RuleService_ListRules",
+        "operationId": "RuleAlarmService_ListRules",
         "responses": {
           "200": {
             "description": "A successful response.",
@@ -869,12 +869,12 @@
           }
         ],
         "tags": [
-          "RuleService"
+          "RuleAlarmService"
         ]
       },
       "post": {
         "summary": "Create a rule. Rules define how events are generated.",
-        "operationId": "RuleService_CreateRule",
+        "operationId": "RuleAlarmService_CreateRule",
         "responses": {
           "200": {
             "description": "A successful response.",
@@ -907,14 +907,14 @@
           }
         ],
         "tags": [
-          "RuleService"
+          "RuleAlarmService"
         ]
       }
     },
     "/v1/rules/alarms": {
       "get": {
         "summary": "List alarms. Alarms define how alerts are generated.",
-        "operationId": "RuleService_ListAlarms2",
+        "operationId": "RuleAlarmService_ListAlarms2",
         "responses": {
           "200": {
             "description": "A successful response.",
@@ -954,14 +954,14 @@
           }
         ],
         "tags": [
-          "RuleService"
+          "RuleAlarmService"
         ]
       }
     },
     "/v1/rules/alarms/test": {
       "post": {
         "summary": "Test an alarm. Alarms define how alerts are generated.",
-        "operationId": "RuleService_TestAlarm",
+        "operationId": "RuleAlarmService_TestAlarm",
         "responses": {
           "200": {
             "description": "A successful response.",
@@ -987,14 +987,14 @@
           }
         ],
         "tags": [
-          "RuleService"
+          "RuleAlarmService"
         ]
       }
     },
     "/v1/rules/test": {
       "post": {
         "summary": "Test a rule. Rules define how events are generated.",
-        "operationId": "RuleService_TestRule",
+        "operationId": "RuleAlarmService_TestRule",
         "responses": {
           "200": {
             "description": "A successful response.",
@@ -1020,14 +1020,14 @@
           }
         ],
         "tags": [
-          "RuleService"
+          "RuleAlarmService"
         ]
       }
     },
     "/v1/rules/{alarm.ruleID}/alarms": {
       "post": {
         "summary": "Create an alarm. Alarms define how alerts are generated.",
-        "operationId": "RuleService_CreateAlarm",
+        "operationId": "RuleAlarmService_CreateAlarm",
         "responses": {
           "200": {
             "description": "A successful response.",
@@ -1067,14 +1067,14 @@
           }
         ],
         "tags": [
-          "RuleService"
+          "RuleAlarmService"
         ]
       }
     },
     "/v1/rules/{alarm.ruleID}/alarms/{alarm.id}": {
       "put": {
         "summary": "Update an alarm. Alarms define how alerts are generated.",
-        "operationId": "RuleService_UpdateAlarm",
+        "operationId": "RuleAlarmService_UpdateAlarm",
         "responses": {
           "200": {
             "description": "A successful response.",
@@ -1122,12 +1122,12 @@
           }
         ],
         "tags": [
-          "RuleService"
+          "RuleAlarmService"
         ]
       },
       "patch": {
         "summary": "Update an alarm. Alarms define how alerts are generated.",
-        "operationId": "RuleService_UpdateAlarm2",
+        "operationId": "RuleAlarmService_UpdateAlarm2",
         "responses": {
           "200": {
             "description": "A successful response.",
@@ -1175,14 +1175,14 @@
           }
         ],
         "tags": [
-          "RuleService"
+          "RuleAlarmService"
         ]
       }
     },
     "/v1/rules/{id}": {
       "get": {
         "summary": "Get a rule by ID. Rules define how events are generated.",
-        "operationId": "RuleService_GetRule",
+        "operationId": "RuleAlarmService_GetRule",
         "responses": {
           "200": {
             "description": "A successful response.",
@@ -1207,12 +1207,12 @@
           }
         ],
         "tags": [
-          "RuleService"
+          "RuleAlarmService"
         ]
       },
       "delete": {
         "summary": "Delete a rule by ID. Rules define how events are generated.",
-        "operationId": "RuleService_DeleteRule",
+        "operationId": "RuleAlarmService_DeleteRule",
         "responses": {
           "200": {
             "description": "A successful response.",
@@ -1241,14 +1241,14 @@
           }
         ],
         "tags": [
-          "RuleService"
+          "RuleAlarmService"
         ]
       }
     },
     "/v1/rules/{rule.id}": {
       "put": {
         "summary": "Update a rule. Rules define how events are generated.",
-        "operationId": "RuleService_UpdateRule",
+        "operationId": "RuleAlarmService_UpdateRule",
         "responses": {
           "200": {
             "description": "A successful response.",
@@ -1289,12 +1289,12 @@
           }
         ],
         "tags": [
-          "RuleService"
+          "RuleAlarmService"
         ]
       },
       "patch": {
         "summary": "Update a rule. Rules define how events are generated.",
-        "operationId": "RuleService_UpdateRule2",
+        "operationId": "RuleAlarmService_UpdateRule2",
         "responses": {
           "200": {
             "description": "A successful response.",
@@ -1335,14 +1335,14 @@
           }
         ],
         "tags": [
-          "RuleService"
+          "RuleAlarmService"
         ]
       }
     },
     "/v1/rules/{ruleID}/alarms": {
       "get": {
         "summary": "List alarms. Alarms define how alerts are generated.",
-        "operationId": "RuleService_ListAlarms",
+        "operationId": "RuleAlarmService_ListAlarms",
         "responses": {
           "200": {
             "description": "A successful response.",
@@ -1382,14 +1382,14 @@
           }
         ],
         "tags": [
-          "RuleService"
+          "RuleAlarmService"
         ]
       }
     },
     "/v1/rules/{ruleID}/alarms/{id}": {
       "get": {
         "summary": "Get an alarm by ID. Alarms define how alerts are generated.",
-        "operationId": "RuleService_GetAlarm",
+        "operationId": "RuleAlarmService_GetAlarm",
         "responses": {
           "200": {
             "description": "A successful response.",
@@ -1421,12 +1421,12 @@
           }
         ],
         "tags": [
-          "RuleService"
+          "RuleAlarmService"
         ]
       },
       "delete": {
         "summary": "Delete an alarm by ID. Alarms define how alerts are generated.",
-        "operationId": "RuleService_DeleteAlarm",
+        "operationId": "RuleAlarmService_DeleteAlarm",
         "responses": {
           "200": {
             "description": "A successful response.",
@@ -1462,7 +1462,7 @@
           }
         ],
         "tags": [
-          "RuleService"
+          "RuleAlarmService"
         ]
       }
     },

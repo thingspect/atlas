@@ -6,7 +6,7 @@ require (
 	github.com/NYTimes/gziphandler v1.1.1
 	github.com/ReneKroon/ttlcache/v2 v2.3.0
 	github.com/antonmedv/expr v1.8.9
-	github.com/brocaar/chirpstack-api/go/v3 v3.9.5
+	github.com/brocaar/chirpstack-api/go/v3 v3.9.6
 	github.com/eclipse/paho.mqtt.golang v1.3.2
 	github.com/go-redis/redis/v8 v8.8.0
 	github.com/golang/mock v1.5.0
@@ -24,11 +24,8 @@ require (
 	github.com/rs/zerolog v1.21.0
 	github.com/smira/go-statsd v1.3.2
 	github.com/stretchr/testify v1.7.0
-	github.com/thingspect/api/go v0.0.0-20210324180454-b7c65eac1618
+	github.com/thingspect/api/go v0.0.0-20210329173825-3212416d4787
 	golang.org/x/crypto v0.0.0-20210322153248-0c34fe9e7dc2
-	golang.org/x/net v0.0.0-20210326220855-61e056675ecf // indirect
-	golang.org/x/sys v0.0.0-20210326220804-49726bf1d181 // indirect
-	google.golang.org/genproto v0.0.0-20210325224202-eed09b1b5210 // indirect
 	google.golang.org/grpc v1.36.1
 	google.golang.org/protobuf v1.26.0
 )
