@@ -11,6 +11,9 @@
   },
   "tags": [
     {
+      "name": "AlertService"
+    },
+    {
       "name": "DataPointService"
     },
     {
@@ -42,6 +45,75 @@
     "application/json"
   ],
   "paths": {
+    "/v1/alerts": {
+      "get": {
+        "summary": "List all alerts for a device, alarm, and/or user in a [end, start) time range, in descending timestamp order.",
+        "operationId": "AlertService_ListAlerts",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/apiListAlertsResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "uniqID",
+            "description": "Device unique ID. If neither unique ID nor device ID are specified, all devices are included.",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "deviceID",
+            "description": "Device ID (UUID). If neither unique ID nor device ID are specified, all devices are included.",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "alarmID",
+            "description": "Alarm ID (UUID). If not specified, all alarms are included.",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "userID",
+            "description": "User ID (UUID). If not specified, all users are included.",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "endTime",
+            "description": "Alerts range end time. Defaults to current time if not specified. Maximum supported time range is 90 days.",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "format": "date-time"
+          },
+          {
+            "name": "startTime",
+            "description": "Alerts range start time. Defaults to end_time - 24 hours if not specified or after end_time. Maximum supported time range is 90 days.",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "format": "date-time"
+          }
+        ],
+        "tags": [
+          "AlertService"
+        ]
+      }
+    },
     "/v1/datapoints": {
       "get": {
         "summary": "List all data points for a device in a [end, start) time range, in descending timestamp order.",
@@ -1913,6 +1985,37 @@
         "repeatInterval"
       ]
     },
+    "apiAlert": {
+      "type": "object",
+      "properties": {
+        "orgID": {
+          "type": "string",
+          "description": "Organization ID (UUID)."
+        },
+        "uniqID": {
+          "type": "string",
+          "description": "Device unique ID."
+        },
+        "alarmID": {
+          "type": "string",
+          "description": "Alarm ID (UUID)."
+        },
+        "userID": {
+          "type": "string",
+          "description": "User ID (UUID)."
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Alert creation timestamp."
+        },
+        "traceId": {
+          "type": "string",
+          "description": "Trace ID (UUID)."
+        }
+      },
+      "description": "Alert represents an alert as stored in the database."
+    },
     "apiCreateDeviceLoRaWANRequest": {
       "type": "object",
       "properties": {
@@ -2006,6 +2109,19 @@
         }
       },
       "description": "ListAlarmsResponse is sent in response to an alarm list."
+    },
+    "apiListAlertsResponse": {
+      "type": "object",
+      "properties": {
+        "alerts": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/apiAlert"
+          },
+          "description": "Alert array, ordered by descending created_at timestamp."
+        }
+      },
+      "description": "ListAlertsResponse is sent in response to a device alerts list."
     },
     "apiListDataPointsResponse": {
       "type": "object",

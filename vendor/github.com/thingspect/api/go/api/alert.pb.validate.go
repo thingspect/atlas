@@ -116,3 +116,186 @@ var _ interface {
 	Cause() error
 	ErrorName() string
 } = AlertValidationError{}
+
+// Validate checks the field values on ListAlertsRequest with the rules defined
+// in the proto definition for this message. If any rules are violated, an
+// error is returned.
+func (m *ListAlertsRequest) Validate() error {
+	if m == nil {
+		return nil
+	}
+
+	// no validation rules for AlarmId
+
+	// no validation rules for UserId
+
+	if v, ok := interface{}(m.GetEndTime()).(interface{ Validate() error }); ok {
+		if err := v.Validate(); err != nil {
+			return ListAlertsRequestValidationError{
+				field:  "EndTime",
+				reason: "embedded message failed validation",
+				cause:  err,
+			}
+		}
+	}
+
+	if v, ok := interface{}(m.GetStartTime()).(interface{ Validate() error }); ok {
+		if err := v.Validate(); err != nil {
+			return ListAlertsRequestValidationError{
+				field:  "StartTime",
+				reason: "embedded message failed validation",
+				cause:  err,
+			}
+		}
+	}
+
+	switch m.IdOneof.(type) {
+
+	case *ListAlertsRequest_UniqId:
+		// no validation rules for UniqId
+
+	case *ListAlertsRequest_DeviceId:
+		// no validation rules for DeviceId
+
+	}
+
+	return nil
+}
+
+// ListAlertsRequestValidationError is the validation error returned by
+// ListAlertsRequest.Validate if the designated constraints aren't met.
+type ListAlertsRequestValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e ListAlertsRequestValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e ListAlertsRequestValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e ListAlertsRequestValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e ListAlertsRequestValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e ListAlertsRequestValidationError) ErrorName() string {
+	return "ListAlertsRequestValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e ListAlertsRequestValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sListAlertsRequest.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = ListAlertsRequestValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = ListAlertsRequestValidationError{}
+
+// Validate checks the field values on ListAlertsResponse with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, an error is returned.
+func (m *ListAlertsResponse) Validate() error {
+	if m == nil {
+		return nil
+	}
+
+	for idx, item := range m.GetAlerts() {
+		_, _ = idx, item
+
+		if v, ok := interface{}(item).(interface{ Validate() error }); ok {
+			if err := v.Validate(); err != nil {
+				return ListAlertsResponseValidationError{
+					field:  fmt.Sprintf("Alerts[%v]", idx),
+					reason: "embedded message failed validation",
+					cause:  err,
+				}
+			}
+		}
+
+	}
+
+	return nil
+}
+
+// ListAlertsResponseValidationError is the validation error returned by
+// ListAlertsResponse.Validate if the designated constraints aren't met.
+type ListAlertsResponseValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e ListAlertsResponseValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e ListAlertsResponseValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e ListAlertsResponseValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e ListAlertsResponseValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e ListAlertsResponseValidationError) ErrorName() string {
+	return "ListAlertsResponseValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e ListAlertsResponseValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sListAlertsResponse.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = ListAlertsResponseValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = ListAlertsResponseValidationError{}
