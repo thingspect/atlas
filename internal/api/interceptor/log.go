@@ -60,7 +60,7 @@ func Log(skipPaths map[string]struct{}) grpc.UnaryServerInterceptor {
 		} else {
 			respOut := fmt.Sprintf("%+v", resp)
 			if len(respOut) > 80 {
-				respOut = fmt.Sprintf("%v...", respOut[:77])
+				respOut = fmt.Sprintf("%s...", respOut[:77])
 			}
 
 			logger.Info(respOut)

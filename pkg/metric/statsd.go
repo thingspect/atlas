@@ -46,6 +46,12 @@ func (s *statsD) Count(stat string, value int, tags map[string]string) {
 	s.client.Incr(stat, int64(value), tagsToSTags(tags)...)
 }
 
+// Set sets a statsd gauge metric. A gauge maintains its value until it is next
+// set.
+func (s *statsD) Set(stat string, value int, tags map[string]string) {
+	s.client.Gauge(stat, int64(value), tagsToSTags(tags)...)
+}
+
 // Timing submits a statsd timing metric in milliseconds.
 func (s *statsD) Timing(stat string, value time.Duration,
 	tags map[string]string) {
