@@ -30,13 +30,15 @@ func TestStatsD(t *testing.T) {
 			metricer.Incr(random.String(10), nil)
 			metricer.Count(random.String(10), random.Intn(99),
 				map[string]string{random.String(10): random.String(10)})
+			metricer.Set(random.String(10), random.Intn(99),
+				map[string]string{random.String(10): random.String(10)})
 			metricer.Timing(random.String(10),
 				time.Duration(random.Intn(99))*time.Millisecond, nil)
 		})
 	}
 }
 
-func TestNewStatsD(t *testing.T) {
+func TestSetStatsD(t *testing.T) {
 	SetStatsD("127.0.0.1:8125", "testnewstatsd")
 
 	for i := 0; i < 5; i++ {
@@ -47,6 +49,8 @@ func TestNewStatsD(t *testing.T) {
 
 			metricer.Incr(random.String(10), nil)
 			metricer.Count(random.String(10), random.Intn(99),
+				map[string]string{random.String(10): random.String(10)})
+			metricer.Set(random.String(10), random.Intn(99),
 				map[string]string{random.String(10): random.String(10)})
 			metricer.Timing(random.String(10),
 				time.Duration(random.Intn(99))*time.Millisecond, nil)
