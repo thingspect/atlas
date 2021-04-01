@@ -6,7 +6,6 @@ import (
 	"log"
 	"os"
 	"testing"
-	"time"
 
 	"github.com/thingspect/atlas/internal/validator/config"
 	"github.com/thingspect/atlas/internal/validator/validator"
@@ -55,15 +54,6 @@ func TestMain(m *testing.M) {
 	if err != nil {
 		log.Fatalf("TestMain queue.NewNSQ: %v", err)
 	}
-
-	// Publish a throwaway message before subscribe to allow for discovery by
-	// nsqlookupd.
-	if err = globalValQueue.Publish(cfg.NSQSubTopic,
-		[]byte("val-aaa")); err != nil {
-		log.Fatalf("TestMain globalValQueue.Publish: %v", err)
-	}
-	time.Sleep(100 * time.Millisecond)
-	log.Print("TestMain published throwaway message")
 
 	// Set up Validator.
 	val, err := validator.New(cfg)

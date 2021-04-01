@@ -129,6 +129,34 @@ func TestNSQSubscribePub(t *testing.T) {
 	}
 }
 
+func TestNSQPrime(t *testing.T) {
+	t.Parallel()
+
+	testConfig := config.New()
+	topic := "testNSQPrime-" + random.String(10)
+
+	nsq, err := NewNSQ(testConfig.NSQPubAddr, nil,
+		"testNSQPrime-"+random.String(10), DefaultNSQRequeueDelay)
+	t.Logf("nsq, err: %+v, %v", nsq, err)
+	require.NoError(t, err)
+
+	sub, err := nsq.Subscribe(topic)
+	t.Logf("sub, err: %+v, %v", sub, err)
+	require.NoError(t, err)
+
+	require.NoError(t, nsq.Prime(topic))
+
+	select {
+	case msg := <-sub.C():
+		msg.Ack()
+		t.Logf("msg.Topic, msg.Payload: %v, %x", msg.Topic(), msg.Payload())
+		require.Equal(t, topic, msg.Topic())
+		require.Equal(t, []byte{Prime}, msg.Payload())
+	case <-time.After(testTimeout):
+		t.Fatal("Message timed out")
+	}
+}
+
 func TestNSQUnsubscribe(t *testing.T) {
 	t.Parallel()
 

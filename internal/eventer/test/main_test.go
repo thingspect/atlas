@@ -6,7 +6,6 @@ import (
 	"log"
 	"os"
 	"testing"
-	"time"
 
 	"github.com/thingspect/atlas/internal/eventer/config"
 	"github.com/thingspect/atlas/internal/eventer/eventer"
@@ -59,15 +58,6 @@ func TestMain(m *testing.M) {
 	if err != nil {
 		log.Fatalf("TestMain queue.NewNSQ: %v", err)
 	}
-
-	// Publish a throwaway message before subscribe to allow for discovery by
-	// nsqlookupd.
-	if err = globalEvQueue.Publish(cfg.NSQSubTopic,
-		[]byte("ev-aaa")); err != nil {
-		log.Fatalf("TestMain globalEvQueue.Publish: %v", err)
-	}
-	time.Sleep(100 * time.Millisecond)
-	log.Print("TestMain published throwaway message")
 
 	// Set up Eventer.
 	ev, err := eventer.New(cfg)

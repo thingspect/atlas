@@ -56,6 +56,15 @@ func (n *nsqQueue) Publish(topic string, payload []byte) error {
 	return n.producer.Publish(topic, payload)
 }
 
+// Prime primes a Queue topic by publishing a single-byte message, with value
+// Prime, for the purpose of being discarded.
+func (n *nsqQueue) Prime(topic string) error {
+	err := n.Publish(topic, []byte{Prime})
+	time.Sleep(100 * time.Millisecond)
+
+	return err
+}
+
 // nsqSub contains methods to read from a subscription and implements the Subber
 // interface.
 type nsqSub struct {

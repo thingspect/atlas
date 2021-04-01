@@ -50,6 +50,12 @@ func (f *fakeQueue) Publish(topic string, payload []byte) error {
 	return nil
 }
 
+// Prime primes a Queue topic by publishing a single-byte message, with value
+// Prime, for the purpose of being discarded.
+func (f *fakeQueue) Prime(topic string) error {
+	return f.Publish(topic, []byte{Prime})
+}
+
 // fakeSub contains methods to read from a subscription and implements the
 // Subber interface.
 type fakeSub struct {

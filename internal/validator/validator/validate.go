@@ -1,6 +1,7 @@
 package validator
 
 import (
+	"bytes"
 	"context"
 	"errors"
 	"time"
@@ -10,6 +11,7 @@ import (
 	"github.com/thingspect/atlas/pkg/alog"
 	"github.com/thingspect/atlas/pkg/dao"
 	"github.com/thingspect/atlas/pkg/metric"
+	"github.com/thingspect/atlas/pkg/queue"
 	"google.golang.org/protobuf/proto"
 )
 
@@ -26,9 +28,12 @@ func (val *Validator) validateMessages() {
 		err := proto.Unmarshal(msg.Payload(), vIn)
 		if err != nil || vIn.Point == nil {
 			msg.Ack()
-			metric.Incr("error", map[string]string{"func": "unmarshal"})
-			alog.Errorf("validateMessages proto.Unmarshal vIn, err: %+v, %v",
-				vIn, err)
+
+			if !bytes.Equal([]byte{queue.Prime}, msg.Payload()) {
+				metric.Incr("error", map[string]string{"func": "unmarshal"})
+				alog.Errorf("validateMessages proto.Unmarshal vIn, err: %+v, "+
+					"%v", vIn, err)
+			}
 
 			continue
 		}
