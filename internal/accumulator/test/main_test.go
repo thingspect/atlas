@@ -6,7 +6,6 @@ import (
 	"log"
 	"os"
 	"testing"
-	"time"
 
 	"github.com/thingspect/atlas/internal/accumulator/accumulator"
 	"github.com/thingspect/atlas/internal/accumulator/config"
@@ -50,15 +49,6 @@ func TestMain(m *testing.M) {
 	if err != nil {
 		log.Fatalf("TestMain queue.NewNSQ: %v", err)
 	}
-
-	// Publish a throwaway message before subscribe to allow for discovery by
-	// nsqlookupd.
-	if err = globalAccQueue.Publish(cfg.NSQSubTopic,
-		[]byte("acc-aaa")); err != nil {
-		log.Fatalf("TestMain globalAccQueue.Publish: %v", err)
-	}
-	time.Sleep(100 * time.Millisecond)
-	log.Print("TestMain published throwaway message")
 
 	// Set up Accumulator.
 	acc, err := accumulator.New(cfg)

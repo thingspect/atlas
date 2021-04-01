@@ -1,6 +1,8 @@
 // Package queue provides functions to publish and subscribe to queues.
 package queue
 
+const Prime = 0x00
+
 // Messager defines the methods provided by a Message. Messages are not
 // guaranteed to be thread-safe, and should only be accessed by their methods.
 type Messager interface {
@@ -33,4 +35,7 @@ type Queuer interface {
 	Subscribe(topic string) (Subber, error)
 	// Disconnect ends the connection to a Queue.
 	Disconnect()
+	// Prime primes a Queue topic by publishing a single-byte message, with
+	// value Prime, for the purpose of being discarded.
+	Prime(topic string) error
 }

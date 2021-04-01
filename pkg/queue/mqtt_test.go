@@ -99,6 +99,35 @@ func TestMQTTSubscribe(t *testing.T) {
 	}
 }
 
+func TestMQTTPrime(t *testing.T) {
+	t.Parallel()
+
+	testConfig := config.New()
+	topic := "testMQTTPrime-" + random.String(10)
+
+	mqtt, err := NewMQTT(testConfig.MQTTAddr, testConfig.MQTTUser,
+		testConfig.MQTTPass, "testMQTTPrime-"+random.String(10),
+		DefaultMQTTConnectTimeout)
+	t.Logf("mqtt, err: %+v, %v", mqtt, err)
+	require.NoError(t, err)
+
+	sub, err := mqtt.Subscribe(topic)
+	t.Logf("sub, err: %+v, %v", sub, err)
+	require.NoError(t, err)
+
+	require.NoError(t, mqtt.Prime(topic))
+
+	select {
+	case msg := <-sub.C():
+		msg.Ack()
+		t.Logf("msg.Topic, msg.Payload: %v, %x", msg.Topic(), msg.Payload())
+		require.Equal(t, topic, msg.Topic())
+		require.Equal(t, []byte{Prime}, msg.Payload())
+	case <-time.After(testTimeout):
+		t.Fatal("Message timed out")
+	}
+}
+
 func TestMQTTUnsubscribe(t *testing.T) {
 	t.Parallel()
 

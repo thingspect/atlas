@@ -1,6 +1,7 @@
 package accumulator
 
 import (
+	"bytes"
 	"context"
 	"errors"
 	"time"
@@ -9,6 +10,7 @@ import (
 	"github.com/thingspect/atlas/pkg/alog"
 	"github.com/thingspect/atlas/pkg/dao"
 	"github.com/thingspect/atlas/pkg/metric"
+	"github.com/thingspect/atlas/pkg/queue"
 	"google.golang.org/protobuf/proto"
 )
 
@@ -24,9 +26,12 @@ func (acc *Accumulator) accumulateMessages() {
 		err := proto.Unmarshal(msg.Payload(), vOut)
 		if err != nil || vOut.Point == nil || vOut.Device == nil {
 			msg.Ack()
-			metric.Incr("error", map[string]string{"func": "unmarshal"})
-			alog.Errorf("accumulateMessages proto.Unmarshal vOut, err: %+v, %v",
-				vOut, err)
+
+			if !bytes.Equal([]byte{queue.Prime}, msg.Payload()) {
+				metric.Incr("error", map[string]string{"func": "unmarshal"})
+				alog.Errorf("accumulateMessages proto.Unmarshal vOut, err: "+
+					"%+v, %v", vOut, err)
+			}
 
 			continue
 		}

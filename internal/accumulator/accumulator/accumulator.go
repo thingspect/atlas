@@ -50,6 +50,11 @@ func New(cfg *config.Config) (*Accumulator, error) {
 		return nil, err
 	}
 
+	// Prime the queue before subscribing to allow for discovery by nsqlookupd.
+	if err = nsq.Prime(cfg.NSQSubTopic); err != nil {
+		return nil, err
+	}
+
 	// Subscribe to the topic.
 	vOutSub, err := nsq.Subscribe(cfg.NSQSubTopic)
 	if err != nil {

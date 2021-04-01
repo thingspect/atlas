@@ -60,6 +60,12 @@ func (m *mqttQueue) Publish(topic string, payload []byte) error {
 	return token.Error()
 }
 
+// Prime primes a Queue topic by publishing a single-byte message, with value
+// Prime, for the purpose of being discarded.
+func (m *mqttQueue) Prime(topic string) error {
+	return m.Publish(topic, []byte{Prime})
+}
+
 // mqttSub contains methods to read from a subscription and implements the
 // Subber interface.
 type mqttSub struct {

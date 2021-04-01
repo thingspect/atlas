@@ -1,6 +1,7 @@
 package decoder
 
 import (
+	"bytes"
 	"context"
 	"errors"
 	"time"
@@ -10,6 +11,7 @@ import (
 	"github.com/thingspect/atlas/pkg/dao"
 	"github.com/thingspect/atlas/pkg/decode/registry"
 	"github.com/thingspect/atlas/pkg/metric"
+	"github.com/thingspect/atlas/pkg/queue"
 	"google.golang.org/protobuf/proto"
 )
 
@@ -26,9 +28,12 @@ func (dec *Decoder) decodeMessages() {
 		err := proto.Unmarshal(msg.Payload(), dIn)
 		if err != nil {
 			msg.Ack()
-			metric.Incr("error", map[string]string{"func": "unmarshal"})
-			alog.Errorf("decodeMessages proto.Unmarshal dIn, err: %+v, %v",
-				dIn, err)
+
+			if !bytes.Equal([]byte{queue.Prime}, msg.Payload()) {
+				metric.Incr("error", map[string]string{"func": "unmarshal"})
+				alog.Errorf("decodeMessages proto.Unmarshal dIn, err: %+v, %v",
+					dIn, err)
+			}
 
 			continue
 		}

@@ -1,6 +1,7 @@
 package eventer
 
 import (
+	"bytes"
 	"context"
 	"errors"
 	"strconv"
@@ -11,6 +12,7 @@ import (
 	"github.com/thingspect/atlas/pkg/alog"
 	"github.com/thingspect/atlas/pkg/dao"
 	"github.com/thingspect/atlas/pkg/metric"
+	"github.com/thingspect/atlas/pkg/queue"
 	"github.com/thingspect/atlas/pkg/rule"
 	"google.golang.org/protobuf/proto"
 )
@@ -28,9 +30,12 @@ func (ev *Eventer) eventMessages() {
 		err := proto.Unmarshal(msg.Payload(), vOut)
 		if err != nil || vOut.Point == nil || vOut.Device == nil {
 			msg.Ack()
-			metric.Incr("error", map[string]string{"func": "unmarshal"})
-			alog.Errorf("eventMessages proto.Unmarshal vOut, err: %+v, %v",
-				vOut, err)
+
+			if !bytes.Equal([]byte{queue.Prime}, msg.Payload()) {
+				metric.Incr("error", map[string]string{"func": "unmarshal"})
+				alog.Errorf("eventMessages proto.Unmarshal vOut, err: %+v, %v",
+					vOut, err)
+			}
 
 			continue
 		}

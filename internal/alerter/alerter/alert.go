@@ -1,6 +1,7 @@
 package alerter
 
 import (
+	"bytes"
 	"context"
 	"time"
 
@@ -11,6 +12,7 @@ import (
 	"github.com/thingspect/atlas/pkg/alog"
 	"github.com/thingspect/atlas/pkg/consterr"
 	"github.com/thingspect/atlas/pkg/metric"
+	"github.com/thingspect/atlas/pkg/queue"
 	"google.golang.org/protobuf/proto"
 )
 
@@ -30,9 +32,12 @@ func (ale *Alerter) alertMessages() {
 		if err != nil || eOut.Point == nil || eOut.Device == nil ||
 			eOut.Rule == nil {
 			msg.Ack()
-			metric.Incr("error", map[string]string{"func": "unmarshal"})
-			alog.Errorf("alertMessages proto.Unmarshal eOut, err: %+v, %v",
-				eOut, err)
+
+			if !bytes.Equal([]byte{queue.Prime}, msg.Payload()) {
+				metric.Incr("error", map[string]string{"func": "unmarshal"})
+				alog.Errorf("alertMessages proto.Unmarshal eOut, err: %+v, %v",
+					eOut, err)
+			}
 
 			continue
 		}
