@@ -98,10 +98,10 @@ func (m *User) Validate() error {
 
 	}
 
-	if l := utf8.RuneCountInString(m.GetAppKey()); l < 0 || l > 80 {
+	if utf8.RuneCountInString(m.GetAppKey()) > 80 {
 		return UserValidationError{
 			field:  "AppKey",
-			reason: "value length must be between 0 and 80 runes, inclusive",
+			reason: "value length must be at most 80 runes",
 		}
 	}
 
@@ -685,16 +685,21 @@ func (m *ListUsersRequest) Validate() error {
 		return nil
 	}
 
-	if val := m.GetPageSize(); val < 0 || val > 250 {
+	if m.GetPageSize() > 250 {
 		return ListUsersRequestValidationError{
 			field:  "PageSize",
-			reason: "value must be inside range [0, 250]",
+			reason: "value must be less than or equal to 250",
 		}
 	}
 
 	// no validation rules for PageToken
 
-	// no validation rules for Tag
+	if utf8.RuneCountInString(m.GetTag()) > 255 {
+		return ListUsersRequestValidationError{
+			field:  "Tag",
+			reason: "value length must be at most 255 runes",
+		}
+	}
 
 	return nil
 }

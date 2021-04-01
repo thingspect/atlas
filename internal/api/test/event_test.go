@@ -143,7 +143,7 @@ func TestListEvents(t *testing.T) {
 		evCli := api.NewEventServiceClient(globalAdminGRPCConn)
 		listEvents, err := evCli.ListEvents(ctx, &api.ListEventsRequest{
 			IdOneof: &api.ListEventsRequest_DeviceId{
-				DeviceId: random.String(10)}, EndTime: timestamppb.Now(),
+				DeviceId: uuid.NewString()}, EndTime: timestamppb.Now(),
 			StartTime: timestamppb.New(time.Now().Add(-91 * 24 * time.Hour))})
 		t.Logf("listEvents, err: %+v, %v", listEvents, err)
 		require.Nil(t, listEvents)
@@ -164,7 +164,8 @@ func TestListEvents(t *testing.T) {
 		t.Logf("listEvents, err: %+v, %v", listEvents, err)
 		require.Nil(t, listEvents)
 		require.EqualError(t, err, "rpc error: code = InvalidArgument desc = "+
-			"invalid format: UUID")
+			"invalid ListEventsRequest.DeviceId: value must be a valid UUID | "+
+			"caused by: invalid uuid format")
 	})
 }
 
@@ -266,6 +267,7 @@ func TestLatestEvents(t *testing.T) {
 		t.Logf("latEvents, err: %+v, %v", latEvents, err)
 		require.Nil(t, latEvents)
 		require.EqualError(t, err, "rpc error: code = InvalidArgument desc = "+
-			"invalid format: UUID")
+			"invalid LatestEventsRequest.RuleId: value must be a valid UUID | "+
+			"caused by: invalid uuid format")
 	})
 }

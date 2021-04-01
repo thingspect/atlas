@@ -473,10 +473,10 @@ func (m *ListOrgsRequest) Validate() error {
 		return nil
 	}
 
-	if val := m.GetPageSize(); val < 0 || val > 250 {
+	if m.GetPageSize() > 250 {
 		return ListOrgsRequestValidationError{
 			field:  "PageSize",
-			reason: "value must be inside range [0, 250]",
+			reason: "value must be less than or equal to 250",
 		}
 	}
 

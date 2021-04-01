@@ -390,10 +390,10 @@ func (m *ListRulesRequest) Validate() error {
 		return nil
 	}
 
-	if val := m.GetPageSize(); val < 0 || val > 250 {
+	if m.GetPageSize() > 250 {
 		return ListRulesRequestValidationError{
 			field:  "PageSize",
-			reason: "value must be inside range [0, 250]",
+			reason: "value must be less than or equal to 250",
 		}
 	}
 
@@ -1245,16 +1245,34 @@ func (m *ListAlarmsRequest) Validate() error {
 		return nil
 	}
 
-	if val := m.GetPageSize(); val < 0 || val > 250 {
+	if m.GetPageSize() > 250 {
 		return ListAlarmsRequestValidationError{
 			field:  "PageSize",
-			reason: "value must be inside range [0, 250]",
+			reason: "value must be less than or equal to 250",
 		}
 	}
 
 	// no validation rules for PageToken
 
-	// no validation rules for RuleId
+	if m.GetRuleId() != "" {
+
+		if err := m._validateUuid(m.GetRuleId()); err != nil {
+			return ListAlarmsRequestValidationError{
+				field:  "RuleId",
+				reason: "value must be a valid UUID",
+				cause:  err,
+			}
+		}
+
+	}
+
+	return nil
+}
+
+func (m *ListAlarmsRequest) _validateUuid(uuid string) error {
+	if matched := _rule_alarm_uuidPattern.MatchString(uuid); !matched {
+		return errors.New("invalid uuid format")
+	}
 
 	return nil
 }

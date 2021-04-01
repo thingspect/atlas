@@ -586,16 +586,21 @@ func (m *ListDevicesRequest) Validate() error {
 		return nil
 	}
 
-	if val := m.GetPageSize(); val < 0 || val > 250 {
+	if m.GetPageSize() > 250 {
 		return ListDevicesRequestValidationError{
 			field:  "PageSize",
-			reason: "value must be inside range [0, 250]",
+			reason: "value must be less than or equal to 250",
 		}
 	}
 
 	// no validation rules for PageToken
 
-	// no validation rules for Tag
+	if utf8.RuneCountInString(m.GetTag()) > 255 {
+		return ListDevicesRequestValidationError{
+			field:  "Tag",
+			reason: "value length must be at most 255 runes",
+		}
+	}
 
 	return nil
 }

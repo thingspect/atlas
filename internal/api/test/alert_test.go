@@ -143,7 +143,7 @@ func TestListAlerts(t *testing.T) {
 		aleCli := api.NewAlertServiceClient(globalAdminGRPCConn)
 		listAlerts, err := aleCli.ListAlerts(ctx, &api.ListAlertsRequest{
 			IdOneof: &api.ListAlertsRequest_DeviceId{
-				DeviceId: random.String(10)}, EndTime: timestamppb.Now(),
+				DeviceId: uuid.NewString()}, EndTime: timestamppb.Now(),
 			StartTime: timestamppb.New(time.Now().Add(-91 * 24 * time.Hour))})
 		t.Logf("listAlerts, err: %+v, %v", listAlerts, err)
 		require.Nil(t, listAlerts)
@@ -164,6 +164,7 @@ func TestListAlerts(t *testing.T) {
 		t.Logf("listAlerts, err: %+v, %v", listAlerts, err)
 		require.Nil(t, listAlerts)
 		require.EqualError(t, err, "rpc error: code = InvalidArgument desc = "+
-			"invalid format: UUID")
+			"invalid ListAlertsRequest.DeviceId: value must be a valid UUID | "+
+			"caused by: invalid uuid format")
 	})
 }

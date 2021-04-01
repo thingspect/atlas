@@ -1922,10 +1922,7 @@
         },
         "name": {
           "type": "string",
-          "description": "Alarm name.",
-          "required": [
-            "name"
-          ]
+          "description": "Alarm name."
         },
         "status": {
           "$ref": "#/definitions/thingspectcommonStatus",
@@ -1940,32 +1937,20 @@
           "items": {
             "type": "string"
           },
-          "description": "User tags to whom alerts are sent.",
-          "required": [
-            "user_tags"
-          ]
+          "description": "User tags to whom alerts are sent."
         },
         "subjectTemplate": {
           "type": "string",
-          "description": "Alarm subject template. Templates generate HTML-safe output using the [Go template engine](https://golang.org/pkg/html/template/).",
-          "required": [
-            "subject_template"
-          ]
+          "description": "Alarm subject template. Templates generate HTML-safe output using the [Go template engine](https://golang.org/pkg/html/template/)."
         },
         "bodyTemplate": {
           "type": "string",
-          "description": "Alarm body template. Templates generate HTML-safe output using the [Go template engine](https://golang.org/pkg/html/template/).",
-          "required": [
-            "body_template"
-          ]
+          "description": "Alarm body template. Templates generate HTML-safe output using the [Go template engine](https://golang.org/pkg/html/template/)."
         },
         "repeatInterval": {
           "type": "integer",
           "format": "int32",
-          "description": "Alarm repeat interval, in minutes. Duration after which a duplicate event will cause an alert to be sent. Minimum is 1 minute, maximum is 14 days.",
-          "required": [
-            "repeat_interval"
-          ]
+          "description": "Alarm repeat interval, in minutes. Duration after which a duplicate event will cause an alert to be sent. Minimum is 1 minute, maximum is 14 days."
         },
         "createdAt": {
           "type": "string",
@@ -1980,14 +1965,7 @@
           "readOnly": true
         }
       },
-      "description": "Alarm represents an alarm as stored in the database.",
-      "required": [
-        "name",
-        "userTags",
-        "subjectTemplate",
-        "bodyTemplate",
-        "repeatInterval"
-      ]
+      "description": "Alarm represents an alarm as stored in the database."
     },
     "apiAlarmType": {
       "type": "string",
@@ -2338,10 +2316,7 @@
         },
         "name": {
           "type": "string",
-          "description": "Organization name.",
-          "required": [
-            "name"
-          ]
+          "description": "Organization name."
         },
         "createdAt": {
           "type": "string",
@@ -2356,10 +2331,7 @@
           "readOnly": true
         }
       },
-      "description": "Org represents an organization as stored in the database.",
-      "required": [
-        "name"
-      ]
+      "description": "Org represents an organization as stored in the database."
     },
     "apiPublishDataPointsRequest": {
       "type": "object",
@@ -2472,10 +2444,7 @@
         },
         "email": {
           "type": "string",
-          "description": "User email.",
-          "required": [
-            "email"
-          ]
+          "description": "User email."
         },
         "role": {
           "$ref": "#/definitions/commonRole",
@@ -2509,10 +2478,7 @@
           "readOnly": true
         }
       },
-      "description": "User represents a user as stored in the database.",
-      "required": [
-        "email"
-      ]
+      "description": "User represents a user as stored in the database."
     },
     "commonDataPoint": {
       "type": "object",
@@ -2602,17 +2568,11 @@
         },
         "uniqID": {
           "type": "string",
-          "description": "Device unique ID.",
-          "required": [
-            "uniq_id"
-          ]
+          "description": "Device unique ID."
         },
         "name": {
           "type": "string",
-          "description": "Device name.",
-          "required": [
-            "name"
-          ]
+          "description": "Device name."
         },
         "status": {
           "$ref": "#/definitions/thingspectcommonStatus",
@@ -2646,11 +2606,7 @@
           "readOnly": true
         }
       },
-      "description": "Device represents a device as stored in the database.",
-      "required": [
-        "uniqID",
-        "name"
-      ]
+      "description": "Device represents a device as stored in the database."
     },
     "commonRole": {
       "type": "string",
@@ -2680,10 +2636,7 @@
         },
         "name": {
           "type": "string",
-          "description": "Rule name.",
-          "required": [
-            "name"
-          ]
+          "description": "Rule name."
         },
         "status": {
           "$ref": "#/definitions/thingspectcommonStatus",
@@ -2691,24 +2644,15 @@
         },
         "deviceTag": {
           "type": "string",
-          "description": "Device tag to which the rule applies.",
-          "required": [
-            "device_tag"
-          ]
+          "description": "Device tag to which the rule applies."
         },
         "attr": {
           "type": "string",
-          "description": "Device and data point attribute to which the rule applies.",
-          "required": [
-            "attr"
-          ]
+          "description": "Device and data point attribute to which the rule applies."
         },
         "expr": {
           "type": "string",
-          "description": "Rule expression. The rules engine evaluates a boolean expression using the [Expr language](https://github.com/antonmedv/expr/blob/master/docs/Language-Definition.md).",
-          "required": [
-            "expr"
-          ]
+          "description": "Rule expression. The rules engine evaluates a boolean expression using the [Expr language](https://github.com/antonmedv/expr/blob/master/docs/Language-Definition.md)."
         },
         "createdAt": {
           "type": "string",
@@ -2723,13 +2667,7 @@
           "readOnly": true
         }
       },
-      "description": "Rule represents a rule as stored in the database.",
-      "required": [
-        "name",
-        "deviceTag",
-        "attr",
-        "expr"
-      ]
+      "description": "Rule represents a rule as stored in the database."
     },
     "googlerpcStatus": {
       "type": "object",
