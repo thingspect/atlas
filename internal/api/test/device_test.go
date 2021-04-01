@@ -498,7 +498,9 @@ func TestUpdateDevice(t *testing.T) {
 		t.Logf("updateDev, err: %+v, %v", updateDev, err)
 		require.Nil(t, updateDev)
 		require.EqualError(t, err, "rpc error: code = InvalidArgument desc = "+
-			"invalid format: UUID")
+			"invalid UpdateDeviceRequest.Device: embedded message failed "+
+			"validation | caused by: invalid Device.Token: value must be a "+
+			"valid UUID | caused by: invalid uuid format")
 	})
 }
 

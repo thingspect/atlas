@@ -33,6 +33,9 @@ var (
 	_ = ptypes.DynamicAny{}
 )
 
+// define the regex for a UUID once up-front
+var _datapoint_uuidPattern = regexp.MustCompile("^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$")
+
 // Validate checks the field values on PublishDataPointsRequest with the rules
 // defined in the proto definition for this message. If any rules are
 // violated, an error is returned.
@@ -130,10 +133,10 @@ func (m *ListDataPointsRequest) Validate() error {
 		return nil
 	}
 
-	if l := utf8.RuneCountInString(m.GetAttr()); l < 0 || l > 40 {
+	if utf8.RuneCountInString(m.GetAttr()) > 40 {
 		return ListDataPointsRequestValidationError{
 			field:  "Attr",
-			reason: "value length must be between 0 and 40 runes, inclusive",
+			reason: "value length must be at most 40 runes",
 		}
 	}
 
@@ -163,7 +166,18 @@ func (m *ListDataPointsRequest) Validate() error {
 		// no validation rules for UniqId
 
 	case *ListDataPointsRequest_DeviceId:
-		// no validation rules for DeviceId
+
+		if m.GetDeviceId() != "" {
+
+			if err := m._validateUuid(m.GetDeviceId()); err != nil {
+				return ListDataPointsRequestValidationError{
+					field:  "DeviceId",
+					reason: "value must be a valid UUID",
+					cause:  err,
+				}
+			}
+
+		}
 
 	default:
 		return ListDataPointsRequestValidationError{
@@ -171,6 +185,14 @@ func (m *ListDataPointsRequest) Validate() error {
 			reason: "value is required",
 		}
 
+	}
+
+	return nil
+}
+
+func (m *ListDataPointsRequest) _validateUuid(uuid string) error {
+	if matched := _datapoint_uuidPattern.MatchString(uuid); !matched {
+		return errors.New("invalid uuid format")
 	}
 
 	return nil
@@ -328,7 +350,18 @@ func (m *LatestDataPointsRequest) Validate() error {
 		// no validation rules for UniqId
 
 	case *LatestDataPointsRequest_DeviceId:
-		// no validation rules for DeviceId
+
+		if m.GetDeviceId() != "" {
+
+			if err := m._validateUuid(m.GetDeviceId()); err != nil {
+				return LatestDataPointsRequestValidationError{
+					field:  "DeviceId",
+					reason: "value must be a valid UUID",
+					cause:  err,
+				}
+			}
+
+		}
 
 	default:
 		return LatestDataPointsRequestValidationError{
@@ -336,6 +369,14 @@ func (m *LatestDataPointsRequest) Validate() error {
 			reason: "value is required",
 		}
 
+	}
+
+	return nil
+}
+
+func (m *LatestDataPointsRequest) _validateUuid(uuid string) error {
+	if matched := _datapoint_uuidPattern.MatchString(uuid); !matched {
+		return errors.New("invalid uuid format")
 	}
 
 	return nil

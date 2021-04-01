@@ -33,6 +33,9 @@ var (
 	_ = ptypes.DynamicAny{}
 )
 
+// define the regex for a UUID once up-front
+var _event_uuidPattern = regexp.MustCompile("^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$")
+
 // Validate checks the field values on Event with the rules defined in the
 // proto definition for this message. If any rules are violated, an error is returned.
 func (m *Event) Validate() error {
@@ -123,7 +126,17 @@ func (m *ListEventsRequest) Validate() error {
 		return nil
 	}
 
-	// no validation rules for RuleId
+	if m.GetRuleId() != "" {
+
+		if err := m._validateUuid(m.GetRuleId()); err != nil {
+			return ListEventsRequestValidationError{
+				field:  "RuleId",
+				reason: "value must be a valid UUID",
+				cause:  err,
+			}
+		}
+
+	}
 
 	if v, ok := interface{}(m.GetEndTime()).(interface{ Validate() error }); ok {
 		if err := v.Validate(); err != nil {
@@ -151,7 +164,18 @@ func (m *ListEventsRequest) Validate() error {
 		// no validation rules for UniqId
 
 	case *ListEventsRequest_DeviceId:
-		// no validation rules for DeviceId
+
+		if m.GetDeviceId() != "" {
+
+			if err := m._validateUuid(m.GetDeviceId()); err != nil {
+				return ListEventsRequestValidationError{
+					field:  "DeviceId",
+					reason: "value must be a valid UUID",
+					cause:  err,
+				}
+			}
+
+		}
 
 	default:
 		return ListEventsRequestValidationError{
@@ -159,6 +183,14 @@ func (m *ListEventsRequest) Validate() error {
 			reason: "value is required",
 		}
 
+	}
+
+	return nil
+}
+
+func (m *ListEventsRequest) _validateUuid(uuid string) error {
+	if matched := _event_uuidPattern.MatchString(uuid); !matched {
+		return errors.New("invalid uuid format")
 	}
 
 	return nil
@@ -310,7 +342,25 @@ func (m *LatestEventsRequest) Validate() error {
 		return nil
 	}
 
-	// no validation rules for RuleId
+	if m.GetRuleId() != "" {
+
+		if err := m._validateUuid(m.GetRuleId()); err != nil {
+			return LatestEventsRequestValidationError{
+				field:  "RuleId",
+				reason: "value must be a valid UUID",
+				cause:  err,
+			}
+		}
+
+	}
+
+	return nil
+}
+
+func (m *LatestEventsRequest) _validateUuid(uuid string) error {
+	if matched := _event_uuidPattern.MatchString(uuid); !matched {
+		return errors.New("invalid uuid format")
+	}
 
 	return nil
 }

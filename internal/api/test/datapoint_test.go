@@ -297,7 +297,7 @@ func TestListDataPoints(t *testing.T) {
 		listPoints, err := dpCli.ListDataPoints(ctx,
 			&api.ListDataPointsRequest{
 				IdOneof: &api.ListDataPointsRequest_DeviceId{
-					DeviceId: random.String(10)}, EndTime: timestamppb.Now(),
+					DeviceId: uuid.NewString()}, EndTime: timestamppb.Now(),
 				StartTime: timestamppb.New(time.Now().Add(
 					-91 * 24 * time.Hour))})
 		t.Logf("listPoints, err: %+v, %v", listPoints, err)
@@ -320,7 +320,8 @@ func TestListDataPoints(t *testing.T) {
 		t.Logf("listPoints, err: %+v, %v", listPoints, err)
 		require.Nil(t, listPoints)
 		require.EqualError(t, err, "rpc error: code = InvalidArgument desc = "+
-			"invalid format: UUID")
+			"invalid ListDataPointsRequest.DeviceId: value must be a valid "+
+			"UUID | caused by: invalid uuid format")
 	})
 }
 
@@ -459,6 +460,7 @@ func TestLatestDataPoints(t *testing.T) {
 		t.Logf("latPoints, err: %+v, %v", latPoints, err)
 		require.Nil(t, latPoints)
 		require.EqualError(t, err, "rpc error: code = InvalidArgument desc = "+
-			"invalid format: UUID")
+			"invalid LatestDataPointsRequest.DeviceId: value must be a valid "+
+			"UUID | caused by: invalid uuid format")
 	})
 }

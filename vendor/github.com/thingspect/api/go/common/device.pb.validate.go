@@ -33,6 +33,9 @@ var (
 	_ = ptypes.DynamicAny{}
 )
 
+// define the regex for a UUID once up-front
+var _device_uuidPattern = regexp.MustCompile("^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$")
+
 // Validate checks the field values on Device with the rules defined in the
 // proto definition for this message. If any rules are violated, an error is returned.
 func (m *Device) Validate() error {
@@ -65,7 +68,17 @@ func (m *Device) Validate() error {
 		}
 	}
 
-	// no validation rules for Token
+	if m.GetToken() != "" {
+
+		if err := m._validateUuid(m.GetToken()); err != nil {
+			return DeviceValidationError{
+				field:  "Token",
+				reason: "value must be a valid UUID",
+				cause:  err,
+			}
+		}
+
+	}
 
 	// no validation rules for Decoder
 
@@ -110,6 +123,14 @@ func (m *Device) Validate() error {
 				cause:  err,
 			}
 		}
+	}
+
+	return nil
+}
+
+func (m *Device) _validateUuid(uuid string) error {
+	if matched := _device_uuidPattern.MatchString(uuid); !matched {
+		return errors.New("invalid uuid format")
 	}
 
 	return nil

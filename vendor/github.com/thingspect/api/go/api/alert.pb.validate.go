@@ -33,6 +33,9 @@ var (
 	_ = ptypes.DynamicAny{}
 )
 
+// define the regex for a UUID once up-front
+var _alert_uuidPattern = regexp.MustCompile("^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$")
+
 // Validate checks the field values on Alert with the rules defined in the
 // proto definition for this message. If any rules are violated, an error is returned.
 func (m *Alert) Validate() error {
@@ -129,9 +132,29 @@ func (m *ListAlertsRequest) Validate() error {
 		return nil
 	}
 
-	// no validation rules for AlarmId
+	if m.GetAlarmId() != "" {
 
-	// no validation rules for UserId
+		if err := m._validateUuid(m.GetAlarmId()); err != nil {
+			return ListAlertsRequestValidationError{
+				field:  "AlarmId",
+				reason: "value must be a valid UUID",
+				cause:  err,
+			}
+		}
+
+	}
+
+	if m.GetUserId() != "" {
+
+		if err := m._validateUuid(m.GetUserId()); err != nil {
+			return ListAlertsRequestValidationError{
+				field:  "UserId",
+				reason: "value must be a valid UUID",
+				cause:  err,
+			}
+		}
+
+	}
 
 	if v, ok := interface{}(m.GetEndTime()).(interface{ Validate() error }); ok {
 		if err := v.Validate(); err != nil {
@@ -159,8 +182,27 @@ func (m *ListAlertsRequest) Validate() error {
 		// no validation rules for UniqId
 
 	case *ListAlertsRequest_DeviceId:
-		// no validation rules for DeviceId
 
+		if m.GetDeviceId() != "" {
+
+			if err := m._validateUuid(m.GetDeviceId()); err != nil {
+				return ListAlertsRequestValidationError{
+					field:  "DeviceId",
+					reason: "value must be a valid UUID",
+					cause:  err,
+				}
+			}
+
+		}
+
+	}
+
+	return nil
+}
+
+func (m *ListAlertsRequest) _validateUuid(uuid string) error {
+	if matched := _alert_uuidPattern.MatchString(uuid); !matched {
+		return errors.New("invalid uuid format")
 	}
 
 	return nil

@@ -25,11 +25,8 @@ require (
 	github.com/rs/zerolog v1.21.0
 	github.com/smira/go-statsd v1.3.2
 	github.com/stretchr/testify v1.7.0
-	github.com/thingspect/api/go v0.0.0-20210401010210-184d9f10996e
+	github.com/thingspect/api/go v0.0.0-20210401193917-e559654e3cef
 	golang.org/x/crypto v0.0.0-20210322153248-0c34fe9e7dc2
-	golang.org/x/net v0.0.0-20210331212208-0fccb6fa2b5c // indirect
-	golang.org/x/sys v0.0.0-20210331175145-43e1dd70ce54 // indirect
-	google.golang.org/genproto v0.0.0-20210331142528-b7513248f0ba // indirect
 	google.golang.org/grpc v1.36.1
 	google.golang.org/protobuf v1.26.0
 )
