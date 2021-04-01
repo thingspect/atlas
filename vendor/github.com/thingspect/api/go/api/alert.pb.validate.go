@@ -48,6 +48,10 @@ func (m *Alert) Validate() error {
 
 	// no validation rules for UserId
 
+	// no validation rules for Status
+
+	// no validation rules for Error
+
 	if v, ok := interface{}(m.GetCreatedAt()).(interface{ Validate() error }); ok {
 		if err := v.Validate(); err != nil {
 			return AlertValidationError{

@@ -14,9 +14,9 @@ import (
 )
 
 const createAlarm = `
-INSERT INTO alarms (org_id, rule_id, name, status, user_tags, subject_template,
-body_template, repeat_interval, created_at, updated_at)
-VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $9)
+INSERT INTO alarms (org_id, rule_id, name, status, type, user_tags,
+subject_template, body_template, repeat_interval, created_at, updated_at)
+VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $10)
 RETURNING id
 `
 
@@ -33,9 +33,9 @@ func (d *DAO) Create(ctx context.Context, alarm *api.Alarm) (*api.Alarm,
 	alarm.UpdatedAt = timestamppb.New(now)
 
 	if err := d.pg.QueryRowContext(ctx, createAlarm, alarm.OrgId, alarm.RuleId,
-		alarm.Name, alarm.Status.String(), tags, alarm.SubjectTemplate,
-		alarm.BodyTemplate, alarm.RepeatInterval, now).Scan(
-		&alarm.Id); err != nil {
+		alarm.Name, alarm.Status.String(), alarm.Type.String(), tags,
+		alarm.SubjectTemplate, alarm.BodyTemplate, alarm.RepeatInterval,
+		now).Scan(&alarm.Id); err != nil {
 		return nil, dao.DBToSentinel(err)
 	}
 
@@ -43,7 +43,7 @@ func (d *DAO) Create(ctx context.Context, alarm *api.Alarm) (*api.Alarm,
 }
 
 const readAlarm = `
-SELECT id, org_id, rule_id, name, status, user_tags, subject_template,
+SELECT id, org_id, rule_id, name, status, type, user_tags, subject_template,
 body_template, repeat_interval, created_at, updated_at
 FROM alarms
 WHERE (id, org_id, rule_id) = ($1, $2, $3)
@@ -53,18 +53,19 @@ WHERE (id, org_id, rule_id) = ($1, $2, $3)
 func (d *DAO) Read(ctx context.Context, alarmID, orgID,
 	ruleID string) (*api.Alarm, error) {
 	alarm := &api.Alarm{}
-	var status string
+	var status, alarmType string
 	var tags pgtype.VarcharArray
 	var createdAt, updatedAt time.Time
 
 	if err := d.pg.QueryRowContext(ctx, readAlarm, alarmID, orgID, ruleID).Scan(
-		&alarm.Id, &alarm.OrgId, &alarm.RuleId, &alarm.Name, &status, &tags,
-		&alarm.SubjectTemplate, &alarm.BodyTemplate, &alarm.RepeatInterval,
-		&createdAt, &updatedAt); err != nil {
+		&alarm.Id, &alarm.OrgId, &alarm.RuleId, &alarm.Name, &status,
+		&alarmType, &tags, &alarm.SubjectTemplate, &alarm.BodyTemplate,
+		&alarm.RepeatInterval, &createdAt, &updatedAt); err != nil {
 		return nil, dao.DBToSentinel(err)
 	}
 
 	alarm.Status = common.Status(common.Status_value[status])
+	alarm.Type = api.AlarmType(api.AlarmType_value[alarmType])
 	if err := tags.AssignTo(&alarm.UserTags); err != nil {
 		return nil, dao.DBToSentinel(err)
 	}
@@ -76,9 +77,9 @@ func (d *DAO) Read(ctx context.Context, alarmID, orgID,
 
 const updateAlarm = `
 UPDATE alarms
-SET name = $1, status = $2, user_tags = $3, subject_template = $4,
-body_template = $5, repeat_interval = $6, updated_at = $7
-WHERE (id, org_id, rule_id) = ($8, $9, $10)
+SET name = $1, status = $2, type = $3, user_tags = $4, subject_template = $5,
+body_template = $6, repeat_interval = $7, updated_at = $8
+WHERE (id, org_id, rule_id) = ($9, $10, $11)
 RETURNING created_at
 `
 
@@ -96,9 +97,9 @@ func (d *DAO) Update(ctx context.Context, alarm *api.Alarm) (*api.Alarm,
 	alarm.UpdatedAt = timestamppb.New(updatedAt)
 
 	if err := d.pg.QueryRowContext(ctx, updateAlarm, alarm.Name,
-		alarm.Status.String(), tags, alarm.SubjectTemplate, alarm.BodyTemplate,
-		alarm.RepeatInterval, updatedAt, alarm.Id, alarm.OrgId,
-		alarm.RuleId).Scan(&createdAt); err != nil {
+		alarm.Status.String(), alarm.Type.String(), tags, alarm.SubjectTemplate,
+		alarm.BodyTemplate, alarm.RepeatInterval, updatedAt, alarm.Id,
+		alarm.OrgId, alarm.RuleId).Scan(&createdAt); err != nil {
 		return nil, dao.DBToSentinel(err)
 	}
 
@@ -136,7 +137,7 @@ AND rule_id = $2
 `
 
 const listAlarms = `
-SELECT id, org_id, rule_id, name, status, user_tags, subject_template,
+SELECT id, org_id, rule_id, name, status, type, user_tags, subject_template,
 body_template, repeat_interval, created_at, updated_at
 FROM alarms
 WHERE org_id = $1
@@ -218,17 +219,19 @@ func (d *DAO) List(ctx context.Context, orgID string, lBoundTS time.Time,
 	var alarms []*api.Alarm
 	for rows.Next() {
 		alarm := &api.Alarm{}
-		var status string
+		var status, alarmType string
 		var tags pgtype.VarcharArray
 		var createdAt, updatedAt time.Time
 
 		if err = rows.Scan(&alarm.Id, &alarm.OrgId, &alarm.RuleId, &alarm.Name,
-			&status, &tags, &alarm.SubjectTemplate, &alarm.BodyTemplate,
-			&alarm.RepeatInterval, &createdAt, &updatedAt); err != nil {
+			&status, &alarmType, &tags, &alarm.SubjectTemplate,
+			&alarm.BodyTemplate, &alarm.RepeatInterval, &createdAt,
+			&updatedAt); err != nil {
 			return nil, 0, dao.DBToSentinel(err)
 		}
 
 		alarm.Status = common.Status(common.Status_value[status])
+		alarm.Type = api.AlarmType(api.AlarmType_value[alarmType])
 		if err := tags.AssignTo(&alarm.UserTags); err != nil {
 			return nil, 0, dao.DBToSentinel(err)
 		}

@@ -196,6 +196,7 @@ func TestUpdate(t *testing.T) {
 		// Update alarm fields.
 		createAlarm.Name = "dao-alarm-" + random.String(10)
 		createAlarm.Status = common.Status_DISABLED
+		createAlarm.Type = api.AlarmType_APP
 		createAlarm.UserTags = random.Tags("dao-alarm-", 2)
 		updateAlarm, _ := proto.Clone(createAlarm).(*api.Alarm)
 
@@ -404,7 +405,7 @@ func TestList(t *testing.T) {
 
 	alarmIDs := []string{}
 	alarmNames := []string{}
-	alarmStatuses := []common.Status{}
+	alarmTypes := []api.AlarmType{}
 	alarmTSes := []time.Time{}
 	for i := 0; i < 3; i++ {
 		createAlarm, err := globalAlarmDAO.Create(ctx, random.Alarm("dao-alarm",
@@ -414,7 +415,7 @@ func TestList(t *testing.T) {
 
 		alarmIDs = append(alarmIDs, createAlarm.Id)
 		alarmNames = append(alarmNames, createAlarm.Name)
-		alarmStatuses = append(alarmStatuses, createAlarm.Status)
+		alarmTypes = append(alarmTypes, createAlarm.Type)
 		alarmTSes = append(alarmTSes, createAlarm.CreatedAt.AsTime())
 	}
 
@@ -436,7 +437,7 @@ func TestList(t *testing.T) {
 		for _, alarm := range listAlarms {
 			if alarm.Id == alarmIDs[len(alarmIDs)-1] &&
 				alarm.Name == alarmNames[len(alarmNames)-1] &&
-				alarm.Status == alarmStatuses[len(alarmStatuses)-1] {
+				alarm.Type == alarmTypes[len(alarmTypes)-1] {
 				found = true
 			}
 		}
@@ -461,7 +462,7 @@ func TestList(t *testing.T) {
 		for _, alarm := range listAlarms {
 			if alarm.Id == alarmIDs[len(alarmIDs)-1] &&
 				alarm.Name == alarmNames[len(alarmNames)-1] &&
-				alarm.Status == alarmStatuses[len(alarmStatuses)-1] {
+				alarm.Type == alarmTypes[len(alarmTypes)-1] {
 				found = true
 			}
 		}
@@ -501,7 +502,7 @@ func TestList(t *testing.T) {
 		for _, alarm := range listAlarms {
 			if alarm.Id == alarmIDs[len(alarmIDs)-1] &&
 				alarm.Name == alarmNames[len(alarmNames)-1] &&
-				alarm.Status == alarmStatuses[len(alarmStatuses)-1] {
+				alarm.Type == alarmTypes[len(alarmTypes)-1] {
 				found = true
 			}
 		}
@@ -526,7 +527,7 @@ func TestList(t *testing.T) {
 		for _, alarm := range listAlarms {
 			if alarm.Id == alarmIDs[len(alarmIDs)-1] &&
 				alarm.Name == alarmNames[len(alarmNames)-1] &&
-				alarm.Status == alarmStatuses[len(alarmStatuses)-1] {
+				alarm.Type == alarmTypes[len(alarmTypes)-1] {
 				found = true
 			}
 		}

@@ -15,6 +15,7 @@ import (
 	"github.com/thingspect/api/go/api"
 	"github.com/thingspect/api/go/common"
 	"github.com/thingspect/atlas/api/go/message"
+	"github.com/thingspect/atlas/internal/alerter/notify"
 	"github.com/thingspect/atlas/pkg/cache"
 	"github.com/thingspect/atlas/pkg/consterr"
 	"github.com/thingspect/atlas/pkg/queue"
@@ -37,29 +38,30 @@ func TestAlertMessages(t *testing.T) {
 	disAlarm.Status = common.Status_DISABLED
 
 	tests := []struct {
-		inpEOut       *message.EventerOut
-		inpAlarms     []*api.Alarm
-		inpUsers      []*api.User
-		inpUserTimes  int
-		inpAlertTimes int
-		inpSeedCache  bool
+		inpEOut        *message.EventerOut
+		inpAlarms      []*api.Alarm
+		inpUsers       []*api.User
+		inpUserTimes   int
+		inpNotifyTimes int
+		inpAlertTimes  int
+		inpSeedCache   bool
 	}{
 		{&message.EventerOut{Point: &common.DataPoint{},
 			Device: random.Device("ale", orgID),
 			Rule:   random.Rule("ale", orgID)}, []*api.Alarm{alarm},
-			[]*api.User{random.User("ale", orgID)}, 1, 1, false},
+			[]*api.User{random.User("ale", orgID)}, 1, 1, 1, false},
 		{&message.EventerOut{Point: &common.DataPoint{},
 			Device: random.Device("ale", orgID),
 			Rule:   random.Rule("ale", orgID)}, []*api.Alarm{disAlarm},
-			[]*api.User{random.User("ale", orgID)}, 0, 0, false},
+			[]*api.User{random.User("ale", orgID)}, 0, 0, 0, false},
 		{&message.EventerOut{Point: &common.DataPoint{},
 			Device: random.Device("ale", orgID),
 			Rule:   random.Rule("ale", orgID)}, []*api.Alarm{alarm},
-			[]*api.User{}, 1, 0, false},
+			[]*api.User{}, 1, 0, 0, false},
 		{&message.EventerOut{Point: &common.DataPoint{},
 			Device: random.Device("ale", orgID),
 			Rule:   random.Rule("ale", orgID)}, []*api.Alarm{alarm},
-			[]*api.User{random.User("ale", orgID)}, 1, 0, true},
+			[]*api.User{random.User("ale", orgID)}, 1, 0, 0, true},
 	}
 
 	for _, test := range tests {
@@ -92,9 +94,14 @@ func TestAlertMessages(t *testing.T) {
 					UniqId:  lTest.inpEOut.Device.UniqId,
 					AlarmId: lTest.inpAlarms[0].Id,
 					UserId:  lTest.inpUsers[0].Id,
+					Status:  api.AlertStatus_SENT,
 					TraceId: lTest.inpEOut.Point.TraceId,
 				}
 			}
+
+			notifier := notify.NewMockNotifier(gomock.NewController(t))
+			notifier.EXPECT().App(gomock.Any(), gomock.Any(), gomock.Any(),
+				gomock.Any()).Return(nil).Times(lTest.inpNotifyTimes)
 
 			alerter := NewMockalerter(gomock.NewController(t))
 			alerter.EXPECT().Create(gomock.Any(), matcher.NewProtoMatcher(
@@ -127,6 +134,8 @@ func TestAlertMessages(t *testing.T) {
 
 				aleQueue: eOutQueue,
 				eOutSub:  eOutSub,
+
+				notify: notifier,
 			}
 			go func() {
 				ale.alertMessages()
@@ -162,60 +171,80 @@ func TestAlertMessagesError(t *testing.T) {
 	badBody.Status = common.Status_ACTIVE
 	badBody.BodyTemplate = `{{if`
 
+	badType := random.Alarm("ale", uuid.NewString(), uuid.NewString())
+	badType.Status = common.Status_ACTIVE
+	badType.Type = 999
+
 	tests := []struct {
-		inpEOut       *message.EventerOut
-		inpAlarms     []*api.Alarm
-		inpAlarmsErr  error
-		inpUsers      []*api.User
-		inpUsersErr   error
-		inpCache      bool
-		inpCacheErr   error
-		inpAlertErr   error
-		inpAlarmTimes int
-		inpUserTimes  int
-		inpCacheTimes int
-		inpAlertTimes int
+		inpEOut        *message.EventerOut
+		inpAlarms      []*api.Alarm
+		inpAlarmsErr   error
+		inpUsers       []*api.User
+		inpUsersErr    error
+		inpCache       bool
+		inpCacheErr    error
+		inpNotifyErr   error
+		inpAlertErr    error
+		inpAlarmTimes  int
+		inpUserTimes   int
+		inpCacheTimes  int
+		inpNotifyTimes int
+		inpAlertTimes  int
 	}{
 		// Bad payload.
-		{nil, nil, nil, nil, nil, true, nil, nil, 0, 0, 0, 0},
+		{nil, nil, nil, nil, nil, true, nil, nil, nil, 0, 0, 0, 0, 0},
 		// Missing data point.
-		{&message.EventerOut{}, nil, nil, nil, nil, true, nil, nil, 0, 0, 0, 0},
+		{&message.EventerOut{}, nil, nil, nil, nil, true, nil, nil, nil, 0, 0,
+			0, 0, 0},
 		// Missing device.
 		{&message.EventerOut{Point: &common.DataPoint{}}, nil, nil, nil, nil,
-			true, nil, nil, 0, 0, 0, 0},
+			true, nil, nil, nil, 0, 0, 0, 0, 0},
 		// Missing rule.
 		{&message.EventerOut{Point: &common.DataPoint{},
-			Device: &common.Device{}}, nil, nil, nil, nil, true, nil, nil, 0, 0,
-			0, 0},
+			Device: &common.Device{}}, nil, nil, nil, nil, true, nil, nil, nil,
+			0, 0, 0, 0, 0},
 		// Alarmer error.
 		{&message.EventerOut{Point: &common.DataPoint{},
 			Device: &common.Device{}, Rule: &common.Rule{}}, nil, errTestProc,
-			nil, nil, true, nil, nil, 1, 0, 0, 0},
+			nil, nil, true, nil, nil, nil, 1, 0, 0, 0, 0},
 		// Userer error.
 		{&message.EventerOut{Point: &common.DataPoint{},
 			Device: &common.Device{}, Rule: &common.Rule{}},
-			[]*api.Alarm{alarm}, nil, nil, errTestProc, true, nil, nil, 1, 1, 0,
-			0},
+			[]*api.Alarm{alarm}, nil, nil, errTestProc, true, nil, nil, nil, 1,
+			1, 0, 0, 0},
 		// Bad alarm subject.
 		{&message.EventerOut{Point: &common.DataPoint{},
 			Device: &common.Device{}, Rule: &common.Rule{}},
 			[]*api.Alarm{badSubj}, nil, []*api.User{random.User("ale",
-				uuid.NewString())}, nil, true, nil, nil, 1, 1, 0, 0},
+				uuid.NewString())}, nil, true, nil, nil, nil, 1, 1, 0, 0, 0},
 		// Bad alarm body.
 		{&message.EventerOut{Point: &common.DataPoint{},
 			Device: &common.Device{}, Rule: &common.Rule{}},
 			[]*api.Alarm{badBody}, nil, []*api.User{random.User("ale",
-				uuid.NewString())}, nil, true, nil, nil, 1, 1, 0, 0},
+				uuid.NewString())}, nil, true, nil, nil, nil, 1, 1, 0, 0, 0},
 		// Cacher error.
 		{&message.EventerOut{Point: &common.DataPoint{},
 			Device: &common.Device{}, Rule: &common.Rule{}},
 			[]*api.Alarm{alarm}, nil, []*api.User{random.User("ale",
-				uuid.NewString())}, nil, false, errTestProc, nil, 1, 1, 1, 0},
+				uuid.NewString())}, nil, false, errTestProc, nil, nil, 1, 1, 1,
+			0, 0},
+		// Notifier error.
+		{&message.EventerOut{Point: &common.DataPoint{},
+			Device: &common.Device{}, Rule: &common.Rule{}},
+			[]*api.Alarm{alarm}, nil, []*api.User{random.User("ale",
+				uuid.NewString())}, nil, true, nil, errTestProc, nil, 1, 1, 1,
+			1, 1},
+		// Bad alarm type.
+		{&message.EventerOut{Point: &common.DataPoint{},
+			Device: &common.Device{}, Rule: &common.Rule{}},
+			[]*api.Alarm{badType}, nil, []*api.User{random.User("ale",
+				uuid.NewString())}, nil, true, nil, nil, nil, 1, 1, 1, 0, 1},
 		// Alerter error.
 		{&message.EventerOut{Point: &common.DataPoint{},
 			Device: &common.Device{}, Rule: &common.Rule{}},
 			[]*api.Alarm{alarm}, nil, []*api.User{random.User("ale",
-				uuid.NewString())}, nil, true, nil, errTestProc, 1, 1, 1, 1},
+				uuid.NewString())}, nil, true, nil, nil, errTestProc, 1, 1, 1,
+			1, 1},
 	}
 
 	for _, test := range tests {
@@ -247,6 +276,11 @@ func TestAlertMessagesError(t *testing.T) {
 				gomock.Any(), gomock.Any()).Return(lTest.inpCache,
 				lTest.inpCacheErr).Times(lTest.inpCacheTimes)
 
+			notifier := notify.NewMockNotifier(gomock.NewController(t))
+			notifier.EXPECT().App(gomock.Any(), gomock.Any(), gomock.Any(),
+				gomock.Any()).Return(lTest.inpNotifyErr).
+				Times(lTest.inpNotifyTimes)
+
 			alerter := NewMockalerter(gomock.NewController(t))
 			alerter.EXPECT().Create(gomock.Any(), gomock.Any()).
 				DoAndReturn(func(_ ...interface{}) error {
@@ -263,6 +297,8 @@ func TestAlertMessagesError(t *testing.T) {
 
 				aleQueue: eOutQueue,
 				eOutSub:  eOutSub,
+
+				notify: notifier,
 			}
 			go func() {
 				ale.alertMessages()

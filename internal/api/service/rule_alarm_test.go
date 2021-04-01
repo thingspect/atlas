@@ -593,7 +593,7 @@ func TestUpdateAlarm(t *testing.T) {
 			Status: common.Status_ACTIVE, SubjectTemplate: `test`}
 		merged := &api.Alarm{Id: alarm.Id, OrgId: alarm.OrgId,
 			RuleId: alarm.RuleId, Name: alarm.Name,
-			Status: part.Status, UserTags: alarm.UserTags,
+			Status: part.Status, Type: alarm.Type, UserTags: alarm.UserTags,
 			SubjectTemplate: part.SubjectTemplate,
 			BodyTemplate:    alarm.BodyTemplate,
 			RepeatInterval:  alarm.RepeatInterval}
