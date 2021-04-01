@@ -735,6 +735,13 @@ func (m *Alarm) Validate() error {
 		}
 	}
 
+	if _, ok := _Alarm_Type_InLookup[m.GetType()]; !ok {
+		return AlarmValidationError{
+			field:  "Type",
+			reason: "value must be in list [1]",
+		}
+	}
+
 	if len(m.GetUserTags()) < 1 {
 		return AlarmValidationError{
 			field:  "UserTags",
@@ -866,6 +873,10 @@ var _ interface {
 var _Alarm_Status_InLookup = map[common.Status]struct{}{
 	3: {},
 	6: {},
+}
+
+var _Alarm_Type_InLookup = map[AlarmType]struct{}{
+	1: {},
 }
 
 // Validate checks the field values on CreateAlarmRequest with the rules

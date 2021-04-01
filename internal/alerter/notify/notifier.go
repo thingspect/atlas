@@ -1,9 +1,9 @@
 // Package notify provides functions to send notifications.
 package notify
 
-import "context"
-
 //go:generate mockgen -source notifier.go -destination mock_notifier.go -package notify
+
+import "context"
 
 // Notifier defines the methods provided by a Notify.
 type Notifier interface {

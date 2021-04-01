@@ -9,9 +9,12 @@ import (
 	"github.com/thingspect/atlas/api/go/message"
 	"github.com/thingspect/atlas/pkg/alarm"
 	"github.com/thingspect/atlas/pkg/alog"
+	"github.com/thingspect/atlas/pkg/consterr"
 	"github.com/thingspect/atlas/pkg/metric"
 	"google.golang.org/protobuf/proto"
 )
+
+const ErrUnknownAlarm consterr.Error = "unknown alarm type"
 
 // alertMessages receives event messages, alerts based on alarm processing, and
 // stores the results.
@@ -127,11 +130,18 @@ func (ale *Alerter) alertMessages() {
 				}
 
 				// Send alert.
-				metric.Incr("sent", nil)
-				logger.Debugf("alertMessages sent: %+v, %v", user, subj+" - "+
-					body)
+				switch a.Type {
+				case api.AlarmType_APP:
+					ctx, cancel := context.WithTimeout(context.Background(),
+						time.Minute)
+					err = ale.notify.App(ctx, user.AppKey, subj, body)
+					cancel()
+				case api.AlarmType_ALARM_TYPE_UNSPECIFIED:
+					fallthrough
+				default:
+					err = ErrUnknownAlarm
+				}
 
-				// Store alert.
 				alert := &api.Alert{
 					OrgId:   eOut.Device.OrgId,
 					UniqId:  eOut.Device.UniqId,
@@ -140,6 +150,20 @@ func (ale *Alerter) alertMessages() {
 					TraceId: eOut.Point.TraceId,
 				}
 
+				if err != nil {
+					alert.Status = api.AlertStatus_ERROR
+					alert.Error = err.Error()
+					metric.Incr("error", map[string]string{"func": "notify"})
+					logger.Errorf("alertMessages ale.notify a, err: %+v, %v", a,
+						err.Error())
+				} else {
+					alert.Status = api.AlertStatus_SENT
+					metric.Incr("sent", nil)
+					logger.Debugf("alertMessages sent user, msg: %+v, %v", user,
+						subj+" - "+body)
+				}
+
+				// Store alert.
 				ctx, cancel = context.WithTimeout(context.Background(),
 					5*time.Second)
 				err = ale.alertDAO.Create(ctx, alert)

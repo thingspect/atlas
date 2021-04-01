@@ -12,7 +12,7 @@ import (
 // App sends a push notification to a mobile application. This operation can
 // block based on rate limiting.
 func (n *notify) App(ctx context.Context, userKey, subject, body string) error {
-	app := pushover.New(n.appKey)
+	app := pushover.New(n.appAPIKey)
 	recipient := pushover.NewRecipient(userKey)
 
 	// Truncate to subject and body limits: https://pushover.net/api#limits

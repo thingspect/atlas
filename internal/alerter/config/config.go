@@ -20,6 +20,8 @@ type Config struct {
 
 	NSQPubAddr  string
 	Concurrency int
+
+	AppAPIKey string
 }
 
 // New instantiates a service Config, parses the environment, and returns it.
@@ -39,5 +41,7 @@ func New() *Config {
 
 		NSQPubAddr:  config.String(pref+"NSQ_PUB_ADDR", "127.0.0.1:4150"),
 		Concurrency: config.Int(pref+"CONCURRENCY", 5),
+
+		AppAPIKey: config.String(pref+"APP_API_KEY", ""),
 	}
 }

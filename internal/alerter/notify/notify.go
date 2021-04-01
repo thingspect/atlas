@@ -7,17 +7,17 @@ import "github.com/thingspect/atlas/pkg/cache"
 type notify struct {
 	cache cache.Cacher
 
-	appKey string
+	appAPIKey string
 }
 
 // Verify notify implements Notifier.
 var _ Notifier = &notify{}
 
 // New builds a new Notifier and returns it.
-func New(cache cache.Cacher, appKey string) Notifier {
+func New(cache cache.Cacher, appAPIKey string) Notifier {
 	return &notify{
 		cache: cache,
 
-		appKey: appKey,
+		appAPIKey: appAPIKey,
 	}
 }

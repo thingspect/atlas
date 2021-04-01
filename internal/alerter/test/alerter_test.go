@@ -13,6 +13,7 @@ import (
 	"github.com/thingspect/api/go/api"
 	"github.com/thingspect/api/go/common"
 	"github.com/thingspect/atlas/api/go/message"
+	"github.com/thingspect/atlas/internal/alerter/alerter"
 	"github.com/thingspect/atlas/pkg/test/random"
 	"google.golang.org/protobuf/proto"
 )
@@ -65,7 +66,7 @@ func TestAlertMessages(t *testing.T) {
 
 	listAlerts, err := globalAleDAO.List(ctx, createOrg.Id, dev.UniqId, "",
 		createAlarm.Id, createUser.Id, time.Now(),
-		time.Now().Add(-3*time.Second))
+		time.Now().Add(-4*time.Second))
 	t.Logf("listAlerts, err: %+v, %v", listAlerts, err)
 	require.NoError(t, err)
 	require.Len(t, listAlerts, 1)
@@ -75,6 +76,7 @@ func TestAlertMessages(t *testing.T) {
 		UniqId:  dev.UniqId,
 		AlarmId: createAlarm.Id,
 		UserId:  createUser.Id,
+		Status:  api.AlertStatus_SENT,
 		TraceId: eOut.Point.TraceId,
 	}
 
@@ -138,7 +140,7 @@ func TestAlertMessagesRepeat(t *testing.T) {
 
 	listAlerts, err := globalAleDAO.List(ctx, createOrg.Id, dev.UniqId, "",
 		createAlarm.Id, createUser.Id, time.Now(),
-		time.Now().Add(-3*time.Second))
+		time.Now().Add(-4*time.Second))
 	t.Logf("listAlerts, err: %+v, %v", listAlerts, err)
 	require.NoError(t, err)
 	require.Len(t, listAlerts, 1)
@@ -148,6 +150,7 @@ func TestAlertMessagesRepeat(t *testing.T) {
 		UniqId:  dev.UniqId,
 		AlarmId: createAlarm.Id,
 		UserId:  createUser.Id,
+		Status:  api.AlertStatus_SENT,
 		TraceId: eOut.Point.TraceId,
 	}
 
@@ -173,10 +176,16 @@ func TestAlertMessagesError(t *testing.T) {
 	t.Logf("createOrg, err: %+v, %v", createOrg, err)
 	require.NoError(t, err)
 
-	rule := random.Rule("ale", createOrg.Id)
-	rule.Status = common.Status_ACTIVE
-	createRule, err := globalRuleDAO.Create(ctx, rule)
-	t.Logf("createRule, err: %+v, %v", createRule, err)
+	badSubjRule := random.Rule("ale", createOrg.Id)
+	badSubjRule.Status = common.Status_ACTIVE
+	createBadSubjRule, err := globalRuleDAO.Create(ctx, badSubjRule)
+	t.Logf("createBadSubjRule, err: %+v, %v", createBadSubjRule, err)
+	require.NoError(t, err)
+
+	badTypeRule := random.Rule("ale", createOrg.Id)
+	badTypeRule.Status = common.Status_ACTIVE
+	createBadTypeRule, err := globalRuleDAO.Create(ctx, badTypeRule)
+	t.Logf("createBadTypeRule, err: %+v, %v", createBadTypeRule, err)
 	require.NoError(t, err)
 
 	user := random.User("dao-user", createOrg.Id)
@@ -185,32 +194,49 @@ func TestAlertMessagesError(t *testing.T) {
 	t.Logf("createUser, err: %+v, %v", createUser, err)
 	require.NoError(t, err)
 
-	alarm := random.Alarm("ale", createOrg.Id, createRule.Id)
-	alarm.Status = common.Status_ACTIVE
-	alarm.UserTags = createUser.Tags
-	alarm.SubjectTemplate = `{{if`
-	createAlarm, err := globalAlarmDAO.Create(ctx, alarm)
-	t.Logf("createAlarm, err: %+v, %v", createAlarm, err)
+	badSubjAlarm := random.Alarm("ale", createOrg.Id, createBadSubjRule.Id)
+	badSubjAlarm.Status = common.Status_ACTIVE
+	badSubjAlarm.UserTags = createUser.Tags
+	badSubjAlarm.SubjectTemplate = `{{if`
+	createBadSubjAlarm, err := globalAlarmDAO.Create(ctx, badSubjAlarm)
+	t.Logf("createBadSubjAlarm, err: %+v, %v", createBadSubjAlarm, err)
+	require.NoError(t, err)
+
+	badTypeAlarm := random.Alarm("ale", createOrg.Id, createBadTypeRule.Id)
+	badTypeAlarm.Status = common.Status_ACTIVE
+	badTypeAlarm.Type = api.AlarmType_ALARM_TYPE_UNSPECIFIED
+	badTypeAlarm.UserTags = createUser.Tags
+	createBadTypeAlarm, err := globalAlarmDAO.Create(ctx, badTypeAlarm)
+	t.Logf("createBadTypeAlarm, err: %+v, %v", createBadTypeAlarm, err)
 	require.NoError(t, err)
 
 	dev := random.Device("ale", createOrg.Id)
-	dev.Tags = []string{createRule.DeviceTag}
+	dev.Tags = []string{createBadSubjRule.DeviceTag,
+		createBadTypeRule.DeviceTag}
 
 	tests := []struct {
-		inp *message.EventerOut
+		inpEOut      *message.EventerOut
+		inpAlarmID   string
+		inpNotifyErr error
 	}{
 		// Bad payload.
-		{nil},
+		{nil, uuid.NewString(), nil},
 		// Missing data point.
-		{&message.EventerOut{Device: &common.Device{}}},
+		{&message.EventerOut{Device: &common.Device{}}, uuid.NewString(), nil},
 		// Missing device.
-		{&message.EventerOut{Point: &common.DataPoint{}}},
+		{&message.EventerOut{Point: &common.DataPoint{}}, uuid.NewString(),
+			nil},
 		// Missing rule.
 		{&message.EventerOut{Point: &common.DataPoint{},
-			Device: &common.Device{}}},
+			Device: &common.Device{}}, uuid.NewString(), nil},
 		// Bad alarm subject.
 		{&message.EventerOut{Point: &common.DataPoint{
-			TraceId: uuid.NewString()}, Device: dev, Rule: createRule}},
+			TraceId: uuid.NewString()}, Device: dev, Rule: createBadSubjRule},
+			createBadSubjAlarm.Id, nil},
+		// Bad alarm type.
+		{&message.EventerOut{Point: &common.DataPoint{
+			TraceId: uuid.NewString()}, Device: dev, Rule: createBadTypeRule},
+			createBadTypeAlarm.Id, alerter.ErrUnknownAlarm},
 	}
 
 	for _, test := range tests {
@@ -220,14 +246,9 @@ func TestAlertMessagesError(t *testing.T) {
 			t.Parallel()
 
 			bEOut := []byte("ale-aaa")
-			if lTest.inp != nil {
-				// Make device unique per run.
-				if lTest.inp.Device != nil {
-					lTest.inp.Device.UniqId = "ale" + "-" + random.String(16)
-				}
-
+			if lTest.inpEOut != nil {
 				var err error
-				bEOut, err = proto.Marshal(lTest.inp)
+				bEOut, err = proto.Marshal(lTest.inpEOut)
 				require.NoError(t, err)
 				t.Logf("bEOut: %s", bEOut)
 			}
@@ -240,12 +261,38 @@ func TestAlertMessagesError(t *testing.T) {
 				testTimeout)
 			defer cancel()
 
-			listAlerts, err := globalAleDAO.List(ctx, createOrg.Id, dev.UniqId,
-				"", createAlarm.Id, createUser.Id, time.Now(),
-				time.Now().Add(-3*time.Second))
+			listAlerts, err := globalAleDAO.List(ctx, createOrg.Id,
+				dev.UniqId, "", lTest.inpAlarmID, createUser.Id, time.Now(),
+				time.Now().Add(-4*time.Second))
 			t.Logf("listAlerts, err: %+v, %v", listAlerts, err)
 			require.NoError(t, err)
-			require.Len(t, listAlerts, 0)
+
+			if lTest.inpNotifyErr != nil {
+				require.Len(t, listAlerts, 1)
+
+				alert := &api.Alert{
+					OrgId:   createOrg.Id,
+					UniqId:  dev.UniqId,
+					AlarmId: lTest.inpAlarmID,
+					UserId:  createUser.Id,
+					Status:  api.AlertStatus_ERROR,
+					Error:   lTest.inpNotifyErr.Error(),
+					TraceId: lTest.inpEOut.Point.TraceId,
+				}
+
+				// Normalize timestamp.
+				require.WithinDuration(t, time.Now(),
+					listAlerts[0].CreatedAt.AsTime(), testTimeout)
+				alert.CreatedAt = listAlerts[0].CreatedAt
+
+				// Testify does not currently support protobuf equality:
+				// https://github.com/stretchr/testify/issues/758
+				if !proto.Equal(alert, listAlerts[0]) {
+					t.Fatalf("\nExpect: %+v\nActual: %+v", alert, listAlerts[0])
+				}
+			} else {
+				require.Len(t, listAlerts, 0)
+			}
 		})
 	}
 }

@@ -98,6 +98,13 @@ func (m *User) Validate() error {
 
 	}
 
+	if l := utf8.RuneCountInString(m.GetAppKey()); l < 0 || l > 80 {
+		return UserValidationError{
+			field:  "AppKey",
+			reason: "value length must be between 0 and 80 runes, inclusive",
+		}
+	}
+
 	if v, ok := interface{}(m.GetCreatedAt()).(interface{ Validate() error }); ok {
 		if err := v.Validate(); err != nil {
 			return UserValidationError{

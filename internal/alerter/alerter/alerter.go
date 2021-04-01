@@ -12,6 +12,7 @@ import (
 
 	"github.com/thingspect/api/go/api"
 	"github.com/thingspect/atlas/internal/alerter/config"
+	"github.com/thingspect/atlas/internal/alerter/notify"
 	"github.com/thingspect/atlas/pkg/alog"
 	"github.com/thingspect/atlas/pkg/cache"
 	"github.com/thingspect/atlas/pkg/dao"
@@ -51,6 +52,8 @@ type Alerter struct {
 
 	aleQueue queue.Queuer
 	eOutSub  queue.Subber
+
+	notify notify.Notifier
 }
 
 // New builds a new Alerter and returns a reference to it and an error value.
@@ -62,9 +65,18 @@ func New(cfg *config.Config) (*Alerter, error) {
 	}
 
 	// Set up cache connection.
-	cache, err := cache.NewRedis(cfg.RedisHost + ":6379")
+	c, err := cache.NewRedis(cfg.RedisHost + ":6379")
 	if err != nil {
 		return nil, err
+	}
+
+	// Set up Notifier. Allow a mock for local usage, but warn loudly.
+	var n notify.Notifier
+	if cfg.AppAPIKey == "" {
+		alog.Error("New cfg.AppAPIKey not found, using notify.NewFake()")
+		n = notify.NewFake()
+	} else {
+		n = notify.New(c, cfg.AppAPIKey)
 	}
 
 	// Build the NSQ connection for consuming.
@@ -84,10 +96,12 @@ func New(cfg *config.Config) (*Alerter, error) {
 		alarmDAO: alarm.NewDAO(pg),
 		userDAO:  user.NewDAO(pg),
 		alertDAO: alert.NewDAO(pg),
-		cache:    cache,
+		cache:    c,
 
 		aleQueue: nsq,
 		eOutSub:  eOutSub,
+
+		notify: n,
 	}, nil
 }
 

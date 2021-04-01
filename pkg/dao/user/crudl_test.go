@@ -236,6 +236,7 @@ func TestUpdate(t *testing.T) {
 		createUser.Role = common.Role_ADMIN
 		createUser.Status = common.Status_DISABLED
 		createUser.Tags = nil
+		createUser.AppKey = random.String(30)
 		updateUser, _ := proto.Clone(createUser).(*api.User)
 
 		updateUser, err = globalUserDAO.Update(ctx, updateUser)
@@ -453,8 +454,8 @@ func TestList(t *testing.T) {
 
 	userIDs := []string{}
 	userRoles := []common.Role{}
-	userStatuses := []common.Status{}
 	userTags := [][]string{}
+	userAppKeys := []string{}
 	userTSes := []time.Time{}
 	for i := 0; i < 3; i++ {
 		createUser, err := globalUserDAO.Create(ctx, random.User("dao-user",
@@ -464,8 +465,8 @@ func TestList(t *testing.T) {
 
 		userIDs = append(userIDs, createUser.Id)
 		userRoles = append(userRoles, createUser.Role)
-		userStatuses = append(userStatuses, createUser.Status)
 		userTags = append(userTags, createUser.Tags)
+		userAppKeys = append(userAppKeys, createUser.AppKey)
 		userTSes = append(userTSes, createUser.CreatedAt.AsTime())
 	}
 
@@ -487,8 +488,8 @@ func TestList(t *testing.T) {
 		for _, user := range listUsers {
 			if user.Id == userIDs[len(userIDs)-1] &&
 				user.Role == userRoles[len(userRoles)-1] &&
-				user.Status == userStatuses[len(userStatuses)-1] &&
-				reflect.DeepEqual(user.Tags, userTags[len(userTags)-1]) {
+				reflect.DeepEqual(user.Tags, userTags[len(userTags)-1]) &&
+				user.AppKey == userAppKeys[len(userAppKeys)-1] {
 				found = true
 			}
 		}
@@ -513,8 +514,8 @@ func TestList(t *testing.T) {
 		for _, user := range listUsers {
 			if user.Id == userIDs[len(userIDs)-1] &&
 				user.Role == userRoles[len(userRoles)-1] &&
-				user.Status == userStatuses[len(userStatuses)-1] &&
-				reflect.DeepEqual(user.Tags, userTags[len(userTags)-1]) {
+				reflect.DeepEqual(user.Tags, userTags[len(userTags)-1]) &&
+				user.AppKey == userAppKeys[len(userAppKeys)-1] {
 				found = true
 			}
 		}
@@ -551,9 +552,9 @@ func TestList(t *testing.T) {
 		require.Equal(t, int32(1), listCount)
 
 		require.Equal(t, userIDs[len(userIDs)-1], listUsers[0].Id)
-		require.Equal(t, userStatuses[len(userStatuses)-1], listUsers[0].Status)
 		require.Equal(t, userRoles[len(userRoles)-1], listUsers[0].Role)
 		require.Equal(t, userTags[len(userTags)-1], listUsers[0].Tags)
+		require.Equal(t, userAppKeys[len(userAppKeys)-1], listUsers[0].AppKey)
 	})
 
 	t.Run("List users with tag filter and pagination", func(t *testing.T) {
@@ -571,9 +572,9 @@ func TestList(t *testing.T) {
 		require.Equal(t, int32(1), listCount)
 
 		require.Equal(t, userIDs[len(userIDs)-1], listUsers[0].Id)
-		require.Equal(t, userStatuses[len(userStatuses)-1], listUsers[0].Status)
 		require.Equal(t, userRoles[len(userRoles)-1], listUsers[0].Role)
 		require.Equal(t, userTags[len(userTags)-1], listUsers[0].Tags)
+		require.Equal(t, userAppKeys[len(userAppKeys)-1], listUsers[0].AppKey)
 	})
 
 	t.Run("Lists are isolated by org ID", func(t *testing.T) {
@@ -658,8 +659,6 @@ func TestListByTags(t *testing.T) {
 		createUser, err := globalUserDAO.Create(ctx, user)
 		t.Logf("createUser, err: %+v, %v", createUser, err)
 		require.NoError(t, err)
-
-		// lUserDeviceTags := append(userTags, createUser.Tags)
 
 		listUsers, err := globalUserDAO.ListByTags(ctx, createOrg.Id,
 			createUser.Tags)

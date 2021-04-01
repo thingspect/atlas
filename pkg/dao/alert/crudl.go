@@ -13,8 +13,9 @@ import (
 )
 
 const createAlert = `
-INSERT INTO alerts (org_id, uniq_id, alarm_id, user_id, created_at, trace_id)
-VALUES ($1, $2, $3, $4, $5, $6)
+INSERT INTO alerts (org_id, uniq_id, alarm_id, user_id, status, error,
+created_at, trace_id)
+VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
 `
 
 // Create creates an alert in the database. Alerts are retrieved elsewhere in
@@ -24,13 +25,15 @@ func (d *DAO) Create(ctx context.Context, alert *api.Alert) error {
 	alert.CreatedAt = timestamppb.New(now)
 
 	_, err := d.pg.ExecContext(ctx, createAlert, alert.OrgId, strings.ToLower(
-		alert.UniqId), alert.AlarmId, alert.UserId, now, alert.TraceId)
+		alert.UniqId), alert.AlarmId, alert.UserId, alert.Status.String(),
+		alert.Error, now, alert.TraceId)
 
 	return dao.DBToSentinel(err)
 }
 
 const listAlerts = `
-SELECT e.org_id, e.uniq_id, e.alarm_id, e.user_id, e.created_at, e.trace_id
+SELECT e.org_id, e.uniq_id, e.alarm_id, e.user_id, e.status, e.error,
+e.created_at, e.trace_id
 FROM alerts e
 WHERE e.org_id = $1
 AND e.created_at <= $2
@@ -38,7 +41,8 @@ AND e.created_at > $3
 `
 
 const listAlertsByUniqID = `
-SELECT e.org_id, e.uniq_id, e.alarm_id, e.user_id, e.created_at, e.trace_id
+SELECT e.org_id, e.uniq_id, e.alarm_id, e.user_id, e.status, e.error,
+e.created_at, e.trace_id
 FROM alerts e
 WHERE (e.org_id, e.uniq_id) = ($1, $2)
 AND e.created_at <= $3
@@ -46,7 +50,8 @@ AND e.created_at > $4
 `
 
 const listAlertsByDevID = `
-SELECT e.org_id, e.uniq_id, e.alarm_id, e.user_id, e.created_at, e.trace_id
+SELECT e.org_id, e.uniq_id, e.alarm_id, e.user_id, e.status, e.error,
+e.created_at, e.trace_id
 FROM alerts e
 INNER JOIN devices d ON (e.org_id, e.uniq_id) = (d.org_id, d.uniq_id)
 WHERE (e.org_id, d.id) = ($1, $2)
@@ -118,13 +123,16 @@ func (d *DAO) List(ctx context.Context, orgID, uniqID, devID, alarmID,
 	var alerts []*api.Alert
 	for rows.Next() {
 		alert := &api.Alert{}
+		var status string
 		var createdAt time.Time
 
 		if err = rows.Scan(&alert.OrgId, &alert.UniqId, &alert.AlarmId,
-			&alert.UserId, &createdAt, &alert.TraceId); err != nil {
+			&alert.UserId, &status, &alert.Error, &createdAt,
+			&alert.TraceId); err != nil {
 			return nil, dao.DBToSentinel(err)
 		}
 
+		alert.Status = api.AlertStatus(api.AlertStatus_value[status])
 		alert.CreatedAt = timestamppb.New(createdAt)
 		alerts = append(alerts, alert)
 	}

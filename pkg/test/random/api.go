@@ -77,6 +77,7 @@ func Alarm(prefix, orgID, ruleID string) *api.Alarm {
 			common.Status_ACTIVE,
 			common.Status_DISABLED,
 		}[Intn(2)],
+		Type:            api.AlarmType_APP,
 		UserTags:        Tags(prefix, Intn(4)+1),
 		SubjectTemplate: `rule name is: {{.rule.Name}}`,
 		BodyTemplate:    `device status is: {{.device.Status}}`,
@@ -91,6 +92,11 @@ func Alert(prefix, orgID string) *api.Alert {
 		UniqId:  prefix + "-" + String(16),
 		AlarmId: uuid.NewString(),
 		UserId:  uuid.NewString(),
+		Status: []api.AlertStatus{
+			api.AlertStatus_SENT,
+			api.AlertStatus_ERROR,
+		}[Intn(2)],
+		Error:   []string{"", prefix + "-" + String(10)}[Intn(2)],
 		TraceId: uuid.NewString(),
 	}
 }
@@ -112,7 +118,8 @@ func User(prefix, orgID string) *api.User {
 			common.Status_ACTIVE,
 			common.Status_DISABLED,
 		}[Intn(2)],
-		Tags: Tags(prefix, Intn(4)+1),
+		Tags:   Tags(prefix, Intn(4)+1),
+		AppKey: []string{"", String(30)}[Intn(2)],
 	}
 }
 
