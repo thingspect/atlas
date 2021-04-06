@@ -165,7 +165,8 @@ func (ale *Alerter) alertMessages() {
 						err.Error())
 				} else {
 					alert.Status = api.AlertStatus_SENT
-					metric.Incr("sent", nil)
+					metric.Incr("sent", map[string]string{
+						"type": a.Type.String()})
 					logger.Debugf("alertMessages sent user, msg: %+v, %v", user,
 						subj+" - "+body)
 				}
