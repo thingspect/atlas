@@ -61,6 +61,13 @@ func (m *User) Validate() error {
 		}
 	}
 
+	if utf8.RuneCountInString(m.GetPhone()) > 16 {
+		return UserValidationError{
+			field:  "Phone",
+			reason: "value length must be at most 16 runes",
+		}
+	}
+
 	if _, ok := _User_Role_InLookup[m.GetRole()]; !ok {
 		return UserValidationError{
 			field:  "Role",

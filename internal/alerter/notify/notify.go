@@ -7,17 +7,23 @@ import "github.com/thingspect/atlas/pkg/cache"
 type notify struct {
 	cache cache.Cacher
 
-	appAPIKey string
+	appAPIKey     string
+	smsAccountSID string
+	smsAuthToken  string
+	smsPhone      string
 }
 
 // Verify notify implements Notifier.
 var _ Notifier = &notify{}
 
 // New builds a new Notifier and returns it.
-func New(cache cache.Cacher, appAPIKey string) Notifier {
+func New(cache cache.Cacher, appAPIKey, smsAccountSID, smsAuthToken, smsPhone string) Notifier {
 	return &notify{
 		cache: cache,
 
-		appAPIKey: appAPIKey,
+		appAPIKey:     appAPIKey,
+		smsAccountSID: smsAccountSID,
+		smsAuthToken:  smsAuthToken,
+		smsPhone:      smsPhone,
 	}
 }

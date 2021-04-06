@@ -84,6 +84,7 @@ services:
       - ALERTER_NSQ_LOOKUP_ADDRS=nsqlookupd:4161
       - ALERTER_NSQ_PUB_ADDR=nsqd:4150
       - ALERTER_APP_API_KEY=notasecurekey
+      - ALERTER_SMS_AUTH_TOKEN=notasecurekey
 networks:
   default:
     external:

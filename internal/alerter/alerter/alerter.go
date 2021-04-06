@@ -72,11 +72,12 @@ func New(cfg *config.Config) (*Alerter, error) {
 
 	// Set up Notifier. Allow a mock for local usage, but warn loudly.
 	var n notify.Notifier
-	if cfg.AppAPIKey == "" {
+	if cfg.AppAPIKey == "" || cfg.SMSAuthToken == "" {
 		alog.Error("New cfg.AppAPIKey not found, using notify.NewFake()")
 		n = notify.NewFake()
 	} else {
-		n = notify.New(c, cfg.AppAPIKey)
+		n = notify.New(c, cfg.AppAPIKey, cfg.SMSAccountSID, cfg.SMSAuthToken,
+			cfg.SMSPhone)
 	}
 
 	// Build the NSQ connection for consuming.

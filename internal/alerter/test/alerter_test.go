@@ -23,146 +23,175 @@ const testTimeout = 8 * time.Second
 func TestAlertMessages(t *testing.T) {
 	t.Parallel()
 
-	ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
-	defer cancel()
+	for _, alarmType := range []api.AlarmType{
+		api.AlarmType_APP,
+		api.AlarmType_SMS,
+	} {
+		lAlarmType := alarmType
 
-	createOrg, err := globalOrgDAO.Create(ctx, random.Org("ale"))
-	t.Logf("createOrg, err: %+v, %v", createOrg, err)
-	require.NoError(t, err)
+		t.Run(fmt.Sprintf("Can alert %v", lAlarmType), func(t *testing.T) {
+			t.Parallel()
 
-	rule := random.Rule("ale", createOrg.Id)
-	rule.Status = common.Status_ACTIVE
-	createRule, err := globalRuleDAO.Create(ctx, rule)
-	t.Logf("createRule, err: %+v, %v", createRule, err)
-	require.NoError(t, err)
+			ctx, cancel := context.WithTimeout(context.Background(),
+				testTimeout)
+			defer cancel()
 
-	user := random.User("dao-user", createOrg.Id)
-	user.Status = common.Status_ACTIVE
-	createUser, err := globalUserDAO.Create(ctx, user)
-	t.Logf("createUser, err: %+v, %v", createUser, err)
-	require.NoError(t, err)
+			createOrg, err := globalOrgDAO.Create(ctx, random.Org("ale"))
+			t.Logf("createOrg, err: %+v, %v", createOrg, err)
+			require.NoError(t, err)
 
-	alarm := random.Alarm("ale", createOrg.Id, createRule.Id)
-	alarm.Status = common.Status_ACTIVE
-	alarm.UserTags = createUser.Tags
-	createAlarm, err := globalAlarmDAO.Create(ctx, alarm)
-	t.Logf("createAlarm, err: %+v, %v", createAlarm, err)
-	require.NoError(t, err)
+			rule := random.Rule("ale", createOrg.Id)
+			rule.Status = common.Status_ACTIVE
+			createRule, err := globalRuleDAO.Create(ctx, rule)
+			t.Logf("createRule, err: %+v, %v", createRule, err)
+			require.NoError(t, err)
 
-	dev := random.Device("ale", createOrg.Id)
-	dev.Tags = []string{createRule.DeviceTag}
+			user := random.User("dao-user", createOrg.Id)
+			user.Status = common.Status_ACTIVE
+			createUser, err := globalUserDAO.Create(ctx, user)
+			t.Logf("createUser, err: %+v, %v", createUser, err)
+			require.NoError(t, err)
 
-	eOut := &message.EventerOut{Point: &common.DataPoint{
-		TraceId: uuid.NewString()}, Device: dev, Rule: createRule}
-	bEOut, err := proto.Marshal(eOut)
-	require.NoError(t, err)
-	t.Logf("bEOut: %s", bEOut)
+			alarm := random.Alarm("ale", createOrg.Id, createRule.Id)
+			alarm.Status = common.Status_ACTIVE
+			alarm.Type = lAlarmType
+			alarm.UserTags = createUser.Tags
+			createAlarm, err := globalAlarmDAO.Create(ctx, alarm)
+			t.Logf("createAlarm, err: %+v, %v", createAlarm, err)
+			require.NoError(t, err)
 
-	require.NoError(t, globalAleQueue.Publish(globalEOutSubTopic, bEOut))
-	time.Sleep(2 * time.Second)
+			dev := random.Device("ale", createOrg.Id)
+			dev.Tags = []string{createRule.DeviceTag}
 
-	ctx, cancel = context.WithTimeout(context.Background(), testTimeout)
-	defer cancel()
+			eOut := &message.EventerOut{Point: &common.DataPoint{
+				TraceId: uuid.NewString()}, Device: dev, Rule: createRule}
+			bEOut, err := proto.Marshal(eOut)
+			require.NoError(t, err)
+			t.Logf("bEOut: %s", bEOut)
 
-	listAlerts, err := globalAleDAO.List(ctx, createOrg.Id, dev.UniqId, "",
-		createAlarm.Id, createUser.Id, time.Now(),
-		time.Now().Add(-4*time.Second))
-	t.Logf("listAlerts, err: %+v, %v", listAlerts, err)
-	require.NoError(t, err)
-	require.Len(t, listAlerts, 1)
+			require.NoError(t, globalAleQueue.Publish(globalEOutSubTopic,
+				bEOut))
+			time.Sleep(2 * time.Second)
 
-	alert := &api.Alert{
-		OrgId:   createOrg.Id,
-		UniqId:  dev.UniqId,
-		AlarmId: createAlarm.Id,
-		UserId:  createUser.Id,
-		Status:  api.AlertStatus_SENT,
-		TraceId: eOut.Point.TraceId,
-	}
+			ctx, cancel = context.WithTimeout(context.Background(), testTimeout)
+			defer cancel()
 
-	// Normalize timestamp.
-	require.WithinDuration(t, time.Now(), listAlerts[0].CreatedAt.AsTime(),
-		testTimeout)
-	alert.CreatedAt = listAlerts[0].CreatedAt
+			listAlerts, err := globalAleDAO.List(ctx, createOrg.Id, dev.UniqId,
+				"", createAlarm.Id, createUser.Id, time.Now(),
+				time.Now().Add(-4*time.Second))
+			t.Logf("listAlerts, err: %+v, %v", listAlerts, err)
+			require.NoError(t, err)
+			require.Len(t, listAlerts, 1)
 
-	// Testify does not currently support protobuf equality:
-	// https://github.com/stretchr/testify/issues/758
-	if !proto.Equal(alert, listAlerts[0]) {
-		t.Fatalf("\nExpect: %+v\nActual: %+v", alert, listAlerts[0])
+			alert := &api.Alert{
+				OrgId:   createOrg.Id,
+				UniqId:  dev.UniqId,
+				AlarmId: createAlarm.Id,
+				UserId:  createUser.Id,
+				Status:  api.AlertStatus_SENT,
+				TraceId: eOut.Point.TraceId,
+			}
+
+			// Normalize timestamp.
+			require.WithinDuration(t, time.Now(),
+				listAlerts[0].CreatedAt.AsTime(), testTimeout)
+			alert.CreatedAt = listAlerts[0].CreatedAt
+
+			// Testify does not currently support protobuf equality:
+			// https://github.com/stretchr/testify/issues/758
+			if !proto.Equal(alert, listAlerts[0]) {
+				t.Fatalf("\nExpect: %+v\nActual: %+v", alert, listAlerts[0])
+			}
+		})
 	}
 }
 
 func TestAlertMessagesRepeat(t *testing.T) {
 	t.Parallel()
 
-	ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
-	defer cancel()
+	for _, alarmType := range []api.AlarmType{
+		api.AlarmType_APP,
+		api.AlarmType_SMS,
+	} {
+		lAlarmType := alarmType
 
-	createOrg, err := globalOrgDAO.Create(ctx, random.Org("ale"))
-	t.Logf("createOrg, err: %+v, %v", createOrg, err)
-	require.NoError(t, err)
+		t.Run(fmt.Sprintf("Can repeat %v", lAlarmType), func(t *testing.T) {
+			t.Parallel()
 
-	rule := random.Rule("ale", createOrg.Id)
-	rule.Status = common.Status_ACTIVE
-	createRule, err := globalRuleDAO.Create(ctx, rule)
-	t.Logf("createRule, err: %+v, %v", createRule, err)
-	require.NoError(t, err)
+			ctx, cancel := context.WithTimeout(context.Background(),
+				testTimeout)
+			defer cancel()
 
-	user := random.User("dao-user", createOrg.Id)
-	user.Status = common.Status_ACTIVE
-	createUser, err := globalUserDAO.Create(ctx, user)
-	t.Logf("createUser, err: %+v, %v", createUser, err)
-	require.NoError(t, err)
+			createOrg, err := globalOrgDAO.Create(ctx, random.Org("ale"))
+			t.Logf("createOrg, err: %+v, %v", createOrg, err)
+			require.NoError(t, err)
 
-	alarm := random.Alarm("ale", createOrg.Id, createRule.Id)
-	alarm.Status = common.Status_ACTIVE
-	alarm.UserTags = createUser.Tags
-	createAlarm, err := globalAlarmDAO.Create(ctx, alarm)
-	t.Logf("createAlarm, err: %+v, %v", createAlarm, err)
-	require.NoError(t, err)
+			rule := random.Rule("ale", createOrg.Id)
+			rule.Status = common.Status_ACTIVE
+			createRule, err := globalRuleDAO.Create(ctx, rule)
+			t.Logf("createRule, err: %+v, %v", createRule, err)
+			require.NoError(t, err)
 
-	dev := random.Device("ale", createOrg.Id)
-	dev.Tags = []string{rule.DeviceTag}
+			user := random.User("dao-user", createOrg.Id)
+			user.Status = common.Status_ACTIVE
+			createUser, err := globalUserDAO.Create(ctx, user)
+			t.Logf("createUser, err: %+v, %v", createUser, err)
+			require.NoError(t, err)
 
-	eOut := &message.EventerOut{Point: &common.DataPoint{
-		TraceId: uuid.NewString()}, Device: dev, Rule: createRule}
-	bEOut, err := proto.Marshal(eOut)
-	require.NoError(t, err)
-	t.Logf("bEOut: %s", bEOut)
+			alarm := random.Alarm("ale", createOrg.Id, createRule.Id)
+			alarm.Status = common.Status_ACTIVE
+			alarm.Type = lAlarmType
+			alarm.UserTags = createUser.Tags
+			createAlarm, err := globalAlarmDAO.Create(ctx, alarm)
+			t.Logf("createAlarm, err: %+v, %v", createAlarm, err)
+			require.NoError(t, err)
 
-	// Publish twice. Don't stagger to validate cache locking.
-	require.NoError(t, globalAleQueue.Publish(globalEOutSubTopic, bEOut))
-	require.NoError(t, globalAleQueue.Publish(globalEOutSubTopic, bEOut))
-	time.Sleep(2 * time.Second)
+			dev := random.Device("ale", createOrg.Id)
+			dev.Tags = []string{rule.DeviceTag}
 
-	ctx, cancel = context.WithTimeout(context.Background(), testTimeout)
-	defer cancel()
+			eOut := &message.EventerOut{Point: &common.DataPoint{
+				TraceId: uuid.NewString()}, Device: dev, Rule: createRule}
+			bEOut, err := proto.Marshal(eOut)
+			require.NoError(t, err)
+			t.Logf("bEOut: %s", bEOut)
 
-	listAlerts, err := globalAleDAO.List(ctx, createOrg.Id, dev.UniqId, "",
-		createAlarm.Id, createUser.Id, time.Now(),
-		time.Now().Add(-4*time.Second))
-	t.Logf("listAlerts, err: %+v, %v", listAlerts, err)
-	require.NoError(t, err)
-	require.Len(t, listAlerts, 1)
+			// Publish twice. Don't stagger to validate cache locking.
+			require.NoError(t, globalAleQueue.Publish(globalEOutSubTopic,
+				bEOut))
+			require.NoError(t, globalAleQueue.Publish(globalEOutSubTopic,
+				bEOut))
+			time.Sleep(2 * time.Second)
 
-	alert := &api.Alert{
-		OrgId:   createOrg.Id,
-		UniqId:  dev.UniqId,
-		AlarmId: createAlarm.Id,
-		UserId:  createUser.Id,
-		Status:  api.AlertStatus_SENT,
-		TraceId: eOut.Point.TraceId,
-	}
+			ctx, cancel = context.WithTimeout(context.Background(), testTimeout)
+			defer cancel()
 
-	// Normalize timestamp.
-	require.WithinDuration(t, time.Now(), listAlerts[0].CreatedAt.AsTime(),
-		testTimeout)
-	alert.CreatedAt = listAlerts[0].CreatedAt
+			listAlerts, err := globalAleDAO.List(ctx, createOrg.Id, dev.UniqId,
+				"", createAlarm.Id, createUser.Id, time.Now(),
+				time.Now().Add(-4*time.Second))
+			t.Logf("listAlerts, err: %+v, %v", listAlerts, err)
+			require.NoError(t, err)
+			require.Len(t, listAlerts, 1)
 
-	// Testify does not currently support protobuf equality:
-	// https://github.com/stretchr/testify/issues/758
-	if !proto.Equal(alert, listAlerts[0]) {
-		t.Fatalf("\nExpect: %+v\nActual: %+v", alert, listAlerts[0])
+			alert := &api.Alert{
+				OrgId:   createOrg.Id,
+				UniqId:  dev.UniqId,
+				AlarmId: createAlarm.Id,
+				UserId:  createUser.Id,
+				Status:  api.AlertStatus_SENT,
+				TraceId: eOut.Point.TraceId,
+			}
+
+			// Normalize timestamp.
+			require.WithinDuration(t, time.Now(),
+				listAlerts[0].CreatedAt.AsTime(), testTimeout)
+			alert.CreatedAt = listAlerts[0].CreatedAt
+
+			// Testify does not currently support protobuf equality:
+			// https://github.com/stretchr/testify/issues/758
+			if !proto.Equal(alert, listAlerts[0]) {
+				t.Fatalf("\nExpect: %+v\nActual: %+v", alert, listAlerts[0])
+			}
+		})
 	}
 }
 
@@ -196,6 +225,7 @@ func TestAlertMessagesError(t *testing.T) {
 
 	badSubjAlarm := random.Alarm("ale", createOrg.Id, createBadSubjRule.Id)
 	badSubjAlarm.Status = common.Status_ACTIVE
+	badSubjAlarm.Type = api.AlarmType_APP
 	badSubjAlarm.UserTags = createUser.Tags
 	badSubjAlarm.SubjectTemplate = `{{if`
 	createBadSubjAlarm, err := globalAlarmDAO.Create(ctx, badSubjAlarm)
