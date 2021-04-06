@@ -26,7 +26,7 @@ const (
 // value.
 func GenerateWebToken(key []byte, user *api.User) (string,
 	*timestamppb.Timestamp, error) {
-	// Convert user.Id and user.OrgId to byte slices.
+	// Convert user.Id and user.OrgId to bytes.
 	userUUID, err := uuid.Parse(user.Id)
 	if err != nil {
 		return "", nil, err

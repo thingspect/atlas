@@ -45,6 +45,7 @@ services:
       - mqtt
       - redis
     environment:
+      - GENERAL__LOG_LEVEL=3
       - POSTGRESQL__DSN=postgres://postgres:notasecurepassword@postgres/chirpstack_ns?sslmode=disable
       - REDIS__URL=redis://redis:6379
       - NETWORK_SERVER__NET_ID=b86498
@@ -68,6 +69,7 @@ services:
       - mqtt
       - redis
     environment:
+      - GENERAL__LOG_LEVEL=3
       - POSTGRESQL__DSN=postgres://postgres:notasecurepassword@postgres/chirpstack_as?sslmode=disable
       - REDIS__URL=redis://redis:6379
       - APPLICATION_SERVER__INTEGRATION__MARSHALER=protobuf
@@ -88,6 +90,13 @@ services:
       - DD_API_KEY=notasecurekey
       - DD_DOGSTATSD_NON_LOCAL_TRAFFIC=true
       - DD_ENV=dev
+  logspout:
+    image: gliderlabs/logspout:latest
+    command: syslog+tls://logs-01.loggly.com:6514
+    environment:
+      - 'SYSLOG_STRUCTURED_DATA=notasecurekey@41058 tag="dev"'
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
 networks:
   default:
     name: deps
