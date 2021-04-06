@@ -128,6 +128,27 @@ func TestCreateUser(t *testing.T) {
 		require.Equal(t, status.Error(codes.InvalidArgument, "invalid format"),
 			err)
 	})
+
+	t.Run("Create invalid user with invalid phone", func(t *testing.T) {
+		t.Parallel()
+
+		user := random.User("api-user", uuid.NewString())
+		user.Role = common.Role_BUILDER
+		user.Phone = random.String(10)
+
+		ctx, cancel := context.WithTimeout(session.NewContext(
+			context.Background(), &session.Session{OrgID: uuid.NewString(),
+				Role: common.Role_ADMIN}), testTimeout)
+		defer cancel()
+
+		userSvc := NewUser(nil)
+		createUser, err := userSvc.CreateUser(ctx, &api.CreateUserRequest{
+			User: user})
+		t.Logf("user, createUser, err: %+v, %+v, %v", user, createUser, err)
+		require.Nil(t, createUser)
+		require.Equal(t, status.Error(codes.InvalidArgument,
+			"invalid E.164 phone number"), err)
+	})
 }
 
 func TestGetUser(t *testing.T) {
@@ -249,8 +270,8 @@ func TestUpdateUser(t *testing.T) {
 		retUser, _ := proto.Clone(user).(*api.User)
 		part := &api.User{Id: user.Id, Status: common.Status_ACTIVE}
 		merged := &api.User{Id: user.Id, OrgId: user.OrgId, Email: user.Email,
-			Role: user.Role, Status: part.Status, Tags: user.Tags,
-			AppKey: user.AppKey}
+			Phone: user.Phone, Role: user.Role, Status: part.Status,
+			Tags: user.Tags, AppKey: user.AppKey}
 		retMerged, _ := proto.Clone(merged).(*api.User)
 
 		userer := NewMockUserer(gomock.NewController(t))
@@ -325,10 +346,72 @@ func TestUpdateUser(t *testing.T) {
 		require.Equal(t, errPerm(common.Role_ADMIN), err)
 	})
 
+	t.Run("Update user role with insufficient role", func(t *testing.T) {
+		t.Parallel()
+
+		user := random.User("api-user", uuid.NewString())
+		user.Role = common.Role_VIEWER
+
+		ctx, cancel := context.WithTimeout(session.NewContext(
+			context.Background(), &session.Session{UserID: user.Id,
+				OrgID: user.OrgId, Role: common.Role_BUILDER}), testTimeout)
+		defer cancel()
+
+		userSvc := NewUser(nil)
+		updateUser, err := userSvc.UpdateUser(ctx, &api.UpdateUserRequest{
+			User: user})
+		t.Logf("user, updateUser, err: %+v, %+v, %v", user, updateUser, err)
+		require.Nil(t, updateUser)
+		require.Equal(t, status.Error(codes.PermissionDenied, "permission "+
+			"denied, role modification not allowed"), err)
+	})
+
+	t.Run("Update user role to sysadmin as non-sysadmin", func(t *testing.T) {
+		t.Parallel()
+
+		user := random.User("api-user", uuid.NewString())
+		user.Role = common.Role_SYS_ADMIN
+
+		ctx, cancel := context.WithTimeout(session.NewContext(
+			context.Background(), &session.Session{UserID: user.Id,
+				OrgID: user.OrgId, Role: common.Role_ADMIN}), testTimeout)
+		defer cancel()
+
+		userSvc := NewUser(nil)
+		updateUser, err := userSvc.UpdateUser(ctx, &api.UpdateUserRequest{
+			User: user})
+		t.Logf("user, updateUser, err: %+v, %+v, %v", user, updateUser, err)
+		require.Nil(t, updateUser)
+		require.Equal(t, status.Error(codes.PermissionDenied, "permission "+
+			"denied, role modification not allowed"), err)
+	})
+
+	t.Run("Update user with invalid phone", func(t *testing.T) {
+		t.Parallel()
+
+		user := random.User("api-user", uuid.NewString())
+		user.Role = common.Role_ADMIN
+		user.Phone = random.String(10)
+
+		ctx, cancel := context.WithTimeout(session.NewContext(
+			context.Background(), &session.Session{OrgID: user.OrgId,
+				Role: common.Role_ADMIN}), testTimeout)
+		defer cancel()
+
+		userSvc := NewUser(nil)
+		updateUser, err := userSvc.UpdateUser(ctx, &api.UpdateUserRequest{
+			User: user})
+		t.Logf("user, updateUser, err: %+v, %+v, %v", user, updateUser, err)
+		require.Nil(t, updateUser)
+		require.Equal(t, status.Error(codes.InvalidArgument,
+			"invalid E.164 phone number"), err)
+	})
+
 	t.Run("Partial update invalid field mask", func(t *testing.T) {
 		t.Parallel()
 
 		user := random.User("api-user", uuid.NewString())
+		user.Role = common.Role_ADMIN
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
 			context.Background(), &session.Session{OrgID: uuid.NewString(),
@@ -374,6 +457,7 @@ func TestUpdateUser(t *testing.T) {
 
 		user := random.User("api-user", uuid.NewString())
 		user.Email = random.String(10)
+		user.Role = common.Role_ADMIN
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
 			context.Background(), &session.Session{OrgID: user.OrgId,
@@ -389,46 +473,6 @@ func TestUpdateUser(t *testing.T) {
 			"UpdateUserRequest.User: embedded message failed validation | "+
 			"caused by: invalid User.Email: value must be a valid email "+
 			"address | caused by: mail: missing '@' or angle-addr"), err)
-	})
-
-	t.Run("Update user role with insufficient role", func(t *testing.T) {
-		t.Parallel()
-
-		user := random.User("api-user", uuid.NewString())
-		user.Role = common.Role_VIEWER
-
-		ctx, cancel := context.WithTimeout(session.NewContext(
-			context.Background(), &session.Session{UserID: user.Id,
-				OrgID: user.OrgId, Role: common.Role_BUILDER}), testTimeout)
-		defer cancel()
-
-		userSvc := NewUser(nil)
-		updateUser, err := userSvc.UpdateUser(ctx, &api.UpdateUserRequest{
-			User: user})
-		t.Logf("user, updateUser, err: %+v, %+v, %v", user, updateUser, err)
-		require.Nil(t, updateUser)
-		require.Equal(t, status.Error(codes.PermissionDenied, "permission "+
-			"denied, role modification not allowed"), err)
-	})
-
-	t.Run("Update user role to sysadmin as non-sysadmin", func(t *testing.T) {
-		t.Parallel()
-
-		user := random.User("api-user", uuid.NewString())
-		user.Role = common.Role_SYS_ADMIN
-
-		ctx, cancel := context.WithTimeout(session.NewContext(
-			context.Background(), &session.Session{UserID: user.Id,
-				OrgID: user.OrgId, Role: common.Role_ADMIN}), testTimeout)
-		defer cancel()
-
-		userSvc := NewUser(nil)
-		updateUser, err := userSvc.UpdateUser(ctx, &api.UpdateUserRequest{
-			User: user})
-		t.Logf("user, updateUser, err: %+v, %+v, %v", user, updateUser, err)
-		require.Nil(t, updateUser)
-		require.Equal(t, status.Error(codes.PermissionDenied, "permission "+
-			"denied, role modification not allowed"), err)
 	})
 
 	t.Run("Update user by invalid user", func(t *testing.T) {

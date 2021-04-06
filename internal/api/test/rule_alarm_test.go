@@ -539,6 +539,7 @@ func TestUpdateAlarm(t *testing.T) {
 		// Update alarm fields.
 		createAlarm.Name = "api-alarm-" + random.String(10)
 		createAlarm.Status = common.Status_DISABLED
+		createAlarm.Type = api.AlarmType_SMS
 
 		updateAlarm, err := raCli.UpdateAlarm(ctx, &api.UpdateAlarmRequest{
 			Alarm: createAlarm})

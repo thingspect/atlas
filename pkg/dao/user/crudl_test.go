@@ -233,6 +233,7 @@ func TestUpdate(t *testing.T) {
 
 		// Update user fields.
 		createUser.Email = "dao-user-" + random.Email()
+		createUser.Phone = "+15125553434"
 		createUser.Role = common.Role_ADMIN
 		createUser.Status = common.Status_DISABLED
 		createUser.Tags = nil

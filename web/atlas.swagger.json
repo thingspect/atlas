@@ -1971,10 +1971,11 @@
       "type": "string",
       "enum": [
         "ALARM_TYPE_UNSPECIFIED",
-        "APP"
+        "APP",
+        "SMS"
       ],
       "default": "ALARM_TYPE_UNSPECIFIED",
-      "description": "AlarmType represents the type of alarm.\n\n - ALARM_TYPE_UNSPECIFIED: Alarm type is not specified.\n - APP: Push notification via mobile application."
+      "description": "AlarmType represents the type of alarm.\n\n - ALARM_TYPE_UNSPECIFIED: Alarm type is not specified.\n - APP: Push notification via mobile application.\n - SMS: SMS notification."
     },
     "apiAlert": {
       "type": "object",
@@ -2445,6 +2446,10 @@
         "email": {
           "type": "string",
           "description": "User email."
+        },
+        "phone": {
+          "type": "string",
+          "description": "User phone number. If specified, must be in valid [E.164](https://www.twilio.com/docs/glossary/what-e164) format."
         },
         "role": {
           "$ref": "#/definitions/commonRole",

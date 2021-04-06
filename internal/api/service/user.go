@@ -4,6 +4,7 @@ package service
 
 import (
 	"context"
+	"regexp"
 	"strings"
 	"time"
 
@@ -20,6 +21,9 @@ import (
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/known/emptypb"
 )
+
+// E.164 format: https://www.twilio.com/docs/glossary/what-e164
+var rePhone = regexp.MustCompile(`^\+[1-9]\d{1,14}$`)
 
 // Userer defines the methods provided by a user.DAO.
 type Userer interface {
@@ -62,6 +66,12 @@ func (u *User) CreateUser(ctx context.Context,
 	if sess.Role == common.Role_ADMIN && req.User.Role > common.Role_ADMIN {
 		return nil, status.Error(codes.PermissionDenied,
 			"permission denied, role modification not allowed")
+	}
+
+	// Validate phone number.
+	if req.User.Phone != "" && !rePhone.MatchString(req.User.Phone) {
+		return nil, status.Error(codes.InvalidArgument,
+			"invalid E.164 phone number")
 	}
 
 	req.User.OrgId = sess.OrgID
@@ -116,6 +126,20 @@ func (u *User) UpdateUser(ctx context.Context,
 		return nil, errPerm(common.Role_ADMIN)
 	}
 
+	// Only admins can update roles, and only system admins can elevate to
+	// system admin.
+	if (sess.Role < common.Role_ADMIN && req.User.Role != sess.Role) ||
+		(sess.Role == common.Role_ADMIN && req.User.Role > common.Role_ADMIN) {
+		return nil, status.Error(codes.PermissionDenied,
+			"permission denied, role modification not allowed")
+	}
+
+	// Validate phone number.
+	if req.User.Phone != "" && !rePhone.MatchString(req.User.Phone) {
+		return nil, status.Error(codes.InvalidArgument,
+			"invalid E.164 phone number")
+	}
+
 	// Perform partial update if directed.
 	if req.UpdateMask != nil && len(req.UpdateMask.Paths) > 0 {
 		// Normalize and validate field mask.
@@ -138,14 +162,6 @@ func (u *User) UpdateUser(ctx context.Context,
 	// Validate after merge to support partial updates.
 	if err := req.Validate(); err != nil {
 		return nil, status.Error(codes.InvalidArgument, err.Error())
-	}
-
-	// Only admins can update roles, and only system admins can elevate to
-	// system admin.
-	if (sess.Role < common.Role_ADMIN && req.User.Role != sess.Role) ||
-		(sess.Role == common.Role_ADMIN && req.User.Role > common.Role_ADMIN) {
-		return nil, status.Error(codes.PermissionDenied,
-			"permission denied, role modification not allowed")
 	}
 
 	user, err := u.userDAO.Update(ctx, req.User)

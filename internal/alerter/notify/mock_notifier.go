@@ -47,3 +47,17 @@ func (mr *MockNotifierMockRecorder) App(ctx, userKey, subject, body interface{})
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "App", reflect.TypeOf((*MockNotifier)(nil).App), ctx, userKey, subject, body)
 }
+
+// SMS mocks base method.
+func (m *MockNotifier) SMS(ctx context.Context, phone, subject, body string) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "SMS", ctx, phone, subject, body)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// SMS indicates an expected call of SMS.
+func (mr *MockNotifierMockRecorder) SMS(ctx, phone, subject, body interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SMS", reflect.TypeOf((*MockNotifier)(nil).SMS), ctx, phone, subject, body)
+}

@@ -94,6 +94,25 @@ func TestCreateUser(t *testing.T) {
 			"validation | caused by: invalid User.Email: value must be a "+
 			"valid email address | caused by: mail: missing '@' or angle-addr")
 	})
+
+	t.Run("Create invalid user with invalid phone", func(t *testing.T) {
+		t.Parallel()
+
+		user := random.User("api-user", uuid.NewString())
+		user.Role = common.Role_BUILDER
+		user.Phone = random.String(10)
+
+		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
+		defer cancel()
+
+		userCli := api.NewUserServiceClient(globalAdminGRPCConn)
+		createUser, err := userCli.CreateUser(ctx, &api.CreateUserRequest{
+			User: user})
+		t.Logf("createUser, err: %+v, %v", createUser, err)
+		require.Nil(t, createUser)
+		require.EqualError(t, err, "rpc error: code = InvalidArgument desc = "+
+			"invalid E.164 phone number")
+	})
 }
 
 func TestGetUser(t *testing.T) {
@@ -296,16 +315,71 @@ func TestUpdateUser(t *testing.T) {
 			"permission denied, ADMIN role required")
 	})
 
+	t.Run("Update user role to sysadmin as non-sysadmin", func(t *testing.T) {
+		t.Parallel()
+
+		user := random.User("api-user", uuid.NewString())
+		user.Role = common.Role_BUILDER
+
+		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
+		defer cancel()
+
+		userCli := api.NewUserServiceClient(globalAdminGRPCConn)
+		createUser, err := userCli.CreateUser(ctx, &api.CreateUserRequest{
+			User: user})
+		t.Logf("createUser, err: %+v, %v", createUser, err)
+		require.NoError(t, err)
+
+		// Update user fields.
+		createUser.Role = common.Role_SYS_ADMIN
+
+		updateUser, err := userCli.UpdateUser(ctx, &api.UpdateUserRequest{
+			User: createUser})
+		t.Logf("updateUser, err: %+v, %v", updateUser, err)
+		require.Nil(t, updateUser)
+		require.EqualError(t, err, "rpc error: code = PermissionDenied desc = "+
+			"permission denied, role modification not allowed")
+	})
+
+	t.Run("Update user with invalid phone", func(t *testing.T) {
+		t.Parallel()
+
+		user := random.User("api-user", uuid.NewString())
+		user.Role = common.Role_BUILDER
+
+		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
+		defer cancel()
+
+		userCli := api.NewUserServiceClient(globalAdminGRPCConn)
+		createUser, err := userCli.CreateUser(ctx, &api.CreateUserRequest{
+			User: user})
+		t.Logf("createUser, err: %+v, %v", createUser, err)
+		require.NoError(t, err)
+
+		// Update user fields.
+		createUser.Phone = random.String(10)
+
+		updateUser, err := userCli.UpdateUser(ctx, &api.UpdateUserRequest{
+			User: createUser})
+		t.Logf("updateUser, err: %+v, %v", updateUser, err)
+		require.Nil(t, updateUser)
+		require.EqualError(t, err, "rpc error: code = InvalidArgument desc = "+
+			"invalid E.164 phone number")
+	})
+
 	t.Run("Partial update invalid field mask", func(t *testing.T) {
 		t.Parallel()
+
+		user := random.User("api-user", uuid.NewString())
+		user.Role = common.Role_ADMIN
 
 		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
 		defer cancel()
 
 		userCli := api.NewUserServiceClient(globalAdminGRPCConn)
 		updateUser, err := userCli.UpdateUser(ctx, &api.UpdateUserRequest{
-			User:       random.User("api-user", uuid.NewString()),
-			UpdateMask: &fieldmaskpb.FieldMask{Paths: []string{"aaa"}}})
+			User: user, UpdateMask: &fieldmaskpb.FieldMask{
+				Paths: []string{"aaa"}}})
 		t.Logf("updateUser, err: %+v, %v", updateUser, err)
 		require.Nil(t, updateUser)
 		require.EqualError(t, err, "rpc error: code = InvalidArgument desc = "+
@@ -315,13 +389,16 @@ func TestUpdateUser(t *testing.T) {
 	t.Run("Partial update user by unknown user", func(t *testing.T) {
 		t.Parallel()
 
+		user := random.User("api-user", uuid.NewString())
+		user.Role = common.Role_ADMIN
+
 		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
 		defer cancel()
 
 		userCli := api.NewUserServiceClient(globalAdminGRPCConn)
 		updateUser, err := userCli.UpdateUser(ctx, &api.UpdateUserRequest{
-			User:       random.User("api-user", uuid.NewString()),
-			UpdateMask: &fieldmaskpb.FieldMask{Paths: []string{"email"}}})
+			User: user, UpdateMask: &fieldmaskpb.FieldMask{
+				Paths: []string{"email"}}})
 		t.Logf("updateUser, err: %+v, %v", updateUser, err)
 		require.Nil(t, updateUser)
 		require.EqualError(t, err, "rpc error: code = NotFound desc = object "+
@@ -400,32 +477,6 @@ func TestUpdateUser(t *testing.T) {
 			"invalid UpdateUserRequest.User: embedded message failed "+
 			"validation | caused by: invalid User.Email: value must be a "+
 			"valid email address | caused by: mail: missing '@' or angle-addr")
-	})
-
-	t.Run("Update user role to sysadmin as non-sysadmin", func(t *testing.T) {
-		t.Parallel()
-
-		user := random.User("api-user", uuid.NewString())
-		user.Role = common.Role_BUILDER
-
-		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
-		defer cancel()
-
-		userCli := api.NewUserServiceClient(globalAdminGRPCConn)
-		createUser, err := userCli.CreateUser(ctx, &api.CreateUserRequest{
-			User: user})
-		t.Logf("createUser, err: %+v, %v", createUser, err)
-		require.NoError(t, err)
-
-		// Update user fields.
-		createUser.Role = common.Role_SYS_ADMIN
-
-		updateUser, err := userCli.UpdateUser(ctx, &api.UpdateUserRequest{
-			User: createUser})
-		t.Logf("updateUser, err: %+v, %v", updateUser, err)
-		require.Nil(t, updateUser)
-		require.EqualError(t, err, "rpc error: code = PermissionDenied desc = "+
-			"permission denied, role modification not allowed")
 	})
 
 	t.Run("Update user by invalid user", func(t *testing.T) {

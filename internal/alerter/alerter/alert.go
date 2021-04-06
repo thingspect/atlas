@@ -135,17 +135,19 @@ func (ale *Alerter) alertMessages() {
 				}
 
 				// Send alert.
+				ctx, cancel = context.WithTimeout(context.Background(),
+					time.Minute)
 				switch a.Type {
 				case api.AlarmType_APP:
-					ctx, cancel := context.WithTimeout(context.Background(),
-						time.Minute)
 					err = ale.notify.App(ctx, user.AppKey, subj, body)
-					cancel()
+				case api.AlarmType_SMS:
+					err = ale.notify.SMS(ctx, user.Phone, subj, body)
 				case api.AlarmType_ALARM_TYPE_UNSPECIFIED:
 					fallthrough
 				default:
 					err = ErrUnknownAlarm
 				}
+				cancel()
 
 				alert := &api.Alert{
 					OrgId:   eOut.Device.OrgId,

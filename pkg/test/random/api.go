@@ -77,7 +77,10 @@ func Alarm(prefix, orgID, ruleID string) *api.Alarm {
 			common.Status_ACTIVE,
 			common.Status_DISABLED,
 		}[Intn(2)],
-		Type:            api.AlarmType_APP,
+		Type: []api.AlarmType{
+			api.AlarmType_APP,
+			api.AlarmType_SMS,
+		}[Intn(2)],
 		UserTags:        Tags(prefix, Intn(4)+1),
 		SubjectTemplate: `rule name is: {{.rule.Name}}`,
 		BodyTemplate:    `device status is: {{.device.Status}}`,
@@ -107,6 +110,7 @@ func User(prefix, orgID string) *api.User {
 		Id:    uuid.NewString(),
 		OrgId: orgID,
 		Email: prefix + "-" + Email(),
+		Phone: []string{"", "+15125551212"}[Intn(2)],
 		Role: []common.Role{
 			common.Role_CONTACT,
 			common.Role_VIEWER,

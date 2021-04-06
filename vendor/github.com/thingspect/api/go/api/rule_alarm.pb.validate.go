@@ -738,7 +738,7 @@ func (m *Alarm) Validate() error {
 	if _, ok := _Alarm_Type_InLookup[m.GetType()]; !ok {
 		return AlarmValidationError{
 			field:  "Type",
-			reason: "value must be in list [1]",
+			reason: "value must be in list [1 2]",
 		}
 	}
 
@@ -877,6 +877,7 @@ var _Alarm_Status_InLookup = map[common.Status]struct{}{
 
 var _Alarm_Type_InLookup = map[AlarmType]struct{}{
 	1: {},
+	2: {},
 }
 
 // Validate checks the field values on CreateAlarmRequest with the rules

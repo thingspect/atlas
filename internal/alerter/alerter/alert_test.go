@@ -31,37 +31,47 @@ func TestAlertMessages(t *testing.T) {
 
 	orgID := uuid.NewString()
 
-	alarm := random.Alarm("ale", orgID, uuid.NewString())
-	alarm.Status = common.Status_ACTIVE
+	appAlarm := random.Alarm("ale", orgID, uuid.NewString())
+	appAlarm.Status = common.Status_ACTIVE
+	appAlarm.Type = api.AlarmType_APP
+
+	smsAlarm := random.Alarm("ale", orgID, uuid.NewString())
+	smsAlarm.Status = common.Status_ACTIVE
+	smsAlarm.Type = api.AlarmType_SMS
 
 	disAlarm := random.Alarm("ale", orgID, uuid.NewString())
 	disAlarm.Status = common.Status_DISABLED
 
 	tests := []struct {
-		inpEOut        *message.EventerOut
-		inpAlarms      []*api.Alarm
-		inpUsers       []*api.User
-		inpUserTimes   int
-		inpNotifyTimes int
-		inpAlertTimes  int
-		inpSeedCache   bool
+		inpEOut       *message.EventerOut
+		inpAlarms     []*api.Alarm
+		inpUsers      []*api.User
+		inpUserTimes  int
+		inpAppTimes   int
+		inpSMSTimes   int
+		inpAlertTimes int
+		inpSeedCache  bool
 	}{
 		{&message.EventerOut{Point: &common.DataPoint{},
 			Device: random.Device("ale", orgID),
-			Rule:   random.Rule("ale", orgID)}, []*api.Alarm{alarm},
-			[]*api.User{random.User("ale", orgID)}, 1, 1, 1, false},
+			Rule:   random.Rule("ale", orgID)}, []*api.Alarm{appAlarm},
+			[]*api.User{random.User("ale", orgID)}, 1, 1, 0, 1, false},
+		{&message.EventerOut{Point: &common.DataPoint{},
+			Device: random.Device("ale", orgID),
+			Rule:   random.Rule("ale", orgID)}, []*api.Alarm{smsAlarm},
+			[]*api.User{random.User("ale", orgID)}, 1, 0, 1, 1, false},
 		{&message.EventerOut{Point: &common.DataPoint{},
 			Device: random.Device("ale", orgID),
 			Rule:   random.Rule("ale", orgID)}, []*api.Alarm{disAlarm},
-			[]*api.User{random.User("ale", orgID)}, 0, 0, 0, false},
+			[]*api.User{random.User("ale", orgID)}, 0, 0, 0, 0, false},
 		{&message.EventerOut{Point: &common.DataPoint{},
 			Device: random.Device("ale", orgID),
-			Rule:   random.Rule("ale", orgID)}, []*api.Alarm{alarm},
-			[]*api.User{}, 1, 0, 0, false},
+			Rule:   random.Rule("ale", orgID)}, []*api.Alarm{appAlarm},
+			[]*api.User{}, 1, 0, 0, 0, false},
 		{&message.EventerOut{Point: &common.DataPoint{},
 			Device: random.Device("ale", orgID),
-			Rule:   random.Rule("ale", orgID)}, []*api.Alarm{alarm},
-			[]*api.User{random.User("ale", orgID)}, 1, 0, 0, true},
+			Rule:   random.Rule("ale", orgID)}, []*api.Alarm{appAlarm},
+			[]*api.User{random.User("ale", orgID)}, 1, 0, 0, 0, true},
 	}
 
 	for _, test := range tests {
@@ -101,7 +111,9 @@ func TestAlertMessages(t *testing.T) {
 
 			notifier := notify.NewMockNotifier(gomock.NewController(t))
 			notifier.EXPECT().App(gomock.Any(), gomock.Any(), gomock.Any(),
-				gomock.Any()).Return(nil).Times(lTest.inpNotifyTimes)
+				gomock.Any()).Return(nil).Times(lTest.inpAppTimes)
+			notifier.EXPECT().SMS(gomock.Any(), gomock.Any(), gomock.Any(),
+				gomock.Any()).Return(nil).Times(lTest.inpSMSTimes)
 
 			alerter := NewMockalerter(gomock.NewController(t))
 			alerter.EXPECT().Create(gomock.Any(), matcher.NewProtoMatcher(
@@ -160,8 +172,9 @@ func TestAlertMessages(t *testing.T) {
 func TestAlertMessagesError(t *testing.T) {
 	t.Parallel()
 
-	alarm := random.Alarm("ale", uuid.NewString(), uuid.NewString())
-	alarm.Status = common.Status_ACTIVE
+	appAlarm := random.Alarm("ale", uuid.NewString(), uuid.NewString())
+	appAlarm.Status = common.Status_ACTIVE
+	appAlarm.Type = api.AlarmType_APP
 
 	badSubj := random.Alarm("ale", uuid.NewString(), uuid.NewString())
 	badSubj.Status = common.Status_ACTIVE
@@ -176,20 +189,20 @@ func TestAlertMessagesError(t *testing.T) {
 	badType.Type = 999
 
 	tests := []struct {
-		inpEOut        *message.EventerOut
-		inpAlarms      []*api.Alarm
-		inpAlarmsErr   error
-		inpUsers       []*api.User
-		inpUsersErr    error
-		inpCache       bool
-		inpCacheErr    error
-		inpNotifyErr   error
-		inpAlertErr    error
-		inpAlarmTimes  int
-		inpUserTimes   int
-		inpCacheTimes  int
-		inpNotifyTimes int
-		inpAlertTimes  int
+		inpEOut       *message.EventerOut
+		inpAlarms     []*api.Alarm
+		inpAlarmsErr  error
+		inpUsers      []*api.User
+		inpUsersErr   error
+		inpCache      bool
+		inpCacheErr   error
+		inpAppErr     error
+		inpAlertErr   error
+		inpAlarmTimes int
+		inpUserTimes  int
+		inpCacheTimes int
+		inpAppTimes   int
+		inpAlertTimes int
 	}{
 		// Bad payload.
 		{nil, nil, nil, nil, nil, true, nil, nil, nil, 0, 0, 0, 0, 0},
@@ -210,7 +223,7 @@ func TestAlertMessagesError(t *testing.T) {
 		// Userer error.
 		{&message.EventerOut{Point: &common.DataPoint{},
 			Device: &common.Device{}, Rule: &common.Rule{}},
-			[]*api.Alarm{alarm}, nil, nil, errTestProc, true, nil, nil, nil, 1,
+			[]*api.Alarm{appAlarm}, nil, nil, errTestProc, true, nil, nil, nil, 1,
 			1, 0, 0, 0},
 		// Bad alarm subject.
 		{&message.EventerOut{Point: &common.DataPoint{},
@@ -225,13 +238,13 @@ func TestAlertMessagesError(t *testing.T) {
 		// Cacher error.
 		{&message.EventerOut{Point: &common.DataPoint{},
 			Device: &common.Device{}, Rule: &common.Rule{}},
-			[]*api.Alarm{alarm}, nil, []*api.User{random.User("ale",
+			[]*api.Alarm{appAlarm}, nil, []*api.User{random.User("ale",
 				uuid.NewString())}, nil, false, errTestProc, nil, nil, 1, 1, 1,
 			0, 0},
 		// Notifier error.
 		{&message.EventerOut{Point: &common.DataPoint{},
 			Device: &common.Device{}, Rule: &common.Rule{}},
-			[]*api.Alarm{alarm}, nil, []*api.User{random.User("ale",
+			[]*api.Alarm{appAlarm}, nil, []*api.User{random.User("ale",
 				uuid.NewString())}, nil, true, nil, errTestProc, nil, 1, 1, 1,
 			1, 1},
 		// Bad alarm type.
@@ -242,7 +255,7 @@ func TestAlertMessagesError(t *testing.T) {
 		// Alerter error.
 		{&message.EventerOut{Point: &common.DataPoint{},
 			Device: &common.Device{}, Rule: &common.Rule{}},
-			[]*api.Alarm{alarm}, nil, []*api.User{random.User("ale",
+			[]*api.Alarm{appAlarm}, nil, []*api.User{random.User("ale",
 				uuid.NewString())}, nil, true, nil, nil, errTestProc, 1, 1, 1,
 			1, 1},
 	}
@@ -278,8 +291,7 @@ func TestAlertMessagesError(t *testing.T) {
 
 			notifier := notify.NewMockNotifier(gomock.NewController(t))
 			notifier.EXPECT().App(gomock.Any(), gomock.Any(), gomock.Any(),
-				gomock.Any()).Return(lTest.inpNotifyErr).
-				Times(lTest.inpNotifyTimes)
+				gomock.Any()).Return(lTest.inpAppErr).Times(lTest.inpAppTimes)
 
 			alerter := NewMockalerter(gomock.NewController(t))
 			alerter.EXPECT().Create(gomock.Any(), gomock.Any()).

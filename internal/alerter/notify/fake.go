@@ -13,6 +13,8 @@ func NewFake() Notifier {
 	notifier := NewMockNotifier(gomock.NewController(alog.Default()))
 	notifier.EXPECT().App(gomock.Any(), gomock.Any(), gomock.Any(),
 		gomock.Any()).Return(nil).AnyTimes()
+	notifier.EXPECT().SMS(gomock.Any(), gomock.Any(), gomock.Any(),
+		gomock.Any()).Return(nil).AnyTimes()
 
 	return notifier
 }
