@@ -11,13 +11,15 @@ type notify struct {
 	smsAccountSID string
 	smsAuthToken  string
 	smsPhone      string
+	emailAPIKey   string
 }
 
 // Verify notify implements Notifier.
 var _ Notifier = &notify{}
 
 // New builds a new Notifier and returns it.
-func New(cache cache.Cacher, appAPIKey, smsAccountSID, smsAuthToken, smsPhone string) Notifier {
+func New(cache cache.Cacher, appAPIKey, smsAccountSID, smsAuthToken, smsPhone,
+	emailAPIKey string) Notifier {
 	return &notify{
 		cache: cache,
 
@@ -25,5 +27,6 @@ func New(cache cache.Cacher, appAPIKey, smsAccountSID, smsAuthToken, smsPhone st
 		smsAccountSID: smsAccountSID,
 		smsAuthToken:  smsAuthToken,
 		smsPhone:      smsPhone,
+		emailAPIKey:   emailAPIKey,
 	}
 }

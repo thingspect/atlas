@@ -244,6 +244,12 @@ func TestUpdate(t *testing.T) {
 		t.Logf("createUser, updateUser, err: %+v, %+v, %v", createUser,
 			updateUser, err)
 		require.NoError(t, err)
+		require.Equal(t, createUser.Email, updateUser.Email)
+		require.Equal(t, createUser.Phone, updateUser.Phone)
+		require.Equal(t, createUser.Role, updateUser.Role)
+		require.Equal(t, createUser.Status, updateUser.Status)
+		require.Equal(t, createUser.Tags, updateUser.Tags)
+		require.Equal(t, createUser.AppKey, updateUser.AppKey)
 		require.True(t, updateUser.UpdatedAt.AsTime().After(
 			updateUser.CreatedAt.AsTime()))
 		require.WithinDuration(t, createUser.CreatedAt.AsTime(),

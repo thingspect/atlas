@@ -590,10 +590,11 @@ func TestUpdateAlarm(t *testing.T) {
 		alarm := random.Alarm("api-alarm", uuid.NewString(), uuid.NewString())
 		retAlarm, _ := proto.Clone(alarm).(*api.Alarm)
 		part := &api.Alarm{Id: alarm.Id, RuleId: alarm.RuleId,
-			Status: common.Status_ACTIVE, SubjectTemplate: `test`}
+			Status: common.Status_ACTIVE, SubjectTemplate: `test`,
+			UserTags: random.Tags("api-alarm", 2)}
 		merged := &api.Alarm{Id: alarm.Id, OrgId: alarm.OrgId,
 			RuleId: alarm.RuleId, Name: alarm.Name,
-			Status: part.Status, Type: alarm.Type, UserTags: alarm.UserTags,
+			Status: part.Status, Type: alarm.Type, UserTags: part.UserTags,
 			SubjectTemplate: part.SubjectTemplate,
 			BodyTemplate:    alarm.BodyTemplate,
 			RepeatInterval:  alarm.RepeatInterval}
@@ -613,7 +614,7 @@ func TestUpdateAlarm(t *testing.T) {
 		raSvc := NewRuleAlarm(nil, alarmer)
 		updateAlarm, err := raSvc.UpdateAlarm(ctx, &api.UpdateAlarmRequest{
 			Alarm: part, UpdateMask: &fieldmaskpb.FieldMask{
-				Paths: []string{"status", "subject_template"}}})
+				Paths: []string{"status", "subject_template", "user_tags"}}})
 		t.Logf("merged, updateAlarm, err: %+v, %+v, %v", merged, updateAlarm,
 			err)
 		require.NoError(t, err)

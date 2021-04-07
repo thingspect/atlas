@@ -219,7 +219,8 @@ func TestUpdateOrg(t *testing.T) {
 		org := random.Org("api-org")
 		retOrg, _ := proto.Clone(org).(*api.Org)
 		part := &api.Org{Id: org.Id, Name: random.String(10)}
-		merged := &api.Org{Id: org.Id, Name: part.Name}
+		merged := &api.Org{Id: org.Id, Name: part.Name,
+			DisplayName: org.DisplayName, Email: org.Email}
 		retMerged, _ := proto.Clone(merged).(*api.Org)
 
 		orger := NewMockOrger(gomock.NewController(t))

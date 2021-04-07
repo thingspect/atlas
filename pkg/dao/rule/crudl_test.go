@@ -160,6 +160,8 @@ func TestUpdate(t *testing.T) {
 		t.Logf("createRule, updateRule, err: %+v, %+v, %v", createRule,
 			updateRule, err)
 		require.NoError(t, err)
+		require.Equal(t, createRule.Name, updateRule.Name)
+		require.Equal(t, createRule.Status, updateRule.Status)
 		require.True(t, updateRule.UpdatedAt.AsTime().After(
 			updateRule.CreatedAt.AsTime()))
 		require.WithinDuration(t, createRule.CreatedAt.AsTime(),

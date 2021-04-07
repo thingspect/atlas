@@ -140,6 +140,8 @@ func TestUpdate(t *testing.T) {
 
 		// Update org fields.
 		createOrg.Name = "dao-org-" + random.String(10)
+		createOrg.DisplayName = "dao-org-" + random.String(10)
+		createOrg.Email = "dao-org-" + random.Email()
 		updateOrg, _ := proto.Clone(createOrg).(*api.Org)
 
 		updateOrg, err = globalOrgDAO.Update(ctx, updateOrg)
@@ -147,7 +149,8 @@ func TestUpdate(t *testing.T) {
 			err)
 		require.NoError(t, err)
 		require.Equal(t, createOrg.Name, updateOrg.Name)
-		require.Equal(t, createOrg.CreatedAt, updateOrg.CreatedAt)
+		require.Equal(t, createOrg.DisplayName, updateOrg.DisplayName)
+		require.Equal(t, createOrg.Email, updateOrg.Email)
 		require.True(t, updateOrg.UpdatedAt.AsTime().After(
 			updateOrg.CreatedAt.AsTime()))
 		require.WithinDuration(t, createOrg.CreatedAt.AsTime(),
@@ -244,6 +247,7 @@ func TestList(t *testing.T) {
 
 	orgIDs := []string{}
 	orgNames := []string{}
+	orgEmails := []string{}
 	orgTSes := []time.Time{}
 	for i := 0; i < 3; i++ {
 		createOrg, err := globalOrgDAO.Create(ctx, random.Org("dao-org"))
@@ -252,6 +256,7 @@ func TestList(t *testing.T) {
 
 		orgIDs = append(orgIDs, createOrg.Id)
 		orgNames = append(orgNames, createOrg.Name)
+		orgEmails = append(orgEmails, createOrg.Email)
 		orgTSes = append(orgTSes, createOrg.CreatedAt.AsTime())
 	}
 
@@ -271,7 +276,8 @@ func TestList(t *testing.T) {
 		var found bool
 		for _, org := range listOrgs {
 			if org.Id == orgIDs[len(orgIDs)-1] &&
-				org.Name == orgNames[len(orgNames)-1] {
+				org.Name == orgNames[len(orgNames)-1] &&
+				org.Email == orgEmails[len(orgEmails)-1] {
 				found = true
 			}
 		}

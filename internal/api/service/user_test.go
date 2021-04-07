@@ -268,10 +268,11 @@ func TestUpdateUser(t *testing.T) {
 		user := random.User("api-user", uuid.NewString())
 		user.Role = common.Role_ADMIN
 		retUser, _ := proto.Clone(user).(*api.User)
-		part := &api.User{Id: user.Id, Status: common.Status_ACTIVE}
+		part := &api.User{Id: user.Id, Status: common.Status_ACTIVE,
+			Tags: random.Tags("api-user", 2)}
 		merged := &api.User{Id: user.Id, OrgId: user.OrgId, Email: user.Email,
 			Phone: user.Phone, Role: user.Role, Status: part.Status,
-			Tags: user.Tags, AppKey: user.AppKey}
+			Tags: part.Tags, AppKey: user.AppKey}
 		retMerged, _ := proto.Clone(merged).(*api.User)
 
 		userer := NewMockUserer(gomock.NewController(t))
@@ -288,7 +289,7 @@ func TestUpdateUser(t *testing.T) {
 		userSvc := NewUser(userer)
 		updateUser, err := userSvc.UpdateUser(ctx, &api.UpdateUserRequest{
 			User: part, UpdateMask: &fieldmaskpb.FieldMask{
-				Paths: []string{"status"}}})
+				Paths: []string{"status", "tags"}}})
 		t.Logf("merged, updateUser, err: %+v, %+v, %v", merged, updateUser, err)
 		require.NoError(t, err)
 

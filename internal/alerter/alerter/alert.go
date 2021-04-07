@@ -51,8 +51,21 @@ func (ale *Alerter) alertMessages() {
 		}
 		logger := alog.WithFields(logFields)
 
-		// Retrieve alarms by rule ID. Alarms may be disabled.
+		// Retrieve org.
 		ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+		org, err := ale.orgDAO.Read(ctx, eOut.Device.OrgId)
+		cancel()
+		if err != nil {
+			msg.Requeue()
+			metric.Incr("error", map[string]string{"func": "read"})
+			logger.Errorf("alertMessages ale.orgDAO.Read: %v", err)
+
+			continue
+		}
+		logger.Debugf("alertMessages org: %+v", org)
+
+		// Retrieve alarms by rule ID. Alarms may be disabled.
+		ctx, cancel = context.WithTimeout(context.Background(), 5*time.Second)
 		alarms, _, err := ale.alarmDAO.List(ctx, eOut.Device.OrgId, time.Time{},
 			"", 0, eOut.Rule.Id)
 		cancel()
@@ -142,6 +155,9 @@ func (ale *Alerter) alertMessages() {
 					err = ale.notify.App(ctx, user.AppKey, subj, body)
 				case api.AlarmType_SMS:
 					err = ale.notify.SMS(ctx, user.Phone, subj, body)
+				case api.AlarmType_EMAIL:
+					err = ale.notify.Email(ctx, org.DisplayName, org.Email,
+						user.Email, subj, body)
 				case api.AlarmType_ALARM_TYPE_UNSPECIFIED:
 					fallthrough
 				default:

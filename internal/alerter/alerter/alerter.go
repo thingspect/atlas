@@ -18,6 +18,7 @@ import (
 	"github.com/thingspect/atlas/pkg/dao"
 	"github.com/thingspect/atlas/pkg/dao/alarm"
 	"github.com/thingspect/atlas/pkg/dao/alert"
+	"github.com/thingspect/atlas/pkg/dao/org"
 	"github.com/thingspect/atlas/pkg/dao/user"
 	"github.com/thingspect/atlas/pkg/queue"
 )
@@ -25,6 +26,11 @@ import (
 const (
 	ServiceName = "alerter"
 )
+
+// orger defines the methods provided by an org.DAO.
+type orger interface {
+	Read(ctx context.Context, orgID string) (*api.Org, error)
+}
 
 // alarmer defines the methods provided by a alarm.DAO.
 type alarmer interface {
@@ -45,6 +51,7 @@ type alerter interface {
 
 // Alerter holds references to the database and message broker connections.
 type Alerter struct {
+	orgDAO   orger
 	alarmDAO alarmer
 	userDAO  userer
 	alertDAO alerter
@@ -72,12 +79,12 @@ func New(cfg *config.Config) (*Alerter, error) {
 
 	// Set up Notifier. Allow a mock for local usage, but warn loudly.
 	var n notify.Notifier
-	if cfg.AppAPIKey == "" || cfg.SMSAuthToken == "" {
+	if cfg.AppAPIKey == "" || cfg.SMSAuthToken == "" || cfg.EmailAPIKey == "" {
 		alog.Error("New cfg.AppAPIKey not found, using notify.NewFake()")
 		n = notify.NewFake()
 	} else {
 		n = notify.New(c, cfg.AppAPIKey, cfg.SMSAccountSID, cfg.SMSAuthToken,
-			cfg.SMSPhone)
+			cfg.SMSPhone, cfg.EmailAPIKey)
 	}
 
 	// Build the NSQ connection for consuming.
@@ -99,6 +106,7 @@ func New(cfg *config.Config) (*Alerter, error) {
 	}
 
 	return &Alerter{
+		orgDAO:   org.NewDAO(pg),
 		alarmDAO: alarm.NewDAO(pg),
 		userDAO:  user.NewDAO(pg),
 		alertDAO: alert.NewDAO(pg),

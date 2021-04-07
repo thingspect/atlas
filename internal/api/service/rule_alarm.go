@@ -214,6 +214,9 @@ func (ra *RuleAlarm) UpdateAlarm(ctx context.Context,
 		}
 
 		fmutils.Filter(req.Alarm, req.UpdateMask.Paths)
+		if req.Alarm.UserTags != nil {
+			alarm.UserTags = nil
+		}
 		proto.Merge(alarm, req.Alarm)
 		req.Alarm = alarm
 	}

@@ -13,6 +13,44 @@ import (
 	api "github.com/thingspect/api/go/api"
 )
 
+// Mockorger is a mock of orger interface.
+type Mockorger struct {
+	ctrl     *gomock.Controller
+	recorder *MockorgerMockRecorder
+}
+
+// MockorgerMockRecorder is the mock recorder for Mockorger.
+type MockorgerMockRecorder struct {
+	mock *Mockorger
+}
+
+// NewMockorger creates a new mock instance.
+func NewMockorger(ctrl *gomock.Controller) *Mockorger {
+	mock := &Mockorger{ctrl: ctrl}
+	mock.recorder = &MockorgerMockRecorder{mock}
+	return mock
+}
+
+// EXPECT returns an object that allows the caller to indicate expected use.
+func (m *Mockorger) EXPECT() *MockorgerMockRecorder {
+	return m.recorder
+}
+
+// Read mocks base method.
+func (m *Mockorger) Read(ctx context.Context, orgID string) (*api.Org, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "Read", ctx, orgID)
+	ret0, _ := ret[0].(*api.Org)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// Read indicates an expected call of Read.
+func (mr *MockorgerMockRecorder) Read(ctx, orgID interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Read", reflect.TypeOf((*Mockorger)(nil).Read), ctx, orgID)
+}
+
 // Mockalarmer is a mock of alarmer interface.
 type Mockalarmer struct {
 	ctrl     *gomock.Controller
