@@ -177,14 +177,16 @@ func TestUpdateOrg(t *testing.T) {
 
 		// Update org fields.
 		createOrg.Name = "api-org-" + random.String(10)
+		createOrg.DisplayName = "dao-org-" + random.String(10)
+		createOrg.Email = "dao-org-" + random.Email()
 
 		updateOrg, err := orgCli.UpdateOrg(ctx, &api.UpdateOrgRequest{
 			Org: createOrg})
 		t.Logf("updateOrg, err: %+v, %v", updateOrg, err)
 		require.NoError(t, err)
 		require.Equal(t, createOrg.Name, updateOrg.Name)
-		require.Equal(t, createOrg.CreatedAt.AsTime(),
-			updateOrg.CreatedAt.AsTime())
+		require.Equal(t, createOrg.DisplayName, updateOrg.DisplayName)
+		require.Equal(t, createOrg.Email, updateOrg.Email)
 		require.True(t, updateOrg.UpdatedAt.AsTime().After(
 			updateOrg.CreatedAt.AsTime()))
 		require.WithinDuration(t, createOrg.CreatedAt.AsTime(),
@@ -215,15 +217,18 @@ func TestUpdateOrg(t *testing.T) {
 		require.NoError(t, err)
 
 		// Update org fields.
-		part := &api.Org{Id: createOrg.Id, Name: "api-org-" + random.String(10)}
+		part := &api.Org{Id: createOrg.Id, Name: "api-org-" + random.String(10),
+			DisplayName: "dao-org-" + random.String(10), Email: "dao-org-" +
+				random.Email()}
 
 		updateOrg, err := orgCli.UpdateOrg(ctx, &api.UpdateOrgRequest{
 			Org: part, UpdateMask: &fieldmaskpb.FieldMask{
-				Paths: []string{"name"}}})
+				Paths: []string{"name", "display_name", "email"}}})
 		t.Logf("updateOrg, err: %+v, %v", updateOrg, err)
 		require.NoError(t, err)
-		require.Equal(t, createOrg.CreatedAt.AsTime(),
-			updateOrg.CreatedAt.AsTime())
+		require.Equal(t, part.Name, updateOrg.Name)
+		require.Equal(t, part.DisplayName, updateOrg.DisplayName)
+		require.Equal(t, part.Email, updateOrg.Email)
 		require.True(t, updateOrg.UpdatedAt.AsTime().After(
 			updateOrg.CreatedAt.AsTime()))
 		require.WithinDuration(t, createOrg.CreatedAt.AsTime(),

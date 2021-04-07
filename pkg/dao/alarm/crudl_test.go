@@ -197,7 +197,7 @@ func TestUpdate(t *testing.T) {
 		createAlarm.Name = "dao-alarm-" + random.String(10)
 		createAlarm.Status = common.Status_DISABLED
 		createAlarm.Type = api.AlarmType_APP
-		createAlarm.UserTags = random.Tags("dao-alarm-", 2)
+		createAlarm.UserTags = random.Tags("dao-alarm", 2)
 		updateAlarm, _ := proto.Clone(createAlarm).(*api.Alarm)
 
 		updateAlarm, err = globalAlarmDAO.Update(ctx, updateAlarm)
@@ -205,6 +205,9 @@ func TestUpdate(t *testing.T) {
 			updateAlarm, err)
 		require.NoError(t, err)
 		require.Equal(t, createAlarm.Name, updateAlarm.Name)
+		require.Equal(t, createAlarm.Status, updateAlarm.Status)
+		require.Equal(t, createAlarm.Type, updateAlarm.Type)
+		require.Equal(t, createAlarm.UserTags, updateAlarm.UserTags)
 		require.True(t, updateAlarm.UpdatedAt.AsTime().After(
 			updateAlarm.CreatedAt.AsTime()))
 		require.WithinDuration(t, createAlarm.CreatedAt.AsTime(),

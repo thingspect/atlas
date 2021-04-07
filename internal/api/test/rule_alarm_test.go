@@ -540,13 +540,16 @@ func TestUpdateAlarm(t *testing.T) {
 		createAlarm.Name = "api-alarm-" + random.String(10)
 		createAlarm.Status = common.Status_DISABLED
 		createAlarm.Type = api.AlarmType_SMS
+		createAlarm.UserTags = random.Tags("api-alarm", 2)
 
 		updateAlarm, err := raCli.UpdateAlarm(ctx, &api.UpdateAlarmRequest{
 			Alarm: createAlarm})
 		t.Logf("updateAlarm, err: %+v, %v", updateAlarm, err)
 		require.NoError(t, err)
-		require.Equal(t, createAlarm.CreatedAt.AsTime(),
-			updateAlarm.CreatedAt.AsTime())
+		require.Equal(t, createAlarm.Name, updateAlarm.Name)
+		require.Equal(t, createAlarm.Status, updateAlarm.Status)
+		require.Equal(t, createAlarm.Type, updateAlarm.Type)
+		require.Equal(t, createAlarm.UserTags, updateAlarm.UserTags)
 		require.True(t, updateAlarm.UpdatedAt.AsTime().After(
 			updateAlarm.CreatedAt.AsTime()))
 		require.WithinDuration(t, createAlarm.CreatedAt.AsTime(),
@@ -584,15 +587,18 @@ func TestUpdateAlarm(t *testing.T) {
 		// Update alarm fields.
 		part := &api.Alarm{Id: createAlarm.Id, RuleId: createRule.Id,
 			Name:   "api-alarm-" + random.String(10),
-			Status: common.Status_DISABLED}
+			Status: common.Status_DISABLED, Type: api.AlarmType_SMS,
+			UserTags: random.Tags("api-alarm", 2)}
 
 		updateAlarm, err := raCli.UpdateAlarm(ctx, &api.UpdateAlarmRequest{
 			Alarm: part, UpdateMask: &fieldmaskpb.FieldMask{
-				Paths: []string{"name", "status"}}})
+				Paths: []string{"name", "status", "type", "user_tags"}}})
 		t.Logf("updateAlarm, err: %+v, %v", updateAlarm, err)
 		require.NoError(t, err)
-		require.Equal(t, createAlarm.CreatedAt.AsTime(),
-			updateAlarm.CreatedAt.AsTime())
+		require.Equal(t, part.Name, updateAlarm.Name)
+		require.Equal(t, part.Status, updateAlarm.Status)
+		require.Equal(t, part.Type, updateAlarm.Type)
+		require.Equal(t, part.UserTags, updateAlarm.UserTags)
 		require.True(t, updateAlarm.UpdatedAt.AsTime().After(
 			updateAlarm.CreatedAt.AsTime()))
 		require.WithinDuration(t, createAlarm.CreatedAt.AsTime(),

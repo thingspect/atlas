@@ -283,15 +283,17 @@ func TestUpdateDevice(t *testing.T) {
 		createDev.Name = "api-device-" + random.String(10)
 		createDev.Status = common.Status_DISABLED
 		createDev.Decoder = common.Decoder_GATEWAY
-		createDev.Tags = random.Tags("api-device-", 2)
+		createDev.Tags = random.Tags("api-device", 2)
 
 		updateDev, err := devCli.UpdateDevice(ctx, &api.UpdateDeviceRequest{
 			Device: createDev})
 		t.Logf("updateDev, err: %+v, %v", updateDev, err)
 		require.NoError(t, err)
 		require.Equal(t, createDev.UniqId, updateDev.UniqId)
-		require.Equal(t, createDev.CreatedAt.AsTime(),
-			updateDev.CreatedAt.AsTime())
+		require.Equal(t, createDev.Name, updateDev.Name)
+		require.Equal(t, createDev.Status, updateDev.Status)
+		require.Equal(t, createDev.Decoder, updateDev.Decoder)
+		require.Equal(t, createDev.Tags, updateDev.Tags)
 		require.True(t, updateDev.UpdatedAt.AsTime().After(
 			updateDev.CreatedAt.AsTime()))
 		require.WithinDuration(t, createDev.CreatedAt.AsTime(),
@@ -324,16 +326,19 @@ func TestUpdateDevice(t *testing.T) {
 		// Update device fields.
 		part := &common.Device{Id: createDev.Id, UniqId: "api-device-" +
 			random.String(16), Name: "api-device-" + random.String(10),
-			Status: common.Status_DISABLED, Decoder: common.Decoder_GATEWAY}
+			Status: common.Status_DISABLED, Decoder: common.Decoder_GATEWAY,
+			Tags: random.Tags("api-device", 2)}
 
 		updateDev, err := devCli.UpdateDevice(ctx, &api.UpdateDeviceRequest{
-			Device: part, UpdateMask: &fieldmaskpb.FieldMask{
-				Paths: []string{"uniq_id", "name", "status", "decoder"}}})
+			Device: part, UpdateMask: &fieldmaskpb.FieldMask{Paths: []string{
+				"uniq_id", "name", "status", "decoder", "tags"}}})
 		t.Logf("updateDev, err: %+v, %v", updateDev, err)
 		require.NoError(t, err)
 		require.Equal(t, part.UniqId, updateDev.UniqId)
-		require.Equal(t, createDev.CreatedAt.AsTime(),
-			updateDev.CreatedAt.AsTime())
+		require.Equal(t, part.Name, updateDev.Name)
+		require.Equal(t, part.Status, updateDev.Status)
+		require.Equal(t, part.Decoder, updateDev.Decoder)
+		require.Equal(t, part.Tags, updateDev.Tags)
 		require.True(t, updateDev.UpdatedAt.AsTime().After(
 			updateDev.CreatedAt.AsTime()))
 		require.WithinDuration(t, createDev.CreatedAt.AsTime(),

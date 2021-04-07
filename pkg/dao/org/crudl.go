@@ -13,8 +13,8 @@ import (
 )
 
 const createOrg = `
-INSERT INTO orgs (name, created_at, updated_at)
-VALUES ($1, $2, $2)
+INSERT INTO orgs (name, display_name, email, created_at, updated_at)
+VALUES ($1, $2, $3, $4, $4)
 RETURNING id
 `
 
@@ -25,8 +25,8 @@ func (d *DAO) Create(ctx context.Context, org *api.Org) (*api.Org, error) {
 	org.CreatedAt = timestamppb.New(now)
 	org.UpdatedAt = timestamppb.New(now)
 
-	if err := d.pg.QueryRowContext(ctx, createOrg, org.Name, now).Scan(
-		&org.Id); err != nil {
+	if err := d.pg.QueryRowContext(ctx, createOrg, org.Name, org.DisplayName,
+		org.Email, now).Scan(&org.Id); err != nil {
 		return nil, dao.DBToSentinel(err)
 	}
 
@@ -34,7 +34,7 @@ func (d *DAO) Create(ctx context.Context, org *api.Org) (*api.Org, error) {
 }
 
 const readOrg = `
-SELECT id, name, created_at, updated_at
+SELECT id, name, display_name, email, created_at, updated_at
 FROM orgs
 WHERE id = $1
 `
@@ -45,7 +45,7 @@ func (d *DAO) Read(ctx context.Context, orgID string) (*api.Org, error) {
 	var createdAt, updatedAt time.Time
 
 	if err := d.pg.QueryRowContext(ctx, readOrg, orgID).Scan(&org.Id, &org.Name,
-		&createdAt, &updatedAt); err != nil {
+		&org.DisplayName, &org.Email, &createdAt, &updatedAt); err != nil {
 		return nil, dao.DBToSentinel(err)
 	}
 
@@ -57,8 +57,8 @@ func (d *DAO) Read(ctx context.Context, orgID string) (*api.Org, error) {
 
 const updateOrg = `
 UPDATE orgs
-SET name = $1, updated_at = $2
-WHERE id = $3
+SET name = $1, display_name = $2, email = $3, updated_at = $4
+WHERE id = $5
 RETURNING created_at
 `
 
@@ -70,8 +70,8 @@ func (d *DAO) Update(ctx context.Context, org *api.Org) (*api.Org, error) {
 	updatedAt := time.Now().UTC().Truncate(time.Microsecond)
 	org.UpdatedAt = timestamppb.New(updatedAt)
 
-	if err := d.pg.QueryRowContext(ctx, updateOrg, org.Name, updatedAt,
-		org.Id).Scan(&createdAt); err != nil {
+	if err := d.pg.QueryRowContext(ctx, updateOrg, org.Name, org.DisplayName,
+		org.Email, updatedAt, org.Id).Scan(&createdAt); err != nil {
 		return nil, dao.DBToSentinel(err)
 	}
 
@@ -104,7 +104,7 @@ FROM orgs
 `
 
 const listOrgs = `
-SELECT id, name, created_at, updated_at
+SELECT id, name, display_name, email, created_at, updated_at
 FROM orgs
 `
 
@@ -163,8 +163,8 @@ func (d *DAO) List(ctx context.Context, lBoundTS time.Time, prevID string,
 		org := &api.Org{}
 		var createdAt, updatedAt time.Time
 
-		if err = rows.Scan(&org.Id, &org.Name, &createdAt,
-			&updatedAt); err != nil {
+		if err = rows.Scan(&org.Id, &org.Name, &org.DisplayName, &org.Email,
+			&createdAt, &updatedAt); err != nil {
 			return nil, 0, dao.DBToSentinel(err)
 		}
 

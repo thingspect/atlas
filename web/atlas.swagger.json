@@ -1972,10 +1972,11 @@
       "enum": [
         "ALARM_TYPE_UNSPECIFIED",
         "APP",
-        "SMS"
+        "SMS",
+        "EMAIL"
       ],
       "default": "ALARM_TYPE_UNSPECIFIED",
-      "description": "AlarmType represents the type of alarm.\n\n - ALARM_TYPE_UNSPECIFIED: Alarm type is not specified.\n - APP: Push notification via mobile application.\n - SMS: SMS notification."
+      "description": "AlarmType represents the type of alarm.\n\n - ALARM_TYPE_UNSPECIFIED: Alarm type is not specified.\n - APP: Push notification via mobile application.\n - SMS: SMS notification.\n - EMAIL: Email notification."
     },
     "apiAlert": {
       "type": "object",
@@ -2318,6 +2319,14 @@
         "name": {
           "type": "string",
           "description": "Organization name."
+        },
+        "displayName": {
+          "type": "string",
+          "description": "Organization display name. Used anywhere the organization is shown to a user, including web sites and alert sender fields."
+        },
+        "email": {
+          "type": "string",
+          "description": "Organization email. Used as the 'From' address in email alerts."
         },
         "createdAt": {
           "type": "string",

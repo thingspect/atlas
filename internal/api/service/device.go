@@ -149,6 +149,9 @@ func (d *Device) UpdateDevice(ctx context.Context,
 		}
 
 		fmutils.Filter(req.Device, req.UpdateMask.Paths)
+		if req.Device.Tags != nil {
+			dev.Tags = nil
+		}
 		proto.Merge(dev, req.Device)
 		req.Device = dev
 	}

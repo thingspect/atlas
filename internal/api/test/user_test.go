@@ -217,14 +217,16 @@ func TestUpdateUser(t *testing.T) {
 		createUser.Email = "api-user-" + random.Email()
 		createUser.Role = common.Role_ADMIN
 		createUser.Status = common.Status_DISABLED
-		createUser.Tags = random.Tags("api-user-", 2)
+		createUser.Tags = random.Tags("api-user", 2)
 
 		updateUser, err := userCli.UpdateUser(ctx, &api.UpdateUserRequest{
 			User: createUser})
 		t.Logf("updateUser, err: %+v, %v", updateUser, err)
 		require.NoError(t, err)
-		require.Equal(t, createUser.CreatedAt.AsTime(),
-			updateUser.CreatedAt.AsTime())
+		require.Equal(t, createUser.Email, updateUser.Email)
+		require.Equal(t, createUser.Role, updateUser.Role)
+		require.Equal(t, createUser.Status, updateUser.Status)
+		require.Equal(t, createUser.Tags, updateUser.Tags)
 		require.True(t, updateUser.UpdatedAt.AsTime().After(
 			updateUser.CreatedAt.AsTime()))
 		require.WithinDuration(t, createUser.CreatedAt.AsTime(),
@@ -259,15 +261,18 @@ func TestUpdateUser(t *testing.T) {
 
 		// Update user fields.
 		part := &api.User{Id: createUser.Id, Email: "api-user-" +
-			random.Email(), Status: common.Status_DISABLED}
+			random.Email(), Role: common.Role_ADMIN,
+			Status: common.Status_DISABLED, Tags: random.Tags("api-user", 2)}
 
 		updateUser, err := userCli.UpdateUser(ctx, &api.UpdateUserRequest{
 			User: part, UpdateMask: &fieldmaskpb.FieldMask{
-				Paths: []string{"email", "status"}}})
+				Paths: []string{"email", "role", "status", "tags"}}})
 		t.Logf("updateUser, err: %+v, %v", updateUser, err)
 		require.NoError(t, err)
-		require.Equal(t, createUser.CreatedAt.AsTime(),
-			updateUser.CreatedAt.AsTime())
+		require.Equal(t, part.Email, updateUser.Email)
+		require.Equal(t, part.Role, updateUser.Role)
+		require.Equal(t, part.Status, updateUser.Status)
+		require.Equal(t, part.Tags, updateUser.Tags)
 		require.True(t, updateUser.UpdatedAt.AsTime().After(
 			updateUser.CreatedAt.AsTime()))
 		require.WithinDuration(t, createUser.CreatedAt.AsTime(),

@@ -30,6 +30,10 @@ func TestOrg(t *testing.T) {
 			require.NotEqual(t, o1, o2)
 			require.True(t, strings.HasPrefix(o1.Name, prefix))
 			require.True(t, strings.HasPrefix(o2.Name, prefix))
+			require.True(t, strings.HasPrefix(o1.DisplayName, prefix))
+			require.True(t, strings.HasPrefix(o2.DisplayName, prefix))
+			require.True(t, strings.HasPrefix(o1.Email, prefix))
+			require.True(t, strings.HasPrefix(o2.Email, prefix))
 		})
 	}
 }

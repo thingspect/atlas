@@ -1,6 +1,6 @@
+ALTER TABLE users DROP COLUMN phone;
+
 ALTER TYPE alarm_type RENAME TO alarm_type_old;
 CREATE TYPE alarm_type AS ENUM ('ALARM_TYPE_UNSPECIFIED', 'APP');
 ALTER TABLE alarms ALTER COLUMN type TYPE alarm_type USING type::text::alarm_type;
 DROP TYPE alarm_type_old;
-
-ALTER TABLE users DROP COLUMN phone;

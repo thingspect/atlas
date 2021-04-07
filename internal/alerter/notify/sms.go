@@ -23,14 +23,16 @@ func (n *notify) SMS(ctx context.Context, phone, subject, body string) error {
 	// Support modified Twilio rate limit of 1 per second, serially. Twilio will
 	// queue up to 4 hours worth of messages (14,400):
 	// https://support.twilio.com/hc/en-us/articles/115002943027-Understanding-Twilio-Rate-Limits-and-Message-Queues
-	ok, err := n.cache.SetIfNotExistTTL(ctx, "notify.sms", 0, 750*time.Millisecond)
+	ok, err := n.cache.SetIfNotExistTTL(ctx, "notify.sms", 0,
+		750*time.Millisecond)
 	if err != nil {
 		return err
 	}
 	for !ok {
 		time.Sleep(750 * time.Millisecond)
 
-		ok, err = n.cache.SetIfNotExistTTL(ctx, "notify.sms", 0, 750*time.Millisecond)
+		ok, err = n.cache.SetIfNotExistTTL(ctx, "notify.sms", 0,
+			750*time.Millisecond)
 		if err != nil {
 			return err
 		}

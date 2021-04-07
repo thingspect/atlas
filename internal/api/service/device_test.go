@@ -358,10 +358,10 @@ func TestUpdateDevice(t *testing.T) {
 		dev := random.Device("api-device", uuid.NewString())
 		retDev, _ := proto.Clone(dev).(*common.Device)
 		part := &common.Device{Id: dev.Id, Status: common.Status_ACTIVE,
-			Decoder: common.Decoder_GATEWAY}
+			Decoder: common.Decoder_GATEWAY, Tags: random.Tags("api-device", 2)}
 		merged := &common.Device{Id: dev.Id, OrgId: dev.OrgId,
 			UniqId: dev.UniqId, Name: dev.Name, Status: part.Status,
-			Token: dev.Token, Decoder: part.Decoder, Tags: dev.Tags}
+			Token: dev.Token, Decoder: part.Decoder, Tags: part.Tags}
 		retMerged, _ := proto.Clone(merged).(*common.Device)
 
 		devicer := NewMockDevicer(gomock.NewController(t))
@@ -378,7 +378,7 @@ func TestUpdateDevice(t *testing.T) {
 		devSvc := NewDevice(devicer, nil)
 		updateDev, err := devSvc.UpdateDevice(ctx, &api.UpdateDeviceRequest{
 			Device: part, UpdateMask: &fieldmaskpb.FieldMask{
-				Paths: []string{"status", "decoder"}}})
+				Paths: []string{"status", "decoder", "tags"}}})
 		t.Logf("merged, updateDev, err: %+v, %+v, %v", merged, updateDev, err)
 		require.NoError(t, err)
 

@@ -25,6 +25,7 @@ type Config struct {
 	SMSAccountSID string
 	SMSAuthToken  string
 	SMSPhone      string
+	EmailAPIKey   string
 }
 
 // New instantiates a service Config, parses the environment, and returns it.
@@ -50,5 +51,6 @@ func New() *Config {
 			"ACdefd5896d2acc15061cae169bb9d4836"),
 		SMSAuthToken: config.String(pref+"SMS_AUTH_TOKEN", ""),
 		SMSPhone:     config.String(pref+"SMS_PHONE", "+15125432462"),
+		EmailAPIKey:  config.String(pref+"EMAIL_API_KEY", ""),
 	}
 }

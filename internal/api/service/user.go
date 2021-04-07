@@ -155,6 +155,9 @@ func (u *User) UpdateUser(ctx context.Context,
 		}
 
 		fmutils.Filter(req.User, req.UpdateMask.Paths)
+		if req.User.Tags != nil {
+			user.Tags = nil
+		}
 		proto.Merge(user, req.User)
 		req.User = user
 	}

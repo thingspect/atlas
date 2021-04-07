@@ -12,8 +12,10 @@ import (
 // Org generates a random org with prefixed identifiers.
 func Org(prefix string) *api.Org {
 	return &api.Org{
-		Id:   uuid.NewString(),
-		Name: prefix + "-" + String(10),
+		Id:          uuid.NewString(),
+		Name:        prefix + "-" + String(10),
+		DisplayName: prefix + "-" + String(10),
+		Email:       prefix + "-" + Email(),
 	}
 }
 
@@ -80,7 +82,8 @@ func Alarm(prefix, orgID, ruleID string) *api.Alarm {
 		Type: []api.AlarmType{
 			api.AlarmType_APP,
 			api.AlarmType_SMS,
-		}[Intn(2)],
+			api.AlarmType_EMAIL,
+		}[Intn(3)],
 		UserTags:        Tags(prefix, Intn(4)+1),
 		SubjectTemplate: `rule name is: {{.rule.Name}}`,
 		BodyTemplate:    `device status is: {{.device.Status}}`,

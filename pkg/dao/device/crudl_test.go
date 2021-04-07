@@ -229,6 +229,10 @@ func TestUpdate(t *testing.T) {
 			err)
 		require.NoError(t, err)
 		require.Equal(t, createDev.UniqId, updateDev.UniqId)
+		require.Equal(t, createDev.Name, updateDev.Name)
+		require.Equal(t, createDev.Status, updateDev.Status)
+		require.Equal(t, createDev.Decoder, updateDev.Decoder)
+		require.Equal(t, createDev.Tags, updateDev.Tags)
 		require.True(t, updateDev.UpdatedAt.AsTime().After(
 			updateDev.CreatedAt.AsTime()))
 		require.WithinDuration(t, createDev.CreatedAt.AsTime(),

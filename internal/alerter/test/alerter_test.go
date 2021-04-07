@@ -26,6 +26,7 @@ func TestAlertMessages(t *testing.T) {
 	for _, alarmType := range []api.AlarmType{
 		api.AlarmType_APP,
 		api.AlarmType_SMS,
+		api.AlarmType_EMAIL,
 	} {
 		lAlarmType := alarmType
 
@@ -112,6 +113,7 @@ func TestAlertMessagesRepeat(t *testing.T) {
 	for _, alarmType := range []api.AlarmType{
 		api.AlarmType_APP,
 		api.AlarmType_SMS,
+		api.AlarmType_EMAIL,
 	} {
 		lAlarmType := alarmType
 
@@ -211,10 +213,10 @@ func TestAlertMessagesError(t *testing.T) {
 	t.Logf("createBadSubjRule, err: %+v, %v", createBadSubjRule, err)
 	require.NoError(t, err)
 
-	badTypeRule := random.Rule("ale", createOrg.Id)
-	badTypeRule.Status = common.Status_ACTIVE
-	createBadTypeRule, err := globalRuleDAO.Create(ctx, badTypeRule)
-	t.Logf("createBadTypeRule, err: %+v, %v", createBadTypeRule, err)
+	unspecTypeRule := random.Rule("ale", createOrg.Id)
+	unspecTypeRule.Status = common.Status_ACTIVE
+	createUnspecTypeRule, err := globalRuleDAO.Create(ctx, unspecTypeRule)
+	t.Logf("createUnspecTypeRule, err: %+v, %v", createUnspecTypeRule, err)
 	require.NoError(t, err)
 
 	user := random.User("dao-user", createOrg.Id)
@@ -232,17 +234,18 @@ func TestAlertMessagesError(t *testing.T) {
 	t.Logf("createBadSubjAlarm, err: %+v, %v", createBadSubjAlarm, err)
 	require.NoError(t, err)
 
-	badTypeAlarm := random.Alarm("ale", createOrg.Id, createBadTypeRule.Id)
-	badTypeAlarm.Status = common.Status_ACTIVE
-	badTypeAlarm.Type = api.AlarmType_ALARM_TYPE_UNSPECIFIED
-	badTypeAlarm.UserTags = createUser.Tags
-	createBadTypeAlarm, err := globalAlarmDAO.Create(ctx, badTypeAlarm)
-	t.Logf("createBadTypeAlarm, err: %+v, %v", createBadTypeAlarm, err)
+	unspecTypeAlarm := random.Alarm("ale", createOrg.Id,
+		createUnspecTypeRule.Id)
+	unspecTypeAlarm.Status = common.Status_ACTIVE
+	unspecTypeAlarm.Type = api.AlarmType_ALARM_TYPE_UNSPECIFIED
+	unspecTypeAlarm.UserTags = createUser.Tags
+	createUnspecTypeAlarm, err := globalAlarmDAO.Create(ctx, unspecTypeAlarm)
+	t.Logf("createUnspecTypeAlarm, err: %+v, %v", createUnspecTypeAlarm, err)
 	require.NoError(t, err)
 
 	dev := random.Device("ale", createOrg.Id)
 	dev.Tags = []string{createBadSubjRule.DeviceTag,
-		createBadTypeRule.DeviceTag}
+		createUnspecTypeRule.DeviceTag}
 
 	tests := []struct {
 		inpEOut      *message.EventerOut
@@ -259,14 +262,20 @@ func TestAlertMessagesError(t *testing.T) {
 		// Missing rule.
 		{&message.EventerOut{Point: &common.DataPoint{},
 			Device: &common.Device{}}, uuid.NewString(), nil},
+		// Unknown org. If this fails due to msg.Requeue(), remove it.
+		{&message.EventerOut{Point: &common.DataPoint{
+			TraceId: uuid.NewString()}, Device: random.Device("ale",
+			uuid.NewString()), Rule: random.Rule("ale", createOrg.Id)},
+			uuid.NewString(), nil},
 		// Bad alarm subject.
 		{&message.EventerOut{Point: &common.DataPoint{
 			TraceId: uuid.NewString()}, Device: dev, Rule: createBadSubjRule},
 			createBadSubjAlarm.Id, nil},
-		// Bad alarm type.
+		// Unspecified alarm type.
 		{&message.EventerOut{Point: &common.DataPoint{
-			TraceId: uuid.NewString()}, Device: dev, Rule: createBadTypeRule},
-			createBadTypeAlarm.Id, alerter.ErrUnknownAlarm},
+			TraceId: uuid.NewString()}, Device: dev,
+			Rule: createUnspecTypeRule}, createUnspecTypeAlarm.Id,
+			alerter.ErrUnknownAlarm},
 	}
 
 	for _, test := range tests {
