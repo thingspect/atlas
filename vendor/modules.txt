@@ -128,7 +128,7 @@ github.com/kevinburke/twilio-go
 ## explicit
 github.com/mailgun/mailgun-go/v4
 github.com/mailgun/mailgun-go/v4/events
-# github.com/mennanov/fmutils v0.0.3
+# github.com/mennanov/fmutils v0.0.4
 ## explicit
 github.com/mennanov/fmutils
 # github.com/modern-go/concurrent v0.0.0-20180306012644-bacd9c7ef1dd
@@ -154,7 +154,7 @@ github.com/smira/go-statsd
 ## explicit
 github.com/stretchr/testify/assert
 github.com/stretchr/testify/require
-# github.com/thingspect/api/go v0.0.0-20210407185146-a01d72220f60
+# github.com/thingspect/api/go v0.0.0-20210408143733-0920ace0feca
 ## explicit
 github.com/thingspect/api/go/api
 github.com/thingspect/api/go/common

@@ -16,6 +16,8 @@ import (
 	"unicode/utf8"
 
 	"github.com/golang/protobuf/ptypes"
+
+	common "github.com/thingspect/api/go/common"
 )
 
 // ensure the imports are used
@@ -31,7 +33,12 @@ var (
 	_ = (*url.URL)(nil)
 	_ = (*mail.Address)(nil)
 	_ = ptypes.DynamicAny{}
+
+	_ = common.Role(0)
 )
+
+// define the regex for a UUID once up-front
+var _session_uuidPattern = regexp.MustCompile("^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$")
 
 // Validate checks the field values on LoginRequest with the rules defined in
 // the proto definition for this message. If any rules are violated, an error
@@ -180,3 +187,503 @@ var _ interface {
 	Cause() error
 	ErrorName() string
 } = LoginResponseValidationError{}
+
+// Validate checks the field values on Key with the rules defined in the proto
+// definition for this message. If any rules are violated, an error is returned.
+func (m *Key) Validate() error {
+	if m == nil {
+		return nil
+	}
+
+	// no validation rules for Id
+
+	// no validation rules for OrgId
+
+	if l := utf8.RuneCountInString(m.GetName()); l < 5 || l > 80 {
+		return KeyValidationError{
+			field:  "Name",
+			reason: "value length must be between 5 and 80 runes, inclusive",
+		}
+	}
+
+	if _, ok := _Key_Role_InLookup[m.GetRole()]; !ok {
+		return KeyValidationError{
+			field:  "Role",
+			reason: "value must be in list [3 6 9 12 15]",
+		}
+	}
+
+	if v, ok := interface{}(m.GetCreatedAt()).(interface{ Validate() error }); ok {
+		if err := v.Validate(); err != nil {
+			return KeyValidationError{
+				field:  "CreatedAt",
+				reason: "embedded message failed validation",
+				cause:  err,
+			}
+		}
+	}
+
+	return nil
+}
+
+// KeyValidationError is the validation error returned by Key.Validate if the
+// designated constraints aren't met.
+type KeyValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e KeyValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e KeyValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e KeyValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e KeyValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e KeyValidationError) ErrorName() string { return "KeyValidationError" }
+
+// Error satisfies the builtin error interface
+func (e KeyValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sKey.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = KeyValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = KeyValidationError{}
+
+var _Key_Role_InLookup = map[common.Role]struct{}{
+	3:  {},
+	6:  {},
+	9:  {},
+	12: {},
+	15: {},
+}
+
+// Validate checks the field values on CreateKeyRequest with the rules defined
+// in the proto definition for this message. If any rules are violated, an
+// error is returned.
+func (m *CreateKeyRequest) Validate() error {
+	if m == nil {
+		return nil
+	}
+
+	if m.GetKey() == nil {
+		return CreateKeyRequestValidationError{
+			field:  "Key",
+			reason: "value is required",
+		}
+	}
+
+	if v, ok := interface{}(m.GetKey()).(interface{ Validate() error }); ok {
+		if err := v.Validate(); err != nil {
+			return CreateKeyRequestValidationError{
+				field:  "Key",
+				reason: "embedded message failed validation",
+				cause:  err,
+			}
+		}
+	}
+
+	return nil
+}
+
+// CreateKeyRequestValidationError is the validation error returned by
+// CreateKeyRequest.Validate if the designated constraints aren't met.
+type CreateKeyRequestValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e CreateKeyRequestValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e CreateKeyRequestValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e CreateKeyRequestValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e CreateKeyRequestValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e CreateKeyRequestValidationError) ErrorName() string { return "CreateKeyRequestValidationError" }
+
+// Error satisfies the builtin error interface
+func (e CreateKeyRequestValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sCreateKeyRequest.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = CreateKeyRequestValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = CreateKeyRequestValidationError{}
+
+// Validate checks the field values on CreateKeyResponse with the rules defined
+// in the proto definition for this message. If any rules are violated, an
+// error is returned.
+func (m *CreateKeyResponse) Validate() error {
+	if m == nil {
+		return nil
+	}
+
+	if v, ok := interface{}(m.GetKey()).(interface{ Validate() error }); ok {
+		if err := v.Validate(); err != nil {
+			return CreateKeyResponseValidationError{
+				field:  "Key",
+				reason: "embedded message failed validation",
+				cause:  err,
+			}
+		}
+	}
+
+	// no validation rules for Token
+
+	return nil
+}
+
+// CreateKeyResponseValidationError is the validation error returned by
+// CreateKeyResponse.Validate if the designated constraints aren't met.
+type CreateKeyResponseValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e CreateKeyResponseValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e CreateKeyResponseValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e CreateKeyResponseValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e CreateKeyResponseValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e CreateKeyResponseValidationError) ErrorName() string {
+	return "CreateKeyResponseValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e CreateKeyResponseValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sCreateKeyResponse.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = CreateKeyResponseValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = CreateKeyResponseValidationError{}
+
+// Validate checks the field values on DeleteKeyRequest with the rules defined
+// in the proto definition for this message. If any rules are violated, an
+// error is returned.
+func (m *DeleteKeyRequest) Validate() error {
+	if m == nil {
+		return nil
+	}
+
+	if err := m._validateUuid(m.GetId()); err != nil {
+		return DeleteKeyRequestValidationError{
+			field:  "Id",
+			reason: "value must be a valid UUID",
+			cause:  err,
+		}
+	}
+
+	return nil
+}
+
+func (m *DeleteKeyRequest) _validateUuid(uuid string) error {
+	if matched := _session_uuidPattern.MatchString(uuid); !matched {
+		return errors.New("invalid uuid format")
+	}
+
+	return nil
+}
+
+// DeleteKeyRequestValidationError is the validation error returned by
+// DeleteKeyRequest.Validate if the designated constraints aren't met.
+type DeleteKeyRequestValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e DeleteKeyRequestValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e DeleteKeyRequestValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e DeleteKeyRequestValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e DeleteKeyRequestValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e DeleteKeyRequestValidationError) ErrorName() string { return "DeleteKeyRequestValidationError" }
+
+// Error satisfies the builtin error interface
+func (e DeleteKeyRequestValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sDeleteKeyRequest.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = DeleteKeyRequestValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = DeleteKeyRequestValidationError{}
+
+// Validate checks the field values on ListKeysRequest with the rules defined
+// in the proto definition for this message. If any rules are violated, an
+// error is returned.
+func (m *ListKeysRequest) Validate() error {
+	if m == nil {
+		return nil
+	}
+
+	if m.GetPageSize() > 250 {
+		return ListKeysRequestValidationError{
+			field:  "PageSize",
+			reason: "value must be less than or equal to 250",
+		}
+	}
+
+	// no validation rules for PageToken
+
+	return nil
+}
+
+// ListKeysRequestValidationError is the validation error returned by
+// ListKeysRequest.Validate if the designated constraints aren't met.
+type ListKeysRequestValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e ListKeysRequestValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e ListKeysRequestValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e ListKeysRequestValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e ListKeysRequestValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e ListKeysRequestValidationError) ErrorName() string { return "ListKeysRequestValidationError" }
+
+// Error satisfies the builtin error interface
+func (e ListKeysRequestValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sListKeysRequest.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = ListKeysRequestValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = ListKeysRequestValidationError{}
+
+// Validate checks the field values on ListKeysResponse with the rules defined
+// in the proto definition for this message. If any rules are violated, an
+// error is returned.
+func (m *ListKeysResponse) Validate() error {
+	if m == nil {
+		return nil
+	}
+
+	for idx, item := range m.GetKeys() {
+		_, _ = idx, item
+
+		if v, ok := interface{}(item).(interface{ Validate() error }); ok {
+			if err := v.Validate(); err != nil {
+				return ListKeysResponseValidationError{
+					field:  fmt.Sprintf("Keys[%v]", idx),
+					reason: "embedded message failed validation",
+					cause:  err,
+				}
+			}
+		}
+
+	}
+
+	// no validation rules for NextPageToken
+
+	// no validation rules for TotalSize
+
+	return nil
+}
+
+// ListKeysResponseValidationError is the validation error returned by
+// ListKeysResponse.Validate if the designated constraints aren't met.
+type ListKeysResponseValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e ListKeysResponseValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e ListKeysResponseValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e ListKeysResponseValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e ListKeysResponseValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e ListKeysResponseValidationError) ErrorName() string { return "ListKeysResponseValidationError" }
+
+// Error satisfies the builtin error interface
+func (e ListKeysResponseValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sListKeysResponse.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = ListKeysResponseValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = ListKeysResponseValidationError{}

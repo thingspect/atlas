@@ -397,8 +397,8 @@ github.com/mattn/go-runewidth v0.0.2/go.mod h1:LwmH8dsx7+W8Uxz3IHJYH5QSwggIsqBzp
 github.com/mattn/go-runewidth v0.0.4/go.mod h1:LwmH8dsx7+W8Uxz3IHJYH5QSwggIsqBzpuz5H//U1FU=
 github.com/mattn/go-runewidth v0.0.8/go.mod h1:H031xJmbD/WCDINGzjvQ9THkh0rPKHF+m2gUSrubnMI=
 github.com/matttproud/golang_protobuf_extensions v1.0.1/go.mod h1:D8He9yQNgCq6Z5Ld7szi9bcBfOoFv/3dc6xSMkL2PC0=
-github.com/mennanov/fmutils v0.0.3 h1:NscONV1U0HzmqTYKic6UnLIdOBVGWnw5T672NC4yFCQ=
-github.com/mennanov/fmutils v0.0.3/go.mod h1:yoXEhA9spZa//ChoyEllLZiGsHrTjcbFuF/eYhFa1rw=
+github.com/mennanov/fmutils v0.0.4 h1:H9r/iXT3ZqiqSz3jncS60FblivhL4KaRNAyWaF8EQ2A=
+github.com/mennanov/fmutils v0.0.4/go.mod h1:yoXEhA9spZa//ChoyEllLZiGsHrTjcbFuF/eYhFa1rw=
 github.com/miekg/dns v1.0.14/go.mod h1:W1PPwlIAgtquWBMBEV9nkV9Cazfe8ScdGz/Lj7v3Nrg=
 github.com/mitchellh/cli v1.0.0/go.mod h1:hNIlj7HEI86fIcpObd7a0FcrxTWetlwJDGcceTlRvqc=
 github.com/mitchellh/go-homedir v1.0.0/go.mod h1:SfyaCUpYCn1Vlf4IUYiD9fPX4A5wJrkLzIz1N1q0pr0=
@@ -547,8 +547,8 @@ github.com/stretchr/testify v1.6.1/go.mod h1:6Fq8oRcR53rry900zMqJjRRixrwX3KX962/
 github.com/stretchr/testify v1.7.0 h1:nwc3DEeHmmLAfoZucVR881uASk0Mfjw8xYJ99tb5CcY=
 github.com/stretchr/testify v1.7.0/go.mod h1:6Fq8oRcR53rry900zMqJjRRixrwX3KX962/h/Wwjteg=
 github.com/subosito/gotenv v1.2.0/go.mod h1:N0PQaV/YGNqwC0u51sEeR/aUtSLEXKX9iv69rRypqCw=
-github.com/thingspect/api/go v0.0.0-20210407185146-a01d72220f60 h1:QhzCen/vG8O8TwrFRsKU2olLG+MoBaZOjJNStK3zLGk=
-github.com/thingspect/api/go v0.0.0-20210407185146-a01d72220f60/go.mod h1:hoE+75uIJtRSCEFGZ5RGlXLwGf8FzicnRPkJ949kN68=
+github.com/thingspect/api/go v0.0.0-20210408143733-0920ace0feca h1:/hVQRAwWLac90Y6XWKlQSu1dEAi867YHgaA/JFfFO3c=
+github.com/thingspect/api/go v0.0.0-20210408143733-0920ace0feca/go.mod h1:XWGsLxytOFnff3dDMq+iBq3kJYCjEkGWYIgo3hRc738=
 github.com/tmc/grpc-websocket-proxy v0.0.0-20170815181823-89b8d40f7ca8/go.mod h1:ncp9v5uamzpCO7NfCPTXjqaC+bZgJeR0sMTm6dMHP7U=
 github.com/tmc/grpc-websocket-proxy v0.0.0-20190109142713-0ad062ec5ee5/go.mod h1:ncp9v5uamzpCO7NfCPTXjqaC+bZgJeR0sMTm6dMHP7U=
 github.com/ttacon/builder v0.0.0-20170518171403-c099f663e1c2 h1:5u+EJUQiosu3JFX0XS0qTf5FznsMOzTjGqavBGuCbo0=
