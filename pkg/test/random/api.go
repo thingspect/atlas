@@ -130,6 +130,22 @@ func User(prefix, orgID string) *api.User {
 	}
 }
 
+// Key generates a random API key with prefixed identifiers.
+func Key(prefix, orgID string) *api.Key {
+	return &api.Key{
+		Id:    uuid.NewString(),
+		OrgId: orgID,
+		Name:  prefix + "-" + String(10),
+		Role: []common.Role{
+			common.Role_CONTACT,
+			common.Role_VIEWER,
+			common.Role_BUILDER,
+			common.Role_ADMIN,
+			common.Role_SYS_ADMIN,
+		}[Intn(5)],
+	}
+}
+
 // Tags generates n random tags with prefixed identifiers.
 func Tags(prefix string, n int) []string {
 	tags := []string{}

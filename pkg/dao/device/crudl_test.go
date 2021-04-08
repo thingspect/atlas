@@ -42,7 +42,6 @@ func TestCreate(t *testing.T) {
 		t.Logf("dev, createDev, err: %+v, %+v, %v", dev, createDev, err)
 		require.NoError(t, err)
 		require.NotEqual(t, dev.Id, createDev.Id)
-		require.Equal(t, dev.UniqId, createDev.UniqId)
 		require.NotEqual(t, dev.Token, createDev.Token)
 		require.WithinDuration(t, time.Now(), createDev.CreatedAt.AsTime(),
 			2*time.Second)

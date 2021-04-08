@@ -193,6 +193,29 @@ func TestUser(t *testing.T) {
 	}
 }
 
+func TestKey(t *testing.T) {
+	t.Parallel()
+
+	for i := 0; i < 5; i++ {
+		lTest := i
+
+		t.Run(fmt.Sprintf("Can generate %v", lTest), func(t *testing.T) {
+			t.Parallel()
+
+			prefix := String(10)
+			orgID := uuid.NewString()
+
+			k1 := Key(prefix, orgID)
+			k2 := Key(prefix, orgID)
+			t.Logf("k1, k2: %+v, %+v", k1, k2)
+
+			require.NotEqual(t, k1, k2)
+			require.True(t, strings.HasPrefix(k1.Name, prefix))
+			require.True(t, strings.HasPrefix(k2.Name, prefix))
+		})
+	}
+}
+
 func TestTags(t *testing.T) {
 	t.Parallel()
 

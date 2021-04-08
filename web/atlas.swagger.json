@@ -1538,6 +1538,120 @@
         ]
       }
     },
+    "/v1/sessions/keys": {
+      "get": {
+        "summary": "List all API keys.",
+        "operationId": "SessionService_ListKeys",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/apiListKeysResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "pageSize",
+            "description": "Number of API keys to retrieve in a single page. Defaults to 50 if not specified, with a maximum of 250.",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
+          },
+          {
+            "name": "pageToken",
+            "description": "Token of the page to retrieve. If not specified, the first page of results will be returned. To request the next page of results, use next_page_token from the previous response.",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "SessionService"
+        ]
+      },
+      "post": {
+        "summary": "Create an API key.",
+        "operationId": "SessionService_CreateKey",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/apiCreateKeyResponse"
+            }
+          },
+          "201": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/apiKey"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "description": "Key message to create.",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/apiKey"
+            }
+          }
+        ],
+        "tags": [
+          "SessionService"
+        ]
+      }
+    },
+    "/v1/sessions/keys/{id}": {
+      "delete": {
+        "summary": "Delete an API key by ID.",
+        "operationId": "SessionService_DeleteKey",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "properties": {}
+            }
+          },
+          "204": {
+            "description": "A successful response.",
+            "schema": {}
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "description": "Key ID (UUID) to delete.",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "SessionService"
+        ]
+      }
+    },
     "/v1/sessions/login": {
       "post": {
         "summary": "Log in a user.",
@@ -2046,6 +2160,20 @@
       },
       "description": "CreateDeviceLoRaWANRequest is sent to add LoRaWAN configuration to a device."
     },
+    "apiCreateKeyResponse": {
+      "type": "object",
+      "properties": {
+        "key": {
+          "$ref": "#/definitions/apiKey",
+          "description": "Key message created."
+        },
+        "token": {
+          "type": "string",
+          "description": "Token to be used for subsequent calls. Only returned once, upon key creation."
+        }
+      },
+      "description": "CreateKeyResponse is sent in response to an API key creation."
+    },
     "apiEvent": {
       "type": "object",
       "properties": {
@@ -2072,6 +2200,42 @@
         }
       },
       "description": "Event represents an event as stored in the database."
+    },
+    "apiKey": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Key ID (UUID).",
+          "readOnly": true
+        },
+        "orgID": {
+          "type": "string",
+          "description": "Organization ID (UUID).",
+          "readOnly": true
+        },
+        "name": {
+          "type": "string",
+          "description": "Key name.",
+          "required": [
+            "name"
+          ]
+        },
+        "role": {
+          "$ref": "#/definitions/commonRole",
+          "description": "Key role."
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Key creation timestamp.",
+          "readOnly": true
+        }
+      },
+      "description": "Key represents an API key as stored in the database.",
+      "required": [
+        "name"
+      ]
     },
     "apiLatestDataPointsResponse": {
       "type": "object",
@@ -2181,6 +2345,28 @@
         }
       },
       "description": "ListEventsResponse is sent in response to a device events list."
+    },
+    "apiListKeysResponse": {
+      "type": "object",
+      "properties": {
+        "keys": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/apiKey"
+          },
+          "description": "Key array, ordered by ascending created_at timestamp."
+        },
+        "nextPageToken": {
+          "type": "string",
+          "description": "Pagination token used to retrieve the next page of results. Not returned for the last page."
+        },
+        "totalSize": {
+          "type": "integer",
+          "format": "int32",
+          "description": "Total number of API keys available."
+        }
+      },
+      "description": "ListKeysResponse is sent in response to an API key list."
     },
     "apiListOrgsResponse": {
       "type": "object",
@@ -2298,7 +2484,7 @@
       "properties": {
         "token": {
           "type": "string",
-          "description": "Token to be used for subsequent non-login service calls."
+          "description": "Token to be used for subsequent non-login calls."
         },
         "expiresAt": {
           "type": "string",
