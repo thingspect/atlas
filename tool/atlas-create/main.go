@@ -71,10 +71,21 @@ func main() {
 	switch flag.Arg(0) {
 	// Create org and fall through to user.
 	case "org":
+		// Build org email.
+		emailParts := strings.SplitN(flag.Arg(2), "@", 2)
+		if len(emailParts) != 2 {
+			fmt.Fprintln(os.Stderr, "invalid email address")
+			os.Exit(1)
+		}
+
 		ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
 		defer cancel()
 
-		createOrg, err := orgDAO.Create(ctx, &api.Org{Name: flag.Arg(1)})
+		createOrg, err := orgDAO.Create(ctx, &api.Org{
+			Name:        flag.Arg(1),
+			DisplayName: strings.Title(strings.ToLower(flag.Arg(1))),
+			Email:       "noreply@" + emailParts[1],
+		})
 		checkErr(err)
 		orgID = createOrg.Id
 		fmt.Fprintf(os.Stdout, "Org: %+v\n", createOrg)
