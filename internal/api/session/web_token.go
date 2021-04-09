@@ -6,6 +6,7 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/thingspect/api/go/api"
+	"github.com/thingspect/api/go/common"
 	"github.com/thingspect/atlas/api/go/token"
 	"github.com/thingspect/atlas/internal/api/crypto"
 	"github.com/thingspect/atlas/pkg/consterr"
@@ -24,7 +25,7 @@ const (
 // GenerateWebToken generates an encrypted protobuf web token in raw (no
 // padding) base64 format. It returns the token, expiration time, and an error
 // value.
-func GenerateWebToken(key []byte, user *api.User) (string,
+func GenerateWebToken(pwtKey []byte, user *api.User) (string,
 	*timestamppb.Timestamp, error) {
 	// Convert user.Id and user.OrgId to bytes.
 	userUUID, err := uuid.Parse(user.Id)
@@ -44,7 +45,7 @@ func GenerateWebToken(key []byte, user *api.User) (string,
 
 	// Build unencrypted PWT.
 	pwt := &token.Web{
-		UserId:    userUUID[:],
+		IdOneof:   &token.Web_UserId{UserId: userUUID[:]},
 		OrgId:     orgUUID[:],
 		Role:      user.Role,
 		ExpiresAt: exp,
@@ -56,7 +57,7 @@ func GenerateWebToken(key []byte, user *api.User) (string,
 	}
 
 	// Encrypt and encode PWT.
-	ePWT, err := crypto.Encrypt(key, bPWT)
+	ePWT, err := crypto.Encrypt(pwtKey, bPWT)
 	if err != nil {
 		return "", nil, err
 	}
@@ -64,16 +65,51 @@ func GenerateWebToken(key []byte, user *api.User) (string,
 	return base64.RawStdEncoding.EncodeToString(ePWT), exp, nil
 }
 
-// ValidateWebToken validates an encrypted protobuf web token in raw (no
-// padding) base64 format. A nil error as part of the return indicates success.
-func ValidateWebToken(key []byte, ciphertoken string) (*Session, error) {
+// GenerateKeyToken generates an encrypted protobuf API key token in raw (no
+// padding) base64 format. It returns the token and an error value.
+func GenerateKeyToken(pwtKey []byte, keyID, orgID string,
+	role common.Role) (string, error) {
+	// Convert keyID and orgID to bytes.
+	keyUUID, err := uuid.Parse(keyID)
+	if err != nil {
+		return "", err
+	}
+
+	orgUUID, err := uuid.Parse(orgID)
+	if err != nil {
+		return "", err
+	}
+
+	// Build unencrypted PWT.
+	pwt := &token.Web{
+		IdOneof: &token.Web_KeyId{KeyId: keyUUID[:]},
+		OrgId:   orgUUID[:],
+		Role:    role,
+	}
+
+	bPWT, err := proto.Marshal(pwt)
+	if err != nil {
+		return "", err
+	}
+
+	// Encrypt and encode PWT.
+	ePWT, err := crypto.Encrypt(pwtKey, bPWT)
+	if err != nil {
+		return "", err
+	}
+
+	return base64.RawStdEncoding.EncodeToString(ePWT), nil
+}
+
+// ValidateWebToken validates an encrypted protobuf web or API key token.
+func ValidateWebToken(pwtKey []byte, ciphertoken string) (*Session, error) {
 	// Decode and decrypt PWT.
 	ePWT, err := base64.RawStdEncoding.DecodeString(ciphertoken)
 	if err != nil {
 		return nil, err
 	}
 
-	bPWT, err := crypto.Decrypt(key, ePWT)
+	bPWT, err := crypto.Decrypt(pwtKey, ePWT)
 	if err != nil {
 		return nil, err
 	}
@@ -84,21 +120,28 @@ func ValidateWebToken(key []byte, ciphertoken string) (*Session, error) {
 		return nil, err
 	}
 
-	// Validate expiration.
-	if pwt.ExpiresAt == nil || pwt.ExpiresAt.AsTime().Before(time.Now()) {
+	// Validate expiration, if present.
+	if pwt.ExpiresAt != nil && pwt.ExpiresAt.AsTime().Before(time.Now()) {
 		return nil, errWebTokenExp
 	}
 
-	// Build Session to return. UUIDs have been decrypted and are safe to copy.
-	var userUUID uuid.UUID
-	copy(userUUID[:], pwt.UserId)
+	// Build Session to return. UUIDs have been authenticated and are safe to
+	// copy.
+	sess := &Session{Role: pwt.Role}
+
+	var idUUID uuid.UUID
+	switch id := pwt.IdOneof.(type) {
+	case *token.Web_UserId:
+		copy(idUUID[:], id.UserId)
+		sess.UserID = idUUID.String()
+	case *token.Web_KeyId:
+		copy(idUUID[:], id.KeyId)
+		sess.KeyID = idUUID.String()
+	}
 
 	var orgUUID uuid.UUID
-	copy(orgUUID[:], pwt.OrgId)
+	_ = copy(orgUUID[:], pwt.OrgId)
+	sess.OrgID = orgUUID.String()
 
-	return &Session{
-		UserID: userUUID.String(),
-		OrgID:  orgUUID.String(),
-		Role:   pwt.Role,
-	}, nil
+	return sess, nil
 }

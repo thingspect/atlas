@@ -164,6 +164,21 @@ func TestGetUser(t *testing.T) {
 			"permission denied, ADMIN role required")
 	})
 
+	t.Run("Get user with insufficient key role", func(t *testing.T) {
+		t.Parallel()
+
+		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
+		defer cancel()
+
+		userCli := api.NewUserServiceClient(secondaryViewerKeyGRPCConn)
+		getUser, err := userCli.GetUser(ctx, &api.GetUserRequest{
+			Id: createUser.Id})
+		t.Logf("getUser, err: %+v, %v", getUser, err)
+		require.Nil(t, getUser)
+		require.EqualError(t, err, "rpc error: code = PermissionDenied desc = "+
+			"permission denied, ADMIN role required")
+	})
+
 	t.Run("Get user by unknown ID", func(t *testing.T) {
 		t.Parallel()
 
@@ -253,7 +268,7 @@ func TestUpdateUser(t *testing.T) {
 		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
 		defer cancel()
 
-		userCli := api.NewUserServiceClient(globalAdminGRPCConn)
+		userCli := api.NewUserServiceClient(globalAdminKeyGRPCConn)
 		createUser, err := userCli.CreateUser(ctx, &api.CreateUserRequest{
 			User: user})
 		t.Logf("createUser, err: %+v, %v", createUser, err)
@@ -312,6 +327,21 @@ func TestUpdateUser(t *testing.T) {
 		defer cancel()
 
 		userCli := api.NewUserServiceClient(secondaryViewerGRPCConn)
+		updateUser, err := userCli.UpdateUser(ctx, &api.UpdateUserRequest{
+			User: random.User("api-user", uuid.NewString())})
+		t.Logf("updateUser, err: %+v, %v", updateUser, err)
+		require.Nil(t, updateUser)
+		require.EqualError(t, err, "rpc error: code = PermissionDenied desc = "+
+			"permission denied, ADMIN role required")
+	})
+
+	t.Run("Update user with insufficient key role", func(t *testing.T) {
+		t.Parallel()
+
+		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
+		defer cancel()
+
+		userCli := api.NewUserServiceClient(secondaryViewerKeyGRPCConn)
 		updateUser, err := userCli.UpdateUser(ctx, &api.UpdateUserRequest{
 			User: random.User("api-user", uuid.NewString())})
 		t.Logf("updateUser, err: %+v, %v", updateUser, err)
@@ -551,6 +581,21 @@ func TestUpdateUserPassword(t *testing.T) {
 			"permission denied, ADMIN role required")
 	})
 
+	t.Run("Update user password with insufficient key role", func(t *testing.T) {
+		t.Parallel()
+
+		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
+		defer cancel()
+
+		userCli := api.NewUserServiceClient(secondaryViewerKeyGRPCConn)
+		_, err := userCli.UpdateUserPassword(ctx,
+			&api.UpdateUserPasswordRequest{Id: uuid.NewString(),
+				Password: random.String(20)})
+		t.Logf("err: %v", err)
+		require.EqualError(t, err, "rpc error: code = PermissionDenied desc = "+
+			"permission denied, ADMIN role required")
+	})
+
 	t.Run("Update user password with weak password", func(t *testing.T) {
 		t.Parallel()
 
@@ -642,7 +687,7 @@ func TestDeleteUser(t *testing.T) {
 				testTimeout)
 			defer cancel()
 
-			userCli := api.NewUserServiceClient(globalAdminGRPCConn)
+			userCli := api.NewUserServiceClient(globalAdminKeyGRPCConn)
 			getUser, err := userCli.GetUser(ctx, &api.GetUserRequest{
 				Id: createUser.Id})
 			t.Logf("getUser, err: %+v, %v", getUser, err)
@@ -761,7 +806,7 @@ func TestListUsers(t *testing.T) {
 		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
 		defer cancel()
 
-		userCli := api.NewUserServiceClient(globalAdminGRPCConn)
+		userCli := api.NewUserServiceClient(globalAdminKeyGRPCConn)
 		listUsers, err := userCli.ListUsers(ctx, &api.ListUsersRequest{
 			PageSize: 2})
 		t.Logf("listUsers, err: %+v, %v", listUsers, err)
@@ -811,6 +856,20 @@ func TestListUsers(t *testing.T) {
 		require.NoError(t, err)
 		require.Len(t, listUsers.Users, 1)
 		require.Equal(t, int32(1), listUsers.TotalSize)
+	})
+
+	t.Run("List users with insufficient key role", func(t *testing.T) {
+		t.Parallel()
+
+		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
+		defer cancel()
+
+		secCli := api.NewUserServiceClient(secondaryViewerKeyGRPCConn)
+		listUsers, err := secCli.ListUsers(ctx, &api.ListUsersRequest{})
+		t.Logf("listUsers, err: %+v, %v", listUsers, err)
+		require.Nil(t, listUsers)
+		require.EqualError(t, err, "rpc error: code = InvalidArgument desc = "+
+			"invalid format: UUID")
 	})
 
 	t.Run("Lists are isolated by org ID", func(t *testing.T) {

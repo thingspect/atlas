@@ -4,8 +4,10 @@ import (
 	"context"
 	"strings"
 
+	"github.com/thingspect/atlas/internal/api/key"
 	"github.com/thingspect/atlas/internal/api/session"
 	"github.com/thingspect/atlas/pkg/alog"
+	"github.com/thingspect/atlas/pkg/cache"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
@@ -14,8 +16,8 @@ import (
 
 // Auth performs authentication and authorization via web token, and implements
 // the grpc.UnaryServerInterceptor type signature.
-func Auth(skipPaths map[string]struct{},
-	key []byte) grpc.UnaryServerInterceptor {
+func Auth(skipPaths map[string]struct{}, pwtKey []byte,
+	cache cache.Cacher) grpc.UnaryServerInterceptor {
 	return func(ctx context.Context, req interface{},
 		info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (interface{},
 		error) {
@@ -40,15 +42,27 @@ func Auth(skipPaths map[string]struct{},
 
 		// Validate token.
 		token := strings.TrimPrefix(auth[0], "Bearer ")
-		sess, err := session.ValidateWebToken(key, token)
+		sess, err := session.ValidateWebToken(pwtKey, token)
 		if err != nil {
 			return nil, status.Error(codes.Unauthenticated, "unauthorized")
 		}
 
+		// Check for disabled API key.
+		if sess.KeyID != "" {
+			if ok, _, err := cache.Get(ctx, key.Disabled(sess.OrgID,
+				sess.KeyID)); ok || err != nil {
+				return nil, status.Error(codes.Unauthenticated, "unauthorized")
+			}
+		}
+
 		// Add logging fields.
 		logger := alog.FromContext(ctx)
-		logger.Logger = logger.WithStr("userID", sess.UserID).WithStr("orgID",
-			sess.OrgID)
+		if sess.UserID != "" {
+			logger.Logger = logger.WithStr("userID", sess.UserID)
+		} else {
+			logger.Logger = logger.WithStr("KeyID", sess.KeyID)
+		}
+		logger.Logger = logger.WithStr("orgID", sess.OrgID)
 
 		ctx = session.NewContext(ctx, sess)
 

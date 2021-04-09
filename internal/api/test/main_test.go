@@ -42,12 +42,14 @@ var (
 	// globalHash is stored globally for test performance under -race.
 	globalHash []byte
 
-	globalNoAuthGRPCConn      *grpc.ClientConn
-	globalAdminGRPCConn       *grpc.ClientConn
-	globalAdminOrgID          string
-	secondaryAdminGRPCConn    *grpc.ClientConn
-	secondaryViewerGRPCConn   *grpc.ClientConn
-	secondarySysAdminGRPCConn *grpc.ClientConn
+	globalNoAuthGRPCConn       *grpc.ClientConn
+	globalAdminGRPCConn        *grpc.ClientConn
+	globalAdminOrgID           string
+	secondaryAdminGRPCConn     *grpc.ClientConn
+	secondaryViewerGRPCConn    *grpc.ClientConn
+	secondarySysAdminGRPCConn  *grpc.ClientConn
+	globalAdminKeyGRPCConn     *grpc.ClientConn
+	secondaryViewerKeyGRPCConn *grpc.ClientConn
 
 	globalPubTopic string
 	globalPubSub   queue.Subber
@@ -64,6 +66,8 @@ func TestMain(m *testing.M) {
 	testConfig := testconfig.New()
 	cfg := config.New()
 	cfg.PgURI = testConfig.PgURI
+	cfg.RedisHost = testConfig.RedisHost
+
 	cfg.PWTKey = key
 
 	cfg.NSQPubAddr = testConfig.NSQPubAddr
@@ -114,7 +118,7 @@ func TestMain(m *testing.M) {
 	// Build authenticated gRPC connections.
 	globalAdminOrgID, globalAdminGRPCConn, err = authGRPCConn(common.Role_ADMIN)
 	if err != nil {
-		log.Fatalf("TestMain globalAdminOrgID authGRPCConn: %v", err)
+		log.Fatalf("TestMain globalAdminGRPCConn authGRPCConn: %v", err)
 	}
 
 	_, secondaryAdminGRPCConn, err = authGRPCConn(common.Role_ADMIN)
@@ -130,6 +134,19 @@ func TestMain(m *testing.M) {
 	_, secondarySysAdminGRPCConn, err = authGRPCConn(common.Role_SYS_ADMIN)
 	if err != nil {
 		log.Fatalf("TestMain secondarySysAdminGRPCConn authGRPCConn: %v", err)
+	}
+
+	// Build API key-based gRPC connections.
+	globalAdminKeyGRPCConn, err = keyGRPCConn(globalAdminGRPCConn,
+		common.Role_ADMIN)
+	if err != nil {
+		log.Fatalf("TestMain globalAdminKeyGRPCConn keyGRPCConn: %v", err)
+	}
+
+	secondaryViewerKeyGRPCConn, err = keyGRPCConn(secondaryAdminGRPCConn,
+		common.Role_VIEWER)
+	if err != nil {
+		log.Fatalf("TestMain secondaryViewerKeyGRPCConn keyGRPCConn: %v", err)
 	}
 
 	// Set up NSQ subscription to verify published messages. Use a unique

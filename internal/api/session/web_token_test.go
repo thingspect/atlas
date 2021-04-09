@@ -20,7 +20,7 @@ import (
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
-func TestGenerateToken(t *testing.T) {
+func TestGenerateWebToken(t *testing.T) {
 	t.Parallel()
 
 	key := make([]byte, 32)
@@ -67,7 +67,48 @@ func TestGenerateToken(t *testing.T) {
 	}
 }
 
-func TestValidateToken(t *testing.T) {
+func TestGenerateKeyToken(t *testing.T) {
+	t.Parallel()
+
+	key := make([]byte, 32)
+	_, err := rand.Read(key)
+	require.NoError(t, err)
+
+	tests := []struct {
+		inpKey    []byte
+		inpKeyID  string
+		inpOrgID  string
+		resMinLen int
+		err       string
+	}{
+		{key, uuid.NewString(), uuid.NewString(), 80, ""},
+		{key, random.String(10), uuid.NewString(), 0,
+			"invalid UUID length: 10"},
+		{key, uuid.NewString(), random.String(10), 0,
+			"invalid UUID length: 10"},
+		{[]byte{}, uuid.NewString(), uuid.NewString(), 0,
+			crypto.ErrKeyLength.Error()},
+	}
+
+	for _, test := range tests {
+		lTest := test
+
+		t.Run(fmt.Sprintf("Can generate %+v", lTest), func(t *testing.T) {
+			t.Parallel()
+
+			res, err := GenerateKeyToken(lTest.inpKey, lTest.inpKeyID, lTest.inpOrgID, common.Role_BUILDER)
+			t.Logf("res, err: %v, %#v", res, err)
+			require.GreaterOrEqual(t, len(res), lTest.resMinLen)
+			if lTest.err == "" {
+				require.NoError(t, err)
+			} else {
+				require.EqualError(t, err, lTest.err)
+			}
+		})
+	}
+}
+
+func TestValidateWebToken(t *testing.T) {
 	t.Parallel()
 
 	key := make([]byte, 32)
@@ -119,6 +160,66 @@ func TestValidateToken(t *testing.T) {
 			t.Logf("resVal, err: %+v, %v", resVal, err)
 			if resVal != nil {
 				require.Equal(t, user.Id, resVal.UserID)
+				require.Empty(t, resVal.KeyID)
+				require.Equal(t, user.OrgId, resVal.OrgID)
+				require.Equal(t, user.Role, resVal.Role)
+			}
+			if lTest.err == "" {
+				require.NoError(t, err)
+			} else {
+				require.Contains(t, err.Error(), lTest.err)
+			}
+		})
+	}
+}
+
+func TestValidateKeyToken(t *testing.T) {
+	t.Parallel()
+
+	key := make([]byte, 32)
+	_, err := rand.Read(key)
+	require.NoError(t, err)
+
+	badCipher, err := crypto.Encrypt(key, []byte("aaa"))
+	require.NoError(t, err)
+
+	tests := []struct {
+		inpKey         []byte
+		inpCiphertoken string
+		err            string
+	}{
+		{key, "", ""},
+		{key, "...", "illegal base64 data at input byte 0"},
+		{key, random.String(10), "crypto: malformed ciphertext"},
+		{key, base64.RawStdEncoding.EncodeToString(badCipher),
+			"cannot parse invalid wire-format data"},
+	}
+
+	for _, test := range tests {
+		lTest := test
+
+		t.Run(fmt.Sprintf("Can validate %+v", lTest), func(t *testing.T) {
+			t.Parallel()
+
+			keyID := uuid.NewString()
+			user := random.User("keytoken", uuid.NewString())
+
+			resGen, err := GenerateKeyToken(lTest.inpKey, keyID, user.OrgId,
+				user.Role)
+			t.Logf("resGen, err: %v, %v", resGen, err)
+			require.NoError(t, err)
+
+			var resVal *Session
+			if lTest.inpCiphertoken == "" {
+				resVal, err = ValidateWebToken(lTest.inpKey, resGen)
+			} else {
+				resVal, err = ValidateWebToken(lTest.inpKey,
+					lTest.inpCiphertoken)
+			}
+			t.Logf("resVal, err: %+v, %v", resVal, err)
+			if resVal != nil {
+				require.Empty(t, resVal.UserID)
+				require.Equal(t, keyID, resVal.KeyID)
 				require.Equal(t, user.OrgId, resVal.OrgID)
 				require.Equal(t, user.Role, resVal.Role)
 			}

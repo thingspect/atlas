@@ -150,9 +150,8 @@ func TestGetOrg(t *testing.T) {
 		t.Parallel()
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
-			context.Background(), &session.Session{UserID: uuid.NewString(),
-				OrgID: uuid.NewString(), Role: common.Role_ADMIN}),
-			testTimeout)
+			context.Background(), &session.Session{OrgID: uuid.NewString(),
+				Role: common.Role_ADMIN}), testTimeout)
 		defer cancel()
 
 		orgSvc := NewOrg(nil)
@@ -282,9 +281,8 @@ func TestUpdateOrg(t *testing.T) {
 		org := random.Org("api-org")
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
-			context.Background(), &session.Session{UserID: uuid.NewString(),
-				OrgID: org.Id, Role: common.Role_BUILDER}),
-			testTimeout)
+			context.Background(), &session.Session{OrgID: org.Id,
+				Role: common.Role_BUILDER}), testTimeout)
 		defer cancel()
 
 		orgSvc := NewOrg(nil)
@@ -299,9 +297,8 @@ func TestUpdateOrg(t *testing.T) {
 		t.Parallel()
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
-			context.Background(), &session.Session{UserID: uuid.NewString(),
-				OrgID: uuid.NewString(), Role: common.Role_ADMIN}),
-			testTimeout)
+			context.Background(), &session.Session{OrgID: uuid.NewString(),
+				Role: common.Role_ADMIN}), testTimeout)
 		defer cancel()
 
 		orgSvc := NewOrg(nil)

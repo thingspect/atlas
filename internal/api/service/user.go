@@ -63,7 +63,8 @@ func (u *User) CreateUser(ctx context.Context,
 	}
 
 	// Only system admins can elevate to system admin.
-	if sess.Role == common.Role_ADMIN && req.User.Role > common.Role_ADMIN {
+	if sess.Role < common.Role_SYS_ADMIN &&
+		req.User.Role == common.Role_SYS_ADMIN {
 		return nil, status.Error(codes.PermissionDenied,
 			"permission denied, role modification not allowed")
 	}
@@ -129,7 +130,8 @@ func (u *User) UpdateUser(ctx context.Context,
 	// Only admins can update roles, and only system admins can elevate to
 	// system admin.
 	if (sess.Role < common.Role_ADMIN && req.User.Role != sess.Role) ||
-		(sess.Role == common.Role_ADMIN && req.User.Role > common.Role_ADMIN) {
+		(sess.Role < common.Role_SYS_ADMIN &&
+			req.User.Role == common.Role_SYS_ADMIN) {
 		return nil, status.Error(codes.PermissionDenied,
 			"permission denied, role modification not allowed")
 	}
@@ -233,7 +235,8 @@ func (u *User) ListUsers(ctx context.Context,
 		return nil, errPerm(common.Role_ADMIN)
 	}
 
-	// If the user does not have sufficient role, return only their user.
+	// If the user does not have sufficient role, return only their user. Will
+	// not be found for API key tokens.
 	if sess.Role < common.Role_ADMIN {
 		user, err := u.userDAO.Read(ctx, sess.UserID, sess.OrgID)
 		if err != nil {

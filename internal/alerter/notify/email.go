@@ -10,7 +10,10 @@ import (
 	"github.com/thingspect/atlas/pkg/consterr"
 )
 
-const ErrInvalidEmail consterr.Error = "invalid email address"
+const (
+	errInvalidEmail consterr.Error = "invalid email address"
+	emailKey        string         = "notify.email"
+)
 
 // Email sends an email notification. The provider domain used for sending is
 // derived from the organization's email address: "mg." followed by the domain
@@ -21,7 +24,7 @@ func (n *notify) Email(ctx context.Context, orgDisplayName, orgEmail, userEmail,
 	// Build provider domain.
 	domParts := strings.SplitN(orgEmail, "@", 2)
 	if len(domParts) != 2 {
-		return ErrInvalidEmail
+		return errInvalidEmail
 	}
 
 	client := mailgun.NewMailgun("mg."+domParts[1], n.emailAPIKey)
@@ -32,15 +35,14 @@ func (n *notify) Email(ctx context.Context, orgDisplayName, orgEmail, userEmail,
 
 	// Mailgun does not currently employ a rate limit, so default to 3 per
 	// second, serially.
-	ok, err := n.cache.SetIfNotExistTTL(ctx, "notify.email", 0,
-		333*time.Millisecond)
+	ok, err := n.cache.SetIfNotExistTTL(ctx, emailKey, 1, 333*time.Millisecond)
 	if err != nil {
 		return err
 	}
 	for !ok {
 		time.Sleep(333 * time.Millisecond)
 
-		ok, err = n.cache.SetIfNotExistTTL(ctx, "notify.email", 0,
+		ok, err = n.cache.SetIfNotExistTTL(ctx, emailKey, 1,
 			333*time.Millisecond)
 		if err != nil {
 			return err

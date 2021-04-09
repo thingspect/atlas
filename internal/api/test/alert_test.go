@@ -25,8 +25,8 @@ func TestListAlerts(t *testing.T) {
 		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
 		defer cancel()
 
-		daleCli := api.NewDeviceServiceClient(globalAdminGRPCConn)
-		createDev, err := daleCli.CreateDevice(ctx, &api.CreateDeviceRequest{
+		devCli := api.NewDeviceServiceClient(globalAdminGRPCConn)
+		createDev, err := devCli.CreateDevice(ctx, &api.CreateDeviceRequest{
 			Device: random.Device("api-alert", uuid.NewString())})
 		t.Logf("createDev, err: %+v, %v", createDev, err)
 		require.NoError(t, err)

@@ -24,13 +24,13 @@ require (
 	github.com/kevinburke/go.uuid v1.2.0 // indirect
 	github.com/kevinburke/rest v0.0.0-20210222204520-f7a2e216372f // indirect
 	github.com/kevinburke/twilio-go v0.0.0-20210327194925-1623146bcf73
-	github.com/mailgun/mailgun-go/v4 v4.4.1
-	github.com/mennanov/fmutils v0.0.4
+	github.com/mailgun/mailgun-go/v4 v4.5.0
+	github.com/mennanov/fmutils v0.1.0
 	github.com/nsqio/go-nsq v1.0.8
 	github.com/rs/zerolog v1.21.0
 	github.com/smira/go-statsd v1.3.2
 	github.com/stretchr/testify v1.7.0
-	github.com/thingspect/api/go v0.0.0-20210408143733-0920ace0feca
+	github.com/thingspect/api/go v0.0.0-20210409215754-fd1c3dcf7fc1
 	github.com/ttacon/builder v0.0.0-20170518171403-c099f663e1c2 // indirect
 	github.com/ttacon/libphonenumber v1.2.1 // indirect
 	golang.org/x/crypto v0.0.0-20210322153248-0c34fe9e7dc2

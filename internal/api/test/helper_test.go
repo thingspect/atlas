@@ -6,6 +6,7 @@ import (
 	"context"
 	"time"
 
+	"github.com/google/uuid"
 	"github.com/thingspect/api/go/api"
 	"github.com/thingspect/api/go/common"
 	iapi "github.com/thingspect/atlas/internal/api/api"
@@ -68,10 +69,37 @@ func authGRPCConn(role common.Role) (string, *grpc.ClientConn, error) {
 		grpc.WithInsecure(),
 		grpc.WithPerRPCCredentials(&credential{token: loginResp.Token}),
 	}
-	conn, err := grpc.Dial(iapi.GRPCHost+iapi.GRPCPort, opts...)
+	authConn, err := grpc.Dial(iapi.GRPCHost+iapi.GRPCPort, opts...)
 	if err != nil {
 		return "", nil, err
 	}
 
-	return createOrg.Id, conn, nil
+	return createOrg.Id, authConn, nil
+}
+
+func keyGRPCConn(conn *grpc.ClientConn, role common.Role) (*grpc.ClientConn,
+	error) {
+	key := random.Key("api-key", uuid.NewString())
+	key.Role = role
+
+	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
+	defer cancel()
+
+	sessCli := api.NewSessionServiceClient(conn)
+	createKey, err := sessCli.CreateKey(ctx, &api.CreateKeyRequest{Key: key})
+	if err != nil {
+		return nil, err
+	}
+
+	opts := []grpc.DialOption{
+		grpc.WithBlock(),
+		grpc.WithInsecure(),
+		grpc.WithPerRPCCredentials(&credential{token: createKey.Token}),
+	}
+	keyConn, err := grpc.Dial(iapi.GRPCHost+iapi.GRPCPort, opts...)
+	if err != nil {
+		return nil, err
+	}
+
+	return keyConn, nil
 }

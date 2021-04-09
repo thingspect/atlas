@@ -101,7 +101,7 @@ LIMIT %d
 // do not apply a limit. List returns a slice of keys, a total count, and an
 // error value.
 func (d *DAO) List(ctx context.Context, orgID string, lBoundTS time.Time,
-	prevID string, limit int32, tag string) ([]*api.Key, int32, error) {
+	prevID string, limit int32) ([]*api.Key, int32, error) {
 	// Run count query.
 	var count int32
 	if err := d.pg.QueryRowContext(ctx, countKeys, orgID).Scan(

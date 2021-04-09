@@ -229,7 +229,7 @@ func TestList(t *testing.T) {
 		defer cancel()
 
 		listKeys, listCount, err := globalKeyDAO.List(ctx, createOrg.Id,
-			time.Time{}, "", 0, "")
+			time.Time{}, "", 0)
 		t.Logf("listKeys, listCount, err: %+v, %v, %v", listKeys, listCount,
 			err)
 		require.NoError(t, err)
@@ -254,7 +254,7 @@ func TestList(t *testing.T) {
 		defer cancel()
 
 		listKeys, listCount, err := globalKeyDAO.List(ctx, createOrg.Id,
-			keyTSes[0], keyIDs[0], 5, "")
+			keyTSes[0], keyIDs[0], 5)
 		t.Logf("listKeys, listCount, err: %+v, %v, %v", listKeys, listCount,
 			err)
 		require.NoError(t, err)
@@ -279,7 +279,7 @@ func TestList(t *testing.T) {
 		defer cancel()
 
 		listKeys, listCount, err := globalKeyDAO.List(ctx, createOrg.Id,
-			time.Time{}, "", 1, "")
+			time.Time{}, "", 1)
 		t.Logf("listKeys, listCount, err: %+v, %v, %v", listKeys, listCount,
 			err)
 		require.NoError(t, err)
@@ -294,7 +294,7 @@ func TestList(t *testing.T) {
 		defer cancel()
 
 		listKeys, listCount, err := globalKeyDAO.List(ctx, uuid.NewString(),
-			time.Time{}, "", 0, "")
+			time.Time{}, "", 0)
 		t.Logf("listKeys, listCount, err: %+v, %v, %v", listKeys, listCount,
 			err)
 		require.NoError(t, err)
@@ -309,7 +309,7 @@ func TestList(t *testing.T) {
 		defer cancel()
 
 		listKeys, listCount, err := globalKeyDAO.List(ctx, random.String(10),
-			time.Time{}, "", 0, "")
+			time.Time{}, "", 0)
 		t.Logf("listKeys, listCount, err: %+v, %v, %v", listKeys, listCount,
 			err)
 		require.Nil(t, listKeys)

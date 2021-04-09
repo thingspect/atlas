@@ -68,7 +68,7 @@ func TestPublishDataPoints(t *testing.T) {
 		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
 		defer cancel()
 
-		dpCli := api.NewDataPointServiceClient(globalAdminGRPCConn)
+		dpCli := api.NewDataPointServiceClient(globalAdminKeyGRPCConn)
 		_, err := dpCli.PublishDataPoints(ctx, &api.PublishDataPointsRequest{
 			Points: []*common.DataPoint{point}})
 		t.Logf("err: %v", err)

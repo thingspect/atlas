@@ -8,9 +8,11 @@ import (
 	"github.com/thingspect/api/go/common"
 )
 
-// Session represents user information as retrieved from an encrypted web token.
+// Session represents session metadata as retrieved from an encrypted token.
+// Either UserID or KeyID will be present, but not both.
 type Session struct {
 	UserID string
+	KeyID  string
 	OrgID  string
 	Role   common.Role
 }

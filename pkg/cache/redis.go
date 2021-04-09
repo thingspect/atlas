@@ -2,6 +2,7 @@ package cache
 
 import (
 	"context"
+	"errors"
 	"time"
 
 	"github.com/go-redis/redis/v8"
@@ -32,6 +33,48 @@ func NewRedis(redisAddr string) (Cacher, error) {
 	return &redisCache{
 		client: client,
 	}, nil
+}
+
+// Set sets key to value.
+func (r *redisCache) Set(ctx context.Context, key string,
+	value interface{}) error {
+	return r.SetTTL(ctx, key, value, 0)
+}
+
+// SetTTL sets key to value with expiration.
+func (r *redisCache) SetTTL(ctx context.Context, key string, value interface{},
+	exp time.Duration) error {
+	return r.client.Set(ctx, key, value, exp).Err()
+}
+
+// Get retrieves a string value by key. If the key does not exist, the boolean
+// returned is set to false.
+func (r *redisCache) Get(ctx context.Context, key string) (bool, string,
+	error) {
+	s, err := r.client.Get(ctx, key).Result()
+	if errors.Is(err, redis.Nil) {
+		return false, "", nil
+	}
+	if err != nil {
+		return false, "", err
+	}
+
+	return true, s, nil
+}
+
+// Get retrieves a []byte value by key. If the key does not exist, the boolean
+// returned is set to false.
+func (r *redisCache) GetB(ctx context.Context, key string) (bool, []byte,
+	error) {
+	b, err := r.client.Get(ctx, key).Bytes()
+	if errors.Is(err, redis.Nil) {
+		return false, nil, nil
+	}
+	if err != nil {
+		return false, nil, err
+	}
+
+	return true, b, nil
 }
 
 // SetIfNotExist sets key to value if the key does not exist. If it is

@@ -127,10 +127,11 @@ func (ale *Alerter) alertMessages() {
 			// Process alerts.
 			for _, user := range users {
 				// Check cache for existing repeat interval.
-				key := Key(eOut.Device.OrgId, eOut.Device.Id, a.Id, user.Id)
+				key := repeatKey(eOut.Device.OrgId, eOut.Device.Id, a.Id,
+					user.Id)
 				ctx, cancel := context.WithTimeout(context.Background(),
 					5*time.Second)
-				ok, err := ale.cache.SetIfNotExistTTL(ctx, key, 0,
+				ok, err := ale.cache.SetIfNotExistTTL(ctx, key, 1,
 					time.Duration(a.RepeatInterval)*time.Minute)
 				cancel()
 				if err != nil {

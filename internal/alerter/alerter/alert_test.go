@@ -147,9 +147,10 @@ func TestAlertMessages(t *testing.T) {
 					5*time.Second)
 				defer cancel()
 
-				key := Key(lTest.inpEOut.Device.OrgId, lTest.inpEOut.Device.Id,
-					lTest.inpAlarms[0].Id, lTest.inpUsers[0].Id)
-				ok, err := cache.SetIfNotExistTTL(ctx, key, 0, time.Minute)
+				key := repeatKey(lTest.inpEOut.Device.OrgId,
+					lTest.inpEOut.Device.Id, lTest.inpAlarms[0].Id,
+					lTest.inpUsers[0].Id)
+				ok, err := cache.SetIfNotExistTTL(ctx, key, 1, time.Minute)
 				require.True(t, ok)
 				require.NoError(t, err)
 			}

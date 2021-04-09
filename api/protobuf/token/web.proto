@@ -6,17 +6,23 @@ import "google/protobuf/timestamp.proto";
 
 option go_package = "github.com/thingspect/atlas/api/go/token";
 
-// Web represents a web token.
+// Web represents a web or API key token.
 message Web {
-  // User ID (UUID).
-  bytes user_id = 1;
+  // User identifier.
+  oneof id_oneof {
+    // User ID (UUID). Either user ID or key ID must be provided.
+    bytes user_id = 1;
+
+    // Key ID (UUID). Either user ID or key ID must be provided.
+    bytes key_id = 2;
+  }
 
   // Organization ID (UUID).
-  bytes org_id = 2;
+  bytes org_id = 3;
 
   // User role.
-  common.Role role = 3;
+  common.Role role = 4;
 
-  // Web token expiration timestamp. Nanos should be zeroed for compactness.
-  google.protobuf.Timestamp expires_at = 4;
+  // Token expiration timestamp. If present, nanos should be zeroed for compactness. Will not be present for API key use.
+  google.protobuf.Timestamp expires_at = 5;
 }

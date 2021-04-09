@@ -11,7 +11,9 @@ type Config struct {
 	LogLevel   string
 	StatsDAddr string
 
-	PgURI  string
+	PgURI     string
+	RedisHost string
+
 	PWTKey []byte
 
 	NSQPubAddr  string
@@ -33,6 +35,8 @@ func New() *Config {
 
 		PgURI: config.String(pref+"PG_URI",
 			"postgres://postgres:postgres@127.0.0.1/atlas_test"),
+		RedisHost: config.String(pref+"REDIS_HOST", "127.0.0.1"),
+
 		PWTKey: config.ByteSlice(pref + "PWT_KEY"),
 
 		NSQPubAddr:  config.String(pref+"NSQ_PUB_ADDR", "127.0.0.1:4150"),
