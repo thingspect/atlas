@@ -10,7 +10,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestKey(t *testing.T) {
+func TestRepeatKey(t *testing.T) {
 	t.Parallel()
 
 	for i := 0; i < 5; i++ {
@@ -24,12 +24,12 @@ func TestKey(t *testing.T) {
 			alarmID := uuid.NewString()
 			userID := uuid.NewString()
 
-			key := Key(orgID, devID, alarmID, userID)
+			key := repeatKey(orgID, devID, alarmID, userID)
 			t.Logf("key: %v", key)
 
 			require.Equal(t, fmt.Sprintf("alerter:org:%s:dev:%s:alarm:%s:user:"+
 				"%s", orgID, devID, alarmID, userID), key)
-			require.Equal(t, key, Key(orgID, devID, alarmID, userID))
+			require.Equal(t, key, repeatKey(orgID, devID, alarmID, userID))
 		})
 	}
 }

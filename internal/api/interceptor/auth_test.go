@@ -8,15 +8,20 @@ import (
 	"fmt"
 	"testing"
 
+	"github.com/golang/mock/gomock"
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/require"
 	"github.com/thingspect/atlas/internal/api/session"
+	"github.com/thingspect/atlas/pkg/cache"
+	"github.com/thingspect/atlas/pkg/consterr"
 	"github.com/thingspect/atlas/pkg/test/random"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/status"
 )
+
+const errTestFunc consterr.Error = "interceptor: test function error"
 
 func TestAuth(t *testing.T) {
 	t.Parallel()
@@ -25,9 +30,15 @@ func TestAuth(t *testing.T) {
 	_, err := rand.Read(key)
 	require.NoError(t, err)
 
-	token, _, err := session.GenerateWebToken(key, random.User("auth",
+	webToken, _, err := session.GenerateWebToken(key, random.User("auth",
 		uuid.NewString()))
-	t.Logf("token, err: %v, %v", token, err)
+	t.Logf("webToken, err: %v, %v", webToken, err)
+	require.NoError(t, err)
+
+	user := random.User("auth", uuid.NewString())
+	keyToken, err := session.GenerateKeyToken(key, uuid.NewString(), user.OrgId,
+		user.Role)
+	t.Logf("keyToken, err: %v, %v", keyToken, err)
 	require.NoError(t, err)
 
 	skipPath := random.String(10)
@@ -37,21 +48,35 @@ func TestAuth(t *testing.T) {
 		inpHandlerErr error
 		inpSkipPaths  map[string]struct{}
 		inpInfo       *grpc.UnaryServerInfo
+		inpCache      bool
+		inpCacheErr   error
+		inpCacheTimes int
+		err           error
 	}{
-		{[]string{"authorization", "Bearer " + token}, nil, nil,
-			&grpc.UnaryServerInfo{FullMethod: random.String(10)}},
-		{nil, nil, map[string]struct{}{skipPath: {}}, &grpc.UnaryServerInfo{
-			FullMethod: skipPath}},
-		{nil, status.Error(codes.Unauthenticated, "unauthorized"), nil,
-			&grpc.UnaryServerInfo{FullMethod: random.String(10)}},
-		{[]string{}, status.Error(codes.Unauthenticated, "unauthorized"), nil,
-			&grpc.UnaryServerInfo{FullMethod: random.String(10)}},
-		{[]string{"authorization", "NoBearer " + token},
-			status.Error(codes.Unauthenticated, "unauthorized"), nil,
-			&grpc.UnaryServerInfo{FullMethod: random.String(10)}},
-		{[]string{"authorization", "Bearer ..."},
-			status.Error(codes.Unauthenticated, "unauthorized"), nil,
-			&grpc.UnaryServerInfo{FullMethod: random.String(10)}},
+		{[]string{"authorization", "Bearer " + webToken}, nil, nil,
+			&grpc.UnaryServerInfo{FullMethod: random.String(10)}, false, nil, 0,
+			nil},
+		{[]string{"authorization", "Bearer " + keyToken}, nil, nil,
+			&grpc.UnaryServerInfo{FullMethod: random.String(10)}, false, nil, 1,
+			nil},
+		{nil, errTestFunc, map[string]struct{}{skipPath: {}},
+			&grpc.UnaryServerInfo{FullMethod: skipPath}, false, nil, 0,
+			errTestFunc},
+		{nil, errTestFunc, nil, &grpc.UnaryServerInfo{
+			FullMethod: random.String(10)}, false, nil, 0,
+			status.Error(codes.Unauthenticated, "unauthorized")},
+		{[]string{}, errTestFunc, nil, &grpc.UnaryServerInfo{
+			FullMethod: random.String(10)}, false, nil, 0,
+			status.Error(codes.Unauthenticated, "unauthorized")},
+		{[]string{"authorization", "NoBearer " + webToken}, errTestFunc, nil,
+			&grpc.UnaryServerInfo{FullMethod: random.String(10)}, false, nil, 0,
+			status.Error(codes.Unauthenticated, "unauthorized")},
+		{[]string{"authorization", "Bearer ..."}, errTestFunc, nil,
+			&grpc.UnaryServerInfo{FullMethod: random.String(10)}, false, nil, 0,
+			status.Error(codes.Unauthenticated, "unauthorized")},
+		{[]string{"authorization", "Bearer " + keyToken}, errTestFunc, nil,
+			&grpc.UnaryServerInfo{FullMethod: random.String(10)}, true, nil, 1,
+			status.Error(codes.Unauthenticated, "unauthorized")},
 	}
 
 	for _, test := range tests {
@@ -59,6 +84,11 @@ func TestAuth(t *testing.T) {
 
 		t.Run(fmt.Sprintf("Can log %+v", lTest), func(t *testing.T) {
 			t.Parallel()
+
+			cacher := cache.NewMockCacher(gomock.NewController(t))
+			cacher.EXPECT().Get(gomock.Any(), gomock.Any()).
+				Return(lTest.inpCache, "", lTest.inpCacheErr).
+				Times(lTest.inpCacheTimes)
 
 			ctx, cancel := context.WithTimeout(context.Background(),
 				testTimeout)
@@ -73,11 +103,11 @@ func TestAuth(t *testing.T) {
 				return req, lTest.inpHandlerErr
 			}
 
-			res, err := Auth(lTest.inpSkipPaths, key)(ctx, nil, lTest.inpInfo,
-				handler)
+			res, err := Auth(lTest.inpSkipPaths, key, cacher)(ctx, nil,
+				lTest.inpInfo, handler)
 			t.Logf("res, err: %v, %v", res, err)
 			require.Nil(t, res)
-			require.Equal(t, lTest.inpHandlerErr, err)
+			require.Equal(t, lTest.err, err)
 		})
 	}
 }

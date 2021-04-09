@@ -9,6 +9,8 @@ import (
 	"github.com/thingspect/atlas/pkg/metric"
 )
 
+const appKey = "notify.app"
+
 // App sends a push notification to a mobile application. This operation can
 // block based on rate limiting.
 func (n *notify) App(ctx context.Context, userKey, subject, body string) error {
@@ -26,16 +28,14 @@ func (n *notify) App(ctx context.Context, userKey, subject, body string) error {
 
 	// Support modified Pushover rate limit of 2 per second, serially:
 	// https://pushover.net/api#friendly
-	ok, err := n.cache.SetIfNotExistTTL(ctx, "notify.app", 0,
-		500*time.Millisecond)
+	ok, err := n.cache.SetIfNotExistTTL(ctx, appKey, 1, 500*time.Millisecond)
 	if err != nil {
 		return err
 	}
 	for !ok {
 		time.Sleep(500 * time.Millisecond)
 
-		ok, err = n.cache.SetIfNotExistTTL(ctx, "notify.app", 0,
-			500*time.Millisecond)
+		ok, err = n.cache.SetIfNotExistTTL(ctx, appKey, 1, 500*time.Millisecond)
 		if err != nil {
 			return err
 		}
@@ -44,7 +44,7 @@ func (n *notify) App(ctx context.Context, userKey, subject, body string) error {
 	resp, err := app.SendMessage(msg, recipient)
 	// Set remaining message limit if present, regardless of error.
 	if resp != nil && resp.Limit != nil {
-		metric.Set("notify.app.remaining", resp.Limit.Remaining, nil)
+		metric.Set(appKey+".remaining", resp.Limit.Remaining, nil)
 	}
 
 	return err

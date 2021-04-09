@@ -7,7 +7,10 @@ import (
 	"time"
 
 	"github.com/ReneKroon/ttlcache/v2"
+	"github.com/thingspect/atlas/pkg/consterr"
 )
+
+var errWrongType consterr.Error = "value wrong type"
 
 // memoryCache contains methods to create and query data in memory and
 // implements the Cacher interface. An additional RWMutex is used to support
@@ -28,6 +31,70 @@ func NewMemory() (Cacher, error) {
 	return &memoryCache{
 		cache: cache,
 	}, nil
+}
+
+// Set sets key to value.
+func (m *memoryCache) Set(ctx context.Context, key string,
+	value interface{}) error {
+	m.cacheMu.Lock()
+	defer m.cacheMu.Unlock()
+
+	return m.cache.Set(key, value)
+}
+
+// SetTTL sets key to value with expiration.
+func (m *memoryCache) SetTTL(ctx context.Context, key string, value interface{},
+	exp time.Duration) error {
+	m.cacheMu.Lock()
+	defer m.cacheMu.Unlock()
+
+	return m.cache.SetWithTTL(key, value, exp)
+}
+
+// Get retrieves a string value by key. If the key does not exist, the boolean
+// returned is set to false.
+func (m *memoryCache) Get(ctx context.Context, key string) (bool, string,
+	error) {
+	m.cacheMu.RLock()
+	defer m.cacheMu.RUnlock()
+
+	i, err := m.cache.Get(key)
+	if errors.Is(err, ttlcache.ErrNotFound) {
+		return false, "", nil
+	}
+	if err != nil {
+		return false, "", err
+	}
+
+	s, ok := i.(string)
+	if !ok {
+		return false, "", errWrongType
+	}
+
+	return true, s, nil
+}
+
+// Get retrieves a []byte value by key. If the key does not exist, the boolean
+// returned is set to false.
+func (m *memoryCache) GetB(ctx context.Context, key string) (bool, []byte,
+	error) {
+	m.cacheMu.RLock()
+	defer m.cacheMu.RUnlock()
+
+	i, err := m.cache.Get(key)
+	if errors.Is(err, ttlcache.ErrNotFound) {
+		return false, nil, nil
+	}
+	if err != nil {
+		return false, nil, err
+	}
+
+	b, ok := i.([]byte)
+	if !ok {
+		return false, nil, errWrongType
+	}
+
+	return true, b, nil
 }
 
 // SetIfNotExist sets key to value if the key does not exist. If it is

@@ -354,7 +354,7 @@ func TestUpdateRule(t *testing.T) {
 		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
 		defer cancel()
 
-		raCli := api.NewRuleAlarmServiceClient(globalAdminGRPCConn)
+		raCli := api.NewRuleAlarmServiceClient(globalAdminKeyGRPCConn)
 		createRule, err := raCli.CreateRule(ctx, &api.CreateRuleRequest{
 			Rule: random.Rule("api-rule", uuid.NewString())})
 		t.Logf("createRule, err: %+v, %v", createRule, err)
@@ -573,7 +573,7 @@ func TestUpdateAlarm(t *testing.T) {
 		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
 		defer cancel()
 
-		raCli := api.NewRuleAlarmServiceClient(globalAdminGRPCConn)
+		raCli := api.NewRuleAlarmServiceClient(globalAdminKeyGRPCConn)
 		createRule, err := raCli.CreateRule(ctx, &api.CreateRuleRequest{
 			Rule: random.Rule("api-alarm", uuid.NewString())})
 		t.Logf("createRule, err: %+v, %v", createRule, err)
@@ -854,7 +854,7 @@ func TestDeleteRule(t *testing.T) {
 				testTimeout)
 			defer cancel()
 
-			raCli := api.NewRuleAlarmServiceClient(globalAdminGRPCConn)
+			raCli := api.NewRuleAlarmServiceClient(globalAdminKeyGRPCConn)
 			getRule, err := raCli.GetRule(ctx, &api.GetRuleRequest{
 				Id: createRule.Id})
 			t.Logf("getRule, err: %+v, %v", getRule, err)
@@ -945,7 +945,7 @@ func TestDeleteAlarm(t *testing.T) {
 				testTimeout)
 			defer cancel()
 
-			raCli := api.NewRuleAlarmServiceClient(globalAdminGRPCConn)
+			raCli := api.NewRuleAlarmServiceClient(globalAdminKeyGRPCConn)
 			getAlarm, err := raCli.GetAlarm(ctx, &api.GetAlarmRequest{
 				Id: createAlarm.Id, RuleId: createRule.Id})
 			t.Logf("getAlarm, err: %+v, %v", getAlarm, err)
@@ -1084,7 +1084,7 @@ func TestListRules(t *testing.T) {
 		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
 		defer cancel()
 
-		raCli := api.NewRuleAlarmServiceClient(globalAdminGRPCConn)
+		raCli := api.NewRuleAlarmServiceClient(globalAdminKeyGRPCConn)
 		listRules, err := raCli.ListRules(ctx, &api.ListRulesRequest{
 			PageSize: 2})
 		t.Logf("listRules, err: %+v, %v", listRules, err)

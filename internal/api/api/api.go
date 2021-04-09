@@ -17,6 +17,7 @@ import (
 	"github.com/thingspect/atlas/internal/api/lora"
 	"github.com/thingspect/atlas/internal/api/service"
 	"github.com/thingspect/atlas/pkg/alog"
+	"github.com/thingspect/atlas/pkg/cache"
 	"github.com/thingspect/atlas/pkg/consterr"
 	"github.com/thingspect/atlas/pkg/dao"
 	"github.com/thingspect/atlas/pkg/dao/alarm"
@@ -24,6 +25,7 @@ import (
 	"github.com/thingspect/atlas/pkg/dao/datapoint"
 	"github.com/thingspect/atlas/pkg/dao/device"
 	"github.com/thingspect/atlas/pkg/dao/event"
+	"github.com/thingspect/atlas/pkg/dao/key"
 	"github.com/thingspect/atlas/pkg/dao/org"
 	"github.com/thingspect/atlas/pkg/dao/rule"
 	"github.com/thingspect/atlas/pkg/dao/tag"
@@ -64,6 +66,12 @@ func New(cfg *config.Config) (*API, error) {
 		return nil, err
 	}
 
+	// Set up cache connection.
+	c, err := cache.NewRedis(cfg.RedisHost + ":6379")
+	if err != nil {
+		return nil, err
+	}
+
 	// Build the NSQ connection for publishing.
 	nsq, err := queue.NewNSQ(cfg.NSQPubAddr, nil, "",
 		queue.DefaultNSQRequeueDelay)
@@ -99,7 +107,7 @@ func New(cfg *config.Config) (*API, error) {
 
 	srv := grpc.NewServer(grpc.ChainUnaryInterceptor(
 		interceptor.Log(nil),
-		interceptor.Auth(skipAuth, cfg.PWTKey),
+		interceptor.Auth(skipAuth, cfg.PWTKey, c),
 		interceptor.Validate(skipValidate),
 	))
 	api.RegisterAlertServiceServer(srv, service.NewAlert(alert.NewDAO(pg)))
@@ -112,7 +120,7 @@ func New(cfg *config.Config) (*API, error) {
 	api.RegisterRuleAlarmServiceServer(srv,
 		service.NewRuleAlarm(rule.NewDAO(pg), alarm.NewDAO(pg)))
 	api.RegisterSessionServiceServer(srv, service.NewSession(user.NewDAO(pg),
-		cfg.PWTKey))
+		key.NewDAO(pg), c, cfg.PWTKey))
 	api.RegisterTagServiceServer(srv, service.NewTag(tag.NewDAO(pg)))
 	api.RegisterUserServiceServer(srv, service.NewUser(user.NewDAO(pg)))
 

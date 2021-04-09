@@ -48,6 +48,91 @@ func TestNewRedis(t *testing.T) {
 	}
 }
 
+func TestRedisSetGet(t *testing.T) {
+	t.Parallel()
+
+	testConfig := config.New()
+
+	redis, err := NewRedis(testConfig.RedisHost + ":6379")
+	t.Logf("redis, err: %+v, %v", redis, err)
+	require.NoError(t, err)
+
+	key := "testRedisSetGet-" + random.String(10)
+	val := random.String(10)
+
+	ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
+	defer cancel()
+
+	require.NoError(t, redis.Set(ctx, key, val))
+
+	ok, res, err := redis.Get(ctx, key)
+	t.Logf("ok, res, err: %v, %v, %v", ok, res, err)
+	require.True(t, ok)
+	require.Equal(t, val, res)
+	require.NoError(t, err)
+
+	ok, res, err = redis.Get(ctx, "testRedisSetGet-"+random.String(10))
+	t.Logf("ok, res, err: %v, %v, %v", ok, res, err)
+	require.False(t, ok)
+	require.Empty(t, res)
+	require.NoError(t, err)
+}
+
+func TestRedisSetTTLGetB(t *testing.T) {
+	t.Parallel()
+
+	testConfig := config.New()
+
+	redis, err := NewRedis(testConfig.RedisHost + ":6379")
+	t.Logf("redis, err: %+v, %v", redis, err)
+	require.NoError(t, err)
+
+	key := "testRedisSetTTLGetB-" + random.String(10)
+	val := random.Bytes(10)
+
+	ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
+	defer cancel()
+
+	require.NoError(t, redis.SetTTL(ctx, key, val, testTimeout))
+
+	ok, res, err := redis.GetB(ctx, key)
+	t.Logf("ok, res, err: %v, %x, %v", ok, res, err)
+	require.True(t, ok)
+	require.Equal(t, val, res)
+	require.NoError(t, err)
+
+	ok, res, err = redis.GetB(ctx, "testRedisSetTTLGetB-"+random.String(10))
+	t.Logf("ok, res, err: %v, %x, %v", ok, res, err)
+	require.False(t, ok)
+	require.Empty(t, res)
+	require.NoError(t, err)
+}
+
+func TestRedisSetTTLGetBShort(t *testing.T) {
+	t.Parallel()
+
+	testConfig := config.New()
+
+	redis, err := NewRedis(testConfig.RedisHost + ":6379")
+	t.Logf("redis, err: %+v, %v", redis, err)
+	require.NoError(t, err)
+
+	key := "testRedisSetTTLGetBShort-" + random.String(10)
+	val := random.Bytes(10)
+
+	ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
+	defer cancel()
+
+	require.NoError(t, redis.SetTTL(ctx, key, val, time.Millisecond))
+
+	time.Sleep(100 * time.Millisecond)
+	ok, res, err := redis.GetB(ctx, key)
+	t.Logf("ok, res, err: %v, %x, %v", ok, res, err)
+	require.False(t, ok)
+	require.Empty(t, res)
+	require.NoError(t, err)
+}
+
 func TestRedisSetIfNotExist(t *testing.T) {
 	t.Parallel()
 

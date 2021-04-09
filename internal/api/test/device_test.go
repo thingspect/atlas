@@ -52,7 +52,7 @@ func TestCreateDevice(t *testing.T) {
 		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
 		defer cancel()
 
-		devCli := api.NewDeviceServiceClient(globalAdminGRPCConn)
+		devCli := api.NewDeviceServiceClient(globalAdminKeyGRPCConn)
 		createDev, err := devCli.CreateDevice(ctx, &api.CreateDeviceRequest{
 			Device: dev})
 		t.Logf("createDev, err: %+v, %v", createDev, err)
@@ -131,7 +131,7 @@ func TestCreateDeviceLoRaWAN(t *testing.T) {
 		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
 		defer cancel()
 
-		devCli := api.NewDeviceServiceClient(globalAdminGRPCConn)
+		devCli := api.NewDeviceServiceClient(globalAdminKeyGRPCConn)
 		createDev, err := devCli.CreateDevice(ctx, &api.CreateDeviceRequest{
 			Device: random.Device("api-device", uuid.NewString())})
 		t.Logf("createDev, err: %+v, %v", createDev, err)
@@ -317,7 +317,7 @@ func TestUpdateDevice(t *testing.T) {
 		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
 		defer cancel()
 
-		devCli := api.NewDeviceServiceClient(globalAdminGRPCConn)
+		devCli := api.NewDeviceServiceClient(globalAdminKeyGRPCConn)
 		createDev, err := devCli.CreateDevice(ctx, &api.CreateDeviceRequest{
 			Device: random.Device("api-device", uuid.NewString())})
 		t.Logf("createDev, err: %+v, %v", createDev, err)
@@ -631,7 +631,7 @@ func TestDeleteDevice(t *testing.T) {
 				testTimeout)
 			defer cancel()
 
-			devCli := api.NewDeviceServiceClient(globalAdminGRPCConn)
+			devCli := api.NewDeviceServiceClient(globalAdminKeyGRPCConn)
 			getDev, err := devCli.GetDevice(ctx, &api.GetDeviceRequest{
 				Id: createDev.Id})
 			t.Logf("getDev, err: %+v, %v", getDev, err)
@@ -747,7 +747,7 @@ func TestListDevices(t *testing.T) {
 		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
 		defer cancel()
 
-		devCli := api.NewDeviceServiceClient(globalAdminGRPCConn)
+		devCli := api.NewDeviceServiceClient(globalAdminKeyGRPCConn)
 		listDevs, err := devCli.ListDevices(ctx, &api.ListDevicesRequest{
 			PageSize: 2})
 		t.Logf("listDevs, err: %+v, %v", listDevs, err)

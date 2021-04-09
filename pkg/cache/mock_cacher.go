@@ -49,6 +49,52 @@ func (mr *MockCacherMockRecorder) Close() *gomock.Call {
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Close", reflect.TypeOf((*MockCacher)(nil).Close))
 }
 
+// Get mocks base method.
+func (m *MockCacher) Get(ctx context.Context, key string) (bool, string, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "Get", ctx, key)
+	ret0, _ := ret[0].(bool)
+	ret1, _ := ret[1].(string)
+	ret2, _ := ret[2].(error)
+	return ret0, ret1, ret2
+}
+
+// Get indicates an expected call of Get.
+func (mr *MockCacherMockRecorder) Get(ctx, key interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Get", reflect.TypeOf((*MockCacher)(nil).Get), ctx, key)
+}
+
+// GetB mocks base method.
+func (m *MockCacher) GetB(ctx context.Context, key string) (bool, []byte, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetB", ctx, key)
+	ret0, _ := ret[0].(bool)
+	ret1, _ := ret[1].([]byte)
+	ret2, _ := ret[2].(error)
+	return ret0, ret1, ret2
+}
+
+// GetB indicates an expected call of GetB.
+func (mr *MockCacherMockRecorder) GetB(ctx, key interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetB", reflect.TypeOf((*MockCacher)(nil).GetB), ctx, key)
+}
+
+// Set mocks base method.
+func (m *MockCacher) Set(ctx context.Context, key string, value interface{}) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "Set", ctx, key, value)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// Set indicates an expected call of Set.
+func (mr *MockCacherMockRecorder) Set(ctx, key, value interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Set", reflect.TypeOf((*MockCacher)(nil).Set), ctx, key, value)
+}
+
 // SetIfNotExist mocks base method.
 func (m *MockCacher) SetIfNotExist(ctx context.Context, key string, value interface{}) (bool, error) {
 	m.ctrl.T.Helper()
@@ -77,4 +123,18 @@ func (m *MockCacher) SetIfNotExistTTL(ctx context.Context, key string, value int
 func (mr *MockCacherMockRecorder) SetIfNotExistTTL(ctx, key, value, exp interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SetIfNotExistTTL", reflect.TypeOf((*MockCacher)(nil).SetIfNotExistTTL), ctx, key, value, exp)
+}
+
+// SetTTL mocks base method.
+func (m *MockCacher) SetTTL(ctx context.Context, key string, value interface{}, exp time.Duration) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "SetTTL", ctx, key, value, exp)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// SetTTL indicates an expected call of SetTTL.
+func (mr *MockCacherMockRecorder) SetTTL(ctx, key, value, exp interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SetTTL", reflect.TypeOf((*MockCacher)(nil).SetTTL), ctx, key, value, exp)
 }
