@@ -1,7 +1,7 @@
 # github.com/NYTimes/gziphandler v1.1.1
 ## explicit
 github.com/NYTimes/gziphandler
-# github.com/ReneKroon/ttlcache/v2 v2.3.0
+# github.com/ReneKroon/ttlcache/v2 v2.4.0
 ## explicit
 github.com/ReneKroon/ttlcache/v2
 # github.com/antonmedv/expr v1.8.9
@@ -16,7 +16,7 @@ github.com/antonmedv/expr/optimizer
 github.com/antonmedv/expr/parser
 github.com/antonmedv/expr/parser/lexer
 github.com/antonmedv/expr/vm
-# github.com/brocaar/chirpstack-api/go/v3 v3.9.6
+# github.com/brocaar/chirpstack-api/go/v3 v3.9.7
 ## explicit
 github.com/brocaar/chirpstack-api/go/v3/as/external/api
 github.com/brocaar/chirpstack-api/go/v3/as/integration
@@ -187,7 +187,8 @@ go.opentelemetry.io/otel/trace
 golang.org/x/crypto/bcrypt
 golang.org/x/crypto/blowfish
 golang.org/x/crypto/pbkdf2
-# golang.org/x/net v0.0.0-20210405180319-a5a99cb37ef4
+# golang.org/x/net v0.0.0-20210410081132-afb366fc7cd1
+## explicit
 golang.org/x/net/context
 golang.org/x/net/http/httpguts
 golang.org/x/net/http2

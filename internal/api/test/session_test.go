@@ -11,8 +11,10 @@ import (
 	"github.com/stretchr/testify/require"
 	"github.com/thingspect/api/go/api"
 	"github.com/thingspect/api/go/common"
+	iapi "github.com/thingspect/atlas/internal/api/api"
 	"github.com/thingspect/atlas/internal/api/session"
 	"github.com/thingspect/atlas/pkg/test/random"
+	"google.golang.org/grpc"
 )
 
 func TestLogin(t *testing.T) {
@@ -257,6 +259,42 @@ func TestDeleteKey(t *testing.T) {
 			require.EqualError(t, err, "rpc error: code = NotFound desc = "+
 				"object not found")
 		})
+	})
+
+	t.Run("Delete key with invalid key", func(t *testing.T) {
+		t.Parallel()
+
+		key := random.Key("api-key", uuid.NewString())
+		key.Role = common.Role_ADMIN
+
+		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
+		defer cancel()
+
+		sessCli := api.NewSessionServiceClient(globalAdminGRPCConn)
+		createKey, err := sessCli.CreateKey(ctx, &api.CreateKeyRequest{
+			Key: key})
+		t.Logf("createKey, err: %+v, %v", createKey, err)
+		require.NoError(t, err)
+
+		opts := []grpc.DialOption{
+			grpc.WithBlock(),
+			grpc.WithInsecure(),
+			grpc.WithPerRPCCredentials(&credential{token: createKey.Token}),
+		}
+		keyConn, err := grpc.Dial(iapi.GRPCHost+iapi.GRPCPort, opts...)
+		require.NoError(t, err)
+
+		sessCli = api.NewSessionServiceClient(keyConn)
+		_, err = sessCli.DeleteKey(ctx, &api.DeleteKeyRequest{
+			Id: createKey.Key.Id})
+		t.Logf("err: %v", err)
+		require.NoError(t, err)
+
+		_, err = sessCli.DeleteKey(ctx, &api.DeleteKeyRequest{
+			Id: createKey.Key.Id})
+		t.Logf("err: %v", err)
+		require.EqualError(t, err, "rpc error: code = Unauthenticated desc = "+
+			"unauthorized")
 	})
 
 	t.Run("Delete key with insufficient role", func(t *testing.T) {

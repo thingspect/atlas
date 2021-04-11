@@ -60,7 +60,7 @@ func Auth(skipPaths map[string]struct{}, pwtKey []byte,
 		if sess.UserID != "" {
 			logger.Logger = logger.WithStr("userID", sess.UserID)
 		} else {
-			logger.Logger = logger.WithStr("KeyID", sess.KeyID)
+			logger.Logger = logger.WithStr("keyID", sess.KeyID)
 		}
 		logger.Logger = logger.WithStr("orgID", sess.OrgID)
 
