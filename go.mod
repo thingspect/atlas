@@ -4,9 +4,9 @@ go 1.16
 
 require (
 	github.com/NYTimes/gziphandler v1.1.1
-	github.com/ReneKroon/ttlcache/v2 v2.3.0
+	github.com/ReneKroon/ttlcache/v2 v2.4.0
 	github.com/antonmedv/expr v1.8.9
-	github.com/brocaar/chirpstack-api/go/v3 v3.9.6
+	github.com/brocaar/chirpstack-api/go/v3 v3.9.7
 	github.com/eclipse/paho.mqtt.golang v1.3.3
 	github.com/go-redis/redis/v8 v8.8.0
 	github.com/golang/mock v1.5.0
@@ -34,6 +34,7 @@ require (
 	github.com/ttacon/builder v0.0.0-20170518171403-c099f663e1c2 // indirect
 	github.com/ttacon/libphonenumber v1.2.1 // indirect
 	golang.org/x/crypto v0.0.0-20210322153248-0c34fe9e7dc2
+	golang.org/x/net v0.0.0-20210410081132-afb366fc7cd1 // indirect
 	golang.org/x/sync v0.0.0-20210220032951-036812b2e83c // indirect
 	google.golang.org/grpc v1.37.0
 	google.golang.org/protobuf v1.26.0
