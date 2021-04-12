@@ -4,8 +4,11 @@
 
 ## Getting Started
 
+Install [Docker](https://docs.docker.com/get-started/overview/) and
+[Go](https://golang.org/doc/tutorial/getting-started).
+
 ```
-docker-compose -f build/docker-compose.yml up
+docker compose -f build/docker-compose.yml up
 make test
 RACE=y make test
 ```
