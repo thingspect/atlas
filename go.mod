@@ -30,11 +30,10 @@ require (
 	github.com/rs/zerolog v1.21.0
 	github.com/smira/go-statsd v1.3.2
 	github.com/stretchr/testify v1.7.0
-	github.com/thingspect/api/go v0.0.0-20210409215754-fd1c3dcf7fc1
+	github.com/thingspect/api/go v0.0.0-20210412132419-6517fb30a9f2
 	github.com/ttacon/builder v0.0.0-20170518171403-c099f663e1c2 // indirect
 	github.com/ttacon/libphonenumber v1.2.1 // indirect
 	golang.org/x/crypto v0.0.0-20210322153248-0c34fe9e7dc2
-	golang.org/x/net v0.0.0-20210410081132-afb366fc7cd1 // indirect
 	golang.org/x/sync v0.0.0-20210220032951-036812b2e83c // indirect
 	google.golang.org/grpc v1.37.0
 	google.golang.org/protobuf v1.26.0

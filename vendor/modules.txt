@@ -154,7 +154,7 @@ github.com/smira/go-statsd
 ## explicit
 github.com/stretchr/testify/assert
 github.com/stretchr/testify/require
-# github.com/thingspect/api/go v0.0.0-20210409215754-fd1c3dcf7fc1
+# github.com/thingspect/api/go v0.0.0-20210412132419-6517fb30a9f2
 ## explicit
 github.com/thingspect/api/go/api
 github.com/thingspect/api/go/common
@@ -188,7 +188,6 @@ golang.org/x/crypto/bcrypt
 golang.org/x/crypto/blowfish
 golang.org/x/crypto/pbkdf2
 # golang.org/x/net v0.0.0-20210410081132-afb366fc7cd1
-## explicit
 golang.org/x/net/context
 golang.org/x/net/http/httpguts
 golang.org/x/net/http2
