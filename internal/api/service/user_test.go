@@ -270,9 +270,9 @@ func TestUpdateUser(t *testing.T) {
 		retUser, _ := proto.Clone(user).(*api.User)
 		part := &api.User{Id: user.Id, Status: common.Status_ACTIVE,
 			Tags: random.Tags("api-user", 2)}
-		merged := &api.User{Id: user.Id, OrgId: user.OrgId, Email: user.Email,
-			Phone: user.Phone, Role: user.Role, Status: part.Status,
-			Tags: part.Tags, AppKey: user.AppKey}
+		merged := &api.User{Id: user.Id, OrgId: user.OrgId, Name: user.Name,
+			Email: user.Email, Phone: user.Phone, Role: user.Role,
+			Status: part.Status, Tags: part.Tags, AppKey: user.AppKey}
 		retMerged, _ := proto.Clone(merged).(*api.User)
 
 		userer := NewMockUserer(gomock.NewController(t))

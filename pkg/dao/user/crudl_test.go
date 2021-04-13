@@ -232,6 +232,7 @@ func TestUpdate(t *testing.T) {
 		require.NoError(t, err)
 
 		// Update user fields.
+		createUser.Name = "dao-user-" + random.String(10)
 		createUser.Email = "dao-user-" + random.Email()
 		createUser.Phone = "+15125553434"
 		createUser.Role = common.Role_ADMIN
@@ -244,6 +245,7 @@ func TestUpdate(t *testing.T) {
 		t.Logf("createUser, updateUser, err: %+v, %+v, %v", createUser,
 			updateUser, err)
 		require.NoError(t, err)
+		require.Equal(t, createUser.Name, updateUser.Name)
 		require.Equal(t, createUser.Email, updateUser.Email)
 		require.Equal(t, createUser.Phone, updateUser.Phone)
 		require.Equal(t, createUser.Role, updateUser.Role)
@@ -460,6 +462,7 @@ func TestList(t *testing.T) {
 	require.NoError(t, err)
 
 	userIDs := []string{}
+	userNames := []string{}
 	userRoles := []common.Role{}
 	userTags := [][]string{}
 	userAppKeys := []string{}
@@ -471,6 +474,7 @@ func TestList(t *testing.T) {
 		require.NoError(t, err)
 
 		userIDs = append(userIDs, createUser.Id)
+		userNames = append(userNames, createUser.Name)
 		userRoles = append(userRoles, createUser.Role)
 		userTags = append(userTags, createUser.Tags)
 		userAppKeys = append(userAppKeys, createUser.AppKey)
@@ -494,6 +498,7 @@ func TestList(t *testing.T) {
 		var found bool
 		for _, user := range listUsers {
 			if user.Id == userIDs[len(userIDs)-1] &&
+				user.Name == userNames[len(userNames)-1] &&
 				user.Role == userRoles[len(userRoles)-1] &&
 				reflect.DeepEqual(user.Tags, userTags[len(userTags)-1]) &&
 				user.AppKey == userAppKeys[len(userAppKeys)-1] {
@@ -520,6 +525,7 @@ func TestList(t *testing.T) {
 		var found bool
 		for _, user := range listUsers {
 			if user.Id == userIDs[len(userIDs)-1] &&
+				user.Name == userNames[len(userNames)-1] &&
 				user.Role == userRoles[len(userRoles)-1] &&
 				reflect.DeepEqual(user.Tags, userTags[len(userTags)-1]) &&
 				user.AppKey == userAppKeys[len(userAppKeys)-1] {
@@ -559,6 +565,7 @@ func TestList(t *testing.T) {
 		require.Equal(t, int32(1), listCount)
 
 		require.Equal(t, userIDs[len(userIDs)-1], listUsers[0].Id)
+		require.Equal(t, userNames[len(userNames)-1], listUsers[0].Name)
 		require.Equal(t, userRoles[len(userRoles)-1], listUsers[0].Role)
 		require.Equal(t, userTags[len(userTags)-1], listUsers[0].Tags)
 		require.Equal(t, userAppKeys[len(userAppKeys)-1], listUsers[0].AppKey)
@@ -579,6 +586,7 @@ func TestList(t *testing.T) {
 		require.Equal(t, int32(1), listCount)
 
 		require.Equal(t, userIDs[len(userIDs)-1], listUsers[0].Id)
+		require.Equal(t, userNames[len(userNames)-1], listUsers[0].Name)
 		require.Equal(t, userRoles[len(userRoles)-1], listUsers[0].Role)
 		require.Equal(t, userTags[len(userTags)-1], listUsers[0].Tags)
 		require.Equal(t, userAppKeys[len(userAppKeys)-1], listUsers[0].AppKey)
@@ -626,6 +634,7 @@ func TestListByTags(t *testing.T) {
 	require.NoError(t, err)
 
 	userIDs := []string{}
+	userNames := []string{}
 	userTags := [][]string{}
 	for i := 0; i < 3; i++ {
 		user := random.User("dao-user", createOrg.Id)
@@ -635,6 +644,7 @@ func TestListByTags(t *testing.T) {
 		require.NoError(t, err)
 
 		userIDs = append(userIDs, createUser.Id)
+		userNames = append(userNames, createUser.Name)
 		userTags = append(userTags, createUser.Tags)
 	}
 
@@ -650,6 +660,7 @@ func TestListByTags(t *testing.T) {
 		require.NoError(t, err)
 		require.Len(t, listUsers, 1)
 		require.Equal(t, listUsers[0].Id, userIDs[len(userIDs)-1])
+		require.Equal(t, listUsers[0].Name, userNames[len(userNames)-1])
 		require.Equal(t, listUsers[0].Tags, userTags[len(userTags)-1])
 	})
 

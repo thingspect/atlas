@@ -229,6 +229,7 @@ func TestUpdateUser(t *testing.T) {
 		require.NoError(t, err)
 
 		// Update user fields.
+		createUser.Name = "dao-user-" + random.String(10)
 		createUser.Email = "api-user-" + random.Email()
 		createUser.Role = common.Role_ADMIN
 		createUser.Status = common.Status_DISABLED
@@ -238,6 +239,7 @@ func TestUpdateUser(t *testing.T) {
 			User: createUser})
 		t.Logf("updateUser, err: %+v, %v", updateUser, err)
 		require.NoError(t, err)
+		require.Equal(t, createUser.Name, updateUser.Name)
 		require.Equal(t, createUser.Email, updateUser.Email)
 		require.Equal(t, createUser.Role, updateUser.Role)
 		require.Equal(t, createUser.Status, updateUser.Status)
@@ -275,15 +277,17 @@ func TestUpdateUser(t *testing.T) {
 		require.NoError(t, err)
 
 		// Update user fields.
-		part := &api.User{Id: createUser.Id, Email: "api-user-" +
-			random.Email(), Role: common.Role_ADMIN,
-			Status: common.Status_DISABLED, Tags: random.Tags("api-user", 2)}
+		part := &api.User{Id: createUser.Id, Name: "dao-user-" +
+			random.String(10), Email: "api-user-" + random.Email(),
+			Role: common.Role_ADMIN, Status: common.Status_DISABLED,
+			Tags: random.Tags("api-user", 2)}
 
 		updateUser, err := userCli.UpdateUser(ctx, &api.UpdateUserRequest{
 			User: part, UpdateMask: &fieldmaskpb.FieldMask{
-				Paths: []string{"email", "role", "status", "tags"}}})
+				Paths: []string{"name", "email", "role", "status", "tags"}}})
 		t.Logf("updateUser, err: %+v, %v", updateUser, err)
 		require.NoError(t, err)
+		require.Equal(t, part.Name, updateUser.Name)
 		require.Equal(t, part.Email, updateUser.Email)
 		require.Equal(t, part.Role, updateUser.Role)
 		require.Equal(t, part.Status, updateUser.Status)
@@ -756,6 +760,7 @@ func TestListUsers(t *testing.T) {
 	defer cancel()
 
 	userIDs := []string{}
+	userNames := []string{}
 	userRoles := []common.Role{}
 	userStatuses := []common.Status{}
 	userTags := [][]string{}
@@ -770,6 +775,7 @@ func TestListUsers(t *testing.T) {
 		require.NoError(t, err)
 
 		userIDs = append(userIDs, createUser.Id)
+		userNames = append(userNames, createUser.Name)
 		userRoles = append(userRoles, createUser.Role)
 		userStatuses = append(userStatuses, createUser.Status)
 		userTags = append(userTags, createUser.Tags)
@@ -791,6 +797,7 @@ func TestListUsers(t *testing.T) {
 		var found bool
 		for _, user := range listUsers.Users {
 			if user.Id == userIDs[len(userIDs)-1] &&
+				user.Name == userNames[len(userNames)-1] &&
 				user.Role == userRoles[len(userRoles)-1] &&
 				user.Status == userStatuses[len(userStatuses)-1] &&
 				reflect.DeepEqual(user.Tags, userTags[len(userTags)-1]) {
@@ -838,6 +845,7 @@ func TestListUsers(t *testing.T) {
 		require.Equal(t, int32(1), listUsers.TotalSize)
 
 		require.Equal(t, userIDs[len(userIDs)-1], listUsers.Users[0].Id)
+		require.Equal(t, userNames[len(userNames)-1], listUsers.Users[0].Name)
 		require.Equal(t, userStatuses[len(userStatuses)-1],
 			listUsers.Users[0].Status)
 		require.Equal(t, userRoles[len(userRoles)-1], listUsers.Users[0].Role)

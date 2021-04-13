@@ -53,6 +53,13 @@ func (m *User) Validate() error {
 
 	// no validation rules for OrgId
 
+	if l := utf8.RuneCountInString(m.GetName()); l < 5 || l > 80 {
+		return UserValidationError{
+			field:  "Name",
+			reason: "value length must be between 5 and 80 runes, inclusive",
+		}
+	}
+
 	if err := m._validateEmail(m.GetEmail()); err != nil {
 		return UserValidationError{
 			field:  "Email",
