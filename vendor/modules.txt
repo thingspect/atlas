@@ -124,7 +124,7 @@ github.com/kevinburke/rest/resterror
 # github.com/kevinburke/twilio-go v0.0.0-20210327194925-1623146bcf73
 ## explicit
 github.com/kevinburke/twilio-go
-# github.com/mailgun/mailgun-go/v4 v4.5.0
+# github.com/mailgun/mailgun-go/v4 v4.5.1
 ## explicit
 github.com/mailgun/mailgun-go/v4
 github.com/mailgun/mailgun-go/v4/events
@@ -154,7 +154,7 @@ github.com/smira/go-statsd
 ## explicit
 github.com/stretchr/testify/assert
 github.com/stretchr/testify/require
-# github.com/thingspect/api/go v0.0.0-20210412132419-6517fb30a9f2
+# github.com/thingspect/api/go v0.0.0-20210413170714-65f333ef4540
 ## explicit
 github.com/thingspect/api/go/api
 github.com/thingspect/api/go/common
@@ -200,7 +200,7 @@ golang.org/x/net/trace
 # golang.org/x/sync v0.0.0-20210220032951-036812b2e83c
 ## explicit
 golang.org/x/sync/errgroup
-# golang.org/x/sys v0.0.0-20210403161142-5e06dd20ab57
+# golang.org/x/sys v0.0.0-20210412220455-f1c623a9e750
 golang.org/x/sys/internal/unsafeheader
 golang.org/x/sys/unix
 # golang.org/x/text v0.3.6
@@ -217,7 +217,7 @@ golang.org/x/text/transform
 golang.org/x/text/unicode/bidi
 golang.org/x/text/unicode/norm
 golang.org/x/text/width
-# google.golang.org/genproto v0.0.0-20210406143921-e86de6bf7a46
+# google.golang.org/genproto v0.0.0-20210413151531-c14fb6ef47c3
 google.golang.org/genproto/googleapis/api/annotations
 google.golang.org/genproto/googleapis/api/httpbody
 google.golang.org/genproto/googleapis/rpc/status

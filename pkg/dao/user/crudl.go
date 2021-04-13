@@ -14,9 +14,9 @@ import (
 )
 
 const createUser = `
-INSERT INTO users (org_id, email, phone, role, status, tags, app_key,
+INSERT INTO users (org_id, name, email, phone, role, status, tags, app_key,
 created_at, updated_at)
-VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $8)
+VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $9)
 RETURNING id
 `
 
@@ -31,9 +31,9 @@ func (d *DAO) Create(ctx context.Context, user *api.User) (*api.User, error) {
 	user.CreatedAt = timestamppb.New(now)
 	user.UpdatedAt = timestamppb.New(now)
 
-	if err := d.pg.QueryRowContext(ctx, createUser, user.OrgId, user.Email,
-		user.Phone, user.Role.String(), user.Status.String(), tags, user.AppKey,
-		now).Scan(&user.Id); err != nil {
+	if err := d.pg.QueryRowContext(ctx, createUser, user.OrgId, user.Name,
+		user.Email, user.Phone, user.Role.String(), user.Status.String(), tags,
+		user.AppKey, now).Scan(&user.Id); err != nil {
 		return nil, dao.DBToSentinel(err)
 	}
 
@@ -41,7 +41,7 @@ func (d *DAO) Create(ctx context.Context, user *api.User) (*api.User, error) {
 }
 
 const readUser = `
-SELECT id, org_id, email, phone, role, status, tags, app_key, created_at,
+SELECT id, org_id, name, email, phone, role, status, tags, app_key, created_at,
 updated_at
 FROM users
 WHERE (id, org_id) = ($1, $2)
@@ -56,8 +56,8 @@ func (d *DAO) Read(ctx context.Context, userID, orgID string) (*api.User,
 	var createdAt, updatedAt time.Time
 
 	if err := d.pg.QueryRowContext(ctx, readUser, userID, orgID).Scan(&user.Id,
-		&user.OrgId, &user.Email, &user.Phone, &role, &status, &tags,
-		&user.AppKey, &createdAt, &updatedAt); err != nil {
+		&user.OrgId, &user.Name, &user.Email, &user.Phone, &role, &status,
+		&tags, &user.AppKey, &createdAt, &updatedAt); err != nil {
 		return nil, dao.DBToSentinel(err)
 	}
 
@@ -73,7 +73,7 @@ func (d *DAO) Read(ctx context.Context, userID, orgID string) (*api.User,
 }
 
 const readUserByEmail = `
-SELECT u.id, u.org_id, u.email, u.phone, u.password_hash, u.role, u.status,
+SELECT u.id, u.org_id, u.name, u.email, u.phone, u.password_hash, u.role, u.status,
 u.tags, u.app_key, u.created_at, u.updated_at
 FROM users u
 INNER JOIN orgs o ON u.org_id = o.id
@@ -90,8 +90,9 @@ func (d *DAO) ReadByEmail(ctx context.Context, email,
 	var createdAt, updatedAt time.Time
 
 	if err := d.pg.QueryRowContext(ctx, readUserByEmail, email, orgName).Scan(
-		&user.Id, &user.OrgId, &user.Email, &user.Phone, &passHash, &role,
-		&status, &tags, &user.AppKey, &createdAt, &updatedAt); err != nil {
+		&user.Id, &user.OrgId, &user.Name, &user.Email, &user.Phone, &passHash,
+		&role, &status, &tags, &user.AppKey, &createdAt,
+		&updatedAt); err != nil {
 		return nil, nil, dao.DBToSentinel(err)
 	}
 
@@ -108,9 +109,9 @@ func (d *DAO) ReadByEmail(ctx context.Context, email,
 
 const updateUser = `
 UPDATE users
-SET email = $1, phone = $2, role = $3, status = $4, tags = $5, app_key = $6,
-updated_at = $7
-WHERE (id, org_id) = ($8, $9)
+SET name = $1, email = $2, phone = $3, role = $4, status = $5, tags = $6,
+app_key = $7, updated_at = $8
+WHERE (id, org_id) = ($9, $10)
 RETURNING created_at
 `
 
@@ -126,9 +127,9 @@ func (d *DAO) Update(ctx context.Context, user *api.User) (*api.User, error) {
 	updatedAt := time.Now().UTC().Truncate(time.Microsecond)
 	user.UpdatedAt = timestamppb.New(updatedAt)
 
-	if err := d.pg.QueryRowContext(ctx, updateUser, user.Email, user.Phone,
-		user.Role.String(), user.Status.String(), tags, user.AppKey, updatedAt,
-		user.Id, user.OrgId).Scan(&createdAt); err != nil {
+	if err := d.pg.QueryRowContext(ctx, updateUser, user.Name, user.Email,
+		user.Phone, user.Role.String(), user.Status.String(), tags, user.AppKey,
+		updatedAt, user.Id, user.OrgId).Scan(&createdAt); err != nil {
 		return nil, dao.DBToSentinel(err)
 	}
 
@@ -188,7 +189,7 @@ AND $2 = ANY (tags)
 `
 
 const listUsers = `
-SELECT id, org_id, email, phone, role, status, tags, app_key, created_at,
+SELECT id, org_id, name, email, phone, role, status, tags, app_key, created_at,
 updated_at
 FROM users
 WHERE org_id = $1
@@ -274,8 +275,8 @@ func (d *DAO) List(ctx context.Context, orgID string, lBoundTS time.Time,
 		var tags pgtype.VarcharArray
 		var createdAt, updatedAt time.Time
 
-		if err = rows.Scan(&user.Id, &user.OrgId, &user.Email, &user.Phone,
-			&role, &status, &tags, &user.AppKey, &createdAt,
+		if err = rows.Scan(&user.Id, &user.OrgId, &user.Name, &user.Email,
+			&user.Phone, &role, &status, &tags, &user.AppKey, &createdAt,
 			&updatedAt); err != nil {
 			return nil, 0, dao.DBToSentinel(err)
 		}
@@ -301,7 +302,7 @@ func (d *DAO) List(ctx context.Context, orgID string, lBoundTS time.Time,
 }
 
 const listByTags = `
-SELECT id, org_id, email, phone, role, status, tags, app_key, created_at,
+SELECT id, org_id, name, email, phone, role, status, tags, app_key, created_at,
 updated_at
 FROM users
 WHERE (org_id, status) = ($1, 'ACTIVE')
@@ -335,8 +336,8 @@ func (d *DAO) ListByTags(ctx context.Context, orgID string,
 		var tags pgtype.VarcharArray
 		var createdAt, updatedAt time.Time
 
-		if err = rows.Scan(&user.Id, &user.OrgId, &user.Email, &user.Phone,
-			&role, &status, &tags, &user.AppKey, &createdAt,
+		if err = rows.Scan(&user.Id, &user.OrgId, &user.Name, &user.Email,
+			&user.Phone, &role, &status, &tags, &user.AppKey, &createdAt,
 			&updatedAt); err != nil {
 			return nil, dao.DBToSentinel(err)
 		}

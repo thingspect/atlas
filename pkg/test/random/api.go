@@ -112,6 +112,7 @@ func User(prefix, orgID string) *api.User {
 	return &api.User{
 		Id:    uuid.NewString(),
 		OrgId: orgID,
+		Name:  prefix + "-" + String(10),
 		Email: prefix + "-" + Email(),
 		Phone: []string{"", "+15125551212"}[Intn(2)],
 		Role: []common.Role{

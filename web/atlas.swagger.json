@@ -2638,6 +2638,10 @@
           "description": "Organization ID (UUID).",
           "readOnly": true
         },
+        "name": {
+          "type": "string",
+          "description": "User name."
+        },
         "email": {
           "type": "string",
           "description": "User email."

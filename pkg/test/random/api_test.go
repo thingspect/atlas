@@ -185,6 +185,8 @@ func TestUser(t *testing.T) {
 			t.Logf("u1, u2: %+v, %+v", u1, u2)
 
 			require.NotEqual(t, u1, u2)
+			require.True(t, strings.HasPrefix(u1.Name, prefix))
+			require.True(t, strings.HasPrefix(u2.Name, prefix))
 			require.True(t, strings.HasPrefix(u1.Email, prefix))
 			require.True(t, strings.HasPrefix(u2.Email, prefix))
 			require.GreaterOrEqual(t, len(u1.Tags), 1)
