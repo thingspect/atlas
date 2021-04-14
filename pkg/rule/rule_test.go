@@ -25,18 +25,33 @@ func TestEval(t *testing.T) {
 		{&common.DataPoint{}, `10 > 15`, false, ""},
 		{&common.DataPoint{}, `point.Token == ""`, true, ""},
 		{&common.DataPoint{}, `pointTS < currTS`, true, ""},
-		{&common.DataPoint{ValOneof: &common.DataPoint_IntVal{IntVal: 40}},
-			`point.GetIntVal() == 40`, true, ""},
-		{&common.DataPoint{ValOneof: &common.DataPoint_IntVal{IntVal: 40}},
-			`pointVal > 32`, true, ""},
-		{&common.DataPoint{ValOneof: &common.DataPoint_Fl64Val{Fl64Val: 37.7}},
-			`pointVal < 32`, false, ""},
-		{&common.DataPoint{ValOneof: &common.DataPoint_StrVal{StrVal: "batt"}},
-			`pointVal == line`, false, ""},
-		{&common.DataPoint{ValOneof: &common.DataPoint_BoolVal{BoolVal: true}},
-			`pointVal`, true, ""},
-		{&common.DataPoint{}, `1 + "aaa"`, false,
-			"invalid operation: int + string"},
+		{
+			&common.DataPoint{ValOneof: &common.DataPoint_IntVal{IntVal: 40}},
+			`point.GetIntVal() == 40`, true, "",
+		},
+		{
+			&common.DataPoint{ValOneof: &common.DataPoint_IntVal{IntVal: 40}},
+			`pointVal > 32`, true, "",
+		},
+		{
+			&common.DataPoint{ValOneof: &common.DataPoint_Fl64Val{
+				Fl64Val: 37.7,
+			}}, `pointVal < 32`, false, "",
+		},
+		{
+			&common.DataPoint{ValOneof: &common.DataPoint_StrVal{
+				StrVal: "batt",
+			}}, `pointVal == line`, false, "",
+		},
+		{
+			&common.DataPoint{ValOneof: &common.DataPoint_BoolVal{
+				BoolVal: true,
+			}}, `pointVal`, true, "",
+		},
+		{
+			&common.DataPoint{}, `1 + "aaa"`, false,
+			"invalid operation: int + string",
+		},
 		{&common.DataPoint{}, `"aaa"`, false, ErrNotBool.Error()},
 	}
 
