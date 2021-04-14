@@ -11,8 +11,10 @@ import (
 	"github.com/thingspect/atlas/pkg/decode"
 )
 
-const ackOK = "OK"
-const ackTimeout = "DOWNLINK_TIMEOUT"
+const (
+	ackOK      = "OK"
+	ackTimeout = "DOWNLINK_TIMEOUT"
+)
 
 // deviceAck parses a device ACK payload from a []byte according to the spec.
 func deviceAck(body []byte) ([]*decode.Point, error) {
