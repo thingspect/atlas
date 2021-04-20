@@ -40,13 +40,14 @@ func TestCreateUser(t *testing.T) {
 		userer.EXPECT().Create(gomock.Any(), user).Return(retUser, nil).Times(1)
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
-			context.Background(), &session.Session{OrgID: user.OrgId,
-				Role: common.Role_ADMIN}), testTimeout)
+			context.Background(), &session.Session{
+				OrgID: user.OrgId, Role: common.Role_ADMIN,
+			}), testTimeout)
 		defer cancel()
 
 		userSvc := NewUser(userer)
-		createUser, err := userSvc.CreateUser(ctx, &api.CreateUserRequest{
-			User: user})
+		createUser, err := userSvc.CreateUser(ctx,
+			&api.CreateUserRequest{User: user})
 		t.Logf("user, createUser, err: %+v, %+v, %v", user, createUser, err)
 		require.NoError(t, err)
 
@@ -74,8 +75,9 @@ func TestCreateUser(t *testing.T) {
 		t.Parallel()
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
-			context.Background(), &session.Session{OrgID: uuid.NewString(),
-				Role: common.Role_BUILDER}), testTimeout)
+			context.Background(), &session.Session{
+				OrgID: uuid.NewString(), Role: common.Role_BUILDER,
+			}), testTimeout)
 		defer cancel()
 
 		userSvc := NewUser(nil)
@@ -92,13 +94,14 @@ func TestCreateUser(t *testing.T) {
 		user.Role = common.Role_SYS_ADMIN
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
-			context.Background(), &session.Session{OrgID: uuid.NewString(),
-				Role: common.Role_ADMIN}), testTimeout)
+			context.Background(), &session.Session{
+				OrgID: uuid.NewString(), Role: common.Role_ADMIN,
+			}), testTimeout)
 		defer cancel()
 
 		userSvc := NewUser(nil)
-		createUser, err := userSvc.CreateUser(ctx, &api.CreateUserRequest{
-			User: user})
+		createUser, err := userSvc.CreateUser(ctx,
+			&api.CreateUserRequest{User: user})
 		t.Logf("user, createUser, err: %+v, %+v, %v", user, createUser, err)
 		require.Nil(t, createUser)
 		require.Equal(t, status.Error(codes.PermissionDenied, "permission "+
@@ -116,13 +119,14 @@ func TestCreateUser(t *testing.T) {
 			dao.ErrInvalidFormat).Times(1)
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
-			context.Background(), &session.Session{OrgID: user.OrgId,
-				Role: common.Role_ADMIN}), testTimeout)
+			context.Background(), &session.Session{
+				OrgID: user.OrgId, Role: common.Role_ADMIN,
+			}), testTimeout)
 		defer cancel()
 
 		userSvc := NewUser(userer)
-		createUser, err := userSvc.CreateUser(ctx, &api.CreateUserRequest{
-			User: user})
+		createUser, err := userSvc.CreateUser(ctx,
+			&api.CreateUserRequest{User: user})
 		t.Logf("user, createUser, err: %+v, %+v, %v", user, createUser, err)
 		require.Nil(t, createUser)
 		require.Equal(t, status.Error(codes.InvalidArgument, "invalid format"),
@@ -137,13 +141,14 @@ func TestCreateUser(t *testing.T) {
 		user.Phone = random.String(10)
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
-			context.Background(), &session.Session{OrgID: uuid.NewString(),
-				Role: common.Role_ADMIN}), testTimeout)
+			context.Background(), &session.Session{
+				OrgID: uuid.NewString(), Role: common.Role_ADMIN,
+			}), testTimeout)
 		defer cancel()
 
 		userSvc := NewUser(nil)
-		createUser, err := userSvc.CreateUser(ctx, &api.CreateUserRequest{
-			User: user})
+		createUser, err := userSvc.CreateUser(ctx,
+			&api.CreateUserRequest{User: user})
 		t.Logf("user, createUser, err: %+v, %+v, %v", user, createUser, err)
 		require.Nil(t, createUser)
 		require.Equal(t, status.Error(codes.InvalidArgument,
@@ -165,8 +170,9 @@ func TestGetUser(t *testing.T) {
 			nil).Times(1)
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
-			context.Background(), &session.Session{OrgID: user.OrgId,
-				Role: common.Role_ADMIN}), testTimeout)
+			context.Background(), &session.Session{
+				OrgID: user.OrgId, Role: common.Role_ADMIN,
+			}), testTimeout)
 		defer cancel()
 
 		userSvc := NewUser(userer)
@@ -198,9 +204,10 @@ func TestGetUser(t *testing.T) {
 		t.Parallel()
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
-			context.Background(), &session.Session{UserID: uuid.NewString(),
-				OrgID: uuid.NewString(), Role: common.Role_VIEWER}),
-			testTimeout)
+			context.Background(), &session.Session{
+				UserID: uuid.NewString(), OrgID: uuid.NewString(),
+				Role: common.Role_VIEWER,
+			}), testTimeout)
 		defer cancel()
 
 		userSvc := NewUser(nil)
@@ -218,13 +225,14 @@ func TestGetUser(t *testing.T) {
 			Return(nil, dao.ErrNotFound).Times(1)
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
-			context.Background(), &session.Session{OrgID: uuid.NewString(),
-				Role: common.Role_ADMIN}), testTimeout)
+			context.Background(), &session.Session{
+				OrgID: uuid.NewString(), Role: common.Role_ADMIN,
+			}), testTimeout)
 		defer cancel()
 
 		userSvc := NewUser(userer)
-		getUser, err := userSvc.GetUser(ctx, &api.GetUserRequest{
-			Id: uuid.NewString()})
+		getUser, err := userSvc.GetUser(ctx,
+			&api.GetUserRequest{Id: uuid.NewString()})
 		t.Logf("getUser, err: %+v, %v", getUser, err)
 		require.Nil(t, getUser)
 		require.Equal(t, status.Error(codes.NotFound, "object not found"), err)
@@ -245,13 +253,14 @@ func TestUpdateUser(t *testing.T) {
 		userer.EXPECT().Update(gomock.Any(), user).Return(retUser, nil).Times(1)
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
-			context.Background(), &session.Session{OrgID: user.OrgId,
-				Role: common.Role_ADMIN}), testTimeout)
+			context.Background(), &session.Session{
+				OrgID: user.OrgId, Role: common.Role_ADMIN,
+			}), testTimeout)
 		defer cancel()
 
 		userSvc := NewUser(userer)
-		updateUser, err := userSvc.UpdateUser(ctx, &api.UpdateUserRequest{
-			User: user})
+		updateUser, err := userSvc.UpdateUser(ctx,
+			&api.UpdateUserRequest{User: user})
 		t.Logf("user, updateUser, err: %+v, %+v, %v", user, updateUser, err)
 		require.NoError(t, err)
 
@@ -268,11 +277,15 @@ func TestUpdateUser(t *testing.T) {
 		user := random.User("api-user", uuid.NewString())
 		user.Role = common.Role_ADMIN
 		retUser, _ := proto.Clone(user).(*api.User)
-		part := &api.User{Id: user.Id, Status: common.Status_ACTIVE,
-			Tags: random.Tags("api-user", 2)}
-		merged := &api.User{Id: user.Id, OrgId: user.OrgId, Name: user.Name,
-			Email: user.Email, Phone: user.Phone, Role: user.Role,
-			Status: part.Status, Tags: part.Tags, AppKey: user.AppKey}
+		part := &api.User{
+			Id: user.Id, Status: common.Status_ACTIVE,
+			Tags: random.Tags("api-user", 2),
+		}
+		merged := &api.User{
+			Id: user.Id, OrgId: user.OrgId, Name: user.Name, Email: user.Email,
+			Phone: user.Phone, Role: user.Role, Status: part.Status,
+			Tags: part.Tags, AppKey: user.AppKey,
+		}
 		retMerged, _ := proto.Clone(merged).(*api.User)
 
 		userer := NewMockUserer(gomock.NewController(t))
@@ -282,14 +295,17 @@ func TestUpdateUser(t *testing.T) {
 			Return(retMerged, nil).Times(1)
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
-			context.Background(), &session.Session{OrgID: user.OrgId,
-				Role: common.Role_ADMIN}), testTimeout)
+			context.Background(), &session.Session{
+				OrgID: user.OrgId, Role: common.Role_ADMIN,
+			}), testTimeout)
 		defer cancel()
 
 		userSvc := NewUser(userer)
 		updateUser, err := userSvc.UpdateUser(ctx, &api.UpdateUserRequest{
 			User: part, UpdateMask: &fieldmaskpb.FieldMask{
-				Paths: []string{"status", "tags"}}})
+				Paths: []string{"status", "tags"},
+			},
+		})
 		t.Logf("merged, updateUser, err: %+v, %+v, %v", merged, updateUser, err)
 		require.NoError(t, err)
 
@@ -317,13 +333,14 @@ func TestUpdateUser(t *testing.T) {
 		t.Parallel()
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
-			context.Background(), &session.Session{OrgID: uuid.NewString(),
-				Role: common.Role_ADMIN}), testTimeout)
+			context.Background(), &session.Session{
+				OrgID: uuid.NewString(), Role: common.Role_ADMIN,
+			}), testTimeout)
 		defer cancel()
 
 		userSvc := NewUser(nil)
-		updateUser, err := userSvc.UpdateUser(ctx, &api.UpdateUserRequest{
-			User: nil})
+		updateUser, err := userSvc.UpdateUser(ctx,
+			&api.UpdateUserRequest{User: nil})
 		t.Logf("updateUser, err: %+v, %v", updateUser, err)
 		require.Nil(t, updateUser)
 		require.Equal(t, status.Error(codes.InvalidArgument,
@@ -334,14 +351,16 @@ func TestUpdateUser(t *testing.T) {
 		t.Parallel()
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
-			context.Background(), &session.Session{UserID: uuid.NewString(),
-				OrgID: uuid.NewString(), Role: common.Role_VIEWER}),
-			testTimeout)
+			context.Background(), &session.Session{
+				UserID: uuid.NewString(), OrgID: uuid.NewString(),
+				Role: common.Role_VIEWER,
+			}), testTimeout)
 		defer cancel()
 
 		userSvc := NewUser(nil)
 		updateUser, err := userSvc.UpdateUser(ctx, &api.UpdateUserRequest{
-			User: random.User("api-user", uuid.NewString())})
+			User: random.User("api-user", uuid.NewString()),
+		})
 		t.Logf("updateUser, err: %+v, %v", updateUser, err)
 		require.Nil(t, updateUser)
 		require.Equal(t, errPerm(common.Role_ADMIN), err)
@@ -354,13 +373,14 @@ func TestUpdateUser(t *testing.T) {
 		user.Role = common.Role_VIEWER
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
-			context.Background(), &session.Session{UserID: user.Id,
-				OrgID: user.OrgId, Role: common.Role_BUILDER}), testTimeout)
+			context.Background(), &session.Session{
+				UserID: user.Id, OrgID: user.OrgId, Role: common.Role_BUILDER,
+			}), testTimeout)
 		defer cancel()
 
 		userSvc := NewUser(nil)
-		updateUser, err := userSvc.UpdateUser(ctx, &api.UpdateUserRequest{
-			User: user})
+		updateUser, err := userSvc.UpdateUser(ctx,
+			&api.UpdateUserRequest{User: user})
 		t.Logf("user, updateUser, err: %+v, %+v, %v", user, updateUser, err)
 		require.Nil(t, updateUser)
 		require.Equal(t, status.Error(codes.PermissionDenied, "permission "+
@@ -374,13 +394,14 @@ func TestUpdateUser(t *testing.T) {
 		user.Role = common.Role_SYS_ADMIN
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
-			context.Background(), &session.Session{UserID: user.Id,
-				OrgID: user.OrgId, Role: common.Role_ADMIN}), testTimeout)
+			context.Background(), &session.Session{
+				UserID: user.Id, OrgID: user.OrgId, Role: common.Role_ADMIN,
+			}), testTimeout)
 		defer cancel()
 
 		userSvc := NewUser(nil)
-		updateUser, err := userSvc.UpdateUser(ctx, &api.UpdateUserRequest{
-			User: user})
+		updateUser, err := userSvc.UpdateUser(ctx,
+			&api.UpdateUserRequest{User: user})
 		t.Logf("user, updateUser, err: %+v, %+v, %v", user, updateUser, err)
 		require.Nil(t, updateUser)
 		require.Equal(t, status.Error(codes.PermissionDenied, "permission "+
@@ -395,13 +416,14 @@ func TestUpdateUser(t *testing.T) {
 		user.Phone = random.String(10)
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
-			context.Background(), &session.Session{OrgID: user.OrgId,
-				Role: common.Role_ADMIN}), testTimeout)
+			context.Background(), &session.Session{
+				OrgID: user.OrgId, Role: common.Role_ADMIN,
+			}), testTimeout)
 		defer cancel()
 
 		userSvc := NewUser(nil)
-		updateUser, err := userSvc.UpdateUser(ctx, &api.UpdateUserRequest{
-			User: user})
+		updateUser, err := userSvc.UpdateUser(ctx,
+			&api.UpdateUserRequest{User: user})
 		t.Logf("user, updateUser, err: %+v, %+v, %v", user, updateUser, err)
 		require.Nil(t, updateUser)
 		require.Equal(t, status.Error(codes.InvalidArgument,
@@ -415,14 +437,17 @@ func TestUpdateUser(t *testing.T) {
 		user.Role = common.Role_ADMIN
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
-			context.Background(), &session.Session{OrgID: uuid.NewString(),
-				Role: common.Role_ADMIN}), testTimeout)
+			context.Background(), &session.Session{
+				OrgID: uuid.NewString(), Role: common.Role_ADMIN,
+			}), testTimeout)
 		defer cancel()
 
 		userSvc := NewUser(nil)
 		updateUser, err := userSvc.UpdateUser(ctx, &api.UpdateUserRequest{
 			User: user, UpdateMask: &fieldmaskpb.FieldMask{
-				Paths: []string{"aaa"}}})
+				Paths: []string{"aaa"},
+			},
+		})
 		t.Logf("user, updateUser, err: %+v, %+v, %v", user, updateUser, err)
 		require.Nil(t, updateUser)
 		require.Equal(t, status.Error(codes.InvalidArgument,
@@ -440,14 +465,17 @@ func TestUpdateUser(t *testing.T) {
 			Return(nil, dao.ErrNotFound).Times(1)
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
-			context.Background(), &session.Session{OrgID: orgID,
-				Role: common.Role_ADMIN}), testTimeout)
+			context.Background(), &session.Session{
+				OrgID: orgID, Role: common.Role_ADMIN,
+			}), testTimeout)
 		defer cancel()
 
 		userSvc := NewUser(userer)
 		updateUser, err := userSvc.UpdateUser(ctx, &api.UpdateUserRequest{
 			User: part, UpdateMask: &fieldmaskpb.FieldMask{
-				Paths: []string{"status"}}})
+				Paths: []string{"status"},
+			},
+		})
 		t.Logf("part, updateUser, err: %+v, %+v, %v", part, updateUser, err)
 		require.Nil(t, updateUser)
 		require.Equal(t, status.Error(codes.NotFound, "object not found"), err)
@@ -461,13 +489,14 @@ func TestUpdateUser(t *testing.T) {
 		user.Role = common.Role_ADMIN
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
-			context.Background(), &session.Session{OrgID: user.OrgId,
-				Role: common.Role_ADMIN}), testTimeout)
+			context.Background(), &session.Session{
+				OrgID: user.OrgId, Role: common.Role_ADMIN,
+			}), testTimeout)
 		defer cancel()
 
 		userSvc := NewUser(nil)
-		updateUser, err := userSvc.UpdateUser(ctx, &api.UpdateUserRequest{
-			User: user})
+		updateUser, err := userSvc.UpdateUser(ctx,
+			&api.UpdateUserRequest{User: user})
 		t.Logf("user, updateUser, err: %+v, %+v, %v", user, updateUser, err)
 		require.Nil(t, updateUser)
 		require.Equal(t, status.Error(codes.InvalidArgument, "invalid "+
@@ -488,13 +517,14 @@ func TestUpdateUser(t *testing.T) {
 			dao.ErrInvalidFormat).Times(1)
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
-			context.Background(), &session.Session{OrgID: user.OrgId,
-				Role: common.Role_ADMIN}), testTimeout)
+			context.Background(), &session.Session{
+				OrgID: user.OrgId, Role: common.Role_ADMIN,
+			}), testTimeout)
 		defer cancel()
 
 		userSvc := NewUser(userer)
-		updateUser, err := userSvc.UpdateUser(ctx, &api.UpdateUserRequest{
-			User: user})
+		updateUser, err := userSvc.UpdateUser(ctx,
+			&api.UpdateUserRequest{User: user})
 		t.Logf("user, updateUser, err: %+v, %+v, %v", user, updateUser, err)
 		require.Nil(t, updateUser)
 		require.Equal(t, status.Error(codes.InvalidArgument, "invalid format"),
@@ -513,14 +543,16 @@ func TestUpdateUserPassword(t *testing.T) {
 			gomock.Any()).Return(nil).Times(1)
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
-			context.Background(), &session.Session{OrgID: uuid.NewString(),
-				Role: common.Role_ADMIN}), testTimeout)
+			context.Background(), &session.Session{
+				OrgID: uuid.NewString(), Role: common.Role_ADMIN,
+			}), testTimeout)
 		defer cancel()
 
 		userSvc := NewUser(userer)
 		_, err := userSvc.UpdateUserPassword(ctx,
-			&api.UpdateUserPasswordRequest{Id: uuid.NewString(),
-				Password: random.String(20)})
+			&api.UpdateUserPasswordRequest{
+				Id: uuid.NewString(), Password: random.String(20),
+			})
 		t.Logf("err: %v", err)
 		require.NoError(t, err)
 	})
@@ -542,9 +574,10 @@ func TestUpdateUserPassword(t *testing.T) {
 		t.Parallel()
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
-			context.Background(), &session.Session{UserID: uuid.NewString(),
-				OrgID: uuid.NewString(), Role: common.Role_VIEWER}),
-			testTimeout)
+			context.Background(), &session.Session{
+				UserID: uuid.NewString(), OrgID: uuid.NewString(),
+				Role: common.Role_VIEWER,
+			}), testTimeout)
 		defer cancel()
 
 		userSvc := NewUser(nil)
@@ -558,14 +591,16 @@ func TestUpdateUserPassword(t *testing.T) {
 		t.Parallel()
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
-			context.Background(), &session.Session{OrgID: uuid.NewString(),
-				Role: common.Role_ADMIN}), testTimeout)
+			context.Background(), &session.Session{
+				OrgID: uuid.NewString(), Role: common.Role_ADMIN,
+			}), testTimeout)
 		defer cancel()
 
 		userSvc := NewUser(nil)
 		_, err := userSvc.UpdateUserPassword(ctx,
-			&api.UpdateUserPasswordRequest{Id: uuid.NewString(),
-				Password: "1234567890"})
+			&api.UpdateUserPasswordRequest{
+				Id: uuid.NewString(), Password: "1234567890",
+			})
 		t.Logf("err: %v", err)
 		require.Equal(t, status.Error(codes.InvalidArgument,
 			crypto.ErrWeakPass.Error()), err)
@@ -579,14 +614,16 @@ func TestUpdateUserPassword(t *testing.T) {
 			gomock.Any()).Return(dao.ErrNotFound).Times(1)
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
-			context.Background(), &session.Session{OrgID: uuid.NewString(),
-				Role: common.Role_ADMIN}), testTimeout)
+			context.Background(), &session.Session{
+				OrgID: uuid.NewString(), Role: common.Role_ADMIN,
+			}), testTimeout)
 		defer cancel()
 
 		userSvc := NewUser(userer)
 		_, err := userSvc.UpdateUserPassword(ctx,
-			&api.UpdateUserPasswordRequest{Id: uuid.NewString(),
-				Password: random.String(20)})
+			&api.UpdateUserPasswordRequest{
+				Id: uuid.NewString(), Password: random.String(20),
+			})
 		t.Logf("err: %v", err)
 		require.Equal(t, status.Error(codes.NotFound, "object not found"), err)
 	})
@@ -603,13 +640,14 @@ func TestDeleteUser(t *testing.T) {
 			Return(nil).Times(1)
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
-			context.Background(), &session.Session{OrgID: uuid.NewString(),
-				Role: common.Role_ADMIN}), testTimeout)
+			context.Background(), &session.Session{
+				OrgID: uuid.NewString(), Role: common.Role_ADMIN,
+			}), testTimeout)
 		defer cancel()
 
 		userSvc := NewUser(userer)
-		_, err := userSvc.DeleteUser(ctx, &api.DeleteUserRequest{
-			Id: uuid.NewString()})
+		_, err := userSvc.DeleteUser(ctx,
+			&api.DeleteUserRequest{Id: uuid.NewString()})
 		t.Logf("err: %v", err)
 		require.NoError(t, err)
 	})
@@ -630,8 +668,9 @@ func TestDeleteUser(t *testing.T) {
 		t.Parallel()
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
-			context.Background(), &session.Session{OrgID: uuid.NewString(),
-				Role: common.Role_BUILDER}), testTimeout)
+			context.Background(), &session.Session{
+				OrgID: uuid.NewString(), Role: common.Role_BUILDER,
+			}), testTimeout)
 		defer cancel()
 
 		userSvc := NewUser(nil)
@@ -648,13 +687,14 @@ func TestDeleteUser(t *testing.T) {
 			Return(dao.ErrNotFound).Times(1)
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
-			context.Background(), &session.Session{OrgID: uuid.NewString(),
-				Role: common.Role_ADMIN}), testTimeout)
+			context.Background(), &session.Session{
+				OrgID: uuid.NewString(), Role: common.Role_ADMIN,
+			}), testTimeout)
 		defer cancel()
 
 		userSvc := NewUser(userer)
-		_, err := userSvc.DeleteUser(ctx, &api.DeleteUserRequest{
-			Id: uuid.NewString()})
+		_, err := userSvc.DeleteUser(ctx,
+			&api.DeleteUserRequest{Id: uuid.NewString()})
 		t.Logf("err: %v", err)
 		require.Equal(t, status.Error(codes.NotFound, "object not found"), err)
 	})
@@ -679,8 +719,9 @@ func TestListUsers(t *testing.T) {
 			"").Return(users, int32(3), nil).Times(1)
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
-			context.Background(), &session.Session{OrgID: orgID,
-				Role: common.Role_ADMIN}), testTimeout)
+			context.Background(), &session.Session{
+				OrgID: orgID, Role: common.Role_ADMIN,
+			}), testTimeout)
 		defer cancel()
 
 		userSvc := NewUser(userer)
@@ -718,24 +759,26 @@ func TestListUsers(t *testing.T) {
 			"").Return(users, int32(3), nil).Times(1)
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
-			context.Background(), &session.Session{OrgID: orgID,
-				Role: common.Role_ADMIN}), testTimeout)
+			context.Background(), &session.Session{
+				OrgID: orgID, Role: common.Role_ADMIN,
+			}), testTimeout)
 		defer cancel()
 
 		userSvc := NewUser(userer)
-		listUsers, err := userSvc.ListUsers(ctx, &api.ListUsersRequest{
-			PageSize: 2})
+		listUsers, err := userSvc.ListUsers(ctx,
+			&api.ListUsersRequest{PageSize: 2})
 		t.Logf("listUsers, err: %+v, %v", listUsers, err)
 		require.NoError(t, err)
 		require.Equal(t, int32(3), listUsers.TotalSize)
 
 		// Testify does not currently support protobuf equality:
 		// https://github.com/stretchr/testify/issues/758
-		if !proto.Equal(&api.ListUsersResponse{Users: users[:2],
-			NextPageToken: next, TotalSize: 3}, listUsers) {
-			t.Fatalf("\nExpect: %+v\nActual: %+v",
-				&api.ListUsersResponse{Users: users[:2], NextPageToken: next,
-					TotalSize: 3}, listUsers)
+		if !proto.Equal(&api.ListUsersResponse{
+			Users: users[:2], NextPageToken: next, TotalSize: 3,
+		}, listUsers) {
+			t.Fatalf("\nExpect: %+v\nActual: %+v", &api.ListUsersResponse{
+				Users: users[:2], NextPageToken: next, TotalSize: 3,
+			}, listUsers)
 		}
 	})
 
@@ -762,8 +805,9 @@ func TestListUsers(t *testing.T) {
 			nil).Times(1)
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
-			context.Background(), &session.Session{UserID: user.Id,
-				OrgID: user.OrgId, Role: common.Role_VIEWER}), testTimeout)
+			context.Background(), &session.Session{
+				UserID: user.Id, OrgID: user.OrgId, Role: common.Role_VIEWER,
+			}), testTimeout)
 		defer cancel()
 
 		userSvc := NewUser(userer)
@@ -773,10 +817,12 @@ func TestListUsers(t *testing.T) {
 
 		// Testify does not currently support protobuf equality:
 		// https://github.com/stretchr/testify/issues/758
-		if !proto.Equal(&api.ListUsersResponse{Users: []*api.User{user},
-			TotalSize: 1}, listUsers) {
+		if !proto.Equal(&api.ListUsersResponse{
+			Users: []*api.User{user}, TotalSize: 1,
+		}, listUsers) {
 			t.Fatalf("\nExpect: %+v\nActual: %+v", &api.ListUsersResponse{
-				Users: []*api.User{user}, TotalSize: 1}, listUsers)
+				Users: []*api.User{user}, TotalSize: 1,
+			}, listUsers)
 		}
 	})
 
@@ -790,8 +836,9 @@ func TestListUsers(t *testing.T) {
 			Return(nil, dao.ErrNotFound).Times(1)
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
-			context.Background(), &session.Session{UserID: user.Id,
-				OrgID: user.OrgId, Role: common.Role_VIEWER}), testTimeout)
+			context.Background(), &session.Session{
+				UserID: user.Id, OrgID: user.OrgId, Role: common.Role_VIEWER,
+			}), testTimeout)
 		defer cancel()
 
 		userSvc := NewUser(userer)
@@ -805,13 +852,14 @@ func TestListUsers(t *testing.T) {
 		t.Parallel()
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
-			context.Background(), &session.Session{OrgID: uuid.NewString(),
-				Role: common.Role_ADMIN}), testTimeout)
+			context.Background(), &session.Session{
+				OrgID: uuid.NewString(), Role: common.Role_ADMIN,
+			}), testTimeout)
 		defer cancel()
 
 		userSvc := NewUser(nil)
-		listUsers, err := userSvc.ListUsers(ctx, &api.ListUsersRequest{
-			PageToken: badUUID})
+		listUsers, err := userSvc.ListUsers(ctx,
+			&api.ListUsersRequest{PageToken: badUUID})
 		t.Logf("listUsers, err: %+v, %v", listUsers, err)
 		require.Nil(t, listUsers)
 		require.Equal(t, status.Error(codes.InvalidArgument,
@@ -827,8 +875,9 @@ func TestListUsers(t *testing.T) {
 			dao.ErrInvalidFormat).Times(1)
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
-			context.Background(), &session.Session{OrgID: "aaa",
-				Role: common.Role_ADMIN}), testTimeout)
+			context.Background(), &session.Session{
+				OrgID: "aaa", Role: common.Role_ADMIN,
+			}), testTimeout)
 		defer cancel()
 
 		userSvc := NewUser(userer)
@@ -856,13 +905,14 @@ func TestListUsers(t *testing.T) {
 			"").Return(users, int32(3), nil).Times(1)
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
-			context.Background(), &session.Session{OrgID: orgID,
-				Role: common.Role_ADMIN}), testTimeout)
+			context.Background(), &session.Session{
+				OrgID: orgID, Role: common.Role_ADMIN,
+			}), testTimeout)
 		defer cancel()
 
 		userSvc := NewUser(userer)
-		listUsers, err := userSvc.ListUsers(ctx, &api.ListUsersRequest{
-			PageSize: 2})
+		listUsers, err := userSvc.ListUsers(ctx,
+			&api.ListUsersRequest{PageSize: 2})
 		t.Logf("listUsers, err: %+v, %v", listUsers, err)
 		require.NoError(t, err)
 		require.Equal(t, int32(3), listUsers.TotalSize)

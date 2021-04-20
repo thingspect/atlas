@@ -35,8 +35,9 @@ func main() {
 		"postgres://postgres:postgres@127.0.0.1/atlas_test", "PostgreSQL URI")
 	flag.Parse()
 
-	if _, ok := map[string]struct{}{"uuid": {}, "uniqid": {}, "org": {},
-		"user": {}}[flag.Arg(0)]; !ok {
+	if _, ok := map[string]struct{}{
+		"uuid": {}, "uniqid": {}, "org": {}, "user": {},
+	}[flag.Arg(0)]; !ok {
 		flag.Usage()
 		os.Exit(2)
 	}

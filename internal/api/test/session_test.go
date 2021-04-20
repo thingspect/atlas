@@ -71,7 +71,8 @@ func TestLogin(t *testing.T) {
 		sessCli := api.NewSessionServiceClient(globalNoAuthGRPCConn)
 		loginResp, err := sessCli.Login(ctx, &api.LoginRequest{
 			Email: createUser.Email, OrgName: createOrg.Name,
-			Password: globalPass})
+			Password: globalPass,
+		})
 		t.Logf("loginResp, err: %+v, %v", loginResp, err)
 		require.NoError(t, err)
 		require.GreaterOrEqual(t, len(loginResp.Token), 90)
@@ -89,7 +90,8 @@ func TestLogin(t *testing.T) {
 		sessCli := api.NewSessionServiceClient(globalNoAuthGRPCConn)
 		loginResp, err := sessCli.Login(ctx, &api.LoginRequest{
 			Email: random.Email(), OrgName: random.String(10),
-			Password: random.String(10)})
+			Password: random.String(10),
+		})
 		t.Logf("loginResp, err: %+v, %v", loginResp, err)
 		require.Nil(t, loginResp)
 		require.EqualError(t, err, "rpc error: code = Unauthenticated desc = "+
@@ -105,7 +107,8 @@ func TestLogin(t *testing.T) {
 		sessCli := api.NewSessionServiceClient(globalNoAuthGRPCConn)
 		loginResp, err := sessCli.Login(ctx, &api.LoginRequest{
 			Email: createUser.Email, OrgName: createOrg.Name,
-			Password: random.String(10)})
+			Password: random.String(10),
+		})
 		t.Logf("loginResp, err: %+v, %v", loginResp, err)
 		require.Nil(t, loginResp)
 		require.EqualError(t, err, "rpc error: code = Unauthenticated desc = "+
@@ -121,7 +124,8 @@ func TestLogin(t *testing.T) {
 		sessCli := api.NewSessionServiceClient(globalNoAuthGRPCConn)
 		loginResp, err := sessCli.Login(ctx, &api.LoginRequest{
 			Email: createDisUser.Email, OrgName: createOrg.Name,
-			Password: globalPass})
+			Password: globalPass,
+		})
 		t.Logf("loginResp, err: %+v, %v", loginResp, err)
 		require.Nil(t, loginResp)
 		require.EqualError(t, err, "rpc error: code = Unauthenticated desc = "+
@@ -137,7 +141,8 @@ func TestLogin(t *testing.T) {
 		sessCli := api.NewSessionServiceClient(globalNoAuthGRPCConn)
 		loginResp, err := sessCli.Login(ctx, &api.LoginRequest{
 			Email: createContUser.Email, OrgName: createOrg.Name,
-			Password: globalPass})
+			Password: globalPass,
+		})
 		t.Logf("loginResp, err: %+v, %v", loginResp, err)
 		require.Nil(t, loginResp)
 		require.EqualError(t, err, "rpc error: code = Unauthenticated desc = "+
@@ -158,8 +163,8 @@ func TestCreateKey(t *testing.T) {
 		defer cancel()
 
 		sessCli := api.NewSessionServiceClient(globalAdminGRPCConn)
-		createKey, err := sessCli.CreateKey(ctx, &api.CreateKeyRequest{
-			Key: key})
+		createKey, err := sessCli.CreateKey(ctx,
+			&api.CreateKeyRequest{Key: key})
 		t.Logf("createKey, err: %+v, %v", createKey, err)
 		require.NoError(t, err)
 		require.NotEqual(t, key.Id, createKey.Key.Id)
@@ -175,8 +180,8 @@ func TestCreateKey(t *testing.T) {
 		defer cancel()
 
 		sessCli := api.NewSessionServiceClient(secondaryViewerGRPCConn)
-		createKey, err := sessCli.CreateKey(ctx, &api.CreateKeyRequest{
-			Key: random.Key("api-key", uuid.NewString())})
+		createKey, err := sessCli.CreateKey(ctx,
+			&api.CreateKeyRequest{Key: random.Key("api-key", uuid.NewString())})
 		t.Logf("createKey, err: %+v, %v", createKey, err)
 		require.Nil(t, createKey)
 		require.EqualError(t, err, "rpc error: code = PermissionDenied desc = "+
@@ -193,8 +198,8 @@ func TestCreateKey(t *testing.T) {
 		defer cancel()
 
 		sessCli := api.NewSessionServiceClient(globalAdminGRPCConn)
-		createKey, err := sessCli.CreateKey(ctx, &api.CreateKeyRequest{
-			Key: key})
+		createKey, err := sessCli.CreateKey(ctx,
+			&api.CreateKeyRequest{Key: key})
 		t.Logf("createKey, err: %+v, %v", createKey, err)
 		require.Nil(t, createKey)
 		require.EqualError(t, err, "rpc error: code = PermissionDenied desc = "+
@@ -211,8 +216,8 @@ func TestCreateKey(t *testing.T) {
 		defer cancel()
 
 		sessCli := api.NewSessionServiceClient(globalAdminGRPCConn)
-		createKey, err := sessCli.CreateKey(ctx, &api.CreateKeyRequest{
-			Key: key})
+		createKey, err := sessCli.CreateKey(ctx,
+			&api.CreateKeyRequest{Key: key})
 		t.Logf("createKey, err: %+v, %v", createKey, err)
 		require.Nil(t, createKey)
 		require.EqualError(t, err, "rpc error: code = InvalidArgument desc = "+
@@ -235,13 +240,13 @@ func TestDeleteKey(t *testing.T) {
 		defer cancel()
 
 		sessCli := api.NewSessionServiceClient(globalAdminGRPCConn)
-		createKey, err := sessCli.CreateKey(ctx, &api.CreateKeyRequest{
-			Key: key})
+		createKey, err := sessCli.CreateKey(ctx,
+			&api.CreateKeyRequest{Key: key})
 		t.Logf("createKey, err: %+v, %v", createKey, err)
 		require.NoError(t, err)
 
-		_, err = sessCli.DeleteKey(ctx, &api.DeleteKeyRequest{
-			Id: createKey.Key.Id})
+		_, err = sessCli.DeleteKey(ctx,
+			&api.DeleteKeyRequest{Id: createKey.Key.Id})
 		t.Logf("err: %v", err)
 		require.NoError(t, err)
 
@@ -253,8 +258,8 @@ func TestDeleteKey(t *testing.T) {
 			defer cancel()
 
 			sessCli := api.NewSessionServiceClient(globalAdminKeyGRPCConn)
-			_, err := sessCli.DeleteKey(ctx, &api.DeleteKeyRequest{
-				Id: createKey.Key.Id})
+			_, err := sessCli.DeleteKey(ctx,
+				&api.DeleteKeyRequest{Id: createKey.Key.Id})
 			t.Logf("err: %v", err)
 			require.EqualError(t, err, "rpc error: code = NotFound desc = "+
 				"object not found")
@@ -271,8 +276,8 @@ func TestDeleteKey(t *testing.T) {
 		defer cancel()
 
 		sessCli := api.NewSessionServiceClient(globalAdminGRPCConn)
-		createKey, err := sessCli.CreateKey(ctx, &api.CreateKeyRequest{
-			Key: key})
+		createKey, err := sessCli.CreateKey(ctx,
+			&api.CreateKeyRequest{Key: key})
 		t.Logf("createKey, err: %+v, %v", createKey, err)
 		require.NoError(t, err)
 
@@ -285,13 +290,13 @@ func TestDeleteKey(t *testing.T) {
 		require.NoError(t, err)
 
 		sessCli = api.NewSessionServiceClient(keyConn)
-		_, err = sessCli.DeleteKey(ctx, &api.DeleteKeyRequest{
-			Id: createKey.Key.Id})
+		_, err = sessCli.DeleteKey(ctx,
+			&api.DeleteKeyRequest{Id: createKey.Key.Id})
 		t.Logf("err: %v", err)
 		require.NoError(t, err)
 
-		_, err = sessCli.DeleteKey(ctx, &api.DeleteKeyRequest{
-			Id: createKey.Key.Id})
+		_, err = sessCli.DeleteKey(ctx,
+			&api.DeleteKeyRequest{Id: createKey.Key.Id})
 		t.Logf("err: %v", err)
 		require.EqualError(t, err, "rpc error: code = Unauthenticated desc = "+
 			"unauthorized")
@@ -304,8 +309,8 @@ func TestDeleteKey(t *testing.T) {
 		defer cancel()
 
 		sessCli := api.NewSessionServiceClient(secondaryViewerGRPCConn)
-		_, err := sessCli.DeleteKey(ctx, &api.DeleteKeyRequest{
-			Id: uuid.NewString()})
+		_, err := sessCli.DeleteKey(ctx,
+			&api.DeleteKeyRequest{Id: uuid.NewString()})
 		t.Logf("err: %v", err)
 		require.EqualError(t, err, "rpc error: code = PermissionDenied "+
 			"desc = permission denied, ADMIN role required")
@@ -318,8 +323,8 @@ func TestDeleteKey(t *testing.T) {
 		defer cancel()
 
 		sessCli := api.NewSessionServiceClient(globalAdminGRPCConn)
-		_, err := sessCli.DeleteKey(ctx, &api.DeleteKeyRequest{
-			Id: uuid.NewString()})
+		_, err := sessCli.DeleteKey(ctx,
+			&api.DeleteKeyRequest{Id: uuid.NewString()})
 		t.Logf("err: %v", err)
 		require.EqualError(t, err, "rpc error: code = NotFound desc = object "+
 			"not found")
@@ -335,14 +340,14 @@ func TestDeleteKey(t *testing.T) {
 		defer cancel()
 
 		sessCli := api.NewSessionServiceClient(globalAdminGRPCConn)
-		createKey, err := sessCli.CreateKey(ctx, &api.CreateKeyRequest{
-			Key: key})
+		createKey, err := sessCli.CreateKey(ctx,
+			&api.CreateKeyRequest{Key: key})
 		t.Logf("createKey, err: %+v, %v", createKey, err)
 		require.NoError(t, err)
 
 		secCli := api.NewSessionServiceClient(secondaryAdminGRPCConn)
-		_, err = secCli.DeleteKey(ctx, &api.DeleteKeyRequest{
-			Id: createKey.Key.Id})
+		_, err = secCli.DeleteKey(ctx,
+			&api.DeleteKeyRequest{Id: createKey.Key.Id})
 		t.Logf("err: %v", err)
 		require.EqualError(t, err, "rpc error: code = NotFound desc = object "+
 			"not found")
@@ -363,8 +368,8 @@ func TestListKeys(t *testing.T) {
 		key.Role = common.Role_BUILDER
 
 		sessCli := api.NewSessionServiceClient(globalAdminGRPCConn)
-		createKey, err := sessCli.CreateKey(ctx, &api.CreateKeyRequest{
-			Key: key})
+		createKey, err := sessCli.CreateKey(ctx,
+			&api.CreateKeyRequest{Key: key})
 		t.Logf("createKey, err: %+v, %v", createKey, err)
 		require.NoError(t, err)
 
@@ -404,8 +409,8 @@ func TestListKeys(t *testing.T) {
 		defer cancel()
 
 		sessCli := api.NewSessionServiceClient(globalAdminKeyGRPCConn)
-		listKeys, err := sessCli.ListKeys(ctx, &api.ListKeysRequest{
-			PageSize: 2})
+		listKeys, err := sessCli.ListKeys(ctx,
+			&api.ListKeysRequest{PageSize: 2})
 		t.Logf("listKeys, err: %+v, %v", listKeys, err)
 		require.NoError(t, err)
 		require.Len(t, listKeys.Keys, 2)
@@ -413,7 +418,8 @@ func TestListKeys(t *testing.T) {
 		require.GreaterOrEqual(t, listKeys.TotalSize, int32(3))
 
 		nextKeys, err := sessCli.ListKeys(ctx, &api.ListKeysRequest{
-			PageSize: 2, PageToken: listKeys.NextPageToken})
+			PageSize: 2, PageToken: listKeys.NextPageToken,
+		})
 		t.Logf("nextKeys, err: %+v, %v", nextKeys, err)
 		require.NoError(t, err)
 		require.GreaterOrEqual(t, len(nextKeys.Keys), 1)
@@ -455,8 +461,8 @@ func TestListKeys(t *testing.T) {
 		defer cancel()
 
 		sessCli := api.NewSessionServiceClient(globalAdminGRPCConn)
-		listKeys, err := sessCli.ListKeys(ctx, &api.ListKeysRequest{
-			PageToken: badUUID})
+		listKeys, err := sessCli.ListKeys(ctx,
+			&api.ListKeysRequest{PageToken: badUUID})
 		t.Logf("listKeys, err: %+v, %v", listKeys, err)
 		require.Nil(t, listKeys)
 		require.EqualError(t, err, "rpc error: code = InvalidArgument desc = "+

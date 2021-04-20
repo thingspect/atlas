@@ -58,8 +58,8 @@ func authGRPCConn(role common.Role) (string, *grpc.ClientConn, error) {
 
 	sessCli := api.NewSessionServiceClient(globalNoAuthGRPCConn)
 	loginResp, err := sessCli.Login(ctx, &api.LoginRequest{
-		Email: createUser.Email, OrgName: createOrg.Name,
-		Password: globalPass})
+		Email: createUser.Email, OrgName: createOrg.Name, Password: globalPass,
+	})
 	if err != nil {
 		return "", nil, err
 	}

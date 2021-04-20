@@ -120,9 +120,10 @@ ORDER BY created_at ASC, id ASC
 LIMIT %d
 `
 
-// List retrieves all organizations. If lBoundTS and prevID are zero values,
-// the first page of results is returned. Limits of 0 or less do not apply a
-// limit. List returns a slice of orgs, a total count, and an error value.
+// List retrieves all organizations with pagination. If lBoundTS and prevID are
+// zero values, the first page of results is returned. Limits of 0 or less do
+// not apply a limit. List returns a slice of orgs, a total count, and an error
+// value.
 func (d *DAO) List(ctx context.Context, lBoundTS time.Time, prevID string,
 	limit int32) ([]*api.Org, int32, error) {
 	// Run count query.

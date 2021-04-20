@@ -34,13 +34,22 @@ func TestGenerateWebToken(t *testing.T) {
 		resMinLen int
 		err       string
 	}{
-		{key, uuid.NewString(), uuid.NewString(), 90, ""},
-		{key, random.String(10), uuid.NewString(), 0,
-			"invalid UUID length: 10"},
-		{key, uuid.NewString(), random.String(10), 0,
-			"invalid UUID length: 10"},
-		{[]byte{}, uuid.NewString(), uuid.NewString(), 0,
-			crypto.ErrKeyLength.Error()},
+		{
+			key, uuid.NewString(), uuid.NewString(), 90, "",
+		},
+		{
+			key, random.String(10), uuid.NewString(), 0,
+			"invalid UUID length: 10",
+		},
+		{
+			key, uuid.NewString(), random.String(10), 0,
+			"invalid UUID length: 10",
+		},
+		{
+			[]byte{},
+			uuid.NewString(), uuid.NewString(), 0,
+			crypto.ErrKeyLength.Error(),
+		},
 	}
 
 	for _, test := range tests {
@@ -51,7 +60,8 @@ func TestGenerateWebToken(t *testing.T) {
 
 			res, exp, err := GenerateWebToken(lTest.inpKey, &api.User{
 				Id: lTest.inpUserID, OrgId: lTest.inpOrgID,
-				Role: common.Role_BUILDER})
+				Role: common.Role_BUILDER,
+			})
 			t.Logf("res, exp, err: %v, %+v, %#v", res, exp, err)
 			require.GreaterOrEqual(t, len(res), lTest.resMinLen)
 			if exp != nil {
@@ -81,13 +91,22 @@ func TestGenerateKeyToken(t *testing.T) {
 		resMinLen int
 		err       string
 	}{
-		{key, uuid.NewString(), uuid.NewString(), 80, ""},
-		{key, random.String(10), uuid.NewString(), 0,
-			"invalid UUID length: 10"},
-		{key, uuid.NewString(), random.String(10), 0,
-			"invalid UUID length: 10"},
-		{[]byte{}, uuid.NewString(), uuid.NewString(), 0,
-			crypto.ErrKeyLength.Error()},
+		{
+			key, uuid.NewString(), uuid.NewString(), 80, "",
+		},
+		{
+			key, random.String(10), uuid.NewString(), 0,
+			"invalid UUID length: 10",
+		},
+		{
+			key, uuid.NewString(), random.String(10), 0,
+			"invalid UUID length: 10",
+		},
+		{
+			[]byte{},
+			uuid.NewString(), uuid.NewString(), 0,
+			crypto.ErrKeyLength.Error(),
+		},
 	}
 
 	for _, test := range tests {
@@ -96,7 +115,8 @@ func TestGenerateKeyToken(t *testing.T) {
 		t.Run(fmt.Sprintf("Can generate %+v", lTest), func(t *testing.T) {
 			t.Parallel()
 
-			res, err := GenerateKeyToken(lTest.inpKey, lTest.inpKeyID, lTest.inpOrgID, common.Role_BUILDER)
+			res, err := GenerateKeyToken(lTest.inpKey, lTest.inpKeyID,
+				lTest.inpOrgID, common.Role_BUILDER)
 			t.Logf("res, err: %v, %#v", res, err)
 			require.GreaterOrEqual(t, len(res), lTest.resMinLen)
 			if lTest.err == "" {
@@ -130,13 +150,23 @@ func TestValidateWebToken(t *testing.T) {
 		inpCiphertoken string
 		err            string
 	}{
-		{key, "", ""},
-		{key, "...", "illegal base64 data at input byte 0"},
-		{key, random.String(10), "crypto: malformed ciphertext"},
-		{key, base64.RawStdEncoding.EncodeToString(badCipher),
-			"cannot parse invalid wire-format data"},
-		{key, base64.RawStdEncoding.EncodeToString(eOldToken),
-			errWebTokenExp.Error()},
+		{
+			key, "", "",
+		},
+		{
+			key, "...", "illegal base64 data at input byte 0",
+		},
+		{
+			key, random.String(10), "crypto: malformed ciphertext",
+		},
+		{
+			key, base64.RawStdEncoding.EncodeToString(badCipher),
+			"cannot parse invalid wire-format data",
+		},
+		{
+			key, base64.RawStdEncoding.EncodeToString(eOldToken),
+			errWebTokenExp.Error(),
+		},
 	}
 
 	for _, test := range tests {
@@ -188,11 +218,19 @@ func TestValidateKeyToken(t *testing.T) {
 		inpCiphertoken string
 		err            string
 	}{
-		{key, "", ""},
-		{key, "...", "illegal base64 data at input byte 0"},
-		{key, random.String(10), "crypto: malformed ciphertext"},
-		{key, base64.RawStdEncoding.EncodeToString(badCipher),
-			"cannot parse invalid wire-format data"},
+		{
+			key, "", "",
+		},
+		{
+			key, "...", "illegal base64 data at input byte 0",
+		},
+		{
+			key, random.String(10), "crypto: malformed ciphertext",
+		},
+		{
+			key, base64.RawStdEncoding.EncodeToString(badCipher),
+			"cannot parse invalid wire-format data",
+		},
 	}
 
 	for _, test := range tests {

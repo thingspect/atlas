@@ -46,7 +46,8 @@ func TestLogin(t *testing.T) {
 
 		sessSvc := NewSession(userer, nil, nil, pwtKey)
 		loginResp, err := sessSvc.Login(ctx, &api.LoginRequest{
-			Email: user.Email, OrgName: org.Name, Password: globalPass})
+			Email: user.Email, OrgName: org.Name, Password: globalPass,
+		})
 		t.Logf("loginResp, err: %+v, %v", loginResp, err)
 		require.NoError(t, err)
 		require.GreaterOrEqual(t, len(loginResp.Token), 90)
@@ -75,7 +76,8 @@ func TestLogin(t *testing.T) {
 
 		sessSvc := NewSession(userer, nil, nil, pwtKey)
 		loginResp, err := sessSvc.Login(ctx, &api.LoginRequest{
-			Email: user.Email, OrgName: org.Name, Password: globalPass})
+			Email: user.Email, OrgName: org.Name, Password: globalPass,
+		})
 		t.Logf("loginResp, err: %+v, %v", loginResp, err)
 		require.Nil(t, loginResp)
 		require.Equal(t, status.Error(codes.Unauthenticated, "unauthorized"),
@@ -102,7 +104,8 @@ func TestLogin(t *testing.T) {
 
 		sessSvc := NewSession(userer, nil, nil, pwtKey)
 		loginResp, err := sessSvc.Login(ctx, &api.LoginRequest{
-			Email: user.Email, OrgName: org.Name, Password: random.String(10)})
+			Email: user.Email, OrgName: org.Name, Password: random.String(10),
+		})
 		t.Logf("loginResp, err: %+v, %v", loginResp, err)
 		require.Nil(t, loginResp)
 		require.Equal(t, status.Error(codes.Unauthenticated, "unauthorized"),
@@ -129,7 +132,8 @@ func TestLogin(t *testing.T) {
 
 		sessSvc := NewSession(userer, nil, nil, pwtKey)
 		loginResp, err := sessSvc.Login(ctx, &api.LoginRequest{
-			Email: user.Email, OrgName: org.Name, Password: globalPass})
+			Email: user.Email, OrgName: org.Name, Password: globalPass,
+		})
 		t.Logf("loginResp, err: %+v, %v", loginResp, err)
 		require.Nil(t, loginResp)
 		require.Equal(t, status.Error(codes.Unauthenticated, "unauthorized"),
@@ -157,7 +161,8 @@ func TestLogin(t *testing.T) {
 
 		sessSvc := NewSession(userer, nil, nil, pwtKey)
 		loginResp, err := sessSvc.Login(ctx, &api.LoginRequest{
-			Email: user.Email, OrgName: org.Name, Password: globalPass})
+			Email: user.Email, OrgName: org.Name, Password: globalPass,
+		})
 		t.Logf("loginResp, err: %+v, %v", loginResp, err)
 		require.Nil(t, loginResp)
 		require.Equal(t, status.Error(codes.Unauthenticated, "unauthorized"),
@@ -181,7 +186,8 @@ func TestLogin(t *testing.T) {
 
 		sessSvc := NewSession(userer, nil, nil, nil)
 		loginResp, err := sessSvc.Login(ctx, &api.LoginRequest{
-			Email: user.Email, OrgName: org.Name, Password: globalPass})
+			Email: user.Email, OrgName: org.Name, Password: globalPass,
+		})
 		t.Logf("loginResp, err: %+v, %v", loginResp, err)
 		require.Nil(t, loginResp)
 		require.Equal(t, status.Error(codes.Unauthenticated, "unauthorized"),
@@ -207,13 +213,13 @@ func TestCreateKey(t *testing.T) {
 		require.NoError(t, err)
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
-			context.Background(), &session.Session{OrgID: key.OrgId,
-				Role: common.Role_ADMIN}), testTimeout)
+			context.Background(), &session.Session{
+				OrgID: key.OrgId, Role: common.Role_ADMIN,
+			}), testTimeout)
 		defer cancel()
 
 		keySvc := NewSession(nil, keyer, nil, pwtKey)
-		createKey, err := keySvc.CreateKey(ctx, &api.CreateKeyRequest{
-			Key: key})
+		createKey, err := keySvc.CreateKey(ctx, &api.CreateKeyRequest{Key: key})
 		t.Logf("key, createKey, err: %+v, %+v, %v", key, createKey, err)
 		require.NoError(t, err)
 
@@ -244,8 +250,9 @@ func TestCreateKey(t *testing.T) {
 		t.Parallel()
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
-			context.Background(), &session.Session{OrgID: uuid.NewString(),
-				Role: common.Role_BUILDER}), testTimeout)
+			context.Background(), &session.Session{
+				OrgID: uuid.NewString(), Role: common.Role_BUILDER,
+			}), testTimeout)
 		defer cancel()
 
 		keySvc := NewSession(nil, nil, nil, nil)
@@ -262,13 +269,13 @@ func TestCreateKey(t *testing.T) {
 		key.Role = common.Role_SYS_ADMIN
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
-			context.Background(), &session.Session{OrgID: uuid.NewString(),
-				Role: common.Role_ADMIN}), testTimeout)
+			context.Background(), &session.Session{
+				OrgID: uuid.NewString(), Role: common.Role_ADMIN,
+			}), testTimeout)
 		defer cancel()
 
 		keySvc := NewSession(nil, nil, nil, nil)
-		createKey, err := keySvc.CreateKey(ctx, &api.CreateKeyRequest{
-			Key: key})
+		createKey, err := keySvc.CreateKey(ctx, &api.CreateKeyRequest{Key: key})
 		t.Logf("key, createKey, err: %+v, %+v, %v", key, createKey, err)
 		require.Nil(t, createKey)
 		require.Equal(t, status.Error(codes.PermissionDenied, "permission "+
@@ -286,13 +293,13 @@ func TestCreateKey(t *testing.T) {
 			dao.ErrInvalidFormat).Times(1)
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
-			context.Background(), &session.Session{OrgID: key.OrgId,
-				Role: common.Role_ADMIN}), testTimeout)
+			context.Background(), &session.Session{
+				OrgID: key.OrgId, Role: common.Role_ADMIN,
+			}), testTimeout)
 		defer cancel()
 
 		keySvc := NewSession(nil, keyer, nil, nil)
-		createKey, err := keySvc.CreateKey(ctx, &api.CreateKeyRequest{
-			Key: key})
+		createKey, err := keySvc.CreateKey(ctx, &api.CreateKeyRequest{Key: key})
 		t.Logf("key, createKey, err: %+v, %+v, %v", key, createKey, err)
 		require.Nil(t, createKey)
 		require.Equal(t, status.Error(codes.InvalidArgument, "invalid format"),
@@ -310,13 +317,13 @@ func TestCreateKey(t *testing.T) {
 		keyer.EXPECT().Create(gomock.Any(), key).Return(retKey, nil).Times(1)
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
-			context.Background(), &session.Session{OrgID: uuid.NewString(),
-				Role: common.Role_ADMIN}), testTimeout)
+			context.Background(), &session.Session{
+				OrgID: uuid.NewString(), Role: common.Role_ADMIN,
+			}), testTimeout)
 		defer cancel()
 
 		keySvc := NewSession(nil, keyer, nil, nil)
-		createKey, err := keySvc.CreateKey(ctx, &api.CreateKeyRequest{
-			Key: key})
+		createKey, err := keySvc.CreateKey(ctx, &api.CreateKeyRequest{Key: key})
 		t.Logf("key, createKey, err: %+v, %+v, %v", key, createKey, err)
 		require.Nil(t, createKey)
 		require.Equal(t, status.Error(codes.Unknown,
@@ -338,13 +345,14 @@ func TestDeleteKey(t *testing.T) {
 			Return(nil).Times(1)
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
-			context.Background(), &session.Session{OrgID: uuid.NewString(),
-				Role: common.Role_ADMIN}), testTimeout)
+			context.Background(), &session.Session{
+				OrgID: uuid.NewString(), Role: common.Role_ADMIN,
+			}), testTimeout)
 		defer cancel()
 
 		keySvc := NewSession(nil, keyer, cacher, nil)
-		_, err := keySvc.DeleteKey(ctx, &api.DeleteKeyRequest{
-			Id: uuid.NewString()})
+		_, err := keySvc.DeleteKey(ctx,
+			&api.DeleteKeyRequest{Id: uuid.NewString()})
 		t.Logf("err: %v", err)
 		require.NoError(t, err)
 	})
@@ -365,8 +373,9 @@ func TestDeleteKey(t *testing.T) {
 		t.Parallel()
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
-			context.Background(), &session.Session{OrgID: uuid.NewString(),
-				Role: common.Role_BUILDER}), testTimeout)
+			context.Background(), &session.Session{
+				OrgID: uuid.NewString(), Role: common.Role_BUILDER,
+			}), testTimeout)
 		defer cancel()
 
 		keySvc := NewSession(nil, nil, nil, nil)
@@ -383,13 +392,14 @@ func TestDeleteKey(t *testing.T) {
 			Return(dao.ErrInvalidFormat).Times(1)
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
-			context.Background(), &session.Session{OrgID: uuid.NewString(),
-				Role: common.Role_ADMIN}), testTimeout)
+			context.Background(), &session.Session{
+				OrgID: uuid.NewString(), Role: common.Role_ADMIN,
+			}), testTimeout)
 		defer cancel()
 
 		keySvc := NewSession(nil, nil, cacher, nil)
-		_, err := keySvc.DeleteKey(ctx, &api.DeleteKeyRequest{
-			Id: uuid.NewString()})
+		_, err := keySvc.DeleteKey(ctx,
+			&api.DeleteKeyRequest{Id: uuid.NewString()})
 		t.Logf("err: %v", err)
 		require.Equal(t, status.Error(codes.InvalidArgument, "invalid format"),
 			err)
@@ -406,13 +416,14 @@ func TestDeleteKey(t *testing.T) {
 			Return(dao.ErrNotFound).Times(1)
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
-			context.Background(), &session.Session{OrgID: uuid.NewString(),
-				Role: common.Role_ADMIN}), testTimeout)
+			context.Background(), &session.Session{
+				OrgID: uuid.NewString(), Role: common.Role_ADMIN,
+			}), testTimeout)
 		defer cancel()
 
 		keySvc := NewSession(nil, keyer, cacher, nil)
-		_, err := keySvc.DeleteKey(ctx, &api.DeleteKeyRequest{
-			Id: uuid.NewString()})
+		_, err := keySvc.DeleteKey(ctx,
+			&api.DeleteKeyRequest{Id: uuid.NewString()})
 		t.Logf("err: %v", err)
 		require.Equal(t, status.Error(codes.NotFound, "object not found"), err)
 	})
@@ -437,8 +448,9 @@ func TestListKeys(t *testing.T) {
 			Return(keys, int32(3), nil).Times(1)
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
-			context.Background(), &session.Session{OrgID: orgID,
-				Role: common.Role_ADMIN}), testTimeout)
+			context.Background(), &session.Session{
+				OrgID: orgID, Role: common.Role_ADMIN,
+			}), testTimeout)
 		defer cancel()
 
 		keySvc := NewSession(nil, keyer, nil, nil)
@@ -476,24 +488,25 @@ func TestListKeys(t *testing.T) {
 			Return(keys, int32(3), nil).Times(1)
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
-			context.Background(), &session.Session{OrgID: orgID,
-				Role: common.Role_ADMIN}), testTimeout)
+			context.Background(), &session.Session{
+				OrgID: orgID, Role: common.Role_ADMIN,
+			}), testTimeout)
 		defer cancel()
 
 		keySvc := NewSession(nil, keyer, nil, nil)
-		listKeys, err := keySvc.ListKeys(ctx, &api.ListKeysRequest{
-			PageSize: 2})
+		listKeys, err := keySvc.ListKeys(ctx, &api.ListKeysRequest{PageSize: 2})
 		t.Logf("listKeys, err: %+v, %v", listKeys, err)
 		require.NoError(t, err)
 		require.Equal(t, int32(3), listKeys.TotalSize)
 
 		// Testify does not currently support protobuf equality:
 		// https://github.com/stretchr/testify/issues/758
-		if !proto.Equal(&api.ListKeysResponse{Keys: keys[:2],
-			NextPageToken: next, TotalSize: 3}, listKeys) {
-			t.Fatalf("\nExpect: %+v\nActual: %+v",
-				&api.ListKeysResponse{Keys: keys[:2], NextPageToken: next,
-					TotalSize: 3}, listKeys)
+		if !proto.Equal(&api.ListKeysResponse{
+			Keys: keys[:2], NextPageToken: next, TotalSize: 3,
+		}, listKeys) {
+			t.Fatalf("\nExpect: %+v\nActual: %+v", &api.ListKeysResponse{
+				Keys: keys[:2], NextPageToken: next, TotalSize: 3,
+			}, listKeys)
 		}
 	})
 
@@ -514,13 +527,14 @@ func TestListKeys(t *testing.T) {
 		t.Parallel()
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
-			context.Background(), &session.Session{OrgID: uuid.NewString(),
-				Role: common.Role_ADMIN}), testTimeout)
+			context.Background(), &session.Session{
+				OrgID: uuid.NewString(), Role: common.Role_ADMIN,
+			}), testTimeout)
 		defer cancel()
 
 		keySvc := NewSession(nil, nil, nil, nil)
-		listKeys, err := keySvc.ListKeys(ctx, &api.ListKeysRequest{
-			PageToken: badUUID})
+		listKeys, err := keySvc.ListKeys(ctx,
+			&api.ListKeysRequest{PageToken: badUUID})
 		t.Logf("listKeys, err: %+v, %v", listKeys, err)
 		require.Nil(t, listKeys)
 		require.Equal(t, status.Error(codes.InvalidArgument,
@@ -536,8 +550,9 @@ func TestListKeys(t *testing.T) {
 			dao.ErrInvalidFormat).Times(1)
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
-			context.Background(), &session.Session{OrgID: "aaa",
-				Role: common.Role_ADMIN}), testTimeout)
+			context.Background(), &session.Session{
+				OrgID: "aaa", Role: common.Role_ADMIN,
+			}), testTimeout)
 		defer cancel()
 
 		keySvc := NewSession(nil, keyer, nil, nil)
@@ -565,13 +580,13 @@ func TestListKeys(t *testing.T) {
 			Return(keys, int32(3), nil).Times(1)
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
-			context.Background(), &session.Session{OrgID: orgID,
-				Role: common.Role_ADMIN}), testTimeout)
+			context.Background(), &session.Session{
+				OrgID: orgID, Role: common.Role_ADMIN,
+			}), testTimeout)
 		defer cancel()
 
 		keySvc := NewSession(nil, keyer, nil, nil)
-		listKeys, err := keySvc.ListKeys(ctx, &api.ListKeysRequest{
-			PageSize: 2})
+		listKeys, err := keySvc.ListKeys(ctx, &api.ListKeysRequest{PageSize: 2})
 		t.Logf("listKeys, err: %+v, %v", listKeys, err)
 		require.NoError(t, err)
 		require.Equal(t, int32(3), listKeys.TotalSize)

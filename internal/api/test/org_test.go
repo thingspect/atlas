@@ -28,8 +28,8 @@ func TestCreateOrg(t *testing.T) {
 		defer cancel()
 
 		orgCli := api.NewOrgServiceClient(secondarySysAdminGRPCConn)
-		createOrg, err := orgCli.CreateOrg(ctx, &api.CreateOrgRequest{
-			Org: org})
+		createOrg, err := orgCli.CreateOrg(ctx,
+			&api.CreateOrgRequest{Org: org})
 		t.Logf("createOrg, err: %+v, %v", createOrg, err)
 		require.NoError(t, err)
 		require.NotEqual(t, org.Id, createOrg.Id)
@@ -50,8 +50,8 @@ func TestCreateOrg(t *testing.T) {
 		defer cancel()
 
 		orgCli := api.NewOrgServiceClient(secondarySysAdminGRPCConn)
-		createOrg, err := orgCli.CreateOrg(ctx, &api.CreateOrgRequest{
-			Org: org})
+		createOrg, err := orgCli.CreateOrg(ctx,
+			&api.CreateOrgRequest{Org: org})
 		t.Logf("createOrg, err: %+v, %v", createOrg, err)
 		require.NoError(t, err)
 		require.NotEqual(t, org.Id, createOrg.Id)
@@ -69,8 +69,8 @@ func TestCreateOrg(t *testing.T) {
 		defer cancel()
 
 		orgCli := api.NewOrgServiceClient(globalAdminGRPCConn)
-		createOrg, err := orgCli.CreateOrg(ctx, &api.CreateOrgRequest{
-			Org: random.Org("api-org")})
+		createOrg, err := orgCli.CreateOrg(ctx,
+			&api.CreateOrgRequest{Org: random.Org("api-org")})
 		t.Logf("createOrg, err: %+v, %v", createOrg, err)
 		require.Nil(t, createOrg)
 		require.EqualError(t, err, "rpc error: code = PermissionDenied desc = "+
@@ -87,8 +87,8 @@ func TestCreateOrg(t *testing.T) {
 		defer cancel()
 
 		orgCli := api.NewOrgServiceClient(secondarySysAdminGRPCConn)
-		createOrg, err := orgCli.CreateOrg(ctx, &api.CreateOrgRequest{
-			Org: org})
+		createOrg, err := orgCli.CreateOrg(ctx,
+			&api.CreateOrgRequest{Org: org})
 		t.Logf("createOrg, err: %+v, %v", createOrg, err)
 		require.Nil(t, createOrg)
 		require.EqualError(t, err, "rpc error: code = InvalidArgument desc = "+
@@ -105,8 +105,8 @@ func TestGetOrg(t *testing.T) {
 	defer cancel()
 
 	orgCli := api.NewOrgServiceClient(secondarySysAdminGRPCConn)
-	createOrg, err := orgCli.CreateOrg(ctx, &api.CreateOrgRequest{
-		Org: random.Org("api-org")})
+	createOrg, err := orgCli.CreateOrg(ctx,
+		&api.CreateOrgRequest{Org: random.Org("api-org")})
 	t.Logf("createOrg, err: %+v, %v", createOrg, err)
 	require.NoError(t, err)
 
@@ -117,8 +117,7 @@ func TestGetOrg(t *testing.T) {
 		defer cancel()
 
 		orgCli := api.NewOrgServiceClient(secondarySysAdminGRPCConn)
-		getOrg, err := orgCli.GetOrg(ctx, &api.GetOrgRequest{
-			Id: createOrg.Id})
+		getOrg, err := orgCli.GetOrg(ctx, &api.GetOrgRequest{Id: createOrg.Id})
 		t.Logf("getOrg, err: %+v, %v", getOrg, err)
 		require.NoError(t, err)
 
@@ -136,8 +135,8 @@ func TestGetOrg(t *testing.T) {
 		defer cancel()
 
 		orgCli := api.NewOrgServiceClient(globalAdminGRPCConn)
-		getOrg, err := orgCli.GetOrg(ctx, &api.GetOrgRequest{
-			Id: createOrg.Id})
+		getOrg, err := orgCli.GetOrg(ctx,
+			&api.GetOrgRequest{Id: createOrg.Id})
 		t.Logf("getOrg, err: %+v, %v", getOrg, err)
 		require.Nil(t, getOrg)
 		require.EqualError(t, err, "rpc error: code = PermissionDenied desc = "+
@@ -151,8 +150,8 @@ func TestGetOrg(t *testing.T) {
 		defer cancel()
 
 		orgCli := api.NewOrgServiceClient(secondarySysAdminGRPCConn)
-		getOrg, err := orgCli.GetOrg(ctx, &api.GetOrgRequest{
-			Id: uuid.NewString()})
+		getOrg, err := orgCli.GetOrg(ctx,
+			&api.GetOrgRequest{Id: uuid.NewString()})
 		t.Logf("getOrg, err: %+v, %v", getOrg, err)
 		require.Nil(t, getOrg)
 		require.EqualError(t, err, "rpc error: code = NotFound desc = object "+
@@ -170,8 +169,8 @@ func TestUpdateOrg(t *testing.T) {
 		defer cancel()
 
 		orgCli := api.NewOrgServiceClient(secondarySysAdminGRPCConn)
-		createOrg, err := orgCli.CreateOrg(ctx, &api.CreateOrgRequest{
-			Org: random.Org("api-org")})
+		createOrg, err := orgCli.CreateOrg(ctx,
+			&api.CreateOrgRequest{Org: random.Org("api-org")})
 		t.Logf("createOrg, err: %+v, %v", createOrg, err)
 		require.NoError(t, err)
 
@@ -180,8 +179,8 @@ func TestUpdateOrg(t *testing.T) {
 		createOrg.DisplayName = "dao-org-" + random.String(10)
 		createOrg.Email = "dao-org-" + random.Email()
 
-		updateOrg, err := orgCli.UpdateOrg(ctx, &api.UpdateOrgRequest{
-			Org: createOrg})
+		updateOrg, err := orgCli.UpdateOrg(ctx,
+			&api.UpdateOrgRequest{Org: createOrg})
 		t.Logf("updateOrg, err: %+v, %v", updateOrg, err)
 		require.NoError(t, err)
 		require.Equal(t, createOrg.Name, updateOrg.Name)
@@ -192,8 +191,8 @@ func TestUpdateOrg(t *testing.T) {
 		require.WithinDuration(t, createOrg.CreatedAt.AsTime(),
 			updateOrg.UpdatedAt.AsTime(), 2*time.Second)
 
-		getOrg, err := orgCli.GetOrg(ctx, &api.GetOrgRequest{
-			Id: createOrg.Id})
+		getOrg, err := orgCli.GetOrg(ctx,
+			&api.GetOrgRequest{Id: createOrg.Id})
 		t.Logf("getOrg, err: %+v, %v", getOrg, err)
 		require.NoError(t, err)
 
@@ -211,19 +210,23 @@ func TestUpdateOrg(t *testing.T) {
 		defer cancel()
 
 		orgCli := api.NewOrgServiceClient(secondarySysAdminGRPCConn)
-		createOrg, err := orgCli.CreateOrg(ctx, &api.CreateOrgRequest{
-			Org: random.Org("api-org")})
+		createOrg, err := orgCli.CreateOrg(ctx,
+			&api.CreateOrgRequest{Org: random.Org("api-org")})
 		t.Logf("createOrg, err: %+v, %v", createOrg, err)
 		require.NoError(t, err)
 
 		// Update org fields.
-		part := &api.Org{Id: createOrg.Id, Name: "api-org-" + random.String(10),
-			DisplayName: "dao-org-" + random.String(10), Email: "dao-org-" +
-				random.Email()}
+		part := &api.Org{
+			Id: createOrg.Id, Name: "api-org-" + random.String(10),
+			DisplayName: "dao-org-" + random.String(10),
+			Email:       "dao-org-" + random.Email(),
+		}
 
 		updateOrg, err := orgCli.UpdateOrg(ctx, &api.UpdateOrgRequest{
-			Org: part, UpdateMask: &fieldmaskpb.FieldMask{
-				Paths: []string{"name", "display_name", "email"}}})
+			Org: part, UpdateMask: &fieldmaskpb.FieldMask{Paths: []string{
+				"name", "display_name", "email",
+			}},
+		})
 		t.Logf("updateOrg, err: %+v, %v", updateOrg, err)
 		require.NoError(t, err)
 		require.Equal(t, part.Name, updateOrg.Name)
@@ -234,8 +237,7 @@ func TestUpdateOrg(t *testing.T) {
 		require.WithinDuration(t, createOrg.CreatedAt.AsTime(),
 			updateOrg.UpdatedAt.AsTime(), 2*time.Second)
 
-		getOrg, err := orgCli.GetOrg(ctx, &api.GetOrgRequest{
-			Id: createOrg.Id})
+		getOrg, err := orgCli.GetOrg(ctx, &api.GetOrgRequest{Id: createOrg.Id})
 		t.Logf("getOrg, err: %+v, %v", getOrg, err)
 		require.NoError(t, err)
 
@@ -253,8 +255,7 @@ func TestUpdateOrg(t *testing.T) {
 		defer cancel()
 
 		orgCli := api.NewOrgServiceClient(secondarySysAdminGRPCConn)
-		updateOrg, err := orgCli.UpdateOrg(ctx, &api.UpdateOrgRequest{
-			Org: nil})
+		updateOrg, err := orgCli.UpdateOrg(ctx, &api.UpdateOrgRequest{Org: nil})
 		t.Logf("updateOrg, err: %+v, %v", updateOrg, err)
 		require.Nil(t, updateOrg)
 		require.EqualError(t, err, "rpc error: code = InvalidArgument desc = "+
@@ -268,8 +269,8 @@ func TestUpdateOrg(t *testing.T) {
 		defer cancel()
 
 		orgCli := api.NewOrgServiceClient(globalAdminGRPCConn)
-		updateOrg, err := orgCli.UpdateOrg(ctx, &api.UpdateOrgRequest{
-			Org: random.Org("api-org")})
+		updateOrg, err := orgCli.UpdateOrg(ctx,
+			&api.UpdateOrgRequest{Org: random.Org("api-org")})
 		t.Logf("updateOrg, err: %+v, %v", updateOrg, err)
 		require.Nil(t, updateOrg)
 		require.EqualError(t, err, "rpc error: code = PermissionDenied desc = "+
@@ -284,8 +285,10 @@ func TestUpdateOrg(t *testing.T) {
 
 		orgCli := api.NewOrgServiceClient(secondarySysAdminGRPCConn)
 		updateOrg, err := orgCli.UpdateOrg(ctx, &api.UpdateOrgRequest{
-			Org:        random.Org("api-org"),
-			UpdateMask: &fieldmaskpb.FieldMask{Paths: []string{"aaa"}}})
+			Org: random.Org("api-org"), UpdateMask: &fieldmaskpb.FieldMask{
+				Paths: []string{"aaa"},
+			},
+		})
 		t.Logf("updateOrg, err: %+v, %v", updateOrg, err)
 		require.Nil(t, updateOrg)
 		require.EqualError(t, err, "rpc error: code = InvalidArgument desc = "+
@@ -300,8 +303,10 @@ func TestUpdateOrg(t *testing.T) {
 
 		orgCli := api.NewOrgServiceClient(secondarySysAdminGRPCConn)
 		updateOrg, err := orgCli.UpdateOrg(ctx, &api.UpdateOrgRequest{
-			Org:        random.Org("api-org"),
-			UpdateMask: &fieldmaskpb.FieldMask{Paths: []string{"name"}}})
+			Org: random.Org("api-org"), UpdateMask: &fieldmaskpb.FieldMask{
+				Paths: []string{"name"},
+			},
+		})
 		t.Logf("updateOrg, err: %+v, %v", updateOrg, err)
 		require.Nil(t, updateOrg)
 		require.EqualError(t, err, "rpc error: code = NotFound desc = object "+
@@ -315,8 +320,8 @@ func TestUpdateOrg(t *testing.T) {
 		defer cancel()
 
 		orgCli := api.NewOrgServiceClient(secondarySysAdminGRPCConn)
-		updateOrg, err := orgCli.UpdateOrg(ctx, &api.UpdateOrgRequest{
-			Org: random.Org("api-org")})
+		updateOrg, err := orgCli.UpdateOrg(ctx,
+			&api.UpdateOrgRequest{Org: random.Org("api-org")})
 		t.Logf("updateOrg, err: %+v, %v", updateOrg, err)
 		require.Nil(t, updateOrg)
 		require.EqualError(t, err, "rpc error: code = NotFound desc = object "+
@@ -330,16 +335,16 @@ func TestUpdateOrg(t *testing.T) {
 		defer cancel()
 
 		orgCli := api.NewOrgServiceClient(secondarySysAdminGRPCConn)
-		createOrg, err := orgCli.CreateOrg(ctx, &api.CreateOrgRequest{
-			Org: random.Org("api-org")})
+		createOrg, err := orgCli.CreateOrg(ctx,
+			&api.CreateOrgRequest{Org: random.Org("api-org")})
 		t.Logf("createOrg, err: %+v, %v", createOrg, err)
 		require.NoError(t, err)
 
 		// Update org fields.
 		createOrg.Name = "api-org-" + random.String(40)
 
-		updateOrg, err := orgCli.UpdateOrg(ctx, &api.UpdateOrgRequest{
-			Org: createOrg})
+		updateOrg, err := orgCli.UpdateOrg(ctx,
+			&api.UpdateOrgRequest{Org: createOrg})
 		t.Logf("updateOrg, err: %+v, %v", updateOrg, err)
 		require.Nil(t, updateOrg)
 		require.EqualError(t, err, "rpc error: code = InvalidArgument desc = "+
@@ -359,13 +364,12 @@ func TestDeleteOrg(t *testing.T) {
 		defer cancel()
 
 		orgCli := api.NewOrgServiceClient(secondarySysAdminGRPCConn)
-		createOrg, err := orgCli.CreateOrg(ctx, &api.CreateOrgRequest{
-			Org: random.Org("api-org")})
+		createOrg, err := orgCli.CreateOrg(ctx,
+			&api.CreateOrgRequest{Org: random.Org("api-org")})
 		t.Logf("createOrg, err: %+v, %v", createOrg, err)
 		require.NoError(t, err)
 
-		_, err = orgCli.DeleteOrg(ctx, &api.DeleteOrgRequest{
-			Id: createOrg.Id})
+		_, err = orgCli.DeleteOrg(ctx, &api.DeleteOrgRequest{Id: createOrg.Id})
 		t.Logf("err: %v", err)
 		require.NoError(t, err)
 
@@ -377,8 +381,8 @@ func TestDeleteOrg(t *testing.T) {
 			defer cancel()
 
 			orgCli := api.NewOrgServiceClient(secondarySysAdminGRPCConn)
-			getOrg, err := orgCli.GetOrg(ctx, &api.GetOrgRequest{
-				Id: createOrg.Id})
+			getOrg, err := orgCli.GetOrg(ctx,
+				&api.GetOrgRequest{Id: createOrg.Id})
 			t.Logf("getOrg, err: %+v, %v", getOrg, err)
 			require.Nil(t, getOrg)
 			require.EqualError(t, err, "rpc error: code = NotFound desc = "+
@@ -393,8 +397,8 @@ func TestDeleteOrg(t *testing.T) {
 		defer cancel()
 
 		orgCli := api.NewOrgServiceClient(globalAdminGRPCConn)
-		_, err := orgCli.DeleteOrg(ctx, &api.DeleteOrgRequest{
-			Id: uuid.NewString()})
+		_, err := orgCli.DeleteOrg(ctx,
+			&api.DeleteOrgRequest{Id: uuid.NewString()})
 		t.Logf("err: %v", err)
 		require.EqualError(t, err, "rpc error: code = PermissionDenied "+
 			"desc = permission denied, SYS_ADMIN role required")
@@ -407,8 +411,8 @@ func TestDeleteOrg(t *testing.T) {
 		defer cancel()
 
 		orgCli := api.NewOrgServiceClient(secondarySysAdminGRPCConn)
-		_, err := orgCli.DeleteOrg(ctx, &api.DeleteOrgRequest{
-			Id: uuid.NewString()})
+		_, err := orgCli.DeleteOrg(ctx,
+			&api.DeleteOrgRequest{Id: uuid.NewString()})
 		t.Logf("err: %v", err)
 		require.EqualError(t, err, "rpc error: code = NotFound desc = object "+
 			"not found")
@@ -425,8 +429,8 @@ func TestListOrgs(t *testing.T) {
 	orgNames := []string{}
 	for i := 0; i < 3; i++ {
 		orgCli := api.NewOrgServiceClient(secondarySysAdminGRPCConn)
-		createOrg, err := orgCli.CreateOrg(ctx, &api.CreateOrgRequest{
-			Org: random.Org("api-org")})
+		createOrg, err := orgCli.CreateOrg(ctx,
+			&api.CreateOrgRequest{Org: random.Org("api-org")})
 		t.Logf("createOrg, err: %+v, %v", createOrg, err)
 		require.NoError(t, err)
 
@@ -441,8 +445,8 @@ func TestListOrgs(t *testing.T) {
 		defer cancel()
 
 		orgCli := api.NewOrgServiceClient(secondarySysAdminGRPCConn)
-		listOrgs, err := orgCli.ListOrgs(ctx, &api.ListOrgsRequest{
-			PageSize: 250})
+		listOrgs, err := orgCli.ListOrgs(ctx,
+			&api.ListOrgsRequest{PageSize: 250})
 		t.Logf("listOrgs, err: %+v, %v", listOrgs, err)
 		require.NoError(t, err)
 		require.GreaterOrEqual(t, len(listOrgs.Orgs), 3)
@@ -465,8 +469,7 @@ func TestListOrgs(t *testing.T) {
 		defer cancel()
 
 		orgCli := api.NewOrgServiceClient(secondarySysAdminGRPCConn)
-		listOrgs, err := orgCli.ListOrgs(ctx, &api.ListOrgsRequest{
-			PageSize: 2})
+		listOrgs, err := orgCli.ListOrgs(ctx, &api.ListOrgsRequest{PageSize: 2})
 		t.Logf("listOrgs, err: %+v, %v", listOrgs, err)
 		require.NoError(t, err)
 		require.Len(t, listOrgs.Orgs, 2)
@@ -474,7 +477,8 @@ func TestListOrgs(t *testing.T) {
 		require.GreaterOrEqual(t, listOrgs.TotalSize, int32(3))
 
 		nextOrgs, err := orgCli.ListOrgs(ctx, &api.ListOrgsRequest{
-			PageSize: 2, PageToken: listOrgs.NextPageToken})
+			PageSize: 2, PageToken: listOrgs.NextPageToken,
+		})
 		t.Logf("nextOrgs, err: %+v, %v", nextOrgs, err)
 		require.NoError(t, err)
 		require.GreaterOrEqual(t, len(nextOrgs.Orgs), 1)
@@ -502,8 +506,8 @@ func TestListOrgs(t *testing.T) {
 		defer cancel()
 
 		orgCli := api.NewOrgServiceClient(secondarySysAdminGRPCConn)
-		listOrgs, err := orgCli.ListOrgs(ctx, &api.ListOrgsRequest{
-			PageToken: badUUID})
+		listOrgs, err := orgCli.ListOrgs(ctx,
+			&api.ListOrgsRequest{PageToken: badUUID})
 		t.Logf("listOrgs, err: %+v, %v", listOrgs, err)
 		require.Nil(t, listOrgs)
 		require.EqualError(t, err, "rpc error: code = InvalidArgument desc = "+

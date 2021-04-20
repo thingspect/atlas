@@ -53,30 +53,54 @@ func TestAuth(t *testing.T) {
 		inpCacheTimes int
 		err           error
 	}{
-		{[]string{"authorization", "Bearer " + webToken}, nil, nil,
+		{
+			[]string{"authorization", "Bearer " + webToken},
+			nil, nil,
 			&grpc.UnaryServerInfo{FullMethod: random.String(10)}, false, nil, 0,
-			nil},
-		{[]string{"authorization", "Bearer " + keyToken}, nil, nil,
+			nil,
+		},
+		{
+			[]string{"authorization", "Bearer " + keyToken},
+			nil, nil,
 			&grpc.UnaryServerInfo{FullMethod: random.String(10)}, false, nil, 1,
-			nil},
-		{nil, errTestFunc, map[string]struct{}{skipPath: {}},
+			nil,
+		},
+		{
+			nil, errTestFunc,
+			map[string]struct{}{skipPath: {}},
 			&grpc.UnaryServerInfo{FullMethod: skipPath}, false, nil, 0,
-			errTestFunc},
-		{nil, errTestFunc, nil, &grpc.UnaryServerInfo{
-			FullMethod: random.String(10)}, false, nil, 0,
-			status.Error(codes.Unauthenticated, "unauthorized")},
-		{[]string{}, errTestFunc, nil, &grpc.UnaryServerInfo{
-			FullMethod: random.String(10)}, false, nil, 0,
-			status.Error(codes.Unauthenticated, "unauthorized")},
-		{[]string{"authorization", "NoBearer " + webToken}, errTestFunc, nil,
+			errTestFunc,
+		},
+		{
+			nil, errTestFunc, nil, &grpc.UnaryServerInfo{
+				FullMethod: random.String(10),
+			}, false, nil, 0, status.Error(codes.Unauthenticated,
+				"unauthorized"),
+		},
+		{
+			[]string{}, errTestFunc, nil, &grpc.UnaryServerInfo{
+				FullMethod: random.String(10),
+			}, false, nil, 0, status.Error(codes.Unauthenticated,
+				"unauthorized"),
+		},
+		{
+			[]string{"authorization", "NoBearer " + webToken},
+			errTestFunc, nil,
 			&grpc.UnaryServerInfo{FullMethod: random.String(10)}, false, nil, 0,
-			status.Error(codes.Unauthenticated, "unauthorized")},
-		{[]string{"authorization", "Bearer ..."}, errTestFunc, nil,
+			status.Error(codes.Unauthenticated, "unauthorized"),
+		},
+		{
+			[]string{"authorization", "Bearer ..."},
+			errTestFunc, nil,
 			&grpc.UnaryServerInfo{FullMethod: random.String(10)}, false, nil, 0,
-			status.Error(codes.Unauthenticated, "unauthorized")},
-		{[]string{"authorization", "Bearer " + keyToken}, errTestFunc, nil,
+			status.Error(codes.Unauthenticated, "unauthorized"),
+		},
+		{
+			[]string{"authorization", "Bearer " + keyToken},
+			errTestFunc, nil,
 			&grpc.UnaryServerInfo{FullMethod: random.String(10)}, true, nil, 1,
-			status.Error(codes.Unauthenticated, "unauthorized")},
+			status.Error(codes.Unauthenticated, "unauthorized"),
+		},
 	}
 
 	for _, test := range tests {

@@ -66,16 +66,30 @@ func TestParsePageToken(t *testing.T) {
 		inpPT string
 		err   string
 	}{
-		{prevID.String(), time.Now().UTC(), "res", ""},
-		{prevID.String(), time.Time{}, "", ""},
-		{prevID.String(), time.Time{}, "...",
-			"illegal base64 data at input byte 0"},
-		{prevID.String(), time.Time{}, base64.RawURLEncoding.EncodeToString(
-			[]byte("aaa")), "cannot parse invalid wire-format data"},
-		{prevID.String(), time.Time{}, base64.RawURLEncoding.EncodeToString(
-			bNilTSPT), ""},
-		{prevID.String(), time.Time{}, base64.RawURLEncoding.EncodeToString(
-			bBadUUIDPT), "invalid UUID (got 3 bytes)"},
+		{
+			prevID.String(), time.Now().UTC(), "res", "",
+		},
+		{
+			prevID.String(), time.Time{}, "", "",
+		},
+		{
+			prevID.String(),
+			time.Time{},
+			"...",
+			"illegal base64 data at input byte 0",
+		},
+		{
+			prevID.String(), time.Time{}, base64.RawURLEncoding.EncodeToString(
+				[]byte("aaa")), "cannot parse invalid wire-format data",
+		},
+		{
+			prevID.String(), time.Time{}, base64.RawURLEncoding.EncodeToString(
+				bNilTSPT), "",
+		},
+		{
+			prevID.String(), time.Time{}, base64.RawURLEncoding.EncodeToString(
+				bBadUUIDPT), "invalid UUID (got 3 bytes)",
+		},
 	}
 
 	for _, test := range tests {
