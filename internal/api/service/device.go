@@ -62,7 +62,7 @@ func (d *Device) CreateDevice(ctx context.Context,
 		return nil, errToStatus(err)
 	}
 
-	if err := grpc.SetHeader(ctx, metadata.Pairs("atlas-status-code",
+	if err := grpc.SetHeader(ctx, metadata.Pairs(StatusCodeKey,
 		"201")); err != nil {
 		logger.Errorf("CreateDevice grpc.SetHeader: %v", err)
 	}
@@ -96,7 +96,7 @@ func (d *Device) CreateDeviceLoRaWAN(ctx context.Context,
 		return nil, errToStatus(err)
 	}
 
-	if err := grpc.SetHeader(ctx, metadata.Pairs("atlas-status-code",
+	if err := grpc.SetHeader(ctx, metadata.Pairs(StatusCodeKey,
 		"204")); err != nil {
 		logger.Errorf("CreateDeviceLoRaWAN grpc.SetHeader: %v", err)
 	}
@@ -201,7 +201,7 @@ func (d *Device) DeleteDeviceLoRaWAN(ctx context.Context,
 		return nil, errToStatus(err)
 	}
 
-	if err := grpc.SetHeader(ctx, metadata.Pairs("atlas-status-code",
+	if err := grpc.SetHeader(ctx, metadata.Pairs(StatusCodeKey,
 		"204")); err != nil {
 		logger.Errorf("DeleteDeviceLoRaWAN grpc.SetHeader: %v", err)
 	}
@@ -222,7 +222,7 @@ func (d *Device) DeleteDevice(ctx context.Context,
 		return nil, errToStatus(err)
 	}
 
-	if err := grpc.SetHeader(ctx, metadata.Pairs("atlas-status-code",
+	if err := grpc.SetHeader(ctx, metadata.Pairs(StatusCodeKey,
 		"204")); err != nil {
 		logger.Errorf("DeleteDevice grpc.SetHeader: %v", err)
 	}

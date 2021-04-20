@@ -12,6 +12,7 @@ import (
 	"github.com/golang/mock/gomock"
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
 	"github.com/stretchr/testify/require"
+	"github.com/thingspect/atlas/internal/api/service"
 	"google.golang.org/grpc/metadata"
 )
 
@@ -23,9 +24,8 @@ func TestStatusCode(t *testing.T) {
 	t.Run("Modify status code", func(t *testing.T) {
 		t.Parallel()
 
-		mdHeader := metadata.MD{"atlas-status-code": []string{"201"}}
-		wHeader := http.Header{"Grpc-Metadata-Atlas-Status-Code": []string{
-			"201"}}
+		mdHeader := metadata.MD{service.StatusCodeKey: []string{"201"}}
+		wHeader := http.Header{grpcStatusCodeKey: []string{"201"}}
 		t.Logf("mdHeader, wHeader: %+v, %+v", mdHeader, wHeader)
 
 		respWriter := NewMockResponseWriter(gomock.NewController(t))
@@ -93,9 +93,8 @@ func TestStatusCode(t *testing.T) {
 	t.Run("Don't modify status code with invalid metadata", func(t *testing.T) {
 		t.Parallel()
 
-		mdHeader := metadata.MD{"atlas-status-code": []string{"aaa"}}
-		wHeader := http.Header{"Grpc-Metadata-Atlas-Status-Code": []string{
-			"201"}}
+		mdHeader := metadata.MD{service.StatusCodeKey: []string{"aaa"}}
+		wHeader := http.Header{grpcStatusCodeKey: []string{"201"}}
 		t.Logf("mdHeader, wHeader: %+v, %+v", mdHeader, wHeader)
 
 		respWriter := NewMockResponseWriter(gomock.NewController(t))
@@ -110,9 +109,9 @@ func TestStatusCode(t *testing.T) {
 		require.ErrorIs(t, err, strconv.ErrSyntax)
 
 		t.Logf("mdHeader, wHeader: %+v, %+v", mdHeader, wHeader)
-		require.Equal(t, metadata.MD{"atlas-status-code": []string{"aaa"}},
+		require.Equal(t, metadata.MD{service.StatusCodeKey: []string{"aaa"}},
 			mdHeader)
-		require.Equal(t, http.Header{
-			"Grpc-Metadata-Atlas-Status-Code": []string{"201"}}, wHeader)
+		require.Equal(t, http.Header{grpcStatusCodeKey: []string{"201"}},
+			wHeader)
 	})
 }

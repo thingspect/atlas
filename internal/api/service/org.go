@@ -57,7 +57,7 @@ func (o *Org) CreateOrg(ctx context.Context,
 		return nil, errToStatus(err)
 	}
 
-	if err := grpc.SetHeader(ctx, metadata.Pairs("atlas-status-code",
+	if err := grpc.SetHeader(ctx, metadata.Pairs(StatusCodeKey,
 		"201")); err != nil {
 		logger.Errorf("CreateOrg grpc.SetHeader: %v", err)
 	}
@@ -145,7 +145,7 @@ func (o *Org) DeleteOrg(ctx context.Context,
 		return nil, errToStatus(err)
 	}
 
-	if err := grpc.SetHeader(ctx, metadata.Pairs("atlas-status-code",
+	if err := grpc.SetHeader(ctx, metadata.Pairs(StatusCodeKey,
 		"204")); err != nil {
 		logger.Errorf("DeleteOrg grpc.SetHeader: %v", err)
 	}

@@ -74,7 +74,7 @@ func (ra *RuleAlarm) CreateRule(ctx context.Context,
 		return nil, errToStatus(err)
 	}
 
-	if err := grpc.SetHeader(ctx, metadata.Pairs("atlas-status-code",
+	if err := grpc.SetHeader(ctx, metadata.Pairs(StatusCodeKey,
 		"201")); err != nil {
 		logger.Errorf("CreateRule grpc.SetHeader: %v", err)
 	}
@@ -98,7 +98,7 @@ func (ra *RuleAlarm) CreateAlarm(ctx context.Context,
 		return nil, errToStatus(err)
 	}
 
-	if err := grpc.SetHeader(ctx, metadata.Pairs("atlas-status-code",
+	if err := grpc.SetHeader(ctx, metadata.Pairs(StatusCodeKey,
 		"201")); err != nil {
 		logger.Errorf("CreateAlarm grpc.SetHeader: %v", err)
 	}
@@ -247,7 +247,7 @@ func (ra *RuleAlarm) DeleteRule(ctx context.Context,
 		return nil, errToStatus(err)
 	}
 
-	if err := grpc.SetHeader(ctx, metadata.Pairs("atlas-status-code",
+	if err := grpc.SetHeader(ctx, metadata.Pairs(StatusCodeKey,
 		"204")); err != nil {
 		logger.Errorf("DeleteRule grpc.SetHeader: %v", err)
 	}
@@ -269,7 +269,7 @@ func (ra *RuleAlarm) DeleteAlarm(ctx context.Context,
 		return nil, errToStatus(err)
 	}
 
-	if err := grpc.SetHeader(ctx, metadata.Pairs("atlas-status-code",
+	if err := grpc.SetHeader(ctx, metadata.Pairs(StatusCodeKey,
 		"204")); err != nil {
 		logger.Errorf("DeleteAlarm grpc.SetHeader: %v", err)
 	}

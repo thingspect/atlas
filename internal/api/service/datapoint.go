@@ -96,7 +96,7 @@ func (d *DataPoint) PublishDataPoints(ctx context.Context,
 		logger.Debugf("PublishDataPoints published: %+v", vIn)
 	}
 
-	if err := grpc.SetHeader(ctx, metadata.Pairs("atlas-status-code",
+	if err := grpc.SetHeader(ctx, metadata.Pairs(StatusCodeKey,
 		"202")); err != nil {
 		logger.Errorf("PublishDataPoints grpc.SetHeader: %v", err)
 	}
