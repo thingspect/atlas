@@ -29,15 +29,29 @@ func TestLog(t *testing.T) {
 		inpReq        string
 		inpInfo       *grpc.UnaryServerInfo
 	}{
-		{nil, nil, nil, random.String(105), &grpc.UnaryServerInfo{
-			FullMethod: random.String(10)}},
-		{nil, nil, map[string]struct{}{skipPath: {}}, random.String(10),
-			&grpc.UnaryServerInfo{FullMethod: skipPath}},
-		{[]string{random.String(10), random.String(10)}, nil, nil,
+		{
+			nil, nil, nil, random.String(105), &grpc.UnaryServerInfo{
+				FullMethod: random.String(10),
+			},
+		},
+		{
+			nil, nil,
+			map[string]struct{}{skipPath: {}},
+			random.String(10),
+			&grpc.UnaryServerInfo{FullMethod: skipPath},
+		},
+		{
+			[]string{random.String(10), random.String(10)},
+			nil, nil,
 			random.String(10), &grpc.UnaryServerInfo{
-				FullMethod: random.String(10)}},
-		{nil, io.EOF, nil, "", &grpc.UnaryServerInfo{
-			FullMethod: random.String(10)}},
+				FullMethod: random.String(10),
+			},
+		},
+		{
+			nil, io.EOF, nil, "", &grpc.UnaryServerInfo{
+				FullMethod: random.String(10),
+			},
+		},
 	}
 
 	for _, test := range tests {

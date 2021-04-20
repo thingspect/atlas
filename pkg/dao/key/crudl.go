@@ -85,9 +85,9 @@ WHERE org_id = $1
 `
 
 const listKeysTSAndID = `
-AND (created_at > $%d
-OR (created_at = $%d
-AND id > $%d
+AND (created_at > $2
+OR (created_at = $2
+AND id > $3
 ))
 `
 
@@ -110,22 +110,22 @@ func (d *DAO) List(ctx context.Context, orgID string, lBoundTS time.Time,
 	}
 
 	// Build list query.
-	lQuery := listKeys
-	lArgs := []interface{}{orgID}
+	query := listKeys
+	args := []interface{}{orgID}
 
 	if prevID != "" && !lBoundTS.IsZero() {
-		lQuery += fmt.Sprintf(listKeysTSAndID, 2, 2, 3)
-		lArgs = append(lArgs, lBoundTS, prevID)
+		query += listKeysTSAndID
+		args = append(args, lBoundTS, prevID)
 	}
 
 	// Ordering is applied with the limit, which will always be present for API
 	// usage, whereas lBoundTS and prevID will not for first pages.
 	if limit > 0 {
-		lQuery += fmt.Sprintf(listKeysLimit, limit)
+		query += fmt.Sprintf(listKeysLimit, limit)
 	}
 
 	// Run list query.
-	rows, err := d.pg.QueryContext(ctx, lQuery, lArgs...)
+	rows, err := d.pg.QueryContext(ctx, query, args...)
 	if err != nil {
 		return nil, 0, dao.DBToSentinel(err)
 	}

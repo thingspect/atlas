@@ -8,6 +8,8 @@ production NSQ images and set specific `CMD` values for each service.
 ## Build
 
 ```
+docker login -u thingspect
+
 docker build -f Dockerfile-nsqlookupd -t thingspect/nsqlookupd:v1.2.0 .
 docker push thingspect/nsqlookupd:v1.2.0
 
@@ -16,6 +18,8 @@ docker push thingspect/nsqd:v1.2.0
 
 docker build -f Dockerfile-nsqadmin -t thingspect/nsqadmin:v1.2.0 .
 docker push thingspect/nsqadmin:v1.2.0
+
+docker logout
 ```
 
 ## Usage

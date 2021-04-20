@@ -21,5 +21,3 @@
 ### Thingspect ###
 /api/protobuf/common
 /bin
-/mqtt-ingestor
-/validator

@@ -9,21 +9,21 @@ import (
 
 	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/require"
-	"github.com/thingspect/atlas/api/go/message"
+	"github.com/thingspect/atlas/api/go/token"
 )
 
 type protoer interface {
-	f(vIn *message.ValidatorIn) error
+	f(vIn *token.Web) error
 }
 
-func runProto(p protoer, vIn *message.ValidatorIn) error {
+func runProto(p protoer, vIn *token.Web) error {
 	return p.f(vIn)
 }
 
 func TestProtoMatcher(t *testing.T) {
 	protoer := NewMockprotoer(gomock.NewController(t))
-	protoer.EXPECT().f(NewProtoMatcher(&message.ValidatorIn{})).Return(
+	protoer.EXPECT().f(NewProtoMatcher(&token.Web{})).Return(
 		nil).Times(1)
 
-	require.NoError(t, runProto(protoer, &message.ValidatorIn{}))
+	require.NoError(t, runProto(protoer, &token.Web{}))
 }

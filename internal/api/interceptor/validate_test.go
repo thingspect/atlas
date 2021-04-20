@@ -34,13 +34,23 @@ func TestValidate(t *testing.T) {
 		inpReq       interface{}
 		inpInfo      *grpc.UnaryServerInfo
 	}{
-		{nil, nil, nil, &grpc.UnaryServerInfo{FullMethod: random.String(10)}},
-		{nil, map[string]struct{}{skipPath: {}}, nil, &grpc.UnaryServerInfo{
-			FullMethod: skipPath}},
-		{nil, nil, &valPass{}, &grpc.UnaryServerInfo{
-			FullMethod: random.String(10)}},
-		{status.Error(codes.InvalidArgument, io.EOF.Error()), nil, &valFail{},
-			&grpc.UnaryServerInfo{FullMethod: random.String(10)}},
+		{
+			nil, nil, nil, &grpc.UnaryServerInfo{FullMethod: random.String(10)},
+		},
+		{
+			nil, map[string]struct{}{skipPath: {}}, nil, &grpc.UnaryServerInfo{
+				FullMethod: skipPath,
+			},
+		},
+		{
+			nil, nil, &valPass{}, &grpc.UnaryServerInfo{
+				FullMethod: random.String(10),
+			},
+		},
+		{
+			status.Error(codes.InvalidArgument, io.EOF.Error()), nil,
+			&valFail{}, &grpc.UnaryServerInfo{FullMethod: random.String(10)},
+		},
 	}
 
 	for _, test := range tests {

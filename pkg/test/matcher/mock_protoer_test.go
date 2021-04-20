@@ -8,7 +8,7 @@ import (
 	reflect "reflect"
 
 	gomock "github.com/golang/mock/gomock"
-	message "github.com/thingspect/atlas/api/go/message"
+	token "github.com/thingspect/atlas/api/go/token"
 )
 
 // Mockprotoer is a mock of protoer interface.
@@ -35,7 +35,7 @@ func (m *Mockprotoer) EXPECT() *MockprotoerMockRecorder {
 }
 
 // f mocks base method.
-func (m *Mockprotoer) f(vIn *message.ValidatorIn) error {
+func (m *Mockprotoer) f(vIn *token.Web) error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "f", vIn)
 	ret0, _ := ret[0].(error)

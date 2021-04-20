@@ -35,13 +35,13 @@ func TestCreateOrg(t *testing.T) {
 		orger.EXPECT().Create(gomock.Any(), org).Return(retOrg, nil).Times(1)
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
-			context.Background(), &session.Session{OrgID: org.Id,
-				Role: common.Role_SYS_ADMIN}), testTimeout)
+			context.Background(), &session.Session{
+				OrgID: org.Id, Role: common.Role_SYS_ADMIN,
+			}), testTimeout)
 		defer cancel()
 
 		orgSvc := NewOrg(orger)
-		createOrg, err := orgSvc.CreateOrg(ctx, &api.CreateOrgRequest{
-			Org: org})
+		createOrg, err := orgSvc.CreateOrg(ctx, &api.CreateOrgRequest{Org: org})
 		t.Logf("org, createOrg, err: %+v, %+v, %v", org, createOrg, err)
 		require.NoError(t, err)
 
@@ -69,8 +69,9 @@ func TestCreateOrg(t *testing.T) {
 		t.Parallel()
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
-			context.Background(), &session.Session{OrgID: uuid.NewString(),
-				Role: common.Role_ADMIN}), testTimeout)
+			context.Background(), &session.Session{
+				OrgID: uuid.NewString(), Role: common.Role_ADMIN,
+			}), testTimeout)
 		defer cancel()
 
 		orgSvc := NewOrg(nil)
@@ -90,13 +91,13 @@ func TestCreateOrg(t *testing.T) {
 			dao.ErrInvalidFormat).Times(1)
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
-			context.Background(), &session.Session{OrgID: org.Id,
-				Role: common.Role_SYS_ADMIN}), testTimeout)
+			context.Background(), &session.Session{
+				OrgID: org.Id, Role: common.Role_SYS_ADMIN,
+			}), testTimeout)
 		defer cancel()
 
 		orgSvc := NewOrg(orger)
-		createOrg, err := orgSvc.CreateOrg(ctx, &api.CreateOrgRequest{
-			Org: org})
+		createOrg, err := orgSvc.CreateOrg(ctx, &api.CreateOrgRequest{Org: org})
 		t.Logf("org, createOrg, err: %+v, %+v, %v", org, createOrg, err)
 		require.Nil(t, createOrg)
 		require.Equal(t, status.Error(codes.InvalidArgument, "invalid format"),
@@ -117,8 +118,9 @@ func TestGetOrg(t *testing.T) {
 		orger.EXPECT().Read(gomock.Any(), org.Id).Return(retOrg, nil).Times(1)
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
-			context.Background(), &session.Session{OrgID: org.Id,
-				Role: common.Role_SYS_ADMIN}), testTimeout)
+			context.Background(), &session.Session{
+				OrgID: org.Id, Role: common.Role_SYS_ADMIN,
+			}), testTimeout)
 		defer cancel()
 
 		orgSvc := NewOrg(orger)
@@ -150,8 +152,9 @@ func TestGetOrg(t *testing.T) {
 		t.Parallel()
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
-			context.Background(), &session.Session{OrgID: uuid.NewString(),
-				Role: common.Role_ADMIN}), testTimeout)
+			context.Background(), &session.Session{
+				OrgID: uuid.NewString(), Role: common.Role_ADMIN,
+			}), testTimeout)
 		defer cancel()
 
 		orgSvc := NewOrg(nil)
@@ -169,13 +172,14 @@ func TestGetOrg(t *testing.T) {
 			dao.ErrNotFound).Times(1)
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
-			context.Background(), &session.Session{OrgID: uuid.NewString(),
-				Role: common.Role_SYS_ADMIN}), testTimeout)
+			context.Background(), &session.Session{
+				OrgID: uuid.NewString(), Role: common.Role_SYS_ADMIN,
+			}), testTimeout)
 		defer cancel()
 
 		orgSvc := NewOrg(orger)
-		getOrg, err := orgSvc.GetOrg(ctx, &api.GetOrgRequest{
-			Id: uuid.NewString()})
+		getOrg, err := orgSvc.GetOrg(ctx,
+			&api.GetOrgRequest{Id: uuid.NewString()})
 		t.Logf("getOrg, err: %+v, %v", getOrg, err)
 		require.Nil(t, getOrg)
 		require.Equal(t, status.Error(codes.NotFound, "object not found"), err)
@@ -195,13 +199,13 @@ func TestUpdateOrg(t *testing.T) {
 		orger.EXPECT().Update(gomock.Any(), org).Return(retOrg, nil).Times(1)
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
-			context.Background(), &session.Session{OrgID: org.Id,
-				Role: common.Role_SYS_ADMIN}), testTimeout)
+			context.Background(), &session.Session{
+				OrgID: org.Id, Role: common.Role_SYS_ADMIN,
+			}), testTimeout)
 		defer cancel()
 
 		orgSvc := NewOrg(orger)
-		updateOrg, err := orgSvc.UpdateOrg(ctx, &api.UpdateOrgRequest{
-			Org: org})
+		updateOrg, err := orgSvc.UpdateOrg(ctx, &api.UpdateOrgRequest{Org: org})
 		t.Logf("org, updateOrg, err: %+v, %+v, %v", org, updateOrg, err)
 		require.NoError(t, err)
 
@@ -218,8 +222,10 @@ func TestUpdateOrg(t *testing.T) {
 		org := random.Org("api-org")
 		retOrg, _ := proto.Clone(org).(*api.Org)
 		part := &api.Org{Id: org.Id, Name: random.String(10)}
-		merged := &api.Org{Id: org.Id, Name: part.Name,
-			DisplayName: org.DisplayName, Email: org.Email}
+		merged := &api.Org{
+			Id: org.Id, Name: part.Name, DisplayName: org.DisplayName,
+			Email: org.Email,
+		}
 		retMerged, _ := proto.Clone(merged).(*api.Org)
 
 		orger := NewMockOrger(gomock.NewController(t))
@@ -228,14 +234,16 @@ func TestUpdateOrg(t *testing.T) {
 			Return(retMerged, nil).Times(1)
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
-			context.Background(), &session.Session{OrgID: org.Id,
-				Role: common.Role_SYS_ADMIN}), testTimeout)
+			context.Background(), &session.Session{
+				OrgID: org.Id, Role: common.Role_SYS_ADMIN,
+			}), testTimeout)
 		defer cancel()
 
 		orgSvc := NewOrg(orger)
 		updateOrg, err := orgSvc.UpdateOrg(ctx, &api.UpdateOrgRequest{
-			Org: part, UpdateMask: &fieldmaskpb.FieldMask{
-				Paths: []string{"name"}}})
+			Org:        part,
+			UpdateMask: &fieldmaskpb.FieldMask{Paths: []string{"name"}},
+		})
 		t.Logf("merged, updateOrg, err: %+v, %+v, %v", merged, updateOrg, err)
 		require.NoError(t, err)
 
@@ -263,8 +271,9 @@ func TestUpdateOrg(t *testing.T) {
 		t.Parallel()
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
-			context.Background(), &session.Session{OrgID: uuid.NewString(),
-				Role: common.Role_SYS_ADMIN}), testTimeout)
+			context.Background(), &session.Session{
+				OrgID: uuid.NewString(), Role: common.Role_SYS_ADMIN,
+			}), testTimeout)
 		defer cancel()
 
 		orgSvc := NewOrg(nil)
@@ -281,13 +290,13 @@ func TestUpdateOrg(t *testing.T) {
 		org := random.Org("api-org")
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
-			context.Background(), &session.Session{OrgID: org.Id,
-				Role: common.Role_BUILDER}), testTimeout)
+			context.Background(), &session.Session{
+				OrgID: org.Id, Role: common.Role_BUILDER,
+			}), testTimeout)
 		defer cancel()
 
 		orgSvc := NewOrg(nil)
-		updateOrg, err := orgSvc.UpdateOrg(ctx, &api.UpdateOrgRequest{
-			Org: org})
+		updateOrg, err := orgSvc.UpdateOrg(ctx, &api.UpdateOrgRequest{Org: org})
 		t.Logf("org, updateOrg, err: %+v, %+v, %v", org, updateOrg, err)
 		require.Nil(t, updateOrg)
 		require.Equal(t, errPerm(common.Role_SYS_ADMIN), err)
@@ -297,13 +306,14 @@ func TestUpdateOrg(t *testing.T) {
 		t.Parallel()
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
-			context.Background(), &session.Session{OrgID: uuid.NewString(),
-				Role: common.Role_ADMIN}), testTimeout)
+			context.Background(), &session.Session{
+				OrgID: uuid.NewString(), Role: common.Role_ADMIN,
+			}), testTimeout)
 		defer cancel()
 
 		orgSvc := NewOrg(nil)
-		updateOrg, err := orgSvc.UpdateOrg(ctx, &api.UpdateOrgRequest{
-			Org: random.Org("api-org")})
+		updateOrg, err := orgSvc.UpdateOrg(ctx,
+			&api.UpdateOrgRequest{Org: random.Org("api-org")})
 		t.Logf("updateOrg, err: %+v, %v", updateOrg, err)
 		require.Nil(t, updateOrg)
 		require.Equal(t, errPerm(common.Role_SYS_ADMIN), err)
@@ -315,14 +325,16 @@ func TestUpdateOrg(t *testing.T) {
 		org := random.Org("api-org")
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
-			context.Background(), &session.Session{OrgID: uuid.NewString(),
-				Role: common.Role_SYS_ADMIN}), testTimeout)
+			context.Background(), &session.Session{
+				OrgID: uuid.NewString(), Role: common.Role_SYS_ADMIN,
+			}), testTimeout)
 		defer cancel()
 
 		orgSvc := NewOrg(nil)
 		updateOrg, err := orgSvc.UpdateOrg(ctx, &api.UpdateOrgRequest{
-			Org: org, UpdateMask: &fieldmaskpb.FieldMask{
-				Paths: []string{"aaa"}}})
+			Org:        org,
+			UpdateMask: &fieldmaskpb.FieldMask{Paths: []string{"aaa"}},
+		})
 		t.Logf("org, updateOrg, err: %+v, %+v, %v", org, updateOrg, err)
 		require.Nil(t, updateOrg)
 		require.Equal(t, status.Error(codes.InvalidArgument,
@@ -340,14 +352,16 @@ func TestUpdateOrg(t *testing.T) {
 			Times(1)
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
-			context.Background(), &session.Session{OrgID: orgID,
-				Role: common.Role_SYS_ADMIN}), testTimeout)
+			context.Background(), &session.Session{
+				OrgID: orgID, Role: common.Role_SYS_ADMIN,
+			}), testTimeout)
 		defer cancel()
 
 		orgSvc := NewOrg(orger)
 		updateOrg, err := orgSvc.UpdateOrg(ctx, &api.UpdateOrgRequest{
-			Org: part, UpdateMask: &fieldmaskpb.FieldMask{
-				Paths: []string{"name"}}})
+			Org:        part,
+			UpdateMask: &fieldmaskpb.FieldMask{Paths: []string{"name"}},
+		})
 		t.Logf("part, updateOrg, err: %+v, %+v, %v", part, updateOrg, err)
 		require.Nil(t, updateOrg)
 		require.Equal(t, status.Error(codes.NotFound, "object not found"), err)
@@ -360,13 +374,13 @@ func TestUpdateOrg(t *testing.T) {
 		org.Name = random.String(41)
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
-			context.Background(), &session.Session{OrgID: org.Id,
-				Role: common.Role_SYS_ADMIN}), testTimeout)
+			context.Background(), &session.Session{
+				OrgID: org.Id, Role: common.Role_SYS_ADMIN,
+			}), testTimeout)
 		defer cancel()
 
 		orgSvc := NewOrg(nil)
-		updateOrg, err := orgSvc.UpdateOrg(ctx, &api.UpdateOrgRequest{
-			Org: org})
+		updateOrg, err := orgSvc.UpdateOrg(ctx, &api.UpdateOrgRequest{Org: org})
 		t.Logf("org, updateOrg, err: %+v, %+v, %v", org, updateOrg, err)
 		require.Nil(t, updateOrg)
 		require.Equal(t, status.Error(codes.InvalidArgument, "invalid "+
@@ -385,13 +399,13 @@ func TestUpdateOrg(t *testing.T) {
 			dao.ErrInvalidFormat).Times(1)
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
-			context.Background(), &session.Session{OrgID: org.Id,
-				Role: common.Role_SYS_ADMIN}), testTimeout)
+			context.Background(), &session.Session{
+				OrgID: org.Id, Role: common.Role_SYS_ADMIN,
+			}), testTimeout)
 		defer cancel()
 
 		orgSvc := NewOrg(orger)
-		updateOrg, err := orgSvc.UpdateOrg(ctx, &api.UpdateOrgRequest{
-			Org: org})
+		updateOrg, err := orgSvc.UpdateOrg(ctx, &api.UpdateOrgRequest{Org: org})
 		t.Logf("org, updateOrg, err: %+v, %+v, %v", org, updateOrg, err)
 		require.Nil(t, updateOrg)
 		require.Equal(t, status.Error(codes.InvalidArgument, "invalid format"),
@@ -409,13 +423,14 @@ func TestDeleteOrg(t *testing.T) {
 		orger.EXPECT().Delete(gomock.Any(), gomock.Any()).Return(nil).Times(1)
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
-			context.Background(), &session.Session{OrgID: uuid.NewString(),
-				Role: common.Role_SYS_ADMIN}), testTimeout)
+			context.Background(), &session.Session{
+				OrgID: uuid.NewString(), Role: common.Role_SYS_ADMIN,
+			}), testTimeout)
 		defer cancel()
 
 		orgSvc := NewOrg(orger)
-		_, err := orgSvc.DeleteOrg(ctx, &api.DeleteOrgRequest{
-			Id: uuid.NewString()})
+		_, err := orgSvc.DeleteOrg(ctx,
+			&api.DeleteOrgRequest{Id: uuid.NewString()})
 		t.Logf("err: %v", err)
 		require.NoError(t, err)
 	})
@@ -436,8 +451,9 @@ func TestDeleteOrg(t *testing.T) {
 		t.Parallel()
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
-			context.Background(), &session.Session{OrgID: uuid.NewString(),
-				Role: common.Role_ADMIN}), testTimeout)
+			context.Background(), &session.Session{
+				OrgID: uuid.NewString(), Role: common.Role_ADMIN,
+			}), testTimeout)
 		defer cancel()
 
 		orgSvc := NewOrg(nil)
@@ -454,13 +470,14 @@ func TestDeleteOrg(t *testing.T) {
 			Return(dao.ErrNotFound).Times(1)
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
-			context.Background(), &session.Session{OrgID: uuid.NewString(),
-				Role: common.Role_SYS_ADMIN}), testTimeout)
+			context.Background(), &session.Session{
+				OrgID: uuid.NewString(), Role: common.Role_SYS_ADMIN,
+			}), testTimeout)
 		defer cancel()
 
 		orgSvc := NewOrg(orger)
-		_, err := orgSvc.DeleteOrg(ctx, &api.DeleteOrgRequest{
-			Id: uuid.NewString()})
+		_, err := orgSvc.DeleteOrg(ctx,
+			&api.DeleteOrgRequest{Id: uuid.NewString()})
 		t.Logf("err: %v", err)
 		require.Equal(t, status.Error(codes.NotFound, "object not found"), err)
 	})
@@ -485,8 +502,9 @@ func TestListOrgs(t *testing.T) {
 			Return(orgs, int32(3), nil).Times(1)
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
-			context.Background(), &session.Session{OrgID: orgID,
-				Role: common.Role_SYS_ADMIN}), testTimeout)
+			context.Background(), &session.Session{
+				OrgID: orgID, Role: common.Role_SYS_ADMIN,
+			}), testTimeout)
 		defer cancel()
 
 		orgSvc := NewOrg(orger)
@@ -524,24 +542,25 @@ func TestListOrgs(t *testing.T) {
 			Return(orgs, int32(3), nil).Times(1)
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
-			context.Background(), &session.Session{OrgID: orgID,
-				Role: common.Role_SYS_ADMIN}), testTimeout)
+			context.Background(), &session.Session{
+				OrgID: orgID, Role: common.Role_SYS_ADMIN,
+			}), testTimeout)
 		defer cancel()
 
 		orgSvc := NewOrg(orger)
-		listOrgs, err := orgSvc.ListOrgs(ctx, &api.ListOrgsRequest{
-			PageSize: 2})
+		listOrgs, err := orgSvc.ListOrgs(ctx, &api.ListOrgsRequest{PageSize: 2})
 		t.Logf("listOrgs, err: %+v, %v", listOrgs, err)
 		require.NoError(t, err)
 		require.Equal(t, int32(3), listOrgs.TotalSize)
 
 		// Testify does not currently support protobuf equality:
 		// https://github.com/stretchr/testify/issues/758
-		if !proto.Equal(&api.ListOrgsResponse{Orgs: orgs[:2],
-			NextPageToken: next, TotalSize: 3}, listOrgs) {
-			t.Fatalf("\nExpect: %+v\nActual: %+v",
-				&api.ListOrgsResponse{Orgs: orgs[:2], NextPageToken: next,
-					TotalSize: 3}, listOrgs)
+		if !proto.Equal(&api.ListOrgsResponse{
+			Orgs: orgs[:2], NextPageToken: next, TotalSize: 3,
+		}, listOrgs) {
+			t.Fatalf("\nExpect: %+v\nActual: %+v", &api.ListOrgsResponse{
+				Orgs: orgs[:2], NextPageToken: next, TotalSize: 3,
+			}, listOrgs)
 		}
 	})
 
@@ -567,8 +586,9 @@ func TestListOrgs(t *testing.T) {
 		orger.EXPECT().Read(gomock.Any(), org.Id).Return(org, nil).Times(1)
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
-			context.Background(), &session.Session{OrgID: org.Id,
-				Role: common.Role_ADMIN}), testTimeout)
+			context.Background(), &session.Session{
+				OrgID: org.Id, Role: common.Role_ADMIN,
+			}), testTimeout)
 		defer cancel()
 
 		orgSvc := NewOrg(orger)
@@ -578,10 +598,12 @@ func TestListOrgs(t *testing.T) {
 
 		// Testify does not currently support protobuf equality:
 		// https://github.com/stretchr/testify/issues/758
-		if !proto.Equal(&api.ListOrgsResponse{Orgs: []*api.Org{org},
-			TotalSize: 1}, listOrgs) {
+		if !proto.Equal(&api.ListOrgsResponse{
+			Orgs: []*api.Org{org}, TotalSize: 1,
+		}, listOrgs) {
 			t.Fatalf("\nExpect: %+v\nActual: %+v", &api.ListOrgsResponse{
-				Orgs: []*api.Org{org}, TotalSize: 1}, listOrgs)
+				Orgs: []*api.Org{org}, TotalSize: 1,
+			}, listOrgs)
 		}
 	})
 
@@ -595,8 +617,9 @@ func TestListOrgs(t *testing.T) {
 			dao.ErrNotFound).Times(1)
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
-			context.Background(), &session.Session{OrgID: org.Id,
-				Role: common.Role_ADMIN}), testTimeout)
+			context.Background(), &session.Session{
+				OrgID: org.Id, Role: common.Role_ADMIN,
+			}), testTimeout)
 		defer cancel()
 
 		orgSvc := NewOrg(orger)
@@ -610,13 +633,14 @@ func TestListOrgs(t *testing.T) {
 		t.Parallel()
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
-			context.Background(), &session.Session{OrgID: uuid.NewString(),
-				Role: common.Role_SYS_ADMIN}), testTimeout)
+			context.Background(), &session.Session{
+				OrgID: uuid.NewString(), Role: common.Role_SYS_ADMIN,
+			}), testTimeout)
 		defer cancel()
 
 		orgSvc := NewOrg(nil)
-		listOrgs, err := orgSvc.ListOrgs(ctx, &api.ListOrgsRequest{
-			PageToken: badUUID})
+		listOrgs, err := orgSvc.ListOrgs(ctx,
+			&api.ListOrgsRequest{PageToken: badUUID})
 		t.Logf("listOrgs, err: %+v, %v", listOrgs, err)
 		require.Nil(t, listOrgs)
 		require.Equal(t, status.Error(codes.InvalidArgument,
@@ -631,8 +655,9 @@ func TestListOrgs(t *testing.T) {
 			gomock.Any()).Return(nil, int32(0), dao.ErrInvalidFormat).Times(1)
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
-			context.Background(), &session.Session{OrgID: "aaa",
-				Role: common.Role_SYS_ADMIN}), testTimeout)
+			context.Background(), &session.Session{
+				OrgID: "aaa", Role: common.Role_SYS_ADMIN,
+			}), testTimeout)
 		defer cancel()
 
 		orgSvc := NewOrg(orger)
@@ -660,13 +685,13 @@ func TestListOrgs(t *testing.T) {
 			Return(orgs, int32(3), nil).Times(1)
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
-			context.Background(), &session.Session{OrgID: orgID,
-				Role: common.Role_SYS_ADMIN}), testTimeout)
+			context.Background(), &session.Session{
+				OrgID: orgID, Role: common.Role_SYS_ADMIN,
+			}), testTimeout)
 		defer cancel()
 
 		orgSvc := NewOrg(orger)
-		listOrgs, err := orgSvc.ListOrgs(ctx, &api.ListOrgsRequest{
-			PageSize: 2})
+		listOrgs, err := orgSvc.ListOrgs(ctx, &api.ListOrgsRequest{PageSize: 2})
 		t.Logf("listOrgs, err: %+v, %v", listOrgs, err)
 		require.NoError(t, err)
 		require.Equal(t, int32(3), listOrgs.TotalSize)
