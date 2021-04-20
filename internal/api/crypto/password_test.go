@@ -41,18 +41,20 @@ func TestHashPass(t *testing.T) {
 	t.Parallel()
 
 	pass := random.String(10)
+	hashChan := make(chan []byte)
 
-	h1, err := HashPass(pass)
-	t.Logf("h1, err: %s, %v", h1, err)
-	require.NoError(t, err)
-	require.Len(t, h1, 60)
+	for i := 0; i < 2; i++ {
+		go func() {
+			h, err := HashPass(pass)
+			t.Logf("h, err: %s, %v", h, err)
+			require.NoError(t, err)
+			require.Len(t, h, 60)
 
-	h2, err := HashPass(pass)
-	t.Logf("h2, err: %s, %v", h2, err)
-	require.NoError(t, err)
-	require.Len(t, h2, 60)
+			hashChan <- h
+		}()
+	}
 
-	require.NotEqual(t, h1, h2)
+	require.NotEqual(t, <-hashChan, <-hashChan)
 }
 
 func TestCompareHashPass(t *testing.T) {
@@ -64,9 +66,19 @@ func TestCompareHashPass(t *testing.T) {
 	t.Logf("hash, err: %s, %v", hash, err)
 	require.NoError(t, err)
 
-	require.NoError(t, CompareHashPass(hash, pass))
-	require.Equal(t, bcrypt.ErrMismatchedHashAndPassword,
-		CompareHashPass(hash, random.String(10)))
+	t.Run("Can compare correct pass", func(t *testing.T) {
+		t.Parallel()
+
+		require.NoError(t, CompareHashPass(hash, pass))
+	})
+
+	t.Run("Can compare incorrect pass", func(t *testing.T) {
+		t.Parallel()
+
+		require.Equal(t, bcrypt.ErrMismatchedHashAndPassword,
+			CompareHashPass(hash, random.String(10)))
+	})
+
 	require.Equal(t, bcrypt.ErrHashTooShort, CompareHashPass([]byte{}, pass))
 	require.Equal(t, bcrypt.ErrHashTooShort, CompareHashPass(nil, pass))
 }
