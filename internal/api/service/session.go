@@ -20,8 +20,6 @@ import (
 	"google.golang.org/protobuf/types/known/emptypb"
 )
 
-const defaultPageSize = 50
-
 // Keyer defines the methods provided by a key.DAO.
 type Keyer interface {
 	Create(ctx context.Context, key *api.Key) (*api.Key, error)
@@ -121,7 +119,7 @@ func (s *Session) CreateKey(ctx context.Context,
 		return nil, errToStatus(err)
 	}
 
-	if err := grpc.SetHeader(ctx, metadata.Pairs("atlas-status-code",
+	if err := grpc.SetHeader(ctx, metadata.Pairs(StatusCodeKey,
 		"201")); err != nil {
 		logger.Errorf("CreateKey grpc.SetHeader: %v", err)
 	}
@@ -150,7 +148,7 @@ func (s *Session) DeleteKey(ctx context.Context,
 		return nil, errToStatus(err)
 	}
 
-	if err := grpc.SetHeader(ctx, metadata.Pairs("atlas-status-code",
+	if err := grpc.SetHeader(ctx, metadata.Pairs(StatusCodeKey,
 		"204")); err != nil {
 		logger.Errorf("DeleteKey grpc.SetHeader: %v", err)
 	}

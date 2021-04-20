@@ -8,8 +8,11 @@ import (
 	"strconv"
 
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
+	"github.com/thingspect/atlas/internal/api/service"
 	"google.golang.org/protobuf/proto"
 )
+
+const grpcStatusCodeKey = "Grpc-Metadata-Atlas-Status-Code"
 
 // statusCode modifies the HTTP response status code based on header.
 func statusCode(ctx context.Context, w http.ResponseWriter,
@@ -19,14 +22,14 @@ func statusCode(ctx context.Context, w http.ResponseWriter,
 		return nil
 	}
 
-	if mdCode := md.HeaderMD["atlas-status-code"]; len(mdCode) > 0 {
+	if mdCode := md.HeaderMD[service.StatusCodeKey]; len(mdCode) > 0 {
 		code, err := strconv.Atoi(mdCode[0])
 		if err != nil {
 			return err
 		}
 
-		delete(md.HeaderMD, "atlas-status-code")
-		delete(w.Header(), "Grpc-Metadata-Atlas-Status-Code")
+		delete(md.HeaderMD, service.StatusCodeKey)
+		delete(w.Header(), grpcStatusCodeKey)
 		w.WriteHeader(code)
 	}
 
