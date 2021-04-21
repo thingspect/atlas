@@ -71,7 +71,7 @@ github.com/google/uuid
 github.com/gorilla/mux
 # github.com/gorilla/websocket v1.4.2
 github.com/gorilla/websocket
-# github.com/gregdel/pushover v0.0.0-20210216095829-2131362cb888
+# github.com/gregdel/pushover v0.0.0-20210420080121-f84e8ffafef5
 ## explicit
 github.com/gregdel/pushover
 # github.com/grpc-ecosystem/grpc-gateway v1.16.0
@@ -187,7 +187,7 @@ go.opentelemetry.io/otel/trace
 golang.org/x/crypto/bcrypt
 golang.org/x/crypto/blowfish
 golang.org/x/crypto/pbkdf2
-# golang.org/x/net v0.0.0-20210415231046-e915ea6b2b7d
+# golang.org/x/net v0.0.0-20210420210106-798c2154c571
 ## explicit
 golang.org/x/net/context
 golang.org/x/net/http/httpguts
@@ -201,7 +201,7 @@ golang.org/x/net/trace
 # golang.org/x/sync v0.0.0-20210220032951-036812b2e83c
 ## explicit
 golang.org/x/sync/errgroup
-# golang.org/x/sys v0.0.0-20210419170143-37df388d1f33
+# golang.org/x/sys v0.0.0-20210420205809-ac73e9fd8988
 ## explicit
 golang.org/x/sys/internal/unsafeheader
 golang.org/x/sys/unix
@@ -219,7 +219,7 @@ golang.org/x/text/transform
 golang.org/x/text/unicode/bidi
 golang.org/x/text/unicode/norm
 golang.org/x/text/width
-# google.golang.org/genproto v0.0.0-20210416161957-9910b6c460de
+# google.golang.org/genproto v0.0.0-20210420162539-3c870d7478d2
 ## explicit
 google.golang.org/genproto/googleapis/api/annotations
 google.golang.org/genproto/googleapis/api/httpbody

@@ -195,7 +195,7 @@ func TestGetUser(t *testing.T) {
 			"not found")
 	})
 
-	t.Run("Get are isolated by org ID", func(t *testing.T) {
+	t.Run("Gets are isolated by org ID", func(t *testing.T) {
 		t.Parallel()
 
 		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
@@ -230,7 +230,7 @@ func TestUpdateUser(t *testing.T) {
 		require.NoError(t, err)
 
 		// Update user fields.
-		createUser.Name = "dao-user-" + random.String(10)
+		createUser.Name = "api-user-" + random.String(10)
 		createUser.Email = "api-user-" + random.Email()
 		createUser.Role = common.Role_ADMIN
 		createUser.Status = common.Status_DISABLED
@@ -279,7 +279,7 @@ func TestUpdateUser(t *testing.T) {
 
 		// Update user fields.
 		part := &api.User{
-			Id: createUser.Id, Name: "dao-user-" + random.String(10),
+			Id: createUser.Id, Name: "api-user-" + random.String(10),
 			Email: "api-user-" + random.Email(), Role: common.Role_ADMIN,
 			Status: common.Status_DISABLED, Tags: random.Tags("api-user", 2),
 		}
