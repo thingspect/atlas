@@ -30,8 +30,8 @@ func TestCreateDevice(t *testing.T) {
 		defer cancel()
 
 		devCli := api.NewDeviceServiceClient(globalAdminGRPCConn)
-		createDev, err := devCli.CreateDevice(ctx, &api.CreateDeviceRequest{
-			Device: dev})
+		createDev, err := devCli.CreateDevice(ctx,
+			&api.CreateDeviceRequest{Device: dev})
 		t.Logf("createDev, err: %+v, %v", createDev, err)
 		require.NoError(t, err)
 		require.NotEqual(t, dev.Id, createDev.Id)
@@ -53,8 +53,8 @@ func TestCreateDevice(t *testing.T) {
 		defer cancel()
 
 		devCli := api.NewDeviceServiceClient(globalAdminKeyGRPCConn)
-		createDev, err := devCli.CreateDevice(ctx, &api.CreateDeviceRequest{
-			Device: dev})
+		createDev, err := devCli.CreateDevice(ctx,
+			&api.CreateDeviceRequest{Device: dev})
 		t.Logf("createDev, err: %+v, %v", createDev, err)
 		require.NoError(t, err)
 		require.NotEqual(t, dev.Id, createDev.Id)
@@ -74,7 +74,8 @@ func TestCreateDevice(t *testing.T) {
 
 		devCli := api.NewDeviceServiceClient(secondaryViewerGRPCConn)
 		createDev, err := devCli.CreateDevice(ctx, &api.CreateDeviceRequest{
-			Device: random.Device("api-device", uuid.NewString())})
+			Device: random.Device("api-device", uuid.NewString()),
+		})
 		t.Logf("createDev, err: %+v, %v", createDev, err)
 		require.Nil(t, createDev)
 		require.EqualError(t, err, "rpc error: code = PermissionDenied desc = "+
@@ -91,8 +92,8 @@ func TestCreateDevice(t *testing.T) {
 		defer cancel()
 
 		devCli := api.NewDeviceServiceClient(globalAdminGRPCConn)
-		createDev, err := devCli.CreateDevice(ctx, &api.CreateDeviceRequest{
-			Device: dev})
+		createDev, err := devCli.CreateDevice(ctx,
+			&api.CreateDeviceRequest{Device: dev})
 		t.Logf("createDev, err: %+v, %v", createDev, err)
 		require.Nil(t, createDev)
 		require.EqualError(t, err, "rpc error: code = InvalidArgument desc = "+
@@ -113,12 +114,14 @@ func TestCreateDeviceLoRaWAN(t *testing.T) {
 
 		devCli := api.NewDeviceServiceClient(globalAdminGRPCConn)
 		createDev, err := devCli.CreateDevice(ctx, &api.CreateDeviceRequest{
-			Device: random.Device("api-device", uuid.NewString())})
+			Device: random.Device("api-device", uuid.NewString()),
+		})
 		t.Logf("createDev, err: %+v, %v", createDev, err)
 		require.NoError(t, err)
 
 		_, err = devCli.CreateDeviceLoRaWAN(ctx,
-			&api.CreateDeviceLoRaWANRequest{Id: createDev.Id,
+			&api.CreateDeviceLoRaWANRequest{
+				Id:        createDev.Id,
 				TypeOneof: &api.CreateDeviceLoRaWANRequest_GatewayLorawanType{},
 			})
 		t.Logf("err: %v", err)
@@ -133,15 +136,20 @@ func TestCreateDeviceLoRaWAN(t *testing.T) {
 
 		devCli := api.NewDeviceServiceClient(globalAdminKeyGRPCConn)
 		createDev, err := devCli.CreateDevice(ctx, &api.CreateDeviceRequest{
-			Device: random.Device("api-device", uuid.NewString())})
+			Device: random.Device("api-device", uuid.NewString()),
+		})
 		t.Logf("createDev, err: %+v, %v", createDev, err)
 		require.NoError(t, err)
 
 		_, err = devCli.CreateDeviceLoRaWAN(ctx,
-			&api.CreateDeviceLoRaWANRequest{Id: createDev.Id,
+			&api.CreateDeviceLoRaWANRequest{
+				Id: createDev.Id,
 				TypeOneof: &api.CreateDeviceLoRaWANRequest_DeviceLorawanType{
 					DeviceLorawanType: &api.CreateDeviceLoRaWANRequest_DeviceLoRaWANType{
-						AppKey: random.String(32)}}})
+						AppKey: random.String(32),
+					},
+				},
+			})
 		t.Logf("err: %v", err)
 		require.NoError(t, err)
 	})
@@ -154,7 +162,8 @@ func TestCreateDeviceLoRaWAN(t *testing.T) {
 
 		devCli := api.NewDeviceServiceClient(secondaryViewerGRPCConn)
 		_, err := devCli.CreateDeviceLoRaWAN(ctx,
-			&api.CreateDeviceLoRaWANRequest{Id: uuid.NewString(),
+			&api.CreateDeviceLoRaWANRequest{
+				Id:        uuid.NewString(),
 				TypeOneof: &api.CreateDeviceLoRaWANRequest_GatewayLorawanType{},
 			})
 		t.Logf("err: %v", err)
@@ -170,7 +179,8 @@ func TestCreateDeviceLoRaWAN(t *testing.T) {
 
 		devCli := api.NewDeviceServiceClient(globalAdminGRPCConn)
 		_, err := devCli.CreateDeviceLoRaWAN(ctx,
-			&api.CreateDeviceLoRaWANRequest{Id: uuid.NewString(),
+			&api.CreateDeviceLoRaWANRequest{
+				Id:        uuid.NewString(),
 				TypeOneof: &api.CreateDeviceLoRaWANRequest_GatewayLorawanType{},
 			})
 		t.Logf("err: %v", err)
@@ -186,13 +196,15 @@ func TestCreateDeviceLoRaWAN(t *testing.T) {
 
 		devCli := api.NewDeviceServiceClient(globalAdminGRPCConn)
 		createDev, err := devCli.CreateDevice(ctx, &api.CreateDeviceRequest{
-			Device: random.Device("api-device", uuid.NewString())})
+			Device: random.Device("api-device", uuid.NewString()),
+		})
 		t.Logf("createDev, err: %+v, %v", createDev, err)
 		require.NoError(t, err)
 
 		secCli := api.NewDeviceServiceClient(secondaryAdminGRPCConn)
 		_, err = secCli.CreateDeviceLoRaWAN(ctx,
-			&api.CreateDeviceLoRaWANRequest{Id: createDev.Id,
+			&api.CreateDeviceLoRaWANRequest{
+				Id:        createDev.Id,
 				TypeOneof: &api.CreateDeviceLoRaWANRequest_GatewayLorawanType{},
 			})
 		t.Logf("err: %v", err)
@@ -209,7 +221,8 @@ func TestGetDevice(t *testing.T) {
 
 	devCli := api.NewDeviceServiceClient(globalAdminGRPCConn)
 	createDev, err := devCli.CreateDevice(ctx, &api.CreateDeviceRequest{
-		Device: random.Device("api-device", uuid.NewString())})
+		Device: random.Device("api-device", uuid.NewString()),
+	})
 	t.Logf("createDev, err: %+v, %v", createDev, err)
 	require.NoError(t, err)
 
@@ -220,8 +233,8 @@ func TestGetDevice(t *testing.T) {
 		defer cancel()
 
 		devCli := api.NewDeviceServiceClient(globalAdminGRPCConn)
-		getDev, err := devCli.GetDevice(ctx, &api.GetDeviceRequest{
-			Id: createDev.Id})
+		getDev, err := devCli.GetDevice(ctx,
+			&api.GetDeviceRequest{Id: createDev.Id})
 		t.Logf("getDev, err: %+v, %v", getDev, err)
 		require.NoError(t, err)
 
@@ -239,23 +252,23 @@ func TestGetDevice(t *testing.T) {
 		defer cancel()
 
 		devCli := api.NewDeviceServiceClient(globalAdminGRPCConn)
-		getDev, err := devCli.GetDevice(ctx, &api.GetDeviceRequest{
-			Id: uuid.NewString()})
+		getDev, err := devCli.GetDevice(ctx,
+			&api.GetDeviceRequest{Id: uuid.NewString()})
 		t.Logf("getDev, err: %+v, %v", getDev, err)
 		require.Nil(t, getDev)
 		require.EqualError(t, err, "rpc error: code = NotFound desc = object "+
 			"not found")
 	})
 
-	t.Run("Get are isolated by org ID", func(t *testing.T) {
+	t.Run("Gets are isolated by org ID", func(t *testing.T) {
 		t.Parallel()
 
 		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
 		defer cancel()
 
 		secCli := api.NewDeviceServiceClient(secondaryAdminGRPCConn)
-		getDev, err := secCli.GetDevice(ctx, &api.GetDeviceRequest{
-			Id: createDev.Id})
+		getDev, err := secCli.GetDevice(ctx,
+			&api.GetDeviceRequest{Id: createDev.Id})
 		t.Logf("getDev, err: %+v, %v", getDev, err)
 		require.Nil(t, getDev)
 		require.EqualError(t, err, "rpc error: code = NotFound desc = object "+
@@ -274,7 +287,8 @@ func TestUpdateDevice(t *testing.T) {
 
 		devCli := api.NewDeviceServiceClient(globalAdminGRPCConn)
 		createDev, err := devCli.CreateDevice(ctx, &api.CreateDeviceRequest{
-			Device: random.Device("api-device", uuid.NewString())})
+			Device: random.Device("api-device", uuid.NewString()),
+		})
 		t.Logf("createDev, err: %+v, %v", createDev, err)
 		require.NoError(t, err)
 
@@ -285,8 +299,8 @@ func TestUpdateDevice(t *testing.T) {
 		createDev.Decoder = common.Decoder_GATEWAY
 		createDev.Tags = random.Tags("api-device", 2)
 
-		updateDev, err := devCli.UpdateDevice(ctx, &api.UpdateDeviceRequest{
-			Device: createDev})
+		updateDev, err := devCli.UpdateDevice(ctx,
+			&api.UpdateDeviceRequest{Device: createDev})
 		t.Logf("updateDev, err: %+v, %v", updateDev, err)
 		require.NoError(t, err)
 		require.Equal(t, createDev.UniqId, updateDev.UniqId)
@@ -299,8 +313,8 @@ func TestUpdateDevice(t *testing.T) {
 		require.WithinDuration(t, createDev.CreatedAt.AsTime(),
 			updateDev.UpdatedAt.AsTime(), 2*time.Second)
 
-		getDev, err := devCli.GetDevice(ctx, &api.GetDeviceRequest{
-			Id: createDev.Id})
+		getDev, err := devCli.GetDevice(ctx,
+			&api.GetDeviceRequest{Id: createDev.Id})
 		t.Logf("getDev, err: %+v, %v", getDev, err)
 		require.NoError(t, err)
 
@@ -319,19 +333,24 @@ func TestUpdateDevice(t *testing.T) {
 
 		devCli := api.NewDeviceServiceClient(globalAdminKeyGRPCConn)
 		createDev, err := devCli.CreateDevice(ctx, &api.CreateDeviceRequest{
-			Device: random.Device("api-device", uuid.NewString())})
+			Device: random.Device("api-device", uuid.NewString()),
+		})
 		t.Logf("createDev, err: %+v, %v", createDev, err)
 		require.NoError(t, err)
 
 		// Update device fields.
-		part := &common.Device{Id: createDev.Id, UniqId: "api-device-" +
-			random.String(16), Name: "api-device-" + random.String(10),
+		part := &common.Device{
+			Id: createDev.Id, UniqId: "api-device-" + random.String(16),
+			Name:   "api-device-" + random.String(10),
 			Status: common.Status_DISABLED, Decoder: common.Decoder_GATEWAY,
-			Tags: random.Tags("api-device", 2)}
+			Tags: random.Tags("api-device", 2),
+		}
 
 		updateDev, err := devCli.UpdateDevice(ctx, &api.UpdateDeviceRequest{
 			Device: part, UpdateMask: &fieldmaskpb.FieldMask{Paths: []string{
-				"uniq_id", "name", "status", "decoder", "tags"}}})
+				"uniq_id", "name", "status", "decoder", "tags",
+			}},
+		})
 		t.Logf("updateDev, err: %+v, %v", updateDev, err)
 		require.NoError(t, err)
 		require.Equal(t, part.UniqId, updateDev.UniqId)
@@ -344,8 +363,8 @@ func TestUpdateDevice(t *testing.T) {
 		require.WithinDuration(t, createDev.CreatedAt.AsTime(),
 			updateDev.UpdatedAt.AsTime(), 2*time.Second)
 
-		getDev, err := devCli.GetDevice(ctx, &api.GetDeviceRequest{
-			Id: createDev.Id})
+		getDev, err := devCli.GetDevice(ctx,
+			&api.GetDeviceRequest{Id: createDev.Id})
 		t.Logf("getDev, err: %+v, %v", getDev, err)
 		require.NoError(t, err)
 
@@ -377,8 +396,8 @@ func TestUpdateDevice(t *testing.T) {
 		defer cancel()
 
 		devCli := api.NewDeviceServiceClient(globalAdminGRPCConn)
-		updateDev, err := devCli.UpdateDevice(ctx, &api.UpdateDeviceRequest{
-			Device: nil})
+		updateDev, err := devCli.UpdateDevice(ctx,
+			&api.UpdateDeviceRequest{Device: nil})
 		t.Logf("updateDev, err: %+v, %v", updateDev, err)
 		require.Nil(t, updateDev)
 		require.EqualError(t, err, "rpc error: code = InvalidArgument desc = "+
@@ -394,7 +413,8 @@ func TestUpdateDevice(t *testing.T) {
 		devCli := api.NewDeviceServiceClient(globalAdminGRPCConn)
 		updateDev, err := devCli.UpdateDevice(ctx, &api.UpdateDeviceRequest{
 			Device:     random.Device("api-device", uuid.NewString()),
-			UpdateMask: &fieldmaskpb.FieldMask{Paths: []string{"aaa"}}})
+			UpdateMask: &fieldmaskpb.FieldMask{Paths: []string{"aaa"}},
+		})
 		t.Logf("updateDev, err: %+v, %v", updateDev, err)
 		require.Nil(t, updateDev)
 		require.EqualError(t, err, "rpc error: code = InvalidArgument desc = "+
@@ -411,7 +431,9 @@ func TestUpdateDevice(t *testing.T) {
 		updateDev, err := devCli.UpdateDevice(ctx, &api.UpdateDeviceRequest{
 			Device: random.Device("api-device", uuid.NewString()),
 			UpdateMask: &fieldmaskpb.FieldMask{
-				Paths: []string{"uniq_id", "token"}}})
+				Paths: []string{"uniq_id", "token"},
+			},
+		})
 		t.Logf("updateDev, err: %+v, %v", updateDev, err)
 		require.Nil(t, updateDev)
 		require.EqualError(t, err, "rpc error: code = NotFound desc = object "+
@@ -426,7 +448,8 @@ func TestUpdateDevice(t *testing.T) {
 
 		devCli := api.NewDeviceServiceClient(globalAdminGRPCConn)
 		updateDev, err := devCli.UpdateDevice(ctx, &api.UpdateDeviceRequest{
-			Device: random.Device("api-device", uuid.NewString())})
+			Device: random.Device("api-device", uuid.NewString()),
+		})
 		t.Logf("updateDev, err: %+v, %v", updateDev, err)
 		require.Nil(t, updateDev)
 		require.EqualError(t, err, "rpc error: code = NotFound desc = object "+
@@ -441,7 +464,8 @@ func TestUpdateDevice(t *testing.T) {
 
 		devCli := api.NewDeviceServiceClient(globalAdminGRPCConn)
 		createDev, err := devCli.CreateDevice(ctx, &api.CreateDeviceRequest{
-			Device: random.Device("api-device", uuid.NewString())})
+			Device: random.Device("api-device", uuid.NewString()),
+		})
 		t.Logf("createDev, err: %+v, %v", createDev, err)
 		require.NoError(t, err)
 
@@ -450,8 +474,8 @@ func TestUpdateDevice(t *testing.T) {
 		createDev.UniqId = "api-device-" + random.String(16)
 
 		secCli := api.NewDeviceServiceClient(secondaryAdminGRPCConn)
-		updateDev, err := secCli.UpdateDevice(ctx, &api.UpdateDeviceRequest{
-			Device: createDev})
+		updateDev, err := secCli.UpdateDevice(ctx,
+			&api.UpdateDeviceRequest{Device: createDev})
 		t.Logf("updateDev, err: %+v, %v", updateDev, err)
 		require.Nil(t, updateDev)
 		require.EqualError(t, err, "rpc error: code = NotFound desc = object "+
@@ -466,15 +490,16 @@ func TestUpdateDevice(t *testing.T) {
 
 		devCli := api.NewDeviceServiceClient(globalAdminGRPCConn)
 		createDev, err := devCli.CreateDevice(ctx, &api.CreateDeviceRequest{
-			Device: random.Device("api-device", uuid.NewString())})
+			Device: random.Device("api-device", uuid.NewString()),
+		})
 		t.Logf("createDev, err: %+v, %v", createDev, err)
 		require.NoError(t, err)
 
 		// Update device fields.
 		createDev.UniqId = "api-device-" + random.String(40)
 
-		updateDev, err := devCli.UpdateDevice(ctx, &api.UpdateDeviceRequest{
-			Device: createDev})
+		updateDev, err := devCli.UpdateDevice(ctx,
+			&api.UpdateDeviceRequest{Device: createDev})
 		t.Logf("updateDev, err: %+v, %v", updateDev, err)
 		require.Nil(t, updateDev)
 		require.EqualError(t, err, "rpc error: code = InvalidArgument desc = "+
@@ -491,15 +516,16 @@ func TestUpdateDevice(t *testing.T) {
 
 		devCli := api.NewDeviceServiceClient(globalAdminGRPCConn)
 		createDev, err := devCli.CreateDevice(ctx, &api.CreateDeviceRequest{
-			Device: random.Device("api-device", uuid.NewString())})
+			Device: random.Device("api-device", uuid.NewString()),
+		})
 		t.Logf("createDev, err: %+v, %v", createDev, err)
 		require.NoError(t, err)
 
 		// Update device fields.
 		createDev.Token = random.String(10)
 
-		updateDev, err := devCli.UpdateDevice(ctx, &api.UpdateDeviceRequest{
-			Device: createDev})
+		updateDev, err := devCli.UpdateDevice(ctx,
+			&api.UpdateDeviceRequest{Device: createDev})
 		t.Logf("updateDev, err: %+v, %v", updateDev, err)
 		require.Nil(t, updateDev)
 		require.EqualError(t, err, "rpc error: code = InvalidArgument desc = "+
@@ -520,12 +546,14 @@ func TestDeleteDeviceLoRaWAN(t *testing.T) {
 
 		devCli := api.NewDeviceServiceClient(globalAdminGRPCConn)
 		createDev, err := devCli.CreateDevice(ctx, &api.CreateDeviceRequest{
-			Device: random.Device("api-device", uuid.NewString())})
+			Device: random.Device("api-device", uuid.NewString()),
+		})
 		t.Logf("createDev, err: %+v, %v", createDev, err)
 		require.NoError(t, err)
 
 		_, err = devCli.CreateDeviceLoRaWAN(ctx,
-			&api.CreateDeviceLoRaWANRequest{Id: createDev.Id,
+			&api.CreateDeviceLoRaWANRequest{
+				Id:        createDev.Id,
 				TypeOneof: &api.CreateDeviceLoRaWANRequest_GatewayLorawanType{},
 			})
 		t.Logf("err: %v", err)
@@ -545,7 +573,8 @@ func TestDeleteDeviceLoRaWAN(t *testing.T) {
 
 		devCli := api.NewDeviceServiceClient(globalAdminGRPCConn)
 		createDev, err := devCli.CreateDevice(ctx, &api.CreateDeviceRequest{
-			Device: random.Device("api-device", uuid.NewString())})
+			Device: random.Device("api-device", uuid.NewString()),
+		})
 		t.Logf("createDev, err: %+v, %v", createDev, err)
 		require.NoError(t, err)
 
@@ -591,7 +620,8 @@ func TestDeleteDeviceLoRaWAN(t *testing.T) {
 
 		devCli := api.NewDeviceServiceClient(globalAdminGRPCConn)
 		createDev, err := devCli.CreateDevice(ctx, &api.CreateDeviceRequest{
-			Device: random.Device("api-device", uuid.NewString())})
+			Device: random.Device("api-device", uuid.NewString()),
+		})
 		t.Logf("createDev, err: %+v, %v", createDev, err)
 		require.NoError(t, err)
 
@@ -615,12 +645,13 @@ func TestDeleteDevice(t *testing.T) {
 
 		devCli := api.NewDeviceServiceClient(globalAdminGRPCConn)
 		createDev, err := devCli.CreateDevice(ctx, &api.CreateDeviceRequest{
-			Device: random.Device("api-device", uuid.NewString())})
+			Device: random.Device("api-device", uuid.NewString()),
+		})
 		t.Logf("createDev, err: %+v, %v", createDev, err)
 		require.NoError(t, err)
 
-		_, err = devCli.DeleteDevice(ctx, &api.DeleteDeviceRequest{
-			Id: createDev.Id})
+		_, err = devCli.DeleteDevice(ctx,
+			&api.DeleteDeviceRequest{Id: createDev.Id})
 		t.Logf("err: %v", err)
 		require.NoError(t, err)
 
@@ -632,8 +663,8 @@ func TestDeleteDevice(t *testing.T) {
 			defer cancel()
 
 			devCli := api.NewDeviceServiceClient(globalAdminKeyGRPCConn)
-			getDev, err := devCli.GetDevice(ctx, &api.GetDeviceRequest{
-				Id: createDev.Id})
+			getDev, err := devCli.GetDevice(ctx,
+				&api.GetDeviceRequest{Id: createDev.Id})
 			t.Logf("getDev, err: %+v, %v", getDev, err)
 			require.Nil(t, getDev)
 			require.EqualError(t, err, "rpc error: code = NotFound desc = "+
@@ -648,8 +679,8 @@ func TestDeleteDevice(t *testing.T) {
 		defer cancel()
 
 		devCli := api.NewDeviceServiceClient(secondaryViewerGRPCConn)
-		_, err := devCli.DeleteDevice(ctx, &api.DeleteDeviceRequest{
-			Id: uuid.NewString()})
+		_, err := devCli.DeleteDevice(ctx,
+			&api.DeleteDeviceRequest{Id: uuid.NewString()})
 		t.Logf("err: %v", err)
 		require.EqualError(t, err, "rpc error: code = PermissionDenied desc = "+
 			"permission denied, BUILDER role required")
@@ -662,8 +693,8 @@ func TestDeleteDevice(t *testing.T) {
 		defer cancel()
 
 		devCli := api.NewDeviceServiceClient(globalAdminGRPCConn)
-		_, err := devCli.DeleteDevice(ctx, &api.DeleteDeviceRequest{
-			Id: uuid.NewString()})
+		_, err := devCli.DeleteDevice(ctx,
+			&api.DeleteDeviceRequest{Id: uuid.NewString()})
 		t.Logf("err: %v", err)
 		require.EqualError(t, err, "rpc error: code = NotFound desc = object "+
 			"not found")
@@ -677,13 +708,14 @@ func TestDeleteDevice(t *testing.T) {
 
 		devCli := api.NewDeviceServiceClient(globalAdminGRPCConn)
 		createDev, err := devCli.CreateDevice(ctx, &api.CreateDeviceRequest{
-			Device: random.Device("api-device", uuid.NewString())})
+			Device: random.Device("api-device", uuid.NewString()),
+		})
 		t.Logf("createDev, err: %+v, %v", createDev, err)
 		require.NoError(t, err)
 
 		secCli := api.NewDeviceServiceClient(secondaryAdminGRPCConn)
-		_, err = secCli.DeleteDevice(ctx, &api.DeleteDeviceRequest{
-			Id: createDev.Id})
+		_, err = secCli.DeleteDevice(ctx,
+			&api.DeleteDeviceRequest{Id: createDev.Id})
 		t.Logf("err: %v", err)
 		require.EqualError(t, err, "rpc error: code = NotFound desc = object "+
 			"not found")
@@ -704,7 +736,8 @@ func TestListDevices(t *testing.T) {
 	for i := 0; i < 3; i++ {
 		devCli := api.NewDeviceServiceClient(globalAdminGRPCConn)
 		createDev, err := devCli.CreateDevice(ctx, &api.CreateDeviceRequest{
-			Device: random.Device("api-device", uuid.NewString())})
+			Device: random.Device("api-device", uuid.NewString()),
+		})
 		t.Logf("createDev, err: %+v, %v", createDev, err)
 		require.NoError(t, err)
 
@@ -748,8 +781,8 @@ func TestListDevices(t *testing.T) {
 		defer cancel()
 
 		devCli := api.NewDeviceServiceClient(globalAdminKeyGRPCConn)
-		listDevs, err := devCli.ListDevices(ctx, &api.ListDevicesRequest{
-			PageSize: 2})
+		listDevs, err := devCli.ListDevices(ctx,
+			&api.ListDevicesRequest{PageSize: 2})
 		t.Logf("listDevs, err: %+v, %v", listDevs, err)
 		require.NoError(t, err)
 		require.Len(t, listDevs.Devices, 2)
@@ -757,7 +790,8 @@ func TestListDevices(t *testing.T) {
 		require.GreaterOrEqual(t, listDevs.TotalSize, int32(3))
 
 		nextDevs, err := devCli.ListDevices(ctx, &api.ListDevicesRequest{
-			PageSize: 2, PageToken: listDevs.NextPageToken})
+			PageSize: 2, PageToken: listDevs.NextPageToken,
+		})
 		t.Logf("nextDevs, err: %+v, %v", nextDevs, err)
 		require.NoError(t, err)
 		require.GreaterOrEqual(t, len(nextDevs.Devices), 1)
@@ -771,8 +805,8 @@ func TestListDevices(t *testing.T) {
 		defer cancel()
 
 		devCli := api.NewDeviceServiceClient(globalAdminGRPCConn)
-		listDevs, err := devCli.ListDevices(ctx, &api.ListDevicesRequest{
-			Tag: devTags[2][0]})
+		listDevs, err := devCli.ListDevices(ctx,
+			&api.ListDevicesRequest{Tag: devTags[2][0]})
 		t.Logf("listDevs, err: %+v, %v", listDevs, err)
 		require.NoError(t, err)
 		require.Len(t, listDevs.Devices, 1)
@@ -808,8 +842,8 @@ func TestListDevices(t *testing.T) {
 		defer cancel()
 
 		devCli := api.NewDeviceServiceClient(globalAdminGRPCConn)
-		listDevs, err := devCli.ListDevices(ctx, &api.ListDevicesRequest{
-			PageToken: badUUID})
+		listDevs, err := devCli.ListDevices(ctx,
+			&api.ListDevicesRequest{PageToken: badUUID})
 		t.Logf("listDevs, err: %+v, %v", listDevs, err)
 		require.Nil(t, listDevs)
 		require.EqualError(t, err, "rpc error: code = InvalidArgument desc = "+

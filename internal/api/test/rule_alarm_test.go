@@ -33,8 +33,8 @@ func TestCreateRule(t *testing.T) {
 		defer cancel()
 
 		raCli := api.NewRuleAlarmServiceClient(globalAdminGRPCConn)
-		createRule, err := raCli.CreateRule(ctx, &api.CreateRuleRequest{
-			Rule: rule})
+		createRule, err := raCli.CreateRule(ctx,
+			&api.CreateRuleRequest{Rule: rule})
 		t.Logf("createRule, err: %+v, %v", createRule, err)
 		require.NoError(t, err)
 		require.NotEqual(t, rule.Id, createRule.Id)
@@ -52,7 +52,8 @@ func TestCreateRule(t *testing.T) {
 
 		raCli := api.NewRuleAlarmServiceClient(secondaryViewerGRPCConn)
 		createRule, err := raCli.CreateRule(ctx, &api.CreateRuleRequest{
-			Rule: random.Rule("api-rule", uuid.NewString())})
+			Rule: random.Rule("api-rule", uuid.NewString()),
+		})
 		t.Logf("createRule, err: %+v, %v", createRule, err)
 		require.Nil(t, createRule)
 		require.EqualError(t, err, "rpc error: code = PermissionDenied desc = "+
@@ -69,8 +70,8 @@ func TestCreateRule(t *testing.T) {
 		defer cancel()
 
 		raCli := api.NewRuleAlarmServiceClient(globalAdminGRPCConn)
-		createRule, err := raCli.CreateRule(ctx, &api.CreateRuleRequest{
-			Rule: rule})
+		createRule, err := raCli.CreateRule(ctx,
+			&api.CreateRuleRequest{Rule: rule})
 		t.Logf("createRule, err: %+v, %v", createRule, err)
 		require.Nil(t, createRule)
 		require.EqualError(t, err, "rpc error: code = InvalidArgument desc = "+
@@ -91,14 +92,15 @@ func TestCreateAlarm(t *testing.T) {
 
 		raCli := api.NewRuleAlarmServiceClient(globalAdminGRPCConn)
 		createRule, err := raCli.CreateRule(ctx, &api.CreateRuleRequest{
-			Rule: random.Rule("api-alarm", uuid.NewString())})
+			Rule: random.Rule("api-alarm", uuid.NewString()),
+		})
 		t.Logf("createRule, err: %+v, %v", createRule, err)
 		require.NoError(t, err)
 
 		alarm := random.Alarm("api-alarm", uuid.NewString(), createRule.Id)
 
-		createAlarm, err := raCli.CreateAlarm(ctx, &api.CreateAlarmRequest{
-			Alarm: alarm})
+		createAlarm, err := raCli.CreateAlarm(ctx,
+			&api.CreateAlarmRequest{Alarm: alarm})
 		t.Logf("createAlarm, err: %+v, %v", createAlarm, err)
 		require.NoError(t, err)
 		require.NotEqual(t, alarm.Id, createAlarm.Id)
@@ -117,7 +119,8 @@ func TestCreateAlarm(t *testing.T) {
 		raCli := api.NewRuleAlarmServiceClient(secondaryViewerGRPCConn)
 		createAlarm, err := raCli.CreateAlarm(ctx, &api.CreateAlarmRequest{
 			Alarm: random.Alarm("api-alarm", uuid.NewString(),
-				uuid.NewString())})
+				uuid.NewString()),
+		})
 		t.Logf("createAlarm, err: %+v, %v", createAlarm, err)
 		require.Nil(t, createAlarm)
 		require.EqualError(t, err, "rpc error: code = PermissionDenied desc = "+
@@ -134,8 +137,8 @@ func TestCreateAlarm(t *testing.T) {
 		defer cancel()
 
 		raCli := api.NewRuleAlarmServiceClient(globalAdminGRPCConn)
-		createAlarm, err := raCli.CreateAlarm(ctx, &api.CreateAlarmRequest{
-			Alarm: alarm})
+		createAlarm, err := raCli.CreateAlarm(ctx,
+			&api.CreateAlarmRequest{Alarm: alarm})
 		t.Logf("createAlarm, err: %+v, %v", createAlarm, err)
 		require.Nil(t, createAlarm)
 		require.EqualError(t, err, "rpc error: code = InvalidArgument desc = "+
@@ -153,8 +156,8 @@ func TestCreateAlarm(t *testing.T) {
 		defer cancel()
 
 		raCli := api.NewRuleAlarmServiceClient(globalAdminGRPCConn)
-		createAlarm, err := raCli.CreateAlarm(ctx, &api.CreateAlarmRequest{
-			Alarm: alarm})
+		createAlarm, err := raCli.CreateAlarm(ctx,
+			&api.CreateAlarmRequest{Alarm: alarm})
 		t.Logf("createAlarm, err: %+v, %v", createAlarm, err)
 		require.Nil(t, createAlarm)
 		require.EqualError(t, err, "rpc error: code = InvalidArgument desc = "+
@@ -170,7 +173,8 @@ func TestGetRule(t *testing.T) {
 
 	raCli := api.NewRuleAlarmServiceClient(globalAdminGRPCConn)
 	createRule, err := raCli.CreateRule(ctx, &api.CreateRuleRequest{
-		Rule: random.Rule("api-rule", uuid.NewString())})
+		Rule: random.Rule("api-rule", uuid.NewString()),
+	})
 	t.Logf("createRule, err: %+v, %v", createRule, err)
 	require.NoError(t, err)
 
@@ -181,8 +185,8 @@ func TestGetRule(t *testing.T) {
 		defer cancel()
 
 		raCli := api.NewRuleAlarmServiceClient(globalAdminGRPCConn)
-		getRule, err := raCli.GetRule(ctx, &api.GetRuleRequest{
-			Id: createRule.Id})
+		getRule, err := raCli.GetRule(ctx,
+			&api.GetRuleRequest{Id: createRule.Id})
 		t.Logf("getRule, err: %+v, %v", getRule, err)
 		require.NoError(t, err)
 
@@ -200,23 +204,23 @@ func TestGetRule(t *testing.T) {
 		defer cancel()
 
 		raCli := api.NewRuleAlarmServiceClient(globalAdminGRPCConn)
-		getRule, err := raCli.GetRule(ctx, &api.GetRuleRequest{
-			Id: uuid.NewString()})
+		getRule, err := raCli.GetRule(ctx,
+			&api.GetRuleRequest{Id: uuid.NewString()})
 		t.Logf("getRule, err: %+v, %v", getRule, err)
 		require.Nil(t, getRule)
 		require.EqualError(t, err, "rpc error: code = NotFound desc = object "+
 			"not found")
 	})
 
-	t.Run("Get are isolated by org ID", func(t *testing.T) {
+	t.Run("Gets are isolated by org ID", func(t *testing.T) {
 		t.Parallel()
 
 		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
 		defer cancel()
 
 		secCli := api.NewRuleAlarmServiceClient(secondaryAdminGRPCConn)
-		getRule, err := secCli.GetRule(ctx, &api.GetRuleRequest{
-			Id: createRule.Id})
+		getRule, err := secCli.GetRule(ctx,
+			&api.GetRuleRequest{Id: createRule.Id})
 		t.Logf("getRule, err: %+v, %v", getRule, err)
 		require.Nil(t, getRule)
 		require.EqualError(t, err, "rpc error: code = NotFound desc = object "+
@@ -232,12 +236,14 @@ func TestGetAlarm(t *testing.T) {
 
 	raCli := api.NewRuleAlarmServiceClient(globalAdminGRPCConn)
 	createRule, err := raCli.CreateRule(ctx, &api.CreateRuleRequest{
-		Rule: random.Rule("api-alarm", uuid.NewString())})
+		Rule: random.Rule("api-alarm", uuid.NewString()),
+	})
 	t.Logf("createRule, err: %+v, %v", createRule, err)
 	require.NoError(t, err)
 
 	createAlarm, err := raCli.CreateAlarm(ctx, &api.CreateAlarmRequest{
-		Alarm: random.Alarm("api-alarm", uuid.NewString(), createRule.Id)})
+		Alarm: random.Alarm("api-alarm", uuid.NewString(), createRule.Id),
+	})
 	t.Logf("createAlarm, err: %+v, %v", createAlarm, err)
 	require.NoError(t, err)
 
@@ -249,7 +255,8 @@ func TestGetAlarm(t *testing.T) {
 
 		raCli := api.NewRuleAlarmServiceClient(globalAdminGRPCConn)
 		getAlarm, err := raCli.GetAlarm(ctx, &api.GetAlarmRequest{
-			Id: createAlarm.Id, RuleId: createRule.Id})
+			Id: createAlarm.Id, RuleId: createRule.Id,
+		})
 		t.Logf("getAlarm, err: %+v, %v", getAlarm, err)
 		require.NoError(t, err)
 
@@ -268,7 +275,8 @@ func TestGetAlarm(t *testing.T) {
 
 		raCli := api.NewRuleAlarmServiceClient(globalAdminGRPCConn)
 		getAlarm, err := raCli.GetAlarm(ctx, &api.GetAlarmRequest{
-			Id: uuid.NewString(), RuleId: createRule.Id})
+			Id: uuid.NewString(), RuleId: createRule.Id,
+		})
 		t.Logf("getAlarm, err: %+v, %v", getAlarm, err)
 		require.Nil(t, getAlarm)
 		require.EqualError(t, err, "rpc error: code = NotFound desc = object "+
@@ -283,14 +291,15 @@ func TestGetAlarm(t *testing.T) {
 
 		raCli := api.NewRuleAlarmServiceClient(globalAdminGRPCConn)
 		getAlarm, err := raCli.GetAlarm(ctx, &api.GetAlarmRequest{
-			Id: createAlarm.Id, RuleId: uuid.NewString()})
+			Id: createAlarm.Id, RuleId: uuid.NewString(),
+		})
 		t.Logf("getAlarm, err: %+v, %v", getAlarm, err)
 		require.Nil(t, getAlarm)
 		require.EqualError(t, err, "rpc error: code = NotFound desc = object "+
 			"not found")
 	})
 
-	t.Run("Get are isolated by org ID", func(t *testing.T) {
+	t.Run("Gets are isolated by org ID", func(t *testing.T) {
 		t.Parallel()
 
 		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
@@ -298,7 +307,8 @@ func TestGetAlarm(t *testing.T) {
 
 		secCli := api.NewRuleAlarmServiceClient(secondaryAdminGRPCConn)
 		getAlarm, err := secCli.GetAlarm(ctx, &api.GetAlarmRequest{
-			Id: createAlarm.Id, RuleId: createRule.Id})
+			Id: createAlarm.Id, RuleId: createRule.Id,
+		})
 		t.Logf("getAlarm, err: %+v, %v", getAlarm, err)
 		require.Nil(t, getAlarm)
 		require.EqualError(t, err, "rpc error: code = NotFound desc = object "+
@@ -317,7 +327,8 @@ func TestUpdateRule(t *testing.T) {
 
 		raCli := api.NewRuleAlarmServiceClient(globalAdminGRPCConn)
 		createRule, err := raCli.CreateRule(ctx, &api.CreateRuleRequest{
-			Rule: random.Rule("api-rule", uuid.NewString())})
+			Rule: random.Rule("api-rule", uuid.NewString()),
+		})
 		t.Logf("createRule, err: %+v, %v", createRule, err)
 		require.NoError(t, err)
 
@@ -325,8 +336,8 @@ func TestUpdateRule(t *testing.T) {
 		createRule.Name = "api-rule-" + random.String(10)
 		createRule.Status = common.Status_DISABLED
 
-		updateRule, err := raCli.UpdateRule(ctx, &api.UpdateRuleRequest{
-			Rule: createRule})
+		updateRule, err := raCli.UpdateRule(ctx,
+			&api.UpdateRuleRequest{Rule: createRule})
 		t.Logf("updateRule, err: %+v, %v", updateRule, err)
 		require.NoError(t, err)
 		require.Equal(t, createRule.CreatedAt.AsTime(),
@@ -336,8 +347,8 @@ func TestUpdateRule(t *testing.T) {
 		require.WithinDuration(t, createRule.CreatedAt.AsTime(),
 			updateRule.UpdatedAt.AsTime(), 2*time.Second)
 
-		getRule, err := raCli.GetRule(ctx, &api.GetRuleRequest{
-			Id: createRule.Id})
+		getRule, err := raCli.GetRule(ctx,
+			&api.GetRuleRequest{Id: createRule.Id})
 		t.Logf("getRule, err: %+v, %v", getRule, err)
 		require.NoError(t, err)
 
@@ -356,7 +367,8 @@ func TestUpdateRule(t *testing.T) {
 
 		raCli := api.NewRuleAlarmServiceClient(globalAdminKeyGRPCConn)
 		createRule, err := raCli.CreateRule(ctx, &api.CreateRuleRequest{
-			Rule: random.Rule("api-rule", uuid.NewString())})
+			Rule: random.Rule("api-rule", uuid.NewString()),
+		})
 		t.Logf("createRule, err: %+v, %v", createRule, err)
 		require.NoError(t, err)
 
@@ -366,7 +378,9 @@ func TestUpdateRule(t *testing.T) {
 
 		updateRule, err := raCli.UpdateRule(ctx, &api.UpdateRuleRequest{
 			Rule: part, UpdateMask: &fieldmaskpb.FieldMask{
-				Paths: []string{"name", "status", "expr"}}})
+				Paths: []string{"name", "status", "expr"},
+			},
+		})
 		t.Logf("updateRule, err: %+v, %v", updateRule, err)
 		require.NoError(t, err)
 		require.Equal(t, createRule.CreatedAt.AsTime(),
@@ -376,8 +390,8 @@ func TestUpdateRule(t *testing.T) {
 		require.WithinDuration(t, createRule.CreatedAt.AsTime(),
 			updateRule.UpdatedAt.AsTime(), 2*time.Second)
 
-		getRule, err := raCli.GetRule(ctx, &api.GetRuleRequest{
-			Id: createRule.Id})
+		getRule, err := raCli.GetRule(ctx,
+			&api.GetRuleRequest{Id: createRule.Id})
 		t.Logf("getRule, err: %+v, %v", getRule, err)
 		require.NoError(t, err)
 
@@ -409,8 +423,8 @@ func TestUpdateRule(t *testing.T) {
 		defer cancel()
 
 		raCli := api.NewRuleAlarmServiceClient(globalAdminGRPCConn)
-		updateRule, err := raCli.UpdateRule(ctx, &api.UpdateRuleRequest{
-			Rule: nil})
+		updateRule, err := raCli.UpdateRule(ctx,
+			&api.UpdateRuleRequest{Rule: nil})
 		t.Logf("updateRule, err: %+v, %v", updateRule, err)
 		require.Nil(t, updateRule)
 		require.EqualError(t, err, "rpc error: code = InvalidArgument desc = "+
@@ -426,7 +440,8 @@ func TestUpdateRule(t *testing.T) {
 		raCli := api.NewRuleAlarmServiceClient(globalAdminGRPCConn)
 		updateRule, err := raCli.UpdateRule(ctx, &api.UpdateRuleRequest{
 			Rule:       random.Rule("api-rule", uuid.NewString()),
-			UpdateMask: &fieldmaskpb.FieldMask{Paths: []string{"aaa"}}})
+			UpdateMask: &fieldmaskpb.FieldMask{Paths: []string{"aaa"}},
+		})
 		t.Logf("updateRule, err: %+v, %v", updateRule, err)
 		require.Nil(t, updateRule)
 		require.EqualError(t, err, "rpc error: code = InvalidArgument desc = "+
@@ -443,7 +458,9 @@ func TestUpdateRule(t *testing.T) {
 		updateRule, err := raCli.UpdateRule(ctx, &api.UpdateRuleRequest{
 			Rule: random.Rule("api-rule", uuid.NewString()),
 			UpdateMask: &fieldmaskpb.FieldMask{
-				Paths: []string{"name", "status", "expr"}}})
+				Paths: []string{"name", "status", "expr"},
+			},
+		})
 		t.Logf("updateRule, err: %+v, %v", updateRule, err)
 		require.Nil(t, updateRule)
 		require.EqualError(t, err, "rpc error: code = NotFound desc = object "+
@@ -458,7 +475,8 @@ func TestUpdateRule(t *testing.T) {
 
 		raCli := api.NewRuleAlarmServiceClient(globalAdminGRPCConn)
 		updateRule, err := raCli.UpdateRule(ctx, &api.UpdateRuleRequest{
-			Rule: random.Rule("api-rule", uuid.NewString())})
+			Rule: random.Rule("api-rule", uuid.NewString()),
+		})
 		t.Logf("updateRule, err: %+v, %v", updateRule, err)
 		require.Nil(t, updateRule)
 		require.EqualError(t, err, "rpc error: code = NotFound desc = object "+
@@ -473,7 +491,8 @@ func TestUpdateRule(t *testing.T) {
 
 		raCli := api.NewRuleAlarmServiceClient(globalAdminGRPCConn)
 		createRule, err := raCli.CreateRule(ctx, &api.CreateRuleRequest{
-			Rule: random.Rule("api-rule", uuid.NewString())})
+			Rule: random.Rule("api-rule", uuid.NewString()),
+		})
 		t.Logf("createRule, err: %+v, %v", createRule, err)
 		require.NoError(t, err)
 
@@ -482,8 +501,8 @@ func TestUpdateRule(t *testing.T) {
 		createRule.Name = "api-rule-" + random.String(10)
 
 		secCli := api.NewRuleAlarmServiceClient(secondaryAdminGRPCConn)
-		updateRule, err := secCli.UpdateRule(ctx, &api.UpdateRuleRequest{
-			Rule: createRule})
+		updateRule, err := secCli.UpdateRule(ctx,
+			&api.UpdateRuleRequest{Rule: createRule})
 		t.Logf("updateRule, err: %+v, %v", updateRule, err)
 		require.Nil(t, updateRule)
 		require.EqualError(t, err, "rpc error: code = NotFound desc = object "+
@@ -498,15 +517,16 @@ func TestUpdateRule(t *testing.T) {
 
 		raCli := api.NewRuleAlarmServiceClient(globalAdminGRPCConn)
 		createRule, err := raCli.CreateRule(ctx, &api.CreateRuleRequest{
-			Rule: random.Rule("api-rule", uuid.NewString())})
+			Rule: random.Rule("api-rule", uuid.NewString()),
+		})
 		t.Logf("createRule, err: %+v, %v", createRule, err)
 		require.NoError(t, err)
 
 		// Update rule fields.
 		createRule.Attr = "api-rule-" + random.String(40)
 
-		updateRule, err := raCli.UpdateRule(ctx, &api.UpdateRuleRequest{
-			Rule: createRule})
+		updateRule, err := raCli.UpdateRule(ctx,
+			&api.UpdateRuleRequest{Rule: createRule})
 		t.Logf("updateRule, err: %+v, %v", updateRule, err)
 		require.Nil(t, updateRule)
 		require.EqualError(t, err, "rpc error: code = InvalidArgument desc = "+
@@ -527,12 +547,14 @@ func TestUpdateAlarm(t *testing.T) {
 
 		raCli := api.NewRuleAlarmServiceClient(globalAdminGRPCConn)
 		createRule, err := raCli.CreateRule(ctx, &api.CreateRuleRequest{
-			Rule: random.Rule("api-alarm", uuid.NewString())})
+			Rule: random.Rule("api-alarm", uuid.NewString()),
+		})
 		t.Logf("createRule, err: %+v, %v", createRule, err)
 		require.NoError(t, err)
 
 		createAlarm, err := raCli.CreateAlarm(ctx, &api.CreateAlarmRequest{
-			Alarm: random.Alarm("api-alarm", uuid.NewString(), createRule.Id)})
+			Alarm: random.Alarm("api-alarm", uuid.NewString(), createRule.Id),
+		})
 		t.Logf("createAlarm, err: %+v, %v", createAlarm, err)
 		require.NoError(t, err)
 
@@ -542,8 +564,8 @@ func TestUpdateAlarm(t *testing.T) {
 		createAlarm.Type = api.AlarmType_SMS
 		createAlarm.UserTags = random.Tags("api-alarm", 2)
 
-		updateAlarm, err := raCli.UpdateAlarm(ctx, &api.UpdateAlarmRequest{
-			Alarm: createAlarm})
+		updateAlarm, err := raCli.UpdateAlarm(ctx,
+			&api.UpdateAlarmRequest{Alarm: createAlarm})
 		t.Logf("updateAlarm, err: %+v, %v", updateAlarm, err)
 		require.NoError(t, err)
 		require.Equal(t, createAlarm.Name, updateAlarm.Name)
@@ -556,7 +578,8 @@ func TestUpdateAlarm(t *testing.T) {
 			updateAlarm.UpdatedAt.AsTime(), 2*time.Second)
 
 		getAlarm, err := raCli.GetAlarm(ctx, &api.GetAlarmRequest{
-			Id: createAlarm.Id, RuleId: createRule.Id})
+			Id: createAlarm.Id, RuleId: createRule.Id,
+		})
 		t.Logf("getAlarm, err: %+v, %v", getAlarm, err)
 		require.NoError(t, err)
 
@@ -575,24 +598,29 @@ func TestUpdateAlarm(t *testing.T) {
 
 		raCli := api.NewRuleAlarmServiceClient(globalAdminKeyGRPCConn)
 		createRule, err := raCli.CreateRule(ctx, &api.CreateRuleRequest{
-			Rule: random.Rule("api-alarm", uuid.NewString())})
+			Rule: random.Rule("api-alarm", uuid.NewString()),
+		})
 		t.Logf("createRule, err: %+v, %v", createRule, err)
 		require.NoError(t, err)
 
 		createAlarm, err := raCli.CreateAlarm(ctx, &api.CreateAlarmRequest{
-			Alarm: random.Alarm("api-alarm", uuid.NewString(), createRule.Id)})
+			Alarm: random.Alarm("api-alarm", uuid.NewString(), createRule.Id),
+		})
 		t.Logf("createAlarm, err: %+v, %v", createAlarm, err)
 		require.NoError(t, err)
 
 		// Update alarm fields.
-		part := &api.Alarm{Id: createAlarm.Id, RuleId: createRule.Id,
-			Name:   "api-alarm-" + random.String(10),
-			Status: common.Status_DISABLED, Type: api.AlarmType_SMS,
-			UserTags: random.Tags("api-alarm", 2)}
+		part := &api.Alarm{
+			Id: createAlarm.Id, RuleId: createRule.Id, Name: "api-alarm-" +
+				random.String(10), Status: common.Status_DISABLED,
+			Type: api.AlarmType_SMS, UserTags: random.Tags("api-alarm", 2),
+		}
 
 		updateAlarm, err := raCli.UpdateAlarm(ctx, &api.UpdateAlarmRequest{
 			Alarm: part, UpdateMask: &fieldmaskpb.FieldMask{
-				Paths: []string{"name", "status", "type", "user_tags"}}})
+				Paths: []string{"name", "status", "type", "user_tags"},
+			},
+		})
 		t.Logf("updateAlarm, err: %+v, %v", updateAlarm, err)
 		require.NoError(t, err)
 		require.Equal(t, part.Name, updateAlarm.Name)
@@ -605,7 +633,8 @@ func TestUpdateAlarm(t *testing.T) {
 			updateAlarm.UpdatedAt.AsTime(), 2*time.Second)
 
 		getAlarm, err := raCli.GetAlarm(ctx, &api.GetAlarmRequest{
-			Id: createAlarm.Id, RuleId: createRule.Id})
+			Id: createAlarm.Id, RuleId: createRule.Id,
+		})
 		t.Logf("getAlarm, err: %+v, %v", getAlarm, err)
 		require.NoError(t, err)
 
@@ -637,8 +666,8 @@ func TestUpdateAlarm(t *testing.T) {
 		defer cancel()
 
 		raCli := api.NewRuleAlarmServiceClient(globalAdminGRPCConn)
-		updateAlarm, err := raCli.UpdateAlarm(ctx, &api.UpdateAlarmRequest{
-			Alarm: nil})
+		updateAlarm, err := raCli.UpdateAlarm(ctx,
+			&api.UpdateAlarmRequest{Alarm: nil})
 		t.Logf("updateAlarm, err: %+v, %v", updateAlarm, err)
 		require.Nil(t, updateAlarm)
 		require.EqualError(t, err, "rpc error: code = InvalidArgument desc = "+
@@ -655,7 +684,9 @@ func TestUpdateAlarm(t *testing.T) {
 		updateAlarm, err := raCli.UpdateAlarm(ctx, &api.UpdateAlarmRequest{
 			Alarm: random.Alarm("api-alarm", uuid.NewString(),
 				uuid.NewString()), UpdateMask: &fieldmaskpb.FieldMask{
-				Paths: []string{"aaa"}}})
+				Paths: []string{"aaa"},
+			},
+		})
 		t.Logf("updateAlarm, err: %+v, %v", updateAlarm, err)
 		require.Nil(t, updateAlarm)
 		require.EqualError(t, err, "rpc error: code = InvalidArgument desc = "+
@@ -670,14 +701,17 @@ func TestUpdateAlarm(t *testing.T) {
 
 		raCli := api.NewRuleAlarmServiceClient(globalAdminGRPCConn)
 		createRule, err := raCli.CreateRule(ctx, &api.CreateRuleRequest{
-			Rule: random.Rule("api-alarm", uuid.NewString())})
+			Rule: random.Rule("api-alarm", uuid.NewString()),
+		})
 		t.Logf("createRule, err: %+v, %v", createRule, err)
 		require.NoError(t, err)
 
 		updateAlarm, err := raCli.UpdateAlarm(ctx, &api.UpdateAlarmRequest{
 			Alarm: random.Alarm("api-alarm", uuid.NewString(),
 				createRule.Id), UpdateMask: &fieldmaskpb.FieldMask{
-				Paths: []string{"name", "status"}}})
+				Paths: []string{"name", "status"},
+			},
+		})
 		t.Logf("updateAlarm, err: %+v, %v", updateAlarm, err)
 		require.Nil(t, updateAlarm)
 		require.EqualError(t, err, "rpc error: code = NotFound desc = object "+
@@ -692,23 +726,28 @@ func TestUpdateAlarm(t *testing.T) {
 
 		raCli := api.NewRuleAlarmServiceClient(globalAdminGRPCConn)
 		createRule, err := raCli.CreateRule(ctx, &api.CreateRuleRequest{
-			Rule: random.Rule("api-alarm", uuid.NewString())})
+			Rule: random.Rule("api-alarm", uuid.NewString()),
+		})
 		t.Logf("createRule, err: %+v, %v", createRule, err)
 		require.NoError(t, err)
 
 		createAlarm, err := raCli.CreateAlarm(ctx, &api.CreateAlarmRequest{
-			Alarm: random.Alarm("api-alarm", uuid.NewString(), createRule.Id)})
+			Alarm: random.Alarm("api-alarm", uuid.NewString(), createRule.Id),
+		})
 		t.Logf("createAlarm, err: %+v, %v", createAlarm, err)
 		require.NoError(t, err)
 
 		// Update alarm fields.
-		part := &api.Alarm{Id: createAlarm.Id, RuleId: uuid.NewString(),
-			Name:   "api-alarm-" + random.String(10),
-			Status: common.Status_DISABLED}
+		part := &api.Alarm{
+			Id: createAlarm.Id, RuleId: uuid.NewString(), Name: "api-alarm-" +
+				random.String(10), Status: common.Status_DISABLED,
+		}
 
 		updateAlarm, err := raCli.UpdateAlarm(ctx, &api.UpdateAlarmRequest{
 			Alarm: part, UpdateMask: &fieldmaskpb.FieldMask{
-				Paths: []string{"name", "status"}}})
+				Paths: []string{"name", "status"},
+			},
+		})
 		t.Logf("updateAlarm, err: %+v, %v", updateAlarm, err)
 		require.Nil(t, updateAlarm)
 		require.EqualError(t, err, "rpc error: code = NotFound desc = object "+
@@ -723,13 +762,14 @@ func TestUpdateAlarm(t *testing.T) {
 
 		raCli := api.NewRuleAlarmServiceClient(globalAdminGRPCConn)
 		createRule, err := raCli.CreateRule(ctx, &api.CreateRuleRequest{
-			Rule: random.Rule("api-alarm", uuid.NewString())})
+			Rule: random.Rule("api-alarm", uuid.NewString()),
+		})
 		t.Logf("createRule, err: %+v, %v", createRule, err)
 		require.NoError(t, err)
 
 		updateAlarm, err := raCli.UpdateAlarm(ctx, &api.UpdateAlarmRequest{
-			Alarm: random.Alarm("api-alarm", uuid.NewString(),
-				createRule.Id)})
+			Alarm: random.Alarm("api-alarm", uuid.NewString(), createRule.Id),
+		})
 		t.Logf("updateAlarm, err: %+v, %v", updateAlarm, err)
 		require.Nil(t, updateAlarm)
 		require.EqualError(t, err, "rpc error: code = NotFound desc = object "+
@@ -744,12 +784,14 @@ func TestUpdateAlarm(t *testing.T) {
 
 		raCli := api.NewRuleAlarmServiceClient(globalAdminGRPCConn)
 		createRule, err := raCli.CreateRule(ctx, &api.CreateRuleRequest{
-			Rule: random.Rule("api-alarm", uuid.NewString())})
+			Rule: random.Rule("api-alarm", uuid.NewString()),
+		})
 		t.Logf("createRule, err: %+v, %v", createRule, err)
 		require.NoError(t, err)
 
 		createAlarm, err := raCli.CreateAlarm(ctx, &api.CreateAlarmRequest{
-			Alarm: random.Alarm("api-alarm", uuid.NewString(), createRule.Id)})
+			Alarm: random.Alarm("api-alarm", uuid.NewString(), createRule.Id),
+		})
 		t.Logf("createAlarm, err: %+v, %v", createAlarm, err)
 		require.NoError(t, err)
 
@@ -758,8 +800,8 @@ func TestUpdateAlarm(t *testing.T) {
 		createAlarm.Name = "api-alarm-" + random.String(10)
 		createAlarm.Status = common.Status_DISABLED
 
-		updateAlarm, err := raCli.UpdateAlarm(ctx, &api.UpdateAlarmRequest{
-			Alarm: createAlarm})
+		updateAlarm, err := raCli.UpdateAlarm(ctx,
+			&api.UpdateAlarmRequest{Alarm: createAlarm})
 		t.Logf("updateAlarm, err: %+v, %v", updateAlarm, err)
 		require.Nil(t, updateAlarm)
 		require.EqualError(t, err, "rpc error: code = NotFound desc = object "+
@@ -774,12 +816,14 @@ func TestUpdateAlarm(t *testing.T) {
 
 		raCli := api.NewRuleAlarmServiceClient(globalAdminGRPCConn)
 		createRule, err := raCli.CreateRule(ctx, &api.CreateRuleRequest{
-			Rule: random.Rule("api-alarm", uuid.NewString())})
+			Rule: random.Rule("api-alarm", uuid.NewString()),
+		})
 		t.Logf("createRule, err: %+v, %v", createRule, err)
 		require.NoError(t, err)
 
 		createAlarm, err := raCli.CreateAlarm(ctx, &api.CreateAlarmRequest{
-			Alarm: random.Alarm("api-alarm", uuid.NewString(), createRule.Id)})
+			Alarm: random.Alarm("api-alarm", uuid.NewString(), createRule.Id),
+		})
 		t.Logf("createAlarm, err: %+v, %v", createAlarm, err)
 		require.NoError(t, err)
 
@@ -788,8 +832,8 @@ func TestUpdateAlarm(t *testing.T) {
 		createAlarm.Name = "api-alarm-" + random.String(10)
 
 		secCli := api.NewRuleAlarmServiceClient(secondaryAdminGRPCConn)
-		updateAlarm, err := secCli.UpdateAlarm(ctx, &api.UpdateAlarmRequest{
-			Alarm: createAlarm})
+		updateAlarm, err := secCli.UpdateAlarm(ctx,
+			&api.UpdateAlarmRequest{Alarm: createAlarm})
 		t.Logf("updateAlarm, err: %+v, %v", updateAlarm, err)
 		require.Nil(t, updateAlarm)
 		require.EqualError(t, err, "rpc error: code = NotFound desc = object "+
@@ -804,20 +848,22 @@ func TestUpdateAlarm(t *testing.T) {
 
 		raCli := api.NewRuleAlarmServiceClient(globalAdminGRPCConn)
 		createRule, err := raCli.CreateRule(ctx, &api.CreateRuleRequest{
-			Rule: random.Rule("api-alarm", uuid.NewString())})
+			Rule: random.Rule("api-alarm", uuid.NewString()),
+		})
 		t.Logf("createRule, err: %+v, %v", createRule, err)
 		require.NoError(t, err)
 
 		createAlarm, err := raCli.CreateAlarm(ctx, &api.CreateAlarmRequest{
-			Alarm: random.Alarm("api-alarm", uuid.NewString(), createRule.Id)})
+			Alarm: random.Alarm("api-alarm", uuid.NewString(), createRule.Id),
+		})
 		t.Logf("createAlarm, err: %+v, %v", createAlarm, err)
 		require.NoError(t, err)
 
 		// Update alarm fields.
 		createAlarm.Name = "api-alarm-" + random.String(80)
 
-		updateAlarm, err := raCli.UpdateAlarm(ctx, &api.UpdateAlarmRequest{
-			Alarm: createAlarm})
+		updateAlarm, err := raCli.UpdateAlarm(ctx,
+			&api.UpdateAlarmRequest{Alarm: createAlarm})
 		t.Logf("updateAlarm, err: %+v, %v", updateAlarm, err)
 		require.Nil(t, updateAlarm)
 		require.EqualError(t, err, "rpc error: code = InvalidArgument desc = "+
@@ -838,12 +884,13 @@ func TestDeleteRule(t *testing.T) {
 
 		raCli := api.NewRuleAlarmServiceClient(globalAdminGRPCConn)
 		createRule, err := raCli.CreateRule(ctx, &api.CreateRuleRequest{
-			Rule: random.Rule("api-rule", uuid.NewString())})
+			Rule: random.Rule("api-rule", uuid.NewString()),
+		})
 		t.Logf("createRule, err: %+v, %v", createRule, err)
 		require.NoError(t, err)
 
-		_, err = raCli.DeleteRule(ctx, &api.DeleteRuleRequest{
-			Id: createRule.Id})
+		_, err = raCli.DeleteRule(ctx,
+			&api.DeleteRuleRequest{Id: createRule.Id})
 		t.Logf("err: %v", err)
 		require.NoError(t, err)
 
@@ -855,8 +902,8 @@ func TestDeleteRule(t *testing.T) {
 			defer cancel()
 
 			raCli := api.NewRuleAlarmServiceClient(globalAdminKeyGRPCConn)
-			getRule, err := raCli.GetRule(ctx, &api.GetRuleRequest{
-				Id: createRule.Id})
+			getRule, err := raCli.GetRule(ctx,
+				&api.GetRuleRequest{Id: createRule.Id})
 			t.Logf("getRule, err: %+v, %v", getRule, err)
 			require.Nil(t, getRule)
 			require.EqualError(t, err, "rpc error: code = NotFound desc = "+
@@ -871,8 +918,8 @@ func TestDeleteRule(t *testing.T) {
 		defer cancel()
 
 		raCli := api.NewRuleAlarmServiceClient(secondaryViewerGRPCConn)
-		_, err := raCli.DeleteRule(ctx, &api.DeleteRuleRequest{
-			Id: uuid.NewString()})
+		_, err := raCli.DeleteRule(ctx,
+			&api.DeleteRuleRequest{Id: uuid.NewString()})
 		t.Logf("err: %v", err)
 		require.EqualError(t, err, "rpc error: code = PermissionDenied desc = "+
 			"permission denied, BUILDER role required")
@@ -885,8 +932,8 @@ func TestDeleteRule(t *testing.T) {
 		defer cancel()
 
 		raCli := api.NewRuleAlarmServiceClient(globalAdminGRPCConn)
-		_, err := raCli.DeleteRule(ctx, &api.DeleteRuleRequest{
-			Id: uuid.NewString()})
+		_, err := raCli.DeleteRule(ctx,
+			&api.DeleteRuleRequest{Id: uuid.NewString()})
 		t.Logf("err: %v", err)
 		require.EqualError(t, err, "rpc error: code = NotFound desc = object "+
 			"not found")
@@ -900,13 +947,14 @@ func TestDeleteRule(t *testing.T) {
 
 		raCli := api.NewRuleAlarmServiceClient(globalAdminGRPCConn)
 		createRule, err := raCli.CreateRule(ctx, &api.CreateRuleRequest{
-			Rule: random.Rule("api-rule", uuid.NewString())})
+			Rule: random.Rule("api-rule", uuid.NewString()),
+		})
 		t.Logf("createRule, err: %+v, %v", createRule, err)
 		require.NoError(t, err)
 
 		secCli := api.NewRuleAlarmServiceClient(secondaryAdminGRPCConn)
-		_, err = secCli.DeleteRule(ctx, &api.DeleteRuleRequest{
-			Id: createRule.Id})
+		_, err = secCli.DeleteRule(ctx,
+			&api.DeleteRuleRequest{Id: createRule.Id})
 		t.Logf("err: %v", err)
 		require.EqualError(t, err, "rpc error: code = NotFound desc = object "+
 			"not found")
@@ -924,17 +972,20 @@ func TestDeleteAlarm(t *testing.T) {
 
 		raCli := api.NewRuleAlarmServiceClient(globalAdminGRPCConn)
 		createRule, err := raCli.CreateRule(ctx, &api.CreateRuleRequest{
-			Rule: random.Rule("api-alarm", uuid.NewString())})
+			Rule: random.Rule("api-alarm", uuid.NewString()),
+		})
 		t.Logf("createRule, err: %+v, %v", createRule, err)
 		require.NoError(t, err)
 
 		createAlarm, err := raCli.CreateAlarm(ctx, &api.CreateAlarmRequest{
-			Alarm: random.Alarm("api-alarm", uuid.NewString(), createRule.Id)})
+			Alarm: random.Alarm("api-alarm", uuid.NewString(), createRule.Id),
+		})
 		t.Logf("createAlarm, err: %+v, %v", createAlarm, err)
 		require.NoError(t, err)
 
 		_, err = raCli.DeleteAlarm(ctx, &api.DeleteAlarmRequest{
-			Id: createAlarm.Id, RuleId: createRule.Id})
+			Id: createAlarm.Id, RuleId: createRule.Id,
+		})
 		t.Logf("err: %v", err)
 		require.NoError(t, err)
 
@@ -947,7 +998,8 @@ func TestDeleteAlarm(t *testing.T) {
 
 			raCli := api.NewRuleAlarmServiceClient(globalAdminKeyGRPCConn)
 			getAlarm, err := raCli.GetAlarm(ctx, &api.GetAlarmRequest{
-				Id: createAlarm.Id, RuleId: createRule.Id})
+				Id: createAlarm.Id, RuleId: createRule.Id,
+			})
 			t.Logf("getAlarm, err: %+v, %v", getAlarm, err)
 			require.Nil(t, getAlarm)
 			require.EqualError(t, err, "rpc error: code = NotFound desc = "+
@@ -963,7 +1015,8 @@ func TestDeleteAlarm(t *testing.T) {
 
 		raCli := api.NewRuleAlarmServiceClient(secondaryViewerGRPCConn)
 		_, err := raCli.DeleteAlarm(ctx, &api.DeleteAlarmRequest{
-			Id: uuid.NewString(), RuleId: uuid.NewString()})
+			Id: uuid.NewString(), RuleId: uuid.NewString(),
+		})
 		t.Logf("err: %v", err)
 		require.EqualError(t, err, "rpc error: code = PermissionDenied desc = "+
 			"permission denied, BUILDER role required")
@@ -977,7 +1030,8 @@ func TestDeleteAlarm(t *testing.T) {
 
 		raCli := api.NewRuleAlarmServiceClient(globalAdminGRPCConn)
 		_, err := raCli.DeleteAlarm(ctx, &api.DeleteAlarmRequest{
-			Id: uuid.NewString(), RuleId: uuid.NewString()})
+			Id: uuid.NewString(), RuleId: uuid.NewString(),
+		})
 		t.Logf("err: %v", err)
 		require.EqualError(t, err, "rpc error: code = NotFound desc = object "+
 			"not found")
@@ -991,17 +1045,20 @@ func TestDeleteAlarm(t *testing.T) {
 
 		raCli := api.NewRuleAlarmServiceClient(globalAdminGRPCConn)
 		createRule, err := raCli.CreateRule(ctx, &api.CreateRuleRequest{
-			Rule: random.Rule("api-alarm", uuid.NewString())})
+			Rule: random.Rule("api-alarm", uuid.NewString()),
+		})
 		t.Logf("createRule, err: %+v, %v", createRule, err)
 		require.NoError(t, err)
 
 		createAlarm, err := raCli.CreateAlarm(ctx, &api.CreateAlarmRequest{
-			Alarm: random.Alarm("api-alarm", uuid.NewString(), createRule.Id)})
+			Alarm: random.Alarm("api-alarm", uuid.NewString(), createRule.Id),
+		})
 		t.Logf("createAlarm, err: %+v, %v", createAlarm, err)
 		require.NoError(t, err)
 
 		_, err = raCli.DeleteAlarm(ctx, &api.DeleteAlarmRequest{
-			Id: createAlarm.Id, RuleId: uuid.NewString()})
+			Id: createAlarm.Id, RuleId: uuid.NewString(),
+		})
 		t.Logf("err: %v", err)
 		require.EqualError(t, err, "rpc error: code = NotFound desc = object "+
 			"not found")
@@ -1015,18 +1072,21 @@ func TestDeleteAlarm(t *testing.T) {
 
 		raCli := api.NewRuleAlarmServiceClient(globalAdminGRPCConn)
 		createRule, err := raCli.CreateRule(ctx, &api.CreateRuleRequest{
-			Rule: random.Rule("api-alarm", uuid.NewString())})
+			Rule: random.Rule("api-alarm", uuid.NewString()),
+		})
 		t.Logf("createRule, err: %+v, %v", createRule, err)
 		require.NoError(t, err)
 
 		createAlarm, err := raCli.CreateAlarm(ctx, &api.CreateAlarmRequest{
-			Alarm: random.Alarm("api-alarm", uuid.NewString(), createRule.Id)})
+			Alarm: random.Alarm("api-alarm", uuid.NewString(), createRule.Id),
+		})
 		t.Logf("createAlarm, err: %+v, %v", createAlarm, err)
 		require.NoError(t, err)
 
 		secCli := api.NewRuleAlarmServiceClient(secondaryAdminGRPCConn)
 		_, err = secCli.DeleteAlarm(ctx, &api.DeleteAlarmRequest{
-			Id: createAlarm.Id, RuleId: createRule.Id})
+			Id: createAlarm.Id, RuleId: createRule.Id,
+		})
 		t.Logf("err: %v", err)
 		require.EqualError(t, err, "rpc error: code = NotFound desc = object "+
 			"not found")
@@ -1045,7 +1105,8 @@ func TestListRules(t *testing.T) {
 	for i := 0; i < 3; i++ {
 		raCli := api.NewRuleAlarmServiceClient(globalAdminGRPCConn)
 		createRule, err := raCli.CreateRule(ctx, &api.CreateRuleRequest{
-			Rule: random.Rule("api-rule", uuid.NewString())})
+			Rule: random.Rule("api-rule", uuid.NewString()),
+		})
 		t.Logf("createRule, err: %+v, %v", createRule, err)
 		require.NoError(t, err)
 
@@ -1085,8 +1146,8 @@ func TestListRules(t *testing.T) {
 		defer cancel()
 
 		raCli := api.NewRuleAlarmServiceClient(globalAdminKeyGRPCConn)
-		listRules, err := raCli.ListRules(ctx, &api.ListRulesRequest{
-			PageSize: 2})
+		listRules, err := raCli.ListRules(ctx,
+			&api.ListRulesRequest{PageSize: 2})
 		t.Logf("listRules, err: %+v, %v", listRules, err)
 		require.NoError(t, err)
 		require.Len(t, listRules.Rules, 2)
@@ -1094,7 +1155,8 @@ func TestListRules(t *testing.T) {
 		require.GreaterOrEqual(t, listRules.TotalSize, int32(3))
 
 		nextRules, err := raCli.ListRules(ctx, &api.ListRulesRequest{
-			PageSize: 2, PageToken: listRules.NextPageToken})
+			PageSize: 2, PageToken: listRules.NextPageToken,
+		})
 		t.Logf("nextRules, err: %+v, %v", nextRules, err)
 		require.NoError(t, err)
 		require.GreaterOrEqual(t, len(nextRules.Rules), 1)
@@ -1122,8 +1184,8 @@ func TestListRules(t *testing.T) {
 		defer cancel()
 
 		raCli := api.NewRuleAlarmServiceClient(globalAdminGRPCConn)
-		listRules, err := raCli.ListRules(ctx, &api.ListRulesRequest{
-			PageToken: badUUID})
+		listRules, err := raCli.ListRules(ctx,
+			&api.ListRulesRequest{PageToken: badUUID})
 		t.Logf("listRules, err: %+v, %v", listRules, err)
 		require.Nil(t, listRules)
 		require.EqualError(t, err, "rpc error: code = InvalidArgument desc = "+
@@ -1139,7 +1201,8 @@ func TestListAlarms(t *testing.T) {
 
 	raCli := api.NewRuleAlarmServiceClient(globalAdminGRPCConn)
 	createRule, err := raCli.CreateRule(ctx, &api.CreateRuleRequest{
-		Rule: random.Rule("api-alarm", uuid.NewString())})
+		Rule: random.Rule("api-alarm", uuid.NewString()),
+	})
 	t.Logf("createRule, err: %+v, %v", createRule, err)
 	require.NoError(t, err)
 
@@ -1148,7 +1211,8 @@ func TestListAlarms(t *testing.T) {
 	alarmStatuses := []common.Status{}
 	for i := 0; i < 3; i++ {
 		createAlarm, err := raCli.CreateAlarm(ctx, &api.CreateAlarmRequest{
-			Alarm: random.Alarm("api-alarm", uuid.NewString(), createRule.Id)})
+			Alarm: random.Alarm("api-alarm", uuid.NewString(), createRule.Id),
+		})
 		t.Logf("createAlarm, err: %+v, %v", createAlarm, err)
 		require.NoError(t, err)
 
@@ -1188,8 +1252,8 @@ func TestListAlarms(t *testing.T) {
 		defer cancel()
 
 		raCli := api.NewRuleAlarmServiceClient(globalAdminGRPCConn)
-		listAlarms, err := raCli.ListAlarms(ctx, &api.ListAlarmsRequest{
-			PageSize: 2})
+		listAlarms, err := raCli.ListAlarms(ctx,
+			&api.ListAlarmsRequest{PageSize: 2})
 		t.Logf("listAlarms, err: %+v, %v", listAlarms, err)
 		require.NoError(t, err)
 		require.Len(t, listAlarms.Alarms, 2)
@@ -1197,7 +1261,8 @@ func TestListAlarms(t *testing.T) {
 		require.GreaterOrEqual(t, listAlarms.TotalSize, int32(3))
 
 		nextAlarms, err := raCli.ListAlarms(ctx, &api.ListAlarmsRequest{
-			PageSize: 2, PageToken: listAlarms.NextPageToken})
+			PageSize: 2, PageToken: listAlarms.NextPageToken,
+		})
 		t.Logf("nextAlarms, err: %+v, %v", nextAlarms, err)
 		require.NoError(t, err)
 		require.GreaterOrEqual(t, len(nextAlarms.Alarms), 1)
@@ -1211,8 +1276,8 @@ func TestListAlarms(t *testing.T) {
 		defer cancel()
 
 		raCli := api.NewRuleAlarmServiceClient(globalAdminGRPCConn)
-		listAlarms, err := raCli.ListAlarms(ctx, &api.ListAlarmsRequest{
-			RuleId: createRule.Id})
+		listAlarms, err := raCli.ListAlarms(ctx,
+			&api.ListAlarmsRequest{RuleId: createRule.Id})
 		t.Logf("listAlarms, err: %+v, %v", listAlarms, err)
 		require.NoError(t, err)
 		require.GreaterOrEqual(t, len(listAlarms.Alarms), 3)
@@ -1250,8 +1315,8 @@ func TestListAlarms(t *testing.T) {
 		defer cancel()
 
 		raCli := api.NewRuleAlarmServiceClient(globalAdminGRPCConn)
-		listAlarms, err := raCli.ListAlarms(ctx, &api.ListAlarmsRequest{
-			PageToken: badUUID})
+		listAlarms, err := raCli.ListAlarms(ctx,
+			&api.ListAlarmsRequest{PageToken: badUUID})
 		t.Logf("listAlarms, err: %+v, %v", listAlarms, err)
 		require.Nil(t, listAlarms)
 		require.EqualError(t, err, "rpc error: code = InvalidArgument desc = "+
@@ -1271,29 +1336,62 @@ func TestTestRule(t *testing.T) {
 			res         bool
 			err         string
 		}{
-			{&common.DataPoint{ValOneof: &common.DataPoint_IntVal{IntVal: 40}},
-				`true`, true, ""},
-			{&common.DataPoint{ValOneof: &common.DataPoint_IntVal{IntVal: 40}},
-				`10 > 15`, false, ""},
-			{&common.DataPoint{ValOneof: &common.DataPoint_IntVal{IntVal: 40}},
-				`point.Token == ""`, true, ""},
-			{&common.DataPoint{ValOneof: &common.DataPoint_IntVal{IntVal: 40},
-				Ts: timestamppb.New(time.Now().Add(-time.Second))},
-				`pointTS < currTS`, true, ""},
-			{&common.DataPoint{ValOneof: &common.DataPoint_IntVal{IntVal: 40}},
-				`point.GetIntVal() == 40`, true, ""},
-			{&common.DataPoint{ValOneof: &common.DataPoint_IntVal{IntVal: 40}},
-				`pointVal > 32`, true, ""},
-			{&common.DataPoint{ValOneof: &common.DataPoint_Fl64Val{
-				Fl64Val: 37.7}}, `pointVal < 32`, false, ""},
-			{&common.DataPoint{ValOneof: &common.DataPoint_StrVal{
-				StrVal: "batt"}}, `pointVal == line`, false, ""},
-			{&common.DataPoint{ValOneof: &common.DataPoint_BoolVal{
-				BoolVal: true}}, `pointVal`, true, ""},
-			{&common.DataPoint{ValOneof: &common.DataPoint_IntVal{IntVal: 40}},
-				`1 + "aaa"`, false, "invalid operation: int + string"},
-			{&common.DataPoint{ValOneof: &common.DataPoint_IntVal{IntVal: 40}},
-				`"aaa"`, false, rule.ErrNotBool.Error()},
+			{
+				&common.DataPoint{ValOneof: &common.DataPoint_IntVal{
+					IntVal: 40,
+				}}, `true`, true, "",
+			},
+			{
+				&common.DataPoint{ValOneof: &common.DataPoint_IntVal{
+					IntVal: 40,
+				}}, `10 > 15`, false, "",
+			},
+			{
+				&common.DataPoint{ValOneof: &common.DataPoint_IntVal{
+					IntVal: 40,
+				}}, `point.Token == ""`, true, "",
+			},
+			{
+				&common.DataPoint{ValOneof: &common.DataPoint_IntVal{
+					IntVal: 40,
+				}, Ts: timestamppb.New(time.Now().Add(-time.Second))},
+				`pointTS < currTS`, true, "",
+			},
+			{
+				&common.DataPoint{ValOneof: &common.DataPoint_IntVal{
+					IntVal: 40,
+				}}, `point.GetIntVal() == 40`, true, "",
+			},
+			{
+				&common.DataPoint{ValOneof: &common.DataPoint_IntVal{
+					IntVal: 40,
+				}}, `pointVal > 32`, true, "",
+			},
+			{
+				&common.DataPoint{ValOneof: &common.DataPoint_Fl64Val{
+					Fl64Val: 37.7,
+				}}, `pointVal < 32`, false, "",
+			},
+			{
+				&common.DataPoint{ValOneof: &common.DataPoint_StrVal{
+					StrVal: "batt",
+				}}, `pointVal == line`, false, "",
+			},
+			{
+				&common.DataPoint{ValOneof: &common.DataPoint_BoolVal{
+					BoolVal: true,
+				}}, `pointVal`, true, "",
+			},
+			{
+				&common.DataPoint{ValOneof: &common.DataPoint_IntVal{
+					IntVal: 40,
+				}}, `1 + "aaa"`, false, "invalid operation: int + string",
+			},
+			{
+				&common.DataPoint{ValOneof: &common.DataPoint_IntVal{
+					IntVal: 40,
+				}}, `"aaa"`, false, rule.ErrNotBool.Error(),
+			},
 		}
 
 		for _, test := range tests {
@@ -1315,7 +1413,8 @@ func TestTestRule(t *testing.T) {
 
 				raCli := api.NewRuleAlarmServiceClient(globalAdminGRPCConn)
 				testRes, err := raCli.TestRule(ctx, &api.TestRuleRequest{
-					Point: lTest.inpPoint, Rule: rule})
+					Point: lTest.inpPoint, Rule: rule,
+				})
 				t.Logf("testRes, err: %+v, %v", testRes, err)
 				if lTest.err == "" {
 					require.Equal(t, lTest.res, testRes.Result)
@@ -1332,17 +1431,19 @@ func TestTestRule(t *testing.T) {
 	t.Run("Test rule with insufficient role", func(t *testing.T) {
 		t.Parallel()
 
-		point := &common.DataPoint{UniqId: "api-rule-" + random.String(16),
-			Attr:     "api-rule" + random.String(10),
-			ValOneof: &common.DataPoint_IntVal{IntVal: 123}}
+		point := &common.DataPoint{
+			UniqId: "api-rule-" + random.String(16), Attr: "api-rule" +
+				random.String(10),
+			ValOneof: &common.DataPoint_IntVal{IntVal: 123},
+		}
 		rule := random.Rule("api-rule", uuid.NewString())
 
 		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
 		defer cancel()
 
 		raCli := api.NewRuleAlarmServiceClient(secondaryViewerGRPCConn)
-		testRes, err := raCli.TestRule(ctx, &api.TestRuleRequest{Point: point,
-			Rule: rule})
+		testRes, err := raCli.TestRule(ctx,
+			&api.TestRuleRequest{Point: point, Rule: rule})
 		t.Logf("testRes, err: %+v, %v", testRes, err)
 		require.Nil(t, testRes)
 		require.EqualError(t, err, "rpc error: code = PermissionDenied desc = "+
@@ -1352,17 +1453,19 @@ func TestTestRule(t *testing.T) {
 	t.Run("Test invalid rule attribute", func(t *testing.T) {
 		t.Parallel()
 
-		point := &common.DataPoint{UniqId: "api-rule-" + random.String(16),
-			Attr:     "api-rule" + random.String(10),
-			ValOneof: &common.DataPoint_IntVal{IntVal: 123}}
+		point := &common.DataPoint{
+			UniqId: "api-rule-" + random.String(16), Attr: "api-rule" +
+				random.String(10),
+			ValOneof: &common.DataPoint_IntVal{IntVal: 123},
+		}
 		rule := random.Rule("api-rule", uuid.NewString())
 
 		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
 		defer cancel()
 
 		raCli := api.NewRuleAlarmServiceClient(globalAdminGRPCConn)
-		testRes, err := raCli.TestRule(ctx, &api.TestRuleRequest{
-			Point: point, Rule: rule})
+		testRes, err := raCli.TestRule(ctx,
+			&api.TestRuleRequest{Point: point, Rule: rule})
 		t.Logf("testRes, err: %+v, %v", testRes, err)
 		require.Nil(t, testRes)
 		require.EqualError(t, err, "rpc error: code = InvalidArgument desc = "+
@@ -1390,30 +1493,53 @@ func TestTestAlarm(t *testing.T) {
 			res      string
 			err      string
 		}{
-			{&common.DataPoint{ValOneof: &common.DataPoint_IntVal{IntVal: 40}},
-				nil, nil, `test`, "test", ""},
-			{&common.DataPoint{ValOneof: &common.DataPoint_IntVal{IntVal: 40}},
-				rule, nil, `point value is an integer: {{.pointVal}}, rule ` +
-					`name is: {{.rule.Name}}`, "point value is an integer: " +
-					"40, rule name is: test rule", ""},
-			{&common.DataPoint{ValOneof: &common.DataPoint_Fl64Val{
-				Fl64Val: 37.7}}, nil, dev, `point value is a float: ` +
-				`{{.pointVal}}, device status is: {{.device.Status}}`,
-				"point value is a float: 37.7, device status is: ACTIVE", ""},
-			{&common.DataPoint{ValOneof: &common.DataPoint_StrVal{
-				StrVal: "batt"}}, nil, nil, `point value is a string: ` +
-				`{{.pointVal}}`, "point value is a string: batt", ""},
-			{&common.DataPoint{ValOneof: &common.DataPoint_BoolVal{
-				BoolVal: true}}, nil, nil, `point value is a bool: ` +
-				`{{.pointVal}}`, "point value is a bool: true", ""},
-			{&common.DataPoint{ValOneof: &common.DataPoint_BytesVal{
-				BytesVal: []byte{0x00, 0x01}}}, nil, nil, `point value is a ` +
-				`byte slice: {{.pointVal}}`, "point value is a byte slice: " +
-				"[0 1]", ""},
-			{&common.DataPoint{ValOneof: &common.DataPoint_IntVal{IntVal: 40}},
-				nil, nil, `{{if`, "", "unclosed action"},
-			{&common.DataPoint{ValOneof: &common.DataPoint_IntVal{IntVal: 40}},
-				nil, nil, `{{template "aaa"}}`, "", "no such template"},
+			{
+				&common.DataPoint{ValOneof: &common.DataPoint_IntVal{
+					IntVal: 40,
+				}}, nil, nil, `test`, "test", "",
+			},
+			{
+				&common.DataPoint{ValOneof: &common.DataPoint_IntVal{
+					IntVal: 40,
+				}}, rule, nil, `point value is an integer: {{.pointVal}}, ` +
+					`rule name is: {{.rule.Name}}`, "point value is an " +
+					"integer: 40, rule name is: test rule", "",
+			},
+			{
+				&common.DataPoint{ValOneof: &common.DataPoint_Fl64Val{
+					Fl64Val: 37.7,
+				}}, nil, dev, `point value is a float: {{.pointVal}}, device ` +
+					`status is: {{.device.Status}}`, "point value is a " +
+					"float: 37.7, device status is: ACTIVE", "",
+			},
+			{
+				&common.DataPoint{ValOneof: &common.DataPoint_StrVal{
+					StrVal: "batt",
+				}}, nil, nil, `point value is a string: {{.pointVal}}`,
+				"point value is a string: batt", "",
+			},
+			{
+				&common.DataPoint{ValOneof: &common.DataPoint_BoolVal{
+					BoolVal: true,
+				}}, nil, nil, `point value is a bool: {{.pointVal}}`,
+				"point value is a bool: true", "",
+			},
+			{
+				&common.DataPoint{ValOneof: &common.DataPoint_BytesVal{
+					BytesVal: []byte{0x00, 0x01},
+				}}, nil, nil, `point value is a byte slice: {{.pointVal}}`,
+				"point value is a byte slice: [0 1]", "",
+			},
+			{
+				&common.DataPoint{ValOneof: &common.DataPoint_IntVal{
+					IntVal: 40,
+				}}, nil, nil, `{{if`, "", "unclosed action",
+			},
+			{
+				&common.DataPoint{ValOneof: &common.DataPoint_IntVal{
+					IntVal: 40,
+				}}, nil, nil, `{{template "aaa"}}`, "", "no such template",
+			},
 		}
 
 		for _, test := range tests {
@@ -1445,7 +1571,8 @@ func TestTestAlarm(t *testing.T) {
 				raCli := api.NewRuleAlarmServiceClient(globalAdminGRPCConn)
 				testRes, err := raCli.TestAlarm(ctx, &api.TestAlarmRequest{
 					Point: lTest.inpPoint, Rule: lTest.inpRule,
-					Device: lTest.inpDev, Alarm: alarm})
+					Device: lTest.inpDev, Alarm: alarm,
+				})
 				t.Logf("testRes, err: %+v, %v", testRes, err)
 				if lTest.err == "" {
 					require.Equal(t, lTest.res+" - "+lTest.res, testRes.Result)
@@ -1462,9 +1589,11 @@ func TestTestAlarm(t *testing.T) {
 	t.Run("Test alarm with insufficient role", func(t *testing.T) {
 		t.Parallel()
 
-		point := &common.DataPoint{UniqId: "api-alarm-" + random.String(16),
-			Attr:     "api-alarm" + random.String(10),
-			ValOneof: &common.DataPoint_IntVal{IntVal: 123}}
+		point := &common.DataPoint{
+			UniqId: "api-alarm-" + random.String(16), Attr: "api-alarm" +
+				random.String(10),
+			ValOneof: &common.DataPoint_IntVal{IntVal: 123},
+		}
 		rule := random.Rule("api-alarm", uuid.NewString())
 		dev := random.Device("api-alarm", uuid.NewString())
 		alarm := random.Alarm("api-alarm", uuid.NewString(), uuid.NewString())
@@ -1474,7 +1603,8 @@ func TestTestAlarm(t *testing.T) {
 
 		raCli := api.NewRuleAlarmServiceClient(secondaryViewerGRPCConn)
 		testRes, err := raCli.TestAlarm(ctx, &api.TestAlarmRequest{
-			Point: point, Rule: rule, Device: dev, Alarm: alarm})
+			Point: point, Rule: rule, Device: dev, Alarm: alarm,
+		})
 		t.Logf("testRes, err: %+v, %v", testRes, err)
 		require.Nil(t, testRes)
 		require.EqualError(t, err, "rpc error: code = PermissionDenied desc = "+
@@ -1484,9 +1614,11 @@ func TestTestAlarm(t *testing.T) {
 	t.Run("Test alarm with invalid body template", func(t *testing.T) {
 		t.Parallel()
 
-		point := &common.DataPoint{UniqId: "api-alarm-" + random.String(16),
-			Attr:     "api-alarm" + random.String(10),
-			ValOneof: &common.DataPoint_IntVal{IntVal: 123}}
+		point := &common.DataPoint{
+			UniqId: "api-alarm-" + random.String(16), Attr: "api-alarm" +
+				random.String(10),
+			ValOneof: &common.DataPoint_IntVal{IntVal: 123},
+		}
 		rule := random.Rule("api-alarm", uuid.NewString())
 		dev := random.Device("api-alarm", uuid.NewString())
 		alarm := random.Alarm("api-alarm", uuid.NewString(), uuid.NewString())
@@ -1497,7 +1629,8 @@ func TestTestAlarm(t *testing.T) {
 
 		raCli := api.NewRuleAlarmServiceClient(globalAdminGRPCConn)
 		testRes, err := raCli.TestAlarm(ctx, &api.TestAlarmRequest{
-			Point: point, Rule: rule, Device: dev, Alarm: alarm})
+			Point: point, Rule: rule, Device: dev, Alarm: alarm,
+		})
 		t.Logf("testRes, err: %+v, %v", testRes, err)
 		require.Nil(t, testRes)
 		require.EqualError(t, err, "rpc error: code = InvalidArgument desc = "+

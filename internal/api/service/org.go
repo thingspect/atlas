@@ -29,7 +29,7 @@ type Orger interface {
 		limit int32) ([]*api.Org, int32, error)
 }
 
-// Org service contains functions to query and modify orgs.
+// Org service contains functions to query and modify organizations.
 type Org struct {
 	api.UnimplementedOrgServiceServer
 
@@ -153,7 +153,7 @@ func (o *Org) DeleteOrg(ctx context.Context,
 	return &emptypb.Empty{}, nil
 }
 
-// ListOrgs retrieves all orgs.
+// ListOrgs retrieves all organizations.
 func (o *Org) ListOrgs(ctx context.Context,
 	req *api.ListOrgsRequest) (*api.ListOrgsResponse, error) {
 	logger := alog.FromContext(ctx)
