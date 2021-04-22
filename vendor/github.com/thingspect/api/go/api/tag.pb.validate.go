@@ -15,7 +15,7 @@ import (
 	"time"
 	"unicode/utf8"
 
-	"github.com/golang/protobuf/ptypes"
+	"google.golang.org/protobuf/types/known/anypb"
 )
 
 // ensure the imports are used
@@ -30,19 +30,44 @@ var (
 	_ = time.Duration(0)
 	_ = (*url.URL)(nil)
 	_ = (*mail.Address)(nil)
-	_ = ptypes.DynamicAny{}
+	_ = anypb.Any{}
 )
 
 // Validate checks the field values on ListTagsRequest with the rules defined
 // in the proto definition for this message. If any rules are violated, an
-// error is returned.
-func (m *ListTagsRequest) Validate() error {
+// error is returned. When asked to return all errors, validation continues
+// after first violation, and the result is a list of violation errors wrapped
+// in ListTagsRequestMultiError, or nil if none found. Otherwise, only the
+// first error is returned, if any.
+func (m *ListTagsRequest) Validate(all bool) error {
 	if m == nil {
 		return nil
 	}
 
+	var errors []error
+
+	if len(errors) > 0 {
+		return ListTagsRequestMultiError(errors)
+	}
 	return nil
 }
+
+// ListTagsRequestMultiError is an error wrapping multiple validation errors
+// returned by ListTagsRequest.Validate(true) if the designated constraints
+// aren't met.
+type ListTagsRequestMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m ListTagsRequestMultiError) Error() string {
+	var msgs []string
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m ListTagsRequestMultiError) AllErrors() []error { return m }
 
 // ListTagsRequestValidationError is the validation error returned by
 // ListTagsRequest.Validate if the designated constraints aren't met.
@@ -100,14 +125,39 @@ var _ interface {
 
 // Validate checks the field values on ListTagsResponse with the rules defined
 // in the proto definition for this message. If any rules are violated, an
-// error is returned.
-func (m *ListTagsResponse) Validate() error {
+// error is returned. When asked to return all errors, validation continues
+// after first violation, and the result is a list of violation errors wrapped
+// in ListTagsResponseMultiError, or nil if none found. Otherwise, only the
+// first error is returned, if any.
+func (m *ListTagsResponse) Validate(all bool) error {
 	if m == nil {
 		return nil
 	}
 
+	var errors []error
+
+	if len(errors) > 0 {
+		return ListTagsResponseMultiError(errors)
+	}
 	return nil
 }
+
+// ListTagsResponseMultiError is an error wrapping multiple validation errors
+// returned by ListTagsResponse.Validate(true) if the designated constraints
+// aren't met.
+type ListTagsResponseMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m ListTagsResponseMultiError) Error() string {
+	var msgs []string
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m ListTagsResponseMultiError) AllErrors() []error { return m }
 
 // ListTagsResponseValidationError is the validation error returned by
 // ListTagsResponse.Validate if the designated constraints aren't met.

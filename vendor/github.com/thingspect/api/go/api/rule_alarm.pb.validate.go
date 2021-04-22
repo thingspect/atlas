@@ -15,7 +15,7 @@ import (
 	"time"
 	"unicode/utf8"
 
-	"github.com/golang/protobuf/ptypes"
+	"google.golang.org/protobuf/types/known/anypb"
 
 	common "github.com/thingspect/api/go/common"
 )
@@ -32,7 +32,7 @@ var (
 	_ = time.Duration(0)
 	_ = (*url.URL)(nil)
 	_ = (*mail.Address)(nil)
-	_ = ptypes.DynamicAny{}
+	_ = anypb.Any{}
 
 	_ = common.Status(0)
 )
@@ -42,31 +42,64 @@ var _rule_alarm_uuidPattern = regexp.MustCompile("^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}
 
 // Validate checks the field values on CreateRuleRequest with the rules defined
 // in the proto definition for this message. If any rules are violated, an
-// error is returned.
-func (m *CreateRuleRequest) Validate() error {
+// error is returned. When asked to return all errors, validation continues
+// after first violation, and the result is a list of violation errors wrapped
+// in CreateRuleRequestMultiError, or nil if none found. Otherwise, only the
+// first error is returned, if any.
+func (m *CreateRuleRequest) Validate(all bool) error {
 	if m == nil {
 		return nil
 	}
 
+	var errors []error
+
 	if m.GetRule() == nil {
-		return CreateRuleRequestValidationError{
+		err := CreateRuleRequestValidationError{
 			field:  "Rule",
 			reason: "value is required",
 		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
 	}
 
-	if v, ok := interface{}(m.GetRule()).(interface{ Validate() error }); ok {
-		if err := v.Validate(); err != nil {
-			return CreateRuleRequestValidationError{
+	if v, ok := interface{}(m.GetRule()).(interface{ Validate(bool) error }); ok {
+		if err := v.Validate(all); err != nil {
+			err = CreateRuleRequestValidationError{
 				field:  "Rule",
 				reason: "embedded message failed validation",
 				cause:  err,
 			}
+			if !all {
+				return err
+			}
+			errors = append(errors, err)
 		}
 	}
 
+	if len(errors) > 0 {
+		return CreateRuleRequestMultiError(errors)
+	}
 	return nil
 }
+
+// CreateRuleRequestMultiError is an error wrapping multiple validation errors
+// returned by CreateRuleRequest.Validate(true) if the designated constraints
+// aren't met.
+type CreateRuleRequestMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m CreateRuleRequestMultiError) Error() string {
+	var msgs []string
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m CreateRuleRequestMultiError) AllErrors() []error { return m }
 
 // CreateRuleRequestValidationError is the validation error returned by
 // CreateRuleRequest.Validate if the designated constraints aren't met.
@@ -126,20 +159,32 @@ var _ interface {
 
 // Validate checks the field values on GetRuleRequest with the rules defined in
 // the proto definition for this message. If any rules are violated, an error
-// is returned.
-func (m *GetRuleRequest) Validate() error {
+// is returned. When asked to return all errors, validation continues after
+// first violation, and the result is a list of violation errors wrapped in
+// GetRuleRequestMultiError, or nil if none found. Otherwise, only the first
+// error is returned, if any.
+func (m *GetRuleRequest) Validate(all bool) error {
 	if m == nil {
 		return nil
 	}
 
+	var errors []error
+
 	if err := m._validateUuid(m.GetId()); err != nil {
-		return GetRuleRequestValidationError{
+		err = GetRuleRequestValidationError{
 			field:  "Id",
 			reason: "value must be a valid UUID",
 			cause:  err,
 		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
 	}
 
+	if len(errors) > 0 {
+		return GetRuleRequestMultiError(errors)
+	}
 	return nil
 }
 
@@ -150,6 +195,23 @@ func (m *GetRuleRequest) _validateUuid(uuid string) error {
 
 	return nil
 }
+
+// GetRuleRequestMultiError is an error wrapping multiple validation errors
+// returned by GetRuleRequest.Validate(true) if the designated constraints
+// aren't met.
+type GetRuleRequestMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m GetRuleRequestMultiError) Error() string {
+	var msgs []string
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m GetRuleRequestMultiError) AllErrors() []error { return m }
 
 // GetRuleRequestValidationError is the validation error returned by
 // GetRuleRequest.Validate if the designated constraints aren't met.
@@ -207,41 +269,78 @@ var _ interface {
 
 // Validate checks the field values on UpdateRuleRequest with the rules defined
 // in the proto definition for this message. If any rules are violated, an
-// error is returned.
-func (m *UpdateRuleRequest) Validate() error {
+// error is returned. When asked to return all errors, validation continues
+// after first violation, and the result is a list of violation errors wrapped
+// in UpdateRuleRequestMultiError, or nil if none found. Otherwise, only the
+// first error is returned, if any.
+func (m *UpdateRuleRequest) Validate(all bool) error {
 	if m == nil {
 		return nil
 	}
 
+	var errors []error
+
 	if m.GetRule() == nil {
-		return UpdateRuleRequestValidationError{
+		err := UpdateRuleRequestValidationError{
 			field:  "Rule",
 			reason: "value is required",
 		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
 	}
 
-	if v, ok := interface{}(m.GetRule()).(interface{ Validate() error }); ok {
-		if err := v.Validate(); err != nil {
-			return UpdateRuleRequestValidationError{
+	if v, ok := interface{}(m.GetRule()).(interface{ Validate(bool) error }); ok {
+		if err := v.Validate(all); err != nil {
+			err = UpdateRuleRequestValidationError{
 				field:  "Rule",
 				reason: "embedded message failed validation",
 				cause:  err,
 			}
+			if !all {
+				return err
+			}
+			errors = append(errors, err)
 		}
 	}
 
-	if v, ok := interface{}(m.GetUpdateMask()).(interface{ Validate() error }); ok {
-		if err := v.Validate(); err != nil {
-			return UpdateRuleRequestValidationError{
+	if v, ok := interface{}(m.GetUpdateMask()).(interface{ Validate(bool) error }); ok {
+		if err := v.Validate(all); err != nil {
+			err = UpdateRuleRequestValidationError{
 				field:  "UpdateMask",
 				reason: "embedded message failed validation",
 				cause:  err,
 			}
+			if !all {
+				return err
+			}
+			errors = append(errors, err)
 		}
 	}
 
+	if len(errors) > 0 {
+		return UpdateRuleRequestMultiError(errors)
+	}
 	return nil
 }
+
+// UpdateRuleRequestMultiError is an error wrapping multiple validation errors
+// returned by UpdateRuleRequest.Validate(true) if the designated constraints
+// aren't met.
+type UpdateRuleRequestMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m UpdateRuleRequestMultiError) Error() string {
+	var msgs []string
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m UpdateRuleRequestMultiError) AllErrors() []error { return m }
 
 // UpdateRuleRequestValidationError is the validation error returned by
 // UpdateRuleRequest.Validate if the designated constraints aren't met.
@@ -301,20 +400,32 @@ var _ interface {
 
 // Validate checks the field values on DeleteRuleRequest with the rules defined
 // in the proto definition for this message. If any rules are violated, an
-// error is returned.
-func (m *DeleteRuleRequest) Validate() error {
+// error is returned. When asked to return all errors, validation continues
+// after first violation, and the result is a list of violation errors wrapped
+// in DeleteRuleRequestMultiError, or nil if none found. Otherwise, only the
+// first error is returned, if any.
+func (m *DeleteRuleRequest) Validate(all bool) error {
 	if m == nil {
 		return nil
 	}
 
+	var errors []error
+
 	if err := m._validateUuid(m.GetId()); err != nil {
-		return DeleteRuleRequestValidationError{
+		err = DeleteRuleRequestValidationError{
 			field:  "Id",
 			reason: "value must be a valid UUID",
 			cause:  err,
 		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
 	}
 
+	if len(errors) > 0 {
+		return DeleteRuleRequestMultiError(errors)
+	}
 	return nil
 }
 
@@ -325,6 +436,23 @@ func (m *DeleteRuleRequest) _validateUuid(uuid string) error {
 
 	return nil
 }
+
+// DeleteRuleRequestMultiError is an error wrapping multiple validation errors
+// returned by DeleteRuleRequest.Validate(true) if the designated constraints
+// aren't met.
+type DeleteRuleRequestMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m DeleteRuleRequestMultiError) Error() string {
+	var msgs []string
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m DeleteRuleRequestMultiError) AllErrors() []error { return m }
 
 // DeleteRuleRequestValidationError is the validation error returned by
 // DeleteRuleRequest.Validate if the designated constraints aren't met.
@@ -384,23 +512,52 @@ var _ interface {
 
 // Validate checks the field values on ListRulesRequest with the rules defined
 // in the proto definition for this message. If any rules are violated, an
-// error is returned.
-func (m *ListRulesRequest) Validate() error {
+// error is returned. When asked to return all errors, validation continues
+// after first violation, and the result is a list of violation errors wrapped
+// in ListRulesRequestMultiError, or nil if none found. Otherwise, only the
+// first error is returned, if any.
+func (m *ListRulesRequest) Validate(all bool) error {
 	if m == nil {
 		return nil
 	}
 
+	var errors []error
+
 	if m.GetPageSize() > 250 {
-		return ListRulesRequestValidationError{
+		err := ListRulesRequestValidationError{
 			field:  "PageSize",
 			reason: "value must be less than or equal to 250",
 		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
 	}
 
 	// no validation rules for PageToken
 
+	if len(errors) > 0 {
+		return ListRulesRequestMultiError(errors)
+	}
 	return nil
 }
+
+// ListRulesRequestMultiError is an error wrapping multiple validation errors
+// returned by ListRulesRequest.Validate(true) if the designated constraints
+// aren't met.
+type ListRulesRequestMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m ListRulesRequestMultiError) Error() string {
+	var msgs []string
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m ListRulesRequestMultiError) AllErrors() []error { return m }
 
 // ListRulesRequestValidationError is the validation error returned by
 // ListRulesRequest.Validate if the designated constraints aren't met.
@@ -458,22 +615,31 @@ var _ interface {
 
 // Validate checks the field values on ListRulesResponse with the rules defined
 // in the proto definition for this message. If any rules are violated, an
-// error is returned.
-func (m *ListRulesResponse) Validate() error {
+// error is returned. When asked to return all errors, validation continues
+// after first violation, and the result is a list of violation errors wrapped
+// in ListRulesResponseMultiError, or nil if none found. Otherwise, only the
+// first error is returned, if any.
+func (m *ListRulesResponse) Validate(all bool) error {
 	if m == nil {
 		return nil
 	}
 
+	var errors []error
+
 	for idx, item := range m.GetRules() {
 		_, _ = idx, item
 
-		if v, ok := interface{}(item).(interface{ Validate() error }); ok {
-			if err := v.Validate(); err != nil {
-				return ListRulesResponseValidationError{
+		if v, ok := interface{}(item).(interface{ Validate(bool) error }); ok {
+			if err := v.Validate(all); err != nil {
+				err = ListRulesResponseValidationError{
 					field:  fmt.Sprintf("Rules[%v]", idx),
 					reason: "embedded message failed validation",
 					cause:  err,
 				}
+				if !all {
+					return err
+				}
+				errors = append(errors, err)
 			}
 		}
 
@@ -483,8 +649,28 @@ func (m *ListRulesResponse) Validate() error {
 
 	// no validation rules for TotalSize
 
+	if len(errors) > 0 {
+		return ListRulesResponseMultiError(errors)
+	}
 	return nil
 }
+
+// ListRulesResponseMultiError is an error wrapping multiple validation errors
+// returned by ListRulesResponse.Validate(true) if the designated constraints
+// aren't met.
+type ListRulesResponseMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m ListRulesResponseMultiError) Error() string {
+	var msgs []string
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m ListRulesResponseMultiError) AllErrors() []error { return m }
 
 // ListRulesResponseValidationError is the validation error returned by
 // ListRulesResponse.Validate if the designated constraints aren't met.
@@ -544,48 +730,89 @@ var _ interface {
 
 // Validate checks the field values on TestRuleRequest with the rules defined
 // in the proto definition for this message. If any rules are violated, an
-// error is returned.
-func (m *TestRuleRequest) Validate() error {
+// error is returned. When asked to return all errors, validation continues
+// after first violation, and the result is a list of violation errors wrapped
+// in TestRuleRequestMultiError, or nil if none found. Otherwise, only the
+// first error is returned, if any.
+func (m *TestRuleRequest) Validate(all bool) error {
 	if m == nil {
 		return nil
 	}
 
+	var errors []error
+
 	if m.GetPoint() == nil {
-		return TestRuleRequestValidationError{
+		err := TestRuleRequestValidationError{
 			field:  "Point",
 			reason: "value is required",
 		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
 	}
 
-	if v, ok := interface{}(m.GetPoint()).(interface{ Validate() error }); ok {
-		if err := v.Validate(); err != nil {
-			return TestRuleRequestValidationError{
+	if v, ok := interface{}(m.GetPoint()).(interface{ Validate(bool) error }); ok {
+		if err := v.Validate(all); err != nil {
+			err = TestRuleRequestValidationError{
 				field:  "Point",
 				reason: "embedded message failed validation",
 				cause:  err,
 			}
+			if !all {
+				return err
+			}
+			errors = append(errors, err)
 		}
 	}
 
 	if m.GetRule() == nil {
-		return TestRuleRequestValidationError{
+		err := TestRuleRequestValidationError{
 			field:  "Rule",
 			reason: "value is required",
 		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
 	}
 
-	if v, ok := interface{}(m.GetRule()).(interface{ Validate() error }); ok {
-		if err := v.Validate(); err != nil {
-			return TestRuleRequestValidationError{
+	if v, ok := interface{}(m.GetRule()).(interface{ Validate(bool) error }); ok {
+		if err := v.Validate(all); err != nil {
+			err = TestRuleRequestValidationError{
 				field:  "Rule",
 				reason: "embedded message failed validation",
 				cause:  err,
 			}
+			if !all {
+				return err
+			}
+			errors = append(errors, err)
 		}
 	}
 
+	if len(errors) > 0 {
+		return TestRuleRequestMultiError(errors)
+	}
 	return nil
 }
+
+// TestRuleRequestMultiError is an error wrapping multiple validation errors
+// returned by TestRuleRequest.Validate(true) if the designated constraints
+// aren't met.
+type TestRuleRequestMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m TestRuleRequestMultiError) Error() string {
+	var msgs []string
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m TestRuleRequestMultiError) AllErrors() []error { return m }
 
 // TestRuleRequestValidationError is the validation error returned by
 // TestRuleRequest.Validate if the designated constraints aren't met.
@@ -643,16 +870,41 @@ var _ interface {
 
 // Validate checks the field values on TestRuleResponse with the rules defined
 // in the proto definition for this message. If any rules are violated, an
-// error is returned.
-func (m *TestRuleResponse) Validate() error {
+// error is returned. When asked to return all errors, validation continues
+// after first violation, and the result is a list of violation errors wrapped
+// in TestRuleResponseMultiError, or nil if none found. Otherwise, only the
+// first error is returned, if any.
+func (m *TestRuleResponse) Validate(all bool) error {
 	if m == nil {
 		return nil
 	}
 
+	var errors []error
+
 	// no validation rules for Result
 
+	if len(errors) > 0 {
+		return TestRuleResponseMultiError(errors)
+	}
 	return nil
 }
+
+// TestRuleResponseMultiError is an error wrapping multiple validation errors
+// returned by TestRuleResponse.Validate(true) if the designated constraints
+// aren't met.
+type TestRuleResponseMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m TestRuleResponseMultiError) Error() string {
+	var msgs []string
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m TestRuleResponseMultiError) AllErrors() []error { return m }
 
 // TestRuleResponseValidationError is the validation error returned by
 // TestRuleResponse.Validate if the designated constraints aren't met.
@@ -709,11 +961,17 @@ var _ interface {
 } = TestRuleResponseValidationError{}
 
 // Validate checks the field values on Alarm with the rules defined in the
-// proto definition for this message. If any rules are violated, an error is returned.
-func (m *Alarm) Validate() error {
+// proto definition for this message. If any rules are violated, an error is
+// returned. When asked to return all errors, validation continues after first
+// violation, and the result is a list of violation errors wrapped in
+// AlarmMultiError, or nil if none found. Otherwise, only the first error is
+// returned, if any.
+func (m *Alarm) Validate(all bool) error {
 	if m == nil {
 		return nil
 	}
+
+	var errors []error
 
 	// no validation rules for Id
 
@@ -722,31 +980,47 @@ func (m *Alarm) Validate() error {
 	// no validation rules for RuleId
 
 	if l := utf8.RuneCountInString(m.GetName()); l < 5 || l > 80 {
-		return AlarmValidationError{
+		err := AlarmValidationError{
 			field:  "Name",
 			reason: "value length must be between 5 and 80 runes, inclusive",
 		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
 	}
 
 	if _, ok := _Alarm_Status_InLookup[m.GetStatus()]; !ok {
-		return AlarmValidationError{
+		err := AlarmValidationError{
 			field:  "Status",
 			reason: "value must be in list [3 6]",
 		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
 	}
 
 	if _, ok := _Alarm_Type_InLookup[m.GetType()]; !ok {
-		return AlarmValidationError{
+		err := AlarmValidationError{
 			field:  "Type",
 			reason: "value must be in list [1 2 3]",
 		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
 	}
 
 	if len(m.GetUserTags()) < 1 {
-		return AlarmValidationError{
+		err := AlarmValidationError{
 			field:  "UserTags",
 			reason: "value must contain at least 1 item(s)",
 		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
 	}
 
 	_Alarm_UserTags_Unique := make(map[string]struct{}, len(m.GetUserTags()))
@@ -755,66 +1029,113 @@ func (m *Alarm) Validate() error {
 		_, _ = idx, item
 
 		if _, exists := _Alarm_UserTags_Unique[item]; exists {
-			return AlarmValidationError{
+			err := AlarmValidationError{
 				field:  fmt.Sprintf("UserTags[%v]", idx),
 				reason: "repeated value must contain unique items",
 			}
+			if !all {
+				return err
+			}
+			errors = append(errors, err)
 		} else {
 			_Alarm_UserTags_Unique[item] = struct{}{}
 		}
 
 		if utf8.RuneCountInString(item) > 255 {
-			return AlarmValidationError{
+			err := AlarmValidationError{
 				field:  fmt.Sprintf("UserTags[%v]", idx),
 				reason: "value length must be at most 255 runes",
 			}
+			if !all {
+				return err
+			}
+			errors = append(errors, err)
 		}
 
 	}
 
 	if utf8.RuneCountInString(m.GetSubjectTemplate()) > 1024 {
-		return AlarmValidationError{
+		err := AlarmValidationError{
 			field:  "SubjectTemplate",
 			reason: "value length must be at most 1024 runes",
 		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
 	}
 
 	if utf8.RuneCountInString(m.GetBodyTemplate()) > 4096 {
-		return AlarmValidationError{
+		err := AlarmValidationError{
 			field:  "BodyTemplate",
 			reason: "value length must be at most 4096 runes",
 		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
 	}
 
 	if val := m.GetRepeatInterval(); val < 1 || val > 20160 {
-		return AlarmValidationError{
+		err := AlarmValidationError{
 			field:  "RepeatInterval",
 			reason: "value must be inside range [1, 20160]",
 		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
 	}
 
-	if v, ok := interface{}(m.GetCreatedAt()).(interface{ Validate() error }); ok {
-		if err := v.Validate(); err != nil {
-			return AlarmValidationError{
+	if v, ok := interface{}(m.GetCreatedAt()).(interface{ Validate(bool) error }); ok {
+		if err := v.Validate(all); err != nil {
+			err = AlarmValidationError{
 				field:  "CreatedAt",
 				reason: "embedded message failed validation",
 				cause:  err,
 			}
+			if !all {
+				return err
+			}
+			errors = append(errors, err)
 		}
 	}
 
-	if v, ok := interface{}(m.GetUpdatedAt()).(interface{ Validate() error }); ok {
-		if err := v.Validate(); err != nil {
-			return AlarmValidationError{
+	if v, ok := interface{}(m.GetUpdatedAt()).(interface{ Validate(bool) error }); ok {
+		if err := v.Validate(all); err != nil {
+			err = AlarmValidationError{
 				field:  "UpdatedAt",
 				reason: "embedded message failed validation",
 				cause:  err,
 			}
+			if !all {
+				return err
+			}
+			errors = append(errors, err)
 		}
 	}
 
+	if len(errors) > 0 {
+		return AlarmMultiError(errors)
+	}
 	return nil
 }
+
+// AlarmMultiError is an error wrapping multiple validation errors returned by
+// Alarm.Validate(true) if the designated constraints aren't met.
+type AlarmMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m AlarmMultiError) Error() string {
+	var msgs []string
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m AlarmMultiError) AllErrors() []error { return m }
 
 // AlarmValidationError is the validation error returned by Alarm.Validate if
 // the designated constraints aren't met.
@@ -883,31 +1204,64 @@ var _Alarm_Type_InLookup = map[AlarmType]struct{}{
 
 // Validate checks the field values on CreateAlarmRequest with the rules
 // defined in the proto definition for this message. If any rules are
-// violated, an error is returned.
-func (m *CreateAlarmRequest) Validate() error {
+// violated, an error is returned. When asked to return all errors, validation
+// continues after first violation, and the result is a list of violation
+// errors wrapped in CreateAlarmRequestMultiError, or nil if none found.
+// Otherwise, only the first error is returned, if any.
+func (m *CreateAlarmRequest) Validate(all bool) error {
 	if m == nil {
 		return nil
 	}
 
+	var errors []error
+
 	if m.GetAlarm() == nil {
-		return CreateAlarmRequestValidationError{
+		err := CreateAlarmRequestValidationError{
 			field:  "Alarm",
 			reason: "value is required",
 		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
 	}
 
-	if v, ok := interface{}(m.GetAlarm()).(interface{ Validate() error }); ok {
-		if err := v.Validate(); err != nil {
-			return CreateAlarmRequestValidationError{
+	if v, ok := interface{}(m.GetAlarm()).(interface{ Validate(bool) error }); ok {
+		if err := v.Validate(all); err != nil {
+			err = CreateAlarmRequestValidationError{
 				field:  "Alarm",
 				reason: "embedded message failed validation",
 				cause:  err,
 			}
+			if !all {
+				return err
+			}
+			errors = append(errors, err)
 		}
 	}
 
+	if len(errors) > 0 {
+		return CreateAlarmRequestMultiError(errors)
+	}
 	return nil
 }
+
+// CreateAlarmRequestMultiError is an error wrapping multiple validation errors
+// returned by CreateAlarmRequest.Validate(true) if the designated constraints
+// aren't met.
+type CreateAlarmRequestMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m CreateAlarmRequestMultiError) Error() string {
+	var msgs []string
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m CreateAlarmRequestMultiError) AllErrors() []error { return m }
 
 // CreateAlarmRequestValidationError is the validation error returned by
 // CreateAlarmRequest.Validate if the designated constraints aren't met.
@@ -967,28 +1321,44 @@ var _ interface {
 
 // Validate checks the field values on GetAlarmRequest with the rules defined
 // in the proto definition for this message. If any rules are violated, an
-// error is returned.
-func (m *GetAlarmRequest) Validate() error {
+// error is returned. When asked to return all errors, validation continues
+// after first violation, and the result is a list of violation errors wrapped
+// in GetAlarmRequestMultiError, or nil if none found. Otherwise, only the
+// first error is returned, if any.
+func (m *GetAlarmRequest) Validate(all bool) error {
 	if m == nil {
 		return nil
 	}
 
+	var errors []error
+
 	if err := m._validateUuid(m.GetId()); err != nil {
-		return GetAlarmRequestValidationError{
+		err = GetAlarmRequestValidationError{
 			field:  "Id",
 			reason: "value must be a valid UUID",
 			cause:  err,
 		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
 	}
 
 	if err := m._validateUuid(m.GetRuleId()); err != nil {
-		return GetAlarmRequestValidationError{
+		err = GetAlarmRequestValidationError{
 			field:  "RuleId",
 			reason: "value must be a valid UUID",
 			cause:  err,
 		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
 	}
 
+	if len(errors) > 0 {
+		return GetAlarmRequestMultiError(errors)
+	}
 	return nil
 }
 
@@ -999,6 +1369,23 @@ func (m *GetAlarmRequest) _validateUuid(uuid string) error {
 
 	return nil
 }
+
+// GetAlarmRequestMultiError is an error wrapping multiple validation errors
+// returned by GetAlarmRequest.Validate(true) if the designated constraints
+// aren't met.
+type GetAlarmRequestMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m GetAlarmRequestMultiError) Error() string {
+	var msgs []string
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m GetAlarmRequestMultiError) AllErrors() []error { return m }
 
 // GetAlarmRequestValidationError is the validation error returned by
 // GetAlarmRequest.Validate if the designated constraints aren't met.
@@ -1056,41 +1443,78 @@ var _ interface {
 
 // Validate checks the field values on UpdateAlarmRequest with the rules
 // defined in the proto definition for this message. If any rules are
-// violated, an error is returned.
-func (m *UpdateAlarmRequest) Validate() error {
+// violated, an error is returned. When asked to return all errors, validation
+// continues after first violation, and the result is a list of violation
+// errors wrapped in UpdateAlarmRequestMultiError, or nil if none found.
+// Otherwise, only the first error is returned, if any.
+func (m *UpdateAlarmRequest) Validate(all bool) error {
 	if m == nil {
 		return nil
 	}
 
+	var errors []error
+
 	if m.GetAlarm() == nil {
-		return UpdateAlarmRequestValidationError{
+		err := UpdateAlarmRequestValidationError{
 			field:  "Alarm",
 			reason: "value is required",
 		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
 	}
 
-	if v, ok := interface{}(m.GetAlarm()).(interface{ Validate() error }); ok {
-		if err := v.Validate(); err != nil {
-			return UpdateAlarmRequestValidationError{
+	if v, ok := interface{}(m.GetAlarm()).(interface{ Validate(bool) error }); ok {
+		if err := v.Validate(all); err != nil {
+			err = UpdateAlarmRequestValidationError{
 				field:  "Alarm",
 				reason: "embedded message failed validation",
 				cause:  err,
 			}
+			if !all {
+				return err
+			}
+			errors = append(errors, err)
 		}
 	}
 
-	if v, ok := interface{}(m.GetUpdateMask()).(interface{ Validate() error }); ok {
-		if err := v.Validate(); err != nil {
-			return UpdateAlarmRequestValidationError{
+	if v, ok := interface{}(m.GetUpdateMask()).(interface{ Validate(bool) error }); ok {
+		if err := v.Validate(all); err != nil {
+			err = UpdateAlarmRequestValidationError{
 				field:  "UpdateMask",
 				reason: "embedded message failed validation",
 				cause:  err,
 			}
+			if !all {
+				return err
+			}
+			errors = append(errors, err)
 		}
 	}
 
+	if len(errors) > 0 {
+		return UpdateAlarmRequestMultiError(errors)
+	}
 	return nil
 }
+
+// UpdateAlarmRequestMultiError is an error wrapping multiple validation errors
+// returned by UpdateAlarmRequest.Validate(true) if the designated constraints
+// aren't met.
+type UpdateAlarmRequestMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m UpdateAlarmRequestMultiError) Error() string {
+	var msgs []string
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m UpdateAlarmRequestMultiError) AllErrors() []error { return m }
 
 // UpdateAlarmRequestValidationError is the validation error returned by
 // UpdateAlarmRequest.Validate if the designated constraints aren't met.
@@ -1150,28 +1574,44 @@ var _ interface {
 
 // Validate checks the field values on DeleteAlarmRequest with the rules
 // defined in the proto definition for this message. If any rules are
-// violated, an error is returned.
-func (m *DeleteAlarmRequest) Validate() error {
+// violated, an error is returned. When asked to return all errors, validation
+// continues after first violation, and the result is a list of violation
+// errors wrapped in DeleteAlarmRequestMultiError, or nil if none found.
+// Otherwise, only the first error is returned, if any.
+func (m *DeleteAlarmRequest) Validate(all bool) error {
 	if m == nil {
 		return nil
 	}
 
+	var errors []error
+
 	if err := m._validateUuid(m.GetId()); err != nil {
-		return DeleteAlarmRequestValidationError{
+		err = DeleteAlarmRequestValidationError{
 			field:  "Id",
 			reason: "value must be a valid UUID",
 			cause:  err,
 		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
 	}
 
 	if err := m._validateUuid(m.GetRuleId()); err != nil {
-		return DeleteAlarmRequestValidationError{
+		err = DeleteAlarmRequestValidationError{
 			field:  "RuleId",
 			reason: "value must be a valid UUID",
 			cause:  err,
 		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
 	}
 
+	if len(errors) > 0 {
+		return DeleteAlarmRequestMultiError(errors)
+	}
 	return nil
 }
 
@@ -1182,6 +1622,23 @@ func (m *DeleteAlarmRequest) _validateUuid(uuid string) error {
 
 	return nil
 }
+
+// DeleteAlarmRequestMultiError is an error wrapping multiple validation errors
+// returned by DeleteAlarmRequest.Validate(true) if the designated constraints
+// aren't met.
+type DeleteAlarmRequestMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m DeleteAlarmRequestMultiError) Error() string {
+	var msgs []string
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m DeleteAlarmRequestMultiError) AllErrors() []error { return m }
 
 // DeleteAlarmRequestValidationError is the validation error returned by
 // DeleteAlarmRequest.Validate if the designated constraints aren't met.
@@ -1241,17 +1698,26 @@ var _ interface {
 
 // Validate checks the field values on ListAlarmsRequest with the rules defined
 // in the proto definition for this message. If any rules are violated, an
-// error is returned.
-func (m *ListAlarmsRequest) Validate() error {
+// error is returned. When asked to return all errors, validation continues
+// after first violation, and the result is a list of violation errors wrapped
+// in ListAlarmsRequestMultiError, or nil if none found. Otherwise, only the
+// first error is returned, if any.
+func (m *ListAlarmsRequest) Validate(all bool) error {
 	if m == nil {
 		return nil
 	}
 
+	var errors []error
+
 	if m.GetPageSize() > 250 {
-		return ListAlarmsRequestValidationError{
+		err := ListAlarmsRequestValidationError{
 			field:  "PageSize",
 			reason: "value must be less than or equal to 250",
 		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
 	}
 
 	// no validation rules for PageToken
@@ -1259,15 +1725,22 @@ func (m *ListAlarmsRequest) Validate() error {
 	if m.GetRuleId() != "" {
 
 		if err := m._validateUuid(m.GetRuleId()); err != nil {
-			return ListAlarmsRequestValidationError{
+			err = ListAlarmsRequestValidationError{
 				field:  "RuleId",
 				reason: "value must be a valid UUID",
 				cause:  err,
 			}
+			if !all {
+				return err
+			}
+			errors = append(errors, err)
 		}
 
 	}
 
+	if len(errors) > 0 {
+		return ListAlarmsRequestMultiError(errors)
+	}
 	return nil
 }
 
@@ -1278,6 +1751,23 @@ func (m *ListAlarmsRequest) _validateUuid(uuid string) error {
 
 	return nil
 }
+
+// ListAlarmsRequestMultiError is an error wrapping multiple validation errors
+// returned by ListAlarmsRequest.Validate(true) if the designated constraints
+// aren't met.
+type ListAlarmsRequestMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m ListAlarmsRequestMultiError) Error() string {
+	var msgs []string
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m ListAlarmsRequestMultiError) AllErrors() []error { return m }
 
 // ListAlarmsRequestValidationError is the validation error returned by
 // ListAlarmsRequest.Validate if the designated constraints aren't met.
@@ -1337,22 +1827,31 @@ var _ interface {
 
 // Validate checks the field values on ListAlarmsResponse with the rules
 // defined in the proto definition for this message. If any rules are
-// violated, an error is returned.
-func (m *ListAlarmsResponse) Validate() error {
+// violated, an error is returned. When asked to return all errors, validation
+// continues after first violation, and the result is a list of violation
+// errors wrapped in ListAlarmsResponseMultiError, or nil if none found.
+// Otherwise, only the first error is returned, if any.
+func (m *ListAlarmsResponse) Validate(all bool) error {
 	if m == nil {
 		return nil
 	}
 
+	var errors []error
+
 	for idx, item := range m.GetAlarms() {
 		_, _ = idx, item
 
-		if v, ok := interface{}(item).(interface{ Validate() error }); ok {
-			if err := v.Validate(); err != nil {
-				return ListAlarmsResponseValidationError{
+		if v, ok := interface{}(item).(interface{ Validate(bool) error }); ok {
+			if err := v.Validate(all); err != nil {
+				err = ListAlarmsResponseValidationError{
 					field:  fmt.Sprintf("Alarms[%v]", idx),
 					reason: "embedded message failed validation",
 					cause:  err,
 				}
+				if !all {
+					return err
+				}
+				errors = append(errors, err)
 			}
 		}
 
@@ -1362,8 +1861,28 @@ func (m *ListAlarmsResponse) Validate() error {
 
 	// no validation rules for TotalSize
 
+	if len(errors) > 0 {
+		return ListAlarmsResponseMultiError(errors)
+	}
 	return nil
 }
+
+// ListAlarmsResponseMultiError is an error wrapping multiple validation errors
+// returned by ListAlarmsResponse.Validate(true) if the designated constraints
+// aren't met.
+type ListAlarmsResponseMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m ListAlarmsResponseMultiError) Error() string {
+	var msgs []string
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m ListAlarmsResponseMultiError) AllErrors() []error { return m }
 
 // ListAlarmsResponseValidationError is the validation error returned by
 // ListAlarmsResponse.Validate if the designated constraints aren't met.
@@ -1423,82 +1942,139 @@ var _ interface {
 
 // Validate checks the field values on TestAlarmRequest with the rules defined
 // in the proto definition for this message. If any rules are violated, an
-// error is returned.
-func (m *TestAlarmRequest) Validate() error {
+// error is returned. When asked to return all errors, validation continues
+// after first violation, and the result is a list of violation errors wrapped
+// in TestAlarmRequestMultiError, or nil if none found. Otherwise, only the
+// first error is returned, if any.
+func (m *TestAlarmRequest) Validate(all bool) error {
 	if m == nil {
 		return nil
 	}
 
+	var errors []error
+
 	if m.GetPoint() == nil {
-		return TestAlarmRequestValidationError{
+		err := TestAlarmRequestValidationError{
 			field:  "Point",
 			reason: "value is required",
 		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
 	}
 
-	if v, ok := interface{}(m.GetPoint()).(interface{ Validate() error }); ok {
-		if err := v.Validate(); err != nil {
-			return TestAlarmRequestValidationError{
+	if v, ok := interface{}(m.GetPoint()).(interface{ Validate(bool) error }); ok {
+		if err := v.Validate(all); err != nil {
+			err = TestAlarmRequestValidationError{
 				field:  "Point",
 				reason: "embedded message failed validation",
 				cause:  err,
 			}
+			if !all {
+				return err
+			}
+			errors = append(errors, err)
 		}
 	}
 
 	if m.GetRule() == nil {
-		return TestAlarmRequestValidationError{
+		err := TestAlarmRequestValidationError{
 			field:  "Rule",
 			reason: "value is required",
 		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
 	}
 
-	if v, ok := interface{}(m.GetRule()).(interface{ Validate() error }); ok {
-		if err := v.Validate(); err != nil {
-			return TestAlarmRequestValidationError{
+	if v, ok := interface{}(m.GetRule()).(interface{ Validate(bool) error }); ok {
+		if err := v.Validate(all); err != nil {
+			err = TestAlarmRequestValidationError{
 				field:  "Rule",
 				reason: "embedded message failed validation",
 				cause:  err,
 			}
+			if !all {
+				return err
+			}
+			errors = append(errors, err)
 		}
 	}
 
 	if m.GetDevice() == nil {
-		return TestAlarmRequestValidationError{
+		err := TestAlarmRequestValidationError{
 			field:  "Device",
 			reason: "value is required",
 		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
 	}
 
-	if v, ok := interface{}(m.GetDevice()).(interface{ Validate() error }); ok {
-		if err := v.Validate(); err != nil {
-			return TestAlarmRequestValidationError{
+	if v, ok := interface{}(m.GetDevice()).(interface{ Validate(bool) error }); ok {
+		if err := v.Validate(all); err != nil {
+			err = TestAlarmRequestValidationError{
 				field:  "Device",
 				reason: "embedded message failed validation",
 				cause:  err,
 			}
+			if !all {
+				return err
+			}
+			errors = append(errors, err)
 		}
 	}
 
 	if m.GetAlarm() == nil {
-		return TestAlarmRequestValidationError{
+		err := TestAlarmRequestValidationError{
 			field:  "Alarm",
 			reason: "value is required",
 		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
 	}
 
-	if v, ok := interface{}(m.GetAlarm()).(interface{ Validate() error }); ok {
-		if err := v.Validate(); err != nil {
-			return TestAlarmRequestValidationError{
+	if v, ok := interface{}(m.GetAlarm()).(interface{ Validate(bool) error }); ok {
+		if err := v.Validate(all); err != nil {
+			err = TestAlarmRequestValidationError{
 				field:  "Alarm",
 				reason: "embedded message failed validation",
 				cause:  err,
 			}
+			if !all {
+				return err
+			}
+			errors = append(errors, err)
 		}
 	}
 
+	if len(errors) > 0 {
+		return TestAlarmRequestMultiError(errors)
+	}
 	return nil
 }
+
+// TestAlarmRequestMultiError is an error wrapping multiple validation errors
+// returned by TestAlarmRequest.Validate(true) if the designated constraints
+// aren't met.
+type TestAlarmRequestMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m TestAlarmRequestMultiError) Error() string {
+	var msgs []string
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m TestAlarmRequestMultiError) AllErrors() []error { return m }
 
 // TestAlarmRequestValidationError is the validation error returned by
 // TestAlarmRequest.Validate if the designated constraints aren't met.
@@ -1556,16 +2132,41 @@ var _ interface {
 
 // Validate checks the field values on TestAlarmResponse with the rules defined
 // in the proto definition for this message. If any rules are violated, an
-// error is returned.
-func (m *TestAlarmResponse) Validate() error {
+// error is returned. When asked to return all errors, validation continues
+// after first violation, and the result is a list of violation errors wrapped
+// in TestAlarmResponseMultiError, or nil if none found. Otherwise, only the
+// first error is returned, if any.
+func (m *TestAlarmResponse) Validate(all bool) error {
 	if m == nil {
 		return nil
 	}
 
+	var errors []error
+
 	// no validation rules for Result
 
+	if len(errors) > 0 {
+		return TestAlarmResponseMultiError(errors)
+	}
 	return nil
 }
+
+// TestAlarmResponseMultiError is an error wrapping multiple validation errors
+// returned by TestAlarmResponse.Validate(true) if the designated constraints
+// aren't met.
+type TestAlarmResponseMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m TestAlarmResponseMultiError) Error() string {
+	var msgs []string
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m TestAlarmResponseMultiError) AllErrors() []error { return m }
 
 // TestAlarmResponseValidationError is the validation error returned by
 // TestAlarmResponse.Validate if the designated constraints aren't met.

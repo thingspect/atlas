@@ -15,7 +15,9 @@ const (
 
 // Encrypt encrypts data using 256-bit AES-GCM, providing authenticated
 // encryption with associated data.
+//
 // https://github.com/gtank/cryptopasta
+//
 // https://golang.org/pkg/crypto/cipher/#NewGCM
 func Encrypt(key []byte, plaintext []byte) ([]byte, error) {
 	if len(key) != 32 {

@@ -91,7 +91,8 @@ func (o *Org) UpdateOrg(ctx context.Context,
 	}
 
 	if req.Org == nil {
-		return nil, status.Error(codes.InvalidArgument, req.Validate().Error())
+		return nil, status.Error(codes.InvalidArgument,
+			req.Validate(false).Error())
 	}
 
 	// Admins can only update their own org, system admins can update any org.
@@ -120,7 +121,7 @@ func (o *Org) UpdateOrg(ctx context.Context,
 	}
 
 	// Validate after merge to support partial updates.
-	if err := req.Validate(); err != nil {
+	if err := req.Validate(false); err != nil {
 		return nil, status.Error(codes.InvalidArgument, err.Error())
 	}
 

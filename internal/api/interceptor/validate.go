@@ -9,7 +9,7 @@ import (
 )
 
 type validator interface {
-	Validate() error
+	Validate(all bool) error
 }
 
 // Validate performs request validation, and implements the
@@ -23,7 +23,7 @@ func Validate(skipPaths map[string]struct{}) grpc.UnaryServerInterceptor {
 		}
 
 		if v, ok := req.(validator); ok {
-			if err := v.Validate(); err != nil {
+			if err := v.Validate(false); err != nil {
 				return nil, status.Error(codes.InvalidArgument, err.Error())
 			}
 		}

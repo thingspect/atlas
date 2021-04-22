@@ -393,7 +393,7 @@ type ListOrgsResponse struct {
 	Orgs []*Org `protobuf:"bytes,1,rep,name=orgs,proto3" json:"orgs,omitempty"`
 	// Pagination token used to retrieve the next page of results. Not returned for the last page.
 	NextPageToken string `protobuf:"bytes,2,opt,name=next_page_token,json=nextPageToken,proto3" json:"next_page_token,omitempty"`
-	// Total number of orgs available.
+	// Total number of organizations available.
 	TotalSize int32 `protobuf:"varint,3,opt,name=total_size,json=totalSize,proto3" json:"total_size,omitempty"`
 }
 
