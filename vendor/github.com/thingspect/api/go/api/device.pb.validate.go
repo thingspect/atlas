@@ -15,7 +15,7 @@ import (
 	"time"
 	"unicode/utf8"
 
-	"github.com/golang/protobuf/ptypes"
+	"google.golang.org/protobuf/types/known/anypb"
 )
 
 // ensure the imports are used
@@ -30,7 +30,7 @@ var (
 	_ = time.Duration(0)
 	_ = (*url.URL)(nil)
 	_ = (*mail.Address)(nil)
-	_ = ptypes.DynamicAny{}
+	_ = anypb.Any{}
 )
 
 // define the regex for a UUID once up-front
@@ -38,31 +38,64 @@ var _device_uuidPattern = regexp.MustCompile("^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-
 
 // Validate checks the field values on CreateDeviceRequest with the rules
 // defined in the proto definition for this message. If any rules are
-// violated, an error is returned.
-func (m *CreateDeviceRequest) Validate() error {
+// violated, an error is returned. When asked to return all errors, validation
+// continues after first violation, and the result is a list of violation
+// errors wrapped in CreateDeviceRequestMultiError, or nil if none found.
+// Otherwise, only the first error is returned, if any.
+func (m *CreateDeviceRequest) Validate(all bool) error {
 	if m == nil {
 		return nil
 	}
 
+	var errors []error
+
 	if m.GetDevice() == nil {
-		return CreateDeviceRequestValidationError{
+		err := CreateDeviceRequestValidationError{
 			field:  "Device",
 			reason: "value is required",
 		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
 	}
 
-	if v, ok := interface{}(m.GetDevice()).(interface{ Validate() error }); ok {
-		if err := v.Validate(); err != nil {
-			return CreateDeviceRequestValidationError{
+	if v, ok := interface{}(m.GetDevice()).(interface{ Validate(bool) error }); ok {
+		if err := v.Validate(all); err != nil {
+			err = CreateDeviceRequestValidationError{
 				field:  "Device",
 				reason: "embedded message failed validation",
 				cause:  err,
 			}
+			if !all {
+				return err
+			}
+			errors = append(errors, err)
 		}
 	}
 
+	if len(errors) > 0 {
+		return CreateDeviceRequestMultiError(errors)
+	}
 	return nil
 }
+
+// CreateDeviceRequestMultiError is an error wrapping multiple validation
+// errors returned by CreateDeviceRequest.Validate(true) if the designated
+// constraints aren't met.
+type CreateDeviceRequestMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m CreateDeviceRequestMultiError) Error() string {
+	var msgs []string
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m CreateDeviceRequestMultiError) AllErrors() []error { return m }
 
 // CreateDeviceRequestValidationError is the validation error returned by
 // CreateDeviceRequest.Validate if the designated constraints aren't met.
@@ -122,54 +155,78 @@ var _ interface {
 
 // Validate checks the field values on CreateDeviceLoRaWANRequest with the
 // rules defined in the proto definition for this message. If any rules are
-// violated, an error is returned.
-func (m *CreateDeviceLoRaWANRequest) Validate() error {
+// violated, an error is returned. When asked to return all errors, validation
+// continues after first violation, and the result is a list of violation
+// errors wrapped in CreateDeviceLoRaWANRequestMultiError, or nil if none
+// found. Otherwise, only the first error is returned, if any.
+func (m *CreateDeviceLoRaWANRequest) Validate(all bool) error {
 	if m == nil {
 		return nil
 	}
 
+	var errors []error
+
 	if err := m._validateUuid(m.GetId()); err != nil {
-		return CreateDeviceLoRaWANRequestValidationError{
+		err = CreateDeviceLoRaWANRequestValidationError{
 			field:  "Id",
 			reason: "value must be a valid UUID",
 			cause:  err,
 		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
 	}
 
 	switch m.TypeOneof.(type) {
 
 	case *CreateDeviceLoRaWANRequest_GatewayLorawanType:
 
-		if v, ok := interface{}(m.GetGatewayLorawanType()).(interface{ Validate() error }); ok {
-			if err := v.Validate(); err != nil {
-				return CreateDeviceLoRaWANRequestValidationError{
+		if v, ok := interface{}(m.GetGatewayLorawanType()).(interface{ Validate(bool) error }); ok {
+			if err := v.Validate(all); err != nil {
+				err = CreateDeviceLoRaWANRequestValidationError{
 					field:  "GatewayLorawanType",
 					reason: "embedded message failed validation",
 					cause:  err,
 				}
+				if !all {
+					return err
+				}
+				errors = append(errors, err)
 			}
 		}
 
 	case *CreateDeviceLoRaWANRequest_DeviceLorawanType:
 
-		if v, ok := interface{}(m.GetDeviceLorawanType()).(interface{ Validate() error }); ok {
-			if err := v.Validate(); err != nil {
-				return CreateDeviceLoRaWANRequestValidationError{
+		if v, ok := interface{}(m.GetDeviceLorawanType()).(interface{ Validate(bool) error }); ok {
+			if err := v.Validate(all); err != nil {
+				err = CreateDeviceLoRaWANRequestValidationError{
 					field:  "DeviceLorawanType",
 					reason: "embedded message failed validation",
 					cause:  err,
 				}
+				if !all {
+					return err
+				}
+				errors = append(errors, err)
 			}
 		}
 
 	default:
-		return CreateDeviceLoRaWANRequestValidationError{
+		err := CreateDeviceLoRaWANRequestValidationError{
 			field:  "TypeOneof",
 			reason: "value is required",
 		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
 
 	}
 
+	if len(errors) > 0 {
+		return CreateDeviceLoRaWANRequestMultiError(errors)
+	}
 	return nil
 }
 
@@ -180,6 +237,23 @@ func (m *CreateDeviceLoRaWANRequest) _validateUuid(uuid string) error {
 
 	return nil
 }
+
+// CreateDeviceLoRaWANRequestMultiError is an error wrapping multiple
+// validation errors returned by CreateDeviceLoRaWANRequest.Validate(true) if
+// the designated constraints aren't met.
+type CreateDeviceLoRaWANRequestMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m CreateDeviceLoRaWANRequestMultiError) Error() string {
+	var msgs []string
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m CreateDeviceLoRaWANRequestMultiError) AllErrors() []error { return m }
 
 // CreateDeviceLoRaWANRequestValidationError is the validation error returned
 // by CreateDeviceLoRaWANRequest.Validate if the designated constraints aren't met.
@@ -239,20 +313,32 @@ var _ interface {
 
 // Validate checks the field values on GetDeviceRequest with the rules defined
 // in the proto definition for this message. If any rules are violated, an
-// error is returned.
-func (m *GetDeviceRequest) Validate() error {
+// error is returned. When asked to return all errors, validation continues
+// after first violation, and the result is a list of violation errors wrapped
+// in GetDeviceRequestMultiError, or nil if none found. Otherwise, only the
+// first error is returned, if any.
+func (m *GetDeviceRequest) Validate(all bool) error {
 	if m == nil {
 		return nil
 	}
 
+	var errors []error
+
 	if err := m._validateUuid(m.GetId()); err != nil {
-		return GetDeviceRequestValidationError{
+		err = GetDeviceRequestValidationError{
 			field:  "Id",
 			reason: "value must be a valid UUID",
 			cause:  err,
 		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
 	}
 
+	if len(errors) > 0 {
+		return GetDeviceRequestMultiError(errors)
+	}
 	return nil
 }
 
@@ -263,6 +349,23 @@ func (m *GetDeviceRequest) _validateUuid(uuid string) error {
 
 	return nil
 }
+
+// GetDeviceRequestMultiError is an error wrapping multiple validation errors
+// returned by GetDeviceRequest.Validate(true) if the designated constraints
+// aren't met.
+type GetDeviceRequestMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m GetDeviceRequestMultiError) Error() string {
+	var msgs []string
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m GetDeviceRequestMultiError) AllErrors() []error { return m }
 
 // GetDeviceRequestValidationError is the validation error returned by
 // GetDeviceRequest.Validate if the designated constraints aren't met.
@@ -320,41 +423,78 @@ var _ interface {
 
 // Validate checks the field values on UpdateDeviceRequest with the rules
 // defined in the proto definition for this message. If any rules are
-// violated, an error is returned.
-func (m *UpdateDeviceRequest) Validate() error {
+// violated, an error is returned. When asked to return all errors, validation
+// continues after first violation, and the result is a list of violation
+// errors wrapped in UpdateDeviceRequestMultiError, or nil if none found.
+// Otherwise, only the first error is returned, if any.
+func (m *UpdateDeviceRequest) Validate(all bool) error {
 	if m == nil {
 		return nil
 	}
 
+	var errors []error
+
 	if m.GetDevice() == nil {
-		return UpdateDeviceRequestValidationError{
+		err := UpdateDeviceRequestValidationError{
 			field:  "Device",
 			reason: "value is required",
 		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
 	}
 
-	if v, ok := interface{}(m.GetDevice()).(interface{ Validate() error }); ok {
-		if err := v.Validate(); err != nil {
-			return UpdateDeviceRequestValidationError{
+	if v, ok := interface{}(m.GetDevice()).(interface{ Validate(bool) error }); ok {
+		if err := v.Validate(all); err != nil {
+			err = UpdateDeviceRequestValidationError{
 				field:  "Device",
 				reason: "embedded message failed validation",
 				cause:  err,
 			}
+			if !all {
+				return err
+			}
+			errors = append(errors, err)
 		}
 	}
 
-	if v, ok := interface{}(m.GetUpdateMask()).(interface{ Validate() error }); ok {
-		if err := v.Validate(); err != nil {
-			return UpdateDeviceRequestValidationError{
+	if v, ok := interface{}(m.GetUpdateMask()).(interface{ Validate(bool) error }); ok {
+		if err := v.Validate(all); err != nil {
+			err = UpdateDeviceRequestValidationError{
 				field:  "UpdateMask",
 				reason: "embedded message failed validation",
 				cause:  err,
 			}
+			if !all {
+				return err
+			}
+			errors = append(errors, err)
 		}
 	}
 
+	if len(errors) > 0 {
+		return UpdateDeviceRequestMultiError(errors)
+	}
 	return nil
 }
+
+// UpdateDeviceRequestMultiError is an error wrapping multiple validation
+// errors returned by UpdateDeviceRequest.Validate(true) if the designated
+// constraints aren't met.
+type UpdateDeviceRequestMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m UpdateDeviceRequestMultiError) Error() string {
+	var msgs []string
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m UpdateDeviceRequestMultiError) AllErrors() []error { return m }
 
 // UpdateDeviceRequestValidationError is the validation error returned by
 // UpdateDeviceRequest.Validate if the designated constraints aren't met.
@@ -414,20 +554,32 @@ var _ interface {
 
 // Validate checks the field values on DeleteDeviceLoRaWANRequest with the
 // rules defined in the proto definition for this message. If any rules are
-// violated, an error is returned.
-func (m *DeleteDeviceLoRaWANRequest) Validate() error {
+// violated, an error is returned. When asked to return all errors, validation
+// continues after first violation, and the result is a list of violation
+// errors wrapped in DeleteDeviceLoRaWANRequestMultiError, or nil if none
+// found. Otherwise, only the first error is returned, if any.
+func (m *DeleteDeviceLoRaWANRequest) Validate(all bool) error {
 	if m == nil {
 		return nil
 	}
 
+	var errors []error
+
 	if err := m._validateUuid(m.GetId()); err != nil {
-		return DeleteDeviceLoRaWANRequestValidationError{
+		err = DeleteDeviceLoRaWANRequestValidationError{
 			field:  "Id",
 			reason: "value must be a valid UUID",
 			cause:  err,
 		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
 	}
 
+	if len(errors) > 0 {
+		return DeleteDeviceLoRaWANRequestMultiError(errors)
+	}
 	return nil
 }
 
@@ -438,6 +590,23 @@ func (m *DeleteDeviceLoRaWANRequest) _validateUuid(uuid string) error {
 
 	return nil
 }
+
+// DeleteDeviceLoRaWANRequestMultiError is an error wrapping multiple
+// validation errors returned by DeleteDeviceLoRaWANRequest.Validate(true) if
+// the designated constraints aren't met.
+type DeleteDeviceLoRaWANRequestMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m DeleteDeviceLoRaWANRequestMultiError) Error() string {
+	var msgs []string
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m DeleteDeviceLoRaWANRequestMultiError) AllErrors() []error { return m }
 
 // DeleteDeviceLoRaWANRequestValidationError is the validation error returned
 // by DeleteDeviceLoRaWANRequest.Validate if the designated constraints aren't met.
@@ -497,20 +666,32 @@ var _ interface {
 
 // Validate checks the field values on DeleteDeviceRequest with the rules
 // defined in the proto definition for this message. If any rules are
-// violated, an error is returned.
-func (m *DeleteDeviceRequest) Validate() error {
+// violated, an error is returned. When asked to return all errors, validation
+// continues after first violation, and the result is a list of violation
+// errors wrapped in DeleteDeviceRequestMultiError, or nil if none found.
+// Otherwise, only the first error is returned, if any.
+func (m *DeleteDeviceRequest) Validate(all bool) error {
 	if m == nil {
 		return nil
 	}
 
+	var errors []error
+
 	if err := m._validateUuid(m.GetId()); err != nil {
-		return DeleteDeviceRequestValidationError{
+		err = DeleteDeviceRequestValidationError{
 			field:  "Id",
 			reason: "value must be a valid UUID",
 			cause:  err,
 		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
 	}
 
+	if len(errors) > 0 {
+		return DeleteDeviceRequestMultiError(errors)
+	}
 	return nil
 }
 
@@ -521,6 +702,23 @@ func (m *DeleteDeviceRequest) _validateUuid(uuid string) error {
 
 	return nil
 }
+
+// DeleteDeviceRequestMultiError is an error wrapping multiple validation
+// errors returned by DeleteDeviceRequest.Validate(true) if the designated
+// constraints aren't met.
+type DeleteDeviceRequestMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m DeleteDeviceRequestMultiError) Error() string {
+	var msgs []string
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m DeleteDeviceRequestMultiError) AllErrors() []error { return m }
 
 // DeleteDeviceRequestValidationError is the validation error returned by
 // DeleteDeviceRequest.Validate if the designated constraints aren't met.
@@ -580,30 +778,63 @@ var _ interface {
 
 // Validate checks the field values on ListDevicesRequest with the rules
 // defined in the proto definition for this message. If any rules are
-// violated, an error is returned.
-func (m *ListDevicesRequest) Validate() error {
+// violated, an error is returned. When asked to return all errors, validation
+// continues after first violation, and the result is a list of violation
+// errors wrapped in ListDevicesRequestMultiError, or nil if none found.
+// Otherwise, only the first error is returned, if any.
+func (m *ListDevicesRequest) Validate(all bool) error {
 	if m == nil {
 		return nil
 	}
 
+	var errors []error
+
 	if m.GetPageSize() > 250 {
-		return ListDevicesRequestValidationError{
+		err := ListDevicesRequestValidationError{
 			field:  "PageSize",
 			reason: "value must be less than or equal to 250",
 		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
 	}
 
 	// no validation rules for PageToken
 
 	if utf8.RuneCountInString(m.GetTag()) > 255 {
-		return ListDevicesRequestValidationError{
+		err := ListDevicesRequestValidationError{
 			field:  "Tag",
 			reason: "value length must be at most 255 runes",
 		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
 	}
 
+	if len(errors) > 0 {
+		return ListDevicesRequestMultiError(errors)
+	}
 	return nil
 }
+
+// ListDevicesRequestMultiError is an error wrapping multiple validation errors
+// returned by ListDevicesRequest.Validate(true) if the designated constraints
+// aren't met.
+type ListDevicesRequestMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m ListDevicesRequestMultiError) Error() string {
+	var msgs []string
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m ListDevicesRequestMultiError) AllErrors() []error { return m }
 
 // ListDevicesRequestValidationError is the validation error returned by
 // ListDevicesRequest.Validate if the designated constraints aren't met.
@@ -663,22 +894,31 @@ var _ interface {
 
 // Validate checks the field values on ListDevicesResponse with the rules
 // defined in the proto definition for this message. If any rules are
-// violated, an error is returned.
-func (m *ListDevicesResponse) Validate() error {
+// violated, an error is returned. When asked to return all errors, validation
+// continues after first violation, and the result is a list of violation
+// errors wrapped in ListDevicesResponseMultiError, or nil if none found.
+// Otherwise, only the first error is returned, if any.
+func (m *ListDevicesResponse) Validate(all bool) error {
 	if m == nil {
 		return nil
 	}
 
+	var errors []error
+
 	for idx, item := range m.GetDevices() {
 		_, _ = idx, item
 
-		if v, ok := interface{}(item).(interface{ Validate() error }); ok {
-			if err := v.Validate(); err != nil {
-				return ListDevicesResponseValidationError{
+		if v, ok := interface{}(item).(interface{ Validate(bool) error }); ok {
+			if err := v.Validate(all); err != nil {
+				err = ListDevicesResponseValidationError{
 					field:  fmt.Sprintf("Devices[%v]", idx),
 					reason: "embedded message failed validation",
 					cause:  err,
 				}
+				if !all {
+					return err
+				}
+				errors = append(errors, err)
 			}
 		}
 
@@ -688,8 +928,28 @@ func (m *ListDevicesResponse) Validate() error {
 
 	// no validation rules for TotalSize
 
+	if len(errors) > 0 {
+		return ListDevicesResponseMultiError(errors)
+	}
 	return nil
 }
+
+// ListDevicesResponseMultiError is an error wrapping multiple validation
+// errors returned by ListDevicesResponse.Validate(true) if the designated
+// constraints aren't met.
+type ListDevicesResponseMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m ListDevicesResponseMultiError) Error() string {
+	var msgs []string
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m ListDevicesResponseMultiError) AllErrors() []error { return m }
 
 // ListDevicesResponseValidationError is the validation error returned by
 // ListDevicesResponse.Validate if the designated constraints aren't met.
@@ -749,14 +1009,41 @@ var _ interface {
 
 // Validate checks the field values on
 // CreateDeviceLoRaWANRequest_GatewayLoRaWANType with the rules defined in the
-// proto definition for this message. If any rules are violated, an error is returned.
-func (m *CreateDeviceLoRaWANRequest_GatewayLoRaWANType) Validate() error {
+// proto definition for this message. If any rules are violated, an error is
+// returned. When asked to return all errors, validation continues after first
+// violation, and the result is a list of violation errors wrapped in
+// CreateDeviceLoRaWANRequest_GatewayLoRaWANTypeMultiError, or nil if none
+// found. Otherwise, only the first error is returned, if any.
+func (m *CreateDeviceLoRaWANRequest_GatewayLoRaWANType) Validate(all bool) error {
 	if m == nil {
 		return nil
 	}
 
+	var errors []error
+
+	if len(errors) > 0 {
+		return CreateDeviceLoRaWANRequest_GatewayLoRaWANTypeMultiError(errors)
+	}
 	return nil
 }
+
+// CreateDeviceLoRaWANRequest_GatewayLoRaWANTypeMultiError is an error wrapping
+// multiple validation errors returned by
+// CreateDeviceLoRaWANRequest_GatewayLoRaWANType.Validate(true) if the
+// designated constraints aren't met.
+type CreateDeviceLoRaWANRequest_GatewayLoRaWANTypeMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m CreateDeviceLoRaWANRequest_GatewayLoRaWANTypeMultiError) Error() string {
+	var msgs []string
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m CreateDeviceLoRaWANRequest_GatewayLoRaWANTypeMultiError) AllErrors() []error { return m }
 
 // CreateDeviceLoRaWANRequest_GatewayLoRaWANTypeValidationError is the
 // validation error returned by
@@ -820,22 +1107,53 @@ var _ interface {
 
 // Validate checks the field values on
 // CreateDeviceLoRaWANRequest_DeviceLoRaWANType with the rules defined in the
-// proto definition for this message. If any rules are violated, an error is returned.
-func (m *CreateDeviceLoRaWANRequest_DeviceLoRaWANType) Validate() error {
+// proto definition for this message. If any rules are violated, an error is
+// returned. When asked to return all errors, validation continues after first
+// violation, and the result is a list of violation errors wrapped in
+// CreateDeviceLoRaWANRequest_DeviceLoRaWANTypeMultiError, or nil if none
+// found. Otherwise, only the first error is returned, if any.
+func (m *CreateDeviceLoRaWANRequest_DeviceLoRaWANType) Validate(all bool) error {
 	if m == nil {
 		return nil
 	}
 
+	var errors []error
+
 	if utf8.RuneCountInString(m.GetAppKey()) != 32 {
-		return CreateDeviceLoRaWANRequest_DeviceLoRaWANTypeValidationError{
+		err := CreateDeviceLoRaWANRequest_DeviceLoRaWANTypeValidationError{
 			field:  "AppKey",
 			reason: "value length must be 32 runes",
 		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
 
 	}
 
+	if len(errors) > 0 {
+		return CreateDeviceLoRaWANRequest_DeviceLoRaWANTypeMultiError(errors)
+	}
 	return nil
 }
+
+// CreateDeviceLoRaWANRequest_DeviceLoRaWANTypeMultiError is an error wrapping
+// multiple validation errors returned by
+// CreateDeviceLoRaWANRequest_DeviceLoRaWANType.Validate(true) if the
+// designated constraints aren't met.
+type CreateDeviceLoRaWANRequest_DeviceLoRaWANTypeMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m CreateDeviceLoRaWANRequest_DeviceLoRaWANTypeMultiError) Error() string {
+	var msgs []string
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m CreateDeviceLoRaWANRequest_DeviceLoRaWANTypeMultiError) AllErrors() []error { return m }
 
 // CreateDeviceLoRaWANRequest_DeviceLoRaWANTypeValidationError is the
 // validation error returned by

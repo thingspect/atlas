@@ -148,7 +148,8 @@ func (ra *RuleAlarm) UpdateRule(ctx context.Context,
 	}
 
 	if req.Rule == nil {
-		return nil, status.Error(codes.InvalidArgument, req.Validate().Error())
+		return nil, status.Error(codes.InvalidArgument,
+			req.Validate(false).Error())
 	}
 	req.Rule.OrgId = sess.OrgID
 
@@ -172,7 +173,7 @@ func (ra *RuleAlarm) UpdateRule(ctx context.Context,
 	}
 
 	// Validate after merge to support partial updates.
-	if err := req.Validate(); err != nil {
+	if err := req.Validate(false); err != nil {
 		return nil, status.Error(codes.InvalidArgument, err.Error())
 	}
 
@@ -194,7 +195,8 @@ func (ra *RuleAlarm) UpdateAlarm(ctx context.Context,
 	}
 
 	if req.Alarm == nil {
-		return nil, status.Error(codes.InvalidArgument, req.Validate().Error())
+		return nil, status.Error(codes.InvalidArgument,
+			req.Validate(false).Error())
 	}
 	req.Alarm.OrgId = sess.OrgID
 
@@ -222,7 +224,7 @@ func (ra *RuleAlarm) UpdateAlarm(ctx context.Context,
 	}
 
 	// Validate after merge to support partial updates.
-	if err := req.Validate(); err != nil {
+	if err := req.Validate(false); err != nil {
 		return nil, status.Error(codes.InvalidArgument, err.Error())
 	}
 

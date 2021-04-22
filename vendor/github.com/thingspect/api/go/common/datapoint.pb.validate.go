@@ -15,7 +15,7 @@ import (
 	"time"
 	"unicode/utf8"
 
-	"github.com/golang/protobuf/ptypes"
+	"google.golang.org/protobuf/types/known/anypb"
 )
 
 // ensure the imports are used
@@ -30,37 +30,55 @@ var (
 	_ = time.Duration(0)
 	_ = (*url.URL)(nil)
 	_ = (*mail.Address)(nil)
-	_ = ptypes.DynamicAny{}
+	_ = anypb.Any{}
 )
 
 // Validate checks the field values on DataPoint with the rules defined in the
-// proto definition for this message. If any rules are violated, an error is returned.
-func (m *DataPoint) Validate() error {
+// proto definition for this message. If any rules are violated, an error is
+// returned. When asked to return all errors, validation continues after first
+// violation, and the result is a list of violation errors wrapped in
+// DataPointMultiError, or nil if none found. Otherwise, only the first error
+// is returned, if any.
+func (m *DataPoint) Validate(all bool) error {
 	if m == nil {
 		return nil
 	}
 
+	var errors []error
+
 	if l := utf8.RuneCountInString(m.GetUniqId()); l < 5 || l > 40 {
-		return DataPointValidationError{
+		err := DataPointValidationError{
 			field:  "UniqId",
 			reason: "value length must be between 5 and 40 runes, inclusive",
 		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
 	}
 
 	if utf8.RuneCountInString(m.GetAttr()) > 40 {
-		return DataPointValidationError{
+		err := DataPointValidationError{
 			field:  "Attr",
 			reason: "value length must be at most 40 runes",
 		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
 	}
 
-	if v, ok := interface{}(m.GetTs()).(interface{ Validate() error }); ok {
-		if err := v.Validate(); err != nil {
-			return DataPointValidationError{
+	if v, ok := interface{}(m.GetTs()).(interface{ Validate(bool) error }); ok {
+		if err := v.Validate(all); err != nil {
+			err = DataPointValidationError{
 				field:  "Ts",
 				reason: "embedded message failed validation",
 				cause:  err,
 			}
+			if !all {
+				return err
+			}
+			errors = append(errors, err)
 		}
 	}
 
@@ -86,15 +104,38 @@ func (m *DataPoint) Validate() error {
 		// no validation rules for BytesVal
 
 	default:
-		return DataPointValidationError{
+		err := DataPointValidationError{
 			field:  "ValOneof",
 			reason: "value is required",
 		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
 
 	}
 
+	if len(errors) > 0 {
+		return DataPointMultiError(errors)
+	}
 	return nil
 }
+
+// DataPointMultiError is an error wrapping multiple validation errors returned
+// by DataPoint.Validate(true) if the designated constraints aren't met.
+type DataPointMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m DataPointMultiError) Error() string {
+	var msgs []string
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m DataPointMultiError) AllErrors() []error { return m }
 
 // DataPointValidationError is the validation error returned by
 // DataPoint.Validate if the designated constraints aren't met.

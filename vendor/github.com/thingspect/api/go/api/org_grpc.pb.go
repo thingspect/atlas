@@ -27,7 +27,7 @@ type OrgServiceClient interface {
 	UpdateOrg(ctx context.Context, in *UpdateOrgRequest, opts ...grpc.CallOption) (*Org, error)
 	// Delete an organization by ID.
 	DeleteOrg(ctx context.Context, in *DeleteOrgRequest, opts ...grpc.CallOption) (*empty.Empty, error)
-	// List all orgs.
+	// List all organizations.
 	ListOrgs(ctx context.Context, in *ListOrgsRequest, opts ...grpc.CallOption) (*ListOrgsResponse, error)
 }
 
@@ -96,7 +96,7 @@ type OrgServiceServer interface {
 	UpdateOrg(context.Context, *UpdateOrgRequest) (*Org, error)
 	// Delete an organization by ID.
 	DeleteOrg(context.Context, *DeleteOrgRequest) (*empty.Empty, error)
-	// List all orgs.
+	// List all organizations.
 	ListOrgs(context.Context, *ListOrgsRequest) (*ListOrgsResponse, error)
 	mustEmbedUnimplementedOrgServiceServer()
 }

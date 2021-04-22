@@ -669,7 +669,7 @@
     },
     "/v1/organizations": {
       "get": {
-        "summary": "List all orgs.",
+        "summary": "List all organizations.",
         "operationId": "OrgService_ListOrgs",
         "responses": {
           "200": {
@@ -2385,7 +2385,7 @@
         "totalSize": {
           "type": "integer",
           "format": "int32",
-          "description": "Total number of orgs available."
+          "description": "Total number of organizations available."
         }
       },
       "description": "ListOrgsResponse is sent in response to an organization list."
