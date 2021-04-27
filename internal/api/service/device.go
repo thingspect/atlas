@@ -131,7 +131,7 @@ func (d *Device) UpdateDevice(ctx context.Context,
 
 	if req.Device == nil {
 		return nil, status.Error(codes.InvalidArgument,
-			req.Validate(false).Error())
+			req.Validate().Error())
 	}
 	req.Device.OrgId = sess.OrgID
 
@@ -158,7 +158,7 @@ func (d *Device) UpdateDevice(ctx context.Context,
 	}
 
 	// Validate after merge to support partial updates.
-	if err := req.Validate(false); err != nil {
+	if err := req.Validate(); err != nil {
 		return nil, status.Error(codes.InvalidArgument, err.Error())
 	}
 

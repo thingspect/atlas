@@ -57,8 +57,7 @@ var (
 
 func TestMain(m *testing.M) {
 	key := make([]byte, 32)
-	_, err := rand.Read(key)
-	if err != nil {
+	if _, err := rand.Read(key); err != nil {
 		log.Fatalf("TestMain rand.Read: %v", err)
 	}
 

@@ -2090,7 +2090,7 @@
         "EMAIL"
       ],
       "default": "ALARM_TYPE_UNSPECIFIED",
-      "description": "AlarmType represents the type of alarm.\n\n - ALARM_TYPE_UNSPECIFIED: Alarm type is not specified.\n - APP: Push notification via mobile application.\n - SMS: SMS notification.\n - EMAIL: Email notification."
+      "description": "AlarmType represents the type of an alarm.\n\n - ALARM_TYPE_UNSPECIFIED: Alarm type is not specified.\n - APP: Push notification via mobile application.\n - SMS: SMS notification.\n - EMAIL: Email notification."
     },
     "apiAlert": {
       "type": "object",

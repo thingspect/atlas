@@ -34,126 +34,73 @@ var (
 )
 
 // Validate checks the field values on Rule with the rules defined in the proto
-// definition for this message. If any rules are violated, an error is
-// returned. When asked to return all errors, validation continues after first
-// violation, and the result is a list of violation errors wrapped in
-// RuleMultiError, or nil if none found. Otherwise, only the first error is
-// returned, if any.
-func (m *Rule) Validate(all bool) error {
+// definition for this message. If any rules are violated, an error is returned.
+func (m *Rule) Validate() error {
 	if m == nil {
 		return nil
 	}
-
-	var errors []error
 
 	// no validation rules for Id
 
 	// no validation rules for OrgId
 
 	if l := utf8.RuneCountInString(m.GetName()); l < 5 || l > 80 {
-		err := RuleValidationError{
+		return RuleValidationError{
 			field:  "Name",
 			reason: "value length must be between 5 and 80 runes, inclusive",
 		}
-		if !all {
-			return err
-		}
-		errors = append(errors, err)
 	}
 
 	if _, ok := _Rule_Status_InLookup[m.GetStatus()]; !ok {
-		err := RuleValidationError{
+		return RuleValidationError{
 			field:  "Status",
 			reason: "value must be in list [3 6]",
 		}
-		if !all {
-			return err
-		}
-		errors = append(errors, err)
 	}
 
 	if utf8.RuneCountInString(m.GetDeviceTag()) > 255 {
-		err := RuleValidationError{
+		return RuleValidationError{
 			field:  "DeviceTag",
 			reason: "value length must be at most 255 runes",
 		}
-		if !all {
-			return err
-		}
-		errors = append(errors, err)
 	}
 
 	if utf8.RuneCountInString(m.GetAttr()) > 40 {
-		err := RuleValidationError{
+		return RuleValidationError{
 			field:  "Attr",
 			reason: "value length must be at most 40 runes",
 		}
-		if !all {
-			return err
-		}
-		errors = append(errors, err)
 	}
 
 	if utf8.RuneCountInString(m.GetExpr()) > 1024 {
-		err := RuleValidationError{
+		return RuleValidationError{
 			field:  "Expr",
 			reason: "value length must be at most 1024 runes",
 		}
-		if !all {
-			return err
-		}
-		errors = append(errors, err)
 	}
 
-	if v, ok := interface{}(m.GetCreatedAt()).(interface{ Validate(bool) error }); ok {
-		if err := v.Validate(all); err != nil {
-			err = RuleValidationError{
+	if v, ok := interface{}(m.GetCreatedAt()).(interface{ Validate() error }); ok {
+		if err := v.Validate(); err != nil {
+			return RuleValidationError{
 				field:  "CreatedAt",
 				reason: "embedded message failed validation",
 				cause:  err,
 			}
-			if !all {
-				return err
-			}
-			errors = append(errors, err)
 		}
 	}
 
-	if v, ok := interface{}(m.GetUpdatedAt()).(interface{ Validate(bool) error }); ok {
-		if err := v.Validate(all); err != nil {
-			err = RuleValidationError{
+	if v, ok := interface{}(m.GetUpdatedAt()).(interface{ Validate() error }); ok {
+		if err := v.Validate(); err != nil {
+			return RuleValidationError{
 				field:  "UpdatedAt",
 				reason: "embedded message failed validation",
 				cause:  err,
 			}
-			if !all {
-				return err
-			}
-			errors = append(errors, err)
 		}
 	}
 
-	if len(errors) > 0 {
-		return RuleMultiError(errors)
-	}
 	return nil
 }
-
-// RuleMultiError is an error wrapping multiple validation errors returned by
-// Rule.Validate(true) if the designated constraints aren't met.
-type RuleMultiError []error
-
-// Error returns a concatenation of all the error messages it wraps.
-func (m RuleMultiError) Error() string {
-	var msgs []string
-	for _, err := range m {
-		msgs = append(msgs, err.Error())
-	}
-	return strings.Join(msgs, "; ")
-}
-
-// AllErrors returns a list of validation violation errors.
-func (m RuleMultiError) AllErrors() []error { return m }
 
 // RuleValidationError is the validation error returned by Rule.Validate if the
 // designated constraints aren't met.

@@ -155,7 +155,7 @@ func New(cfg *config.Config) (*API, error) {
 		return nil, err
 	}
 
-	// Event.
+	// Event and Alarm.
 	if err := api.RegisterEventServiceHandlerFromEndpoint(ctx, gwMux,
 		GRPCHost+GRPCPort, opts); err != nil {
 		cancel()

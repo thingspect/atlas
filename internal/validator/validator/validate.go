@@ -67,7 +67,7 @@ func (val *Validator) validateMessages() {
 		logger = logger.WithStr("devID", dev.Id)
 
 		// Perform validation.
-		switch err := vIn.Point.Validate(false); {
+		switch err := vIn.Point.Validate(); {
 		case err != nil:
 			msg.Ack()
 			metric.Incr("invalid", map[string]string{"func": "validate"})

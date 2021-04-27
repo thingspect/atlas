@@ -38,24 +38,26 @@ func TestListAlerts(t *testing.T) {
 			"", end, start).Return([]*api.Alert{retAlert}, nil).Times(1)
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
-			context.Background(), &session.Session{OrgID: alert.OrgId,
-				Role: common.Role_ADMIN}), testTimeout)
+			context.Background(), &session.Session{
+				OrgID: alert.OrgId, Role: common.Role_ADMIN,
+			}), testTimeout)
 		defer cancel()
 
 		aleSvc := NewAlert(alerter)
 		listAlerts, err := aleSvc.ListAlerts(ctx, &api.ListAlertsRequest{
 			IdOneof: &api.ListAlertsRequest_UniqId{UniqId: alert.UniqId},
-			EndTime: timestamppb.New(end), StartTime: timestamppb.New(start)})
+			EndTime: timestamppb.New(end), StartTime: timestamppb.New(start),
+		})
 		t.Logf("alert, listAlerts, err: %+v, %+v, %v", alert, listAlerts, err)
 		require.NoError(t, err)
 
 		// Testify does not currently support protobuf equality:
 		// https://github.com/stretchr/testify/issues/758
-		if !proto.Equal(&api.ListAlertsResponse{
-			Alerts: []*api.Alert{alert}}, listAlerts) {
-			t.Fatalf("\nExpect: %+v\nActual: %+v",
-				&api.ListAlertsResponse{
-					Alerts: []*api.Alert{alert}}, listAlerts)
+		if !proto.Equal(&api.ListAlertsResponse{Alerts: []*api.Alert{alert}},
+			listAlerts) {
+			t.Fatalf("\nExpect: %+v\nActual: %+v", &api.ListAlertsResponse{
+				Alerts: []*api.Alert{alert},
+			}, listAlerts)
 		}
 	})
 
@@ -74,24 +76,26 @@ func TestListAlerts(t *testing.T) {
 			Return([]*api.Alert{retAlert}, nil).Times(1)
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
-			context.Background(), &session.Session{OrgID: alert.OrgId,
-				Role: common.Role_ADMIN}), testTimeout)
+			context.Background(), &session.Session{
+				OrgID: alert.OrgId, Role: common.Role_ADMIN,
+			}), testTimeout)
 		defer cancel()
 
 		aleSvc := NewAlert(alerter)
 		listAlerts, err := aleSvc.ListAlerts(ctx, &api.ListAlertsRequest{
 			IdOneof: &api.ListAlertsRequest_DeviceId{DeviceId: devID},
-			AlarmId: alarmID})
+			AlarmId: alarmID,
+		})
 		t.Logf("alert, listAlerts, err: %+v, %+v, %v", alert, listAlerts, err)
 		require.NoError(t, err)
 
 		// Testify does not currently support protobuf equality:
 		// https://github.com/stretchr/testify/issues/758
-		if !proto.Equal(&api.ListAlertsResponse{
-			Alerts: []*api.Alert{alert}}, listAlerts) {
-			t.Fatalf("\nExpect: %+v\nActual: %+v",
-				&api.ListAlertsResponse{
-					Alerts: []*api.Alert{alert}}, listAlerts)
+		if !proto.Equal(&api.ListAlertsResponse{Alerts: []*api.Alert{alert}},
+			listAlerts) {
+			t.Fatalf("\nExpect: %+v\nActual: %+v", &api.ListAlertsResponse{
+				Alerts: []*api.Alert{alert},
+			}, listAlerts)
 		}
 	})
 
@@ -109,23 +113,24 @@ func TestListAlerts(t *testing.T) {
 			Return([]*api.Alert{retAlert}, nil).Times(1)
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
-			context.Background(), &session.Session{OrgID: alert.OrgId,
-				Role: common.Role_ADMIN}), testTimeout)
+			context.Background(), &session.Session{
+				OrgID: alert.OrgId, Role: common.Role_ADMIN,
+			}), testTimeout)
 		defer cancel()
 
 		aleSvc := NewAlert(alerter)
-		listAlerts, err := aleSvc.ListAlerts(ctx, &api.ListAlertsRequest{
-			UserId: userID})
+		listAlerts, err := aleSvc.ListAlerts(ctx,
+			&api.ListAlertsRequest{UserId: userID})
 		t.Logf("alert, listAlerts, err: %+v, %+v, %v", alert, listAlerts, err)
 		require.NoError(t, err)
 
 		// Testify does not currently support protobuf equality:
 		// https://github.com/stretchr/testify/issues/758
-		if !proto.Equal(&api.ListAlertsResponse{
-			Alerts: []*api.Alert{alert}}, listAlerts) {
-			t.Fatalf("\nExpect: %+v\nActual: %+v",
-				&api.ListAlertsResponse{
-					Alerts: []*api.Alert{alert}}, listAlerts)
+		if !proto.Equal(&api.ListAlertsResponse{Alerts: []*api.Alert{alert}},
+			listAlerts) {
+			t.Fatalf("\nExpect: %+v\nActual: %+v", &api.ListAlertsResponse{
+				Alerts: []*api.Alert{alert},
+			}, listAlerts)
 		}
 	})
 
@@ -146,8 +151,9 @@ func TestListAlerts(t *testing.T) {
 		t.Parallel()
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
-			context.Background(), &session.Session{OrgID: uuid.NewString(),
-				Role: common.Role_CONTACT}), testTimeout)
+			context.Background(), &session.Session{
+				OrgID: uuid.NewString(), Role: common.Role_CONTACT,
+			}), testTimeout)
 		defer cancel()
 
 		aleSvc := NewAlert(nil)
@@ -161,15 +167,17 @@ func TestListAlerts(t *testing.T) {
 		t.Parallel()
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
-			context.Background(), &session.Session{OrgID: uuid.NewString(),
-				Role: common.Role_ADMIN}), testTimeout)
+			context.Background(), &session.Session{
+				OrgID: uuid.NewString(), Role: common.Role_ADMIN,
+			}), testTimeout)
 		defer cancel()
 
 		aleSvc := NewAlert(nil)
 		listAlerts, err := aleSvc.ListAlerts(ctx, &api.ListAlertsRequest{
 			IdOneof: &api.ListAlertsRequest_UniqId{UniqId: "api-alert-" +
 				random.String(16)}, EndTime: timestamppb.Now(),
-			StartTime: timestamppb.New(time.Now().Add(-91 * 24 * time.Hour))})
+			StartTime: timestamppb.New(time.Now().Add(-91 * 24 * time.Hour)),
+		})
 		t.Logf("listAlerts, err: %+v, %v", listAlerts, err)
 		require.Nil(t, listAlerts)
 		require.Equal(t, status.Error(codes.InvalidArgument,
@@ -185,14 +193,16 @@ func TestListAlerts(t *testing.T) {
 			dao.ErrInvalidFormat).Times(1)
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
-			context.Background(), &session.Session{OrgID: "aaa",
-				Role: common.Role_ADMIN}), testTimeout)
+			context.Background(), &session.Session{
+				OrgID: "aaa", Role: common.Role_ADMIN,
+			}), testTimeout)
 		defer cancel()
 
 		aleSvc := NewAlert(alerter)
 		listAlerts, err := aleSvc.ListAlerts(ctx, &api.ListAlertsRequest{
 			IdOneof: &api.ListAlertsRequest_UniqId{UniqId: "api-alert-" +
-				random.String(16)}})
+				random.String(16)},
+		})
 		t.Logf("listAlerts, err: %+v, %v", listAlerts, err)
 		require.Nil(t, listAlerts)
 		require.Equal(t, status.Error(codes.InvalidArgument, "invalid format"),
