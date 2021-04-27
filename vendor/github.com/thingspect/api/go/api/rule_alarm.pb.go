@@ -27,7 +27,7 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
-// AlarmType represents the type of alarm.
+// AlarmType represents the type of an alarm.
 type AlarmType int32
 
 const (

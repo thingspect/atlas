@@ -119,7 +119,7 @@ func (u *User) UpdateUser(ctx context.Context,
 
 	if req.User == nil {
 		return nil, status.Error(codes.InvalidArgument,
-			req.Validate(false).Error())
+			req.Validate().Error())
 	}
 	req.User.OrgId = sess.OrgID
 
@@ -166,7 +166,7 @@ func (u *User) UpdateUser(ctx context.Context,
 	}
 
 	// Validate after merge to support partial updates.
-	if err := req.Validate(false); err != nil {
+	if err := req.Validate(); err != nil {
 		return nil, status.Error(codes.InvalidArgument, err.Error())
 	}
 

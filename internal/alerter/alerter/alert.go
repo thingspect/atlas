@@ -136,7 +136,8 @@ func (ale *Alerter) alertMessages() {
 				cancel()
 				if err != nil {
 					metric.Incr("error", map[string]string{
-						"func": "setifnotexist"})
+						"func": "setifnotexist",
+					})
 					logger.Errorf("alertMessages ale.cache.SetIfNotExistTTL: "+
 						"%v", err)
 
@@ -159,8 +160,6 @@ func (ale *Alerter) alertMessages() {
 				case api.AlarmType_EMAIL:
 					err = ale.notify.Email(ctx, org.DisplayName, org.Email,
 						user.Email, subj, body)
-				case api.AlarmType_ALARM_TYPE_UNSPECIFIED:
-					fallthrough
 				default:
 					err = ErrUnknownAlarm
 				}
@@ -183,7 +182,8 @@ func (ale *Alerter) alertMessages() {
 				} else {
 					alert.Status = api.AlertStatus_SENT
 					metric.Incr("sent", map[string]string{
-						"type": a.Type.String()})
+						"type": a.Type.String(),
+					})
 					logger.Debugf("alertMessages sent user, msg: %+v, %v", user,
 						subj+" - "+body)
 				}

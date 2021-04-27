@@ -37,85 +37,56 @@ var (
 var _org_uuidPattern = regexp.MustCompile("^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$")
 
 // Validate checks the field values on Org with the rules defined in the proto
-// definition for this message. If any rules are violated, an error is
-// returned. When asked to return all errors, validation continues after first
-// violation, and the result is a list of violation errors wrapped in
-// OrgMultiError, or nil if none found. Otherwise, only the first error is
-// returned, if any.
-func (m *Org) Validate(all bool) error {
+// definition for this message. If any rules are violated, an error is returned.
+func (m *Org) Validate() error {
 	if m == nil {
 		return nil
 	}
 
-	var errors []error
-
 	// no validation rules for Id
 
 	if l := utf8.RuneCountInString(m.GetName()); l < 5 || l > 40 {
-		err := OrgValidationError{
+		return OrgValidationError{
 			field:  "Name",
 			reason: "value length must be between 5 and 40 runes, inclusive",
 		}
-		if !all {
-			return err
-		}
-		errors = append(errors, err)
 	}
 
 	if l := utf8.RuneCountInString(m.GetDisplayName()); l < 5 || l > 80 {
-		err := OrgValidationError{
+		return OrgValidationError{
 			field:  "DisplayName",
 			reason: "value length must be between 5 and 80 runes, inclusive",
 		}
-		if !all {
-			return err
-		}
-		errors = append(errors, err)
 	}
 
 	if err := m._validateEmail(m.GetEmail()); err != nil {
-		err = OrgValidationError{
+		return OrgValidationError{
 			field:  "Email",
 			reason: "value must be a valid email address",
 			cause:  err,
 		}
-		if !all {
-			return err
-		}
-		errors = append(errors, err)
 	}
 
-	if v, ok := interface{}(m.GetCreatedAt()).(interface{ Validate(bool) error }); ok {
-		if err := v.Validate(all); err != nil {
-			err = OrgValidationError{
+	if v, ok := interface{}(m.GetCreatedAt()).(interface{ Validate() error }); ok {
+		if err := v.Validate(); err != nil {
+			return OrgValidationError{
 				field:  "CreatedAt",
 				reason: "embedded message failed validation",
 				cause:  err,
 			}
-			if !all {
-				return err
-			}
-			errors = append(errors, err)
 		}
 	}
 
-	if v, ok := interface{}(m.GetUpdatedAt()).(interface{ Validate(bool) error }); ok {
-		if err := v.Validate(all); err != nil {
-			err = OrgValidationError{
+	if v, ok := interface{}(m.GetUpdatedAt()).(interface{ Validate() error }); ok {
+		if err := v.Validate(); err != nil {
+			return OrgValidationError{
 				field:  "UpdatedAt",
 				reason: "embedded message failed validation",
 				cause:  err,
 			}
-			if !all {
-				return err
-			}
-			errors = append(errors, err)
 		}
 	}
 
-	if len(errors) > 0 {
-		return OrgMultiError(errors)
-	}
 	return nil
 }
 
@@ -168,22 +139,6 @@ func (m *Org) _validateEmail(addr string) error {
 
 	return m._validateHostname(parts[1])
 }
-
-// OrgMultiError is an error wrapping multiple validation errors returned by
-// Org.Validate(true) if the designated constraints aren't met.
-type OrgMultiError []error
-
-// Error returns a concatenation of all the error messages it wraps.
-func (m OrgMultiError) Error() string {
-	var msgs []string
-	for _, err := range m {
-		msgs = append(msgs, err.Error())
-	}
-	return strings.Join(msgs, "; ")
-}
-
-// AllErrors returns a list of validation violation errors.
-func (m OrgMultiError) AllErrors() []error { return m }
 
 // OrgValidationError is the validation error returned by Org.Validate if the
 // designated constraints aren't met.
@@ -241,64 +196,31 @@ var _ interface {
 
 // Validate checks the field values on CreateOrgRequest with the rules defined
 // in the proto definition for this message. If any rules are violated, an
-// error is returned. When asked to return all errors, validation continues
-// after first violation, and the result is a list of violation errors wrapped
-// in CreateOrgRequestMultiError, or nil if none found. Otherwise, only the
-// first error is returned, if any.
-func (m *CreateOrgRequest) Validate(all bool) error {
+// error is returned.
+func (m *CreateOrgRequest) Validate() error {
 	if m == nil {
 		return nil
 	}
 
-	var errors []error
-
 	if m.GetOrg() == nil {
-		err := CreateOrgRequestValidationError{
+		return CreateOrgRequestValidationError{
 			field:  "Org",
 			reason: "value is required",
 		}
-		if !all {
-			return err
-		}
-		errors = append(errors, err)
 	}
 
-	if v, ok := interface{}(m.GetOrg()).(interface{ Validate(bool) error }); ok {
-		if err := v.Validate(all); err != nil {
-			err = CreateOrgRequestValidationError{
+	if v, ok := interface{}(m.GetOrg()).(interface{ Validate() error }); ok {
+		if err := v.Validate(); err != nil {
+			return CreateOrgRequestValidationError{
 				field:  "Org",
 				reason: "embedded message failed validation",
 				cause:  err,
 			}
-			if !all {
-				return err
-			}
-			errors = append(errors, err)
 		}
 	}
 
-	if len(errors) > 0 {
-		return CreateOrgRequestMultiError(errors)
-	}
 	return nil
 }
-
-// CreateOrgRequestMultiError is an error wrapping multiple validation errors
-// returned by CreateOrgRequest.Validate(true) if the designated constraints
-// aren't met.
-type CreateOrgRequestMultiError []error
-
-// Error returns a concatenation of all the error messages it wraps.
-func (m CreateOrgRequestMultiError) Error() string {
-	var msgs []string
-	for _, err := range m {
-		msgs = append(msgs, err.Error())
-	}
-	return strings.Join(msgs, "; ")
-}
-
-// AllErrors returns a list of validation violation errors.
-func (m CreateOrgRequestMultiError) AllErrors() []error { return m }
 
 // CreateOrgRequestValidationError is the validation error returned by
 // CreateOrgRequest.Validate if the designated constraints aren't met.
@@ -356,32 +278,20 @@ var _ interface {
 
 // Validate checks the field values on GetOrgRequest with the rules defined in
 // the proto definition for this message. If any rules are violated, an error
-// is returned. When asked to return all errors, validation continues after
-// first violation, and the result is a list of violation errors wrapped in
-// GetOrgRequestMultiError, or nil if none found. Otherwise, only the first
-// error is returned, if any.
-func (m *GetOrgRequest) Validate(all bool) error {
+// is returned.
+func (m *GetOrgRequest) Validate() error {
 	if m == nil {
 		return nil
 	}
 
-	var errors []error
-
 	if err := m._validateUuid(m.GetId()); err != nil {
-		err = GetOrgRequestValidationError{
+		return GetOrgRequestValidationError{
 			field:  "Id",
 			reason: "value must be a valid UUID",
 			cause:  err,
 		}
-		if !all {
-			return err
-		}
-		errors = append(errors, err)
 	}
 
-	if len(errors) > 0 {
-		return GetOrgRequestMultiError(errors)
-	}
 	return nil
 }
 
@@ -392,23 +302,6 @@ func (m *GetOrgRequest) _validateUuid(uuid string) error {
 
 	return nil
 }
-
-// GetOrgRequestMultiError is an error wrapping multiple validation errors
-// returned by GetOrgRequest.Validate(true) if the designated constraints
-// aren't met.
-type GetOrgRequestMultiError []error
-
-// Error returns a concatenation of all the error messages it wraps.
-func (m GetOrgRequestMultiError) Error() string {
-	var msgs []string
-	for _, err := range m {
-		msgs = append(msgs, err.Error())
-	}
-	return strings.Join(msgs, "; ")
-}
-
-// AllErrors returns a list of validation violation errors.
-func (m GetOrgRequestMultiError) AllErrors() []error { return m }
 
 // GetOrgRequestValidationError is the validation error returned by
 // GetOrgRequest.Validate if the designated constraints aren't met.
@@ -466,78 +359,41 @@ var _ interface {
 
 // Validate checks the field values on UpdateOrgRequest with the rules defined
 // in the proto definition for this message. If any rules are violated, an
-// error is returned. When asked to return all errors, validation continues
-// after first violation, and the result is a list of violation errors wrapped
-// in UpdateOrgRequestMultiError, or nil if none found. Otherwise, only the
-// first error is returned, if any.
-func (m *UpdateOrgRequest) Validate(all bool) error {
+// error is returned.
+func (m *UpdateOrgRequest) Validate() error {
 	if m == nil {
 		return nil
 	}
 
-	var errors []error
-
 	if m.GetOrg() == nil {
-		err := UpdateOrgRequestValidationError{
+		return UpdateOrgRequestValidationError{
 			field:  "Org",
 			reason: "value is required",
 		}
-		if !all {
-			return err
-		}
-		errors = append(errors, err)
 	}
 
-	if v, ok := interface{}(m.GetOrg()).(interface{ Validate(bool) error }); ok {
-		if err := v.Validate(all); err != nil {
-			err = UpdateOrgRequestValidationError{
+	if v, ok := interface{}(m.GetOrg()).(interface{ Validate() error }); ok {
+		if err := v.Validate(); err != nil {
+			return UpdateOrgRequestValidationError{
 				field:  "Org",
 				reason: "embedded message failed validation",
 				cause:  err,
 			}
-			if !all {
-				return err
-			}
-			errors = append(errors, err)
 		}
 	}
 
-	if v, ok := interface{}(m.GetUpdateMask()).(interface{ Validate(bool) error }); ok {
-		if err := v.Validate(all); err != nil {
-			err = UpdateOrgRequestValidationError{
+	if v, ok := interface{}(m.GetUpdateMask()).(interface{ Validate() error }); ok {
+		if err := v.Validate(); err != nil {
+			return UpdateOrgRequestValidationError{
 				field:  "UpdateMask",
 				reason: "embedded message failed validation",
 				cause:  err,
 			}
-			if !all {
-				return err
-			}
-			errors = append(errors, err)
 		}
 	}
 
-	if len(errors) > 0 {
-		return UpdateOrgRequestMultiError(errors)
-	}
 	return nil
 }
-
-// UpdateOrgRequestMultiError is an error wrapping multiple validation errors
-// returned by UpdateOrgRequest.Validate(true) if the designated constraints
-// aren't met.
-type UpdateOrgRequestMultiError []error
-
-// Error returns a concatenation of all the error messages it wraps.
-func (m UpdateOrgRequestMultiError) Error() string {
-	var msgs []string
-	for _, err := range m {
-		msgs = append(msgs, err.Error())
-	}
-	return strings.Join(msgs, "; ")
-}
-
-// AllErrors returns a list of validation violation errors.
-func (m UpdateOrgRequestMultiError) AllErrors() []error { return m }
 
 // UpdateOrgRequestValidationError is the validation error returned by
 // UpdateOrgRequest.Validate if the designated constraints aren't met.
@@ -595,32 +451,20 @@ var _ interface {
 
 // Validate checks the field values on DeleteOrgRequest with the rules defined
 // in the proto definition for this message. If any rules are violated, an
-// error is returned. When asked to return all errors, validation continues
-// after first violation, and the result is a list of violation errors wrapped
-// in DeleteOrgRequestMultiError, or nil if none found. Otherwise, only the
-// first error is returned, if any.
-func (m *DeleteOrgRequest) Validate(all bool) error {
+// error is returned.
+func (m *DeleteOrgRequest) Validate() error {
 	if m == nil {
 		return nil
 	}
 
-	var errors []error
-
 	if err := m._validateUuid(m.GetId()); err != nil {
-		err = DeleteOrgRequestValidationError{
+		return DeleteOrgRequestValidationError{
 			field:  "Id",
 			reason: "value must be a valid UUID",
 			cause:  err,
 		}
-		if !all {
-			return err
-		}
-		errors = append(errors, err)
 	}
 
-	if len(errors) > 0 {
-		return DeleteOrgRequestMultiError(errors)
-	}
 	return nil
 }
 
@@ -631,23 +475,6 @@ func (m *DeleteOrgRequest) _validateUuid(uuid string) error {
 
 	return nil
 }
-
-// DeleteOrgRequestMultiError is an error wrapping multiple validation errors
-// returned by DeleteOrgRequest.Validate(true) if the designated constraints
-// aren't met.
-type DeleteOrgRequestMultiError []error
-
-// Error returns a concatenation of all the error messages it wraps.
-func (m DeleteOrgRequestMultiError) Error() string {
-	var msgs []string
-	for _, err := range m {
-		msgs = append(msgs, err.Error())
-	}
-	return strings.Join(msgs, "; ")
-}
-
-// AllErrors returns a list of validation violation errors.
-func (m DeleteOrgRequestMultiError) AllErrors() []error { return m }
 
 // DeleteOrgRequestValidationError is the validation error returned by
 // DeleteOrgRequest.Validate if the designated constraints aren't met.
@@ -705,52 +532,23 @@ var _ interface {
 
 // Validate checks the field values on ListOrgsRequest with the rules defined
 // in the proto definition for this message. If any rules are violated, an
-// error is returned. When asked to return all errors, validation continues
-// after first violation, and the result is a list of violation errors wrapped
-// in ListOrgsRequestMultiError, or nil if none found. Otherwise, only the
-// first error is returned, if any.
-func (m *ListOrgsRequest) Validate(all bool) error {
+// error is returned.
+func (m *ListOrgsRequest) Validate() error {
 	if m == nil {
 		return nil
 	}
 
-	var errors []error
-
 	if m.GetPageSize() > 250 {
-		err := ListOrgsRequestValidationError{
+		return ListOrgsRequestValidationError{
 			field:  "PageSize",
 			reason: "value must be less than or equal to 250",
 		}
-		if !all {
-			return err
-		}
-		errors = append(errors, err)
 	}
 
 	// no validation rules for PageToken
 
-	if len(errors) > 0 {
-		return ListOrgsRequestMultiError(errors)
-	}
 	return nil
 }
-
-// ListOrgsRequestMultiError is an error wrapping multiple validation errors
-// returned by ListOrgsRequest.Validate(true) if the designated constraints
-// aren't met.
-type ListOrgsRequestMultiError []error
-
-// Error returns a concatenation of all the error messages it wraps.
-func (m ListOrgsRequestMultiError) Error() string {
-	var msgs []string
-	for _, err := range m {
-		msgs = append(msgs, err.Error())
-	}
-	return strings.Join(msgs, "; ")
-}
-
-// AllErrors returns a list of validation violation errors.
-func (m ListOrgsRequestMultiError) AllErrors() []error { return m }
 
 // ListOrgsRequestValidationError is the validation error returned by
 // ListOrgsRequest.Validate if the designated constraints aren't met.
@@ -808,31 +606,22 @@ var _ interface {
 
 // Validate checks the field values on ListOrgsResponse with the rules defined
 // in the proto definition for this message. If any rules are violated, an
-// error is returned. When asked to return all errors, validation continues
-// after first violation, and the result is a list of violation errors wrapped
-// in ListOrgsResponseMultiError, or nil if none found. Otherwise, only the
-// first error is returned, if any.
-func (m *ListOrgsResponse) Validate(all bool) error {
+// error is returned.
+func (m *ListOrgsResponse) Validate() error {
 	if m == nil {
 		return nil
 	}
 
-	var errors []error
-
 	for idx, item := range m.GetOrgs() {
 		_, _ = idx, item
 
-		if v, ok := interface{}(item).(interface{ Validate(bool) error }); ok {
-			if err := v.Validate(all); err != nil {
-				err = ListOrgsResponseValidationError{
+		if v, ok := interface{}(item).(interface{ Validate() error }); ok {
+			if err := v.Validate(); err != nil {
+				return ListOrgsResponseValidationError{
 					field:  fmt.Sprintf("Orgs[%v]", idx),
 					reason: "embedded message failed validation",
 					cause:  err,
 				}
-				if !all {
-					return err
-				}
-				errors = append(errors, err)
 			}
 		}
 
@@ -842,28 +631,8 @@ func (m *ListOrgsResponse) Validate(all bool) error {
 
 	// no validation rules for TotalSize
 
-	if len(errors) > 0 {
-		return ListOrgsResponseMultiError(errors)
-	}
 	return nil
 }
-
-// ListOrgsResponseMultiError is an error wrapping multiple validation errors
-// returned by ListOrgsResponse.Validate(true) if the designated constraints
-// aren't met.
-type ListOrgsResponseMultiError []error
-
-// Error returns a concatenation of all the error messages it wraps.
-func (m ListOrgsResponseMultiError) Error() string {
-	var msgs []string
-	for _, err := range m {
-		msgs = append(msgs, err.Error())
-	}
-	return strings.Join(msgs, "; ")
-}
-
-// AllErrors returns a list of validation violation errors.
-func (m ListOrgsResponseMultiError) AllErrors() []error { return m }
 
 // ListOrgsResponseValidationError is the validation error returned by
 // ListOrgsResponse.Validate if the designated constraints aren't met.

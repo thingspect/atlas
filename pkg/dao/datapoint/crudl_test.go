@@ -34,26 +34,46 @@ func TestCreate(t *testing.T) {
 		require.NoError(t, err)
 
 		tests := []struct {
-			inpPoint *common.DataPoint
+			inp *common.DataPoint
 		}{
-			{&common.DataPoint{UniqId: "dao-point-" + random.String(16),
-				Attr: "motion", ValOneof: &common.DataPoint_IntVal{IntVal: 123},
-				Ts: timestamppb.Now(), TraceId: uuid.NewString()}},
-			{&common.DataPoint{UniqId: "dao-point-" + random.String(16),
-				Attr: "temp", ValOneof: &common.DataPoint_Fl64Val{Fl64Val: 9.3},
-				Ts: timestamppb.Now(), TraceId: uuid.NewString()}},
-			{&common.DataPoint{UniqId: "dao-point-" + random.String(16),
-				Attr: "power", ValOneof: &common.DataPoint_StrVal{
-					StrVal: "batt"}, Ts: timestamppb.Now(),
-				TraceId: uuid.NewString()}},
-			{&common.DataPoint{UniqId: "dao-point-" + random.String(16),
-				Attr: "leak", ValOneof: &common.DataPoint_BoolVal{
-					BoolVal: []bool{true, false}[random.Intn(2)]},
-				Ts: timestamppb.Now(), TraceId: uuid.NewString()}},
-			{&common.DataPoint{UniqId: "dao-point-" + random.String(16),
-				Attr: "raw", ValOneof: &common.DataPoint_BytesVal{
-					BytesVal: random.Bytes(10)}, Ts: timestamppb.Now(),
-				TraceId: uuid.NewString()}},
+			{
+				&common.DataPoint{
+					UniqId: "dao-point-" + random.String(16), Attr: "motion",
+					ValOneof: &common.DataPoint_IntVal{IntVal: 123},
+					Ts:       timestamppb.Now(), TraceId: uuid.NewString(),
+				},
+			},
+			{
+				&common.DataPoint{
+					UniqId: "dao-point-" + random.String(16), Attr: "temp",
+					ValOneof: &common.DataPoint_Fl64Val{Fl64Val: 9.3},
+					Ts:       timestamppb.Now(), TraceId: uuid.NewString(),
+				},
+			},
+			{
+				&common.DataPoint{
+					UniqId: "dao-point-" + random.String(16), Attr: "power",
+					ValOneof: &common.DataPoint_StrVal{StrVal: "batt"},
+					Ts:       timestamppb.Now(), TraceId: uuid.NewString(),
+				},
+			},
+			{
+				&common.DataPoint{
+					UniqId: "dao-point-" + random.String(16), Attr: "leak",
+					ValOneof: &common.DataPoint_BoolVal{BoolVal: []bool{
+						true, false,
+					}[random.Intn(2)]}, Ts: timestamppb.Now(),
+					TraceId: uuid.NewString(),
+				},
+			},
+			{
+				&common.DataPoint{
+					UniqId: "dao-point-" + random.String(16), Attr: "raw",
+					ValOneof: &common.DataPoint_BytesVal{
+						BytesVal: random.Bytes(10),
+					}, Ts: timestamppb.Now(), TraceId: uuid.NewString(),
+				},
+			},
 		}
 
 		for _, test := range tests {
@@ -66,7 +86,7 @@ func TestCreate(t *testing.T) {
 					testTimeout)
 				defer cancel()
 
-				err := globalDPDAO.Create(ctx, lTest.inpPoint, createOrg.Id)
+				err := globalDPDAO.Create(ctx, lTest.inp, createOrg.Id)
 				t.Logf("err: %v", err)
 				require.NoError(t, err)
 			})
@@ -79,18 +99,24 @@ func TestCreate(t *testing.T) {
 		orgID := uuid.NewString()
 
 		tests := []struct {
-			inpPoint *common.DataPoint
-			err      error
+			inp *common.DataPoint
+			err error
 		}{
-			{&common.DataPoint{UniqId: "dao-point-" + random.String(40),
-				Attr: "motion", ValOneof: &common.DataPoint_IntVal{IntVal: 123},
-				Ts: timestamppb.Now(), TraceId: uuid.NewString()},
-				dao.ErrInvalidFormat},
-			{&common.DataPoint{UniqId: "dao-point-" + random.String(16),
-				Attr: "raw", ValOneof: &common.DataPoint_BytesVal{
-					BytesVal: random.Bytes(3000)},
-				Ts: timestamppb.Now(), TraceId: uuid.NewString()},
-				dao.ErrInvalidFormat},
+			{
+				&common.DataPoint{
+					UniqId: "dao-point-" + random.String(40), Attr: "motion",
+					ValOneof: &common.DataPoint_IntVal{IntVal: 123},
+					Ts:       timestamppb.Now(), TraceId: uuid.NewString(),
+				}, dao.ErrInvalidFormat,
+			},
+			{
+				&common.DataPoint{
+					UniqId: "dao-point-" + random.String(16), Attr: "raw",
+					ValOneof: &common.DataPoint_BytesVal{
+						BytesVal: random.Bytes(3000),
+					}, Ts: timestamppb.Now(), TraceId: uuid.NewString(),
+				}, dao.ErrInvalidFormat,
+			},
 		}
 
 		for _, test := range tests {
@@ -103,7 +129,7 @@ func TestCreate(t *testing.T) {
 					testTimeout)
 				defer cancel()
 
-				err := globalDPDAO.Create(ctx, lTest.inpPoint, orgID)
+				err := globalDPDAO.Create(ctx, lTest.inp, orgID)
 				t.Logf("err: %#v", err)
 				require.ErrorIs(t, err, lTest.err)
 			})
@@ -120,9 +146,11 @@ func TestCreate(t *testing.T) {
 		t.Logf("createOrg, err: %+v, %v", createOrg, err)
 		require.NoError(t, err)
 
-		point := &common.DataPoint{UniqId: "dao-point-" + random.String(16),
-			Attr: "motion", ValOneof: &common.DataPoint_IntVal{IntVal: 123},
-			Ts: timestamppb.Now(), TraceId: uuid.NewString()}
+		point := &common.DataPoint{
+			UniqId: "dao-point-" + random.String(16), Attr: "motion",
+			ValOneof: &common.DataPoint_IntVal{IntVal: 123},
+			Ts:       timestamppb.Now(), TraceId: uuid.NewString(),
+		}
 
 		err = globalDPDAO.Create(ctx, point, createOrg.Id)
 		t.Logf("err: %#v", err)
@@ -153,24 +181,38 @@ func TestList(t *testing.T) {
 		require.NoError(t, err)
 
 		points := []*common.DataPoint{
-			{UniqId: createDev.UniqId, Attr: "motion",
+			{
+				UniqId: createDev.UniqId, Attr: "motion",
 				ValOneof: &common.DataPoint_IntVal{IntVal: 123},
-				TraceId:  uuid.NewString()},
-			{UniqId: createDev.UniqId, Attr: "temp",
+				TraceId:  uuid.NewString(),
+			},
+			{
+				UniqId: createDev.UniqId, Attr: "temp",
 				ValOneof: &common.DataPoint_Fl64Val{Fl64Val: 9.3},
-				TraceId:  uuid.NewString()},
-			{UniqId: createDev.UniqId, Attr: "power",
+				TraceId:  uuid.NewString(),
+			},
+			{
+				UniqId: createDev.UniqId, Attr: "power",
 				ValOneof: &common.DataPoint_StrVal{StrVal: "batt"},
-				TraceId:  uuid.NewString()},
-			{UniqId: createDev.UniqId, Attr: "leak",
-				ValOneof: &common.DataPoint_BoolVal{BoolVal: []bool{true,
-					false}[random.Intn(2)]}, TraceId: uuid.NewString()},
-			{UniqId: createDev.UniqId, Attr: "raw",
+				TraceId:  uuid.NewString(),
+			},
+			{
+				UniqId: createDev.UniqId, Attr: "leak",
+				ValOneof: &common.DataPoint_BoolVal{BoolVal: []bool{
+					true, false,
+				}[random.Intn(2)]}, TraceId: uuid.NewString(),
+			},
+			{
+				UniqId: createDev.UniqId, Attr: "raw",
 				ValOneof: &common.DataPoint_BytesVal{
-					BytesVal: random.Bytes(10)}, TraceId: uuid.NewString()},
-			{UniqId: createDev.UniqId, Attr: "motion",
+					BytesVal: random.Bytes(10),
+				}, TraceId: uuid.NewString(),
+			},
+			{
+				UniqId: createDev.UniqId, Attr: "motion",
 				ValOneof: &common.DataPoint_IntVal{IntVal: 321},
-				TraceId:  uuid.NewString()},
+				TraceId:  uuid.NewString(),
+			},
 		}
 
 		for _, point := range points {
@@ -261,9 +303,11 @@ func TestList(t *testing.T) {
 		t.Logf("createOrg, err: %+v, %v", createOrg, err)
 		require.NoError(t, err)
 
-		point := &common.DataPoint{UniqId: "dao-point-" + random.String(16),
-			Attr: "motion", ValOneof: &common.DataPoint_IntVal{IntVal: 123},
-			Ts: timestamppb.Now(), TraceId: uuid.NewString()}
+		point := &common.DataPoint{
+			UniqId: "dao-point-" + random.String(16), Attr: "motion",
+			ValOneof: &common.DataPoint_IntVal{IntVal: 123},
+			Ts:       timestamppb.Now(), TraceId: uuid.NewString(),
+		}
 
 		err = globalDPDAO.Create(ctx, point, createOrg.Id)
 		t.Logf("err: %#v", err)
@@ -310,21 +354,33 @@ func TestLatest(t *testing.T) {
 		require.NoError(t, err)
 
 		points := []*common.DataPoint{
-			{UniqId: createDev.UniqId, Attr: "motion",
+			{
+				UniqId: createDev.UniqId, Attr: "motion",
 				ValOneof: &common.DataPoint_IntVal{IntVal: 123},
-				TraceId:  uuid.NewString()},
-			{UniqId: createDev.UniqId, Attr: "temp",
+				TraceId:  uuid.NewString(),
+			},
+			{
+				UniqId: createDev.UniqId, Attr: "temp",
 				ValOneof: &common.DataPoint_Fl64Val{Fl64Val: 9.3},
-				TraceId:  uuid.NewString()},
-			{UniqId: createDev.UniqId, Attr: "power",
+				TraceId:  uuid.NewString(),
+			},
+			{
+				UniqId: createDev.UniqId, Attr: "power",
 				ValOneof: &common.DataPoint_StrVal{StrVal: "batt"},
-				TraceId:  uuid.NewString()},
-			{UniqId: createDev.UniqId, Attr: "leak",
-				ValOneof: &common.DataPoint_BoolVal{BoolVal: []bool{true,
-					false}[random.Intn(2)]}, TraceId: uuid.NewString()},
-			{UniqId: createDev.UniqId, Attr: "raw",
+				TraceId:  uuid.NewString(),
+			},
+			{
+				UniqId: createDev.UniqId, Attr: "leak",
+				ValOneof: &common.DataPoint_BoolVal{BoolVal: []bool{
+					true, false,
+				}[random.Intn(2)]}, TraceId: uuid.NewString(),
+			},
+			{
+				UniqId: createDev.UniqId, Attr: "raw",
 				ValOneof: &common.DataPoint_BytesVal{
-					BytesVal: random.Bytes(10)}, TraceId: uuid.NewString()},
+					BytesVal: random.Bytes(10),
+				}, TraceId: uuid.NewString(),
+			},
 		}
 
 		for _, point := range points {
@@ -393,9 +449,11 @@ func TestLatest(t *testing.T) {
 		t.Logf("createOrg, err: %+v, %v", createOrg, err)
 		require.NoError(t, err)
 
-		point := &common.DataPoint{UniqId: "dao-point-" + random.String(16),
-			Attr: "motion", ValOneof: &common.DataPoint_IntVal{IntVal: 123},
-			Ts: timestamppb.Now(), TraceId: uuid.NewString()}
+		point := &common.DataPoint{
+			UniqId: "dao-point-" + random.String(16), Attr: "motion",
+			ValOneof: &common.DataPoint_IntVal{IntVal: 123},
+			Ts:       timestamppb.Now(), TraceId: uuid.NewString(),
+		}
 
 		err = globalDPDAO.Create(ctx, point, createOrg.Id)
 		t.Logf("err: %#v", err)

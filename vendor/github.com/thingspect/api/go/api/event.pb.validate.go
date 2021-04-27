@@ -37,17 +37,11 @@ var (
 var _event_uuidPattern = regexp.MustCompile("^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$")
 
 // Validate checks the field values on Event with the rules defined in the
-// proto definition for this message. If any rules are violated, an error is
-// returned. When asked to return all errors, validation continues after first
-// violation, and the result is a list of violation errors wrapped in
-// EventMultiError, or nil if none found. Otherwise, only the first error is
-// returned, if any.
-func (m *Event) Validate(all bool) error {
+// proto definition for this message. If any rules are violated, an error is returned.
+func (m *Event) Validate() error {
 	if m == nil {
 		return nil
 	}
-
-	var errors []error
 
 	// no validation rules for OrgId
 
@@ -55,43 +49,20 @@ func (m *Event) Validate(all bool) error {
 
 	// no validation rules for RuleId
 
-	if v, ok := interface{}(m.GetCreatedAt()).(interface{ Validate(bool) error }); ok {
-		if err := v.Validate(all); err != nil {
-			err = EventValidationError{
+	if v, ok := interface{}(m.GetCreatedAt()).(interface{ Validate() error }); ok {
+		if err := v.Validate(); err != nil {
+			return EventValidationError{
 				field:  "CreatedAt",
 				reason: "embedded message failed validation",
 				cause:  err,
 			}
-			if !all {
-				return err
-			}
-			errors = append(errors, err)
 		}
 	}
 
 	// no validation rules for TraceId
 
-	if len(errors) > 0 {
-		return EventMultiError(errors)
-	}
 	return nil
 }
-
-// EventMultiError is an error wrapping multiple validation errors returned by
-// Event.Validate(true) if the designated constraints aren't met.
-type EventMultiError []error
-
-// Error returns a concatenation of all the error messages it wraps.
-func (m EventMultiError) Error() string {
-	var msgs []string
-	for _, err := range m {
-		msgs = append(msgs, err.Error())
-	}
-	return strings.Join(msgs, "; ")
-}
-
-// AllErrors returns a list of validation violation errors.
-func (m EventMultiError) AllErrors() []error { return m }
 
 // EventValidationError is the validation error returned by Event.Validate if
 // the designated constraints aren't met.
@@ -149,58 +120,41 @@ var _ interface {
 
 // Validate checks the field values on ListEventsRequest with the rules defined
 // in the proto definition for this message. If any rules are violated, an
-// error is returned. When asked to return all errors, validation continues
-// after first violation, and the result is a list of violation errors wrapped
-// in ListEventsRequestMultiError, or nil if none found. Otherwise, only the
-// first error is returned, if any.
-func (m *ListEventsRequest) Validate(all bool) error {
+// error is returned.
+func (m *ListEventsRequest) Validate() error {
 	if m == nil {
 		return nil
 	}
 
-	var errors []error
-
 	if m.GetRuleId() != "" {
 
 		if err := m._validateUuid(m.GetRuleId()); err != nil {
-			err = ListEventsRequestValidationError{
+			return ListEventsRequestValidationError{
 				field:  "RuleId",
 				reason: "value must be a valid UUID",
 				cause:  err,
 			}
-			if !all {
-				return err
-			}
-			errors = append(errors, err)
 		}
 
 	}
 
-	if v, ok := interface{}(m.GetEndTime()).(interface{ Validate(bool) error }); ok {
-		if err := v.Validate(all); err != nil {
-			err = ListEventsRequestValidationError{
+	if v, ok := interface{}(m.GetEndTime()).(interface{ Validate() error }); ok {
+		if err := v.Validate(); err != nil {
+			return ListEventsRequestValidationError{
 				field:  "EndTime",
 				reason: "embedded message failed validation",
 				cause:  err,
 			}
-			if !all {
-				return err
-			}
-			errors = append(errors, err)
 		}
 	}
 
-	if v, ok := interface{}(m.GetStartTime()).(interface{ Validate(bool) error }); ok {
-		if err := v.Validate(all); err != nil {
-			err = ListEventsRequestValidationError{
+	if v, ok := interface{}(m.GetStartTime()).(interface{ Validate() error }); ok {
+		if err := v.Validate(); err != nil {
+			return ListEventsRequestValidationError{
 				field:  "StartTime",
 				reason: "embedded message failed validation",
 				cause:  err,
 			}
-			if !all {
-				return err
-			}
-			errors = append(errors, err)
 		}
 	}
 
@@ -214,34 +168,23 @@ func (m *ListEventsRequest) Validate(all bool) error {
 		if m.GetDeviceId() != "" {
 
 			if err := m._validateUuid(m.GetDeviceId()); err != nil {
-				err = ListEventsRequestValidationError{
+				return ListEventsRequestValidationError{
 					field:  "DeviceId",
 					reason: "value must be a valid UUID",
 					cause:  err,
 				}
-				if !all {
-					return err
-				}
-				errors = append(errors, err)
 			}
 
 		}
 
 	default:
-		err := ListEventsRequestValidationError{
+		return ListEventsRequestValidationError{
 			field:  "IdOneof",
 			reason: "value is required",
 		}
-		if !all {
-			return err
-		}
-		errors = append(errors, err)
 
 	}
 
-	if len(errors) > 0 {
-		return ListEventsRequestMultiError(errors)
-	}
 	return nil
 }
 
@@ -252,23 +195,6 @@ func (m *ListEventsRequest) _validateUuid(uuid string) error {
 
 	return nil
 }
-
-// ListEventsRequestMultiError is an error wrapping multiple validation errors
-// returned by ListEventsRequest.Validate(true) if the designated constraints
-// aren't met.
-type ListEventsRequestMultiError []error
-
-// Error returns a concatenation of all the error messages it wraps.
-func (m ListEventsRequestMultiError) Error() string {
-	var msgs []string
-	for _, err := range m {
-		msgs = append(msgs, err.Error())
-	}
-	return strings.Join(msgs, "; ")
-}
-
-// AllErrors returns a list of validation violation errors.
-func (m ListEventsRequestMultiError) AllErrors() []error { return m }
 
 // ListEventsRequestValidationError is the validation error returned by
 // ListEventsRequest.Validate if the designated constraints aren't met.
@@ -328,58 +254,29 @@ var _ interface {
 
 // Validate checks the field values on ListEventsResponse with the rules
 // defined in the proto definition for this message. If any rules are
-// violated, an error is returned. When asked to return all errors, validation
-// continues after first violation, and the result is a list of violation
-// errors wrapped in ListEventsResponseMultiError, or nil if none found.
-// Otherwise, only the first error is returned, if any.
-func (m *ListEventsResponse) Validate(all bool) error {
+// violated, an error is returned.
+func (m *ListEventsResponse) Validate() error {
 	if m == nil {
 		return nil
 	}
 
-	var errors []error
-
 	for idx, item := range m.GetEvents() {
 		_, _ = idx, item
 
-		if v, ok := interface{}(item).(interface{ Validate(bool) error }); ok {
-			if err := v.Validate(all); err != nil {
-				err = ListEventsResponseValidationError{
+		if v, ok := interface{}(item).(interface{ Validate() error }); ok {
+			if err := v.Validate(); err != nil {
+				return ListEventsResponseValidationError{
 					field:  fmt.Sprintf("Events[%v]", idx),
 					reason: "embedded message failed validation",
 					cause:  err,
 				}
-				if !all {
-					return err
-				}
-				errors = append(errors, err)
 			}
 		}
 
 	}
 
-	if len(errors) > 0 {
-		return ListEventsResponseMultiError(errors)
-	}
 	return nil
 }
-
-// ListEventsResponseMultiError is an error wrapping multiple validation errors
-// returned by ListEventsResponse.Validate(true) if the designated constraints
-// aren't met.
-type ListEventsResponseMultiError []error
-
-// Error returns a concatenation of all the error messages it wraps.
-func (m ListEventsResponseMultiError) Error() string {
-	var msgs []string
-	for _, err := range m {
-		msgs = append(msgs, err.Error())
-	}
-	return strings.Join(msgs, "; ")
-}
-
-// AllErrors returns a list of validation violation errors.
-func (m ListEventsResponseMultiError) AllErrors() []error { return m }
 
 // ListEventsResponseValidationError is the validation error returned by
 // ListEventsResponse.Validate if the designated constraints aren't met.
@@ -439,36 +336,24 @@ var _ interface {
 
 // Validate checks the field values on LatestEventsRequest with the rules
 // defined in the proto definition for this message. If any rules are
-// violated, an error is returned. When asked to return all errors, validation
-// continues after first violation, and the result is a list of violation
-// errors wrapped in LatestEventsRequestMultiError, or nil if none found.
-// Otherwise, only the first error is returned, if any.
-func (m *LatestEventsRequest) Validate(all bool) error {
+// violated, an error is returned.
+func (m *LatestEventsRequest) Validate() error {
 	if m == nil {
 		return nil
 	}
 
-	var errors []error
-
 	if m.GetRuleId() != "" {
 
 		if err := m._validateUuid(m.GetRuleId()); err != nil {
-			err = LatestEventsRequestValidationError{
+			return LatestEventsRequestValidationError{
 				field:  "RuleId",
 				reason: "value must be a valid UUID",
 				cause:  err,
 			}
-			if !all {
-				return err
-			}
-			errors = append(errors, err)
 		}
 
 	}
 
-	if len(errors) > 0 {
-		return LatestEventsRequestMultiError(errors)
-	}
 	return nil
 }
 
@@ -479,23 +364,6 @@ func (m *LatestEventsRequest) _validateUuid(uuid string) error {
 
 	return nil
 }
-
-// LatestEventsRequestMultiError is an error wrapping multiple validation
-// errors returned by LatestEventsRequest.Validate(true) if the designated
-// constraints aren't met.
-type LatestEventsRequestMultiError []error
-
-// Error returns a concatenation of all the error messages it wraps.
-func (m LatestEventsRequestMultiError) Error() string {
-	var msgs []string
-	for _, err := range m {
-		msgs = append(msgs, err.Error())
-	}
-	return strings.Join(msgs, "; ")
-}
-
-// AllErrors returns a list of validation violation errors.
-func (m LatestEventsRequestMultiError) AllErrors() []error { return m }
 
 // LatestEventsRequestValidationError is the validation error returned by
 // LatestEventsRequest.Validate if the designated constraints aren't met.
@@ -555,58 +423,29 @@ var _ interface {
 
 // Validate checks the field values on LatestEventsResponse with the rules
 // defined in the proto definition for this message. If any rules are
-// violated, an error is returned. When asked to return all errors, validation
-// continues after first violation, and the result is a list of violation
-// errors wrapped in LatestEventsResponseMultiError, or nil if none found.
-// Otherwise, only the first error is returned, if any.
-func (m *LatestEventsResponse) Validate(all bool) error {
+// violated, an error is returned.
+func (m *LatestEventsResponse) Validate() error {
 	if m == nil {
 		return nil
 	}
 
-	var errors []error
-
 	for idx, item := range m.GetEvents() {
 		_, _ = idx, item
 
-		if v, ok := interface{}(item).(interface{ Validate(bool) error }); ok {
-			if err := v.Validate(all); err != nil {
-				err = LatestEventsResponseValidationError{
+		if v, ok := interface{}(item).(interface{ Validate() error }); ok {
+			if err := v.Validate(); err != nil {
+				return LatestEventsResponseValidationError{
 					field:  fmt.Sprintf("Events[%v]", idx),
 					reason: "embedded message failed validation",
 					cause:  err,
 				}
-				if !all {
-					return err
-				}
-				errors = append(errors, err)
 			}
 		}
 
 	}
 
-	if len(errors) > 0 {
-		return LatestEventsResponseMultiError(errors)
-	}
 	return nil
 }
-
-// LatestEventsResponseMultiError is an error wrapping multiple validation
-// errors returned by LatestEventsResponse.Validate(true) if the designated
-// constraints aren't met.
-type LatestEventsResponseMultiError []error
-
-// Error returns a concatenation of all the error messages it wraps.
-func (m LatestEventsResponseMultiError) Error() string {
-	var msgs []string
-	for _, err := range m {
-		msgs = append(msgs, err.Error())
-	}
-	return strings.Join(msgs, "; ")
-}
-
-// AllErrors returns a list of validation violation errors.
-func (m LatestEventsResponseMultiError) AllErrors() []error { return m }
 
 // LatestEventsResponseValidationError is the validation error returned by
 // LatestEventsResponse.Validate if the designated constraints aren't met.
