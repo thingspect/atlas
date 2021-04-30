@@ -81,6 +81,22 @@ func (mr *MockCacherMockRecorder) GetB(ctx, key interface{}) *gomock.Call {
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetB", reflect.TypeOf((*MockCacher)(nil).GetB), ctx, key)
 }
 
+// GetI mocks base method.
+func (m *MockCacher) GetI(ctx context.Context, key string) (bool, int64, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetI", ctx, key)
+	ret0, _ := ret[0].(bool)
+	ret1, _ := ret[1].(int64)
+	ret2, _ := ret[2].(error)
+	return ret0, ret1, ret2
+}
+
+// GetI indicates an expected call of GetI.
+func (mr *MockCacherMockRecorder) GetI(ctx, key interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetI", reflect.TypeOf((*MockCacher)(nil).GetI), ctx, key)
+}
+
 // Set mocks base method.
 func (m *MockCacher) Set(ctx context.Context, key string, value interface{}) error {
 	m.ctrl.T.Helper()

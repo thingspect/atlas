@@ -564,7 +564,18 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/apiCreateDeviceLoRaWANRequest"
+              "type": "object",
+              "properties": {
+                "gatewayLoRaWANType": {
+                  "$ref": "#/definitions/CreateDeviceLoRaWANRequestGatewayLoRaWANType",
+                  "description": "Gateway LoRaWAN configuration type."
+                },
+                "deviceLoRaWANType": {
+                  "$ref": "#/definitions/CreateDeviceLoRaWANRequestDeviceLoRaWANType",
+                  "description": "Device LoRaWAN configuration type."
+                }
+              },
+              "description": "CreateDeviceLoRaWANRequest is sent to add LoRaWAN configuration to a device."
             }
           }
         ],
@@ -1891,7 +1902,20 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/apiUpdateUserPasswordRequest"
+              "type": "object",
+              "properties": {
+                "password": {
+                  "type": "string",
+                  "description": "User password to update.",
+                  "required": [
+                    "password"
+                  ]
+                }
+              },
+              "description": "UpdateUserPasswordRequest is sent to update a user's password.",
+              "required": [
+                "password"
+              ]
             }
           }
         ],
@@ -2140,25 +2164,6 @@
       ],
       "default": "ALERT_STATUS_UNSPECIFIED",
       "description": "AlertStatus represents the status of an alert.\n\n - ALERT_STATUS_UNSPECIFIED: Alert status is not specified.\n - SENT: Alert was successfully sent.\n - ERROR: Alert encountered an error."
-    },
-    "apiCreateDeviceLoRaWANRequest": {
-      "type": "object",
-      "properties": {
-        "id": {
-          "type": "string",
-          "description": "Device ID (UUID) to add LoRaWAN configuration.",
-          "readOnly": true
-        },
-        "gatewayLoRaWANType": {
-          "$ref": "#/definitions/CreateDeviceLoRaWANRequestGatewayLoRaWANType",
-          "description": "Gateway LoRaWAN configuration type."
-        },
-        "deviceLoRaWANType": {
-          "$ref": "#/definitions/CreateDeviceLoRaWANRequestDeviceLoRaWANType",
-          "description": "Device LoRaWAN configuration type."
-        }
-      },
-      "description": "CreateDeviceLoRaWANRequest is sent to add LoRaWAN configuration to a device."
     },
     "apiCreateKeyResponse": {
       "type": "object",
@@ -2603,27 +2608,6 @@
         }
       },
       "description": "TestRuleResponse is sent in response to a rule test."
-    },
-    "apiUpdateUserPasswordRequest": {
-      "type": "object",
-      "properties": {
-        "id": {
-          "type": "string",
-          "description": "User ID (UUID) to update password.",
-          "readOnly": true
-        },
-        "password": {
-          "type": "string",
-          "description": "User password to update.",
-          "required": [
-            "password"
-          ]
-        }
-      },
-      "description": "UpdateUserPasswordRequest is sent to update a user's password.",
-      "required": [
-        "password"
-      ]
     },
     "apiUser": {
       "type": "object",

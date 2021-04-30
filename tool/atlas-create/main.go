@@ -11,7 +11,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/thingspect/api/go/api"
 	"github.com/thingspect/api/go/common"
-	"github.com/thingspect/atlas/internal/api/crypto"
+	"github.com/thingspect/atlas/internal/atlas-api/crypto"
 	"github.com/thingspect/atlas/pkg/dao"
 	"github.com/thingspect/atlas/pkg/dao/org"
 	"github.com/thingspect/atlas/pkg/dao/user"

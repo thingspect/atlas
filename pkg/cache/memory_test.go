@@ -45,10 +45,11 @@ func TestMemorySetGet(t *testing.T) {
 	require.Empty(t, res)
 	require.NoError(t, err)
 
+	// Test next method.
 	ok, resB, err := mem.GetB(context.Background(), key)
 	t.Logf("ok, resB, err: %v, %x, %v", ok, resB, err)
 	require.False(t, ok)
-	require.Empty(t, res)
+	require.Empty(t, resB)
 	require.Equal(t, errWrongType, err)
 }
 
@@ -78,10 +79,11 @@ func TestMemorySetTTLGetB(t *testing.T) {
 	require.Empty(t, res)
 	require.NoError(t, err)
 
-	ok, resS, err := mem.Get(context.Background(), key)
-	t.Logf("ok, resS, err: %v, %x, %v", ok, resS, err)
+	// Test next method.
+	ok, resI, err := mem.GetI(context.Background(), key)
+	t.Logf("ok, resI, err: %v, %x, %v", ok, resI, err)
 	require.False(t, ok)
-	require.Empty(t, res)
+	require.Empty(t, resI)
 	require.Equal(t, errWrongType, err)
 }
 
@@ -104,6 +106,40 @@ func TestMemorySetTTLGetBShort(t *testing.T) {
 	require.False(t, ok)
 	require.Empty(t, res)
 	require.NoError(t, err)
+}
+
+func TestMemorySetGetI(t *testing.T) {
+	t.Parallel()
+
+	mem, err := NewMemory()
+	t.Logf("mem, err: %+v, %v", mem, err)
+	require.NoError(t, err)
+
+	key := "testMemorySetGetI-" + random.String(10)
+	val := int64(random.Intn(999))
+
+	require.NoError(t, mem.SetTTL(context.Background(), key, val,
+		2*time.Second))
+
+	ok, res, err := mem.GetI(context.Background(), key)
+	t.Logf("ok, res, err: %v, %v, %v", ok, res, err)
+	require.True(t, ok)
+	require.Equal(t, val, res)
+	require.NoError(t, err)
+
+	ok, res, err = mem.GetI(context.Background(), "testMemorySetGetI-"+
+		random.String(10))
+	t.Logf("ok, res, err: %v, %v, %v", ok, res, err)
+	require.False(t, ok)
+	require.Empty(t, res)
+	require.NoError(t, err)
+
+	// Test next method.
+	ok, resS, err := mem.Get(context.Background(), key)
+	t.Logf("ok, resS, err: %v, %v, %v", ok, resS, err)
+	require.False(t, ok)
+	require.Empty(t, resS)
+	require.Equal(t, errWrongType, err)
 }
 
 func TestMemorySetIfNotExist(t *testing.T) {
