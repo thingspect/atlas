@@ -58,7 +58,7 @@ func (m *memoryCache) Get(ctx context.Context, key string) (bool, string,
 	m.cacheMu.RLock()
 	defer m.cacheMu.RUnlock()
 
-	i, err := m.cache.Get(key)
+	iface, err := m.cache.Get(key)
 	if errors.Is(err, ttlcache.ErrNotFound) {
 		return false, "", nil
 	}
@@ -66,7 +66,7 @@ func (m *memoryCache) Get(ctx context.Context, key string) (bool, string,
 		return false, "", err
 	}
 
-	s, ok := i.(string)
+	s, ok := iface.(string)
 	if !ok {
 		return false, "", errWrongType
 	}
@@ -74,14 +74,14 @@ func (m *memoryCache) Get(ctx context.Context, key string) (bool, string,
 	return true, s, nil
 }
 
-// Get retrieves a []byte value by key. If the key does not exist, the boolean
+// GetB retrieves a []byte value by key. If the key does not exist, the boolean
 // returned is set to false.
 func (m *memoryCache) GetB(ctx context.Context, key string) (bool, []byte,
 	error) {
 	m.cacheMu.RLock()
 	defer m.cacheMu.RUnlock()
 
-	i, err := m.cache.Get(key)
+	iface, err := m.cache.Get(key)
 	if errors.Is(err, ttlcache.ErrNotFound) {
 		return false, nil, nil
 	}
@@ -89,12 +89,35 @@ func (m *memoryCache) GetB(ctx context.Context, key string) (bool, []byte,
 		return false, nil, err
 	}
 
-	b, ok := i.([]byte)
+	b, ok := iface.([]byte)
 	if !ok {
 		return false, nil, errWrongType
 	}
 
 	return true, b, nil
+}
+
+// GetI retrieves an int64 value by key. If the key does not exist, the boolean
+// returned is set to false.
+func (m *memoryCache) GetI(ctx context.Context, key string) (bool, int64,
+	error) {
+	m.cacheMu.RLock()
+	defer m.cacheMu.RUnlock()
+
+	iface, err := m.cache.Get(key)
+	if errors.Is(err, ttlcache.ErrNotFound) {
+		return false, 0, nil
+	}
+	if err != nil {
+		return false, 0, err
+	}
+
+	i, ok := iface.(int64)
+	if !ok {
+		return false, 0, errWrongType
+	}
+
+	return true, i, nil
 }
 
 // SetIfNotExist sets key to value if the key does not exist. If it is

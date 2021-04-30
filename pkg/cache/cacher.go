@@ -21,6 +21,9 @@ type Cacher interface {
 	// Get retrieves a []byte value by key. If the key does not exist, the
 	// boolean returned is set to false.
 	GetB(ctx context.Context, key string) (bool, []byte, error)
+	// GetI retrieves an int64 value by key. If the key does not exist, the
+	// boolean returned is set to false.
+	GetI(ctx context.Context, key string) (bool, int64, error)
 	// SetIfNotExist sets key to value if the key does not exist. If it is
 	// successful, it returns true.
 	SetIfNotExist(ctx context.Context, key string, value interface{}) (bool,

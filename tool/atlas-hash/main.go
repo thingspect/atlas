@@ -6,8 +6,8 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/thingspect/atlas/internal/api/crypto"
-	"github.com/thingspect/atlas/internal/api/session"
+	"github.com/thingspect/atlas/internal/atlas-api/crypto"
+	"github.com/thingspect/atlas/internal/atlas-api/session"
 )
 
 const usage = `Usage:

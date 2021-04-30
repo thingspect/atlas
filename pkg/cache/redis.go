@@ -62,7 +62,7 @@ func (r *redisCache) Get(ctx context.Context, key string) (bool, string,
 	return true, s, nil
 }
 
-// Get retrieves a []byte value by key. If the key does not exist, the boolean
+// GetB retrieves a []byte value by key. If the key does not exist, the boolean
 // returned is set to false.
 func (r *redisCache) GetB(ctx context.Context, key string) (bool, []byte,
 	error) {
@@ -75,6 +75,21 @@ func (r *redisCache) GetB(ctx context.Context, key string) (bool, []byte,
 	}
 
 	return true, b, nil
+}
+
+// GetI retrieves an int64 value by key. If the key does not exist, the boolean
+// returned is set to false.
+func (r *redisCache) GetI(ctx context.Context, key string) (bool, int64,
+	error) {
+	i, err := r.client.Get(ctx, key).Int64()
+	if errors.Is(err, redis.Nil) {
+		return false, 0, nil
+	}
+	if err != nil {
+		return false, 0, err
+	}
+
+	return true, i, nil
 }
 
 // SetIfNotExist sets key to value if the key does not exist. If it is
