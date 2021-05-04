@@ -8,9 +8,10 @@ Install [Docker](https://docs.docker.com/get-started/overview/) and
 [Go](https://golang.org/doc/tutorial/getting-started).
 
 ```
-docker compose -f build/docker-compose.yml up
+docker compose -f build/docker-compose.yml up -d
 make test
 RACE=y make test
+docker compose -f build/docker-compose.yml down
 ```
 
 ## Running an API Locally
