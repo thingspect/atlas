@@ -8,11 +8,13 @@ import (
 	"github.com/thingspect/atlas/pkg/consterr"
 )
 
+// ErrTimeout is returned when a Queue operation times out.
+const ErrTimeout consterr.Error = "queue: timed out"
+
+// Constants used for the configuration of MQTT behavior.
 const (
 	DefaultMQTTConnectTimeout = 5 * time.Second
 	mqttPublishTimeout        = 30 * time.Second
-
-	ErrTimeout consterr.Error = "queue: timed out"
 )
 
 // mqttQueue contains methods to publish and subscribe to MQTT and implements

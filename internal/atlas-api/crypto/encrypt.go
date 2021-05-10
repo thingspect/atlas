@@ -8,6 +8,7 @@ import (
 	"github.com/thingspect/atlas/pkg/consterr"
 )
 
+// Errors returned due to encryption or decryption failures.
 const (
 	ErrKeyLength consterr.Error = "crypto: incorrect key length"
 	ErrMalformed consterr.Error = "crypto: malformed ciphertext"

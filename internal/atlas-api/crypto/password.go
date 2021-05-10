@@ -8,6 +8,7 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
+// ErrWeakPass is returned when a password fails any check.
 const ErrWeakPass consterr.Error = "weak password, see NIST password guidelines"
 
 // CheckPass checks whether a password is weak or disallowed.

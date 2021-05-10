@@ -49,8 +49,7 @@ func TestMain(m *testing.M) {
 
 	// Set up NSQ queue to publish test payloads.
 	var err error
-	globalValQueue, err = queue.NewNSQ(cfg.NSQPubAddr, nil, cfg.NSQSubChannel,
-		queue.DefaultNSQRequeueDelay)
+	globalValQueue, err = queue.NewNSQ(cfg.NSQPubAddr, nil, cfg.NSQSubChannel)
 	if err != nil {
 		log.Fatalf("TestMain queue.NewNSQ: %v", err)
 	}

@@ -21,11 +21,11 @@ type Config struct {
 	NSQPubAddr  string
 	Concurrency int
 
-	AppAPIKey     string
-	SMSAccountSID string
-	SMSAuthToken  string
-	SMSPhone      string
-	EmailAPIKey   string
+	AppAPIKey   string
+	SMSSID      string
+	SMSSecret   string
+	SMSPhone    string
+	EmailAPIKey string
 }
 
 // New instantiates a service Config, parses the environment, and returns it.
@@ -47,10 +47,10 @@ func New() *Config {
 		Concurrency: config.Int(pref+"CONCURRENCY", 5),
 
 		AppAPIKey: config.String(pref+"APP_API_KEY", ""),
-		SMSAccountSID: config.String(pref+"SMS_ACCOUNT_SID",
-			"ACdefd5896d2acc15061cae169bb9d4836"),
-		SMSAuthToken: config.String(pref+"SMS_AUTH_TOKEN", ""),
-		SMSPhone:     config.String(pref+"SMS_PHONE", "+15125432462"),
-		EmailAPIKey:  config.String(pref+"EMAIL_API_KEY", ""),
+		SMSSID: config.String(pref+"SMS_SID",
+			"SKb62d2a1320d85ad96b07a90fe92e051e"),
+		SMSSecret:   config.String(pref+"SMS_SECRET", ""),
+		SMSPhone:    config.String(pref+"SMS_PHONE", "+15125432462"),
+		EmailAPIKey: config.String(pref+"EMAIL_API_KEY", ""),
 	}
 }

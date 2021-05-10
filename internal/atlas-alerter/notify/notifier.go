@@ -17,6 +17,6 @@ type Notifier interface {
 	// is derived from the organization's email address: "mg." followed by the
 	// domain name that follows '@' in the address. This operation can block
 	// based on rate limiting.
-	Email(ctx context.Context, orgDisplayName, orgEmail, userEmail, subject,
+	Email(ctx context.Context, displayName, orgEmail, userEmail, subject,
 		body string) error
 }

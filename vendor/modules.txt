@@ -16,7 +16,7 @@ github.com/antonmedv/expr/optimizer
 github.com/antonmedv/expr/parser
 github.com/antonmedv/expr/parser/lexer
 github.com/antonmedv/expr/vm
-# github.com/brocaar/chirpstack-api/go/v3 v3.9.7
+# github.com/brocaar/chirpstack-api/go/v3 v3.9.8
 ## explicit
 github.com/brocaar/chirpstack-api/go/v3/as/external/api
 github.com/brocaar/chirpstack-api/go/v3/as/integration
@@ -71,7 +71,7 @@ github.com/google/uuid
 github.com/gorilla/mux
 # github.com/gorilla/websocket v1.4.2
 github.com/gorilla/websocket
-# github.com/gregdel/pushover v1.0.0
+# github.com/gregdel/pushover v1.1.0
 ## explicit
 github.com/gregdel/pushover
 # github.com/grpc-ecosystem/grpc-gateway v1.16.0
@@ -118,7 +118,7 @@ github.com/kevinburke/go-types
 # github.com/kevinburke/go.uuid v1.2.0
 ## explicit
 github.com/kevinburke/go.uuid
-# github.com/kevinburke/rest v0.0.0-20210425173428-1fcb8c8e9022
+# github.com/kevinburke/rest v0.0.0-20210506044642-5611499aa33c
 ## explicit
 github.com/kevinburke/rest/restclient
 github.com/kevinburke/rest/resterror
@@ -184,12 +184,13 @@ go.opentelemetry.io/otel/metric/number
 go.opentelemetry.io/otel/metric/registry
 # go.opentelemetry.io/otel/trace v0.20.0
 go.opentelemetry.io/otel/trace
-# golang.org/x/crypto v0.0.0-20210503195802-e9a32991a82e
+# golang.org/x/crypto v0.0.0-20210506145944-38f3c27a63bf
 ## explicit
 golang.org/x/crypto/bcrypt
 golang.org/x/crypto/blowfish
 golang.org/x/crypto/pbkdf2
-# golang.org/x/net v0.0.0-20210504132125-bbd867fde50d
+# golang.org/x/net v0.0.0-20210510120150-4163338589ed
+## explicit
 golang.org/x/net/context
 golang.org/x/net/http/httpguts
 golang.org/x/net/http2
@@ -202,7 +203,8 @@ golang.org/x/net/trace
 # golang.org/x/sync v0.0.0-20210220032951-036812b2e83c
 ## explicit
 golang.org/x/sync/errgroup
-# golang.org/x/sys v0.0.0-20210503173754-0981d6026fa6
+# golang.org/x/sys v0.0.0-20210510120138-977fb7262007
+## explicit
 golang.org/x/sys/internal/unsafeheader
 golang.org/x/sys/unix
 # golang.org/x/text v0.3.6
@@ -219,7 +221,8 @@ golang.org/x/text/transform
 golang.org/x/text/unicode/bidi
 golang.org/x/text/unicode/norm
 golang.org/x/text/width
-# google.golang.org/genproto v0.0.0-20210504143626-3b2ad6ccc450
+# google.golang.org/genproto v0.0.0-20210510173355-fb37daa5cd7a
+## explicit
 google.golang.org/genproto/googleapis/api/annotations
 google.golang.org/genproto/googleapis/api/httpbody
 google.golang.org/genproto/googleapis/rpc/status

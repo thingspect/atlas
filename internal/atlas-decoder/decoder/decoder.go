@@ -18,9 +18,8 @@ import (
 	"github.com/thingspect/atlas/pkg/queue"
 )
 
-const (
-	ServiceName = "decoder"
-)
+// ServiceName provides consistent naming, including logs and metrics.
+const ServiceName = "decoder"
 
 // devicer defines the methods provided by a device.DAO.
 type devicer interface {
@@ -47,7 +46,7 @@ func New(cfg *config.Config) (*Decoder, error) {
 
 	// Build the NSQ connection for consuming and publishing.
 	nsq, err := queue.NewNSQ(cfg.NSQPubAddr, cfg.NSQLookupAddrs,
-		cfg.NSQSubChannel, queue.DefaultNSQRequeueDelay)
+		cfg.NSQSubChannel)
 	if err != nil {
 		return nil, err
 	}

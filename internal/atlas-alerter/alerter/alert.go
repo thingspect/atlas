@@ -16,6 +16,7 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
+// ErrUnknownAlarm is returned when sending an alarm of an unknown type.
 const ErrUnknownAlarm consterr.Error = "unknown alarm type"
 
 // alertMessages receives event messages, alerts based on alarm processing, and

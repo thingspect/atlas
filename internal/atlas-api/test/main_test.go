@@ -152,8 +152,7 @@ func TestMain(m *testing.M) {
 	// channel for each test run. This prevents failed tests from interfering
 	// with the next run, but does require eventual cleaning.
 	subChannel := api.ServiceName + "-test-" + random.String(10)
-	nsq, err := queue.NewNSQ(cfg.NSQPubAddr, nil, subChannel,
-		queue.DefaultNSQRequeueDelay)
+	nsq, err := queue.NewNSQ(cfg.NSQPubAddr, nil, subChannel)
 	if err != nil {
 		log.Fatalf("TestMain queue.NewNSQ: %v", err)
 	}

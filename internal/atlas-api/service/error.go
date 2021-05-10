@@ -14,6 +14,7 @@ import (
 	"google.golang.org/grpc/status"
 )
 
+// Constants used for endpoint behavior.
 const (
 	StatusCodeKey   = "atlas-status-code"
 	defaultPageSize = 50

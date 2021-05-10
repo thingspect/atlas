@@ -49,17 +49,17 @@ func (mr *MockNotifierMockRecorder) App(ctx, userKey, subject, body interface{})
 }
 
 // Email mocks base method.
-func (m *MockNotifier) Email(ctx context.Context, orgDisplayName, orgEmail, userEmail, subject, body string) error {
+func (m *MockNotifier) Email(ctx context.Context, displayName, orgEmail, userEmail, subject, body string) error {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Email", ctx, orgDisplayName, orgEmail, userEmail, subject, body)
+	ret := m.ctrl.Call(m, "Email", ctx, displayName, orgEmail, userEmail, subject, body)
 	ret0, _ := ret[0].(error)
 	return ret0
 }
 
 // Email indicates an expected call of Email.
-func (mr *MockNotifierMockRecorder) Email(ctx, orgDisplayName, orgEmail, userEmail, subject, body interface{}) *gomock.Call {
+func (mr *MockNotifierMockRecorder) Email(ctx, displayName, orgEmail, userEmail, subject, body interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Email", reflect.TypeOf((*MockNotifier)(nil).Email), ctx, orgDisplayName, orgEmail, userEmail, subject, body)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Email", reflect.TypeOf((*MockNotifier)(nil).Email), ctx, displayName, orgEmail, userEmail, subject, body)
 }
 
 // SMS mocks base method.

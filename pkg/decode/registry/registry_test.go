@@ -32,13 +32,18 @@ func TestDecode(t *testing.T) {
 		err        error
 	}{
 		// Decoder.
-		{common.Decoder_RAW, "", nil, nil},
-		{common.Decoder_RADIO_BRIDGE_DOOR_V2, "190301", []*decode.Point{
-			{Attr: "count", Value: int32(9)},
-			{Attr: "open", Value: true},
-		}, nil},
+		{
+			common.Decoder_RAW, "", nil, nil,
+		},
+		{
+			common.Decoder_RADIO_BRIDGE_DOOR_V2, "190301", []*decode.Point{
+				{Attr: "count", Value: int32(9)}, {Attr: "open", Value: true},
+			}, nil,
+		},
 		// Decoder function not found.
-		{common.Decoder(999), "", nil, fmt.Errorf("%w: 999", ErrNotFound)},
+		{
+			common.Decoder(999), "", nil, fmt.Errorf("%w: 999", ErrNotFound),
+		},
 	}
 
 	for _, test := range tests {
