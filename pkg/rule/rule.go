@@ -9,6 +9,7 @@ import (
 	"github.com/thingspect/atlas/pkg/consterr"
 )
 
+// ErrNotBool is returned when the expression being evaluated is not boolean.
 const ErrNotBool consterr.Error = "not a boolean expression"
 
 // Eval evaluates a boolean expression using the Expr language:

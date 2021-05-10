@@ -25,13 +25,19 @@ func TestNewMQTT(t *testing.T) {
 		err        string
 	}{
 		// Success.
-		{testConfig.MQTTAddr, DefaultMQTTConnectTimeout, ""},
+		{
+			testConfig.MQTTAddr, DefaultMQTTConnectTimeout, "",
+		},
 		// Wrong port.
-		{"tcp://127.0.0.1:1884", DefaultMQTTConnectTimeout,
-			"connect: connection refused"},
+		{
+			"tcp://127.0.0.1:1884", DefaultMQTTConnectTimeout,
+			"connect: connection refused",
+		},
 		// Unknown host.
-		{"host-" + random.String(10) + ":1883", time.Millisecond,
-			ErrTimeout.Error()},
+		{
+			"host-" + random.String(10) + ":1883", time.Millisecond,
+			ErrTimeout.Error(),
+		},
 	}
 
 	for _, test := range tests {

@@ -14,8 +14,11 @@ import (
 	"github.com/thingspect/atlas/pkg/queue"
 )
 
+// ServiceName provides consistent naming, including logs and metrics.
+const ServiceName = "lora-ingestor"
+
+// Constants used for MQTT topic configuration.
 const (
-	ServiceName  = "lora-ingestor"
 	sharedPref   = "$share/loragroup/"
 	mqttGWTopic  = "lora/gateway/+/event/+"
 	mqttDevTopic = "lora/application/+/device/+/event/+"
@@ -68,8 +71,7 @@ func New(cfg *config.Config) (*Ingestor, error) {
 	}
 
 	// Build the NSQ connection for publishing.
-	nsq, err := queue.NewNSQ(cfg.NSQPubAddr, nil, "",
-		queue.DefaultNSQRequeueDelay)
+	nsq, err := queue.NewNSQ(cfg.NSQPubAddr, nil, "")
 	if err != nil {
 		return nil, err
 	}

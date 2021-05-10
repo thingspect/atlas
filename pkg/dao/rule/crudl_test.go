@@ -466,18 +466,19 @@ func TestListByTags(t *testing.T) {
 	t.Run("List rules by valid org ID and common attr", func(t *testing.T) {
 		t.Parallel()
 
-		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
-		defer cancel()
-
 		rule := random.Rule("dao-rule", createOrg.Id)
 		rule.Status = common.Status_ACTIVE
 		rule.Attr = ruleAttrs[0]
+
+		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
+		defer cancel()
 
 		createRule, err := globalRuleDAO.Create(ctx, rule)
 		t.Logf("createRule, err: %+v, %v", createRule, err)
 		require.NoError(t, err)
 
-		lRuleDeviceTags := append(ruleDeviceTags, createRule.DeviceTag)
+		lRuleDeviceTags := ruleDeviceTags
+		lRuleDeviceTags = append(lRuleDeviceTags, createRule.DeviceTag)
 
 		listRules, err := globalRuleDAO.ListByTags(ctx, createOrg.Id,
 			ruleAttrs[0], lRuleDeviceTags)

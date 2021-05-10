@@ -23,9 +23,8 @@ import (
 	"github.com/thingspect/atlas/pkg/queue"
 )
 
-const (
-	ServiceName = "alerter"
-)
+// ServiceName provides consistent naming, including logs and metrics.
+const ServiceName = "alerter"
 
 // orger defines the methods provided by an org.DAO.
 type orger interface {
@@ -72,24 +71,24 @@ func New(cfg *config.Config) (*Alerter, error) {
 	}
 
 	// Set up cache connection.
-	c, err := cache.NewRedis(cfg.RedisHost + ":6379")
+	redis, err := cache.NewRedis(cfg.RedisHost + ":6379")
 	if err != nil {
 		return nil, err
 	}
 
 	// Set up Notifier. Allow a mock for local usage, but warn loudly.
 	var n notify.Notifier
-	if cfg.AppAPIKey == "" || cfg.SMSAuthToken == "" || cfg.EmailAPIKey == "" {
-		alog.Error("New cfg.AppAPIKey not found, using notify.NewFake()")
+	if cfg.AppAPIKey == "" || cfg.SMSSecret == "" || cfg.EmailAPIKey == "" {
+		alog.Error("New notify secrets not found, using notify.NewFake()")
 		n = notify.NewFake()
 	} else {
-		n = notify.New(c, cfg.AppAPIKey, cfg.SMSAccountSID, cfg.SMSAuthToken,
+		n = notify.New(redis, cfg.AppAPIKey, cfg.SMSSID, cfg.SMSSecret,
 			cfg.SMSPhone, cfg.EmailAPIKey)
 	}
 
 	// Build the NSQ connection for consuming.
 	nsq, err := queue.NewNSQ(cfg.NSQPubAddr, cfg.NSQLookupAddrs,
-		cfg.NSQSubChannel, queue.DefaultNSQRequeueDelay)
+		cfg.NSQSubChannel)
 	if err != nil {
 		return nil, err
 	}
@@ -110,7 +109,7 @@ func New(cfg *config.Config) (*Alerter, error) {
 		alarmDAO: alarm.NewDAO(pg),
 		userDAO:  user.NewDAO(pg),
 		alertDAO: alert.NewDAO(pg),
-		cache:    c,
+		cache:    redis,
 
 		aleQueue: nsq,
 		eOutSub:  eOutSub,

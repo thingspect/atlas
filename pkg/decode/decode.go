@@ -14,6 +14,7 @@ import (
 // has bogus time.
 const ValidWindow = 4 * time.Hour
 
+// ErrUnknownEvent is returned when an event type is not recognized.
 const ErrUnknownEvent consterr.Error = "unknown event type"
 
 // Point represents an attribute-value pair as produced by a decoder function.

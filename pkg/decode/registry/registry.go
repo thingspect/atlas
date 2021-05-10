@@ -10,6 +10,7 @@ import (
 	"github.com/thingspect/atlas/pkg/decode/radiobridge"
 )
 
+// ErrNotFound is returned when a decoder function name is not registered.
 const ErrNotFound consterr.Error = "decoder function not found"
 
 // Registry holds decoder-function mappings.

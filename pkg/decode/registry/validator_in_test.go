@@ -28,41 +28,85 @@ func TestPointToVIn(t *testing.T) {
 		inp *decode.Point
 		res *message.ValidatorIn
 	}{
-		{&decode.Point{Attr: "data_rate", Value: int32(3)},
-			&message.ValidatorIn{Point: &common.DataPoint{UniqId: uniqID,
-				Attr: "data_rate", ValOneof: &common.DataPoint_IntVal{
-					IntVal: 3}, Ts: now, TraceId: traceID}, SkipToken: true}},
-		{&decode.Point{Attr: "data_rate", Value: 3}, &message.ValidatorIn{
-			Point: &common.DataPoint{UniqId: uniqID, Attr: "data_rate",
-				ValOneof: &common.DataPoint_IntVal{IntVal: 3}, Ts: now,
-				TraceId: traceID}, SkipToken: true}},
-		{&decode.Point{Attr: "data_rate", Value: int64(3)},
-			&message.ValidatorIn{Point: &common.DataPoint{UniqId: uniqID,
-				Attr: "data_rate", ValOneof: &common.DataPoint_IntVal{
-					IntVal: 3}, Ts: now, TraceId: traceID}, SkipToken: true}},
-		{&decode.Point{Attr: "snr", Value: 7.8}, &message.ValidatorIn{
-			Point: &common.DataPoint{UniqId: uniqID, Attr: "snr",
-				ValOneof: &common.DataPoint_Fl64Val{Fl64Val: 7.8}, Ts: now,
-				TraceId: traceID}, SkipToken: true}},
-		{&decode.Point{Attr: "snr", Value: float32(7.0)}, &message.ValidatorIn{
-			Point: &common.DataPoint{UniqId: uniqID, Attr: "snr",
+		{
+			&decode.Point{Attr: "data_rate", Value: int32(3)},
+			&message.ValidatorIn{
+				Point: &common.DataPoint{
+					UniqId: uniqID, Attr: "data_rate",
+					ValOneof: &common.DataPoint_IntVal{IntVal: 3}, Ts: now,
+					TraceId: traceID,
+				}, SkipToken: true,
+			},
+		},
+		{
+			&decode.Point{Attr: "data_rate", Value: 3}, &message.ValidatorIn{
+				Point: &common.DataPoint{
+					UniqId: uniqID, Attr: "data_rate",
+					ValOneof: &common.DataPoint_IntVal{IntVal: 3}, Ts: now,
+					TraceId: traceID,
+				}, SkipToken: true,
+			},
+		},
+		{
+			&decode.Point{Attr: "data_rate", Value: int64(3)},
+			&message.ValidatorIn{
+				Point: &common.DataPoint{
+					UniqId: uniqID, Attr: "data_rate",
+					ValOneof: &common.DataPoint_IntVal{IntVal: 3}, Ts: now,
+					TraceId: traceID,
+				}, SkipToken: true,
+			},
+		},
+		{
+			&decode.Point{Attr: "snr", Value: 7.8}, &message.ValidatorIn{
+				Point: &common.DataPoint{
+					UniqId: uniqID, Attr: "snr",
+					ValOneof: &common.DataPoint_Fl64Val{Fl64Val: 7.8}, Ts: now,
+					TraceId: traceID,
+				}, SkipToken: true,
+			},
+		},
+		{
+			&decode.Point{Attr: "snr", Value: float32(7.0)},
+			&message.ValidatorIn{Point: &common.DataPoint{
+				UniqId: uniqID, Attr: "snr",
 				ValOneof: &common.DataPoint_Fl64Val{Fl64Val: 7.0}, Ts: now,
-				TraceId: traceID}, SkipToken: true}},
-		{&decode.Point{Attr: "ack", Value: "OK"}, &message.ValidatorIn{
-			Point: &common.DataPoint{UniqId: uniqID, Attr: "ack",
-				ValOneof: &common.DataPoint_StrVal{StrVal: "OK"}, Ts: now,
-				TraceId: traceID}, SkipToken: true}},
-		{&decode.Point{Attr: "adr", Value: false}, &message.ValidatorIn{
-			Point: &common.DataPoint{UniqId: uniqID, Attr: "adr",
-				ValOneof: &common.DataPoint_BoolVal{BoolVal: false}, Ts: now,
-				TraceId: traceID}, SkipToken: true}},
-		{&decode.Point{Attr: "ack", Value: []byte{0x00}}, &message.ValidatorIn{
-			Point: &common.DataPoint{UniqId: uniqID, Attr: "ack",
+				TraceId: traceID,
+			}, SkipToken: true},
+		},
+		{
+			&decode.Point{Attr: "ack", Value: "OK"}, &message.ValidatorIn{
+				Point: &common.DataPoint{
+					UniqId: uniqID, Attr: "ack",
+					ValOneof: &common.DataPoint_StrVal{StrVal: "OK"}, Ts: now,
+					TraceId: traceID,
+				}, SkipToken: true,
+			},
+		},
+		{
+			&decode.Point{Attr: "adr", Value: false}, &message.ValidatorIn{
+				Point: &common.DataPoint{
+					UniqId: uniqID, Attr: "adr",
+					ValOneof: &common.DataPoint_BoolVal{BoolVal: false},
+					Ts:       now, TraceId: traceID,
+				}, SkipToken: true,
+			},
+		},
+		{
+			&decode.Point{Attr: "ack", Value: []byte{0x00}},
+			&message.ValidatorIn{Point: &common.DataPoint{
+				UniqId: uniqID, Attr: "ack",
 				ValOneof: &common.DataPoint_BytesVal{BytesVal: []byte{0x00}},
-				Ts:       now, TraceId: traceID}, SkipToken: true}},
-		{&decode.Point{Attr: "error", Value: io.EOF}, &message.ValidatorIn{
-			Point: &common.DataPoint{UniqId: uniqID, Attr: "error", Ts: now,
-				TraceId: traceID}, SkipToken: true}},
+				Ts:       now, TraceId: traceID,
+			}, SkipToken: true},
+		},
+		{
+			&decode.Point{Attr: "error", Value: io.EOF}, &message.ValidatorIn{
+				Point: &common.DataPoint{
+					UniqId: uniqID, Attr: "error", Ts: now, TraceId: traceID,
+				}, SkipToken: true,
+			},
+		},
 	}
 
 	for _, test := range tests {

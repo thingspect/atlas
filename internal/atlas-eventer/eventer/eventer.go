@@ -19,9 +19,8 @@ import (
 	"github.com/thingspect/atlas/pkg/queue"
 )
 
-const (
-	ServiceName = "eventer"
-)
+// ServiceName provides consistent naming, including logs and metrics.
+const ServiceName = "eventer"
 
 // ruler defines the methods provided by a rule.DAO.
 type ruler interface {
@@ -54,7 +53,7 @@ func New(cfg *config.Config) (*Eventer, error) {
 
 	// Build the NSQ connection for consuming and publishing.
 	nsq, err := queue.NewNSQ(cfg.NSQPubAddr, cfg.NSQLookupAddrs,
-		cfg.NSQSubChannel, queue.DefaultNSQRequeueDelay)
+		cfg.NSQSubChannel)
 	if err != nil {
 		return nil, err
 	}

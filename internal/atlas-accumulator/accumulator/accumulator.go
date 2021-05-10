@@ -17,9 +17,8 @@ import (
 	"github.com/thingspect/atlas/pkg/queue"
 )
 
-const (
-	ServiceName = "accumulator"
-)
+// ServiceName provides consistent naming, including logs and metrics.
+const ServiceName = "accumulator"
 
 // datapointer defines the methods provided by a datapoint.DAO.
 type datapointer interface {
@@ -45,7 +44,7 @@ func New(cfg *config.Config) (*Accumulator, error) {
 
 	// Build the NSQ connection for consuming.
 	nsq, err := queue.NewNSQ(cfg.NSQPubAddr, cfg.NSQLookupAddrs,
-		cfg.NSQSubChannel, queue.DefaultNSQRequeueDelay)
+		cfg.NSQSubChannel)
 	if err != nil {
 		return nil, err
 	}

@@ -166,6 +166,35 @@ func TestPublishDataPoints(t *testing.T) {
 		t.Logf("err: %v", err)
 		require.Equal(t, errPerm(common.Role_BUILDER), err)
 	})
+
+	t.Run("Publish valid data point with bad queue", func(t *testing.T) {
+		t.Parallel()
+
+		orgID := uuid.NewString()
+		point := &common.DataPoint{
+			UniqId: "api-point-" + random.String(16), Attr: "motion",
+			ValOneof: &common.DataPoint_IntVal{IntVal: 123},
+			Ts:       timestamppb.New(time.Now().Add(-15 * time.Minute)),
+		}
+		vInPubTopic := "topic-" + random.String(10)
+
+		queuer := queue.NewMockQueuer(gomock.NewController(t))
+		queuer.EXPECT().Publish(vInPubTopic, gomock.Any()).
+			Return(dao.ErrNotFound).Times(1)
+
+		ctx, cancel := context.WithTimeout(session.NewContext(
+			context.Background(), &session.Session{
+				OrgID: orgID, Role: common.Role_ADMIN,
+			}), testTimeout)
+		defer cancel()
+
+		dpSvc := NewDataPoint(queuer, vInPubTopic, nil)
+		_, err := dpSvc.PublishDataPoints(ctx, &api.PublishDataPointsRequest{
+			Points: []*common.DataPoint{point},
+		})
+		t.Logf("err: %v", err)
+		require.Equal(t, status.Error(codes.Internal, "publish failure"), err)
+	})
 }
 
 func TestListDataPoints(t *testing.T) {
