@@ -78,11 +78,11 @@ func New(cfg *config.Config) (*Alerter, error) {
 
 	// Set up Notifier. Allow a mock for local usage, but warn loudly.
 	var n notify.Notifier
-	if cfg.AppAPIKey == "" || cfg.SMSSecret == "" || cfg.EmailAPIKey == "" {
+	if cfg.AppAPIKey == "" || cfg.SMSToken == "" || cfg.EmailAPIKey == "" {
 		alog.Error("New notify secrets not found, using notify.NewFake()")
 		n = notify.NewFake()
 	} else {
-		n = notify.New(redis, cfg.AppAPIKey, cfg.SMSSID, cfg.SMSSecret,
+		n = notify.New(redis, cfg.AppAPIKey, cfg.SMSID, cfg.SMSToken,
 			cfg.SMSPhone, cfg.EmailAPIKey)
 	}
 

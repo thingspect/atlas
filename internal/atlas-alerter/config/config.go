@@ -22,8 +22,8 @@ type Config struct {
 	Concurrency int
 
 	AppAPIKey   string
-	SMSSID      string
-	SMSSecret   string
+	SMSID       string
+	SMSToken    string
 	SMSPhone    string
 	EmailAPIKey string
 }
@@ -47,9 +47,9 @@ func New() *Config {
 		Concurrency: config.Int(pref+"CONCURRENCY", 5),
 
 		AppAPIKey: config.String(pref+"APP_API_KEY", ""),
-		SMSSID: config.String(pref+"SMS_SID",
-			"SKb62d2a1320d85ad96b07a90fe92e051e"),
-		SMSSecret:   config.String(pref+"SMS_SECRET", ""),
+		SMSID: config.String(pref+"SMS_ID",
+			"ACdefd5896d2acc15061cae169bb9d4836"),
+		SMSToken:    config.String(pref+"SMS_TOKEN", ""),
 		SMSPhone:    config.String(pref+"SMS_PHONE", "+15125432462"),
 		EmailAPIKey: config.String(pref+"EMAIL_API_KEY", ""),
 	}

@@ -16,7 +16,7 @@ const (
 // SMS sends an SMS notification. Subjects and bodies will be concatenated with
 // ' - '. This operation can block based on rate limiting.
 func (n *notify) SMS(ctx context.Context, phone, subject, body string) error {
-	client := twilio.NewClient(n.smsSID, n.smsSecret, nil)
+	client := twilio.NewClient(n.smsID, n.smsToken, nil)
 
 	// Truncate to message limits, supporting up to 2 SMS messages:
 	// https://www.twilio.com/docs/glossary/what-sms-character-limit

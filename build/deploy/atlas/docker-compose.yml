@@ -1,7 +1,7 @@
 version: "3"
 services:
-  api:
-    image: ghcr.io/thingspect/atlas:5f8ed2e5
+  atlas-api:
+    image: ghcr.io/thingspect/atlas:2e92cd8b
     command: atlas-api
     ports:
       - "8000:8000"
@@ -15,68 +15,68 @@ services:
       - API_LORA_ADDR=chirpstack-application-server:8080
       - API_LORA_API_KEY=notasecurekey
       - API_LORA_DEV_PROF_ID=c53a390c-1b0b-436c-8984-9b328d6210c5
-  mqtt-ingestor:
-    image: ghcr.io/thingspect/atlas:5f8ed2e5
+  atlas-mqtt-ingestor:
+    image: ghcr.io/thingspect/atlas:2e92cd8b
     command: atlas-mqtt-ingestor
     depends_on:
-      - validator
+      - atlas-validator
     environment:
       - MQTT_INGEST_STATSD_ADDR=dogstatsd:8125
       - MQTT_INGEST_MQTT_ADDR=tcp://mqtt:1883
       - MQTT_INGEST_MQTT_PASS=notasecurepassword
       - MQTT_INGEST_NSQ_PUB_ADDR=nsqd:4150
-  lora-ingestor:
-    image: ghcr.io/thingspect/atlas:5f8ed2e5
+  atlas-lora-ingestor:
+    image: ghcr.io/thingspect/atlas:2e92cd8b
     command: atlas-lora-ingestor
     depends_on:
-      - validator
-      - decoder
+      - atlas-validator
+      - atlas-decoder
     environment:
       - LORA_INGEST_STATSD_ADDR=dogstatsd:8125
       - LORA_INGEST_MQTT_ADDR=tcp://mqtt:1883
       - LORA_INGEST_MQTT_PASS=notasecurepassword
       - LORA_INGEST_NSQ_PUB_ADDR=nsqd:4150
-  decoder:
-    image: ghcr.io/thingspect/atlas:5f8ed2e5
+  atlas-decoder:
+    image: ghcr.io/thingspect/atlas:2e92cd8b
     command: atlas-decoder
     depends_on:
-      - validator
+      - atlas-validator
     environment:
       - DECODER_STATSD_ADDR=dogstatsd:8125
       - DECODER_PG_URI=postgres://postgres:notasecurepassword@postgres/atlas
       - DECODER_NSQ_LOOKUP_ADDRS=nsqlookupd:4161
       - DECODER_NSQ_PUB_ADDR=nsqd:4150
-  validator:
-    image: ghcr.io/thingspect/atlas:5f8ed2e5
+  atlas-validator:
+    image: ghcr.io/thingspect/atlas:2e92cd8b
     command: atlas-validator
     depends_on:
-      - accumulator
-      - eventer
+      - atlas-accumulator
+      - atlas-eventer
     environment:
       - VALIDATOR_STATSD_ADDR=dogstatsd:8125
       - VALIDATOR_PG_URI=postgres://postgres:notasecurepassword@postgres/atlas
       - VALIDATOR_NSQ_LOOKUP_ADDRS=nsqlookupd:4161
       - VALIDATOR_NSQ_PUB_ADDR=nsqd:4150
-  accumulator:
-    image: ghcr.io/thingspect/atlas:5f8ed2e5
+  atlas-accumulator:
+    image: ghcr.io/thingspect/atlas:2e92cd8b
     command: atlas-accumulator
     environment:
       - ACCUMULATOR_STATSD_ADDR=dogstatsd:8125
       - ACCUMULATOR_PG_URI=postgres://postgres:notasecurepassword@postgres/atlas
       - ACCUMULATOR_NSQ_LOOKUP_ADDRS=nsqlookupd:4161
       - ACCUMULATOR_NSQ_PUB_ADDR=nsqd:4150
-  eventer:
-    image: ghcr.io/thingspect/atlas:5f8ed2e5
+  atlas-eventer:
+    image: ghcr.io/thingspect/atlas:2e92cd8b
     command: atlas-eventer
     depends_on:
-      - alerter
+      - atlas-alerter
     environment:
       - EVENTER_STATSD_ADDR=dogstatsd:8125
       - EVENTER_PG_URI=postgres://postgres:notasecurepassword@postgres/atlas
       - EVENTER_NSQ_LOOKUP_ADDRS=nsqlookupd:4161
       - EVENTER_NSQ_PUB_ADDR=nsqd:4150
-  alerter:
-    image: ghcr.io/thingspect/atlas:5f8ed2e5
+  atlas-alerter:
+    image: ghcr.io/thingspect/atlas:2e92cd8b
     command: atlas-alerter
     environment:
       - ALERTER_STATSD_ADDR=dogstatsd:8125
@@ -85,7 +85,7 @@ services:
       - ALERTER_NSQ_LOOKUP_ADDRS=nsqlookupd:4161
       - ALERTER_NSQ_PUB_ADDR=nsqd:4150
       - ALERTER_APP_API_KEY=notasecurekey
-      - ALERTER_SMS_SECRET=notasecurekey
+      - ALERTER_SMS_TOKEN=notasecurekey
       - ALERTER_EMAIL_API_KEY=notasecurekey
 networks:
   default:

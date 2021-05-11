@@ -136,7 +136,7 @@ func (s *Session) DeleteKey(ctx context.Context,
 		return nil, errPerm(common.Role_ADMIN)
 	}
 
-	// Disable API key before removing record. If an incorrect key ID is given,
+	// Disable API key before removing record. If a faulty key ID is given,
 	// it will be confined to this org.
 	if err := s.cache.Set(ctx, key.Disabled(sess.OrgID, req.Id),
 		""); err != nil {
