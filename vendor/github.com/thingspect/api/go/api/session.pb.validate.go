@@ -209,7 +209,7 @@ func (m *Key) Validate() error {
 	if _, ok := _Key_Role_InLookup[m.GetRole()]; !ok {
 		return KeyValidationError{
 			field:  "Role",
-			reason: "value must be in list [3 6 9 12 15]",
+			reason: "value must be in list [3 6 7 9 12 15]",
 		}
 	}
 
@@ -283,6 +283,7 @@ var _ interface {
 var _Key_Role_InLookup = map[common.Role]struct{}{
 	3:  {},
 	6:  {},
+	7:  {},
 	9:  {},
 	12: {},
 	15: {},

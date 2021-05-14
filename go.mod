@@ -31,7 +31,7 @@ require (
 	github.com/rs/zerolog v1.22.0
 	github.com/smira/go-statsd v1.3.2
 	github.com/stretchr/testify v1.7.0
-	github.com/thingspect/api/go v0.0.0-20210514182225-2dc2dcb98fb7
+	github.com/thingspect/api/go v0.0.0-20210514185912-23a6116d4302
 	github.com/ttacon/builder v0.0.0-20170518171403-c099f663e1c2 // indirect
 	github.com/ttacon/libphonenumber v1.2.1 // indirect
 	go.opentelemetry.io/otel v0.20.0 // indirect
