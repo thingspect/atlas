@@ -26,7 +26,7 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
-// PublishDataPointsRequest is sent to publish data points.
+// PublishDataPointsRequest is sent to publish data points. The publisher role is recommended for programmatic use of this endpoint.
 type PublishDataPointsRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache

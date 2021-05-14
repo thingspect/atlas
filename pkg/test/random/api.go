@@ -118,10 +118,11 @@ func User(prefix, orgID string) *api.User {
 		Role: []common.Role{
 			common.Role_CONTACT,
 			common.Role_VIEWER,
+			common.Role_PUBLISHER,
 			common.Role_BUILDER,
 			common.Role_ADMIN,
 			common.Role_SYS_ADMIN,
-		}[Intn(5)],
+		}[Intn(6)],
 		Status: []common.Status{
 			common.Status_ACTIVE,
 			common.Status_DISABLED,

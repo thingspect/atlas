@@ -12,6 +12,7 @@ import (
 	"github.com/thingspect/atlas/api/go/message"
 	"github.com/thingspect/atlas/internal/atlas-api/session"
 	"github.com/thingspect/atlas/pkg/alog"
+	"github.com/thingspect/atlas/pkg/metric"
 	"github.com/thingspect/atlas/pkg/queue"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
@@ -56,8 +57,8 @@ func (d *DataPoint) PublishDataPoints(ctx context.Context,
 	req *api.PublishDataPointsRequest) (*emptypb.Empty, error) {
 	logger := alog.FromContext(ctx)
 	sess, ok := session.FromContext(ctx)
-	if !ok || sess.Role < common.Role_BUILDER {
-		return nil, errPerm(common.Role_BUILDER)
+	if !ok || sess.Role < common.Role_PUBLISHER {
+		return nil, errPerm(common.Role_PUBLISHER)
 	}
 
 	logger.Logger = logger.WithStr("paylType", "api")
@@ -93,6 +94,7 @@ func (d *DataPoint) PublishDataPoints(ctx context.Context,
 			return nil, status.Error(codes.Internal, "publish failure")
 		}
 
+		metric.Incr("published", nil)
 		logger.Debugf("PublishDataPoints published: %+v", vIn)
 	}
 

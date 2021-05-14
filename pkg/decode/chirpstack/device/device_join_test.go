@@ -61,37 +61,49 @@ func TestDeviceJoin(t *testing.T) {
 		err       string
 	}{
 		// Device Join.
-		{&as.JoinEvent{RxInfo: []*gw.UplinkRXInfo{{}}},
-			[]*decode.Point{
+		{
+			&as.JoinEvent{RxInfo: []*gw.UplinkRXInfo{{}}}, []*decode.Point{
 				{Attr: "raw_device", Value: `{"rxInfo":[{}]}`},
 				{Attr: "join", Value: true},
 				{Attr: "channel", Value: int32(0)},
 				{Attr: "data_rate", Value: int32(0)},
-			}, time.Now(), ""},
-		{&as.JoinEvent{DevEui: bUniqID, DevAddr: bDevAddr,
-			RxInfo: []*gw.UplinkRXInfo{{GatewayId: []byte("aaa"), Time: tsNow,
-				Rssi: -80, LoraSnr: 1}, {GatewayId: bGatewayID, Time: tsNow,
-				Rssi: -74, LoraSnr: 7.8}}, TxInfo: &gw.UplinkTXInfo{
-				Frequency: 902700000}, Dr: 3}, []*decode.Point{
-			{Attr: "raw_device", Value: fmt.Sprintf(`{"devEUI":"%s","devAddr":`+
-				`"%s","rxInfo":[{"gatewayID":"YWFh","time":"%s","rssi":-80,`+
-				`"loRaSNR":1},{"gatewayID":"%s","time":"%s","rssi":-74,`+
-				`"loRaSNR":7.8}],"txInfo":{"frequency":902700000},"dr":3}`,
-				b64UniqID, b64DevAddr, now.Format(time.RFC3339Nano),
-				b64GatewayID, now.Format(time.RFC3339Nano))},
-			{Attr: "join", Value: true},
-			{Attr: "id", Value: uniqID},
-			{Attr: "devaddr", Value: devAddr},
-			{Attr: "gateway_id", Value: gatewayID},
-			{Attr: "time", Value: strconv.FormatInt(now.Unix(), 10)},
-			{Attr: "lora_rssi", Value: -74},
-			{Attr: "snr", Value: 7.8},
-			{Attr: "channel", Value: int32(0)},
-			{Attr: "frequency", Value: int32(902700000)},
-			{Attr: "data_rate", Value: int32(3)},
-		}, now, ""},
+			}, time.Now(), "",
+		},
+		{
+			&as.JoinEvent{
+				DevEui: bUniqID, DevAddr: bDevAddr, RxInfo: []*gw.UplinkRXInfo{
+					{
+						GatewayId: []byte("aaa"), Time: tsNow, Rssi: -80,
+						LoraSnr: 1,
+					}, {
+						GatewayId: bGatewayID, Time: tsNow, Rssi: -74,
+						LoraSnr: 7.8,
+					},
+				}, TxInfo: &gw.UplinkTXInfo{Frequency: 902700000}, Dr: 3,
+			}, []*decode.Point{
+				{Attr: "raw_device", Value: fmt.Sprintf(`{"devEUI":"%s",`+
+					`"devAddr":"%s","rxInfo":[{"gatewayID":"YWFh","time":"%s",`+
+					`"rssi":-80,"loRaSNR":1},{"gatewayID":"%s","time":"%s",`+
+					`"rssi":-74,"loRaSNR":7.8}],"txInfo":{"frequency":`+
+					`902700000},"dr":3}`, b64UniqID, b64DevAddr,
+					now.Format(time.RFC3339Nano), b64GatewayID,
+					now.Format(time.RFC3339Nano))},
+				{Attr: "join", Value: true},
+				{Attr: "id", Value: uniqID},
+				{Attr: "devaddr", Value: devAddr},
+				{Attr: "gateway_id", Value: gatewayID},
+				{Attr: "time", Value: strconv.FormatInt(now.Unix(), 10)},
+				{Attr: "lora_rssi", Value: -74},
+				{Attr: "snr", Value: 7.8},
+				{Attr: "channel", Value: int32(0)},
+				{Attr: "frequency", Value: int32(902700000)},
+				{Attr: "data_rate", Value: int32(3)},
+			}, now, "",
+		},
 		// Device Join bad length.
-		{nil, nil, time.Time{}, "cannot parse invalid wire-format data"},
+		{
+			nil, nil, time.Time{}, "cannot parse invalid wire-format data",
+		},
 	}
 
 	for _, test := range tests {

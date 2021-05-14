@@ -35,12 +35,14 @@ func deviceJoin(body []byte) ([]*decode.Point, *timestamppb.Timestamp, error) {
 	// Parse JoinEvent.
 	msgs = append(msgs, &decode.Point{Attr: "join", Value: true})
 	if len(joinMsg.DevEui) != 0 {
-		msgs = append(msgs, &decode.Point{Attr: "id",
-			Value: hex.EncodeToString(joinMsg.DevEui)})
+		msgs = append(msgs, &decode.Point{
+			Attr: "id", Value: hex.EncodeToString(joinMsg.DevEui),
+		})
 	}
 	if len(joinMsg.DevAddr) != 0 {
-		msgs = append(msgs, &decode.Point{Attr: "devaddr",
-			Value: hex.EncodeToString(joinMsg.DevAddr)})
+		msgs = append(msgs, &decode.Point{
+			Attr: "devaddr", Value: hex.EncodeToString(joinMsg.DevAddr),
+		})
 	}
 
 	// Parse UplinkRXInfos.
@@ -52,15 +54,19 @@ func deviceJoin(body []byte) ([]*decode.Point, *timestamppb.Timestamp, error) {
 		})
 
 		if len(joinMsg.RxInfo[0].GatewayId) != 0 {
-			msgs = append(msgs, &decode.Point{Attr: "gateway_id",
-				Value: hex.EncodeToString(joinMsg.RxInfo[0].GatewayId)})
+			msgs = append(msgs, &decode.Point{
+				Attr:  "gateway_id",
+				Value: hex.EncodeToString(joinMsg.RxInfo[0].GatewayId),
+			})
 		}
 
 		// Populate time channel if it is provided by the gateway. Use it as
 		// joinTime if it is accurate.
 		if joinMsg.RxInfo[0].Time != nil {
-			msgs = append(msgs, &decode.Point{Attr: "time",
-				Value: strconv.FormatInt(joinMsg.RxInfo[0].Time.Seconds, 10)})
+			msgs = append(msgs, &decode.Point{
+				Attr:  "time",
+				Value: strconv.FormatInt(joinMsg.RxInfo[0].Time.Seconds, 10),
+			})
 
 			ts := joinMsg.RxInfo[0].Time.AsTime()
 			if ts.Before(joinTime.AsTime()) &&
@@ -70,26 +76,31 @@ func deviceJoin(body []byte) ([]*decode.Point, *timestamppb.Timestamp, error) {
 		}
 
 		if joinMsg.RxInfo[0].Rssi != 0 {
-			msgs = append(msgs, &decode.Point{Attr: "lora_rssi",
-				Value: int(joinMsg.RxInfo[0].Rssi)})
+			msgs = append(msgs, &decode.Point{
+				Attr: "lora_rssi", Value: int(joinMsg.RxInfo[0].Rssi),
+			})
 		}
 		if joinMsg.RxInfo[0].LoraSnr != 0 {
-			msgs = append(msgs, &decode.Point{Attr: "snr",
-				Value: joinMsg.RxInfo[0].LoraSnr})
+			msgs = append(msgs, &decode.Point{
+				Attr: "snr", Value: joinMsg.RxInfo[0].LoraSnr,
+			})
 		}
-		msgs = append(msgs, &decode.Point{Attr: "channel",
-			Value: int32(joinMsg.RxInfo[0].Channel)})
+		msgs = append(msgs, &decode.Point{
+			Attr: "channel", Value: int32(joinMsg.RxInfo[0].Channel),
+		})
 	}
 
 	// Parse UplinkTXInfo.
 	if joinMsg.TxInfo != nil && joinMsg.TxInfo.Frequency != 0 {
-		msgs = append(msgs, &decode.Point{Attr: "frequency",
-			Value: int32(joinMsg.TxInfo.Frequency)})
+		msgs = append(msgs, &decode.Point{
+			Attr: "frequency", Value: int32(joinMsg.TxInfo.Frequency),
+		})
 	}
 
 	// Parse JoinEvent data rate.
-	msgs = append(msgs, &decode.Point{Attr: "data_rate",
-		Value: int32(joinMsg.Dr)})
+	msgs = append(msgs, &decode.Point{
+		Attr: "data_rate", Value: int32(joinMsg.Dr),
+	})
 
 	return msgs, joinTime, nil
 }
