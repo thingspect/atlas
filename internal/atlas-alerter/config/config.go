@@ -8,18 +8,17 @@ const pref = "ALERTER_"
 
 // Config holds settings used by the Alerter service.
 type Config struct {
-	LogLevel   string
-	StatsDAddr string
+	LogLevel    string
+	StatsDAddr  string
+	Concurrency int
 
 	PgURI     string
 	RedisHost string
 
+	NSQPubAddr     string
 	NSQLookupAddrs []string
 	NSQSubTopic    string
 	NSQSubChannel  string
-
-	NSQPubAddr  string
-	Concurrency int
 
 	AppAPIKey   string
 	SMSID       string
@@ -31,20 +30,19 @@ type Config struct {
 // New instantiates a service Config, parses the environment, and returns it.
 func New() *Config {
 	return &Config{
-		LogLevel:   config.String(pref+"LOG_LEVEL", "DEBUG"),
-		StatsDAddr: config.String(pref+"STATSD_ADDR", ""),
+		LogLevel:    config.String(pref+"LOG_LEVEL", "DEBUG"),
+		StatsDAddr:  config.String(pref+"STATSD_ADDR", ""),
+		Concurrency: config.Int(pref+"CONCURRENCY", 5),
 
 		PgURI: config.String(pref+"PG_URI",
 			"postgres://postgres:postgres@127.0.0.1/atlas_test"),
 		RedisHost: config.String(pref+"REDIS_HOST", "127.0.0.1"),
 
+		NSQPubAddr: config.String(pref+"NSQ_PUB_ADDR", "127.0.0.1:4150"),
 		NSQLookupAddrs: config.StringSlice(pref+"NSQ_LOOKUP_ADDRS",
 			[]string{"127.0.0.1:4161"}),
 		NSQSubTopic:   config.String(pref+"NSQ_SUB_TOPIC", "EventerOut"),
 		NSQSubChannel: config.String(pref+"NSQ_SUB_CHANNEL", "alerter"),
-
-		NSQPubAddr:  config.String(pref+"NSQ_PUB_ADDR", "127.0.0.1:4150"),
-		Concurrency: config.Int(pref+"CONCURRENCY", 5),
 
 		AppAPIKey: config.String(pref+"APP_API_KEY", ""),
 		SMSID: config.String(pref+"SMS_ID",

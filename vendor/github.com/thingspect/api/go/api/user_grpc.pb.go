@@ -29,7 +29,7 @@ type UserServiceClient interface {
 	UpdateUserPassword(ctx context.Context, in *UpdateUserPasswordRequest, opts ...grpc.CallOption) (*empty.Empty, error)
 	// Delete a user by ID.
 	DeleteUser(ctx context.Context, in *DeleteUserRequest, opts ...grpc.CallOption) (*empty.Empty, error)
-	// List all users.
+	// List users.
 	ListUsers(ctx context.Context, in *ListUsersRequest, opts ...grpc.CallOption) (*ListUsersResponse, error)
 }
 
@@ -109,7 +109,7 @@ type UserServiceServer interface {
 	UpdateUserPassword(context.Context, *UpdateUserPasswordRequest) (*empty.Empty, error)
 	// Delete a user by ID.
 	DeleteUser(context.Context, *DeleteUserRequest) (*empty.Empty, error)
-	// List all users.
+	// List users.
 	ListUsers(context.Context, *ListUsersRequest) (*ListUsersResponse, error)
 	mustEmbedUnimplementedUserServiceServer()
 }

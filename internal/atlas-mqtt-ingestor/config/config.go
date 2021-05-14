@@ -8,8 +8,9 @@ const pref = "MQTT_INGEST_"
 
 // Config holds settings used by the MQTT Ingestor service.
 type Config struct {
-	LogLevel   string
-	StatsDAddr string
+	LogLevel    string
+	StatsDAddr  string
+	Concurrency int
 
 	MQTTAddr   string
 	MQTTUser   string
@@ -18,14 +19,14 @@ type Config struct {
 
 	NSQPubAddr  string
 	NSQPubTopic string
-	Concurrency int
 }
 
 // New instantiates a service Config, parses the environment, and returns it.
 func New() *Config {
 	return &Config{
-		LogLevel:   config.String(pref+"LOG_LEVEL", "DEBUG"),
-		StatsDAddr: config.String(pref+"STATSD_ADDR", ""),
+		LogLevel:    config.String(pref+"LOG_LEVEL", "DEBUG"),
+		StatsDAddr:  config.String(pref+"STATSD_ADDR", ""),
+		Concurrency: config.Int(pref+"CONCURRENCY", 5),
 
 		MQTTAddr:   config.String(pref+"MQTT_ADDR", "tcp://127.0.0.1:1883"),
 		MQTTUser:   config.String(pref+"MQTT_USER", "mqtt-ingestor"),
@@ -34,6 +35,5 @@ func New() *Config {
 
 		NSQPubAddr:  config.String(pref+"NSQ_PUB_ADDR", "127.0.0.1:4150"),
 		NSQPubTopic: config.String(pref+"NSQ_PUB_TOPIC", "ValidatorIn"),
-		Concurrency: config.Int(pref+"CONCURRENCY", 5),
 	}
 }

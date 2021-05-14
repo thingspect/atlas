@@ -59,8 +59,9 @@ func supervisory(body []byte) ([]*decode.Point, error) {
 	}
 
 	// Parse tamper status. Matching bit flag indicates closed/false state.
-	msgs = append(msgs, &decode.Point{Attr: "tamper",
-		Value: errCodes&statusSuperTamper != statusSuperTamper})
+	msgs = append(msgs, &decode.Point{
+		Attr: "tamper", Value: errCodes&statusSuperTamper != statusSuperTamper,
+	})
 
 	// Parse battery level.
 	vInt := body[4] >> 4
@@ -70,8 +71,10 @@ func supervisory(body []byte) ([]*decode.Point, error) {
 
 	// Event count, 2 bytes.
 	if len(body) >= 11 {
-		msgs = append(msgs, &decode.Point{Attr: "total_count",
-			Value: int32(binary.BigEndian.Uint16(body[9:11]))})
+		msgs = append(msgs, &decode.Point{
+			Attr:  "total_count",
+			Value: int32(binary.BigEndian.Uint16(body[9:11])),
+		})
 	}
 
 	// Check for any remaining bytes.

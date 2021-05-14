@@ -143,7 +143,7 @@ github.com/nsqio/go-nsq
 github.com/pkg/errors
 # github.com/pmezard/go-difflib v1.0.0
 github.com/pmezard/go-difflib/difflib
-# github.com/rs/zerolog v1.21.0
+# github.com/rs/zerolog v1.22.0
 ## explicit
 github.com/rs/zerolog
 github.com/rs/zerolog/internal/cbor
@@ -155,7 +155,7 @@ github.com/smira/go-statsd
 ## explicit
 github.com/stretchr/testify/assert
 github.com/stretchr/testify/require
-# github.com/thingspect/api/go v0.0.0-20210504174150-e39e1653ed8e
+# github.com/thingspect/api/go v0.0.0-20210514160840-56ef08f7d4d5
 ## explicit
 github.com/thingspect/api/go/api
 github.com/thingspect/api/go/common
@@ -184,13 +184,12 @@ go.opentelemetry.io/otel/metric/number
 go.opentelemetry.io/otel/metric/registry
 # go.opentelemetry.io/otel/trace v0.20.0
 go.opentelemetry.io/otel/trace
-# golang.org/x/crypto v0.0.0-20210506145944-38f3c27a63bf
+# golang.org/x/crypto v0.0.0-20210513164829-c07d793c2f9a
 ## explicit
 golang.org/x/crypto/bcrypt
 golang.org/x/crypto/blowfish
 golang.org/x/crypto/pbkdf2
 # golang.org/x/net v0.0.0-20210510120150-4163338589ed
-## explicit
 golang.org/x/net/context
 golang.org/x/net/http/httpguts
 golang.org/x/net/http2
@@ -203,8 +202,7 @@ golang.org/x/net/trace
 # golang.org/x/sync v0.0.0-20210220032951-036812b2e83c
 ## explicit
 golang.org/x/sync/errgroup
-# golang.org/x/sys v0.0.0-20210510120138-977fb7262007
-## explicit
+# golang.org/x/sys v0.0.0-20210514084401-e8d321eab015
 golang.org/x/sys/internal/unsafeheader
 golang.org/x/sys/unix
 # golang.org/x/text v0.3.6
@@ -221,13 +219,12 @@ golang.org/x/text/transform
 golang.org/x/text/unicode/bidi
 golang.org/x/text/unicode/norm
 golang.org/x/text/width
-# google.golang.org/genproto v0.0.0-20210510173355-fb37daa5cd7a
-## explicit
+# google.golang.org/genproto v0.0.0-20210513213006-bf773b8c8384
 google.golang.org/genproto/googleapis/api/annotations
 google.golang.org/genproto/googleapis/api/httpbody
 google.golang.org/genproto/googleapis/rpc/status
 google.golang.org/genproto/protobuf/field_mask
-# google.golang.org/grpc v1.37.0
+# google.golang.org/grpc v1.37.1
 ## explicit
 google.golang.org/grpc
 google.golang.org/grpc/attributes

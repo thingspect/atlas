@@ -34,6 +34,7 @@ func TestMain(m *testing.M) {
 	cfg := config.New()
 	cfg.PgURI = testConfig.PgURI
 
+	cfg.NSQPubAddr = testConfig.NSQPubAddr
 	cfg.NSQLookupAddrs = testConfig.NSQLookupAddrs
 	cfg.NSQSubTopic += "-test-" + random.String(10)
 	globalDInSubTopic = cfg.NSQSubTopic
@@ -42,7 +43,6 @@ func TestMain(m *testing.M) {
 	// interfering with the next run, but does require eventual cleaning.
 	cfg.NSQSubChannel = "decoder-test-" + random.String(10)
 
-	cfg.NSQPubAddr = testConfig.NSQPubAddr
 	cfg.NSQPubTopic += "-test-" + random.String(10)
 	globalVInPubTopic = cfg.NSQPubTopic
 	log.Printf("TestMain cfg.NSQPubTopic: %v", cfg.NSQPubTopic)

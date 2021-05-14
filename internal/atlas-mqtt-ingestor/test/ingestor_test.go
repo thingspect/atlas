@@ -36,37 +36,70 @@ func TestDecodeMessages(t *testing.T) {
 		inpPoints     []*common.DataPoint
 		res           []*message.ValidatorIn
 	}{
-		{[]string{"v1", orgID, "json"}, "", []*common.DataPoint{
-			{UniqId: uniqIDPoint, Attr: "motion",
-				ValOneof: &common.DataPoint_IntVal{IntVal: 123}, Ts: now,
-				Token: pointToken},
-			{UniqId: uniqIDPoint, Attr: "motion",
-				ValOneof: &common.DataPoint_IntVal{IntVal: 321}, Ts: now,
-				Token: pointToken},
-		}, []*message.ValidatorIn{
-			{Point: &common.DataPoint{UniqId: uniqIDPoint,
-				Attr: "motion", ValOneof: &common.DataPoint_IntVal{IntVal: 123},
-				Ts: now, Token: pointToken}, OrgId: orgID},
-			{Point: &common.DataPoint{UniqId: uniqIDPoint,
-				Attr: "motion", ValOneof: &common.DataPoint_IntVal{IntVal: 321},
-				Ts: now, Token: pointToken}, OrgId: orgID},
-		}},
-		{[]string{"v1", orgID, uniqIDTopic}, paylToken, []*common.DataPoint{
-			{Attr: "temp", ValOneof: &common.DataPoint_Fl64Val{Fl64Val: 9.3}},
-		}, []*message.ValidatorIn{
-			{Point: &common.DataPoint{UniqId: uniqIDTopic, Attr: "temp",
-				ValOneof: &common.DataPoint_Fl64Val{Fl64Val: 9.3},
-				Token:    paylToken}, OrgId: orgID},
-		}},
-		{[]string{"v1", orgID, uniqIDTopic, "json"}, paylToken,
-			[]*common.DataPoint{
-				{Attr: "power", ValOneof: &common.DataPoint_StrVal{
-					StrVal: "batt"}},
+		{
+			[]string{"v1", orgID, "json"}, "", []*common.DataPoint{
+				{
+					UniqId: uniqIDPoint, Attr: "motion",
+					ValOneof: &common.DataPoint_IntVal{IntVal: 123}, Ts: now,
+					Token: pointToken,
+				}, {
+					UniqId: uniqIDPoint, Attr: "motion",
+					ValOneof: &common.DataPoint_IntVal{IntVal: 321}, Ts: now,
+					Token: pointToken,
+				},
 			}, []*message.ValidatorIn{
-				{Point: &common.DataPoint{UniqId: uniqIDTopic, Attr: "power",
+				{
+					Point: &common.DataPoint{
+						UniqId: uniqIDPoint,
+						Attr:   "motion", ValOneof: &common.DataPoint_IntVal{
+							IntVal: 123,
+						}, Ts: now, Token: pointToken,
+					}, OrgId: orgID,
+				}, {
+					Point: &common.DataPoint{
+						UniqId: uniqIDPoint,
+						Attr:   "motion", ValOneof: &common.DataPoint_IntVal{
+							IntVal: 321,
+						}, Ts: now, Token: pointToken,
+					}, OrgId: orgID,
+				},
+			},
+		},
+		{
+			[]string{"v1", orgID, uniqIDTopic}, paylToken, []*common.DataPoint{
+				{
+					Attr:     "temp",
+					ValOneof: &common.DataPoint_Fl64Val{Fl64Val: 9.3},
+				},
+			}, []*message.ValidatorIn{
+				{
+					Point: &common.DataPoint{
+						UniqId: uniqIDTopic, Attr: "temp",
+						ValOneof: &common.DataPoint_Fl64Val{Fl64Val: 9.3},
+						Token:    paylToken,
+					}, OrgId: orgID,
+				},
+			},
+		},
+		{
+			[]string{"v1", orgID, uniqIDTopic, "json"},
+			paylToken,
+			[]*common.DataPoint{
+				{
+					Attr:     "power",
 					ValOneof: &common.DataPoint_StrVal{StrVal: "batt"},
-					Token:    paylToken}, OrgId: orgID},
-			}},
+				},
+			},
+			[]*message.ValidatorIn{
+				{
+					Point: &common.DataPoint{
+						UniqId: uniqIDTopic, Attr: "power",
+						ValOneof: &common.DataPoint_StrVal{StrVal: "batt"},
+						Token:    paylToken,
+					}, OrgId: orgID,
+				},
+			},
+		},
 	}
 
 	for _, test := range tests {
@@ -75,8 +108,9 @@ func TestDecodeMessages(t *testing.T) {
 		t.Run(fmt.Sprintf("Can decode %+v", lTest), func(t *testing.T) {
 			var bPayl []byte
 			var err error
-			payl := &mqtt.Payload{Points: lTest.inpPoints,
-				Token: lTest.inpPaylToken}
+			payl := &mqtt.Payload{
+				Points: lTest.inpPoints, Token: lTest.inpPaylToken,
+			}
 
 			if lTest.inpTopicParts[len(lTest.inpTopicParts)-1] == "json" {
 				bPayl, err = protojson.Marshal(payl)

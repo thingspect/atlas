@@ -128,16 +128,17 @@ func TestAlertMessages(t *testing.T) {
 			var wg sync.WaitGroup
 			wg.Add(1)
 
-			orger := NewMockorger(gomock.NewController(t))
+			ctrl := gomock.NewController(t)
+			orger := NewMockorger(ctrl)
 			orger.EXPECT().Read(gomock.Any(), lTest.inpEOut.Device.OrgId).
 				Return(org, nil).Times(1)
 
-			alarmer := NewMockalarmer(gomock.NewController(t))
+			alarmer := NewMockalarmer(ctrl)
 			alarmer.EXPECT().List(gomock.Any(), lTest.inpEOut.Device.OrgId,
 				time.Time{}, "", int32(0), lTest.inpEOut.Rule.Id).Return(
 				lTest.inpAlarms, int32(0), nil).Times(1)
 
-			userer := NewMockuserer(gomock.NewController(t))
+			userer := NewMockuserer(ctrl)
 			userer.EXPECT().ListByTags(gomock.Any(), lTest.inpEOut.Device.OrgId,
 				lTest.inpAlarms[0].UserTags).Return(lTest.inpUsers, nil).
 				Times(lTest.inpUserTimes)
@@ -154,7 +155,7 @@ func TestAlertMessages(t *testing.T) {
 				}
 			}
 
-			notifier := notify.NewMockNotifier(gomock.NewController(t))
+			notifier := notify.NewMockNotifier(ctrl)
 			notifier.EXPECT().App(gomock.Any(), gomock.Any(), gomock.Any(),
 				gomock.Any()).Return(nil).Times(lTest.inpAppTimes)
 			notifier.EXPECT().SMS(gomock.Any(), gomock.Any(), gomock.Any(),
@@ -163,7 +164,7 @@ func TestAlertMessages(t *testing.T) {
 				gomock.Any(), gomock.Any(), gomock.Any()).Return(nil).
 				Times(lTest.inpEmailTimes)
 
-			alerter := NewMockalerter(gomock.NewController(t))
+			alerter := NewMockalerter(ctrl)
 			alerter.EXPECT().Create(gomock.Any(), matcher.NewProtoMatcher(
 				alert)).DoAndReturn(func(_ ...interface{}) error {
 				defer wg.Done()
@@ -389,31 +390,32 @@ func TestAlertMessagesError(t *testing.T) {
 			var wg sync.WaitGroup
 			wg.Add(1)
 
-			orger := NewMockorger(gomock.NewController(t))
+			ctrl := gomock.NewController(t)
+			orger := NewMockorger(ctrl)
 			orger.EXPECT().Read(gomock.Any(), gomock.Any()).Return(lTest.inpOrg,
 				lTest.inpOrgErr).Times(lTest.inpOrgTimes)
 
-			alarmer := NewMockalarmer(gomock.NewController(t))
+			alarmer := NewMockalarmer(ctrl)
 			alarmer.EXPECT().List(gomock.Any(), gomock.Any(), gomock.Any(),
 				gomock.Any(), gomock.Any(), gomock.Any()).
 				Return(lTest.inpAlarms, int32(0), lTest.inpAlarmsErr).
 				Times(lTest.inpAlarmTimes)
 
-			userer := NewMockuserer(gomock.NewController(t))
+			userer := NewMockuserer(ctrl)
 			userer.EXPECT().ListByTags(gomock.Any(), gomock.Any(),
 				gomock.Any()).Return(lTest.inpUsers, lTest.inpUsersErr).
 				Times(lTest.inpUserTimes)
 
-			cacher := cache.NewMockCacher(gomock.NewController(t))
+			cacher := cache.NewMockCacher(ctrl)
 			cacher.EXPECT().SetIfNotExistTTL(gomock.Any(), gomock.Any(),
 				gomock.Any(), gomock.Any()).Return(lTest.inpCache,
 				lTest.inpCacheErr).Times(lTest.inpCacheTimes)
 
-			notifier := notify.NewMockNotifier(gomock.NewController(t))
+			notifier := notify.NewMockNotifier(ctrl)
 			notifier.EXPECT().App(gomock.Any(), gomock.Any(), gomock.Any(),
 				gomock.Any()).Return(lTest.inpAppErr).Times(lTest.inpAppTimes)
 
-			alerter := NewMockalerter(gomock.NewController(t))
+			alerter := NewMockalerter(ctrl)
 			alerter.EXPECT().Create(gomock.Any(), gomock.Any()).
 				DoAndReturn(func(_ ...interface{}) error {
 					defer wg.Done()
