@@ -1,0 +1,5 @@
+ALTER TYPE role RENAME TO role_old;
+CREATE TYPE role AS ENUM ('ROLE_UNSPECIFIED', 'CONTACT', 'VIEWER', 'BUILDER', 'ADMIN', 'SYS_ADMIN');
+ALTER TABLE users ALTER COLUMN role TYPE role USING role::text::role;
+ALTER TABLE keys ALTER COLUMN role TYPE role USING role::text::role;
+DROP TYPE role_old;

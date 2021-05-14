@@ -28,8 +28,9 @@ func deviceError(body []byte) ([]*decode.Point, error) {
 	msgs := []*decode.Point{{Attr: "raw_device", Value: gw}}
 
 	// Parse ErrorEvent.
-	msgs = append(msgs, &decode.Point{Attr: "error_type",
-		Value: errMsg.Type.String()})
+	msgs = append(msgs, &decode.Point{
+		Attr: "error_type", Value: errMsg.Type.String(),
+	})
 	if errMsg.Error != "" {
 		msgs = append(msgs, &decode.Point{Attr: "error", Value: errMsg.Error})
 	}

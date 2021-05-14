@@ -155,7 +155,7 @@ github.com/smira/go-statsd
 ## explicit
 github.com/stretchr/testify/assert
 github.com/stretchr/testify/require
-# github.com/thingspect/api/go v0.0.0-20210514160840-56ef08f7d4d5
+# github.com/thingspect/api/go v0.0.0-20210514182225-2dc2dcb98fb7
 ## explicit
 github.com/thingspect/api/go/api
 github.com/thingspect/api/go/common

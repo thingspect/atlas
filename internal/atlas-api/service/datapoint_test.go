@@ -44,7 +44,7 @@ func TestPublishDataPoints(t *testing.T) {
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
 			context.Background(), &session.Session{
-				OrgID: orgID, Role: common.Role_ADMIN,
+				OrgID: orgID, Role: common.Role_PUBLISHER,
 			}), testTimeout)
 		defer cancel()
 
@@ -149,7 +149,7 @@ func TestPublishDataPoints(t *testing.T) {
 		dpSvc := NewDataPoint(nil, "", nil)
 		_, err := dpSvc.PublishDataPoints(ctx, &api.PublishDataPointsRequest{})
 		t.Logf("err: %v", err)
-		require.Equal(t, errPerm(common.Role_BUILDER), err)
+		require.Equal(t, errPerm(common.Role_PUBLISHER), err)
 	})
 
 	t.Run("Publish data point with insufficient role", func(t *testing.T) {
@@ -164,7 +164,7 @@ func TestPublishDataPoints(t *testing.T) {
 		dpSvc := NewDataPoint(nil, "", nil)
 		_, err := dpSvc.PublishDataPoints(ctx, &api.PublishDataPointsRequest{})
 		t.Logf("err: %v", err)
-		require.Equal(t, errPerm(common.Role_BUILDER), err)
+		require.Equal(t, errPerm(common.Role_PUBLISHER), err)
 	})
 
 	t.Run("Publish valid data point with bad queue", func(t *testing.T) {

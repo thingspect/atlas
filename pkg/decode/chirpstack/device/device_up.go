@@ -37,8 +37,9 @@ func deviceUp(body []byte) ([]*decode.Point, *timestamppb.Timestamp, []byte,
 	msgs := []*decode.Point{{Attr: "raw_device", Value: gw}}
 
 	if upMsg.Data != nil {
-		msgs = append(msgs, &decode.Point{Attr: "raw_data",
-			Value: hex.EncodeToString(upMsg.Data)})
+		msgs = append(msgs, &decode.Point{
+			Attr: "raw_data", Value: hex.EncodeToString(upMsg.Data),
+		})
 	}
 
 	// Parse UplinkRXInfos.
@@ -50,15 +51,19 @@ func deviceUp(body []byte) ([]*decode.Point, *timestamppb.Timestamp, []byte,
 		})
 
 		if len(upMsg.RxInfo[0].GatewayId) != 0 {
-			msgs = append(msgs, &decode.Point{Attr: "gateway_id",
-				Value: hex.EncodeToString(upMsg.RxInfo[0].GatewayId)})
+			msgs = append(msgs, &decode.Point{
+				Attr:  "gateway_id",
+				Value: hex.EncodeToString(upMsg.RxInfo[0].GatewayId),
+			})
 		}
 
 		// Populate time channel if it is provided by the gateway. Use it as
 		// upTime if it is accurate.
 		if upMsg.RxInfo[0].Time != nil {
-			msgs = append(msgs, &decode.Point{Attr: "time",
-				Value: strconv.FormatInt(upMsg.RxInfo[0].Time.Seconds, 10)})
+			msgs = append(msgs, &decode.Point{
+				Attr:  "time",
+				Value: strconv.FormatInt(upMsg.RxInfo[0].Time.Seconds, 10),
+			})
 
 			ts := upMsg.RxInfo[0].Time.AsTime()
 			if ts.Before(upTime.AsTime()) &&
@@ -68,28 +73,35 @@ func deviceUp(body []byte) ([]*decode.Point, *timestamppb.Timestamp, []byte,
 		}
 
 		if upMsg.RxInfo[0].Rssi != 0 {
-			msgs = append(msgs, &decode.Point{Attr: "lora_rssi",
-				Value: int(upMsg.RxInfo[0].Rssi)})
+			msgs = append(msgs, &decode.Point{
+				Attr: "lora_rssi", Value: int(upMsg.RxInfo[0].Rssi),
+			})
 		}
 		if upMsg.RxInfo[0].LoraSnr != 0 {
-			msgs = append(msgs, &decode.Point{Attr: "snr",
-				Value: upMsg.RxInfo[0].LoraSnr})
+			msgs = append(msgs, &decode.Point{
+				Attr: "snr", Value: upMsg.RxInfo[0].LoraSnr,
+			})
 		}
-		msgs = append(msgs, &decode.Point{Attr: "channel",
-			Value: int32(upMsg.RxInfo[0].Channel)})
+		msgs = append(msgs, &decode.Point{
+			Attr: "channel", Value: int32(upMsg.RxInfo[0].Channel),
+		})
 	}
 
 	// Parse UplinkTXInfo.
 	if upMsg.TxInfo != nil && upMsg.TxInfo.Frequency != 0 {
-		msgs = append(msgs, &decode.Point{Attr: "frequency",
-			Value: int32(upMsg.TxInfo.Frequency)})
+		msgs = append(msgs, &decode.Point{
+			Attr: "frequency", Value: int32(upMsg.TxInfo.Frequency),
+		})
 	}
 
 	// Parse UplinkEvent.
 	msgs = append(msgs, &decode.Point{Attr: "adr", Value: upMsg.Adr})
-	msgs = append(msgs, &decode.Point{Attr: "data_rate", Value: int32(upMsg.Dr)})
-	msgs = append(msgs, &decode.Point{Attr: "confirmed",
-		Value: upMsg.ConfirmedUplink})
+	msgs = append(msgs, &decode.Point{
+		Attr: "data_rate", Value: int32(upMsg.Dr),
+	})
+	msgs = append(msgs, &decode.Point{
+		Attr: "confirmed", Value: upMsg.ConfirmedUplink,
+	})
 
 	return msgs, upTime, upMsg.Data, nil
 }

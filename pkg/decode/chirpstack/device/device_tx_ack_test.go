@@ -36,20 +36,28 @@ func TestDeviceTxAck(t *testing.T) {
 		err string
 	}{
 		// Device TX ACK.
-		{&as.TxAckEvent{}, []*decode.Point{
-			{Attr: "raw_device", Value: `{}`},
-			{Attr: "ack_gateway_tx", Value: true},
-		}, ""},
-		{&as.TxAckEvent{GatewayId: bGatewayID, TxInfo: &gw.DownlinkTXInfo{
-			Frequency: 902700000}}, []*decode.Point{
-			{Attr: "raw_device", Value: fmt.Sprintf(`{"gatewayID":"%s",`+
-				`"txInfo":{"frequency":902700000}}`, b64GatewayID)},
-			{Attr: "ack_gateway_tx", Value: true},
-			{Attr: "gateway_id", Value: gatewayID},
-			{Attr: "frequency", Value: int32(902700000)},
-		}, ""},
+		{
+			&as.TxAckEvent{}, []*decode.Point{
+				{Attr: "raw_device", Value: `{}`},
+				{Attr: "ack_gateway_tx", Value: true},
+			}, "",
+		},
+		{
+			&as.TxAckEvent{
+				GatewayId: bGatewayID,
+				TxInfo:    &gw.DownlinkTXInfo{Frequency: 902700000},
+			}, []*decode.Point{
+				{Attr: "raw_device", Value: fmt.Sprintf(`{"gatewayID":"%s",`+
+					`"txInfo":{"frequency":902700000}}`, b64GatewayID)},
+				{Attr: "ack_gateway_tx", Value: true},
+				{Attr: "gateway_id", Value: gatewayID},
+				{Attr: "frequency", Value: int32(902700000)},
+			}, "",
+		},
 		// Device TX ACK bad length.
-		{nil, nil, "cannot parse invalid wire-format data"},
+		{
+			nil, nil, "cannot parse invalid wire-format data",
+		},
 	}
 
 	for _, test := range tests {

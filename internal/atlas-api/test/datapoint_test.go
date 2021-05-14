@@ -22,16 +22,19 @@ func TestPublishDataPoints(t *testing.T) {
 	t.Parallel()
 
 	t.Run("Publish valid data point", func(t *testing.T) {
-		point := &common.DataPoint{UniqId: "api-point-" + random.String(16),
-			Attr: "motion", ValOneof: &common.DataPoint_IntVal{IntVal: 123},
-			Ts: timestamppb.New(time.Now().Add(-15 * time.Minute))}
+		point := &common.DataPoint{
+			UniqId: "api-point-" + random.String(16), Attr: "motion",
+			ValOneof: &common.DataPoint_IntVal{IntVal: 123},
+			Ts:       timestamppb.New(time.Now().Add(-15 * time.Minute)),
+		}
 
 		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
 		defer cancel()
 
 		dpCli := api.NewDataPointServiceClient(globalAdminGRPCConn)
 		_, err := dpCli.PublishDataPoints(ctx, &api.PublishDataPointsRequest{
-			Points: []*common.DataPoint{point}})
+			Points: []*common.DataPoint{point},
+		})
 		t.Logf("err: %v", err)
 		require.NoError(t, err)
 
@@ -50,11 +53,12 @@ func TestPublishDataPoints(t *testing.T) {
 
 			// Testify does not currently support protobuf equality:
 			// https://github.com/stretchr/testify/issues/758
-			if !proto.Equal(&message.ValidatorIn{Point: point,
-				OrgId: globalAdminOrgID, SkipToken: true}, vIn) {
+			if !proto.Equal(&message.ValidatorIn{
+				Point: point, OrgId: globalAdminOrgID, SkipToken: true,
+			}, vIn) {
 				t.Fatalf("\nExpect: %+v\nActual: %+v", &message.ValidatorIn{
-					Point: point, OrgId: globalAdminOrgID, SkipToken: true},
-					vIn)
+					Point: point, OrgId: globalAdminOrgID, SkipToken: true,
+				}, vIn)
 			}
 		case <-time.After(testTimeout):
 			t.Fatal("Message timed out")
@@ -62,15 +66,18 @@ func TestPublishDataPoints(t *testing.T) {
 	})
 
 	t.Run("Publish valid data point without timestamp", func(t *testing.T) {
-		point := &common.DataPoint{UniqId: "api-point-" + random.String(16),
-			Attr: "motion", ValOneof: &common.DataPoint_IntVal{IntVal: 123}}
+		point := &common.DataPoint{
+			UniqId: "api-point-" + random.String(16), Attr: "motion",
+			ValOneof: &common.DataPoint_IntVal{IntVal: 123},
+		}
 
 		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
 		defer cancel()
 
 		dpCli := api.NewDataPointServiceClient(globalAdminKeyGRPCConn)
 		_, err := dpCli.PublishDataPoints(ctx, &api.PublishDataPointsRequest{
-			Points: []*common.DataPoint{point}})
+			Points: []*common.DataPoint{point},
+		})
 		t.Logf("err: %v", err)
 		require.NoError(t, err)
 
@@ -93,10 +100,12 @@ func TestPublishDataPoints(t *testing.T) {
 
 			// Testify does not currently support protobuf equality:
 			// https://github.com/stretchr/testify/issues/758
-			if !proto.Equal(&message.ValidatorIn{Point: point,
-				OrgId: globalAdminOrgID, SkipToken: true}, vIn) {
+			if !proto.Equal(&message.ValidatorIn{
+				Point: point, OrgId: globalAdminOrgID, SkipToken: true,
+			}, vIn) {
 				t.Fatalf("\nExpect: %+v\nActual: %+v", &message.ValidatorIn{
-					Point: point, OrgId: globalAdminOrgID, SkipToken: true}, vIn)
+					Point: point, OrgId: globalAdminOrgID, SkipToken: true,
+				}, vIn)
 			}
 		case <-time.After(testTimeout):
 			t.Fatal("Message timed out")
@@ -104,32 +113,38 @@ func TestPublishDataPoints(t *testing.T) {
 	})
 
 	t.Run("Publish data point with insufficient role", func(t *testing.T) {
-		point := &common.DataPoint{UniqId: "api-point-" + random.String(16),
-			Attr: "motion", ValOneof: &common.DataPoint_IntVal{IntVal: 123},
-			Ts: timestamppb.New(time.Now().Add(-15 * time.Minute))}
+		point := &common.DataPoint{
+			UniqId: "api-point-" + random.String(16), Attr: "motion",
+			ValOneof: &common.DataPoint_IntVal{IntVal: 123},
+			Ts:       timestamppb.New(time.Now().Add(-15 * time.Minute)),
+		}
 
 		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
 		defer cancel()
 
 		dpCli := api.NewDataPointServiceClient(secondaryViewerGRPCConn)
 		_, err := dpCli.PublishDataPoints(ctx, &api.PublishDataPointsRequest{
-			Points: []*common.DataPoint{point}})
+			Points: []*common.DataPoint{point},
+		})
 		t.Logf("err: %v", err)
 		require.EqualError(t, err, "rpc error: code = PermissionDenied desc = "+
-			"permission denied, BUILDER role required")
+			"permission denied, PUBLISHER role required")
 	})
 
 	t.Run("Publish invalid data point", func(t *testing.T) {
-		point := &common.DataPoint{UniqId: "api-point-" + random.String(40),
-			Attr: "motion", ValOneof: &common.DataPoint_IntVal{IntVal: 123},
-			Ts: timestamppb.New(time.Now().Add(-15 * time.Minute))}
+		point := &common.DataPoint{
+			UniqId: "api-point-" + random.String(40), Attr: "motion",
+			ValOneof: &common.DataPoint_IntVal{IntVal: 123},
+			Ts:       timestamppb.New(time.Now().Add(-15 * time.Minute)),
+		}
 
 		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
 		defer cancel()
 
 		dpCli := api.NewDataPointServiceClient(globalAdminGRPCConn)
 		_, err := dpCli.PublishDataPoints(ctx, &api.PublishDataPointsRequest{
-			Points: []*common.DataPoint{point}})
+			Points: []*common.DataPoint{point},
+		})
 		t.Logf("err: %v", err)
 		require.EqualError(t, err, "rpc error: code = InvalidArgument desc = "+
 			"invalid PublishDataPointsRequest.Points[0]: embedded message "+
@@ -149,29 +164,44 @@ func TestListDataPoints(t *testing.T) {
 
 		devCli := api.NewDeviceServiceClient(globalAdminGRPCConn)
 		createDev, err := devCli.CreateDevice(ctx, &api.CreateDeviceRequest{
-			Device: random.Device("api-point", uuid.NewString())})
+			Device: random.Device("api-point", uuid.NewString()),
+		})
 		t.Logf("createDev, err: %+v, %v", createDev, err)
 		require.NoError(t, err)
 
 		points := []*common.DataPoint{
-			{UniqId: createDev.UniqId, Attr: "motion",
+			{
+				UniqId: createDev.UniqId, Attr: "motion",
 				ValOneof: &common.DataPoint_IntVal{IntVal: 123},
-				TraceId:  uuid.NewString()},
-			{UniqId: createDev.UniqId, Attr: "temp",
+				TraceId:  uuid.NewString(),
+			},
+			{
+				UniqId: createDev.UniqId, Attr: "temp",
 				ValOneof: &common.DataPoint_Fl64Val{Fl64Val: 9.3},
-				TraceId:  uuid.NewString()},
-			{UniqId: createDev.UniqId, Attr: "power",
+				TraceId:  uuid.NewString(),
+			},
+			{
+				UniqId: createDev.UniqId, Attr: "power",
 				ValOneof: &common.DataPoint_StrVal{StrVal: "batt"},
-				TraceId:  uuid.NewString()},
-			{UniqId: createDev.UniqId, Attr: "leak",
-				ValOneof: &common.DataPoint_BoolVal{BoolVal: []bool{true,
-					false}[random.Intn(2)]}, TraceId: uuid.NewString()},
-			{UniqId: createDev.UniqId, Attr: "raw",
+				TraceId:  uuid.NewString(),
+			},
+			{
+				UniqId: createDev.UniqId, Attr: "leak",
+				ValOneof: &common.DataPoint_BoolVal{BoolVal: []bool{
+					true, false,
+				}[random.Intn(2)]}, TraceId: uuid.NewString(),
+			},
+			{
+				UniqId: createDev.UniqId, Attr: "raw",
 				ValOneof: &common.DataPoint_BytesVal{
-					BytesVal: random.Bytes(10)}, TraceId: uuid.NewString()},
-			{UniqId: createDev.UniqId, Attr: "motion",
+					BytesVal: random.Bytes(10),
+				}, TraceId: uuid.NewString(),
+			},
+			{
+				UniqId: createDev.UniqId, Attr: "motion",
 				ValOneof: &common.DataPoint_IntVal{IntVal: 321},
-				TraceId:  uuid.NewString()},
+				TraceId:  uuid.NewString(),
+			},
 		}
 
 		for _, point := range points {
@@ -201,9 +231,11 @@ func TestListDataPoints(t *testing.T) {
 		listPointsUniqID, err := dpCli.ListDataPoints(ctx,
 			&api.ListDataPointsRequest{
 				IdOneof: &api.ListDataPointsRequest_UniqId{
-					UniqId: createDev.UniqId}, EndTime: points[0].Ts,
-				StartTime: timestamppb.New(
-					points[len(points)-1].Ts.AsTime().Add(-time.Millisecond))})
+					UniqId: createDev.UniqId,
+				}, EndTime: points[0].Ts,
+				StartTime: timestamppb.New(points[len(points)-1].Ts.AsTime().
+					Add(-time.Millisecond)),
+			})
 		t.Logf("listPointsUniqID, err: %+v, %v", listPointsUniqID, err)
 		require.NoError(t, err)
 		require.Len(t, listPointsUniqID.Points, len(points))
@@ -220,8 +252,9 @@ func TestListDataPoints(t *testing.T) {
 		listPointsDevID, err := dpCli.ListDataPoints(ctx,
 			&api.ListDataPointsRequest{
 				IdOneof: &api.ListDataPointsRequest_DeviceId{
-					DeviceId: createDev.Id},
-				StartTime: points[len(points)-1].Ts})
+					DeviceId: createDev.Id,
+				}, StartTime: points[len(points)-1].Ts,
+			})
 		t.Logf("listPointsDevID, err: %+v, %v", listPointsDevID, err)
 		require.NoError(t, err)
 		require.Len(t, listPointsDevID.Points, len(points)-1)
@@ -229,18 +262,22 @@ func TestListDataPoints(t *testing.T) {
 		// Testify does not currently support protobuf equality:
 		// https://github.com/stretchr/testify/issues/758
 		if !proto.Equal(&api.ListDataPointsResponse{
-			Points: points[:len(points)-1]}, listPointsDevID) {
+			Points: points[:len(points)-1],
+		}, listPointsDevID) {
 			t.Fatalf("\nExpect: %+v\nActual: %+v", &api.ListDataPointsResponse{
-				Points: points[:len(points)-1]}, listPointsDevID)
+				Points: points[:len(points)-1],
+			}, listPointsDevID)
 		}
 
 		// Verify results by UniqID and attribute.
 		listPointsUniqID, err = dpCli.ListDataPoints(ctx,
 			&api.ListDataPointsRequest{
 				IdOneof: &api.ListDataPointsRequest_UniqId{
-					UniqId: createDev.UniqId}, Attr: "motion",
-				StartTime: timestamppb.New(
-					points[len(points)-1].Ts.AsTime().Add(-time.Millisecond))})
+					UniqId: createDev.UniqId,
+				}, Attr: "motion",
+				StartTime: timestamppb.New(points[len(points)-1].Ts.AsTime().
+					Add(-time.Millisecond)),
+			})
 		t.Logf("listPointsUniqID, err: %+v, %v", listPointsUniqID, err)
 		require.NoError(t, err)
 		require.Len(t, listPointsUniqID.Points, 2)
@@ -262,9 +299,11 @@ func TestListDataPoints(t *testing.T) {
 	t.Run("List data points are isolated by org ID", func(t *testing.T) {
 		t.Parallel()
 
-		point := &common.DataPoint{UniqId: "api-point-" + random.String(16),
-			Attr: "motion", ValOneof: &common.DataPoint_IntVal{IntVal: 123},
-			Ts: timestamppb.Now(), TraceId: uuid.NewString()}
+		point := &common.DataPoint{
+			UniqId: "api-point-" + random.String(16), Attr: "motion",
+			ValOneof: &common.DataPoint_IntVal{IntVal: 123},
+			Ts:       timestamppb.Now(), TraceId: uuid.NewString(),
+		}
 
 		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
 		defer cancel()
@@ -278,10 +317,9 @@ func TestListDataPoints(t *testing.T) {
 		require.NoError(t, err)
 
 		dpCli := api.NewDataPointServiceClient(globalAdminGRPCConn)
-		listPoints, err := dpCli.ListDataPoints(ctx,
-			&api.ListDataPointsRequest{
-				IdOneof: &api.ListDataPointsRequest_UniqId{
-					UniqId: point.UniqId}})
+		listPoints, err := dpCli.ListDataPoints(ctx, &api.ListDataPointsRequest{
+			IdOneof: &api.ListDataPointsRequest_UniqId{UniqId: point.UniqId},
+		})
 		t.Logf("listPoints, err: %+v, %v", listPoints, err)
 		require.NoError(t, err)
 		require.Len(t, listPoints.Points, 0)
@@ -294,12 +332,12 @@ func TestListDataPoints(t *testing.T) {
 		defer cancel()
 
 		dpCli := api.NewDataPointServiceClient(globalAdminGRPCConn)
-		listPoints, err := dpCli.ListDataPoints(ctx,
-			&api.ListDataPointsRequest{
-				IdOneof: &api.ListDataPointsRequest_DeviceId{
-					DeviceId: uuid.NewString()}, EndTime: timestamppb.Now(),
-				StartTime: timestamppb.New(time.Now().Add(
-					-91 * 24 * time.Hour))})
+		listPoints, err := dpCli.ListDataPoints(ctx, &api.ListDataPointsRequest{
+			IdOneof: &api.ListDataPointsRequest_DeviceId{
+				DeviceId: uuid.NewString(),
+			}, EndTime: timestamppb.Now(),
+			StartTime: timestamppb.New(time.Now().Add(-91 * 24 * time.Hour)),
+		})
 		t.Logf("listPoints, err: %+v, %v", listPoints, err)
 		require.Nil(t, listPoints)
 		require.EqualError(t, err, "rpc error: code = InvalidArgument desc = "+
@@ -313,10 +351,11 @@ func TestListDataPoints(t *testing.T) {
 		defer cancel()
 
 		dpCli := api.NewDataPointServiceClient(globalAdminGRPCConn)
-		listPoints, err := dpCli.ListDataPoints(ctx,
-			&api.ListDataPointsRequest{
-				IdOneof: &api.ListDataPointsRequest_DeviceId{
-					DeviceId: random.String(10)}})
+		listPoints, err := dpCli.ListDataPoints(ctx, &api.ListDataPointsRequest{
+			IdOneof: &api.ListDataPointsRequest_DeviceId{
+				DeviceId: random.String(10),
+			},
+		})
 		t.Logf("listPoints, err: %+v, %v", listPoints, err)
 		require.Nil(t, listPoints)
 		require.EqualError(t, err, "rpc error: code = InvalidArgument desc = "+
@@ -336,26 +375,39 @@ func TestLatestDataPoints(t *testing.T) {
 
 		devCli := api.NewDeviceServiceClient(globalAdminGRPCConn)
 		createDev, err := devCli.CreateDevice(ctx, &api.CreateDeviceRequest{
-			Device: random.Device("api-point", uuid.NewString())})
+			Device: random.Device("api-point", uuid.NewString()),
+		})
 		t.Logf("createDev, err: %+v, %v", createDev, err)
 		require.NoError(t, err)
 
 		points := []*common.DataPoint{
-			{UniqId: createDev.UniqId, Attr: "motion",
+			{
+				UniqId: createDev.UniqId, Attr: "motion",
 				ValOneof: &common.DataPoint_IntVal{IntVal: 123},
-				TraceId:  uuid.NewString()},
-			{UniqId: createDev.UniqId, Attr: "temp",
+				TraceId:  uuid.NewString(),
+			},
+			{
+				UniqId: createDev.UniqId, Attr: "temp",
 				ValOneof: &common.DataPoint_Fl64Val{Fl64Val: 9.3},
-				TraceId:  uuid.NewString()},
-			{UniqId: createDev.UniqId, Attr: "power",
+				TraceId:  uuid.NewString(),
+			},
+			{
+				UniqId: createDev.UniqId, Attr: "power",
 				ValOneof: &common.DataPoint_StrVal{StrVal: "batt"},
-				TraceId:  uuid.NewString()},
-			{UniqId: createDev.UniqId, Attr: "leak",
-				ValOneof: &common.DataPoint_BoolVal{BoolVal: []bool{true,
-					false}[random.Intn(2)]}, TraceId: uuid.NewString()},
-			{UniqId: createDev.UniqId, Attr: "raw",
+				TraceId:  uuid.NewString(),
+			},
+			{
+				UniqId: createDev.UniqId, Attr: "leak",
+				ValOneof: &common.DataPoint_BoolVal{BoolVal: []bool{
+					true, false,
+				}[random.Intn(2)]}, TraceId: uuid.NewString(),
+			},
+			{
+				UniqId: createDev.UniqId, Attr: "raw",
 				ValOneof: &common.DataPoint_BytesVal{
-					BytesVal: random.Bytes(10)}, TraceId: uuid.NewString()},
+					BytesVal: random.Bytes(10),
+				}, TraceId: uuid.NewString(),
+			},
 		}
 
 		for _, point := range points {
@@ -387,7 +439,9 @@ func TestLatestDataPoints(t *testing.T) {
 		latPointsUniqID, err := dpCli.LatestDataPoints(ctx,
 			&api.LatestDataPointsRequest{
 				IdOneof: &api.LatestDataPointsRequest_UniqId{
-					UniqId: createDev.UniqId}})
+					UniqId: createDev.UniqId,
+				},
+			})
 		t.Logf("latPointsUniqID, err: %+v, %v", latPointsUniqID, err)
 		require.NoError(t, err)
 		require.Len(t, latPointsUniqID.Points, len(points))
@@ -404,7 +458,9 @@ func TestLatestDataPoints(t *testing.T) {
 		latPointsDevID, err := dpCli.LatestDataPoints(ctx,
 			&api.LatestDataPointsRequest{
 				IdOneof: &api.LatestDataPointsRequest_DeviceId{
-					DeviceId: createDev.Id}})
+					DeviceId: createDev.Id,
+				},
+			})
 		t.Logf("latPointsDevID, err: %+v, %v", latPointsDevID, err)
 		require.NoError(t, err)
 		require.Len(t, latPointsDevID.Points, len(points))
@@ -421,9 +477,11 @@ func TestLatestDataPoints(t *testing.T) {
 	t.Run("Latest data points are isolated by org ID", func(t *testing.T) {
 		t.Parallel()
 
-		point := &common.DataPoint{UniqId: "api-point-" + random.String(16),
-			Attr: "motion", ValOneof: &common.DataPoint_IntVal{IntVal: 123},
-			Ts: timestamppb.Now(), TraceId: uuid.NewString()}
+		point := &common.DataPoint{
+			UniqId: "api-point-" + random.String(16), Attr: "motion",
+			ValOneof: &common.DataPoint_IntVal{IntVal: 123},
+			Ts:       timestamppb.Now(), TraceId: uuid.NewString(),
+		}
 
 		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
 		defer cancel()
@@ -440,7 +498,9 @@ func TestLatestDataPoints(t *testing.T) {
 		latPoints, err := dpCli.LatestDataPoints(ctx,
 			&api.LatestDataPointsRequest{
 				IdOneof: &api.LatestDataPointsRequest_UniqId{
-					UniqId: point.UniqId}})
+					UniqId: point.UniqId,
+				},
+			})
 		t.Logf("latPoints, err: %+v, %v", latPoints, err)
 		require.NoError(t, err)
 		require.Len(t, latPoints.Points, 0)
@@ -456,7 +516,9 @@ func TestLatestDataPoints(t *testing.T) {
 		latPoints, err := dpCli.LatestDataPoints(ctx,
 			&api.LatestDataPointsRequest{
 				IdOneof: &api.LatestDataPointsRequest_DeviceId{
-					DeviceId: random.String(10)}})
+					DeviceId: random.String(10),
+				},
+			})
 		t.Logf("latPoints, err: %+v, %v", latPoints, err)
 		require.Nil(t, latPoints)
 		require.EqualError(t, err, "rpc error: code = InvalidArgument desc = "+

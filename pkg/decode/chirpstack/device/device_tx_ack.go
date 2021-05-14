@@ -32,14 +32,16 @@ func deviceTxAck(body []byte) ([]*decode.Point, error) {
 	// Parse TxAckEvent.
 	msgs = append(msgs, &decode.Point{Attr: "ack_gateway_tx", Value: true})
 	if len(txAckMsg.GatewayId) != 0 {
-		msgs = append(msgs, &decode.Point{Attr: "gateway_id",
-			Value: hex.EncodeToString(txAckMsg.GatewayId)})
+		msgs = append(msgs, &decode.Point{
+			Attr: "gateway_id", Value: hex.EncodeToString(txAckMsg.GatewayId),
+		})
 	}
 
 	// Parse DownlinkTXInfo.
 	if txAckMsg.TxInfo != nil && txAckMsg.TxInfo.Frequency != 0 {
-		msgs = append(msgs, &decode.Point{Attr: "frequency",
-			Value: int32(txAckMsg.TxInfo.Frequency)})
+		msgs = append(msgs, &decode.Point{
+			Attr: "frequency", Value: int32(txAckMsg.TxInfo.Frequency),
+		})
 	}
 
 	return msgs, nil
