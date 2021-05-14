@@ -20,7 +20,7 @@ jobs:
       SLACK_WEBHOOK_URL: https://hooks.slack.com/services/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
     services:
       postgres:
-        image: postgres:11-alpine
+        image: postgres:12-alpine
         env:
           POSTGRES_PASSWORD: postgres
           POSTGRES_DB: atlas_test

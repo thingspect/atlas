@@ -795,7 +795,28 @@ func TestListUsers(t *testing.T) {
 		require.Equal(t, errPerm(common.Role_ADMIN), err)
 	})
 
-	t.Run("List own user with insufficient role", func(t *testing.T) {
+	t.Run("List no users by key role", func(t *testing.T) {
+		t.Parallel()
+
+		ctx, cancel := context.WithTimeout(session.NewContext(
+			context.Background(), &session.Session{Role: common.Role_VIEWER}),
+			testTimeout)
+		defer cancel()
+
+		userSvc := NewUser(nil)
+		listUsers, err := userSvc.ListUsers(ctx, &api.ListUsersRequest{})
+		t.Logf("listUsers, err: %+v, %v", listUsers, err)
+		require.NoError(t, err)
+
+		// Testify does not currently support protobuf equality:
+		// https://github.com/stretchr/testify/issues/758
+		if !proto.Equal(&api.ListUsersResponse{}, listUsers) {
+			t.Fatalf("\nExpect: %+v\nActual: %+v", &api.ListUsersResponse{},
+				listUsers)
+		}
+	})
+
+	t.Run("List own user with non-admin role", func(t *testing.T) {
 		t.Parallel()
 
 		user := random.User("api-user", uuid.NewString())

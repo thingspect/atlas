@@ -1722,7 +1722,7 @@
     },
     "/v1/users": {
       "get": {
-        "summary": "List all users.",
+        "summary": "List users.",
         "operationId": "UserService_ListUsers",
         "responses": {
           "200": {
@@ -2237,7 +2237,7 @@
           "readOnly": true
         }
       },
-      "description": "Key represents an API key as stored in the database.",
+      "description": "Key represents an API key as stored in the database. API keys are not tied to a specific user.",
       "required": [
         "name"
       ]
@@ -2438,7 +2438,7 @@
           "items": {
             "$ref": "#/definitions/apiUser"
           },
-          "description": "User array, ordered by ascending created_at timestamp."
+          "description": "User array, ordered by ascending created_at timestamp. The completeness of the array will depend on whether the request was made by an admin user, non-admin user, or API key."
         },
         "nextPageToken": {
           "type": "string",

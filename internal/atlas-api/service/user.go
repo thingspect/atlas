@@ -238,6 +238,10 @@ func (u *User) ListUsers(ctx context.Context,
 
 	// If the user does not have sufficient role, return only their user. Will
 	// not be found for API key tokens.
+	if sess.Role < common.Role_ADMIN && sess.UserID == "" {
+		return &api.ListUsersResponse{}, nil
+	}
+
 	if sess.Role < common.Role_ADMIN {
 		user, err := u.userDAO.Read(ctx, sess.UserID, sess.OrgID)
 		if err != nil {

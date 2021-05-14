@@ -39,21 +39,33 @@ func TestAccumulateMessages(t *testing.T) {
 	tests := []struct {
 		inp *message.ValidatorOut
 	}{
-		{&message.ValidatorOut{Point: &common.DataPoint{
-			UniqId: "acc-" + random.String(16), Attr: "acc-motion",
-			ValOneof: &common.DataPoint_IntVal{IntVal: 123}, Ts: now,
-			Token: uuid.NewString(), TraceId: uuid.NewString()},
-			Device: createDev}},
-		{&message.ValidatorOut{Point: &common.DataPoint{
-			UniqId: "acc-" + random.String(16), Attr: "acc-temp",
-			ValOneof: &common.DataPoint_Fl64Val{Fl64Val: 9.3}, Ts: now,
-			Token: uuid.NewString(), TraceId: uuid.NewString()},
-			Device: createDev}},
-		{&message.ValidatorOut{Point: &common.DataPoint{
-			UniqId: "acc-" + random.String(16), Attr: "acc-power",
-			ValOneof: &common.DataPoint_StrVal{StrVal: "batt"}, Ts: now,
-			Token: uuid.NewString(), TraceId: uuid.NewString()},
-			Device: createDev}},
+		{
+			&message.ValidatorOut{
+				Point: &common.DataPoint{
+					UniqId: "acc-" + random.String(16), Attr: "acc-motion",
+					ValOneof: &common.DataPoint_IntVal{IntVal: 123}, Ts: now,
+					Token: uuid.NewString(), TraceId: uuid.NewString(),
+				}, Device: createDev,
+			},
+		},
+		{
+			&message.ValidatorOut{
+				Point: &common.DataPoint{
+					UniqId: "acc-" + random.String(16), Attr: "acc-temp",
+					ValOneof: &common.DataPoint_Fl64Val{Fl64Val: 9.3}, Ts: now,
+					Token: uuid.NewString(), TraceId: uuid.NewString(),
+				}, Device: createDev,
+			},
+		},
+		{
+			&message.ValidatorOut{
+				Point: &common.DataPoint{
+					UniqId: "acc-" + random.String(16), Attr: "acc-power",
+					ValOneof: &common.DataPoint_StrVal{StrVal: "batt"}, Ts: now,
+					Token: uuid.NewString(), TraceId: uuid.NewString(),
+				}, Device: createDev,
+			},
+		},
 	}
 
 	for _, test := range tests {
@@ -112,12 +124,14 @@ func TestAccumulateMessagesDuplicate(t *testing.T) {
 	t.Logf("createDev, err: %+v, %v", createDev, err)
 	require.NoError(t, err)
 
-	duplicateVOut := &message.ValidatorOut{Point: &common.DataPoint{
-		UniqId: "acc-" + random.String(16), Attr: "acc-motion",
-		ValOneof: &common.DataPoint_IntVal{IntVal: 123},
-		Ts:       timestamppb.New(time.Now().Add(-15 * time.Minute)),
-		Token:    uuid.NewString(), TraceId: uuid.NewString()},
-		Device: createDev}
+	duplicateVOut := &message.ValidatorOut{
+		Point: &common.DataPoint{
+			UniqId: "acc-" + random.String(16), Attr: "acc-motion",
+			ValOneof: &common.DataPoint_IntVal{IntVal: 123},
+			Ts:       timestamppb.New(time.Now().Add(-15 * time.Minute)),
+			Token:    uuid.NewString(), TraceId: uuid.NewString(),
+		}, Device: createDev,
+	}
 	require.NoError(t, globalDPDAO.Create(ctx, duplicateVOut.Point,
 		duplicateVOut.Device.OrgId))
 
@@ -167,12 +181,14 @@ func TestAccumulateMessagesError(t *testing.T) {
 	t.Logf("createDev, err: %+v, %v", createDev, err)
 	require.NoError(t, err)
 
-	invalidVOut := &message.ValidatorOut{Point: &common.DataPoint{
-		UniqId: "acc-" + random.String(16), Attr: "acc-raw",
-		ValOneof: &common.DataPoint_BytesVal{BytesVal: random.Bytes(3000)},
-		Ts:       timestamppb.New(time.Now().Add(-15 * time.Minute)),
-		Token:    uuid.NewString(), TraceId: uuid.NewString()},
-		Device: createDev}
+	invalidVOut := &message.ValidatorOut{
+		Point: &common.DataPoint{
+			UniqId: "acc-" + random.String(16), Attr: "acc-raw",
+			ValOneof: &common.DataPoint_BytesVal{BytesVal: random.Bytes(3000)},
+			Ts:       timestamppb.New(time.Now().Add(-15 * time.Minute)),
+			Token:    uuid.NewString(), TraceId: uuid.NewString(),
+		}, Device: createDev,
+	}
 
 	bVOut, err := proto.Marshal(invalidVOut)
 	require.NoError(t, err)

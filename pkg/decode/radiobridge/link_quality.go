@@ -30,10 +30,12 @@ func linkQuality(body []byte) ([]*decode.Point, error) {
 	msgs = append(msgs, &decode.Point{Attr: "sub_band", Value: int32(body[2])})
 
 	// Parse device RSSI and SNR.
-	msgs = append(msgs, &decode.Point{Attr: "device_rssi",
-		Value: int32(int8(body[3]))})
-	msgs = append(msgs, &decode.Point{Attr: "device_snr",
-		Value: int32(int8(body[4]))})
+	msgs = append(msgs, &decode.Point{
+		Attr: "device_rssi", Value: int32(int8(body[3])),
+	})
+	msgs = append(msgs, &decode.Point{
+		Attr: "device_snr", Value: int32(int8(body[4])),
+	})
 
 	return msgs, nil
 }

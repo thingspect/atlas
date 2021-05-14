@@ -71,20 +71,39 @@ func TestEventMessages(t *testing.T) {
 		inp *message.ValidatorOut
 		res []*message.EventerOut
 	}{
-		{&message.ValidatorOut{Point: &common.DataPoint{Attr: "ev-motion",
-			Ts: now, TraceId: traceID}, Device: singleDev},
-			[]*message.EventerOut{{Point: &common.DataPoint{Attr: "ev-motion",
-				Ts: now, TraceId: traceID}, Device: singleDev,
-				Rule: singleRule}}},
-		{&message.ValidatorOut{Point: &common.DataPoint{Attr: "ev-temp",
-			Ts: now, TraceId: traceID}, Device: doubleDev},
-			[]*message.EventerOut{{Point: &common.DataPoint{Attr: "ev-temp",
-				Ts: now, TraceId: traceID}, Device: doubleDev,
-				Rule: doubleRule1}, {Point: &common.DataPoint{Attr: "ev-temp",
-				Ts: now, TraceId: traceID}, Device: doubleDev,
-				Rule: doubleRule2}}},
-		{&message.ValidatorOut{Point: &common.DataPoint{Attr: "ev-power",
-			Ts: now, TraceId: traceID}, Device: singleDev}, nil},
+		{
+			&message.ValidatorOut{
+				Point: &common.DataPoint{
+					Attr: "ev-motion", Ts: now, TraceId: traceID,
+				}, Device: singleDev,
+			}, []*message.EventerOut{
+				{Point: &common.DataPoint{
+					Attr: "ev-motion", Ts: now, TraceId: traceID,
+				}, Device: singleDev, Rule: singleRule},
+			},
+		},
+		{
+			&message.ValidatorOut{
+				Point: &common.DataPoint{
+					Attr: "ev-temp", Ts: now, TraceId: traceID,
+				}, Device: doubleDev,
+			}, []*message.EventerOut{
+				{Point: &common.DataPoint{
+					Attr: "ev-temp", Ts: now, TraceId: traceID,
+				}, Device: doubleDev, Rule: doubleRule1}, {
+					Point: &common.DataPoint{
+						Attr: "ev-temp", Ts: now, TraceId: traceID,
+					}, Device: doubleDev, Rule: doubleRule2,
+				},
+			},
+		},
+		{
+			&message.ValidatorOut{
+				Point: &common.DataPoint{
+					Attr: "ev-power", Ts: now, TraceId: traceID,
+				}, Device: singleDev,
+			}, nil,
+		},
 	}
 
 	for _, test := range tests {
@@ -122,10 +141,12 @@ func TestEventMessages(t *testing.T) {
 				}
 
 				// Verify events by rule ID.
-				event := &api.Event{OrgId: createOrg.Id, RuleId: res.Rule.Id,
+				event := &api.Event{
+					OrgId: createOrg.Id, RuleId: res.Rule.Id,
 					UniqId: lTest.inp.Device.UniqId, CreatedAt: timestamppb.New(
 						now.AsTime().UTC().Truncate(time.Millisecond)),
-					TraceId: traceID}
+					TraceId: traceID,
+				}
 
 				ctx, cancel := context.WithTimeout(context.Background(),
 					testTimeout)
@@ -187,13 +208,23 @@ func TestEventMessagesError(t *testing.T) {
 		// Bad payload.
 		{nil},
 		// Missing data point.
-		{&message.ValidatorOut{Device: &common.Device{Id: createDev.Id}}},
+		{
+			&message.ValidatorOut{Device: &common.Device{Id: createDev.Id}},
+		},
 		// Missing device.
-		{&message.ValidatorOut{Point: &common.DataPoint{
-			UniqId: createDev.UniqId}}},
+		{
+			&message.ValidatorOut{
+				Point: &common.DataPoint{UniqId: createDev.UniqId},
+			},
+		},
 		// Eval error.
-		{&message.ValidatorOut{Point: &common.DataPoint{Attr: "ev-motion",
-			Ts: now, TraceId: uuid.NewString()}, Device: createDev}},
+		{
+			&message.ValidatorOut{
+				Point: &common.DataPoint{
+					Attr: "ev-motion", Ts: now, TraceId: uuid.NewString(),
+				}, Device: createDev,
+			},
+		},
 	}
 
 	for _, test := range tests {

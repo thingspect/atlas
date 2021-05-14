@@ -27,8 +27,8 @@ func TestRepeatKey(t *testing.T) {
 			key := repeatKey(orgID, devID, alarmID, userID)
 			t.Logf("key: %v", key)
 
-			require.Equal(t, fmt.Sprintf("alerter:org:%s:dev:%s:alarm:%s:user:"+
-				"%s", orgID, devID, alarmID, userID), key)
+			require.Equal(t, fmt.Sprintf("alerter:repeat:org:%s:dev:%s:alarm:"+
+				"%s:user:%s", orgID, devID, alarmID, userID), key)
 			require.Equal(t, key, repeatKey(orgID, devID, alarmID, userID))
 		})
 	}

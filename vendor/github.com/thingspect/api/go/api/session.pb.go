@@ -151,7 +151,7 @@ func (x *LoginResponse) GetExpiresAt() *timestamp.Timestamp {
 	return nil
 }
 
-// Key represents an API key as stored in the database.
+// Key represents an API key as stored in the database. API keys are not tied to a specific user.
 type Key struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache

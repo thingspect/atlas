@@ -33,6 +33,7 @@ func TestMain(m *testing.M) {
 	cfg := config.New()
 	cfg.PgURI = testConfig.PgURI
 
+	cfg.NSQPubAddr = testConfig.NSQPubAddr
 	cfg.NSQLookupAddrs = testConfig.NSQLookupAddrs
 	cfg.NSQSubTopic += "-test-" + random.String(10)
 	globalVOutSubTopic = cfg.NSQSubTopic
@@ -40,7 +41,6 @@ func TestMain(m *testing.M) {
 	// Use a unique channel for each test run. This prevents failed tests from
 	// interfering with the next run, but does require eventual cleaning.
 	cfg.NSQSubChannel = "accumulator-test-" + random.String(10)
-	cfg.NSQPubAddr = testConfig.NSQPubAddr
 
 	// Set up NSQ queue to publish test payloads.
 	var err error

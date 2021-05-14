@@ -75,7 +75,7 @@ func (acc *Accumulator) accumulateMessages() {
 
 		msg.Ack()
 		metric.Incr("processed", nil)
-		logger.Debugf("accumulateMessages created: %+v", vOut)
+		logger.Debugf("accumulateMessages processed: %+v", vOut)
 
 		processCount++
 		if processCount%100 == 0 {

@@ -8,8 +8,9 @@ const pref = "LORA_INGEST_"
 
 // Config holds settings used by the LoRa Ingestor service.
 type Config struct {
-	LogLevel   string
-	StatsDAddr string
+	LogLevel    string
+	StatsDAddr  string
+	Concurrency int
 
 	MQTTAddr   string
 	MQTTUser   string
@@ -20,14 +21,14 @@ type Config struct {
 	NSQGWPubTopic   string
 	NSQDevPubTopic  string
 	NSQDataPubTopic string
-	Concurrency     int
 }
 
 // New instantiates a service Config, parses the environment, and returns it.
 func New() *Config {
 	return &Config{
-		LogLevel:   config.String(pref+"LOG_LEVEL", "DEBUG"),
-		StatsDAddr: config.String(pref+"STATSD_ADDR", ""),
+		LogLevel:    config.String(pref+"LOG_LEVEL", "DEBUG"),
+		StatsDAddr:  config.String(pref+"STATSD_ADDR", ""),
+		Concurrency: config.Int(pref+"CONCURRENCY", 5),
 
 		MQTTAddr:   config.String(pref+"MQTT_ADDR", "tcp://127.0.0.1:1883"),
 		MQTTUser:   config.String(pref+"MQTT_USER", "lora-ingestor"),
@@ -38,6 +39,5 @@ func New() *Config {
 		NSQGWPubTopic:   config.String(pref+"NSQ_GW_PUB_TOPIC", "ValidatorIn"),
 		NSQDevPubTopic:  config.String(pref+"NSQ_DEV_PUB_TOPIC", "ValidatorIn"),
 		NSQDataPubTopic: config.String(pref+"NSQ_DATA_PUB_TOPIC", "DecoderIn"),
-		Concurrency:     config.Int(pref+"CONCURRENCY", 5),
 	}
 }

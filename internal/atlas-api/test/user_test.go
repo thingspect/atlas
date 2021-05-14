@@ -869,7 +869,21 @@ func TestListUsers(t *testing.T) {
 		require.Equal(t, userTags[len(userTags)-1], listUsers.Users[0].Tags)
 	})
 
-	t.Run("List users with insufficient role", func(t *testing.T) {
+	t.Run("List no users by key role", func(t *testing.T) {
+		t.Parallel()
+
+		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
+		defer cancel()
+
+		secCli := api.NewUserServiceClient(secondaryViewerKeyGRPCConn)
+		listUsers, err := secCli.ListUsers(ctx, &api.ListUsersRequest{})
+		t.Logf("listUsers, err: %+v, %v", listUsers, err)
+		require.NoError(t, err)
+		require.Len(t, listUsers.Users, 0)
+		require.Equal(t, int32(0), listUsers.TotalSize)
+	})
+
+	t.Run("List own user with non-admin role", func(t *testing.T) {
 		t.Parallel()
 
 		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
@@ -881,20 +895,6 @@ func TestListUsers(t *testing.T) {
 		require.NoError(t, err)
 		require.Len(t, listUsers.Users, 1)
 		require.Equal(t, int32(1), listUsers.TotalSize)
-	})
-
-	t.Run("List users with insufficient key role", func(t *testing.T) {
-		t.Parallel()
-
-		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
-		defer cancel()
-
-		secCli := api.NewUserServiceClient(secondaryViewerKeyGRPCConn)
-		listUsers, err := secCli.ListUsers(ctx, &api.ListUsersRequest{})
-		t.Logf("listUsers, err: %+v, %v", listUsers, err)
-		require.Nil(t, listUsers)
-		require.EqualError(t, err, "rpc error: code = InvalidArgument desc = "+
-			"invalid format: UUID")
 	})
 
 	t.Run("Lists are isolated by org ID", func(t *testing.T) {
