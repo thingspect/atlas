@@ -23,14 +23,12 @@ type memoryCache struct {
 // Verify memoryCache implements Cacher.
 var _ Cacher = &memoryCache{}
 
-// NewMemory builds a new Cacher and returns it and an error value.
-func NewMemory() (Cacher, error) {
+// NewMemory builds a new Cacher and returns it.
+func NewMemory() Cacher {
 	cache := ttlcache.NewCache()
 	cache.SkipTTLExtensionOnHit(true)
 
-	return &memoryCache{
-		cache: cache,
-	}, nil
+	return &memoryCache{cache: cache}
 }
 
 // Set sets key to value.
@@ -143,6 +141,32 @@ func (m *memoryCache) SetIfNotExistTTL(ctx context.Context, key string,
 	}
 
 	return true, nil
+}
+
+// Incr increments an int64 value at key by one. If the key does not exist, the
+// value is set to 1. The incremented value is returned.
+func (m *memoryCache) Incr(ctx context.Context, key string) (int64, error) {
+	m.cacheMu.Lock()
+	defer m.cacheMu.Unlock()
+
+	iface, err := m.cache.Get(key)
+	if errors.Is(err, ttlcache.ErrNotFound) {
+		iface = int64(0)
+	} else if err != nil {
+		return 0, err
+	}
+
+	i, ok := iface.(int64)
+	if !ok {
+		return 0, errWrongType
+	}
+	i++
+
+	if err = m.cache.Set(key, i); err != nil {
+		return 0, err
+	}
+
+	return i, nil
 }
 
 // Close closes the Cacher, releasing any open resources.

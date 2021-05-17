@@ -32,6 +32,9 @@ type Cacher interface {
 	// exist. If it is successful, it returns true.
 	SetIfNotExistTTL(ctx context.Context, key string, value interface{},
 		exp time.Duration) (bool, error)
+	// Incr increments an int64 value at key by one. If the key does not exist,
+	// the value is set to 1. The incremented value is returned.
+	Incr(ctx context.Context, key string) (int64, error)
 	// Close closes the Cacher, releasing any open resources.
 	Close() error
 }
