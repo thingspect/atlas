@@ -65,8 +65,7 @@ func main() {
 	// Set up database connection.
 	pg, err := dao.NewPgDB(*pgURI)
 	checkErr(err)
-	orgDAO := org.NewDAO(pg)
-	userDAO := user.NewDAO(pg)
+
 	orgID := flag.Arg(1)
 
 	switch flag.Arg(0) {
@@ -82,12 +81,14 @@ func main() {
 		ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
 		defer cancel()
 
+		orgDAO := org.NewDAO(pg)
 		createOrg, err := orgDAO.Create(ctx, &api.Org{
 			Name:        flag.Arg(1),
 			DisplayName: strings.Title(strings.ToLower(flag.Arg(1))),
 			Email:       "noreply@" + emailParts[1],
 		})
 		checkErr(err)
+
 		orgID = createOrg.Id
 		fmt.Fprintf(os.Stdout, "Org: %+v\n", createOrg)
 
@@ -100,17 +101,19 @@ func main() {
 		ctx, cancel := context.WithTimeout(context.Background(), 6*time.Second)
 		defer cancel()
 
-		user := &api.User{
+		u := &api.User{
 			OrgId:  orgID,
 			Email:  flag.Arg(2),
 			Role:   common.Role_ADMIN,
 			Status: common.Status_ACTIVE,
 			Tags:   []string{strings.ToLower(common.Role_ADMIN.String())},
 		}
-		createUser, err := userDAO.Create(ctx, user)
+
+		userDAO := user.NewDAO(pg)
+		createUser, err := userDAO.Create(ctx, u)
 		checkErr(err)
 
-		checkErr(userDAO.UpdatePassword(ctx, user.Id, orgID, hash))
+		checkErr(userDAO.UpdatePassword(ctx, createUser.Id, orgID, hash))
 		fmt.Fprintf(os.Stdout, "User: %+v\n", createUser)
 	}
 }

@@ -172,8 +172,7 @@ func TestAlertMessages(t *testing.T) {
 				return nil
 			}).Times(lTest.inpAlertTimes)
 
-			cache, err := cache.NewMemory()
-			require.NoError(t, err)
+			cache := cache.NewMemory()
 
 			if lTest.inpSeedCache {
 				ctx, cancel := context.WithTimeout(context.Background(),

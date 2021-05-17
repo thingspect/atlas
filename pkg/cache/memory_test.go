@@ -7,6 +7,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/ReneKroon/ttlcache/v2"
 	"github.com/stretchr/testify/require"
 	"github.com/thingspect/atlas/pkg/test/random"
 )
@@ -14,19 +15,15 @@ import (
 func TestNewMemory(t *testing.T) {
 	t.Parallel()
 
-	mem, err := NewMemory()
-	t.Logf("mem, err: %+v, %v", mem, err)
+	mem := NewMemory()
+	t.Logf("mem: %+v", mem)
 	require.NotNil(t, mem)
-	require.NoError(t, err)
 }
 
 func TestMemorySetGet(t *testing.T) {
 	t.Parallel()
 
-	mem, err := NewMemory()
-	t.Logf("mem, err: %+v, %v", mem, err)
-	require.NoError(t, err)
-
+	mem := NewMemory()
 	key := "testMemorySetGet-" + random.String(10)
 	val := random.String(10)
 
@@ -45,21 +42,27 @@ func TestMemorySetGet(t *testing.T) {
 	require.Empty(t, res)
 	require.NoError(t, err)
 
-	// Test next method.
-	ok, resB, err := mem.GetB(context.Background(), key)
-	t.Logf("ok, resB, err: %v, %x, %v", ok, resB, err)
+	require.NoError(t, mem.Set(context.Background(), key, random.Bytes(10)))
+
+	ok, res, err = mem.Get(context.Background(), key)
+	t.Logf("ok, res, err: %v, %v, %v", ok, res, err)
 	require.False(t, ok)
-	require.Empty(t, resB)
+	require.Empty(t, res)
 	require.Equal(t, errWrongType, err)
+
+	require.NoError(t, mem.Close())
+
+	ok, res, err = mem.Get(context.Background(), key)
+	t.Logf("ok, res, err: %v, %v, %v", ok, res, err)
+	require.False(t, ok)
+	require.Empty(t, res)
+	require.Equal(t, ttlcache.ErrClosed, err)
 }
 
 func TestMemorySetTTLGetB(t *testing.T) {
 	t.Parallel()
 
-	mem, err := NewMemory()
-	t.Logf("mem, err: %+v, %v", mem, err)
-	require.NoError(t, err)
-
+	mem := NewMemory()
 	key := "testMemorySetTTLGetB-" + random.String(10)
 	val := random.Bytes(10)
 
@@ -79,21 +82,27 @@ func TestMemorySetTTLGetB(t *testing.T) {
 	require.Empty(t, res)
 	require.NoError(t, err)
 
-	// Test next method.
-	ok, resI, err := mem.GetI(context.Background(), key)
-	t.Logf("ok, resI, err: %v, %x, %v", ok, resI, err)
+	require.NoError(t, mem.Set(context.Background(), key, random.String(10)))
+
+	ok, res, err = mem.GetB(context.Background(), key)
+	t.Logf("ok, res, err: %v, %x, %v", ok, res, err)
 	require.False(t, ok)
-	require.Empty(t, resI)
+	require.Empty(t, res)
 	require.Equal(t, errWrongType, err)
+
+	require.NoError(t, mem.Close())
+
+	ok, res, err = mem.GetB(context.Background(), key)
+	t.Logf("ok, res, err: %v, %x, %v", ok, res, err)
+	require.False(t, ok)
+	require.Empty(t, res)
+	require.Equal(t, ttlcache.ErrClosed, err)
 }
 
 func TestMemorySetTTLGetBShort(t *testing.T) {
 	t.Parallel()
 
-	mem, err := NewMemory()
-	t.Logf("mem, err: %+v, %v", mem, err)
-	require.NoError(t, err)
-
+	mem := NewMemory()
 	key := "testMemorySetTTLGetBShort-" + random.String(10)
 	val := random.Bytes(10)
 
@@ -111,10 +120,7 @@ func TestMemorySetTTLGetBShort(t *testing.T) {
 func TestMemorySetGetI(t *testing.T) {
 	t.Parallel()
 
-	mem, err := NewMemory()
-	t.Logf("mem, err: %+v, %v", mem, err)
-	require.NoError(t, err)
-
+	mem := NewMemory()
 	key := "testMemorySetGetI-" + random.String(10)
 	val := int64(random.Intn(999))
 
@@ -134,21 +140,27 @@ func TestMemorySetGetI(t *testing.T) {
 	require.Empty(t, res)
 	require.NoError(t, err)
 
-	// Test next method.
-	ok, resS, err := mem.Get(context.Background(), key)
-	t.Logf("ok, resS, err: %v, %v, %v", ok, resS, err)
+	require.NoError(t, mem.Set(context.Background(), key, random.String(10)))
+
+	ok, res, err = mem.GetI(context.Background(), key)
+	t.Logf("ok, res, err: %v, %v, %v", ok, res, err)
 	require.False(t, ok)
-	require.Empty(t, resS)
+	require.Empty(t, res)
 	require.Equal(t, errWrongType, err)
+
+	require.NoError(t, mem.Close())
+
+	ok, res, err = mem.GetI(context.Background(), key)
+	t.Logf("ok, res, err: %v, %v, %v", ok, res, err)
+	require.False(t, ok)
+	require.Empty(t, res)
+	require.Equal(t, ttlcache.ErrClosed, err)
 }
 
 func TestMemorySetIfNotExist(t *testing.T) {
 	t.Parallel()
 
-	mem, err := NewMemory()
-	t.Logf("mem, err: %+v, %v", mem, err)
-	require.NoError(t, err)
-
+	mem := NewMemory()
 	key := "testMemorySetIfNotExist-" + random.String(10)
 
 	ok, err := mem.SetIfNotExist(context.Background(), key, random.Bytes(10))
@@ -165,10 +177,7 @@ func TestMemorySetIfNotExist(t *testing.T) {
 func TestMemorySetIfNotExistTTL(t *testing.T) {
 	t.Parallel()
 
-	mem, err := NewMemory()
-	t.Logf("mem, err: %+v, %v", mem, err)
-	require.NoError(t, err)
-
+	mem := NewMemory()
 	key := "testMemorySetIfNotExistTTL-" + random.String(10)
 
 	ok, err := mem.SetIfNotExistTTL(context.Background(), key, random.Bytes(10),
@@ -187,10 +196,7 @@ func TestMemorySetIfNotExistTTL(t *testing.T) {
 func TestMemorySetIfNotExistTTLShort(t *testing.T) {
 	t.Parallel()
 
-	mem, err := NewMemory()
-	t.Logf("mem, err: %+v, %v", mem, err)
-	require.NoError(t, err)
-
+	mem := NewMemory()
 	key := "testMemorySetIfNotExistTTLShort-" + random.String(10)
 
 	ok, err := mem.SetIfNotExistTTL(context.Background(), key, random.Bytes(10),
@@ -207,12 +213,44 @@ func TestMemorySetIfNotExistTTLShort(t *testing.T) {
 	require.NoError(t, err)
 }
 
+func TestMemoryIncr(t *testing.T) {
+	t.Parallel()
+
+	mem := NewMemory()
+	key := "testMemoryIncr-" + random.String(10)
+	val := int64(random.Intn(999))
+
+	require.NoError(t, mem.Set(context.Background(), key, val))
+
+	res, err := mem.Incr(context.Background(), key)
+	t.Logf("res, err: %v, %v", res, err)
+	require.Equal(t, val+1, res)
+	require.NoError(t, err)
+
+	res, err = mem.Incr(context.Background(),
+		"testMemoryIncr-"+random.String(10))
+	t.Logf("res, err: %v, %v", res, err)
+	require.Equal(t, int64(1), res)
+	require.NoError(t, err)
+
+	require.NoError(t, mem.Set(context.Background(), key, random.String(10)))
+
+	res, err = mem.Incr(context.Background(), key)
+	t.Logf("res, err: %v, %v", res, err)
+	require.Empty(t, res)
+	require.Equal(t, errWrongType, err)
+
+	require.NoError(t, mem.Close())
+
+	res, err = mem.Incr(context.Background(), key)
+	t.Logf("res, err: %v, %v", res, err)
+	require.Empty(t, res)
+	require.Equal(t, ttlcache.ErrClosed, err)
+}
+
 func TestMemoryClose(t *testing.T) {
 	t.Parallel()
 
-	mem, err := NewMemory()
-	t.Logf("mem, err: %+v, %v", mem, err)
-	require.NoError(t, err)
-
+	mem := NewMemory()
 	require.NoError(t, mem.Close())
 }

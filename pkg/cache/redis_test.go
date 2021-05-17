@@ -13,7 +13,7 @@ import (
 	"github.com/thingspect/atlas/pkg/test/random"
 )
 
-const testTimeout = 2 * time.Second
+const testTimeout = 5 * time.Second
 
 func TestNewRedis(t *testing.T) {
 	t.Parallel()
@@ -76,6 +76,14 @@ func TestRedisSetGet(t *testing.T) {
 	require.False(t, ok)
 	require.Empty(t, res)
 	require.NoError(t, err)
+
+	require.NoError(t, redis.Close())
+
+	ok, res, err = redis.Get(ctx, key)
+	t.Logf("ok, res, err: %v, %v, %v", ok, res, err)
+	require.False(t, ok)
+	require.Empty(t, res)
+	require.EqualError(t, err, "redis: client is closed")
 }
 
 func TestRedisSetTTLGetB(t *testing.T) {
@@ -106,6 +114,14 @@ func TestRedisSetTTLGetB(t *testing.T) {
 	require.False(t, ok)
 	require.Empty(t, res)
 	require.NoError(t, err)
+
+	require.NoError(t, redis.Close())
+
+	ok, res, err = redis.GetB(ctx, key)
+	t.Logf("ok, res, err: %v, %x, %v", ok, res, err)
+	require.False(t, ok)
+	require.Empty(t, res)
+	require.EqualError(t, err, "redis: client is closed")
 }
 
 func TestRedisSetTTLGetBShort(t *testing.T) {
@@ -161,6 +177,14 @@ func TestRedisSetGetI(t *testing.T) {
 	require.False(t, ok)
 	require.Empty(t, res)
 	require.NoError(t, err)
+
+	require.NoError(t, redis.Close())
+
+	ok, res, err = redis.GetI(ctx, key)
+	t.Logf("ok, res, err: %v, %v, %v", ok, res, err)
+	require.False(t, ok)
+	require.Empty(t, res)
+	require.EqualError(t, err, "redis: client is closed")
 }
 
 func TestRedisSetIfNotExist(t *testing.T) {
@@ -238,6 +262,41 @@ func TestRedisSetIfNotExistTTLShort(t *testing.T) {
 	t.Logf("ok, err: %v, %v", ok, err)
 	require.True(t, ok)
 	require.NoError(t, err)
+}
+
+func TestRedisIncr(t *testing.T) {
+	t.Parallel()
+
+	testConfig := config.New()
+
+	redis, err := NewRedis(testConfig.RedisHost + ":6379")
+	t.Logf("redis, err: %+v, %v", redis, err)
+	require.NoError(t, err)
+
+	key := "testRedisIncr-" + random.String(10)
+	val := int64(random.Intn(999))
+
+	ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
+	defer cancel()
+
+	require.NoError(t, redis.Set(ctx, key, val))
+
+	res, err := redis.Incr(ctx, key)
+	t.Logf("res, err: %v, %v", res, err)
+	require.Equal(t, val+1, res)
+	require.NoError(t, err)
+
+	res, err = redis.Incr(ctx, "testRedisIncr-"+random.String(10))
+	t.Logf("res, err: %v, %v", res, err)
+	require.Equal(t, int64(1), res)
+	require.NoError(t, err)
+
+	require.NoError(t, redis.Set(ctx, key, random.String(10)))
+
+	res, err = redis.Incr(ctx, key)
+	t.Logf("res, err: %v, %v", res, err)
+	require.Empty(t, res)
+	require.EqualError(t, err, "ERR value is not an integer or out of range")
 }
 
 func TestRedisClose(t *testing.T) {

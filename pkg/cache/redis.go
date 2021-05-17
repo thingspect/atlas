@@ -106,6 +106,17 @@ func (r *redisCache) SetIfNotExistTTL(ctx context.Context, key string,
 	return r.client.SetNX(ctx, key, value, exp).Result()
 }
 
+// Incr increments an int64 value at key by one. If the key does not exist, the
+// value is set to 1. The incremented value is returned.
+func (r *redisCache) Incr(ctx context.Context, key string) (int64, error) {
+	i, err := r.client.Incr(ctx, key).Result()
+	if err != nil {
+		return 0, err
+	}
+
+	return i, nil
+}
+
 // Close closes the Cacher, releasing any open resources.
 func (r *redisCache) Close() error {
 	return r.client.Close()
