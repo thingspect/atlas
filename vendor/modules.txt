@@ -34,7 +34,7 @@ github.com/eclipse/paho.mqtt.golang
 github.com/eclipse/paho.mqtt.golang/packets
 # github.com/envoyproxy/protoc-gen-validate v0.6.1
 github.com/envoyproxy/protoc-gen-validate/validate
-# github.com/go-redis/redis/v8 v8.8.2
+# github.com/go-redis/redis/v8 v8.8.3
 ## explicit
 github.com/go-redis/redis/v8
 github.com/go-redis/redis/v8/internal
@@ -112,19 +112,6 @@ github.com/jackc/pgx/v4/stdlib
 # github.com/json-iterator/go v1.1.11
 ## explicit
 github.com/json-iterator/go
-# github.com/kevinburke/go-types v0.0.0-20201208005256-aee49f568a20
-## explicit
-github.com/kevinburke/go-types
-# github.com/kevinburke/go.uuid v1.2.0
-## explicit
-github.com/kevinburke/go.uuid
-# github.com/kevinburke/rest v0.0.0-20210506044642-5611499aa33c
-## explicit
-github.com/kevinburke/rest/restclient
-github.com/kevinburke/rest/resterror
-# github.com/kevinburke/twilio-go v0.0.0-20210327194925-1623146bcf73
-## explicit
-github.com/kevinburke/twilio-go
 # github.com/mailgun/mailgun-go/v4 v4.5.1
 ## explicit
 github.com/mailgun/mailgun-go/v4
@@ -160,14 +147,7 @@ github.com/stretchr/testify/require
 github.com/thingspect/api/go/api
 github.com/thingspect/api/go/common
 github.com/thingspect/api/go/mqtt
-# github.com/ttacon/builder v0.0.0-20170518171403-c099f663e1c2
-## explicit
-github.com/ttacon/builder
-# github.com/ttacon/libphonenumber v1.2.1
-## explicit
-github.com/ttacon/libphonenumber
 # go.opentelemetry.io/otel v0.20.0
-## explicit
 go.opentelemetry.io/otel
 go.opentelemetry.io/otel/attribute
 go.opentelemetry.io/otel/codes
@@ -190,7 +170,6 @@ golang.org/x/crypto/bcrypt
 golang.org/x/crypto/blowfish
 golang.org/x/crypto/pbkdf2
 # golang.org/x/net v0.0.0-20210510120150-4163338589ed
-golang.org/x/net/context
 golang.org/x/net/http/httpguts
 golang.org/x/net/http2
 golang.org/x/net/http2/hpack
@@ -199,9 +178,6 @@ golang.org/x/net/internal/socks
 golang.org/x/net/internal/timeseries
 golang.org/x/net/proxy
 golang.org/x/net/trace
-# golang.org/x/sync v0.0.0-20210220032951-036812b2e83c
-## explicit
-golang.org/x/sync/errgroup
 # golang.org/x/sys v0.0.0-20210514084401-e8d321eab015
 golang.org/x/sys/internal/unsafeheader
 golang.org/x/sys/unix
@@ -219,7 +195,8 @@ golang.org/x/text/transform
 golang.org/x/text/unicode/bidi
 golang.org/x/text/unicode/norm
 golang.org/x/text/width
-# google.golang.org/genproto v0.0.0-20210513213006-bf773b8c8384
+# google.golang.org/genproto v0.0.0-20210517163617-5e0236093d7a
+## explicit
 google.golang.org/genproto/googleapis/api/annotations
 google.golang.org/genproto/googleapis/api/httpbody
 google.golang.org/genproto/googleapis/rpc/status

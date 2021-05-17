@@ -8,9 +8,7 @@ type notify struct {
 	cache cache.Cacher
 
 	appAPIKey   string
-	smsID       string
-	smsToken    string
-	smsPhone    string
+	twilio      *twilio
 	emailAPIKey string
 }
 
@@ -18,15 +16,18 @@ type notify struct {
 var _ Notifier = &notify{}
 
 // New builds a new Notifier and returns it.
-func New(cache cache.Cacher, appAPIKey, smsID, smsToken, smsPhone,
-	emailAPIKey string) Notifier {
+func New(cache cache.Cacher, appAPIKey, smsKeyID, smsAccountID, smsKeySecret,
+	smsPhone, emailAPIKey string) Notifier {
 	return &notify{
 		cache: cache,
 
-		appAPIKey:   appAPIKey,
-		smsID:       smsID,
-		smsToken:    smsToken,
-		smsPhone:    smsPhone,
+		appAPIKey: appAPIKey,
+		twilio: &twilio{
+			keySID:     smsKeyID,
+			accountSID: smsAccountID,
+			keySecret:  smsKeySecret,
+			phone:      smsPhone,
+		},
 		emailAPIKey: emailAPIKey,
 	}
 }

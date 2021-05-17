@@ -74,7 +74,7 @@ func deviceUp(body []byte) ([]*decode.Point, *timestamppb.Timestamp, []byte,
 
 		if upMsg.RxInfo[0].Rssi != 0 {
 			msgs = append(msgs, &decode.Point{
-				Attr: "lora_rssi", Value: int(upMsg.RxInfo[0].Rssi),
+				Attr: "lora_rssi", Value: upMsg.RxInfo[0].Rssi,
 			})
 		}
 		if upMsg.RxInfo[0].LoraSnr != 0 {

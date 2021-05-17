@@ -5,19 +5,35 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/kevinburke/twilio-go"
+	"github.com/thingspect/atlas/pkg/consterr"
 )
+
+// ErrInvalidSMS is returned when a phone number fails validation for use.
+const ErrInvalidSMS consterr.Error = "unknown or unsupported phone number"
 
 const (
 	smsKey       = "notify.sms"
 	smsRateDelay = 750 * time.Millisecond
 )
 
+// VaildateSMS verifies that a phone number is correct and supported for SMS
+// usage.
+func (n *notify) VaildateSMS(ctx context.Context, phone string) error {
+	lookup, err := n.twilio.lookupCarrier(ctx, phone)
+	if err != nil {
+		return err
+	}
+
+	if lookup.Carrier.Type != "mobile" && lookup.Carrier.Type != "voip" {
+		return ErrInvalidSMS
+	}
+
+	return nil
+}
+
 // SMS sends an SMS notification. Subjects and bodies will be concatenated with
 // ' - '. This operation can block based on rate limiting.
 func (n *notify) SMS(ctx context.Context, phone, subject, body string) error {
-	client := twilio.NewClient(n.smsID, n.smsToken, nil)
-
 	// Truncate to message limits, supporting up to 2 SMS messages:
 	// https://www.twilio.com/docs/glossary/what-sms-character-limit
 	msg := subject + " - " + body
@@ -42,7 +58,5 @@ func (n *notify) SMS(ctx context.Context, phone, subject, body string) error {
 		}
 	}
 
-	_, err = client.Messages.SendMessage(n.smsPhone, phone, msg, nil)
-
-	return err
+	return n.twilio.sendSMS(ctx, phone, msg)
 }

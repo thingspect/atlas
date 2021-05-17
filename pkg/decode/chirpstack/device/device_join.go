@@ -77,7 +77,7 @@ func deviceJoin(body []byte) ([]*decode.Point, *timestamppb.Timestamp, error) {
 
 		if joinMsg.RxInfo[0].Rssi != 0 {
 			msgs = append(msgs, &decode.Point{
-				Attr: "lora_rssi", Value: int(joinMsg.RxInfo[0].Rssi),
+				Attr: "lora_rssi", Value: joinMsg.RxInfo[0].Rssi,
 			})
 		}
 		if joinMsg.RxInfo[0].LoraSnr != 0 {
