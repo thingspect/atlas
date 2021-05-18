@@ -82,7 +82,7 @@ func TestDeviceUp(t *testing.T) {
 				{Attr: "raw_data", Value: hex.EncodeToString(bData)},
 				{Attr: "gateway_id", Value: gatewayID},
 				{Attr: "time", Value: strconv.FormatInt(now.Unix(), 10)},
-				{Attr: "lora_rssi", Value: -74},
+				{Attr: "lora_rssi", Value: int32(-74)},
 				{Attr: "snr", Value: 7.8},
 				{Attr: "channel", Value: int32(0)},
 				{Attr: "frequency", Value: int32(902700000)},

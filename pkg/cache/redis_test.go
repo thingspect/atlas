@@ -291,7 +291,7 @@ func TestRedisIncr(t *testing.T) {
 	require.Equal(t, int64(1), res)
 	require.NoError(t, err)
 
-	require.NoError(t, redis.Set(ctx, key, random.String(10)))
+	require.NoError(t, redis.Set(ctx, key, "testRedisIncr-"+random.String(10)))
 
 	res, err = redis.Incr(ctx, key)
 	t.Logf("res, err: %v, %v", res, err)
