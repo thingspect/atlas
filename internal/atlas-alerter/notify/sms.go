@@ -8,7 +8,7 @@ import (
 	"github.com/thingspect/atlas/pkg/consterr"
 )
 
-// ErrInvalidSMS is returned when a phone number fails validation for use.
+// ErrInvalidSMS is returned when a phone number fails validation.
 const ErrInvalidSMS consterr.Error = "unknown or unsupported phone number"
 
 const (

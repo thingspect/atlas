@@ -24,24 +24,37 @@ func TestGatewayAck(t *testing.T) {
 		err string
 	}{
 		// Gateway ACK.
-		{&gw.DownlinkTXAck{}, []*decode.Point{
-			{Attr: "raw_gateway", Value: `{}`},
-		}, ""},
-		{&gw.DownlinkTXAck{Items: []*gw.DownlinkTXAckItem{{
-			Status: gw.TxAckStatus_OK}}},
-			[]*decode.Point{
+		{
+			&gw.DownlinkTXAck{}, []*decode.Point{
+				{Attr: "raw_gateway", Value: `{}`},
+			}, "",
+		},
+		{
+			&gw.DownlinkTXAck{
+				Items: []*gw.DownlinkTXAckItem{{Status: gw.TxAckStatus_OK}},
+			}, []*decode.Point{
 				{Attr: "raw_gateway", Value: `{"items":[{"status":"OK"}]}`},
 				{Attr: "ack", Value: "OK"},
-			}, ""},
-		{&gw.DownlinkTXAck{Items: []*gw.DownlinkTXAckItem{{
-			Status: gw.TxAckStatus_TOO_LATE}}},
-			[]*decode.Point{
-				{Attr: "raw_gateway", Value: `{"items":[{"status":` +
-					`"TOO_LATE"}]}`},
-				{Attr: "ack", Value: "TOO_LATE"},
-			}, ""},
+			}, "",
+		},
+		{
+			&gw.DownlinkTXAck{
+				Items: []*gw.DownlinkTXAckItem{
+					{Status: gw.TxAckStatus_TOO_LATE},
+				},
+			}, []*decode.Point{
+				{
+					Attr:  "raw_gateway",
+					Value: `{"items":[{"status":` + `"TOO_LATE"}]}`,
+				}, {
+					Attr: "ack", Value: "TOO_LATE",
+				},
+			}, "",
+		},
 		// Gateway ACK bad length.
-		{nil, nil, "cannot parse invalid wire-format data"},
+		{
+			nil, nil, "cannot parse invalid wire-format data",
+		},
 	}
 
 	for _, test := range tests {

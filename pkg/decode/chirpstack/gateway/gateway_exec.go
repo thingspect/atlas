@@ -29,16 +29,19 @@ func gatewayExec(body []byte) ([]*decode.Point, error) {
 
 	// Parse GatewayCommandExecResponse.
 	if len(execMsg.Stdout) != 0 {
-		msgs = append(msgs, &decode.Point{Attr: "exec_stdout",
-			Value: string(execMsg.Stdout)})
+		msgs = append(msgs, &decode.Point{
+			Attr: "exec_stdout", Value: string(execMsg.Stdout),
+		})
 	}
 	if len(execMsg.Stderr) != 0 {
-		msgs = append(msgs, &decode.Point{Attr: "exec_stderr",
-			Value: string(execMsg.Stderr)})
+		msgs = append(msgs, &decode.Point{
+			Attr: "exec_stderr", Value: string(execMsg.Stderr),
+		})
 	}
 	if execMsg.Error != "" {
-		msgs = append(msgs, &decode.Point{Attr: "exec_error",
-			Value: execMsg.Error})
+		msgs = append(msgs, &decode.Point{
+			Attr: "exec_error", Value: execMsg.Error,
+		})
 	}
 
 	return msgs, nil

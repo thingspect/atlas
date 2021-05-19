@@ -1,5 +1,6 @@
-// Package alarm provides functions to generate HTML-safe output from templates.
-package alarm
+// Package template provides functions to generate HTML-safe output from
+// templates.
+package template
 
 import (
 	"html/template"
@@ -33,7 +34,7 @@ func Generate(point *common.DataPoint, rule *common.Rule, dev *common.Device,
 		env["pointVal"] = v.BytesVal
 	}
 
-	t, err := template.New("alarm").Parse(templ)
+	t, err := template.New("template").Parse(templ)
 	if err != nil {
 		return "", err
 	}

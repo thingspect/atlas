@@ -8,11 +8,11 @@ import (
 	"github.com/thingspect/api/go/api"
 	"github.com/thingspect/api/go/common"
 	"github.com/thingspect/atlas/api/go/message"
-	"github.com/thingspect/atlas/pkg/alarm"
 	"github.com/thingspect/atlas/pkg/alog"
 	"github.com/thingspect/atlas/pkg/consterr"
 	"github.com/thingspect/atlas/pkg/metric"
 	"github.com/thingspect/atlas/pkg/queue"
+	"github.com/thingspect/atlas/pkg/template"
 	"google.golang.org/protobuf/proto"
 )
 
@@ -106,24 +106,24 @@ func (ale *Alerter) alertMessages() {
 			}
 
 			// Generate alert subject and body.
-			subj, err := alarm.Generate(eOut.Point, eOut.Rule, eOut.Device,
+			subj, err := template.Generate(eOut.Point, eOut.Rule, eOut.Device,
 				a.SubjectTemplate)
 			if err != nil {
 				metric.Incr("error", map[string]string{"func": "gensubject"})
-				logger.Errorf("alertMessages subject alarm.Generate: %v", err)
+				logger.Errorf("alertMessages subject template.Generate: %v",
+					err)
 
 				continue
 			}
 
-			body, err := alarm.Generate(eOut.Point, eOut.Rule, eOut.Device,
+			body, err := template.Generate(eOut.Point, eOut.Rule, eOut.Device,
 				a.BodyTemplate)
 			if err != nil {
 				metric.Incr("error", map[string]string{"func": "genbody"})
-				logger.Errorf("alertMessages body alarm.Generate: %v", err)
+				logger.Errorf("alertMessages body template.Generate: %v", err)
 
 				continue
 			}
-			metric.Incr("generated", nil)
 
 			// Process alerts.
 			for _, user := range users {

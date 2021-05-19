@@ -1634,6 +1634,6 @@ func TestTestAlarm(t *testing.T) {
 		t.Logf("testRes, err: %+v, %v", testRes, err)
 		require.Nil(t, testRes)
 		require.EqualError(t, err, "rpc error: code = InvalidArgument desc = "+
-			"template: alarm:1: unclosed action")
+			"template: template:1: unclosed action")
 	})
 }

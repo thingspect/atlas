@@ -30,29 +30,34 @@ func gatewayUp(body []byte) ([]*decode.Point, error) {
 	// Parse UplinkTXInfo.
 	if upMsg.TxInfo != nil {
 		if upMsg.TxInfo.Frequency != 0 {
-			msgs = append(msgs, &decode.Point{Attr: "frequency",
-				Value: int32(upMsg.TxInfo.Frequency)})
+			msgs = append(msgs, &decode.Point{
+				Attr: "frequency", Value: int32(upMsg.TxInfo.Frequency),
+			})
 		}
 
 		mod := upMsg.TxInfo.GetLoraModulationInfo()
 		if mod != nil && mod.SpreadingFactor != 0 {
-			msgs = append(msgs, &decode.Point{Attr: "sf",
-				Value: int32(mod.SpreadingFactor)})
+			msgs = append(msgs, &decode.Point{
+				Attr: "sf", Value: int32(mod.SpreadingFactor),
+			})
 		}
 	}
 
 	// Parse UplinkRXInfo.
 	if upMsg.RxInfo != nil {
 		if upMsg.RxInfo.Rssi != 0 {
-			msgs = append(msgs, &decode.Point{Attr: "lora_rssi",
-				Value: upMsg.RxInfo.Rssi})
+			msgs = append(msgs, &decode.Point{
+				Attr: "lora_rssi", Value: upMsg.RxInfo.Rssi,
+			})
 		}
 		if upMsg.RxInfo.LoraSnr != 0 {
-			msgs = append(msgs, &decode.Point{Attr: "snr",
-				Value: upMsg.RxInfo.LoraSnr})
+			msgs = append(msgs, &decode.Point{
+				Attr: "snr", Value: upMsg.RxInfo.LoraSnr,
+			})
 		}
-		msgs = append(msgs, &decode.Point{Attr: "channel",
-			Value: int32(upMsg.RxInfo.Channel)})
+		msgs = append(msgs, &decode.Point{
+			Attr: "channel", Value: int32(upMsg.RxInfo.Channel),
+		})
 	}
 
 	return msgs, nil

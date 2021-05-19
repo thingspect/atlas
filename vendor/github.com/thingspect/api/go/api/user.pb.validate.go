@@ -112,10 +112,10 @@ func (m *User) Validate() error {
 
 	}
 
-	if utf8.RuneCountInString(m.GetAppKey()) > 80 {
+	if utf8.RuneCountInString(m.GetAppKey()) > 45 {
 		return UserValidationError{
 			field:  "AppKey",
-			reason: "value length must be at most 80 runes",
+			reason: "value length must be at most 45 runes",
 		}
 	}
 
