@@ -10,9 +10,9 @@ import (
 	"github.com/thingspect/api/go/api"
 	"github.com/thingspect/api/go/common"
 	"github.com/thingspect/atlas/internal/atlas-api/session"
-	"github.com/thingspect/atlas/pkg/alarm"
 	"github.com/thingspect/atlas/pkg/alog"
 	"github.com/thingspect/atlas/pkg/rule"
+	"github.com/thingspect/atlas/pkg/template"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
@@ -403,7 +403,7 @@ func (ra *RuleAlarm) TestAlarm(ctx context.Context,
 		return nil, errPerm(common.Role_BUILDER)
 	}
 
-	subj, err := alarm.Generate(req.Point, req.Rule, req.Device,
+	subj, err := template.Generate(req.Point, req.Rule, req.Device,
 		req.Alarm.SubjectTemplate)
 	if err != nil {
 		// Template does not provide sentinel errors, always consider errors to
@@ -411,7 +411,7 @@ func (ra *RuleAlarm) TestAlarm(ctx context.Context,
 		return nil, status.Error(codes.InvalidArgument, err.Error())
 	}
 
-	body, err := alarm.Generate(req.Point, req.Rule, req.Device,
+	body, err := template.Generate(req.Point, req.Rule, req.Device,
 		req.Alarm.BodyTemplate)
 	if err != nil {
 		return nil, status.Error(codes.InvalidArgument, err.Error())

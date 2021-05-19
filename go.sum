@@ -390,8 +390,8 @@ github.com/mattn/go-runewidth v0.0.2/go.mod h1:LwmH8dsx7+W8Uxz3IHJYH5QSwggIsqBzp
 github.com/mattn/go-runewidth v0.0.4/go.mod h1:LwmH8dsx7+W8Uxz3IHJYH5QSwggIsqBzpuz5H//U1FU=
 github.com/mattn/go-runewidth v0.0.8/go.mod h1:H031xJmbD/WCDINGzjvQ9THkh0rPKHF+m2gUSrubnMI=
 github.com/matttproud/golang_protobuf_extensions v1.0.1/go.mod h1:D8He9yQNgCq6Z5Ld7szi9bcBfOoFv/3dc6xSMkL2PC0=
-github.com/mennanov/fmutils v0.1.0 h1:4A6qV+Of9q2hIic9ovGpj5B4IXcPU5I+2JsIvzLJQSo=
-github.com/mennanov/fmutils v0.1.0/go.mod h1:yoXEhA9spZa//ChoyEllLZiGsHrTjcbFuF/eYhFa1rw=
+github.com/mennanov/fmutils v0.1.1 h1:7GAoy/WI1ZUJDmuyB/i33DrL+E9ruj6BXv2GMqIBtj0=
+github.com/mennanov/fmutils v0.1.1/go.mod h1:DE+qeI9Xy5s1GA4trgq8H26jr5DgJ4a9+0D1DPVCqyk=
 github.com/miekg/dns v1.0.14/go.mod h1:W1PPwlIAgtquWBMBEV9nkV9Cazfe8ScdGz/Lj7v3Nrg=
 github.com/mitchellh/cli v1.0.0/go.mod h1:hNIlj7HEI86fIcpObd7a0FcrxTWetlwJDGcceTlRvqc=
 github.com/mitchellh/go-homedir v1.0.0/go.mod h1:SfyaCUpYCn1Vlf4IUYiD9fPX4A5wJrkLzIz1N1q0pr0=
@@ -540,8 +540,8 @@ github.com/stretchr/testify v1.6.1/go.mod h1:6Fq8oRcR53rry900zMqJjRRixrwX3KX962/
 github.com/stretchr/testify v1.7.0 h1:nwc3DEeHmmLAfoZucVR881uASk0Mfjw8xYJ99tb5CcY=
 github.com/stretchr/testify v1.7.0/go.mod h1:6Fq8oRcR53rry900zMqJjRRixrwX3KX962/h/Wwjteg=
 github.com/subosito/gotenv v1.2.0/go.mod h1:N0PQaV/YGNqwC0u51sEeR/aUtSLEXKX9iv69rRypqCw=
-github.com/thingspect/api/go v0.0.0-20210514185912-23a6116d4302 h1:vjg34hvxbp61pBZBwTWDP9OV4S1wIlvDzcbtffN4E1k=
-github.com/thingspect/api/go v0.0.0-20210514185912-23a6116d4302/go.mod h1:/6B3WKpBrLMCOhLSF5+8LzeNDdTSLXPRdzsq80eDleE=
+github.com/thingspect/api/go v0.0.0-20210519164452-7e2997e1640d h1:9EJV9wnZcQs8xOoYjzX/3FwI/emft3KHX3hbQTCURPg=
+github.com/thingspect/api/go v0.0.0-20210519164452-7e2997e1640d/go.mod h1:XJSz9ndZxScbnAleU0zrmM1uH0GRGuZXWGu8bDvcRt4=
 github.com/tmc/grpc-websocket-proxy v0.0.0-20170815181823-89b8d40f7ca8/go.mod h1:ncp9v5uamzpCO7NfCPTXjqaC+bZgJeR0sMTm6dMHP7U=
 github.com/tmc/grpc-websocket-proxy v0.0.0-20190109142713-0ad062ec5ee5/go.mod h1:ncp9v5uamzpCO7NfCPTXjqaC+bZgJeR0sMTm6dMHP7U=
 github.com/twitchtv/twirp v7.1.0+incompatible/go.mod h1:RRJoFSAmTEh2weEqWtpPE3vFK5YBhA6bqp2l1kfCC5A=
@@ -884,9 +884,8 @@ google.golang.org/genproto v0.0.0-20200804131852-c06518451d9c/go.mod h1:FWY/as6D
 google.golang.org/genproto v0.0.0-20200825200019-8632dd797987/go.mod h1:FWY/as6DDZQgahTzZj3fqbO1CbirC29ZNUFHwi0/+no=
 google.golang.org/genproto v0.0.0-20210207032614-bba0dbe2a9ea/go.mod h1:FWY/as6DDZQgahTzZj3fqbO1CbirC29ZNUFHwi0/+no=
 google.golang.org/genproto v0.0.0-20210426193834-eac7f76ac494/go.mod h1:P3QM42oQyzQSnHPnZ/vqoCdDmzH28fzWByN9asMeM8A=
-google.golang.org/genproto v0.0.0-20210513213006-bf773b8c8384/go.mod h1:P3QM42oQyzQSnHPnZ/vqoCdDmzH28fzWByN9asMeM8A=
-google.golang.org/genproto v0.0.0-20210517163617-5e0236093d7a h1:VA0wtJaR+W1I11P2f535J7D/YxyvEFMTMvcmyeZ9FBE=
-google.golang.org/genproto v0.0.0-20210517163617-5e0236093d7a/go.mod h1:P3QM42oQyzQSnHPnZ/vqoCdDmzH28fzWByN9asMeM8A=
+google.golang.org/genproto v0.0.0-20210518161634-ec7691c0a37d h1:bRz6UmsZEz/CzoTjUDp4ZcdguhSWi6CyU299wMQBpZU=
+google.golang.org/genproto v0.0.0-20210518161634-ec7691c0a37d/go.mod h1:P3QM42oQyzQSnHPnZ/vqoCdDmzH28fzWByN9asMeM8A=
 google.golang.org/grpc v1.17.0/go.mod h1:6QZJwpn2B+Zp71q/5VxRsJ6NXXVCE5NRUHRo+f3cWCs=
 google.golang.org/grpc v1.19.0/go.mod h1:mqu4LbDTu4XGKhr4mRzUsmM4RtVoemTSY81AxZiDr8c=
 google.golang.org/grpc v1.20.0/go.mod h1:chYK+tFQF0nDUGJgXMSgLCQk3phJEuONr2DCgLDdAQM=

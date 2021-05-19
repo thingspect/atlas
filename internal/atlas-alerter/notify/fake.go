@@ -11,6 +11,8 @@ func NewFake() Notifier {
 	// Controller.Finish() is not called because usage is expected to be
 	// long-lived.
 	notifier := NewMockNotifier(gomock.NewController(alog.Default()))
+	notifier.EXPECT().ValidateApp(gomock.Any(), gomock.Any()).Return(nil).
+		AnyTimes()
 	notifier.EXPECT().App(gomock.Any(), gomock.Any(), gomock.Any(),
 		gomock.Any()).Return(nil).AnyTimes()
 	notifier.EXPECT().VaildateSMS(gomock.Any(), gomock.Any()).Return(nil).

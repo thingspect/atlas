@@ -116,7 +116,7 @@ github.com/json-iterator/go
 ## explicit
 github.com/mailgun/mailgun-go/v4
 github.com/mailgun/mailgun-go/v4/events
-# github.com/mennanov/fmutils v0.1.0
+# github.com/mennanov/fmutils v0.1.1
 ## explicit
 github.com/mennanov/fmutils
 # github.com/modern-go/concurrent v0.0.0-20180306012644-bacd9c7ef1dd
@@ -142,7 +142,7 @@ github.com/smira/go-statsd
 ## explicit
 github.com/stretchr/testify/assert
 github.com/stretchr/testify/require
-# github.com/thingspect/api/go v0.0.0-20210514185912-23a6116d4302
+# github.com/thingspect/api/go v0.0.0-20210519164452-7e2997e1640d
 ## explicit
 github.com/thingspect/api/go/api
 github.com/thingspect/api/go/common
@@ -195,8 +195,7 @@ golang.org/x/text/transform
 golang.org/x/text/unicode/bidi
 golang.org/x/text/unicode/norm
 golang.org/x/text/width
-# google.golang.org/genproto v0.0.0-20210517163617-5e0236093d7a
-## explicit
+# google.golang.org/genproto v0.0.0-20210518161634-ec7691c0a37d
 google.golang.org/genproto/googleapis/api/annotations
 google.golang.org/genproto/googleapis/api/httpbody
 google.golang.org/genproto/googleapis/rpc/status

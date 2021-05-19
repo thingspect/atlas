@@ -27,7 +27,8 @@ func TestListEvents(t *testing.T) {
 
 		devCli := api.NewDeviceServiceClient(globalAdminGRPCConn)
 		createDev, err := devCli.CreateDevice(ctx, &api.CreateDeviceRequest{
-			Device: random.Device("api-event", uuid.NewString())})
+			Device: random.Device("api-event", uuid.NewString()),
+		})
 		t.Logf("createDev, err: %+v, %v", createDev, err)
 		require.NoError(t, err)
 
@@ -62,7 +63,8 @@ func TestListEvents(t *testing.T) {
 			IdOneof: &api.ListEventsRequest_UniqId{UniqId: createDev.UniqId},
 			EndTime: events[0].CreatedAt, StartTime: timestamppb.New(
 				events[len(events)-1].CreatedAt.AsTime().Add(
-					-time.Millisecond))})
+					-time.Millisecond)),
+		})
 		t.Logf("listEventsUniqID, err: %+v, %v", listEventsUniqID, err)
 		require.NoError(t, err)
 		require.Len(t, listEventsUniqID.Events, len(events))
@@ -78,7 +80,8 @@ func TestListEvents(t *testing.T) {
 		// Verify results by dev ID without oldest event.
 		listEventsDevID, err := evCli.ListEvents(ctx, &api.ListEventsRequest{
 			IdOneof:   &api.ListEventsRequest_DeviceId{DeviceId: createDev.Id},
-			StartTime: events[len(events)-1].CreatedAt})
+			StartTime: events[len(events)-1].CreatedAt,
+		})
 		t.Logf("listEventsDevID, err: %+v, %v", listEventsDevID, err)
 		require.NoError(t, err)
 		require.Len(t, listEventsDevID.Events, len(events)-1)
@@ -88,7 +91,8 @@ func TestListEvents(t *testing.T) {
 		if !proto.Equal(&api.ListEventsResponse{Events: events[:len(events)-1]},
 			listEventsDevID) {
 			t.Fatalf("\nExpect: %+v\nActual: %+v", &api.ListEventsResponse{
-				Events: events[:len(events)-1]}, listEventsDevID)
+				Events: events[:len(events)-1],
+			}, listEventsDevID)
 		}
 
 		// Verify results by UniqID and rule ID.
@@ -96,7 +100,8 @@ func TestListEvents(t *testing.T) {
 			IdOneof: &api.ListEventsRequest_UniqId{UniqId: createDev.UniqId},
 			RuleId:  events[len(events)-1].RuleId, EndTime: events[0].CreatedAt,
 			StartTime: timestamppb.New(events[len(events)-1].CreatedAt.AsTime().
-				Add(-time.Millisecond))})
+				Add(-time.Millisecond)),
+		})
 		t.Logf("listEventsUniqID, err: %+v, %v", listEventsUniqID, err)
 		require.NoError(t, err)
 		require.Len(t, listEventsUniqID.Events, 1)
@@ -104,9 +109,11 @@ func TestListEvents(t *testing.T) {
 		// Testify does not currently support protobuf equality:
 		// https://github.com/stretchr/testify/issues/758
 		if !proto.Equal(&api.ListEventsResponse{Events: []*api.Event{
-			events[len(events)-1]}}, listEventsUniqID) {
+			events[len(events)-1],
+		}}, listEventsUniqID) {
 			t.Fatalf("\nExpect: %+v\nActual: %+v", &api.ListEventsResponse{
-				Events: []*api.Event{events[len(events)-1]}}, listEventsUniqID)
+				Events: []*api.Event{events[len(events)-1]},
+			}, listEventsUniqID)
 		}
 	})
 
@@ -128,7 +135,8 @@ func TestListEvents(t *testing.T) {
 
 		evCli := api.NewEventServiceClient(globalAdminGRPCConn)
 		listEvents, err := evCli.ListEvents(ctx, &api.ListEventsRequest{
-			IdOneof: &api.ListEventsRequest_UniqId{UniqId: event.UniqId}})
+			IdOneof: &api.ListEventsRequest_UniqId{UniqId: event.UniqId},
+		})
 		t.Logf("listEvents, err: %+v, %v", listEvents, err)
 		require.NoError(t, err)
 		require.Len(t, listEvents.Events, 0)
@@ -143,8 +151,10 @@ func TestListEvents(t *testing.T) {
 		evCli := api.NewEventServiceClient(globalAdminGRPCConn)
 		listEvents, err := evCli.ListEvents(ctx, &api.ListEventsRequest{
 			IdOneof: &api.ListEventsRequest_DeviceId{
-				DeviceId: uuid.NewString()}, EndTime: timestamppb.Now(),
-			StartTime: timestamppb.New(time.Now().Add(-91 * 24 * time.Hour))})
+				DeviceId: uuid.NewString(),
+			}, EndTime: timestamppb.Now(), StartTime: timestamppb.New(
+				time.Now().Add(-91 * 24 * time.Hour)),
+		})
 		t.Logf("listEvents, err: %+v, %v", listEvents, err)
 		require.Nil(t, listEvents)
 		require.EqualError(t, err, "rpc error: code = InvalidArgument desc = "+
@@ -160,7 +170,9 @@ func TestListEvents(t *testing.T) {
 		evCli := api.NewEventServiceClient(globalAdminGRPCConn)
 		listEvents, err := evCli.ListEvents(ctx, &api.ListEventsRequest{
 			IdOneof: &api.ListEventsRequest_DeviceId{
-				DeviceId: random.String(10)}})
+				DeviceId: random.String(10),
+			},
+		})
 		t.Logf("listEvents, err: %+v, %v", listEvents, err)
 		require.Nil(t, listEvents)
 		require.EqualError(t, err, "rpc error: code = InvalidArgument desc = "+
@@ -225,10 +237,11 @@ func TestLatestEvents(t *testing.T) {
 		// Testify does not currently support protobuf equality:
 		// https://github.com/stretchr/testify/issues/758
 		if !proto.Equal(&api.LatestEventsResponse{Events: []*api.Event{
-			events[len(events)-1]}}, latEventsRuleID) {
-			t.Fatalf("\nExpect: %+v\nActual: %+v",
-				&api.LatestEventsResponse{Events: []*api.Event{
-					events[len(events)-1]}}, latEventsRuleID)
+			events[len(events)-1],
+		}}, latEventsRuleID) {
+			t.Fatalf("\nExpect: %+v\nActual: %+v", &api.LatestEventsResponse{
+				Events: []*api.Event{events[len(events)-1]},
+			}, latEventsRuleID)
 		}
 	})
 
@@ -263,7 +276,8 @@ func TestLatestEvents(t *testing.T) {
 
 		evCli := api.NewEventServiceClient(globalAdminGRPCConn)
 		latEvents, err := evCli.LatestEvents(ctx, &api.LatestEventsRequest{
-			RuleId: random.String(10)})
+			RuleId: random.String(10),
+		})
 		t.Logf("latEvents, err: %+v, %v", latEvents, err)
 		require.Nil(t, latEvents)
 		require.EqualError(t, err, "rpc error: code = InvalidArgument desc = "+

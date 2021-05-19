@@ -1647,6 +1647,6 @@ func TestTestAlarm(t *testing.T) {
 		t.Logf("testRes, err: %+v, %v", testRes, err)
 		require.Nil(t, testRes)
 		require.Equal(t, status.Error(codes.InvalidArgument,
-			"template: alarm:1: unclosed action"), err)
+			"template: template:1: unclosed action"), err)
 	})
 }

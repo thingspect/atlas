@@ -28,6 +28,7 @@ func TestNewFake(t *testing.T) {
 				2*time.Second)
 			defer cancel()
 
+			require.NoError(t, notifier.ValidateApp(ctx, random.String(10)))
 			require.NoError(t, notifier.App(ctx, random.String(10),
 				random.String(10), random.String(10)))
 			require.NoError(t, notifier.VaildateSMS(ctx, random.String(10)))

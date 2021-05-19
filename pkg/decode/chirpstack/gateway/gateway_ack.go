@@ -29,8 +29,9 @@ func gatewayAck(body []byte) ([]*decode.Point, error) {
 
 	// Parse DownlinkTXAckItems.
 	for _, item := range ackMsg.Items {
-		msgs = append(msgs, &decode.Point{Attr: "ack",
-			Value: item.Status.String()})
+		msgs = append(msgs, &decode.Point{
+			Attr: "ack", Value: item.Status.String(),
+		})
 	}
 
 	return msgs, nil

@@ -1,6 +1,6 @@
 // +build !integration
 
-package alarm
+package template
 
 import (
 	"fmt"
@@ -21,7 +21,9 @@ func TestGenerate(t *testing.T) {
 		res      string
 		err      string
 	}{
-		{&common.DataPoint{}, nil, nil, `test`, "test", ""},
+		{
+			&common.DataPoint{}, nil, nil, `test`, "test", "",
+		},
 		{
 			&common.DataPoint{ValOneof: &common.DataPoint_IntVal{IntVal: 40}},
 			&common.Rule{Name: "test rule"}, nil, `point value is an ` +
@@ -31,8 +33,8 @@ func TestGenerate(t *testing.T) {
 		{
 			&common.DataPoint{ValOneof: &common.DataPoint_Fl64Val{
 				Fl64Val: 37.7,
-			}}, nil, &common.Device{Status: common.Status_ACTIVE}, `point ` +
-				`value is a float: {{.pointVal}}, device status is: ` +
+			}}, nil, &common.Device{Status: common.Status_ACTIVE},
+			`point value is a float: {{.pointVal}}, device status is: ` +
 				`{{.device.Status}}`,
 			"point value is a float: 37.7, device status is: ACTIVE", "",
 		},
@@ -54,7 +56,9 @@ func TestGenerate(t *testing.T) {
 			}}, nil, nil, `point value is a byte slice: {{.pointVal}}`,
 			"point value is a byte slice: [0 1]", "",
 		},
-		{&common.DataPoint{}, nil, nil, `{{if`, "", "unclosed action"},
+		{
+			&common.DataPoint{}, nil, nil, `{{if`, "", "unclosed action",
+		},
 		{
 			&common.DataPoint{}, nil, nil, `{{template "aaa"}}`, "",
 			"no such template",
