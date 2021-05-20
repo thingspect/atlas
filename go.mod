@@ -20,8 +20,6 @@ require (
 	github.com/jackc/pgproto3/v2 v2.0.7 // indirect
 	github.com/jackc/pgtype v1.7.0
 	github.com/jackc/pgx/v4 v4.11.0
-	github.com/json-iterator/go v1.1.11 // indirect
-	github.com/mailgun/mailgun-go/v4 v4.5.1
 	github.com/mennanov/fmutils v0.1.1
 	github.com/nsqio/go-nsq v1.0.8
 	github.com/rs/zerolog v1.22.0
@@ -29,6 +27,6 @@ require (
 	github.com/stretchr/testify v1.7.0
 	github.com/thingspect/api/go v0.0.0-20210519164452-7e2997e1640d
 	golang.org/x/crypto v0.0.0-20210513164829-c07d793c2f9a
-	google.golang.org/grpc v1.37.1
+	google.golang.org/grpc v1.38.0
 	google.golang.org/protobuf v1.26.0
 )

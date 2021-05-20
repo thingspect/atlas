@@ -115,7 +115,7 @@ func (t *twilio) sendSMS(ctx context.Context, to, body string) error {
 	defer func() {
 		if err = resp.Body.Close(); err != nil {
 			logger := alog.FromContext(ctx)
-			logger.Errorf("lookupCarrier resp.Body.Close: %v", err)
+			logger.Errorf("sendSMS resp.Body.Close: %v", err)
 		}
 	}()
 
