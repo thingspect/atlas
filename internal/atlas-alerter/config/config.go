@@ -25,6 +25,7 @@ type Config struct {
 	SMSAccountID string
 	SMSKeySecret string
 	SMSPhone     string
+	EmailDomain  string
 	EmailAPIKey  string
 }
 
@@ -52,6 +53,7 @@ func New() *Config {
 			"ACdefd5896d2acc15061cae169bb9d4836"),
 		SMSKeySecret: config.String(pref+"SMS_KEY_SECRET", ""),
 		SMSPhone:     config.String(pref+"SMS_PHONE", "+15125432462"),
+		EmailDomain:  config.String(pref+"EMAIL_DOMAIN", "mg.thingspect.com"),
 		EmailAPIKey:  config.String(pref+"EMAIL_API_KEY", ""),
 	}
 }
