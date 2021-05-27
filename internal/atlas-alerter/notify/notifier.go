@@ -20,6 +20,6 @@ type Notifier interface {
 	SMS(ctx context.Context, phone, subject, body string) error
 	// Email sends an email notification. This operation can block based on rate
 	// limiting.
-	Email(ctx context.Context, displayName, orgEmail, userEmail, subject,
+	Email(ctx context.Context, displayName, from, to, subject,
 		body string) error
 }
