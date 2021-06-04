@@ -1,6 +1,6 @@
 package api
 
-//go:generate mockgen -destination mock_respwriter_test.go -package api net/http ResponseWriter
+//go:generate mockgen -destination mock_respwriter_test.go -package api -build_flags=-mod=mod net/http ResponseWriter
 
 import (
 	"context"
