@@ -19,13 +19,13 @@ const _ = grpc.SupportPackageIsVersion7
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type SessionServiceClient interface {
-	// Log in a user.
+	// Log in a user. Login tokens are time-limited and accompanied by an expiration.
 	Login(ctx context.Context, in *LoginRequest, opts ...grpc.CallOption) (*LoginResponse, error)
-	// Create an API key.
+	// Create an API key. API keys are persistent and do not expire until revoked.
 	CreateKey(ctx context.Context, in *CreateKeyRequest, opts ...grpc.CallOption) (*CreateKeyResponse, error)
-	// Delete an API key by ID.
+	// Delete an API key by ID. API keys are persistent and do not expire until revoked.
 	DeleteKey(ctx context.Context, in *DeleteKeyRequest, opts ...grpc.CallOption) (*empty.Empty, error)
-	// List all API keys.
+	// List all API keys. API keys are persistent and do not expire until revoked.
 	ListKeys(ctx context.Context, in *ListKeysRequest, opts ...grpc.CallOption) (*ListKeysResponse, error)
 }
 
@@ -77,13 +77,13 @@ func (c *sessionServiceClient) ListKeys(ctx context.Context, in *ListKeysRequest
 // All implementations must embed UnimplementedSessionServiceServer
 // for forward compatibility
 type SessionServiceServer interface {
-	// Log in a user.
+	// Log in a user. Login tokens are time-limited and accompanied by an expiration.
 	Login(context.Context, *LoginRequest) (*LoginResponse, error)
-	// Create an API key.
+	// Create an API key. API keys are persistent and do not expire until revoked.
 	CreateKey(context.Context, *CreateKeyRequest) (*CreateKeyResponse, error)
-	// Delete an API key by ID.
+	// Delete an API key by ID. API keys are persistent and do not expire until revoked.
 	DeleteKey(context.Context, *DeleteKeyRequest) (*empty.Empty, error)
-	// List all API keys.
+	// List all API keys. API keys are persistent and do not expire until revoked.
 	ListKeys(context.Context, *ListKeysRequest) (*ListKeysResponse, error)
 	mustEmbedUnimplementedSessionServiceServer()
 }

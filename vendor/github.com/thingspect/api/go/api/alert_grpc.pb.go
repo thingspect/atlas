@@ -18,7 +18,7 @@ const _ = grpc.SupportPackageIsVersion7
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type AlertServiceClient interface {
-	// List all alerts for a device, alarm, and/or user in a [end, start) time range, in descending timestamp order.
+	// List all alerts for a device, alarm, and/or user in a [end, start) time range, in descending timestamp order. Alerts are generated based on alarms.
 	ListAlerts(ctx context.Context, in *ListAlertsRequest, opts ...grpc.CallOption) (*ListAlertsResponse, error)
 }
 
@@ -43,7 +43,7 @@ func (c *alertServiceClient) ListAlerts(ctx context.Context, in *ListAlertsReque
 // All implementations must embed UnimplementedAlertServiceServer
 // for forward compatibility
 type AlertServiceServer interface {
-	// List all alerts for a device, alarm, and/or user in a [end, start) time range, in descending timestamp order.
+	// List all alerts for a device, alarm, and/or user in a [end, start) time range, in descending timestamp order. Alerts are generated based on alarms.
 	ListAlerts(context.Context, *ListAlertsRequest) (*ListAlertsResponse, error)
 	mustEmbedUnimplementedAlertServiceServer()
 }

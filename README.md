@@ -20,7 +20,7 @@ First complete the above steps. Then:
 
 ```
 atlas-create org testorg testadmin@thingspect.com testpass
-API_PWT_KEY=$(dd if=/dev/random bs=1 count=32|base64) api
+API_PWT_KEY=$(dd if=/dev/random bs=1 count=32|base64) atlas-api
 
 curl -v -X POST -d '{"email":"testadmin@thingspect.com", "orgName":"testorg", "password":"testpass"}' http://127.0.0.1:8000/v1/sessions/login
 ```

@@ -19,15 +19,15 @@ const _ = grpc.SupportPackageIsVersion7
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type OrgServiceClient interface {
-	// Create an organization.
+	// Create an organization. An organization is the top level resource and contains users, devices, rules, and all derived resources.
 	CreateOrg(ctx context.Context, in *CreateOrgRequest, opts ...grpc.CallOption) (*Org, error)
-	// Get an organization by ID.
+	// Get an organization by ID. An organization is the top level resource and contains users, devices, rules, and all derived resources.
 	GetOrg(ctx context.Context, in *GetOrgRequest, opts ...grpc.CallOption) (*Org, error)
-	// Update an organization.
+	// Update an organization. An organization is the top level resource and contains users, devices, rules, and all derived resources.
 	UpdateOrg(ctx context.Context, in *UpdateOrgRequest, opts ...grpc.CallOption) (*Org, error)
-	// Delete an organization by ID.
+	// Delete an organization by ID. An organization is the top level resource and contains users, devices, rules, and all derived resources.
 	DeleteOrg(ctx context.Context, in *DeleteOrgRequest, opts ...grpc.CallOption) (*empty.Empty, error)
-	// List all organizations.
+	// List all organizations. An organization is the top level resource and contains users, devices, rules, and all derived resources.
 	ListOrgs(ctx context.Context, in *ListOrgsRequest, opts ...grpc.CallOption) (*ListOrgsResponse, error)
 }
 
@@ -88,15 +88,15 @@ func (c *orgServiceClient) ListOrgs(ctx context.Context, in *ListOrgsRequest, op
 // All implementations must embed UnimplementedOrgServiceServer
 // for forward compatibility
 type OrgServiceServer interface {
-	// Create an organization.
+	// Create an organization. An organization is the top level resource and contains users, devices, rules, and all derived resources.
 	CreateOrg(context.Context, *CreateOrgRequest) (*Org, error)
-	// Get an organization by ID.
+	// Get an organization by ID. An organization is the top level resource and contains users, devices, rules, and all derived resources.
 	GetOrg(context.Context, *GetOrgRequest) (*Org, error)
-	// Update an organization.
+	// Update an organization. An organization is the top level resource and contains users, devices, rules, and all derived resources.
 	UpdateOrg(context.Context, *UpdateOrgRequest) (*Org, error)
-	// Delete an organization by ID.
+	// Delete an organization by ID. An organization is the top level resource and contains users, devices, rules, and all derived resources.
 	DeleteOrg(context.Context, *DeleteOrgRequest) (*empty.Empty, error)
-	// List all organizations.
+	// List all organizations. An organization is the top level resource and contains users, devices, rules, and all derived resources.
 	ListOrgs(context.Context, *ListOrgsRequest) (*ListOrgsResponse, error)
 	mustEmbedUnimplementedOrgServiceServer()
 }
