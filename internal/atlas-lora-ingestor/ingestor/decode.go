@@ -31,11 +31,14 @@ func (ing *Ingestor) decodeGateways() {
 		}
 		logger := alog.WithFields(logFields)
 
-		// Parse and validate topic in format: 'lora/gateway/+/event/+'.
+		// Parse and validate topic in formats: 'lora/gateway/+/event/+' and
+		// 'lora/gateway/+/state/+'. A state type is considered an event.
 		topic := msg.Topic()
 		topicParts := strings.Split(topic, "/")
-		if len(topicParts) != 5 || topicParts[0] != "lora" ||
-			topicParts[1] != "gateway" || topicParts[3] != "event" {
+		if len(topicParts) != 5 ||
+			topicParts[0] != "lora" ||
+			topicParts[1] != "gateway" ||
+			(topicParts[3] != "event" && topicParts[3] != "state") {
 			metric.Incr("error", map[string]string{"func": "topic"})
 			logger.Errorf("decodeGateways malformed topic: %v", topic)
 

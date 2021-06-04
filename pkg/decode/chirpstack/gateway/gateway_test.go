@@ -26,21 +26,35 @@ func TestParse(t *testing.T) {
 		err      error
 	}{
 		// Gateway.
-		{"up", "", []*decode.Point{
-			{Attr: "raw_gateway", Value: `{}`},
-		}, nil},
-		{"stats", "", []*decode.Point{
-			{Attr: "raw_gateway", Value: `{}`},
-		}, nil},
-		{"ack", "", []*decode.Point{
-			{Attr: "raw_gateway", Value: `{}`},
-		}, nil},
-		{"exec", "", []*decode.Point{
-			{Attr: "raw_gateway", Value: `{}`},
-		}, nil},
+		{
+			"up", "",
+			[]*decode.Point{{Attr: "raw_gateway", Value: `{}`}},
+			nil,
+		},
+		{
+			"stats", "",
+			[]*decode.Point{{Attr: "raw_gateway", Value: `{}`}},
+			nil,
+		},
+		{
+			"ack", "", []*decode.Point{{Attr: "raw_gateway", Value: `{}`}}, nil,
+		},
+		{
+			"exec", "",
+			[]*decode.Point{{Attr: "raw_gateway", Value: `{}`}},
+			nil,
+		},
+		{
+			"conn", "", []*decode.Point{
+				{Attr: "raw_gateway", Value: `{}`},
+				{Attr: "conn", Value: "OFFLINE"},
+			}, nil,
+		},
 		// Gateway unknown event type.
-		{badEvent, "", nil, fmt.Errorf("%w: %s, %x", decode.ErrUnknownEvent,
-			badEvent, []byte{})},
+		{
+			badEvent, "", nil, fmt.Errorf("%w: %s, %x", decode.ErrUnknownEvent,
+				badEvent, []byte{}),
+		},
 	}
 
 	for _, test := range tests {

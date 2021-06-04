@@ -20,6 +20,8 @@ func Parse(event string, body []byte) ([]*decode.Point, error) {
 		return gatewayAck(body)
 	case "exec":
 		return gatewayExec(body)
+	case "conn":
+		return gatewayConn(body)
 	default:
 		return nil, fmt.Errorf("%w: %s, %x", decode.ErrUnknownEvent, event, body)
 	}
