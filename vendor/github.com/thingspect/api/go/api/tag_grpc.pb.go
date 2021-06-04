@@ -18,7 +18,7 @@ const _ = grpc.SupportPackageIsVersion7
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type TagServiceClient interface {
-	// List all tags.
+	// List all tags. Tags are applied to devices and users.
 	ListTags(ctx context.Context, in *ListTagsRequest, opts ...grpc.CallOption) (*ListTagsResponse, error)
 }
 
@@ -43,7 +43,7 @@ func (c *tagServiceClient) ListTags(ctx context.Context, in *ListTagsRequest, op
 // All implementations must embed UnimplementedTagServiceServer
 // for forward compatibility
 type TagServiceServer interface {
-	// List all tags.
+	// List all tags. Tags are applied to devices and users.
 	ListTags(context.Context, *ListTagsRequest) (*ListTagsResponse, error)
 	mustEmbedUnimplementedTagServiceServer()
 }

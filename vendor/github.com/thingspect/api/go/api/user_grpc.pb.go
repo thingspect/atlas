@@ -19,17 +19,17 @@ const _ = grpc.SupportPackageIsVersion7
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type UserServiceClient interface {
-	// Create a user.
+	// Create a user. Users can log in to and interact with the Atlas API and Thingspect website, based on the limits of their role.
 	CreateUser(ctx context.Context, in *CreateUserRequest, opts ...grpc.CallOption) (*User, error)
-	// Get a user by ID.
+	// Get a user by ID. Users can log in to and interact with the Atlas API and Thingspect website, based on the limits of their role.
 	GetUser(ctx context.Context, in *GetUserRequest, opts ...grpc.CallOption) (*User, error)
-	// Update a user.
+	// Update a user. Users can log in to and interact with the Atlas API and Thingspect website, based on the limits of their role.
 	UpdateUser(ctx context.Context, in *UpdateUserRequest, opts ...grpc.CallOption) (*User, error)
-	// Update a user's password.
+	// Update a user's password. Passwords are checked against NIST password guidelines.
 	UpdateUserPassword(ctx context.Context, in *UpdateUserPasswordRequest, opts ...grpc.CallOption) (*empty.Empty, error)
-	// Delete a user by ID.
+	// Delete a user by ID. Users can log in to and interact with the Atlas API and Thingspect website, based on the limits of their role.
 	DeleteUser(ctx context.Context, in *DeleteUserRequest, opts ...grpc.CallOption) (*empty.Empty, error)
-	// List users.
+	// List users. Users can log in to and interact with the Atlas API and Thingspect website, based on the limits of their role.
 	ListUsers(ctx context.Context, in *ListUsersRequest, opts ...grpc.CallOption) (*ListUsersResponse, error)
 }
 
@@ -99,17 +99,17 @@ func (c *userServiceClient) ListUsers(ctx context.Context, in *ListUsersRequest,
 // All implementations must embed UnimplementedUserServiceServer
 // for forward compatibility
 type UserServiceServer interface {
-	// Create a user.
+	// Create a user. Users can log in to and interact with the Atlas API and Thingspect website, based on the limits of their role.
 	CreateUser(context.Context, *CreateUserRequest) (*User, error)
-	// Get a user by ID.
+	// Get a user by ID. Users can log in to and interact with the Atlas API and Thingspect website, based on the limits of their role.
 	GetUser(context.Context, *GetUserRequest) (*User, error)
-	// Update a user.
+	// Update a user. Users can log in to and interact with the Atlas API and Thingspect website, based on the limits of their role.
 	UpdateUser(context.Context, *UpdateUserRequest) (*User, error)
-	// Update a user's password.
+	// Update a user's password. Passwords are checked against NIST password guidelines.
 	UpdateUserPassword(context.Context, *UpdateUserPasswordRequest) (*empty.Empty, error)
-	// Delete a user by ID.
+	// Delete a user by ID. Users can log in to and interact with the Atlas API and Thingspect website, based on the limits of their role.
 	DeleteUser(context.Context, *DeleteUserRequest) (*empty.Empty, error)
-	// List users.
+	// List users. Users can log in to and interact with the Atlas API and Thingspect website, based on the limits of their role.
 	ListUsers(context.Context, *ListUsersRequest) (*ListUsersResponse, error)
 	mustEmbedUnimplementedUserServiceServer()
 }

@@ -20,19 +20,19 @@ const _ = grpc.SupportPackageIsVersion7
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type DeviceServiceClient interface {
-	// Create a device.
+	// Create a device. Devices are used to generate data points.
 	CreateDevice(ctx context.Context, in *CreateDeviceRequest, opts ...grpc.CallOption) (*common.Device, error)
 	// Add LoRaWAN configuration to a device.
 	CreateDeviceLoRaWAN(ctx context.Context, in *CreateDeviceLoRaWANRequest, opts ...grpc.CallOption) (*empty.Empty, error)
-	// Get a device by ID.
+	// Get a device by ID. Devices are used to generate data points.
 	GetDevice(ctx context.Context, in *GetDeviceRequest, opts ...grpc.CallOption) (*common.Device, error)
-	// Update a device.
+	// Update a device. Devices are used to generate data points.
 	UpdateDevice(ctx context.Context, in *UpdateDeviceRequest, opts ...grpc.CallOption) (*common.Device, error)
 	// Remove LoRaWAN configuration from a device.
 	DeleteDeviceLoRaWAN(ctx context.Context, in *DeleteDeviceLoRaWANRequest, opts ...grpc.CallOption) (*empty.Empty, error)
-	// Delete a device by ID.
+	// Delete a device by ID. Devices are used to generate data points.
 	DeleteDevice(ctx context.Context, in *DeleteDeviceRequest, opts ...grpc.CallOption) (*empty.Empty, error)
-	// List all devices.
+	// List all devices. Devices are used to generate data points.
 	ListDevices(ctx context.Context, in *ListDevicesRequest, opts ...grpc.CallOption) (*ListDevicesResponse, error)
 }
 
@@ -111,19 +111,19 @@ func (c *deviceServiceClient) ListDevices(ctx context.Context, in *ListDevicesRe
 // All implementations must embed UnimplementedDeviceServiceServer
 // for forward compatibility
 type DeviceServiceServer interface {
-	// Create a device.
+	// Create a device. Devices are used to generate data points.
 	CreateDevice(context.Context, *CreateDeviceRequest) (*common.Device, error)
 	// Add LoRaWAN configuration to a device.
 	CreateDeviceLoRaWAN(context.Context, *CreateDeviceLoRaWANRequest) (*empty.Empty, error)
-	// Get a device by ID.
+	// Get a device by ID. Devices are used to generate data points.
 	GetDevice(context.Context, *GetDeviceRequest) (*common.Device, error)
-	// Update a device.
+	// Update a device. Devices are used to generate data points.
 	UpdateDevice(context.Context, *UpdateDeviceRequest) (*common.Device, error)
 	// Remove LoRaWAN configuration from a device.
 	DeleteDeviceLoRaWAN(context.Context, *DeleteDeviceLoRaWANRequest) (*empty.Empty, error)
-	// Delete a device by ID.
+	// Delete a device by ID. Devices are used to generate data points.
 	DeleteDevice(context.Context, *DeleteDeviceRequest) (*empty.Empty, error)
-	// List all devices.
+	// List all devices. Devices are used to generate data points.
 	ListDevices(context.Context, *ListDevicesRequest) (*ListDevicesResponse, error)
 	mustEmbedUnimplementedDeviceServiceServer()
 }

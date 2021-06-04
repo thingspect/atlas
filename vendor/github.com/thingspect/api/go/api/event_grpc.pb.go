@@ -18,9 +18,9 @@ const _ = grpc.SupportPackageIsVersion7
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type EventServiceClient interface {
-	// List all events for a device in a [end, start) time range, in descending timestamp order.
+	// List all events for a device in a [end, start) time range, in descending timestamp order. Events are generated based on rules.
 	ListEvents(ctx context.Context, in *ListEventsRequest, opts ...grpc.CallOption) (*ListEventsResponse, error)
-	// List the latest event for each of an organization's devices.
+	// List the latest event for each of an organization's devices. Events are generated based on rules.
 	LatestEvents(ctx context.Context, in *LatestEventsRequest, opts ...grpc.CallOption) (*LatestEventsResponse, error)
 }
 
@@ -54,9 +54,9 @@ func (c *eventServiceClient) LatestEvents(ctx context.Context, in *LatestEventsR
 // All implementations must embed UnimplementedEventServiceServer
 // for forward compatibility
 type EventServiceServer interface {
-	// List all events for a device in a [end, start) time range, in descending timestamp order.
+	// List all events for a device in a [end, start) time range, in descending timestamp order. Events are generated based on rules.
 	ListEvents(context.Context, *ListEventsRequest) (*ListEventsResponse, error)
-	// List the latest event for each of an organization's devices.
+	// List the latest event for each of an organization's devices. Events are generated based on rules.
 	LatestEvents(context.Context, *LatestEventsRequest) (*LatestEventsResponse, error)
 	mustEmbedUnimplementedEventServiceServer()
 }
