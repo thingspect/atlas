@@ -53,7 +53,7 @@ type Alerter struct {
 	orgDAO   orger
 	alarmDAO alarmer
 	userDAO  userer
-	alertDAO alerter
+	aleDAO   alerter
 	cache    cache.Cacher
 
 	aleQueue queue.Queuer
@@ -108,7 +108,7 @@ func New(cfg *config.Config) (*Alerter, error) {
 		orgDAO:   org.NewDAO(pg),
 		alarmDAO: alarm.NewDAO(pg),
 		userDAO:  user.NewDAO(pg),
-		alertDAO: alert.NewDAO(pg),
+		aleDAO:   alert.NewDAO(pg),
 		cache:    redis,
 
 		aleQueue: nsq,

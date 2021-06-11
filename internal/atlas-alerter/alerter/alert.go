@@ -192,11 +192,11 @@ func (ale *Alerter) alertMessages() {
 				// Store alert.
 				ctx, cancel = context.WithTimeout(context.Background(),
 					5*time.Second)
-				err = ale.alertDAO.Create(ctx, alert)
+				err = ale.aleDAO.Create(ctx, alert)
 				cancel()
 				if err != nil {
 					metric.Incr("error", map[string]string{"func": "create"})
-					logger.Errorf("alertMessages ale.alertDAO.Create: %v", err)
+					logger.Errorf("alertMessages ale.aleDAO.Create: %v", err)
 
 					continue
 				}

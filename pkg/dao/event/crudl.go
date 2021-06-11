@@ -120,14 +120,14 @@ SELECT
   e.created_at,
   e.trace_id
 FROM
-  EVENTS e
+  events e
   INNER JOIN (
     SELECT
       org_id,
       uniq_id,
       MAX(created_at) AS created_at
     FROM
-      EVENTS
+      events
     WHERE
       org_id = $1
     GROUP BY
@@ -138,7 +138,7 @@ FROM
 `
 
 const latestEventsRuleID = `
-AND e.rule_id = $2
+WHERE e.rule_id = $2
 `
 
 const latestEventsOrder = `

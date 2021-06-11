@@ -61,7 +61,6 @@ func NewRuleAlarm(ruleDAO Ruler, alarmDAO Alarmer) *RuleAlarm {
 // CreateRule creates a rule.
 func (ra *RuleAlarm) CreateRule(ctx context.Context,
 	req *api.CreateRuleRequest) (*common.Rule, error) {
-	logger := alog.FromContext(ctx)
 	sess, ok := session.FromContext(ctx)
 	if !ok || sess.Role < common.Role_BUILDER {
 		return nil, errPerm(common.Role_BUILDER)
@@ -76,6 +75,7 @@ func (ra *RuleAlarm) CreateRule(ctx context.Context,
 
 	if err := grpc.SetHeader(ctx, metadata.Pairs(StatusCodeKey,
 		"201")); err != nil {
+		logger := alog.FromContext(ctx)
 		logger.Errorf("CreateRule grpc.SetHeader: %v", err)
 	}
 
@@ -85,7 +85,6 @@ func (ra *RuleAlarm) CreateRule(ctx context.Context,
 // CreateAlarm creates an alarm.
 func (ra *RuleAlarm) CreateAlarm(ctx context.Context,
 	req *api.CreateAlarmRequest) (*api.Alarm, error) {
-	logger := alog.FromContext(ctx)
 	sess, ok := session.FromContext(ctx)
 	if !ok || sess.Role < common.Role_BUILDER {
 		return nil, errPerm(common.Role_BUILDER)
@@ -100,6 +99,7 @@ func (ra *RuleAlarm) CreateAlarm(ctx context.Context,
 
 	if err := grpc.SetHeader(ctx, metadata.Pairs(StatusCodeKey,
 		"201")); err != nil {
+		logger := alog.FromContext(ctx)
 		logger.Errorf("CreateAlarm grpc.SetHeader: %v", err)
 	}
 
@@ -239,7 +239,6 @@ func (ra *RuleAlarm) UpdateAlarm(ctx context.Context,
 // DeleteRule deletes a rule by ID.
 func (ra *RuleAlarm) DeleteRule(ctx context.Context,
 	req *api.DeleteRuleRequest) (*emptypb.Empty, error) {
-	logger := alog.FromContext(ctx)
 	sess, ok := session.FromContext(ctx)
 	if !ok || sess.Role < common.Role_BUILDER {
 		return nil, errPerm(common.Role_BUILDER)
@@ -251,6 +250,7 @@ func (ra *RuleAlarm) DeleteRule(ctx context.Context,
 
 	if err := grpc.SetHeader(ctx, metadata.Pairs(StatusCodeKey,
 		"204")); err != nil {
+		logger := alog.FromContext(ctx)
 		logger.Errorf("DeleteRule grpc.SetHeader: %v", err)
 	}
 
@@ -260,7 +260,6 @@ func (ra *RuleAlarm) DeleteRule(ctx context.Context,
 // DeleteAlarm deletes an alarm by ID.
 func (ra *RuleAlarm) DeleteAlarm(ctx context.Context,
 	req *api.DeleteAlarmRequest) (*emptypb.Empty, error) {
-	logger := alog.FromContext(ctx)
 	sess, ok := session.FromContext(ctx)
 	if !ok || sess.Role < common.Role_BUILDER {
 		return nil, errPerm(common.Role_BUILDER)
@@ -273,6 +272,7 @@ func (ra *RuleAlarm) DeleteAlarm(ctx context.Context,
 
 	if err := grpc.SetHeader(ctx, metadata.Pairs(StatusCodeKey,
 		"204")); err != nil {
+		logger := alog.FromContext(ctx)
 		logger.Errorf("DeleteAlarm grpc.SetHeader: %v", err)
 	}
 
@@ -282,7 +282,6 @@ func (ra *RuleAlarm) DeleteAlarm(ctx context.Context,
 // ListRules retrieves all rules.
 func (ra *RuleAlarm) ListRules(ctx context.Context,
 	req *api.ListRulesRequest) (*api.ListRulesResponse, error) {
-	logger := alog.FromContext(ctx)
 	sess, ok := session.FromContext(ctx)
 	if !ok || sess.Role < common.Role_VIEWER {
 		return nil, errPerm(common.Role_VIEWER)
@@ -315,6 +314,7 @@ func (ra *RuleAlarm) ListRules(ctx context.Context,
 			rules[len(rules)-2].Id); err != nil {
 			// GeneratePageToken should not error based on a DB-derived UUID.
 			// Log the error and include the usable empty token.
+			logger := alog.FromContext(ctx)
 			logger.Errorf("ListRules session.GeneratePageToken rule, err: "+
 				"%+v, %v", rules[len(rules)-2], err)
 		}
@@ -326,7 +326,6 @@ func (ra *RuleAlarm) ListRules(ctx context.Context,
 // ListAlarms retrieves alarms.
 func (ra *RuleAlarm) ListAlarms(ctx context.Context,
 	req *api.ListAlarmsRequest) (*api.ListAlarmsResponse, error) {
-	logger := alog.FromContext(ctx)
 	sess, ok := session.FromContext(ctx)
 	if !ok || sess.Role < common.Role_VIEWER {
 		return nil, errPerm(common.Role_VIEWER)
@@ -359,6 +358,7 @@ func (ra *RuleAlarm) ListAlarms(ctx context.Context,
 			alarms[len(alarms)-2].Id); err != nil {
 			// GeneratePageToken should not error based on a DB-derived UUID.
 			// Log the error and include the usable empty token.
+			logger := alog.FromContext(ctx)
 			logger.Errorf("ListAlarms session.GeneratePageToken alarm, err: "+
 				"%+v, %v", alarms[len(alarms)-2], err)
 		}

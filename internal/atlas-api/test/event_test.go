@@ -35,7 +35,7 @@ func TestListEvents(t *testing.T) {
 		events := []*api.Event{}
 
 		for i := 0; i < 5; i++ {
-			event := random.Event("dao-event", globalAdminOrgID)
+			event := random.Event("api-event", globalAdminOrgID)
 			event.UniqId = createDev.UniqId
 			events = append(events, event)
 
@@ -127,7 +127,7 @@ func TestListEvents(t *testing.T) {
 		t.Logf("createOrg, err: %+v, %v", createOrg, err)
 		require.NoError(t, err)
 
-		event := random.Event("dao-event", createOrg.Id)
+		event := random.Event("api-event", createOrg.Id)
 
 		err = globalEvDAO.Create(ctx, event)
 		t.Logf("err: %#v", err)
@@ -190,7 +190,7 @@ func TestLatestEvents(t *testing.T) {
 		events := []*api.Event{}
 
 		for i := 0; i < 5; i++ {
-			event := random.Event("dao-event", globalAdminOrgID)
+			event := random.Event("api-event", globalAdminOrgID)
 			events = append(events, event)
 
 			ctx, cancel := context.WithTimeout(context.Background(),
@@ -255,7 +255,7 @@ func TestLatestEvents(t *testing.T) {
 		t.Logf("createOrg, err: %+v, %v", createOrg, err)
 		require.NoError(t, err)
 
-		event := random.Event("dao-event", createOrg.Id)
+		event := random.Event("api-event", createOrg.Id)
 
 		err = globalEvDAO.Create(ctx, event)
 		t.Logf("err: %#v", err)

@@ -46,7 +46,6 @@ func NewOrg(orgDAO Orger) *Org {
 // CreateOrg creates an organization.
 func (o *Org) CreateOrg(ctx context.Context,
 	req *api.CreateOrgRequest) (*api.Org, error) {
-	logger := alog.FromContext(ctx)
 	sess, ok := session.FromContext(ctx)
 	if !ok || sess.Role < common.Role_SYS_ADMIN {
 		return nil, errPerm(common.Role_SYS_ADMIN)
@@ -59,6 +58,7 @@ func (o *Org) CreateOrg(ctx context.Context,
 
 	if err := grpc.SetHeader(ctx, metadata.Pairs(StatusCodeKey,
 		"201")); err != nil {
+		logger := alog.FromContext(ctx)
 		logger.Errorf("CreateOrg grpc.SetHeader: %v", err)
 	}
 
@@ -136,7 +136,6 @@ func (o *Org) UpdateOrg(ctx context.Context,
 // DeleteOrg deletes an organization by ID.
 func (o *Org) DeleteOrg(ctx context.Context,
 	req *api.DeleteOrgRequest) (*emptypb.Empty, error) {
-	logger := alog.FromContext(ctx)
 	sess, ok := session.FromContext(ctx)
 	if !ok || sess.Role < common.Role_SYS_ADMIN {
 		return nil, errPerm(common.Role_SYS_ADMIN)
@@ -148,6 +147,7 @@ func (o *Org) DeleteOrg(ctx context.Context,
 
 	if err := grpc.SetHeader(ctx, metadata.Pairs(StatusCodeKey,
 		"204")); err != nil {
+		logger := alog.FromContext(ctx)
 		logger.Errorf("DeleteOrg grpc.SetHeader: %v", err)
 	}
 
@@ -157,7 +157,6 @@ func (o *Org) DeleteOrg(ctx context.Context,
 // ListOrgs retrieves all organizations.
 func (o *Org) ListOrgs(ctx context.Context,
 	req *api.ListOrgsRequest) (*api.ListOrgsResponse, error) {
-	logger := alog.FromContext(ctx)
 	sess, ok := session.FromContext(ctx)
 	if !ok {
 		return nil, errPerm(common.Role_SYS_ADMIN)
@@ -202,6 +201,7 @@ func (o *Org) ListOrgs(ctx context.Context,
 			orgs[len(orgs)-2].Id); err != nil {
 			// GeneratePageToken should not error based on a DB-derived UUID.
 			// Log the error and include the usable empty token.
+			logger := alog.FromContext(ctx)
 			logger.Errorf("ListOrgs session.GeneratePageToken org, err: "+
 				"%+v, %v", orgs[len(orgs)-2], err)
 		}
