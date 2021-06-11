@@ -38,23 +38,50 @@ func TestEventMessages(t *testing.T) {
 		inpTimes int
 		res      []*message.EventerOut
 	}{
-		{&message.ValidatorOut{Point: &common.DataPoint{Attr: "motion", Ts: now,
-			TraceId: traceID}}, []*common.Rule{{Id: ruleID, Expr: `true`}}, 1,
-			[]*message.EventerOut{{Point: &common.DataPoint{Attr: "motion",
-				Ts: now, TraceId: traceID}, Rule: &common.Rule{Id: ruleID,
-				Expr: `true`}}}},
-		{&message.ValidatorOut{Point: &common.DataPoint{Attr: "temp", Ts: now,
-			TraceId: traceID}}, []*common.Rule{{Id: ruleID, Expr: `true`},
-			{Id: ruleID, Expr: `true`}}, 2, []*message.EventerOut{{
-			Point: &common.DataPoint{Attr: "temp", Ts: now, TraceId: traceID},
-			Rule:  &common.Rule{Id: ruleID, Expr: `true`}},
-			{Point: &common.DataPoint{Attr: "temp", Ts: now, TraceId: traceID},
-				Rule: &common.Rule{Id: ruleID, Expr: `true`}}}},
-		{&message.ValidatorOut{Point: &common.DataPoint{Attr: "power", Ts: now,
-			TraceId: traceID}}, nil, 0, nil},
-		{&message.ValidatorOut{Point: &common.DataPoint{Attr: "leak", Ts: now,
-			TraceId: traceID}}, []*common.Rule{{Id: ruleID, Expr: `false`}}, 0,
-			nil},
+		{
+			&message.ValidatorOut{Point: &common.DataPoint{
+				Attr: "motion", Ts: now,
+				TraceId: traceID,
+			}},
+			[]*common.Rule{{Id: ruleID, Expr: `true`}},
+			1,
+			[]*message.EventerOut{{Point: &common.DataPoint{
+				Attr: "motion",
+				Ts:   now, TraceId: traceID,
+			}, Rule: &common.Rule{
+				Id:   ruleID,
+				Expr: `true`,
+			}}},
+		},
+		{&message.ValidatorOut{Point: &common.DataPoint{
+			Attr: "temp", Ts: now,
+			TraceId: traceID,
+		}}, []*common.Rule{
+			{Id: ruleID, Expr: `true`},
+			{Id: ruleID, Expr: `true`},
+		}, 2, []*message.EventerOut{
+			{
+				Point: &common.DataPoint{Attr: "temp", Ts: now, TraceId: traceID},
+				Rule:  &common.Rule{Id: ruleID, Expr: `true`},
+			},
+			{
+				Point: &common.DataPoint{Attr: "temp", Ts: now, TraceId: traceID},
+				Rule:  &common.Rule{Id: ruleID, Expr: `true`},
+			},
+		}},
+		{&message.ValidatorOut{Point: &common.DataPoint{
+			Attr: "power", Ts: now,
+			TraceId: traceID,
+		}}, nil, 0, nil},
+		{
+			&message.ValidatorOut{Point: &common.DataPoint{
+				Attr: "leak", Ts: now,
+				TraceId: traceID,
+			}},
+			[]*common.Rule{{Id: ruleID, Expr: `false`}},
+			0,
+			nil,
+		},
 	}
 
 	for _, test := range tests {
@@ -82,17 +109,19 @@ func TestEventMessages(t *testing.T) {
 				Return(lTest.inpRules, nil).Times(1)
 
 			// Reuse ruleID for less branching in the mocking paths.
-			event := &api.Event{OrgId: lTest.inpVOut.Device.OrgId,
+			event := &api.Event{
+				OrgId:  lTest.inpVOut.Device.OrgId,
 				RuleId: ruleID, UniqId: dev.UniqId, CreatedAt: now,
-				TraceId: traceID}
+				TraceId: traceID,
+			}
 			eventer := NewMockeventer(gomock.NewController(t))
 			eventer.EXPECT().Create(gomock.Any(),
 				matcher.NewProtoMatcher(event)).Return(nil).
 				Times(lTest.inpTimes)
 
 			ev := Eventer{
-				ruleDAO:  ruler,
-				eventDAO: eventer,
+				ruleDAO: ruler,
+				evDAO:   eventer,
 
 				evQueue:      evQueue,
 				vOutSub:      vOutSub,
@@ -164,23 +193,42 @@ func TestEventMessagesError(t *testing.T) {
 		// Missing data point.
 		{&message.ValidatorOut{}, nil, 0, nil, nil, 0},
 		// Missing device.
-		{&message.ValidatorOut{Point: &common.DataPoint{}}, nil, 0, nil, nil,
-			0},
+		{
+			&message.ValidatorOut{Point: &common.DataPoint{}}, nil, 0, nil, nil,
+			0,
+		},
 		// Ruler error.
-		{&message.ValidatorOut{Point: &common.DataPoint{},
-			Device: &common.Device{}}, errTestProc, 1, nil, nil, 0},
+		{&message.ValidatorOut{
+			Point:  &common.DataPoint{},
+			Device: &common.Device{},
+		}, errTestProc, 1, nil, nil, 0},
 		// Eval error.
-		{&message.ValidatorOut{Point: &common.DataPoint{Ts: now},
-			Device: &common.Device{}}, nil, 1,
-			[]*common.Rule{{Expr: `1 + "aaa"`}}, nil, 0},
+		{
+			&message.ValidatorOut{
+				Point:  &common.DataPoint{Ts: now},
+				Device: &common.Device{},
+			}, nil, 1,
+			[]*common.Rule{{Expr: `1 + "aaa"`}},
+			nil, 0,
+		},
 		// Eventer already exists.
-		{&message.ValidatorOut{Point: &common.DataPoint{Ts: now},
-			Device: &common.Device{}}, nil, 1, []*common.Rule{{Expr: `true`}},
-			dao.ErrAlreadyExists, 1},
+		{
+			&message.ValidatorOut{
+				Point:  &common.DataPoint{Ts: now},
+				Device: &common.Device{},
+			}, nil, 1,
+			[]*common.Rule{{Expr: `true`}},
+			dao.ErrAlreadyExists, 1,
+		},
 		// Eventer error.
-		{&message.ValidatorOut{Point: &common.DataPoint{Ts: now},
-			Device: &common.Device{}}, nil, 1, []*common.Rule{{Expr: `true`}},
-			errTestProc, 1},
+		{
+			&message.ValidatorOut{
+				Point:  &common.DataPoint{Ts: now},
+				Device: &common.Device{},
+			}, nil, 1,
+			[]*common.Rule{{Expr: `true`}},
+			errTestProc, 1,
+		},
 	}
 
 	for _, test := range tests {
@@ -208,8 +256,8 @@ func TestEventMessagesError(t *testing.T) {
 				Return(lTest.inpEventerErr).Times(lTest.inpEventerTimes)
 
 			ev := Eventer{
-				ruleDAO:  ruler,
-				eventDAO: eventer,
+				ruleDAO: ruler,
+				evDAO:   eventer,
 
 				evQueue:      evQueue,
 				vOutSub:      vOutSub,

@@ -35,8 +35,8 @@ type eventer interface {
 
 // Eventer holds references to the database and message broker connections.
 type Eventer struct {
-	ruleDAO  ruler
-	eventDAO eventer
+	ruleDAO ruler
+	evDAO   eventer
 
 	evQueue      queue.Queuer
 	vOutSub      queue.Subber
@@ -70,8 +70,8 @@ func New(cfg *config.Config) (*Eventer, error) {
 	}
 
 	return &Eventer{
-		ruleDAO:  rule.NewDAO(pg),
-		eventDAO: event.NewDAO(pg),
+		ruleDAO: rule.NewDAO(pg),
+		evDAO:   event.NewDAO(pg),
 
 		evQueue:      nsq,
 		vOutSub:      vOutSub,

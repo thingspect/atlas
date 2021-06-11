@@ -49,7 +49,6 @@ func NewDevice(devDAO Devicer, lora lora.Loraer) *Device {
 // CreateDevice creates a device.
 func (d *Device) CreateDevice(ctx context.Context,
 	req *api.CreateDeviceRequest) (*common.Device, error) {
-	logger := alog.FromContext(ctx)
 	sess, ok := session.FromContext(ctx)
 	if !ok || sess.Role < common.Role_BUILDER {
 		return nil, errPerm(common.Role_BUILDER)
@@ -64,6 +63,7 @@ func (d *Device) CreateDevice(ctx context.Context,
 
 	if err := grpc.SetHeader(ctx, metadata.Pairs(StatusCodeKey,
 		"201")); err != nil {
+		logger := alog.FromContext(ctx)
 		logger.Errorf("CreateDevice grpc.SetHeader: %v", err)
 	}
 
@@ -213,7 +213,6 @@ func (d *Device) DeleteDeviceLoRaWAN(ctx context.Context,
 // DeleteDevice deletes a device by ID.
 func (d *Device) DeleteDevice(ctx context.Context,
 	req *api.DeleteDeviceRequest) (*emptypb.Empty, error) {
-	logger := alog.FromContext(ctx)
 	sess, ok := session.FromContext(ctx)
 	if !ok || sess.Role < common.Role_BUILDER {
 		return nil, errPerm(common.Role_BUILDER)
@@ -225,6 +224,7 @@ func (d *Device) DeleteDevice(ctx context.Context,
 
 	if err := grpc.SetHeader(ctx, metadata.Pairs(StatusCodeKey,
 		"204")); err != nil {
+		logger := alog.FromContext(ctx)
 		logger.Errorf("DeleteDevice grpc.SetHeader: %v", err)
 	}
 
@@ -234,7 +234,6 @@ func (d *Device) DeleteDevice(ctx context.Context,
 // ListDevices retrieves all devices.
 func (d *Device) ListDevices(ctx context.Context,
 	req *api.ListDevicesRequest) (*api.ListDevicesResponse, error) {
-	logger := alog.FromContext(ctx)
 	sess, ok := session.FromContext(ctx)
 	if !ok || sess.Role < common.Role_VIEWER {
 		return nil, errPerm(common.Role_VIEWER)
@@ -267,6 +266,7 @@ func (d *Device) ListDevices(ctx context.Context,
 			devs[len(devs)-2].Id); err != nil {
 			// GeneratePageToken should not error based on a DB-derived UUID.
 			// Log the error and include the usable empty token.
+			logger := alog.FromContext(ctx)
 			logger.Errorf("ListDevices session.GeneratePageToken dev, err: "+
 				"%+v, %v", devs[len(devs)-2], err)
 		}

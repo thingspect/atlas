@@ -163,10 +163,7 @@ func TestListEvents(t *testing.T) {
 		defer cancel()
 
 		evSvc := NewEvent(eventer)
-		listEvents, err := evSvc.ListEvents(ctx, &api.ListEventsRequest{
-			IdOneof: &api.ListEventsRequest_UniqId{UniqId: "api-event-" +
-				random.String(16)},
-		})
+		listEvents, err := evSvc.ListEvents(ctx, &api.ListEventsRequest{})
 		t.Logf("listEvents, err: %+v, %v", listEvents, err)
 		require.Nil(t, listEvents)
 		require.Equal(t, status.Error(codes.InvalidArgument, "invalid format"),

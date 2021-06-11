@@ -130,7 +130,6 @@ func (s *Session) CreateKey(ctx context.Context,
 // DeleteKey deletes an API key by ID.
 func (s *Session) DeleteKey(ctx context.Context,
 	req *api.DeleteKeyRequest) (*emptypb.Empty, error) {
-	logger := alog.FromContext(ctx)
 	sess, ok := session.FromContext(ctx)
 	if !ok || sess.Role < common.Role_ADMIN {
 		return nil, errPerm(common.Role_ADMIN)
@@ -150,6 +149,7 @@ func (s *Session) DeleteKey(ctx context.Context,
 
 	if err := grpc.SetHeader(ctx, metadata.Pairs(StatusCodeKey,
 		"204")); err != nil {
+		logger := alog.FromContext(ctx)
 		logger.Errorf("DeleteKey grpc.SetHeader: %v", err)
 	}
 
@@ -159,7 +159,6 @@ func (s *Session) DeleteKey(ctx context.Context,
 // ListKeys retrieves all API keys.
 func (s *Session) ListKeys(ctx context.Context,
 	req *api.ListKeysRequest) (*api.ListKeysResponse, error) {
-	logger := alog.FromContext(ctx)
 	sess, ok := session.FromContext(ctx)
 	if !ok || sess.Role < common.Role_ADMIN {
 		return nil, errPerm(common.Role_ADMIN)
@@ -192,6 +191,7 @@ func (s *Session) ListKeys(ctx context.Context,
 			keys[len(keys)-2].Id); err != nil {
 			// GeneratePageToken should not error based on a DB-derived UUID.
 			// Log the error and include the usable empty token.
+			logger := alog.FromContext(ctx)
 			logger.Errorf("ListKeys session.GeneratePageToken key, err: "+
 				"%+v, %v", keys[len(keys)-2], err)
 		}

@@ -191,7 +191,7 @@ func TestAlertMessages(t *testing.T) {
 				orgDAO:   orger,
 				alarmDAO: alarmer,
 				userDAO:  userer,
-				alertDAO: alerter,
+				aleDAO:   alerter,
 				cache:    cache,
 
 				aleQueue: eOutQueue,
@@ -426,7 +426,7 @@ func TestAlertMessagesError(t *testing.T) {
 				orgDAO:   orger,
 				alarmDAO: alarmer,
 				userDAO:  userer,
-				alertDAO: alerter,
+				aleDAO:   alerter,
 				cache:    cacher,
 
 				aleQueue: eOutQueue,

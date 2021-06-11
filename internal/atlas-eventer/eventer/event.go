@@ -88,21 +88,21 @@ func (ev *Eventer) eventMessages() {
 
 				ctx, cancel := context.WithTimeout(context.Background(),
 					5*time.Second)
-				err := ev.eventDAO.Create(ctx, event)
+				err := ev.evDAO.Create(ctx, event)
 				cancel()
 				// Use a duplicate event as a tombstone to protect against
 				// failure mid-loop and support fast-forward. Do not attempt to
 				// coordinate event success with publish failures.
 				if errors.Is(err, dao.ErrAlreadyExists) {
 					metric.Incr("duplicate", nil)
-					logger.Infof("eventMessages duplicate ev.eventDAO.Create: "+
+					logger.Infof("eventMessages duplicate ev.evDAO.Create: "+
 						"%v", err)
 
 					continue
 				}
 				if err != nil {
 					metric.Incr("error", map[string]string{"func": "create"})
-					logger.Errorf("eventMessages ev.eventDAO.Create: %v", err)
+					logger.Errorf("eventMessages ev.evDAO.Create: %v", err)
 
 					continue
 				}

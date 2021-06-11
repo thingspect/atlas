@@ -56,7 +56,6 @@ func NewUser(userDAO Userer) *User {
 // CreateUser creates a user.
 func (u *User) CreateUser(ctx context.Context,
 	req *api.CreateUserRequest) (*api.User, error) {
-	logger := alog.FromContext(ctx)
 	sess, ok := session.FromContext(ctx)
 	if !ok || sess.Role < common.Role_ADMIN {
 		return nil, errPerm(common.Role_ADMIN)
@@ -86,6 +85,7 @@ func (u *User) CreateUser(ctx context.Context,
 
 	if err := grpc.SetHeader(ctx, metadata.Pairs(StatusCodeKey,
 		"201")); err != nil {
+		logger := alog.FromContext(ctx)
 		logger.Errorf("CreateUser grpc.SetHeader: %v", err)
 	}
 
@@ -181,7 +181,6 @@ func (u *User) UpdateUser(ctx context.Context,
 // UpdateUserPassword updates a user's password by ID.
 func (u *User) UpdateUserPassword(ctx context.Context,
 	req *api.UpdateUserPasswordRequest) (*emptypb.Empty, error) {
-	logger := alog.FromContext(ctx)
 	sess, ok := session.FromContext(ctx)
 	if !ok || (sess.Role < common.Role_ADMIN && req.Id != sess.UserID) {
 		return nil, errPerm(common.Role_ADMIN)
@@ -193,6 +192,7 @@ func (u *User) UpdateUserPassword(ctx context.Context,
 
 	hash, err := crypto.HashPass(req.Password)
 	if err != nil {
+		logger := alog.FromContext(ctx)
 		logger.Errorf("UpdateUserPassword crypto.HashPass: %v", err)
 
 		return nil, errToStatus(crypto.ErrWeakPass)
@@ -209,7 +209,6 @@ func (u *User) UpdateUserPassword(ctx context.Context,
 // DeleteUser deletes a user by ID.
 func (u *User) DeleteUser(ctx context.Context,
 	req *api.DeleteUserRequest) (*emptypb.Empty, error) {
-	logger := alog.FromContext(ctx)
 	sess, ok := session.FromContext(ctx)
 	if !ok || sess.Role < common.Role_ADMIN {
 		return nil, errPerm(common.Role_ADMIN)
@@ -221,6 +220,7 @@ func (u *User) DeleteUser(ctx context.Context,
 
 	if err := grpc.SetHeader(ctx, metadata.Pairs(StatusCodeKey,
 		"204")); err != nil {
+		logger := alog.FromContext(ctx)
 		logger.Errorf("DeleteUser grpc.SetHeader: %v", err)
 	}
 
@@ -230,7 +230,6 @@ func (u *User) DeleteUser(ctx context.Context,
 // ListUsers retrieves all users.
 func (u *User) ListUsers(ctx context.Context,
 	req *api.ListUsersRequest) (*api.ListUsersResponse, error) {
-	logger := alog.FromContext(ctx)
 	sess, ok := session.FromContext(ctx)
 	if !ok {
 		return nil, errPerm(common.Role_ADMIN)
@@ -281,6 +280,7 @@ func (u *User) ListUsers(ctx context.Context,
 			users[len(users)-2].Id); err != nil {
 			// GeneratePageToken should not error based on a DB-derived UUID.
 			// Log the error and include the usable empty token.
+			logger := alog.FromContext(ctx)
 			logger.Errorf("ListUsers session.GeneratePageToken user, err: "+
 				"%+v, %v", users[len(users)-2], err)
 		}
