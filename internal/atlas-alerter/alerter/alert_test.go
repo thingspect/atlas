@@ -165,12 +165,13 @@ func TestAlertMessages(t *testing.T) {
 				Times(lTest.inpEmailTimes)
 
 			alerter := NewMockalerter(ctrl)
-			alerter.EXPECT().Create(gomock.Any(), matcher.NewProtoMatcher(
-				alert)).DoAndReturn(func(_ ...interface{}) error {
-				defer wg.Done()
+			alerter.EXPECT().Create(gomock.Any(),
+				matcher.NewProtoMatcher(alert)).
+				DoAndReturn(func(ctx interface{}, alert interface{}) error {
+					defer wg.Done()
 
-				return nil
-			}).Times(lTest.inpAlertTimes)
+					return nil
+				}).Times(lTest.inpAlertTimes)
 
 			cache := cache.NewMemory()
 
@@ -416,7 +417,7 @@ func TestAlertMessagesError(t *testing.T) {
 
 			alerter := NewMockalerter(ctrl)
 			alerter.EXPECT().Create(gomock.Any(), gomock.Any()).
-				DoAndReturn(func(_ ...interface{}) error {
+				DoAndReturn(func(ctx interface{}, alert interface{}) error {
 					defer wg.Done()
 
 					return lTest.inpAlertErr

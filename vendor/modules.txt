@@ -28,7 +28,7 @@ github.com/cespare/xxhash/v2
 github.com/davecgh/go-spew/spew
 # github.com/dgryski/go-rendezvous v0.0.0-20200823014737-9f7001d12a5f
 github.com/dgryski/go-rendezvous
-# github.com/eclipse/paho.mqtt.golang v1.3.4
+# github.com/eclipse/paho.mqtt.golang v1.3.5
 ## explicit
 github.com/eclipse/paho.mqtt.golang
 github.com/eclipse/paho.mqtt.golang/packets
@@ -44,7 +44,7 @@ github.com/go-redis/redis/v8/internal/pool
 github.com/go-redis/redis/v8/internal/proto
 github.com/go-redis/redis/v8/internal/rand
 github.com/go-redis/redis/v8/internal/util
-# github.com/golang/mock v1.5.0
+# github.com/golang/mock v1.6.0
 ## explicit
 github.com/golang/mock/gomock
 # github.com/golang/protobuf v1.5.2
@@ -152,7 +152,8 @@ go.opentelemetry.io/otel/trace
 golang.org/x/crypto/bcrypt
 golang.org/x/crypto/blowfish
 golang.org/x/crypto/pbkdf2
-# golang.org/x/net v0.0.0-20210525063256-abc453219eb5
+# golang.org/x/net v0.0.0-20210610132358-84b48f89b13b
+## explicit
 golang.org/x/net/http/httpguts
 golang.org/x/net/http2
 golang.org/x/net/http2/hpack
@@ -163,7 +164,8 @@ golang.org/x/net/proxy
 golang.org/x/net/trace
 # golang.org/x/sync v0.0.0-20210220032951-036812b2e83c
 golang.org/x/sync/singleflight
-# golang.org/x/sys v0.0.0-20210603125802-9665404d3644
+# golang.org/x/sys v0.0.0-20210611083646-a4fc73990273
+## explicit
 golang.org/x/sys/internal/unsafeheader
 golang.org/x/sys/unix
 # golang.org/x/text v0.3.6
@@ -180,7 +182,8 @@ golang.org/x/text/transform
 golang.org/x/text/unicode/bidi
 golang.org/x/text/unicode/norm
 golang.org/x/text/width
-# google.golang.org/genproto v0.0.0-20210604141403-392c879c8b08
+# google.golang.org/genproto v0.0.0-20210611144927-798beca9d670
+## explicit
 google.golang.org/genproto/googleapis/api/annotations
 google.golang.org/genproto/googleapis/api/httpbody
 google.golang.org/genproto/googleapis/rpc/status
