@@ -7,9 +7,9 @@ require (
 	github.com/ReneKroon/ttlcache/v2 v2.7.0
 	github.com/antonmedv/expr v1.8.9
 	github.com/brocaar/chirpstack-api/go/v3 v3.9.11
-	github.com/eclipse/paho.mqtt.golang v1.3.4
+	github.com/eclipse/paho.mqtt.golang v1.3.5
 	github.com/go-redis/redis/v8 v8.10.0
-	github.com/golang/mock v1.5.0
+	github.com/golang/mock v1.6.0
 	github.com/golang/protobuf v1.5.2
 	github.com/golang/snappy v0.0.3 // indirect
 	github.com/google/uuid v1.2.0
@@ -27,6 +27,9 @@ require (
 	github.com/stretchr/testify v1.7.0
 	github.com/thingspect/api/go v0.0.0-20210604200218-a221a05eb0e7
 	golang.org/x/crypto v0.0.0-20210513164829-c07d793c2f9a
+	golang.org/x/net v0.0.0-20210610132358-84b48f89b13b // indirect
+	golang.org/x/sys v0.0.0-20210611083646-a4fc73990273 // indirect
+	google.golang.org/genproto v0.0.0-20210611144927-798beca9d670 // indirect
 	google.golang.org/grpc v1.38.0
 	google.golang.org/protobuf v1.26.0
 )
