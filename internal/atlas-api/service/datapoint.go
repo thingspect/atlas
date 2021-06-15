@@ -6,7 +6,6 @@ import (
 	"context"
 	"time"
 
-	"github.com/google/uuid"
 	"github.com/thingspect/api/go/api"
 	"github.com/thingspect/api/go/common"
 	"github.com/thingspect/atlas/api/go/message"
@@ -65,16 +64,12 @@ func (d *DataPoint) PublishDataPoints(ctx context.Context,
 
 	// Build and publish ValidatorIn messages.
 	for _, point := range req.Points {
-		// Set up per-point logging fields.
-		traceID := uuid.NewString()
-		logger := logger.WithStr("traceID", traceID)
-
 		vIn := &message.ValidatorIn{
 			Point:     point,
 			OrgId:     sess.OrgID,
 			SkipToken: true,
 		}
-		vIn.Point.TraceId = traceID
+		vIn.Point.TraceId = sess.TraceID.String()
 
 		// Default to current timestamp if not provided.
 		if vIn.Point.Ts == nil {

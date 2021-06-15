@@ -63,6 +63,7 @@ func Auth(skipPaths map[string]struct{}, pwtKey []byte,
 			logger.Logger = logger.WithStr("keyID", sess.KeyID)
 		}
 		logger.Logger = logger.WithStr("orgID", sess.OrgID)
+		logger.Logger = logger.WithStr("traceID", sess.TraceID.String())
 
 		ctx = session.NewContext(ctx, sess)
 

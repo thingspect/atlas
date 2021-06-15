@@ -16,7 +16,7 @@ github.com/antonmedv/expr/optimizer
 github.com/antonmedv/expr/parser
 github.com/antonmedv/expr/parser/lexer
 github.com/antonmedv/expr/vm
-# github.com/brocaar/chirpstack-api/go/v3 v3.9.11
+# github.com/brocaar/chirpstack-api/go/v3 v3.10.0
 ## explicit
 github.com/brocaar/chirpstack-api/go/v3/as/external/api
 github.com/brocaar/chirpstack-api/go/v3/as/integration
@@ -93,7 +93,7 @@ github.com/jackc/pgconn/stmtcache
 github.com/jackc/pgio
 # github.com/jackc/pgpassfile v1.0.0
 github.com/jackc/pgpassfile
-# github.com/jackc/pgproto3/v2 v2.0.7
+# github.com/jackc/pgproto3/v2 v2.1.0
 ## explicit
 github.com/jackc/pgproto3/v2
 # github.com/jackc/pgservicefile v0.0.0-20200714003250-2b9c44734f2b
@@ -114,7 +114,7 @@ github.com/mennanov/fmutils
 github.com/nsqio/go-nsq
 # github.com/pmezard/go-difflib v1.0.0
 github.com/pmezard/go-difflib/difflib
-# github.com/rs/zerolog v1.22.0
+# github.com/rs/zerolog v1.23.0
 ## explicit
 github.com/rs/zerolog
 github.com/rs/zerolog/internal/cbor
@@ -152,7 +152,7 @@ go.opentelemetry.io/otel/trace
 golang.org/x/crypto/bcrypt
 golang.org/x/crypto/blowfish
 golang.org/x/crypto/pbkdf2
-# golang.org/x/net v0.0.0-20210610132358-84b48f89b13b
+# golang.org/x/net v0.0.0-20210614182718-04defd469f4e
 ## explicit
 golang.org/x/net/http/httpguts
 golang.org/x/net/http2
@@ -164,7 +164,7 @@ golang.org/x/net/proxy
 golang.org/x/net/trace
 # golang.org/x/sync v0.0.0-20210220032951-036812b2e83c
 golang.org/x/sync/singleflight
-# golang.org/x/sys v0.0.0-20210611083646-a4fc73990273
+# golang.org/x/sys v0.0.0-20210615035016-665e8c7367d1
 ## explicit
 golang.org/x/sys/internal/unsafeheader
 golang.org/x/sys/unix
@@ -182,7 +182,7 @@ golang.org/x/text/transform
 golang.org/x/text/unicode/bidi
 golang.org/x/text/unicode/norm
 golang.org/x/text/width
-# google.golang.org/genproto v0.0.0-20210611144927-798beca9d670
+# google.golang.org/genproto v0.0.0-20210614182748-5b3b54cad159
 ## explicit
 google.golang.org/genproto/googleapis/api/annotations
 google.golang.org/genproto/googleapis/api/httpbody

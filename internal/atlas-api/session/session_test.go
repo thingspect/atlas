@@ -16,7 +16,10 @@ func TestNewUserFromContext(t *testing.T) {
 	t.Parallel()
 
 	user := random.User("session", uuid.NewString())
-	sess := &Session{UserID: user.Id, OrgID: user.OrgId, Role: user.Role}
+	sess := &Session{
+		UserID: user.Id, OrgID: user.OrgId, Role: user.Role,
+		TraceID: uuid.New(),
+	}
 	t.Logf("sess: %+v", sess)
 
 	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
@@ -34,9 +37,8 @@ func TestNewKeyFromContext(t *testing.T) {
 
 	user := random.User("session", uuid.NewString())
 	sess := &Session{
-		KeyID: uuid.NewString(),
-		OrgID: user.OrgId,
-		Role:  user.Role,
+		KeyID: uuid.NewString(), OrgID: user.OrgId, Role: user.Role,
+		TraceID: uuid.New(),
 	}
 	t.Logf("sess: %+v", sess)
 

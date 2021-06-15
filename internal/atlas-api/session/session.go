@@ -5,16 +5,19 @@ package session
 import (
 	"context"
 
+	"github.com/google/uuid"
 	"github.com/thingspect/api/go/common"
 )
 
 // Session represents session metadata as retrieved from an encrypted token.
-// Either UserID or KeyID will be present, but not both.
+// Either UserID or KeyID will be present, but not both. TraceID will be
+// generated whenever a token is validated and a session is returned.
 type Session struct {
-	UserID string
-	KeyID  string
-	OrgID  string
-	Role   common.Role
+	UserID  string
+	KeyID   string
+	OrgID   string
+	Role    common.Role
+	TraceID uuid.UUID
 }
 
 // sessionKey is the key for Session values in Contexts. It is unexported,
