@@ -121,7 +121,7 @@ func TestPublishDataPoints(t *testing.T) {
 
 			// Normalize generated trace ID.
 			point.TraceId = vIn.Point.TraceId
-			// Normalize timestamps.
+			// Normalize timestamp.
 			require.WithinDuration(t, time.Now(), vIn.Point.Ts.AsTime(),
 				2*time.Second)
 			point.Ts = vIn.Point.Ts

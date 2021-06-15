@@ -125,9 +125,12 @@ func ValidateWebToken(pwtKey []byte, ciphertoken string) (*Session, error) {
 		return nil, errWebTokenExp
 	}
 
-	// Build Session to return. UUIDs have been authenticated and are safe to
-	// copy.
-	sess := &Session{Role: pwt.Role}
+	// Build Session with new TraceID. UUIDs have been authenticated and are
+	// safe to copy.
+	sess := &Session{
+		Role:    pwt.Role,
+		TraceID: uuid.New(),
+	}
 
 	var idUUID uuid.UUID
 	switch id := pwt.IdOneof.(type) {

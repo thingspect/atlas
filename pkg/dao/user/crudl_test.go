@@ -167,7 +167,7 @@ func TestReadByEmail(t *testing.T) {
 		require.NoError(t, err)
 		require.Equal(t, hash, readHash)
 
-		// Normalize timestamps.
+		// Normalize timestamp.
 		require.True(t, readUser.UpdatedAt.AsTime().After(
 			createUser.CreatedAt.AsTime()))
 		require.WithinDuration(t, readUser.UpdatedAt.AsTime(),

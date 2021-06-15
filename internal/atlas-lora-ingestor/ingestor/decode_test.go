@@ -184,7 +184,7 @@ func TestDecodeGateways(t *testing.T) {
 
 					// Normalize generated trace ID.
 					res.Point.TraceId = vIn.Point.TraceId
-					// Normalize timestamps.
+					// Normalize timestamp.
 					require.WithinDuration(t, time.Now(), vIn.Point.Ts.AsTime(),
 						2*time.Second)
 					res.Point.Ts = vIn.Point.Ts
@@ -450,7 +450,7 @@ func TestDecodeDevices(t *testing.T) {
 
 					// Normalize generated trace ID.
 					res.Point.TraceId = vIn.Point.TraceId
-					// Normalize timestamps.
+					// Normalize timestamp.
 					require.WithinDuration(t, time.Now(), vIn.Point.Ts.AsTime(),
 						2*time.Second)
 					res.Point.Ts = vIn.Point.Ts

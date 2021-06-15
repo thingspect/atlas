@@ -193,6 +193,7 @@ func TestValidateWebToken(t *testing.T) {
 				require.Empty(t, resVal.KeyID)
 				require.Equal(t, user.OrgId, resVal.OrgID)
 				require.Equal(t, user.Role, resVal.Role)
+				require.NotEmpty(t, resVal.TraceID)
 			}
 			if lTest.err == "" {
 				require.NoError(t, err)
@@ -260,6 +261,7 @@ func TestValidateKeyToken(t *testing.T) {
 				require.Equal(t, keyID, resVal.KeyID)
 				require.Equal(t, user.OrgId, resVal.OrgID)
 				require.Equal(t, user.Role, resVal.Role)
+				require.NotEmpty(t, resVal.TraceID)
 			}
 			if lTest.err == "" {
 				require.NoError(t, err)

@@ -24,7 +24,8 @@ func TestListTags(t *testing.T) {
 	for i := 0; i < 3; i++ {
 		devCli := api.NewDeviceServiceClient(globalAdminGRPCConn)
 		createDev, err := devCli.CreateDevice(ctx, &api.CreateDeviceRequest{
-			Device: random.Device("api-tag", uuid.NewString())})
+			Device: random.Device("api-tag", uuid.NewString()),
+		})
 		t.Logf("createDev, err: %+v, %v", createDev, err)
 		require.NoError(t, err)
 
@@ -38,7 +39,8 @@ func TestListTags(t *testing.T) {
 
 		userCli := api.NewUserServiceClient(globalAdminGRPCConn)
 		createUser, err := userCli.CreateUser(ctx, &api.CreateUserRequest{
-			User: user})
+			User: user,
+		})
 		t.Logf("createUser, err: %+v, %v", createUser, err)
 		require.NoError(t, err)
 

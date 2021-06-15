@@ -139,7 +139,7 @@ func TestDecodeMessages(t *testing.T) {
 
 					// Normalize generated trace ID.
 					res.Point.TraceId = vIn.Point.TraceId
-					// Normalize timestamps.
+					// Normalize timestamp.
 					if lTest.inpPoints[i].Ts == nil {
 						assert.WithinDuration(t, time.Now(),
 							vIn.Point.Ts.AsTime(), testTimeout)
