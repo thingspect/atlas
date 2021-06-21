@@ -87,14 +87,14 @@ func main() {
 
 		cli := api.NewSessionServiceClient(conn)
 		ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
-		resp, err := cli.Login(ctx, &api.LoginRequest{
+		login, err := cli.Login(ctx, &api.LoginRequest{
 			Email: flag.Arg(2), OrgName: flag.Arg(1), Password: flag.Arg(3),
 		})
 		cancel()
 		checkErr(err)
 		checkErr(conn.Close())
 
-		fmt.Fprintf(os.Stdout, "Login: %+v\n", resp)
+		fmt.Fprintf(os.Stdout, "Login: %+v\n", login)
 
 		return
 	}

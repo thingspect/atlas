@@ -57,7 +57,7 @@ func authGRPCConn(role common.Role) (string, *grpc.ClientConn, error) {
 	}
 
 	sessCli := api.NewSessionServiceClient(globalNoAuthGRPCConn)
-	loginResp, err := sessCli.Login(ctx, &api.LoginRequest{
+	login, err := sessCli.Login(ctx, &api.LoginRequest{
 		Email: createUser.Email, OrgName: createOrg.Name, Password: globalPass,
 	})
 	if err != nil {
@@ -67,7 +67,7 @@ func authGRPCConn(role common.Role) (string, *grpc.ClientConn, error) {
 	opts := []grpc.DialOption{
 		grpc.WithBlock(),
 		grpc.WithInsecure(),
-		grpc.WithPerRPCCredentials(&credential{token: loginResp.Token}),
+		grpc.WithPerRPCCredentials(&credential{token: login.Token}),
 	}
 	authConn, err := grpc.Dial(iapi.GRPCHost+iapi.GRPCPort, opts...)
 	if err != nil {

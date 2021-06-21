@@ -69,15 +69,15 @@ func TestLogin(t *testing.T) {
 		defer cancel()
 
 		sessCli := api.NewSessionServiceClient(globalNoAuthGRPCConn)
-		loginResp, err := sessCli.Login(ctx, &api.LoginRequest{
+		login, err := sessCli.Login(ctx, &api.LoginRequest{
 			Email: createUser.Email, OrgName: createOrg.Name,
 			Password: globalPass,
 		})
-		t.Logf("loginResp, err: %+v, %v", loginResp, err)
+		t.Logf("loginResp, err: %+v, %v", login, err)
 		require.NoError(t, err)
-		require.Greater(t, len(loginResp.Token), 90)
+		require.Greater(t, len(login.Token), 90)
 		require.WithinDuration(t, time.Now().Add(
-			session.WebTokenExp*time.Second), loginResp.ExpiresAt.AsTime(),
+			session.WebTokenExp*time.Second), login.ExpiresAt.AsTime(),
 			2*time.Second)
 	})
 
@@ -88,12 +88,12 @@ func TestLogin(t *testing.T) {
 		defer cancel()
 
 		sessCli := api.NewSessionServiceClient(globalNoAuthGRPCConn)
-		loginResp, err := sessCli.Login(ctx, &api.LoginRequest{
+		login, err := sessCli.Login(ctx, &api.LoginRequest{
 			Email: random.Email(), OrgName: random.String(10),
 			Password: random.String(10),
 		})
-		t.Logf("loginResp, err: %+v, %v", loginResp, err)
-		require.Nil(t, loginResp)
+		t.Logf("loginResp, err: %+v, %v", login, err)
+		require.Nil(t, login)
 		require.EqualError(t, err, "rpc error: code = Unauthenticated desc = "+
 			"unauthorized")
 	})
@@ -105,12 +105,12 @@ func TestLogin(t *testing.T) {
 		defer cancel()
 
 		sessCli := api.NewSessionServiceClient(globalNoAuthGRPCConn)
-		loginResp, err := sessCli.Login(ctx, &api.LoginRequest{
+		login, err := sessCli.Login(ctx, &api.LoginRequest{
 			Email: createUser.Email, OrgName: createOrg.Name,
 			Password: random.String(10),
 		})
-		t.Logf("loginResp, err: %+v, %v", loginResp, err)
-		require.Nil(t, loginResp)
+		t.Logf("loginResp, err: %+v, %v", login, err)
+		require.Nil(t, login)
 		require.EqualError(t, err, "rpc error: code = Unauthenticated desc = "+
 			"unauthorized")
 	})
@@ -122,12 +122,12 @@ func TestLogin(t *testing.T) {
 		defer cancel()
 
 		sessCli := api.NewSessionServiceClient(globalNoAuthGRPCConn)
-		loginResp, err := sessCli.Login(ctx, &api.LoginRequest{
+		login, err := sessCli.Login(ctx, &api.LoginRequest{
 			Email: createDisUser.Email, OrgName: createOrg.Name,
 			Password: globalPass,
 		})
-		t.Logf("loginResp, err: %+v, %v", loginResp, err)
-		require.Nil(t, loginResp)
+		t.Logf("loginResp, err: %+v, %v", login, err)
+		require.Nil(t, login)
 		require.EqualError(t, err, "rpc error: code = Unauthenticated desc = "+
 			"unauthorized")
 	})
@@ -139,12 +139,12 @@ func TestLogin(t *testing.T) {
 		defer cancel()
 
 		sessCli := api.NewSessionServiceClient(globalNoAuthGRPCConn)
-		loginResp, err := sessCli.Login(ctx, &api.LoginRequest{
+		login, err := sessCli.Login(ctx, &api.LoginRequest{
 			Email: createContUser.Email, OrgName: createOrg.Name,
 			Password: globalPass,
 		})
-		t.Logf("loginResp, err: %+v, %v", loginResp, err)
-		require.Nil(t, loginResp)
+		t.Logf("loginResp, err: %+v, %v", login, err)
+		require.Nil(t, login)
 		require.EqualError(t, err, "rpc error: code = Unauthenticated desc = "+
 			"unauthorized")
 	})
