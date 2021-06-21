@@ -126,34 +126,29 @@ github.com/smira/go-statsd
 ## explicit
 github.com/stretchr/testify/assert
 github.com/stretchr/testify/require
-# github.com/thingspect/api/go v0.0.0-20210604200218-a221a05eb0e7
+# github.com/thingspect/api/go v0.1.0
 ## explicit
 github.com/thingspect/api/go/api
 github.com/thingspect/api/go/common
 github.com/thingspect/api/go/mqtt
-# go.opentelemetry.io/otel v0.20.0
+# go.opentelemetry.io/otel v1.0.0-RC1
 go.opentelemetry.io/otel/attribute
-go.opentelemetry.io/otel/codes
 go.opentelemetry.io/otel/internal
-go.opentelemetry.io/otel/internal/baggage
-go.opentelemetry.io/otel/internal/global
-go.opentelemetry.io/otel/internal/trace/noop
-go.opentelemetry.io/otel/propagation
-go.opentelemetry.io/otel/unit
-# go.opentelemetry.io/otel/metric v0.20.0
+# go.opentelemetry.io/otel/internal/metric v0.21.0
+## explicit
+go.opentelemetry.io/otel/internal/metric/global
+# go.opentelemetry.io/otel/metric v0.21.0
 go.opentelemetry.io/otel/metric
 go.opentelemetry.io/otel/metric/global
 go.opentelemetry.io/otel/metric/number
 go.opentelemetry.io/otel/metric/registry
-# go.opentelemetry.io/otel/trace v0.20.0
-go.opentelemetry.io/otel/trace
-# golang.org/x/crypto v0.0.0-20210513164829-c07d793c2f9a
+go.opentelemetry.io/otel/metric/unit
+# golang.org/x/crypto v0.0.0-20210616213533-5ff15b29337e
 ## explicit
 golang.org/x/crypto/bcrypt
 golang.org/x/crypto/blowfish
 golang.org/x/crypto/pbkdf2
 # golang.org/x/net v0.0.0-20210614182718-04defd469f4e
-## explicit
 golang.org/x/net/http/httpguts
 golang.org/x/net/http2
 golang.org/x/net/http2/hpack
@@ -164,8 +159,7 @@ golang.org/x/net/proxy
 golang.org/x/net/trace
 # golang.org/x/sync v0.0.0-20210220032951-036812b2e83c
 golang.org/x/sync/singleflight
-# golang.org/x/sys v0.0.0-20210615035016-665e8c7367d1
-## explicit
+# golang.org/x/sys v0.0.0-20210616094352-59db8d763f22
 golang.org/x/sys/internal/unsafeheader
 golang.org/x/sys/unix
 # golang.org/x/text v0.3.6
@@ -182,8 +176,7 @@ golang.org/x/text/transform
 golang.org/x/text/unicode/bidi
 golang.org/x/text/unicode/norm
 golang.org/x/text/width
-# google.golang.org/genproto v0.0.0-20210614182748-5b3b54cad159
-## explicit
+# google.golang.org/genproto v0.0.0-20210617175327-b9e0b3197ced
 google.golang.org/genproto/googleapis/api/annotations
 google.golang.org/genproto/googleapis/api/httpbody
 google.golang.org/genproto/googleapis/rpc/status

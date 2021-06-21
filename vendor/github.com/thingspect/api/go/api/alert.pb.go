@@ -188,7 +188,7 @@ func (x *Alert) GetTraceId() string {
 	return ""
 }
 
-// ListAlertsRequest is sent to list device, alarm, and/or user alerts in a [end, start) time range, in descending timestamp order.
+// ListAlertsRequest is sent to list device, alarm, and/or user alerts in an [end, start) time range, in descending timestamp order.
 type ListAlertsRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache

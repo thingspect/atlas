@@ -75,7 +75,7 @@ func (x *PublishDataPointsRequest) GetPoints() []*common.DataPoint {
 	return nil
 }
 
-// ListDataPointsRequest is sent to list device data points in a [end, start) time range, in descending timestamp order.
+// ListDataPointsRequest is sent to list device data points in an [end, start) time range, in descending timestamp order.
 type ListDataPointsRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
