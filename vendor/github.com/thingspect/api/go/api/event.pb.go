@@ -108,7 +108,7 @@ func (x *Event) GetTraceId() string {
 	return ""
 }
 
-// ListEventsRequest is sent to list device events in a [end, start) time range, in descending timestamp order.
+// ListEventsRequest is sent to list device events in an [end, start) time range, in descending timestamp order.
 type ListEventsRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache

@@ -535,10 +535,10 @@ func (m *UpdateUserPasswordRequest) Validate() error {
 		}
 	}
 
-	if utf8.RuneCountInString(m.GetPassword()) < 10 {
+	if l := utf8.RuneCountInString(m.GetPassword()); l < 10 || l > 100 {
 		return UpdateUserPasswordRequestValidationError{
 			field:  "Password",
-			reason: "value length must be at least 10 runes",
+			reason: "value length must be between 10 and 100 runes, inclusive",
 		}
 	}
 
