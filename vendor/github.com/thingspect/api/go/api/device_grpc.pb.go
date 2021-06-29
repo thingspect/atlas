@@ -4,11 +4,11 @@ package api
 
 import (
 	context "context"
-	empty "github.com/golang/protobuf/ptypes/empty"
 	common "github.com/thingspect/api/go/common"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
+	emptypb "google.golang.org/protobuf/types/known/emptypb"
 )
 
 // This is a compile-time assertion to ensure that this generated file
@@ -23,15 +23,15 @@ type DeviceServiceClient interface {
 	// Create a device. Devices are used to generate data points.
 	CreateDevice(ctx context.Context, in *CreateDeviceRequest, opts ...grpc.CallOption) (*common.Device, error)
 	// Add LoRaWAN configuration to a device.
-	CreateDeviceLoRaWAN(ctx context.Context, in *CreateDeviceLoRaWANRequest, opts ...grpc.CallOption) (*empty.Empty, error)
+	CreateDeviceLoRaWAN(ctx context.Context, in *CreateDeviceLoRaWANRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	// Get a device by ID. Devices are used to generate data points.
 	GetDevice(ctx context.Context, in *GetDeviceRequest, opts ...grpc.CallOption) (*common.Device, error)
 	// Update a device. Devices are used to generate data points.
 	UpdateDevice(ctx context.Context, in *UpdateDeviceRequest, opts ...grpc.CallOption) (*common.Device, error)
 	// Remove LoRaWAN configuration from a device.
-	DeleteDeviceLoRaWAN(ctx context.Context, in *DeleteDeviceLoRaWANRequest, opts ...grpc.CallOption) (*empty.Empty, error)
+	DeleteDeviceLoRaWAN(ctx context.Context, in *DeleteDeviceLoRaWANRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	// Delete a device by ID. Devices are used to generate data points.
-	DeleteDevice(ctx context.Context, in *DeleteDeviceRequest, opts ...grpc.CallOption) (*empty.Empty, error)
+	DeleteDevice(ctx context.Context, in *DeleteDeviceRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	// List all devices. Devices are used to generate data points.
 	ListDevices(ctx context.Context, in *ListDevicesRequest, opts ...grpc.CallOption) (*ListDevicesResponse, error)
 }
@@ -53,8 +53,8 @@ func (c *deviceServiceClient) CreateDevice(ctx context.Context, in *CreateDevice
 	return out, nil
 }
 
-func (c *deviceServiceClient) CreateDeviceLoRaWAN(ctx context.Context, in *CreateDeviceLoRaWANRequest, opts ...grpc.CallOption) (*empty.Empty, error) {
-	out := new(empty.Empty)
+func (c *deviceServiceClient) CreateDeviceLoRaWAN(ctx context.Context, in *CreateDeviceLoRaWANRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+	out := new(emptypb.Empty)
 	err := c.cc.Invoke(ctx, "/thingspect.api.DeviceService/CreateDeviceLoRaWAN", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -80,8 +80,8 @@ func (c *deviceServiceClient) UpdateDevice(ctx context.Context, in *UpdateDevice
 	return out, nil
 }
 
-func (c *deviceServiceClient) DeleteDeviceLoRaWAN(ctx context.Context, in *DeleteDeviceLoRaWANRequest, opts ...grpc.CallOption) (*empty.Empty, error) {
-	out := new(empty.Empty)
+func (c *deviceServiceClient) DeleteDeviceLoRaWAN(ctx context.Context, in *DeleteDeviceLoRaWANRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+	out := new(emptypb.Empty)
 	err := c.cc.Invoke(ctx, "/thingspect.api.DeviceService/DeleteDeviceLoRaWAN", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -89,8 +89,8 @@ func (c *deviceServiceClient) DeleteDeviceLoRaWAN(ctx context.Context, in *Delet
 	return out, nil
 }
 
-func (c *deviceServiceClient) DeleteDevice(ctx context.Context, in *DeleteDeviceRequest, opts ...grpc.CallOption) (*empty.Empty, error) {
-	out := new(empty.Empty)
+func (c *deviceServiceClient) DeleteDevice(ctx context.Context, in *DeleteDeviceRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+	out := new(emptypb.Empty)
 	err := c.cc.Invoke(ctx, "/thingspect.api.DeviceService/DeleteDevice", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -114,15 +114,15 @@ type DeviceServiceServer interface {
 	// Create a device. Devices are used to generate data points.
 	CreateDevice(context.Context, *CreateDeviceRequest) (*common.Device, error)
 	// Add LoRaWAN configuration to a device.
-	CreateDeviceLoRaWAN(context.Context, *CreateDeviceLoRaWANRequest) (*empty.Empty, error)
+	CreateDeviceLoRaWAN(context.Context, *CreateDeviceLoRaWANRequest) (*emptypb.Empty, error)
 	// Get a device by ID. Devices are used to generate data points.
 	GetDevice(context.Context, *GetDeviceRequest) (*common.Device, error)
 	// Update a device. Devices are used to generate data points.
 	UpdateDevice(context.Context, *UpdateDeviceRequest) (*common.Device, error)
 	// Remove LoRaWAN configuration from a device.
-	DeleteDeviceLoRaWAN(context.Context, *DeleteDeviceLoRaWANRequest) (*empty.Empty, error)
+	DeleteDeviceLoRaWAN(context.Context, *DeleteDeviceLoRaWANRequest) (*emptypb.Empty, error)
 	// Delete a device by ID. Devices are used to generate data points.
-	DeleteDevice(context.Context, *DeleteDeviceRequest) (*empty.Empty, error)
+	DeleteDevice(context.Context, *DeleteDeviceRequest) (*emptypb.Empty, error)
 	// List all devices. Devices are used to generate data points.
 	ListDevices(context.Context, *ListDevicesRequest) (*ListDevicesResponse, error)
 	mustEmbedUnimplementedDeviceServiceServer()
@@ -135,7 +135,7 @@ type UnimplementedDeviceServiceServer struct {
 func (UnimplementedDeviceServiceServer) CreateDevice(context.Context, *CreateDeviceRequest) (*common.Device, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateDevice not implemented")
 }
-func (UnimplementedDeviceServiceServer) CreateDeviceLoRaWAN(context.Context, *CreateDeviceLoRaWANRequest) (*empty.Empty, error) {
+func (UnimplementedDeviceServiceServer) CreateDeviceLoRaWAN(context.Context, *CreateDeviceLoRaWANRequest) (*emptypb.Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateDeviceLoRaWAN not implemented")
 }
 func (UnimplementedDeviceServiceServer) GetDevice(context.Context, *GetDeviceRequest) (*common.Device, error) {
@@ -144,10 +144,10 @@ func (UnimplementedDeviceServiceServer) GetDevice(context.Context, *GetDeviceReq
 func (UnimplementedDeviceServiceServer) UpdateDevice(context.Context, *UpdateDeviceRequest) (*common.Device, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateDevice not implemented")
 }
-func (UnimplementedDeviceServiceServer) DeleteDeviceLoRaWAN(context.Context, *DeleteDeviceLoRaWANRequest) (*empty.Empty, error) {
+func (UnimplementedDeviceServiceServer) DeleteDeviceLoRaWAN(context.Context, *DeleteDeviceLoRaWANRequest) (*emptypb.Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteDeviceLoRaWAN not implemented")
 }
-func (UnimplementedDeviceServiceServer) DeleteDevice(context.Context, *DeleteDeviceRequest) (*empty.Empty, error) {
+func (UnimplementedDeviceServiceServer) DeleteDevice(context.Context, *DeleteDeviceRequest) (*emptypb.Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteDevice not implemented")
 }
 func (UnimplementedDeviceServiceServer) ListDevices(context.Context, *ListDevicesRequest) (*ListDevicesResponse, error) {

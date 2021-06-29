@@ -149,7 +149,7 @@ func RegisterDataPointServiceHandlerServer(ctx context.Context, mux *runtime.Ser
 		var stream runtime.ServerTransportStream
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		rctx, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/thingspect.api.DataPointService/PublishDataPoints")
+		rctx, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/thingspect.api.DataPointService/PublishDataPoints", runtime.WithHTTPPathPattern("/v1/datapoints"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -172,7 +172,7 @@ func RegisterDataPointServiceHandlerServer(ctx context.Context, mux *runtime.Ser
 		var stream runtime.ServerTransportStream
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		rctx, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/thingspect.api.DataPointService/ListDataPoints")
+		rctx, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/thingspect.api.DataPointService/ListDataPoints", runtime.WithHTTPPathPattern("/v1/datapoints"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -195,7 +195,7 @@ func RegisterDataPointServiceHandlerServer(ctx context.Context, mux *runtime.Ser
 		var stream runtime.ServerTransportStream
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		rctx, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/thingspect.api.DataPointService/LatestDataPoints")
+		rctx, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/thingspect.api.DataPointService/LatestDataPoints", runtime.WithHTTPPathPattern("/v1/datapoints/latest"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -257,7 +257,7 @@ func RegisterDataPointServiceHandlerClient(ctx context.Context, mux *runtime.Ser
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		rctx, err := runtime.AnnotateContext(ctx, mux, req, "/thingspect.api.DataPointService/PublishDataPoints")
+		rctx, err := runtime.AnnotateContext(ctx, mux, req, "/thingspect.api.DataPointService/PublishDataPoints", runtime.WithHTTPPathPattern("/v1/datapoints"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -277,7 +277,7 @@ func RegisterDataPointServiceHandlerClient(ctx context.Context, mux *runtime.Ser
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		rctx, err := runtime.AnnotateContext(ctx, mux, req, "/thingspect.api.DataPointService/ListDataPoints")
+		rctx, err := runtime.AnnotateContext(ctx, mux, req, "/thingspect.api.DataPointService/ListDataPoints", runtime.WithHTTPPathPattern("/v1/datapoints"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -297,7 +297,7 @@ func RegisterDataPointServiceHandlerClient(ctx context.Context, mux *runtime.Ser
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		rctx, err := runtime.AnnotateContext(ctx, mux, req, "/thingspect.api.DataPointService/LatestDataPoints")
+		rctx, err := runtime.AnnotateContext(ctx, mux, req, "/thingspect.api.DataPointService/LatestDataPoints", runtime.WithHTTPPathPattern("/v1/datapoints/latest"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
