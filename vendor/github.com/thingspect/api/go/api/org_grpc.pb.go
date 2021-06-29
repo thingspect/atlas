@@ -4,10 +4,10 @@ package api
 
 import (
 	context "context"
-	empty "github.com/golang/protobuf/ptypes/empty"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
+	emptypb "google.golang.org/protobuf/types/known/emptypb"
 )
 
 // This is a compile-time assertion to ensure that this generated file
@@ -26,7 +26,7 @@ type OrgServiceClient interface {
 	// Update an organization. An organization is the top level resource and contains users, devices, rules, and all derived resources.
 	UpdateOrg(ctx context.Context, in *UpdateOrgRequest, opts ...grpc.CallOption) (*Org, error)
 	// Delete an organization by ID. An organization is the top level resource and contains users, devices, rules, and all derived resources.
-	DeleteOrg(ctx context.Context, in *DeleteOrgRequest, opts ...grpc.CallOption) (*empty.Empty, error)
+	DeleteOrg(ctx context.Context, in *DeleteOrgRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	// List all organizations. An organization is the top level resource and contains users, devices, rules, and all derived resources.
 	ListOrgs(ctx context.Context, in *ListOrgsRequest, opts ...grpc.CallOption) (*ListOrgsResponse, error)
 }
@@ -66,8 +66,8 @@ func (c *orgServiceClient) UpdateOrg(ctx context.Context, in *UpdateOrgRequest, 
 	return out, nil
 }
 
-func (c *orgServiceClient) DeleteOrg(ctx context.Context, in *DeleteOrgRequest, opts ...grpc.CallOption) (*empty.Empty, error) {
-	out := new(empty.Empty)
+func (c *orgServiceClient) DeleteOrg(ctx context.Context, in *DeleteOrgRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+	out := new(emptypb.Empty)
 	err := c.cc.Invoke(ctx, "/thingspect.api.OrgService/DeleteOrg", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -95,7 +95,7 @@ type OrgServiceServer interface {
 	// Update an organization. An organization is the top level resource and contains users, devices, rules, and all derived resources.
 	UpdateOrg(context.Context, *UpdateOrgRequest) (*Org, error)
 	// Delete an organization by ID. An organization is the top level resource and contains users, devices, rules, and all derived resources.
-	DeleteOrg(context.Context, *DeleteOrgRequest) (*empty.Empty, error)
+	DeleteOrg(context.Context, *DeleteOrgRequest) (*emptypb.Empty, error)
 	// List all organizations. An organization is the top level resource and contains users, devices, rules, and all derived resources.
 	ListOrgs(context.Context, *ListOrgsRequest) (*ListOrgsResponse, error)
 	mustEmbedUnimplementedOrgServiceServer()
@@ -114,7 +114,7 @@ func (UnimplementedOrgServiceServer) GetOrg(context.Context, *GetOrgRequest) (*O
 func (UnimplementedOrgServiceServer) UpdateOrg(context.Context, *UpdateOrgRequest) (*Org, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateOrg not implemented")
 }
-func (UnimplementedOrgServiceServer) DeleteOrg(context.Context, *DeleteOrgRequest) (*empty.Empty, error) {
+func (UnimplementedOrgServiceServer) DeleteOrg(context.Context, *DeleteOrgRequest) (*emptypb.Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteOrg not implemented")
 }
 func (UnimplementedOrgServiceServer) ListOrgs(context.Context, *ListOrgsRequest) (*ListOrgsResponse, error) {

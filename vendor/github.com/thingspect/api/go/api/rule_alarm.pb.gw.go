@@ -1015,7 +1015,7 @@ func RegisterRuleAlarmServiceHandlerServer(ctx context.Context, mux *runtime.Ser
 		var stream runtime.ServerTransportStream
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		rctx, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/thingspect.api.RuleAlarmService/CreateRule")
+		rctx, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/thingspect.api.RuleAlarmService/CreateRule", runtime.WithHTTPPathPattern("/v1/rules"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -1038,7 +1038,7 @@ func RegisterRuleAlarmServiceHandlerServer(ctx context.Context, mux *runtime.Ser
 		var stream runtime.ServerTransportStream
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		rctx, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/thingspect.api.RuleAlarmService/CreateAlarm")
+		rctx, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/thingspect.api.RuleAlarmService/CreateAlarm", runtime.WithHTTPPathPattern("/v1/rules/{alarm.rule_id}/alarms"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -1061,7 +1061,7 @@ func RegisterRuleAlarmServiceHandlerServer(ctx context.Context, mux *runtime.Ser
 		var stream runtime.ServerTransportStream
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		rctx, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/thingspect.api.RuleAlarmService/GetRule")
+		rctx, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/thingspect.api.RuleAlarmService/GetRule", runtime.WithHTTPPathPattern("/v1/rules/{id}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -1084,7 +1084,7 @@ func RegisterRuleAlarmServiceHandlerServer(ctx context.Context, mux *runtime.Ser
 		var stream runtime.ServerTransportStream
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		rctx, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/thingspect.api.RuleAlarmService/GetAlarm")
+		rctx, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/thingspect.api.RuleAlarmService/GetAlarm", runtime.WithHTTPPathPattern("/v1/rules/{rule_id}/alarms/{id}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -1107,7 +1107,7 @@ func RegisterRuleAlarmServiceHandlerServer(ctx context.Context, mux *runtime.Ser
 		var stream runtime.ServerTransportStream
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		rctx, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/thingspect.api.RuleAlarmService/UpdateRule")
+		rctx, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/thingspect.api.RuleAlarmService/UpdateRule", runtime.WithHTTPPathPattern("/v1/rules/{rule.id}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -1130,7 +1130,7 @@ func RegisterRuleAlarmServiceHandlerServer(ctx context.Context, mux *runtime.Ser
 		var stream runtime.ServerTransportStream
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		rctx, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/thingspect.api.RuleAlarmService/UpdateRule")
+		rctx, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/thingspect.api.RuleAlarmService/UpdateRule", runtime.WithHTTPPathPattern("/v1/rules/{rule.id}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -1153,7 +1153,7 @@ func RegisterRuleAlarmServiceHandlerServer(ctx context.Context, mux *runtime.Ser
 		var stream runtime.ServerTransportStream
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		rctx, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/thingspect.api.RuleAlarmService/UpdateAlarm")
+		rctx, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/thingspect.api.RuleAlarmService/UpdateAlarm", runtime.WithHTTPPathPattern("/v1/rules/{alarm.rule_id}/alarms/{alarm.id}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -1176,7 +1176,7 @@ func RegisterRuleAlarmServiceHandlerServer(ctx context.Context, mux *runtime.Ser
 		var stream runtime.ServerTransportStream
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		rctx, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/thingspect.api.RuleAlarmService/UpdateAlarm")
+		rctx, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/thingspect.api.RuleAlarmService/UpdateAlarm", runtime.WithHTTPPathPattern("/v1/rules/{alarm.rule_id}/alarms/{alarm.id}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -1199,7 +1199,7 @@ func RegisterRuleAlarmServiceHandlerServer(ctx context.Context, mux *runtime.Ser
 		var stream runtime.ServerTransportStream
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		rctx, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/thingspect.api.RuleAlarmService/DeleteRule")
+		rctx, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/thingspect.api.RuleAlarmService/DeleteRule", runtime.WithHTTPPathPattern("/v1/rules/{id}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -1222,7 +1222,7 @@ func RegisterRuleAlarmServiceHandlerServer(ctx context.Context, mux *runtime.Ser
 		var stream runtime.ServerTransportStream
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		rctx, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/thingspect.api.RuleAlarmService/DeleteAlarm")
+		rctx, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/thingspect.api.RuleAlarmService/DeleteAlarm", runtime.WithHTTPPathPattern("/v1/rules/{rule_id}/alarms/{id}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -1245,7 +1245,7 @@ func RegisterRuleAlarmServiceHandlerServer(ctx context.Context, mux *runtime.Ser
 		var stream runtime.ServerTransportStream
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		rctx, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/thingspect.api.RuleAlarmService/ListRules")
+		rctx, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/thingspect.api.RuleAlarmService/ListRules", runtime.WithHTTPPathPattern("/v1/rules"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -1268,7 +1268,7 @@ func RegisterRuleAlarmServiceHandlerServer(ctx context.Context, mux *runtime.Ser
 		var stream runtime.ServerTransportStream
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		rctx, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/thingspect.api.RuleAlarmService/ListAlarms")
+		rctx, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/thingspect.api.RuleAlarmService/ListAlarms", runtime.WithHTTPPathPattern("/v1/rules/{rule_id}/alarms"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -1291,7 +1291,7 @@ func RegisterRuleAlarmServiceHandlerServer(ctx context.Context, mux *runtime.Ser
 		var stream runtime.ServerTransportStream
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		rctx, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/thingspect.api.RuleAlarmService/ListAlarms")
+		rctx, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/thingspect.api.RuleAlarmService/ListAlarms", runtime.WithHTTPPathPattern("/v1/rules/alarms"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -1314,7 +1314,7 @@ func RegisterRuleAlarmServiceHandlerServer(ctx context.Context, mux *runtime.Ser
 		var stream runtime.ServerTransportStream
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		rctx, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/thingspect.api.RuleAlarmService/TestRule")
+		rctx, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/thingspect.api.RuleAlarmService/TestRule", runtime.WithHTTPPathPattern("/v1/rules/test"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -1337,7 +1337,7 @@ func RegisterRuleAlarmServiceHandlerServer(ctx context.Context, mux *runtime.Ser
 		var stream runtime.ServerTransportStream
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		rctx, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/thingspect.api.RuleAlarmService/TestAlarm")
+		rctx, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/thingspect.api.RuleAlarmService/TestAlarm", runtime.WithHTTPPathPattern("/v1/rules/alarms/test"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -1399,7 +1399,7 @@ func RegisterRuleAlarmServiceHandlerClient(ctx context.Context, mux *runtime.Ser
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		rctx, err := runtime.AnnotateContext(ctx, mux, req, "/thingspect.api.RuleAlarmService/CreateRule")
+		rctx, err := runtime.AnnotateContext(ctx, mux, req, "/thingspect.api.RuleAlarmService/CreateRule", runtime.WithHTTPPathPattern("/v1/rules"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -1419,7 +1419,7 @@ func RegisterRuleAlarmServiceHandlerClient(ctx context.Context, mux *runtime.Ser
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		rctx, err := runtime.AnnotateContext(ctx, mux, req, "/thingspect.api.RuleAlarmService/CreateAlarm")
+		rctx, err := runtime.AnnotateContext(ctx, mux, req, "/thingspect.api.RuleAlarmService/CreateAlarm", runtime.WithHTTPPathPattern("/v1/rules/{alarm.rule_id}/alarms"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -1439,7 +1439,7 @@ func RegisterRuleAlarmServiceHandlerClient(ctx context.Context, mux *runtime.Ser
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		rctx, err := runtime.AnnotateContext(ctx, mux, req, "/thingspect.api.RuleAlarmService/GetRule")
+		rctx, err := runtime.AnnotateContext(ctx, mux, req, "/thingspect.api.RuleAlarmService/GetRule", runtime.WithHTTPPathPattern("/v1/rules/{id}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -1459,7 +1459,7 @@ func RegisterRuleAlarmServiceHandlerClient(ctx context.Context, mux *runtime.Ser
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		rctx, err := runtime.AnnotateContext(ctx, mux, req, "/thingspect.api.RuleAlarmService/GetAlarm")
+		rctx, err := runtime.AnnotateContext(ctx, mux, req, "/thingspect.api.RuleAlarmService/GetAlarm", runtime.WithHTTPPathPattern("/v1/rules/{rule_id}/alarms/{id}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -1479,7 +1479,7 @@ func RegisterRuleAlarmServiceHandlerClient(ctx context.Context, mux *runtime.Ser
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		rctx, err := runtime.AnnotateContext(ctx, mux, req, "/thingspect.api.RuleAlarmService/UpdateRule")
+		rctx, err := runtime.AnnotateContext(ctx, mux, req, "/thingspect.api.RuleAlarmService/UpdateRule", runtime.WithHTTPPathPattern("/v1/rules/{rule.id}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -1499,7 +1499,7 @@ func RegisterRuleAlarmServiceHandlerClient(ctx context.Context, mux *runtime.Ser
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		rctx, err := runtime.AnnotateContext(ctx, mux, req, "/thingspect.api.RuleAlarmService/UpdateRule")
+		rctx, err := runtime.AnnotateContext(ctx, mux, req, "/thingspect.api.RuleAlarmService/UpdateRule", runtime.WithHTTPPathPattern("/v1/rules/{rule.id}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -1519,7 +1519,7 @@ func RegisterRuleAlarmServiceHandlerClient(ctx context.Context, mux *runtime.Ser
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		rctx, err := runtime.AnnotateContext(ctx, mux, req, "/thingspect.api.RuleAlarmService/UpdateAlarm")
+		rctx, err := runtime.AnnotateContext(ctx, mux, req, "/thingspect.api.RuleAlarmService/UpdateAlarm", runtime.WithHTTPPathPattern("/v1/rules/{alarm.rule_id}/alarms/{alarm.id}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -1539,7 +1539,7 @@ func RegisterRuleAlarmServiceHandlerClient(ctx context.Context, mux *runtime.Ser
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		rctx, err := runtime.AnnotateContext(ctx, mux, req, "/thingspect.api.RuleAlarmService/UpdateAlarm")
+		rctx, err := runtime.AnnotateContext(ctx, mux, req, "/thingspect.api.RuleAlarmService/UpdateAlarm", runtime.WithHTTPPathPattern("/v1/rules/{alarm.rule_id}/alarms/{alarm.id}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -1559,7 +1559,7 @@ func RegisterRuleAlarmServiceHandlerClient(ctx context.Context, mux *runtime.Ser
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		rctx, err := runtime.AnnotateContext(ctx, mux, req, "/thingspect.api.RuleAlarmService/DeleteRule")
+		rctx, err := runtime.AnnotateContext(ctx, mux, req, "/thingspect.api.RuleAlarmService/DeleteRule", runtime.WithHTTPPathPattern("/v1/rules/{id}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -1579,7 +1579,7 @@ func RegisterRuleAlarmServiceHandlerClient(ctx context.Context, mux *runtime.Ser
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		rctx, err := runtime.AnnotateContext(ctx, mux, req, "/thingspect.api.RuleAlarmService/DeleteAlarm")
+		rctx, err := runtime.AnnotateContext(ctx, mux, req, "/thingspect.api.RuleAlarmService/DeleteAlarm", runtime.WithHTTPPathPattern("/v1/rules/{rule_id}/alarms/{id}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -1599,7 +1599,7 @@ func RegisterRuleAlarmServiceHandlerClient(ctx context.Context, mux *runtime.Ser
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		rctx, err := runtime.AnnotateContext(ctx, mux, req, "/thingspect.api.RuleAlarmService/ListRules")
+		rctx, err := runtime.AnnotateContext(ctx, mux, req, "/thingspect.api.RuleAlarmService/ListRules", runtime.WithHTTPPathPattern("/v1/rules"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -1619,7 +1619,7 @@ func RegisterRuleAlarmServiceHandlerClient(ctx context.Context, mux *runtime.Ser
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		rctx, err := runtime.AnnotateContext(ctx, mux, req, "/thingspect.api.RuleAlarmService/ListAlarms")
+		rctx, err := runtime.AnnotateContext(ctx, mux, req, "/thingspect.api.RuleAlarmService/ListAlarms", runtime.WithHTTPPathPattern("/v1/rules/{rule_id}/alarms"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -1639,7 +1639,7 @@ func RegisterRuleAlarmServiceHandlerClient(ctx context.Context, mux *runtime.Ser
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		rctx, err := runtime.AnnotateContext(ctx, mux, req, "/thingspect.api.RuleAlarmService/ListAlarms")
+		rctx, err := runtime.AnnotateContext(ctx, mux, req, "/thingspect.api.RuleAlarmService/ListAlarms", runtime.WithHTTPPathPattern("/v1/rules/alarms"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -1659,7 +1659,7 @@ func RegisterRuleAlarmServiceHandlerClient(ctx context.Context, mux *runtime.Ser
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		rctx, err := runtime.AnnotateContext(ctx, mux, req, "/thingspect.api.RuleAlarmService/TestRule")
+		rctx, err := runtime.AnnotateContext(ctx, mux, req, "/thingspect.api.RuleAlarmService/TestRule", runtime.WithHTTPPathPattern("/v1/rules/test"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -1679,7 +1679,7 @@ func RegisterRuleAlarmServiceHandlerClient(ctx context.Context, mux *runtime.Ser
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		rctx, err := runtime.AnnotateContext(ctx, mux, req, "/thingspect.api.RuleAlarmService/TestAlarm")
+		rctx, err := runtime.AnnotateContext(ctx, mux, req, "/thingspect.api.RuleAlarmService/TestAlarm", runtime.WithHTTPPathPattern("/v1/rules/alarms/test"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return

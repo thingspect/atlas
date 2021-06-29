@@ -115,7 +115,7 @@ func RegisterEventServiceHandlerServer(ctx context.Context, mux *runtime.ServeMu
 		var stream runtime.ServerTransportStream
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		rctx, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/thingspect.api.EventService/ListEvents")
+		rctx, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/thingspect.api.EventService/ListEvents", runtime.WithHTTPPathPattern("/v1/events"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -138,7 +138,7 @@ func RegisterEventServiceHandlerServer(ctx context.Context, mux *runtime.ServeMu
 		var stream runtime.ServerTransportStream
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		rctx, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/thingspect.api.EventService/LatestEvents")
+		rctx, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/thingspect.api.EventService/LatestEvents", runtime.WithHTTPPathPattern("/v1/events/latest"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -200,7 +200,7 @@ func RegisterEventServiceHandlerClient(ctx context.Context, mux *runtime.ServeMu
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		rctx, err := runtime.AnnotateContext(ctx, mux, req, "/thingspect.api.EventService/ListEvents")
+		rctx, err := runtime.AnnotateContext(ctx, mux, req, "/thingspect.api.EventService/ListEvents", runtime.WithHTTPPathPattern("/v1/events"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -220,7 +220,7 @@ func RegisterEventServiceHandlerClient(ctx context.Context, mux *runtime.ServeMu
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		rctx, err := runtime.AnnotateContext(ctx, mux, req, "/thingspect.api.EventService/LatestEvents")
+		rctx, err := runtime.AnnotateContext(ctx, mux, req, "/thingspect.api.EventService/LatestEvents", runtime.WithHTTPPathPattern("/v1/events/latest"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return

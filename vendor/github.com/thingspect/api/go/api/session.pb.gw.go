@@ -199,7 +199,7 @@ func RegisterSessionServiceHandlerServer(ctx context.Context, mux *runtime.Serve
 		var stream runtime.ServerTransportStream
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		rctx, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/thingspect.api.SessionService/Login")
+		rctx, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/thingspect.api.SessionService/Login", runtime.WithHTTPPathPattern("/v1/sessions/login"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -222,7 +222,7 @@ func RegisterSessionServiceHandlerServer(ctx context.Context, mux *runtime.Serve
 		var stream runtime.ServerTransportStream
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		rctx, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/thingspect.api.SessionService/CreateKey")
+		rctx, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/thingspect.api.SessionService/CreateKey", runtime.WithHTTPPathPattern("/v1/sessions/keys"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -245,7 +245,7 @@ func RegisterSessionServiceHandlerServer(ctx context.Context, mux *runtime.Serve
 		var stream runtime.ServerTransportStream
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		rctx, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/thingspect.api.SessionService/DeleteKey")
+		rctx, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/thingspect.api.SessionService/DeleteKey", runtime.WithHTTPPathPattern("/v1/sessions/keys/{id}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -268,7 +268,7 @@ func RegisterSessionServiceHandlerServer(ctx context.Context, mux *runtime.Serve
 		var stream runtime.ServerTransportStream
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		rctx, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/thingspect.api.SessionService/ListKeys")
+		rctx, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/thingspect.api.SessionService/ListKeys", runtime.WithHTTPPathPattern("/v1/sessions/keys"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -330,7 +330,7 @@ func RegisterSessionServiceHandlerClient(ctx context.Context, mux *runtime.Serve
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		rctx, err := runtime.AnnotateContext(ctx, mux, req, "/thingspect.api.SessionService/Login")
+		rctx, err := runtime.AnnotateContext(ctx, mux, req, "/thingspect.api.SessionService/Login", runtime.WithHTTPPathPattern("/v1/sessions/login"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -350,7 +350,7 @@ func RegisterSessionServiceHandlerClient(ctx context.Context, mux *runtime.Serve
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		rctx, err := runtime.AnnotateContext(ctx, mux, req, "/thingspect.api.SessionService/CreateKey")
+		rctx, err := runtime.AnnotateContext(ctx, mux, req, "/thingspect.api.SessionService/CreateKey", runtime.WithHTTPPathPattern("/v1/sessions/keys"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -370,7 +370,7 @@ func RegisterSessionServiceHandlerClient(ctx context.Context, mux *runtime.Serve
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		rctx, err := runtime.AnnotateContext(ctx, mux, req, "/thingspect.api.SessionService/DeleteKey")
+		rctx, err := runtime.AnnotateContext(ctx, mux, req, "/thingspect.api.SessionService/DeleteKey", runtime.WithHTTPPathPattern("/v1/sessions/keys/{id}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -390,7 +390,7 @@ func RegisterSessionServiceHandlerClient(ctx context.Context, mux *runtime.Serve
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		rctx, err := runtime.AnnotateContext(ctx, mux, req, "/thingspect.api.SessionService/ListKeys")
+		rctx, err := runtime.AnnotateContext(ctx, mux, req, "/thingspect.api.SessionService/ListKeys", runtime.WithHTTPPathPattern("/v1/sessions/keys"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return

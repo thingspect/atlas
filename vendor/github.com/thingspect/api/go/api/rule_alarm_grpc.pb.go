@@ -4,11 +4,11 @@ package api
 
 import (
 	context "context"
-	empty "github.com/golang/protobuf/ptypes/empty"
 	common "github.com/thingspect/api/go/common"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
+	emptypb "google.golang.org/protobuf/types/known/emptypb"
 )
 
 // This is a compile-time assertion to ensure that this generated file
@@ -33,9 +33,9 @@ type RuleAlarmServiceClient interface {
 	// Update an alarm. Alarms define how alerts are generated.
 	UpdateAlarm(ctx context.Context, in *UpdateAlarmRequest, opts ...grpc.CallOption) (*Alarm, error)
 	// Delete a rule by ID. Rules define how events are generated.
-	DeleteRule(ctx context.Context, in *DeleteRuleRequest, opts ...grpc.CallOption) (*empty.Empty, error)
+	DeleteRule(ctx context.Context, in *DeleteRuleRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	// Delete an alarm by ID. Alarms define how alerts are generated.
-	DeleteAlarm(ctx context.Context, in *DeleteAlarmRequest, opts ...grpc.CallOption) (*empty.Empty, error)
+	DeleteAlarm(ctx context.Context, in *DeleteAlarmRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	// List all rules. Rules define how events are generated.
 	ListRules(ctx context.Context, in *ListRulesRequest, opts ...grpc.CallOption) (*ListRulesResponse, error)
 	// List alarms. Alarms define how alerts are generated.
@@ -108,8 +108,8 @@ func (c *ruleAlarmServiceClient) UpdateAlarm(ctx context.Context, in *UpdateAlar
 	return out, nil
 }
 
-func (c *ruleAlarmServiceClient) DeleteRule(ctx context.Context, in *DeleteRuleRequest, opts ...grpc.CallOption) (*empty.Empty, error) {
-	out := new(empty.Empty)
+func (c *ruleAlarmServiceClient) DeleteRule(ctx context.Context, in *DeleteRuleRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+	out := new(emptypb.Empty)
 	err := c.cc.Invoke(ctx, "/thingspect.api.RuleAlarmService/DeleteRule", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -117,8 +117,8 @@ func (c *ruleAlarmServiceClient) DeleteRule(ctx context.Context, in *DeleteRuleR
 	return out, nil
 }
 
-func (c *ruleAlarmServiceClient) DeleteAlarm(ctx context.Context, in *DeleteAlarmRequest, opts ...grpc.CallOption) (*empty.Empty, error) {
-	out := new(empty.Empty)
+func (c *ruleAlarmServiceClient) DeleteAlarm(ctx context.Context, in *DeleteAlarmRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+	out := new(emptypb.Empty)
 	err := c.cc.Invoke(ctx, "/thingspect.api.RuleAlarmService/DeleteAlarm", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -179,9 +179,9 @@ type RuleAlarmServiceServer interface {
 	// Update an alarm. Alarms define how alerts are generated.
 	UpdateAlarm(context.Context, *UpdateAlarmRequest) (*Alarm, error)
 	// Delete a rule by ID. Rules define how events are generated.
-	DeleteRule(context.Context, *DeleteRuleRequest) (*empty.Empty, error)
+	DeleteRule(context.Context, *DeleteRuleRequest) (*emptypb.Empty, error)
 	// Delete an alarm by ID. Alarms define how alerts are generated.
-	DeleteAlarm(context.Context, *DeleteAlarmRequest) (*empty.Empty, error)
+	DeleteAlarm(context.Context, *DeleteAlarmRequest) (*emptypb.Empty, error)
 	// List all rules. Rules define how events are generated.
 	ListRules(context.Context, *ListRulesRequest) (*ListRulesResponse, error)
 	// List alarms. Alarms define how alerts are generated.
@@ -215,10 +215,10 @@ func (UnimplementedRuleAlarmServiceServer) UpdateRule(context.Context, *UpdateRu
 func (UnimplementedRuleAlarmServiceServer) UpdateAlarm(context.Context, *UpdateAlarmRequest) (*Alarm, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateAlarm not implemented")
 }
-func (UnimplementedRuleAlarmServiceServer) DeleteRule(context.Context, *DeleteRuleRequest) (*empty.Empty, error) {
+func (UnimplementedRuleAlarmServiceServer) DeleteRule(context.Context, *DeleteRuleRequest) (*emptypb.Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteRule not implemented")
 }
-func (UnimplementedRuleAlarmServiceServer) DeleteAlarm(context.Context, *DeleteAlarmRequest) (*empty.Empty, error) {
+func (UnimplementedRuleAlarmServiceServer) DeleteAlarm(context.Context, *DeleteAlarmRequest) (*emptypb.Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteAlarm not implemented")
 }
 func (UnimplementedRuleAlarmServiceServer) ListRules(context.Context, *ListRulesRequest) (*ListRulesResponse, error) {

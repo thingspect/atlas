@@ -4,10 +4,10 @@ package api
 
 import (
 	context "context"
-	empty "github.com/golang/protobuf/ptypes/empty"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
+	emptypb "google.golang.org/protobuf/types/known/emptypb"
 )
 
 // This is a compile-time assertion to ensure that this generated file
@@ -24,7 +24,7 @@ type SessionServiceClient interface {
 	// Create an API key. API keys are persistent and do not expire until revoked.
 	CreateKey(ctx context.Context, in *CreateKeyRequest, opts ...grpc.CallOption) (*CreateKeyResponse, error)
 	// Delete an API key by ID. API keys are persistent and do not expire until revoked.
-	DeleteKey(ctx context.Context, in *DeleteKeyRequest, opts ...grpc.CallOption) (*empty.Empty, error)
+	DeleteKey(ctx context.Context, in *DeleteKeyRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	// List all API keys. API keys are persistent and do not expire until revoked.
 	ListKeys(ctx context.Context, in *ListKeysRequest, opts ...grpc.CallOption) (*ListKeysResponse, error)
 }
@@ -55,8 +55,8 @@ func (c *sessionServiceClient) CreateKey(ctx context.Context, in *CreateKeyReque
 	return out, nil
 }
 
-func (c *sessionServiceClient) DeleteKey(ctx context.Context, in *DeleteKeyRequest, opts ...grpc.CallOption) (*empty.Empty, error) {
-	out := new(empty.Empty)
+func (c *sessionServiceClient) DeleteKey(ctx context.Context, in *DeleteKeyRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+	out := new(emptypb.Empty)
 	err := c.cc.Invoke(ctx, "/thingspect.api.SessionService/DeleteKey", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -82,7 +82,7 @@ type SessionServiceServer interface {
 	// Create an API key. API keys are persistent and do not expire until revoked.
 	CreateKey(context.Context, *CreateKeyRequest) (*CreateKeyResponse, error)
 	// Delete an API key by ID. API keys are persistent and do not expire until revoked.
-	DeleteKey(context.Context, *DeleteKeyRequest) (*empty.Empty, error)
+	DeleteKey(context.Context, *DeleteKeyRequest) (*emptypb.Empty, error)
 	// List all API keys. API keys are persistent and do not expire until revoked.
 	ListKeys(context.Context, *ListKeysRequest) (*ListKeysResponse, error)
 	mustEmbedUnimplementedSessionServiceServer()
@@ -98,7 +98,7 @@ func (UnimplementedSessionServiceServer) Login(context.Context, *LoginRequest) (
 func (UnimplementedSessionServiceServer) CreateKey(context.Context, *CreateKeyRequest) (*CreateKeyResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateKey not implemented")
 }
-func (UnimplementedSessionServiceServer) DeleteKey(context.Context, *DeleteKeyRequest) (*empty.Empty, error) {
+func (UnimplementedSessionServiceServer) DeleteKey(context.Context, *DeleteKeyRequest) (*emptypb.Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteKey not implemented")
 }
 func (UnimplementedSessionServiceServer) ListKeys(context.Context, *ListKeysRequest) (*ListKeysResponse, error) {
