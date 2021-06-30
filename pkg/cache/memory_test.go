@@ -248,6 +248,38 @@ func TestMemoryIncr(t *testing.T) {
 	require.Equal(t, ttlcache.ErrClosed, err)
 }
 
+func TestMemoryDel(t *testing.T) {
+	t.Parallel()
+
+	mem := NewMemory()
+	key := "testMemoryDel-" + random.String(10)
+	val := random.String(10)
+
+	require.NoError(t, mem.Set(context.Background(), key, val))
+
+	ok, res, err := mem.Get(context.Background(), key)
+	t.Logf("ok, res, err: %v, %v, %v", ok, res, err)
+	require.True(t, ok)
+	require.Equal(t, val, res)
+	require.NoError(t, err)
+
+	err = mem.Del(context.Background(), key)
+	t.Logf("err: %v", err)
+	require.NoError(t, err)
+
+	ok, res, err = mem.Get(context.Background(), key)
+	t.Logf("ok, res, err: %v, %v, %v", ok, res, err)
+	require.False(t, ok)
+	require.Empty(t, res)
+	require.NoError(t, err)
+
+	require.NoError(t, mem.Close())
+
+	err = mem.Del(context.Background(), key)
+	t.Logf("err: %v", err)
+	require.Equal(t, ttlcache.ErrClosed, err)
+}
+
 func TestMemoryClose(t *testing.T) {
 	t.Parallel()
 

@@ -49,6 +49,20 @@ func (mr *MockCacherMockRecorder) Close() *gomock.Call {
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Close", reflect.TypeOf((*MockCacher)(nil).Close))
 }
 
+// Del mocks base method.
+func (m *MockCacher) Del(ctx context.Context, key string) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "Del", ctx, key)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// Del indicates an expected call of Del.
+func (mr *MockCacherMockRecorder) Del(ctx, key interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Del", reflect.TypeOf((*MockCacher)(nil).Del), ctx, key)
+}
+
 // Get mocks base method.
 func (m *MockCacher) Get(ctx context.Context, key string) (bool, string, error) {
 	m.ctrl.T.Helper()

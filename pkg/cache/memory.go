@@ -169,6 +169,19 @@ func (m *memoryCache) Incr(ctx context.Context, key string) (int64, error) {
 	return i, nil
 }
 
+// Del removes the specified key. A key is ignored if it does not exist.
+func (m *memoryCache) Del(ctx context.Context, key string) error {
+	m.cacheMu.Lock()
+	defer m.cacheMu.Unlock()
+
+	if err := m.cache.Remove(key); err != nil &&
+		!errors.Is(err, ttlcache.ErrNotFound) {
+		return err
+	}
+
+	return nil
+}
+
 // Close closes the Cacher, releasing any open resources.
 func (m *memoryCache) Close() error {
 	return m.cache.Close()
