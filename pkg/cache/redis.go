@@ -117,6 +117,11 @@ func (r *redisCache) Incr(ctx context.Context, key string) (int64, error) {
 	return i, nil
 }
 
+// Del removes the specified key. A key is ignored if it does not exist.
+func (r *redisCache) Del(ctx context.Context, key string) error {
+	return r.client.Del(ctx, key).Err()
+}
+
 // Close closes the Cacher, releasing any open resources.
 func (r *redisCache) Close() error {
 	return r.client.Close()

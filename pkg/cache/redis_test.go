@@ -299,6 +299,40 @@ func TestRedisIncr(t *testing.T) {
 	require.EqualError(t, err, "ERR value is not an integer or out of range")
 }
 
+func TestRedisDel(t *testing.T) {
+	t.Parallel()
+
+	testConfig := config.New()
+
+	redis, err := NewRedis(testConfig.RedisHost + ":6379")
+	t.Logf("redis, err: %+v, %v", redis, err)
+	require.NoError(t, err)
+
+	key := "testRedisDel-" + random.String(10)
+	val := random.String(10)
+
+	ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
+	defer cancel()
+
+	require.NoError(t, redis.Set(ctx, key, val))
+
+	ok, res, err := redis.Get(ctx, key)
+	t.Logf("ok, res, err: %v, %v, %v", ok, res, err)
+	require.True(t, ok)
+	require.Equal(t, val, res)
+	require.NoError(t, err)
+
+	err = redis.Del(ctx, key)
+	t.Logf("err: %v", err)
+	require.NoError(t, err)
+
+	ok, res, err = redis.Get(ctx, key)
+	t.Logf("ok, res, err: %v, %v, %v", ok, res, err)
+	require.False(t, ok)
+	require.Empty(t, res)
+	require.NoError(t, err)
+}
+
 func TestRedisClose(t *testing.T) {
 	t.Parallel()
 

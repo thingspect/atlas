@@ -35,6 +35,8 @@ type Cacher interface {
 	// Incr increments an int64 value at key by one. If the key does not exist,
 	// the value is set to 1. The incremented value is returned.
 	Incr(ctx context.Context, key string) (int64, error)
+	// Del removes the specified key. A key is ignored if it does not exist.
+	Del(ctx context.Context, key string) error
 	// Close closes the Cacher, releasing any open resources.
 	Close() error
 }
