@@ -35,6 +35,11 @@ type Backend struct {
 	authType   uint32
 }
 
+const (
+	minStartupPacketLen = 4     // minStartupPacketLen is a single 32-bit int version or code.
+	maxStartupPacketLen = 10000 // maxStartupPacketLen is MAX_STARTUP_PACKET_LENGTH from PG source.
+)
+
 // NewBackend creates a new Backend.
 func NewBackend(cr ChunkReader, w io.Writer) *Backend {
 	return &Backend{cr: cr, w: w}
@@ -56,9 +61,13 @@ func (b *Backend) ReceiveStartupMessage() (FrontendMessage, error) {
 	}
 	msgSize := int(binary.BigEndian.Uint32(buf) - 4)
 
+	if msgSize < minStartupPacketLen || msgSize > maxStartupPacketLen {
+		return nil, fmt.Errorf("invalid length of startup packet: %d", msgSize)
+	}
+
 	buf, err = b.cr.Next(msgSize)
 	if err != nil {
-		return nil, err
+		return nil, translateEOFtoErrUnexpectedEOF(err)
 	}
 
 	code := binary.BigEndian.Uint32(buf)
@@ -98,7 +107,7 @@ func (b *Backend) Receive() (FrontendMessage, error) {
 	if !b.partialMsg {
 		header, err := b.cr.Next(5)
 		if err != nil {
-			return nil, err
+			return nil, translateEOFtoErrUnexpectedEOF(err)
 		}
 
 		b.msgType = header[0]
@@ -152,7 +161,7 @@ func (b *Backend) Receive() (FrontendMessage, error) {
 
 	msgBody, err := b.cr.Next(b.bodyLen)
 	if err != nil {
-		return nil, err
+		return nil, translateEOFtoErrUnexpectedEOF(err)
 	}
 
 	b.partialMsg = false
