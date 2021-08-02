@@ -29,44 +29,85 @@ func TestValidateMessages(t *testing.T) {
 	dev.Status = common.Status_ACTIVE
 	now := timestamppb.New(time.Now().Add(-15 * time.Minute))
 	traceID := uuid.NewString()
-	boolVal := &common.DataPoint_BoolVal{BoolVal: []bool{true,
-		false}[random.Intn(2)]}
+	boolVal := &common.DataPoint_BoolVal{
+		BoolVal: []bool{true, false}[random.Intn(2)],
+	}
 
 	tests := []struct {
 		inp *message.ValidatorIn
 		res *message.ValidatorOut
 	}{
-		{&message.ValidatorIn{Point: &common.DataPoint{UniqId: dev.UniqId,
-			Attr: "motion", ValOneof: &common.DataPoint_IntVal{IntVal: 123},
-			Ts: now, Token: dev.Token, TraceId: traceID}, OrgId: dev.OrgId},
-			&message.ValidatorOut{Point: &common.DataPoint{UniqId: dev.UniqId,
-				Attr: "motion", ValOneof: &common.DataPoint_IntVal{IntVal: 123},
-				Ts: now, Token: dev.Token, TraceId: traceID}, Device: dev}},
-		{&message.ValidatorIn{Point: &common.DataPoint{UniqId: dev.UniqId,
-			Attr: "temp", ValOneof: &common.DataPoint_Fl64Val{Fl64Val: 9.3},
-			Ts: now, Token: dev.Token, TraceId: traceID}, OrgId: dev.OrgId},
-			&message.ValidatorOut{Point: &common.DataPoint{UniqId: dev.UniqId,
-				Attr: "temp", ValOneof: &common.DataPoint_Fl64Val{Fl64Val: 9.3},
-				Ts: now, Token: dev.Token, TraceId: traceID}, Device: dev}},
-		{&message.ValidatorIn{Point: &common.DataPoint{UniqId: dev.UniqId,
-			Attr: "power", ValOneof: &common.DataPoint_StrVal{StrVal: "batt"},
-			Ts: now, Token: dev.Token, TraceId: traceID}, OrgId: dev.OrgId},
-			&message.ValidatorOut{Point: &common.DataPoint{UniqId: dev.UniqId,
-				Attr: "power", ValOneof: &common.DataPoint_StrVal{
-					StrVal: "batt"}, Ts: now, Token: dev.Token,
-				TraceId: traceID}, Device: dev}},
-		{&message.ValidatorIn{Point: &common.DataPoint{UniqId: dev.UniqId,
-			Attr: "leak", ValOneof: boolVal, Ts: now, TraceId: traceID},
-			OrgId: dev.OrgId, SkipToken: true},
-			&message.ValidatorOut{Point: &common.DataPoint{UniqId: dev.UniqId,
-				Attr: "leak", ValOneof: boolVal, Ts: now, TraceId: traceID},
-				Device: dev}},
-		{&message.ValidatorIn{Point: &common.DataPoint{UniqId: dev.UniqId,
-			Attr: "leak", ValOneof: boolVal, Ts: now, TraceId: traceID},
-			SkipToken: true},
-			&message.ValidatorOut{Point: &common.DataPoint{UniqId: dev.UniqId,
-				Attr: "leak", ValOneof: boolVal, Ts: now, TraceId: traceID},
-				Device: dev}},
+		{
+			&message.ValidatorIn{
+				Point: &common.DataPoint{
+					UniqId: dev.UniqId, Attr: "motion",
+					ValOneof: &common.DataPoint_IntVal{IntVal: 123}, Ts: now,
+					Token: dev.Token, TraceId: traceID,
+				}, OrgId: dev.OrgId,
+			}, &message.ValidatorOut{
+				Point: &common.DataPoint{
+					UniqId: dev.UniqId, Attr: "motion",
+					ValOneof: &common.DataPoint_IntVal{IntVal: 123}, Ts: now,
+					Token: dev.Token, TraceId: traceID,
+				}, Device: dev,
+			},
+		},
+		{
+			&message.ValidatorIn{
+				Point: &common.DataPoint{
+					UniqId: dev.UniqId, Attr: "temp",
+					ValOneof: &common.DataPoint_Fl64Val{Fl64Val: 9.3}, Ts: now,
+					Token: dev.Token, TraceId: traceID,
+				}, OrgId: dev.OrgId,
+			}, &message.ValidatorOut{
+				Point: &common.DataPoint{
+					UniqId: dev.UniqId, Attr: "temp",
+					ValOneof: &common.DataPoint_Fl64Val{Fl64Val: 9.3}, Ts: now,
+					Token: dev.Token, TraceId: traceID,
+				}, Device: dev,
+			},
+		},
+		{
+			&message.ValidatorIn{
+				Point: &common.DataPoint{
+					UniqId: dev.UniqId, Attr: "power",
+					ValOneof: &common.DataPoint_StrVal{StrVal: "batt"}, Ts: now,
+					Token: dev.Token, TraceId: traceID,
+				}, OrgId: dev.OrgId,
+			}, &message.ValidatorOut{
+				Point: &common.DataPoint{
+					UniqId: dev.UniqId, Attr: "power",
+					ValOneof: &common.DataPoint_StrVal{StrVal: "batt"}, Ts: now,
+					Token: dev.Token, TraceId: traceID,
+				}, Device: dev,
+			},
+		},
+		{
+			&message.ValidatorIn{
+				Point: &common.DataPoint{
+					UniqId: dev.UniqId, Attr: "leak", ValOneof: boolVal,
+					Ts: now, TraceId: traceID,
+				}, OrgId: dev.OrgId, SkipToken: true,
+			}, &message.ValidatorOut{
+				Point: &common.DataPoint{
+					UniqId: dev.UniqId, Attr: "leak", ValOneof: boolVal,
+					Ts: now, TraceId: traceID,
+				}, Device: dev,
+			},
+		},
+		{
+			&message.ValidatorIn{
+				Point: &common.DataPoint{
+					UniqId: dev.UniqId, Attr: "leak", ValOneof: boolVal,
+					Ts: now, TraceId: traceID,
+				}, SkipToken: true,
+			}, &message.ValidatorOut{
+				Point: &common.DataPoint{
+					UniqId: dev.UniqId, Attr: "leak", ValOneof: boolVal,
+					Ts: now, TraceId: traceID,
+				}, Device: dev,
+			},
+		},
 	}
 
 	for _, test := range tests {
@@ -140,33 +181,55 @@ func TestValidateMessagesError(t *testing.T) {
 		inpTimes  int
 	}{
 		// Bad payload.
-		{nil, common.Status_ACTIVE, nil, 0},
+		{
+			nil, common.Status_ACTIVE, nil, 0,
+		},
 		// Missing data point.
-		{&message.ValidatorIn{}, common.Status_ACTIVE, nil, 0},
+		{
+			&message.ValidatorIn{}, common.Status_ACTIVE, nil, 0,
+		},
 		// Device not found.
-		{&message.ValidatorIn{Point: &common.DataPoint{}}, common.Status_ACTIVE,
-			dao.ErrNotFound, 1},
+		{
+			&message.ValidatorIn{Point: &common.DataPoint{}},
+			common.Status_ACTIVE, dao.ErrNotFound, 1,
+		},
 		// Devicer error.
-		{&message.ValidatorIn{Point: &common.DataPoint{}}, common.Status_ACTIVE,
-			errTestProc, 1},
+		{
+			&message.ValidatorIn{Point: &common.DataPoint{}},
+			common.Status_ACTIVE, errTestProc, 1,
+		},
 		// Missing value.
-		{&message.ValidatorIn{Point: &common.DataPoint{}}, common.Status_ACTIVE,
-			nil, 1},
+		{
+			&message.ValidatorIn{Point: &common.DataPoint{}},
+			common.Status_ACTIVE, nil, 1,
+		},
 		// Invalid org ID.
-		{&message.ValidatorIn{Point: &common.DataPoint{
-			UniqId: random.String(16), Attr: random.String(10),
-			ValOneof: &common.DataPoint_IntVal{}}, OrgId: "val-aaa"},
-			common.Status_ACTIVE, nil, 1},
+		{
+			&message.ValidatorIn{
+				Point: &common.DataPoint{
+					UniqId: random.String(16), Attr: random.String(10),
+					ValOneof: &common.DataPoint_IntVal{},
+				}, OrgId: "val-aaa",
+			}, common.Status_ACTIVE, nil, 1,
+		},
 		// Device status.
-		{&message.ValidatorIn{Point: &common.DataPoint{
-			UniqId: random.String(16), Attr: random.String(10),
-			ValOneof: &common.DataPoint_IntVal{}}, OrgId: orgID},
-			common.Status_DISABLED, nil, 1},
+		{
+			&message.ValidatorIn{
+				Point: &common.DataPoint{
+					UniqId: random.String(16), Attr: random.String(10),
+					ValOneof: &common.DataPoint_IntVal{},
+				}, OrgId: orgID,
+			}, common.Status_DISABLED, nil, 1,
+		},
 		// Invalid token.
-		{&message.ValidatorIn{Point: &common.DataPoint{
-			UniqId: random.String(16), Attr: random.String(10),
-			ValOneof: &common.DataPoint_IntVal{}, Token: "val-aaa"},
-			OrgId: orgID}, common.Status_ACTIVE, nil, 1},
+		{
+			&message.ValidatorIn{
+				Point: &common.DataPoint{
+					UniqId: random.String(16), Attr: random.String(10),
+					ValOneof: &common.DataPoint_IntVal{}, Token: "val-aaa",
+				}, OrgId: orgID,
+			}, common.Status_ACTIVE, nil, 1,
+		},
 	}
 
 	for _, test := range tests {
