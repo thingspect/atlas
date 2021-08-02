@@ -2918,7 +2918,7 @@
     }
   ],
   "externalDocs": {
-    "description": "API Protobuf / gRPC definitions and example code",
+    "description": "API Protobuf + gRPC definitions and example code",
     "url": "https://github.com/thingspect/api"
   }
 }
