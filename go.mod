@@ -6,9 +6,9 @@ require (
 	github.com/NYTimes/gziphandler v1.1.1
 	github.com/ReneKroon/ttlcache/v2 v2.7.0
 	github.com/antonmedv/expr v1.8.9
-	github.com/brocaar/chirpstack-api/go/v3 v3.10.1
+	github.com/brocaar/chirpstack-api/go/v3 v3.11.0
 	github.com/eclipse/paho.mqtt.golang v1.3.5
-	github.com/go-redis/redis/v8 v8.11.1
+	github.com/go-redis/redis/v8 v8.11.2
 	github.com/golang/mock v1.6.0
 	github.com/golang/protobuf v1.5.2
 	github.com/golang/snappy v0.0.4 // indirect
@@ -25,9 +25,9 @@ require (
 	github.com/stretchr/testify v1.7.0
 	github.com/thingspect/api/go v0.1.2
 	golang.org/x/crypto v0.0.0-20210711020723-a769d52b0f97
-	golang.org/x/net v0.0.0-20210726213435-c6fcb2dbf985 // indirect
-	google.golang.org/genproto v0.0.0-20210729151513-df9385d47c1b // indirect
-	google.golang.org/grpc v1.39.0
+	golang.org/x/net v0.0.0-20210805182204-aaa1db679c0d // indirect
+	google.golang.org/genproto v0.0.0-20210805201207-89edb61ffb67 // indirect
+	google.golang.org/grpc v1.39.1
 	google.golang.org/protobuf v1.27.1
 	gopkg.in/yaml.v3 v3.0.0-20210107192922-496545a6307b // indirect
 )
