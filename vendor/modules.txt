@@ -4,7 +4,7 @@ github.com/NYTimes/gziphandler
 # github.com/ReneKroon/ttlcache/v2 v2.7.0
 ## explicit
 github.com/ReneKroon/ttlcache/v2
-# github.com/antonmedv/expr v1.8.9
+# github.com/antonmedv/expr v1.9.0
 ## explicit
 github.com/antonmedv/expr
 github.com/antonmedv/expr/ast
@@ -16,7 +16,7 @@ github.com/antonmedv/expr/optimizer
 github.com/antonmedv/expr/parser
 github.com/antonmedv/expr/parser/lexer
 github.com/antonmedv/expr/vm
-# github.com/brocaar/chirpstack-api/go/v3 v3.11.0
+# github.com/brocaar/chirpstack-api/go/v3 v3.11.1
 ## explicit
 github.com/brocaar/chirpstack-api/go/v3/as/external/api
 github.com/brocaar/chirpstack-api/go/v3/as/integration
@@ -145,10 +145,12 @@ golang.org/x/net/proxy
 golang.org/x/net/trace
 # golang.org/x/sync v0.0.0-20210220032951-036812b2e83c
 golang.org/x/sync/singleflight
-# golang.org/x/sys v0.0.0-20210630005230-0f9fa26af87c
+# golang.org/x/sys v0.0.0-20210809222454-d867a43fc93e
+## explicit
 golang.org/x/sys/internal/unsafeheader
 golang.org/x/sys/unix
-# golang.org/x/text v0.3.6
+# golang.org/x/text v0.3.7
+## explicit
 golang.org/x/text/cases
 golang.org/x/text/internal
 golang.org/x/text/internal/language
@@ -162,7 +164,7 @@ golang.org/x/text/transform
 golang.org/x/text/unicode/bidi
 golang.org/x/text/unicode/norm
 golang.org/x/text/width
-# google.golang.org/genproto v0.0.0-20210805201207-89edb61ffb67
+# google.golang.org/genproto v0.0.0-20210811021853-ddbe55d93216
 ## explicit
 google.golang.org/genproto/googleapis/api/annotations
 google.golang.org/genproto/googleapis/api/httpbody
