@@ -10,17 +10,17 @@ services:
     volumes:
       - ./volume/postgres:/var/lib/postgresql/data
   nsqlookupd:
-    image: nsqio/nsq:v1.2.0
+    image: nsqio/nsq:v1.2.1
     command: /nsqlookupd --log-level=warn
   nsqd:
-    image: nsqio/nsq:v1.2.0
+    image: nsqio/nsq:v1.2.1
     command: /nsqd --lookupd-tcp-address=nsqlookupd:4160 --broadcast-address=nsqd --log-level=warn
     depends_on:
       - nsqlookupd
     volumes:
       - ./volume/nsqd:/data
   nsqadmin:
-    image: nsqio/nsq:v1.2.0
+    image: nsqio/nsq:v1.2.1
     command: /nsqadmin --lookupd-http-address=nsqlookupd:4161 --log-level=warn
     depends_on:
       - nsqlookupd
