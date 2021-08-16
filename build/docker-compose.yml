@@ -9,12 +9,12 @@ services:
       - POSTGRES_PASSWORD=postgres
       - POSTGRES_DB=atlas_test
   nsqlookupd:
-    image: nsqio/nsq:v1.2.0
+    image: nsqio/nsq:v1.2.1
     command: /nsqlookupd --log-level=warn
     ports:
       - "127.0.0.1:4161:4161"
   nsqd_nsqadmin:
-    image: nsqio/nsq:v1.2.0
+    image: nsqio/nsq:v1.2.1
     # Run nsqd and nsqadmin in the same container to support a broadcast address
     # outside of Docker
     command: >
