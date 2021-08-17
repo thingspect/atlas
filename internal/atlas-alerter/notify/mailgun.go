@@ -24,14 +24,14 @@ type mailgun struct {
 	apiKey string
 }
 
-// mailgunResp represents a Mailgun response as returned from an API call.
-type mailgunResp struct {
+// mailgunError represents a Mailgun response as returned from an API call.
+type mailgunError struct {
 	ID      string `json:"id"`
 	Message string `json:"message"`
 }
 
 // Error returns an error as a string and implements the error interface.
-func (te *mailgunResp) Error() string {
+func (te *mailgunError) Error() string {
 	return te.Message
 }
 
@@ -74,7 +74,7 @@ func (t *mailgun) sendEmail(ctx context.Context, from, to, subject,
 	}
 
 	if resp.StatusCode >= 400 {
-		te := &mailgunResp{}
+		te := &mailgunError{}
 		// Handle Mailgun mixing JSON and plain text responses.
 		if err = json.Unmarshal(respBody, te); err != nil {
 			return fmt.Errorf("%w: %d - %s", errMailgun, resp.StatusCode,
