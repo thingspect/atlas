@@ -41,7 +41,7 @@ lint:
 
 	go install github.com/golangci/golangci-lint/cmd/golangci-lint@latest
 	golangci-lint --version
-	golangci-lint run -D staticcheck -E durationcheck,exportloopref \
+	golangci-lint run -D staticcheck -E durationcheck,errname,exportloopref \
 	-E forcetypeassert,goconst,godot,goerr113,gofumpt,gosec,nlreturn,prealloc \
 	-E unconvert,unparam --exclude-use-default=false
 
