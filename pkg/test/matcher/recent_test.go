@@ -1,4 +1,4 @@
-// +build !integration
+//go:build !integration
 
 //go:generate mockgen -source recent_test.go -destination mock_recenter_test.go -package matcher
 
