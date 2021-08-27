@@ -1,4 +1,4 @@
-// +build !integration
+//go:build !integration
 
 //go:generate mockgen -source proto_test.go -destination mock_protoer_test.go -package matcher
 

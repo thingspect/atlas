@@ -217,6 +217,8 @@ struct ltchars {
 #include <linux/genetlink.h>
 #include <linux/hdreg.h>
 #include <linux/hidraw.h>
+#include <linux/icmp.h>
+#include <linux/icmpv6.h>
 #include <linux/if.h>
 #include <linux/if_addr.h>
 #include <linux/if_alg.h>
@@ -561,7 +563,6 @@ ccflags="$@"
 		$2 ~ /^KEYCTL_/ ||
 		$2 ~ /^PERF_/ ||
 		$2 ~ /^SECCOMP_MODE_/ ||
-		$2 ~ /^SEEK_/ ||
 		$2 ~ /^SPLICE_/ ||
 		$2 ~ /^SYNC_FILE_RANGE_/ ||
 		$2 !~ /^AUDIT_RECORD_MAGIC/ &&

@@ -7,7 +7,7 @@ jobs:
     name: Build
     runs-on: ubuntu-latest
     container:
-      image: golang:1.16-alpine
+      image: golang:1.17-alpine
       env:
         DOCKER: "y"
         # RACE: "y"

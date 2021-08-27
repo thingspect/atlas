@@ -49,5 +49,5 @@ To find test files that are missing build tags, the following command can be
 run:
 
 ```
-find . -name '*_test.go' -type f|grep -v /mock_|xargs grep -L '// +build'
+find . -name '*_test.go' -type f|grep -v /mock_|xargs grep -L '//go:build'
 ```
