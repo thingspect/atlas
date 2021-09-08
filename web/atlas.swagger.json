@@ -3,7 +3,7 @@
   "info": {
     "title": "Atlas",
     "description": "Getting started with the Atlas API:\n- Log in with `/v1/sessions/login` using your provided credentials. Authorize below using the provided token.\n- (Optional) Create an `BUILDER` role API key with `/v1/sessions/keys`. Re-authorize using the provided token.\n\nPublish and verify data points:\n- Create a device with `/v1/devices`. Include a notable `tag` for future use.\n- Publish data with `/v1/datapoints`. The `attr` and `val` fields can be arbitrarily chosen.\n- Inspect the received data with `/v1/datapoints/latest` using the device's `uniqID`.\n\nPublish data points and receive alerts:\n- Update your user with `/v1/users/{user.id}` to include a notable `tag`.\n- Create a rule with `/v1/rules`. The `deviceTag` field should match a tag of the device. The `expr` field can be simply `true`.\n- Create an alarm with `/v1/rules/{alarm.ruleID}/alarms`. The `type` field should match data that is available in the user's fields, such as `EMAIL`. The `userTags` field should include a tag of the user.\n- Publish data for the device, as done in the previous section. The `attr` field should match the `attr` of the rule.\n- Verify the alert is received by the user on the configured `type` method.\n- Inspect the created event with `/v1/events` using the device's `uniqID`.\n- Inspect the created alert with `/v1/alerts` using the device's `uniqID`.",
-    "version": "0.1.3",
+    "version": "0.1.4",
     "contact": {
       "name": "Thingspect",
       "url": "https://www.thingspect.com/",
@@ -58,13 +58,13 @@
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/apiListAlertsResponse"
+              "$ref": "#/definitions/ListAlertsResponse"
             }
           },
           "default": {
             "description": "An unexpected error response.",
             "schema": {
-              "$ref": "#/definitions/googlerpcStatus"
+              "$ref": "#/definitions/rpc.Status"
             }
           }
         },
@@ -127,13 +127,13 @@
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/apiListDataPointsResponse"
+              "$ref": "#/definitions/ListDataPointsResponse"
             }
           },
           "default": {
             "description": "An unexpected error response.",
             "schema": {
-              "$ref": "#/definitions/googlerpcStatus"
+              "$ref": "#/definitions/rpc.Status"
             }
           }
         },
@@ -197,7 +197,7 @@
           "default": {
             "description": "An unexpected error response.",
             "schema": {
-              "$ref": "#/definitions/googlerpcStatus"
+              "$ref": "#/definitions/rpc.Status"
             }
           }
         },
@@ -207,7 +207,7 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/apiPublishDataPointsRequest"
+              "$ref": "#/definitions/PublishDataPointsRequest"
             }
           }
         ],
@@ -224,13 +224,13 @@
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/apiLatestDataPointsResponse"
+              "$ref": "#/definitions/LatestDataPointsResponse"
             }
           },
           "default": {
             "description": "An unexpected error response.",
             "schema": {
-              "$ref": "#/definitions/googlerpcStatus"
+              "$ref": "#/definitions/rpc.Status"
             }
           }
         },
@@ -263,13 +263,13 @@
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/apiListDevicesResponse"
+              "$ref": "#/definitions/ListDevicesResponse"
             }
           },
           "default": {
             "description": "An unexpected error response.",
             "schema": {
-              "$ref": "#/definitions/googlerpcStatus"
+              "$ref": "#/definitions/rpc.Status"
             }
           }
         },
@@ -308,19 +308,19 @@
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/commonDevice"
+              "$ref": "#/definitions/Device"
             }
           },
           "201": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/commonDevice"
+              "$ref": "#/definitions/Device"
             }
           },
           "default": {
             "description": "An unexpected error response.",
             "schema": {
-              "$ref": "#/definitions/googlerpcStatus"
+              "$ref": "#/definitions/rpc.Status"
             }
           }
         },
@@ -331,7 +331,7 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/commonDevice"
+              "$ref": "#/definitions/Device"
             }
           }
         ],
@@ -348,13 +348,13 @@
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/commonDevice"
+              "$ref": "#/definitions/Device"
             }
           },
           "default": {
             "description": "An unexpected error response.",
             "schema": {
-              "$ref": "#/definitions/googlerpcStatus"
+              "$ref": "#/definitions/rpc.Status"
             }
           }
         },
@@ -372,7 +372,7 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/commonDevice"
+              "$ref": "#/definitions/Device"
             }
           },
           {
@@ -394,13 +394,13 @@
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/commonDevice"
+              "$ref": "#/definitions/Device"
             }
           },
           "default": {
             "description": "An unexpected error response.",
             "schema": {
-              "$ref": "#/definitions/googlerpcStatus"
+              "$ref": "#/definitions/rpc.Status"
             }
           }
         },
@@ -418,7 +418,7 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/commonDevice"
+              "$ref": "#/definitions/Device"
             }
           },
           {
@@ -442,13 +442,13 @@
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/commonDevice"
+              "$ref": "#/definitions/Device"
             }
           },
           "default": {
             "description": "An unexpected error response.",
             "schema": {
-              "$ref": "#/definitions/googlerpcStatus"
+              "$ref": "#/definitions/rpc.Status"
             }
           }
         },
@@ -482,7 +482,7 @@
           "default": {
             "description": "An unexpected error response.",
             "schema": {
-              "$ref": "#/definitions/googlerpcStatus"
+              "$ref": "#/definitions/rpc.Status"
             }
           }
         },
@@ -518,7 +518,7 @@
           "default": {
             "description": "An unexpected error response.",
             "schema": {
-              "$ref": "#/definitions/googlerpcStatus"
+              "$ref": "#/definitions/rpc.Status"
             }
           }
         },
@@ -552,7 +552,7 @@
           "default": {
             "description": "An unexpected error response.",
             "schema": {
-              "$ref": "#/definitions/googlerpcStatus"
+              "$ref": "#/definitions/rpc.Status"
             }
           }
         },
@@ -572,11 +572,11 @@
               "type": "object",
               "properties": {
                 "gatewayLoRaWANType": {
-                  "$ref": "#/definitions/CreateDeviceLoRaWANRequestGatewayLoRaWANType",
+                  "$ref": "#/definitions/GatewayLoRaWANType",
                   "description": "Gateway LoRaWAN configuration type."
                 },
                 "deviceLoRaWANType": {
-                  "$ref": "#/definitions/CreateDeviceLoRaWANRequestDeviceLoRaWANType",
+                  "$ref": "#/definitions/DeviceLoRaWANType",
                   "description": "Device LoRaWAN configuration type."
                 }
               },
@@ -597,13 +597,13 @@
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/apiListEventsResponse"
+              "$ref": "#/definitions/ListEventsResponse"
             }
           },
           "default": {
             "description": "An unexpected error response.",
             "schema": {
-              "$ref": "#/definitions/googlerpcStatus"
+              "$ref": "#/definitions/rpc.Status"
             }
           }
         },
@@ -659,13 +659,13 @@
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/apiLatestEventsResponse"
+              "$ref": "#/definitions/LatestEventsResponse"
             }
           },
           "default": {
             "description": "An unexpected error response.",
             "schema": {
-              "$ref": "#/definitions/googlerpcStatus"
+              "$ref": "#/definitions/rpc.Status"
             }
           }
         },
@@ -691,13 +691,13 @@
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/apiListOrgsResponse"
+              "$ref": "#/definitions/ListOrgsResponse"
             }
           },
           "default": {
             "description": "An unexpected error response.",
             "schema": {
-              "$ref": "#/definitions/googlerpcStatus"
+              "$ref": "#/definitions/rpc.Status"
             }
           }
         },
@@ -729,19 +729,19 @@
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/apiOrg"
+              "$ref": "#/definitions/Org"
             }
           },
           "201": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/apiOrg"
+              "$ref": "#/definitions/Org"
             }
           },
           "default": {
             "description": "An unexpected error response.",
             "schema": {
-              "$ref": "#/definitions/googlerpcStatus"
+              "$ref": "#/definitions/rpc.Status"
             }
           }
         },
@@ -752,7 +752,7 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/apiOrg"
+              "$ref": "#/definitions/Org"
             }
           }
         ],
@@ -769,13 +769,13 @@
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/apiOrg"
+              "$ref": "#/definitions/Org"
             }
           },
           "default": {
             "description": "An unexpected error response.",
             "schema": {
-              "$ref": "#/definitions/googlerpcStatus"
+              "$ref": "#/definitions/rpc.Status"
             }
           }
         },
@@ -809,7 +809,7 @@
           "default": {
             "description": "An unexpected error response.",
             "schema": {
-              "$ref": "#/definitions/googlerpcStatus"
+              "$ref": "#/definitions/rpc.Status"
             }
           }
         },
@@ -835,13 +835,13 @@
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/apiOrg"
+              "$ref": "#/definitions/Org"
             }
           },
           "default": {
             "description": "An unexpected error response.",
             "schema": {
-              "$ref": "#/definitions/googlerpcStatus"
+              "$ref": "#/definitions/rpc.Status"
             }
           }
         },
@@ -859,7 +859,7 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/apiOrg"
+              "$ref": "#/definitions/Org"
             }
           },
           {
@@ -881,13 +881,13 @@
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/apiOrg"
+              "$ref": "#/definitions/Org"
             }
           },
           "default": {
             "description": "An unexpected error response.",
             "schema": {
-              "$ref": "#/definitions/googlerpcStatus"
+              "$ref": "#/definitions/rpc.Status"
             }
           }
         },
@@ -905,7 +905,7 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/apiOrg"
+              "$ref": "#/definitions/Org"
             }
           },
           {
@@ -929,13 +929,13 @@
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/apiListRulesResponse"
+              "$ref": "#/definitions/ListRulesResponse"
             }
           },
           "default": {
             "description": "An unexpected error response.",
             "schema": {
-              "$ref": "#/definitions/googlerpcStatus"
+              "$ref": "#/definitions/rpc.Status"
             }
           }
         },
@@ -967,19 +967,19 @@
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/commonRule"
+              "$ref": "#/definitions/Rule"
             }
           },
           "201": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/commonRule"
+              "$ref": "#/definitions/Rule"
             }
           },
           "default": {
             "description": "An unexpected error response.",
             "schema": {
-              "$ref": "#/definitions/googlerpcStatus"
+              "$ref": "#/definitions/rpc.Status"
             }
           }
         },
@@ -990,7 +990,7 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/commonRule"
+              "$ref": "#/definitions/Rule"
             }
           }
         ],
@@ -1007,13 +1007,13 @@
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/apiListAlarmsResponse"
+              "$ref": "#/definitions/ListAlarmsResponse"
             }
           },
           "default": {
             "description": "An unexpected error response.",
             "schema": {
-              "$ref": "#/definitions/googlerpcStatus"
+              "$ref": "#/definitions/rpc.Status"
             }
           }
         },
@@ -1054,13 +1054,13 @@
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/apiTestAlarmResponse"
+              "$ref": "#/definitions/TestAlarmResponse"
             }
           },
           "default": {
             "description": "An unexpected error response.",
             "schema": {
-              "$ref": "#/definitions/googlerpcStatus"
+              "$ref": "#/definitions/rpc.Status"
             }
           }
         },
@@ -1070,7 +1070,7 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/apiTestAlarmRequest"
+              "$ref": "#/definitions/TestAlarmRequest"
             }
           }
         ],
@@ -1087,13 +1087,13 @@
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/apiTestRuleResponse"
+              "$ref": "#/definitions/TestRuleResponse"
             }
           },
           "default": {
             "description": "An unexpected error response.",
             "schema": {
-              "$ref": "#/definitions/googlerpcStatus"
+              "$ref": "#/definitions/rpc.Status"
             }
           }
         },
@@ -1103,7 +1103,7 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/apiTestRuleRequest"
+              "$ref": "#/definitions/TestRuleRequest"
             }
           }
         ],
@@ -1120,19 +1120,19 @@
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/apiAlarm"
+              "$ref": "#/definitions/Alarm"
             }
           },
           "201": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/apiAlarm"
+              "$ref": "#/definitions/Alarm"
             }
           },
           "default": {
             "description": "An unexpected error response.",
             "schema": {
-              "$ref": "#/definitions/googlerpcStatus"
+              "$ref": "#/definitions/rpc.Status"
             }
           }
         },
@@ -1150,7 +1150,7 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/apiAlarm"
+              "$ref": "#/definitions/Alarm"
             }
           }
         ],
@@ -1167,13 +1167,13 @@
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/apiAlarm"
+              "$ref": "#/definitions/Alarm"
             }
           },
           "default": {
             "description": "An unexpected error response.",
             "schema": {
-              "$ref": "#/definitions/googlerpcStatus"
+              "$ref": "#/definitions/rpc.Status"
             }
           }
         },
@@ -1198,7 +1198,7 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/apiAlarm"
+              "$ref": "#/definitions/Alarm"
             }
           },
           {
@@ -1220,13 +1220,13 @@
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/apiAlarm"
+              "$ref": "#/definitions/Alarm"
             }
           },
           "default": {
             "description": "An unexpected error response.",
             "schema": {
-              "$ref": "#/definitions/googlerpcStatus"
+              "$ref": "#/definitions/rpc.Status"
             }
           }
         },
@@ -1251,7 +1251,7 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/apiAlarm"
+              "$ref": "#/definitions/Alarm"
             }
           },
           {
@@ -1275,13 +1275,13 @@
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/commonRule"
+              "$ref": "#/definitions/Rule"
             }
           },
           "default": {
             "description": "An unexpected error response.",
             "schema": {
-              "$ref": "#/definitions/googlerpcStatus"
+              "$ref": "#/definitions/rpc.Status"
             }
           }
         },
@@ -1315,7 +1315,7 @@
           "default": {
             "description": "An unexpected error response.",
             "schema": {
-              "$ref": "#/definitions/googlerpcStatus"
+              "$ref": "#/definitions/rpc.Status"
             }
           }
         },
@@ -1341,13 +1341,13 @@
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/commonRule"
+              "$ref": "#/definitions/Rule"
             }
           },
           "default": {
             "description": "An unexpected error response.",
             "schema": {
-              "$ref": "#/definitions/googlerpcStatus"
+              "$ref": "#/definitions/rpc.Status"
             }
           }
         },
@@ -1365,7 +1365,7 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/commonRule"
+              "$ref": "#/definitions/Rule"
             }
           },
           {
@@ -1387,13 +1387,13 @@
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/commonRule"
+              "$ref": "#/definitions/Rule"
             }
           },
           "default": {
             "description": "An unexpected error response.",
             "schema": {
-              "$ref": "#/definitions/googlerpcStatus"
+              "$ref": "#/definitions/rpc.Status"
             }
           }
         },
@@ -1411,7 +1411,7 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/commonRule"
+              "$ref": "#/definitions/Rule"
             }
           },
           {
@@ -1435,13 +1435,13 @@
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/apiListAlarmsResponse"
+              "$ref": "#/definitions/ListAlarmsResponse"
             }
           },
           "default": {
             "description": "An unexpected error response.",
             "schema": {
-              "$ref": "#/definitions/googlerpcStatus"
+              "$ref": "#/definitions/rpc.Status"
             }
           }
         },
@@ -1482,13 +1482,13 @@
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/apiAlarm"
+              "$ref": "#/definitions/Alarm"
             }
           },
           "default": {
             "description": "An unexpected error response.",
             "schema": {
-              "$ref": "#/definitions/googlerpcStatus"
+              "$ref": "#/definitions/rpc.Status"
             }
           }
         },
@@ -1529,7 +1529,7 @@
           "default": {
             "description": "An unexpected error response.",
             "schema": {
-              "$ref": "#/definitions/googlerpcStatus"
+              "$ref": "#/definitions/rpc.Status"
             }
           }
         },
@@ -1562,13 +1562,13 @@
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/apiListKeysResponse"
+              "$ref": "#/definitions/ListKeysResponse"
             }
           },
           "default": {
             "description": "An unexpected error response.",
             "schema": {
-              "$ref": "#/definitions/googlerpcStatus"
+              "$ref": "#/definitions/rpc.Status"
             }
           }
         },
@@ -1600,19 +1600,19 @@
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/apiCreateKeyResponse"
+              "$ref": "#/definitions/CreateKeyResponse"
             }
           },
           "201": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/apiCreateKeyResponse"
+              "$ref": "#/definitions/CreateKeyResponse"
             }
           },
           "default": {
             "description": "An unexpected error response.",
             "schema": {
-              "$ref": "#/definitions/googlerpcStatus"
+              "$ref": "#/definitions/rpc.Status"
             }
           }
         },
@@ -1623,7 +1623,7 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/apiKey"
+              "$ref": "#/definitions/Key"
             }
           }
         ],
@@ -1650,7 +1650,7 @@
           "default": {
             "description": "An unexpected error response.",
             "schema": {
-              "$ref": "#/definitions/googlerpcStatus"
+              "$ref": "#/definitions/rpc.Status"
             }
           }
         },
@@ -1676,13 +1676,13 @@
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/apiLoginResponse"
+              "$ref": "#/definitions/LoginResponse"
             }
           },
           "default": {
             "description": "An unexpected error response.",
             "schema": {
-              "$ref": "#/definitions/googlerpcStatus"
+              "$ref": "#/definitions/rpc.Status"
             }
           }
         },
@@ -1692,7 +1692,7 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/apiLoginRequest"
+              "$ref": "#/definitions/LoginRequest"
             }
           }
         ],
@@ -1710,13 +1710,13 @@
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/apiListTagsResponse"
+              "$ref": "#/definitions/ListTagsResponse"
             }
           },
           "default": {
             "description": "An unexpected error response.",
             "schema": {
-              "$ref": "#/definitions/googlerpcStatus"
+              "$ref": "#/definitions/rpc.Status"
             }
           }
         },
@@ -1733,13 +1733,13 @@
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/apiListUsersResponse"
+              "$ref": "#/definitions/ListUsersResponse"
             }
           },
           "default": {
             "description": "An unexpected error response.",
             "schema": {
-              "$ref": "#/definitions/googlerpcStatus"
+              "$ref": "#/definitions/rpc.Status"
             }
           }
         },
@@ -1778,19 +1778,19 @@
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/apiUser"
+              "$ref": "#/definitions/User"
             }
           },
           "201": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/apiUser"
+              "$ref": "#/definitions/User"
             }
           },
           "default": {
             "description": "An unexpected error response.",
             "schema": {
-              "$ref": "#/definitions/googlerpcStatus"
+              "$ref": "#/definitions/rpc.Status"
             }
           }
         },
@@ -1801,7 +1801,7 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/apiUser"
+              "$ref": "#/definitions/User"
             }
           }
         ],
@@ -1818,13 +1818,13 @@
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/apiUser"
+              "$ref": "#/definitions/User"
             }
           },
           "default": {
             "description": "An unexpected error response.",
             "schema": {
-              "$ref": "#/definitions/googlerpcStatus"
+              "$ref": "#/definitions/rpc.Status"
             }
           }
         },
@@ -1858,7 +1858,7 @@
           "default": {
             "description": "An unexpected error response.",
             "schema": {
-              "$ref": "#/definitions/googlerpcStatus"
+              "$ref": "#/definitions/rpc.Status"
             }
           }
         },
@@ -1890,7 +1890,7 @@
           "default": {
             "description": "An unexpected error response.",
             "schema": {
-              "$ref": "#/definitions/googlerpcStatus"
+              "$ref": "#/definitions/rpc.Status"
             }
           }
         },
@@ -1937,13 +1937,13 @@
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/apiUser"
+              "$ref": "#/definitions/User"
             }
           },
           "default": {
             "description": "An unexpected error response.",
             "schema": {
-              "$ref": "#/definitions/googlerpcStatus"
+              "$ref": "#/definitions/rpc.Status"
             }
           }
         },
@@ -1961,7 +1961,7 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/apiUser"
+              "$ref": "#/definitions/User"
             }
           },
           {
@@ -1983,13 +1983,13 @@
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/apiUser"
+              "$ref": "#/definitions/User"
             }
           },
           "default": {
             "description": "An unexpected error response.",
             "schema": {
-              "$ref": "#/definitions/googlerpcStatus"
+              "$ref": "#/definitions/rpc.Status"
             }
           }
         },
@@ -2007,7 +2007,7 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/apiUser"
+              "$ref": "#/definitions/User"
             }
           },
           {
@@ -2025,27 +2025,7 @@
     }
   },
   "definitions": {
-    "CreateDeviceLoRaWANRequestDeviceLoRaWANType": {
-      "type": "object",
-      "properties": {
-        "appKey": {
-          "type": "string",
-          "description": "Device LoRaWAN 1.0.x application key.",
-          "required": [
-            "app_key"
-          ]
-        }
-      },
-      "description": "DeviceLoRaWANType is sent to add LoRaWAN device configuration.",
-      "required": [
-        "appKey"
-      ]
-    },
-    "CreateDeviceLoRaWANRequestGatewayLoRaWANType": {
-      "type": "object",
-      "description": "GatewayLoRaWANType is sent to add LoRaWAN gateway configuration."
-    },
-    "apiAlarm": {
+    "Alarm": {
       "type": "object",
       "properties": {
         "id": {
@@ -2068,11 +2048,11 @@
           "description": "Alarm name."
         },
         "status": {
-          "$ref": "#/definitions/thingspectcommonStatus",
+          "$ref": "#/definitions/common.Status",
           "description": "Alarm status."
         },
         "type": {
-          "$ref": "#/definitions/apiAlarmType",
+          "$ref": "#/definitions/AlarmType",
           "description": "Alarm type."
         },
         "userTags": {
@@ -2110,7 +2090,7 @@
       },
       "description": "Alarm represents an alarm as stored in the database."
     },
-    "apiAlarmType": {
+    "AlarmType": {
       "type": "string",
       "enum": [
         "ALARM_TYPE_UNSPECIFIED",
@@ -2121,7 +2101,7 @@
       "default": "ALARM_TYPE_UNSPECIFIED",
       "description": "AlarmType represents the type of an alarm.\n\n - ALARM_TYPE_UNSPECIFIED: Alarm type is not specified.\n - APP: Push notification via mobile application.\n - SMS: SMS notification.\n - EMAIL: Email notification."
     },
-    "apiAlert": {
+    "Alert": {
       "type": "object",
       "properties": {
         "orgID": {
@@ -2141,7 +2121,7 @@
           "description": "User ID (UUID)."
         },
         "status": {
-          "$ref": "#/definitions/apiAlertStatus",
+          "$ref": "#/definitions/AlertStatus",
           "description": "Alert status."
         },
         "error": {
@@ -2160,7 +2140,7 @@
       },
       "description": "Alert represents an alert as stored in the database."
     },
-    "apiAlertStatus": {
+    "AlertStatus": {
       "type": "string",
       "enum": [
         "ALERT_STATUS_UNSPECIFIED",
@@ -2170,11 +2150,20 @@
       "default": "ALERT_STATUS_UNSPECIFIED",
       "description": "AlertStatus represents the status of an alert.\n\n - ALERT_STATUS_UNSPECIFIED: Alert status is not specified.\n - SENT: Alert was successfully sent.\n - ERROR: Alert encountered an error."
     },
-    "apiCreateKeyResponse": {
+    "Any": {
+      "type": "object",
+      "properties": {
+        "@type": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": {}
+    },
+    "CreateKeyResponse": {
       "type": "object",
       "properties": {
         "key": {
-          "$ref": "#/definitions/apiKey",
+          "$ref": "#/definitions/Key",
           "description": "Key message created."
         },
         "token": {
@@ -2184,496 +2173,7 @@
       },
       "description": "CreateKeyResponse is sent in response to an API key creation."
     },
-    "apiEvent": {
-      "type": "object",
-      "properties": {
-        "orgID": {
-          "type": "string",
-          "description": "Organization ID (UUID)."
-        },
-        "uniqID": {
-          "type": "string",
-          "description": "Device unique ID."
-        },
-        "ruleID": {
-          "type": "string",
-          "description": "Rule ID (UUID)."
-        },
-        "createdAt": {
-          "type": "string",
-          "format": "date-time",
-          "description": "Event creation timestamp."
-        },
-        "traceId": {
-          "type": "string",
-          "description": "Trace ID (UUID)."
-        }
-      },
-      "description": "Event represents an event as stored in the database."
-    },
-    "apiKey": {
-      "type": "object",
-      "properties": {
-        "id": {
-          "type": "string",
-          "description": "Key ID (UUID).",
-          "readOnly": true
-        },
-        "orgID": {
-          "type": "string",
-          "description": "Organization ID (UUID).",
-          "readOnly": true
-        },
-        "name": {
-          "type": "string",
-          "description": "Key name.",
-          "required": [
-            "name"
-          ]
-        },
-        "role": {
-          "$ref": "#/definitions/commonRole",
-          "description": "Key role."
-        },
-        "createdAt": {
-          "type": "string",
-          "format": "date-time",
-          "description": "Key creation timestamp.",
-          "readOnly": true
-        }
-      },
-      "description": "Key represents an API key as stored in the database. API keys are not tied to a specific user.",
-      "required": [
-        "name"
-      ]
-    },
-    "apiLatestDataPointsResponse": {
-      "type": "object",
-      "properties": {
-        "points": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/commonDataPoint"
-          },
-          "description": "Data point array, ordered by ascending attribute name."
-        }
-      },
-      "description": "LatestDataPointsResponse is sent in response to a device latest list."
-    },
-    "apiLatestEventsResponse": {
-      "type": "object",
-      "properties": {
-        "events": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/apiEvent"
-          },
-          "description": "Event array, ordered by descending created_at timestamp."
-        }
-      },
-      "description": "LatestEventsResponse is sent in response to an organization latest list."
-    },
-    "apiListAlarmsResponse": {
-      "type": "object",
-      "properties": {
-        "alarms": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/apiAlarm"
-          },
-          "description": "Alarm array, ordered by ascending created_at timestamp."
-        },
-        "nextPageToken": {
-          "type": "string",
-          "description": "Pagination token used to retrieve the next page of results. Not returned for the last page."
-        },
-        "totalSize": {
-          "type": "integer",
-          "format": "int32",
-          "description": "Total number of alarms available."
-        }
-      },
-      "description": "ListAlarmsResponse is sent in response to an alarm list."
-    },
-    "apiListAlertsResponse": {
-      "type": "object",
-      "properties": {
-        "alerts": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/apiAlert"
-          },
-          "description": "Alert array, ordered by descending created_at timestamp."
-        }
-      },
-      "description": "ListAlertsResponse is sent in response to a device alerts list."
-    },
-    "apiListDataPointsResponse": {
-      "type": "object",
-      "properties": {
-        "points": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/commonDataPoint"
-          },
-          "description": "Data point array, ordered by descending created_at timestamp."
-        }
-      },
-      "description": "ListDataPointsResponse is sent in response to a device data points list."
-    },
-    "apiListDevicesResponse": {
-      "type": "object",
-      "properties": {
-        "devices": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/commonDevice"
-          },
-          "description": "Device array, ordered by ascending created_at timestamp."
-        },
-        "nextPageToken": {
-          "type": "string",
-          "description": "Pagination token used to retrieve the next page of results. Not returned for the last page."
-        },
-        "totalSize": {
-          "type": "integer",
-          "format": "int32",
-          "description": "Total number of devices available."
-        }
-      },
-      "description": "ListDevicesResponse is sent in response to a device list."
-    },
-    "apiListEventsResponse": {
-      "type": "object",
-      "properties": {
-        "events": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/apiEvent"
-          },
-          "description": "Event array, ordered by descending created_at timestamp."
-        }
-      },
-      "description": "ListEventsResponse is sent in response to a device events list."
-    },
-    "apiListKeysResponse": {
-      "type": "object",
-      "properties": {
-        "keys": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/apiKey"
-          },
-          "description": "Key array, ordered by ascending created_at timestamp."
-        },
-        "nextPageToken": {
-          "type": "string",
-          "description": "Pagination token used to retrieve the next page of results. Not returned for the last page."
-        },
-        "totalSize": {
-          "type": "integer",
-          "format": "int32",
-          "description": "Total number of API keys available."
-        }
-      },
-      "description": "ListKeysResponse is sent in response to an API key list."
-    },
-    "apiListOrgsResponse": {
-      "type": "object",
-      "properties": {
-        "orgs": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/apiOrg"
-          },
-          "description": "Org array, ordered by ascending created_at timestamp."
-        },
-        "nextPageToken": {
-          "type": "string",
-          "description": "Pagination token used to retrieve the next page of results. Not returned for the last page."
-        },
-        "totalSize": {
-          "type": "integer",
-          "format": "int32",
-          "description": "Total number of organizations available."
-        }
-      },
-      "description": "ListOrgsResponse is sent in response to an organization list."
-    },
-    "apiListRulesResponse": {
-      "type": "object",
-      "properties": {
-        "rules": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/commonRule"
-          },
-          "description": "Rule array, ordered by ascending created_at timestamp."
-        },
-        "nextPageToken": {
-          "type": "string",
-          "description": "Pagination token used to retrieve the next page of results. Not returned for the last page."
-        },
-        "totalSize": {
-          "type": "integer",
-          "format": "int32",
-          "description": "Total number of rules available."
-        }
-      },
-      "description": "ListRulesResponse is sent in response to a rule list."
-    },
-    "apiListTagsResponse": {
-      "type": "object",
-      "properties": {
-        "tags": {
-          "type": "array",
-          "items": {
-            "type": "string"
-          },
-          "description": "Tag array, ordered by ascending name."
-        }
-      },
-      "description": "ListTagsResponse is sent in response to a tag list."
-    },
-    "apiListUsersResponse": {
-      "type": "object",
-      "properties": {
-        "users": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/apiUser"
-          },
-          "description": "User array, ordered by ascending created_at timestamp. The completeness of the array will depend on whether the request was made by an admin user, non-admin user, or API key."
-        },
-        "nextPageToken": {
-          "type": "string",
-          "description": "Pagination token used to retrieve the next page of results. Not returned for the last page."
-        },
-        "totalSize": {
-          "type": "integer",
-          "format": "int32",
-          "description": "Total number of users available."
-        }
-      },
-      "description": "ListUsersResponse is sent in response to a user list."
-    },
-    "apiLoginRequest": {
-      "type": "object",
-      "properties": {
-        "email": {
-          "type": "string",
-          "description": "Email of the user to log in.",
-          "required": [
-            "email"
-          ]
-        },
-        "orgName": {
-          "type": "string",
-          "description": "Organization name of the user to log in.",
-          "required": [
-            "org_name"
-          ]
-        },
-        "password": {
-          "type": "string",
-          "description": "Password of the user to log in.",
-          "required": [
-            "password"
-          ]
-        }
-      },
-      "description": "LoginRequest is sent to log in a user.",
-      "required": [
-        "email",
-        "orgName",
-        "password"
-      ]
-    },
-    "apiLoginResponse": {
-      "type": "object",
-      "properties": {
-        "token": {
-          "type": "string",
-          "description": "Token to be used for subsequent non-login calls."
-        },
-        "expiresAt": {
-          "type": "string",
-          "format": "date-time",
-          "description": "Token expiration timestamp."
-        }
-      },
-      "description": "LoginResponse is sent in response to a user login."
-    },
-    "apiOrg": {
-      "type": "object",
-      "properties": {
-        "id": {
-          "type": "string",
-          "description": "Organization ID (UUID).",
-          "readOnly": true
-        },
-        "name": {
-          "type": "string",
-          "description": "Organization name."
-        },
-        "displayName": {
-          "type": "string",
-          "description": "Organization display name. Used anywhere the organization is shown to a user, including web sites and alert sender fields."
-        },
-        "email": {
-          "type": "string",
-          "description": "Organization email. Used as the 'From' address in email alerts."
-        },
-        "createdAt": {
-          "type": "string",
-          "format": "date-time",
-          "description": "Organization creation timestamp.",
-          "readOnly": true
-        },
-        "updatedAt": {
-          "type": "string",
-          "format": "date-time",
-          "description": "Organization modification timestamp.",
-          "readOnly": true
-        }
-      },
-      "description": "Org represents an organization as stored in the database."
-    },
-    "apiPublishDataPointsRequest": {
-      "type": "object",
-      "properties": {
-        "points": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/commonDataPoint"
-          },
-          "description": "Data point array to publish.",
-          "required": [
-            "points"
-          ]
-        }
-      },
-      "description": "PublishDataPointsRequest is sent to publish data points. The publisher role is recommended for programmatic use of this endpoint.",
-      "required": [
-        "points"
-      ]
-    },
-    "apiTestAlarmRequest": {
-      "type": "object",
-      "properties": {
-        "point": {
-          "$ref": "#/definitions/commonDataPoint",
-          "description": "Data point to test against an alarm."
-        },
-        "rule": {
-          "$ref": "#/definitions/commonRule",
-          "description": "Rule to test against an alarm."
-        },
-        "device": {
-          "$ref": "#/definitions/commonDevice",
-          "description": "Device to test against an alarm."
-        },
-        "alarm": {
-          "$ref": "#/definitions/apiAlarm",
-          "description": "Alarm message to test."
-        }
-      },
-      "description": "TestAlarmRequest is sent to test an alarm."
-    },
-    "apiTestAlarmResponse": {
-      "type": "object",
-      "properties": {
-        "result": {
-          "type": "string",
-          "description": "Result of the alarm generation. Subjects and bodies will be concatenated with ' - '."
-        }
-      },
-      "description": "TestAlarmResponse is sent in response to an alarm test."
-    },
-    "apiTestRuleRequest": {
-      "type": "object",
-      "properties": {
-        "point": {
-          "$ref": "#/definitions/commonDataPoint",
-          "description": "Data point to test against a rule."
-        },
-        "rule": {
-          "$ref": "#/definitions/commonRule",
-          "description": "Rule message to test."
-        }
-      },
-      "description": "TestRuleRequest is sent to test a rule."
-    },
-    "apiTestRuleResponse": {
-      "type": "object",
-      "properties": {
-        "result": {
-          "type": "boolean",
-          "description": "Result of the rule evaluation."
-        }
-      },
-      "description": "TestRuleResponse is sent in response to a rule test."
-    },
-    "apiUser": {
-      "type": "object",
-      "properties": {
-        "id": {
-          "type": "string",
-          "description": "User ID (UUID).",
-          "readOnly": true
-        },
-        "orgID": {
-          "type": "string",
-          "description": "Organization ID (UUID).",
-          "readOnly": true
-        },
-        "name": {
-          "type": "string",
-          "description": "User name."
-        },
-        "email": {
-          "type": "string",
-          "description": "User email."
-        },
-        "phone": {
-          "type": "string",
-          "description": "User phone number. If specified, must be in valid [E.164](https://www.twilio.com/docs/glossary/what-e164) format."
-        },
-        "role": {
-          "$ref": "#/definitions/commonRole",
-          "description": "User role."
-        },
-        "status": {
-          "$ref": "#/definitions/thingspectcommonStatus",
-          "description": "User status."
-        },
-        "tags": {
-          "type": "array",
-          "items": {
-            "type": "string"
-          },
-          "description": "User tags. Nested tags should be delimited by '/'."
-        },
-        "appKey": {
-          "type": "string",
-          "description": "Mobile application user key."
-        },
-        "createdAt": {
-          "type": "string",
-          "format": "date-time",
-          "description": "User creation timestamp.",
-          "readOnly": true
-        },
-        "updatedAt": {
-          "type": "string",
-          "format": "date-time",
-          "description": "User modification timestamp.",
-          "readOnly": true
-        }
-      },
-      "description": "User represents a user as stored in the database."
-    },
-    "commonDataPoint": {
+    "DataPoint": {
       "type": "object",
       "properties": {
         "uniqID": {
@@ -2735,7 +2235,7 @@
         "attr"
       ]
     },
-    "commonDecoder": {
+    "Decoder": {
       "type": "string",
       "enum": [
         "RAW",
@@ -2746,7 +2246,7 @@
       "default": "RAW",
       "description": "Decoder represents the data payload decoder for a device.\n\n - RAW: Payloads will be passed through without decoding. Appropriate for devices that do not use decoders (MQTT, API, etc.).\n - GATEWAY: LoRaWAN gateway. Acts as a pass-through in the absence of device data payloads.\n - RADIO_BRIDGE_DOOR_V1: Radio Bridge Door/Window sensor with V1 firmware.\n - RADIO_BRIDGE_DOOR_V2: Radio Bridge Door/Window sensor with V2 firmware."
     },
-    "commonDevice": {
+    "Device": {
       "type": "object",
       "properties": {
         "id": {
@@ -2768,7 +2268,7 @@
           "description": "Device name."
         },
         "status": {
-          "$ref": "#/definitions/thingspectcommonStatus",
+          "$ref": "#/definitions/common.Status",
           "description": "Device status."
         },
         "token": {
@@ -2776,7 +2276,7 @@
           "description": "Authentication token (UUID). Will be generated at creation time, but can be updated afterward."
         },
         "decoder": {
-          "$ref": "#/definitions/commonDecoder",
+          "$ref": "#/definitions/Decoder",
           "description": "Device data payload decoder."
         },
         "tags": {
@@ -2801,7 +2301,401 @@
       },
       "description": "Device represents a device as stored in the database."
     },
-    "commonRole": {
+    "DeviceLoRaWANType": {
+      "type": "object",
+      "properties": {
+        "appKey": {
+          "type": "string",
+          "description": "Device LoRaWAN 1.0.x application key.",
+          "required": [
+            "app_key"
+          ]
+        }
+      },
+      "description": "DeviceLoRaWANType is sent to add LoRaWAN device configuration.",
+      "required": [
+        "appKey"
+      ]
+    },
+    "Event": {
+      "type": "object",
+      "properties": {
+        "orgID": {
+          "type": "string",
+          "description": "Organization ID (UUID)."
+        },
+        "uniqID": {
+          "type": "string",
+          "description": "Device unique ID."
+        },
+        "ruleID": {
+          "type": "string",
+          "description": "Rule ID (UUID)."
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Event creation timestamp."
+        },
+        "traceId": {
+          "type": "string",
+          "description": "Trace ID (UUID)."
+        }
+      },
+      "description": "Event represents an event as stored in the database."
+    },
+    "GatewayLoRaWANType": {
+      "type": "object",
+      "description": "GatewayLoRaWANType is sent to add LoRaWAN gateway configuration."
+    },
+    "Key": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Key ID (UUID).",
+          "readOnly": true
+        },
+        "orgID": {
+          "type": "string",
+          "description": "Organization ID (UUID).",
+          "readOnly": true
+        },
+        "name": {
+          "type": "string",
+          "description": "Key name.",
+          "required": [
+            "name"
+          ]
+        },
+        "role": {
+          "$ref": "#/definitions/Role",
+          "description": "Key role."
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Key creation timestamp.",
+          "readOnly": true
+        }
+      },
+      "description": "Key represents an API key as stored in the database. API keys are not tied to a specific user.",
+      "required": [
+        "name"
+      ]
+    },
+    "LatestDataPointsResponse": {
+      "type": "object",
+      "properties": {
+        "points": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/DataPoint"
+          },
+          "description": "Data point array, ordered by ascending attribute name."
+        }
+      },
+      "description": "LatestDataPointsResponse is sent in response to a device latest list."
+    },
+    "LatestEventsResponse": {
+      "type": "object",
+      "properties": {
+        "events": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Event"
+          },
+          "description": "Event array, ordered by descending created_at timestamp."
+        }
+      },
+      "description": "LatestEventsResponse is sent in response to an organization latest list."
+    },
+    "ListAlarmsResponse": {
+      "type": "object",
+      "properties": {
+        "alarms": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Alarm"
+          },
+          "description": "Alarm array, ordered by ascending created_at timestamp."
+        },
+        "nextPageToken": {
+          "type": "string",
+          "description": "Pagination token used to retrieve the next page of results. Not returned for the last page."
+        },
+        "totalSize": {
+          "type": "integer",
+          "format": "int32",
+          "description": "Total number of alarms available."
+        }
+      },
+      "description": "ListAlarmsResponse is sent in response to an alarm list."
+    },
+    "ListAlertsResponse": {
+      "type": "object",
+      "properties": {
+        "alerts": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Alert"
+          },
+          "description": "Alert array, ordered by descending created_at timestamp."
+        }
+      },
+      "description": "ListAlertsResponse is sent in response to a device alerts list."
+    },
+    "ListDataPointsResponse": {
+      "type": "object",
+      "properties": {
+        "points": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/DataPoint"
+          },
+          "description": "Data point array, ordered by descending created_at timestamp."
+        }
+      },
+      "description": "ListDataPointsResponse is sent in response to a device data points list."
+    },
+    "ListDevicesResponse": {
+      "type": "object",
+      "properties": {
+        "devices": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Device"
+          },
+          "description": "Device array, ordered by ascending created_at timestamp."
+        },
+        "nextPageToken": {
+          "type": "string",
+          "description": "Pagination token used to retrieve the next page of results. Not returned for the last page."
+        },
+        "totalSize": {
+          "type": "integer",
+          "format": "int32",
+          "description": "Total number of devices available."
+        }
+      },
+      "description": "ListDevicesResponse is sent in response to a device list."
+    },
+    "ListEventsResponse": {
+      "type": "object",
+      "properties": {
+        "events": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Event"
+          },
+          "description": "Event array, ordered by descending created_at timestamp."
+        }
+      },
+      "description": "ListEventsResponse is sent in response to a device events list."
+    },
+    "ListKeysResponse": {
+      "type": "object",
+      "properties": {
+        "keys": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Key"
+          },
+          "description": "Key array, ordered by ascending created_at timestamp."
+        },
+        "nextPageToken": {
+          "type": "string",
+          "description": "Pagination token used to retrieve the next page of results. Not returned for the last page."
+        },
+        "totalSize": {
+          "type": "integer",
+          "format": "int32",
+          "description": "Total number of API keys available."
+        }
+      },
+      "description": "ListKeysResponse is sent in response to an API key list."
+    },
+    "ListOrgsResponse": {
+      "type": "object",
+      "properties": {
+        "orgs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Org"
+          },
+          "description": "Org array, ordered by ascending created_at timestamp."
+        },
+        "nextPageToken": {
+          "type": "string",
+          "description": "Pagination token used to retrieve the next page of results. Not returned for the last page."
+        },
+        "totalSize": {
+          "type": "integer",
+          "format": "int32",
+          "description": "Total number of organizations available."
+        }
+      },
+      "description": "ListOrgsResponse is sent in response to an organization list."
+    },
+    "ListRulesResponse": {
+      "type": "object",
+      "properties": {
+        "rules": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Rule"
+          },
+          "description": "Rule array, ordered by ascending created_at timestamp."
+        },
+        "nextPageToken": {
+          "type": "string",
+          "description": "Pagination token used to retrieve the next page of results. Not returned for the last page."
+        },
+        "totalSize": {
+          "type": "integer",
+          "format": "int32",
+          "description": "Total number of rules available."
+        }
+      },
+      "description": "ListRulesResponse is sent in response to a rule list."
+    },
+    "ListTagsResponse": {
+      "type": "object",
+      "properties": {
+        "tags": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Tag array, ordered by ascending name."
+        }
+      },
+      "description": "ListTagsResponse is sent in response to a tag list."
+    },
+    "ListUsersResponse": {
+      "type": "object",
+      "properties": {
+        "users": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/User"
+          },
+          "description": "User array, ordered by ascending created_at timestamp. The completeness of the array will depend on whether the request was made by an admin user, non-admin user, or API key."
+        },
+        "nextPageToken": {
+          "type": "string",
+          "description": "Pagination token used to retrieve the next page of results. Not returned for the last page."
+        },
+        "totalSize": {
+          "type": "integer",
+          "format": "int32",
+          "description": "Total number of users available."
+        }
+      },
+      "description": "ListUsersResponse is sent in response to a user list."
+    },
+    "LoginRequest": {
+      "type": "object",
+      "properties": {
+        "email": {
+          "type": "string",
+          "description": "Email of the user to log in.",
+          "required": [
+            "email"
+          ]
+        },
+        "orgName": {
+          "type": "string",
+          "description": "Organization name of the user to log in.",
+          "required": [
+            "org_name"
+          ]
+        },
+        "password": {
+          "type": "string",
+          "description": "Password of the user to log in.",
+          "required": [
+            "password"
+          ]
+        }
+      },
+      "description": "LoginRequest is sent to log in a user.",
+      "required": [
+        "email",
+        "orgName",
+        "password"
+      ]
+    },
+    "LoginResponse": {
+      "type": "object",
+      "properties": {
+        "token": {
+          "type": "string",
+          "description": "Token to be used for subsequent non-login calls."
+        },
+        "expiresAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Token expiration timestamp."
+        }
+      },
+      "description": "LoginResponse is sent in response to a user login."
+    },
+    "Org": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Organization ID (UUID).",
+          "readOnly": true
+        },
+        "name": {
+          "type": "string",
+          "description": "Organization name."
+        },
+        "displayName": {
+          "type": "string",
+          "description": "Organization display name. Used anywhere the organization is shown to a user, including web sites and alert sender fields."
+        },
+        "email": {
+          "type": "string",
+          "description": "Organization email. Used as the 'From' address in email alerts."
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Organization creation timestamp.",
+          "readOnly": true
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Organization modification timestamp.",
+          "readOnly": true
+        }
+      },
+      "description": "Org represents an organization as stored in the database."
+    },
+    "PublishDataPointsRequest": {
+      "type": "object",
+      "properties": {
+        "points": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/DataPoint"
+          },
+          "description": "Data point array to publish.",
+          "required": [
+            "points"
+          ]
+        }
+      },
+      "description": "PublishDataPointsRequest is sent to publish data points. The publisher role is recommended for programmatic use of this endpoint.",
+      "required": [
+        "points"
+      ]
+    },
+    "Role": {
       "type": "string",
       "enum": [
         "ROLE_UNSPECIFIED",
@@ -2815,7 +2709,7 @@
       "default": "ROLE_UNSPECIFIED",
       "description": "Role represents the role of a user.\n\n - ROLE_UNSPECIFIED: Role is not specified.\n - CONTACT: Contacts are not allowed to log in to the system, but can receive and respond to alerts from their organization.\n - VIEWER: Viewers can only read resources in their organization, but can update their own user.\n - PUBLISHER: Publishers can publish data points, but otherwise can only read resources in their organization.\n - BUILDER: Builders can read and modify resources in their organization, but can only update their own user.\n - ADMIN: Admins can read and modify anything in their organization, including creating users of an equal or lesser role.\n - SYS_ADMIN: System admins can create organizations and modify anything in their organization."
     },
-    "commonRule": {
+    "Rule": {
       "type": "object",
       "properties": {
         "id": {
@@ -2833,7 +2727,7 @@
           "description": "Rule name."
         },
         "status": {
-          "$ref": "#/definitions/thingspectcommonStatus",
+          "$ref": "#/definitions/common.Status",
           "description": "Rule status."
         },
         "deviceTag": {
@@ -2863,7 +2757,132 @@
       },
       "description": "Rule represents a rule as stored in the database."
     },
-    "googlerpcStatus": {
+    "TestAlarmRequest": {
+      "type": "object",
+      "properties": {
+        "point": {
+          "$ref": "#/definitions/DataPoint",
+          "description": "Data point to test against an alarm."
+        },
+        "rule": {
+          "$ref": "#/definitions/Rule",
+          "description": "Rule to test against an alarm."
+        },
+        "device": {
+          "$ref": "#/definitions/Device",
+          "description": "Device to test against an alarm."
+        },
+        "alarm": {
+          "$ref": "#/definitions/Alarm",
+          "description": "Alarm message to test."
+        }
+      },
+      "description": "TestAlarmRequest is sent to test an alarm."
+    },
+    "TestAlarmResponse": {
+      "type": "object",
+      "properties": {
+        "result": {
+          "type": "string",
+          "description": "Result of the alarm generation. Subjects and bodies will be concatenated with ' - '."
+        }
+      },
+      "description": "TestAlarmResponse is sent in response to an alarm test."
+    },
+    "TestRuleRequest": {
+      "type": "object",
+      "properties": {
+        "point": {
+          "$ref": "#/definitions/DataPoint",
+          "description": "Data point to test against a rule."
+        },
+        "rule": {
+          "$ref": "#/definitions/Rule",
+          "description": "Rule message to test."
+        }
+      },
+      "description": "TestRuleRequest is sent to test a rule."
+    },
+    "TestRuleResponse": {
+      "type": "object",
+      "properties": {
+        "result": {
+          "type": "boolean",
+          "description": "Result of the rule evaluation."
+        }
+      },
+      "description": "TestRuleResponse is sent in response to a rule test."
+    },
+    "User": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "User ID (UUID).",
+          "readOnly": true
+        },
+        "orgID": {
+          "type": "string",
+          "description": "Organization ID (UUID).",
+          "readOnly": true
+        },
+        "name": {
+          "type": "string",
+          "description": "User name."
+        },
+        "email": {
+          "type": "string",
+          "description": "User email."
+        },
+        "phone": {
+          "type": "string",
+          "description": "User phone number. If specified, must be in valid [E.164](https://www.twilio.com/docs/glossary/what-e164) format."
+        },
+        "role": {
+          "$ref": "#/definitions/Role",
+          "description": "User role."
+        },
+        "status": {
+          "$ref": "#/definitions/common.Status",
+          "description": "User status."
+        },
+        "tags": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "User tags. Nested tags should be delimited by '/'."
+        },
+        "appKey": {
+          "type": "string",
+          "description": "Mobile application user key."
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "User creation timestamp.",
+          "readOnly": true
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "User modification timestamp.",
+          "readOnly": true
+        }
+      },
+      "description": "User represents a user as stored in the database."
+    },
+    "common.Status": {
+      "type": "string",
+      "enum": [
+        "STATUS_UNSPECIFIED",
+        "ACTIVE",
+        "DISABLED"
+      ],
+      "default": "STATUS_UNSPECIFIED",
+      "description": "Status represents the status of a message.\n\n - STATUS_UNSPECIFIED: Status is not specified.\n - ACTIVE: Message subject is active.\n - DISABLED: Message subject is disabled."
+    },
+    "rpc.Status": {
       "type": "object",
       "properties": {
         "code": {
@@ -2876,32 +2895,10 @@
         "details": {
           "type": "array",
           "items": {
-            "$ref": "#/definitions/protobufAny"
+            "$ref": "#/definitions/Any"
           }
         }
       }
-    },
-    "protobufAny": {
-      "type": "object",
-      "properties": {
-        "typeUrl": {
-          "type": "string"
-        },
-        "value": {
-          "type": "string",
-          "format": "byte"
-        }
-      }
-    },
-    "thingspectcommonStatus": {
-      "type": "string",
-      "enum": [
-        "STATUS_UNSPECIFIED",
-        "ACTIVE",
-        "DISABLED"
-      ],
-      "default": "STATUS_UNSPECIFIED",
-      "description": "Status represents the status of a message.\n\n - STATUS_UNSPECIFIED: Status is not specified.\n - ACTIVE: Message subject is active.\n - DISABLED: Message subject is disabled."
     }
   },
   "securityDefinitions": {
