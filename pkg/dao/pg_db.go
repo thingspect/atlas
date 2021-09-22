@@ -3,6 +3,7 @@ package dao
 import (
 	"context"
 	"database/sql"
+	"net/url"
 	"time"
 
 	// pgx/stdlib imported for database/sql.
@@ -12,7 +13,15 @@ import (
 // NewPgDB builds, configures, and verifies a new database/sql DB using the pgx
 // driver.
 func NewPgDB(uri string) (*sql.DB, error) {
-	db, err := sql.Open("pgx", uri)
+	pgURI, err := url.Parse(uri)
+	if err != nil {
+		return nil, err
+	}
+
+	// Normalize scheme as provided to pgx-enabled migrate command in tests.
+	pgURI.Scheme = "postgres"
+
+	db, err := sql.Open("pgx", pgURI.String())
 	if err != nil {
 		return nil, err
 	}

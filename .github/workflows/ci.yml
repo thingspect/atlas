@@ -12,7 +12,7 @@ jobs:
         DOCKER: "y"
         # RACE: "y"
         TEST_REDIS_HOST: redis
-        TEST_PG_URI: postgres://postgres:postgres@postgres/atlas_test
+        TEST_PG_URI: pgx://postgres:postgres@postgres/atlas_test
         TEST_NSQ_PUB_ADDR: nsqd:4150
         TEST_NSQ_LOOKUP_ADDRS: nsqlookupd:4161
         TEST_MQTT_ADDR: tcp://mqtt:1883

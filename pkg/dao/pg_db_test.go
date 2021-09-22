@@ -21,6 +21,8 @@ func TestNewPgDB(t *testing.T) {
 	}{
 		// Success.
 		{testConfig.PgURI, ""},
+		// Bad URI.
+		{"://", "missing protocol scheme"},
 		// Database does not exist.
 		{fmt.Sprintf("%s_not_exist", testConfig.PgURI), "does not exist"},
 		// Wrong port.

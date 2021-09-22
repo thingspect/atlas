@@ -23,7 +23,7 @@ TEST_REDIS_HOST = 127.0.0.1
 endif
 
 ifeq ($(strip $(TEST_PG_URI)),)
-TEST_PG_URI = postgres://postgres:postgres@127.0.0.1/atlas_test
+TEST_PG_URI = pgx://postgres:postgres@127.0.0.1/atlas_test
 endif
 
 install:
@@ -48,10 +48,9 @@ lint:
 init_db:
 	echo FLUSHALL|nc -w 2 $(TEST_REDIS_HOST) 6379
 
-	go install -tags postgres \
-	github.com/golang-migrate/migrate/v4/cmd/migrate@latest
-	migrate -path /tmp -database $(TEST_PG_URI)?sslmode=disable drop -f
-	migrate -path config/db/atlas -database $(TEST_PG_URI)?sslmode=disable up
+	go install -tags pgx github.com/golang-migrate/migrate/v4/cmd/migrate@latest
+	migrate -path /tmp -database $(TEST_PG_URI) drop -f
+	migrate -path config/db/atlas -database $(TEST_PG_URI) up
 
 test: install lint unit_test integration_test
 # -count 1 is the idiomatic way to disable test caching in package list mode
