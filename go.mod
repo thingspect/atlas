@@ -4,7 +4,7 @@ go 1.17
 
 require (
 	github.com/NYTimes/gziphandler v1.1.1
-	github.com/ReneKroon/ttlcache/v2 v2.8.1
+	github.com/ReneKroon/ttlcache/v2 v2.9.0
 	github.com/antonmedv/expr v1.9.0
 	github.com/brocaar/chirpstack-api/go/v3 v3.12.3
 	github.com/eclipse/paho.mqtt.golang v1.3.5
@@ -42,10 +42,10 @@ require (
 	github.com/jackc/pgproto3/v2 v2.1.1 // indirect
 	github.com/jackc/pgservicefile v0.0.0-20200714003250-2b9c44734f2b // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
-	golang.org/x/net v0.0.0-20211005215030-d2e5035098b3 // indirect
+	golang.org/x/net v0.0.0-20211015210444-4f30a5c0130f // indirect
 	golang.org/x/sync v0.0.0-20210220032951-036812b2e83c // indirect
-	golang.org/x/sys v0.0.0-20211004093028-2c5d950f24ef // indirect
+	golang.org/x/sys v0.0.0-20211015200801-69063c4bb744 // indirect
 	golang.org/x/text v0.3.7 // indirect
-	google.golang.org/genproto v0.0.0-20211005153810-c76a74d43a8e // indirect
+	google.golang.org/genproto v0.0.0-20211016002631-37fc39342514 // indirect
 	gopkg.in/yaml.v3 v3.0.0-20210107192922-496545a6307b // indirect
 )
