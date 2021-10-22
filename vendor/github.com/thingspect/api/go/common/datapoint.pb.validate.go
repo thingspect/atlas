@@ -11,6 +11,7 @@ import (
 	"net/mail"
 	"net/url"
 	"regexp"
+	"sort"
 	"strings"
 	"time"
 	"unicode/utf8"
@@ -31,30 +32,73 @@ var (
 	_ = (*url.URL)(nil)
 	_ = (*mail.Address)(nil)
 	_ = anypb.Any{}
+	_ = sort.Sort
 )
 
 // Validate checks the field values on DataPoint with the rules defined in the
-// proto definition for this message. If any rules are violated, an error is returned.
+// proto definition for this message. If any rules are violated, the first
+// error encountered is returned, or nil if there are no violations.
 func (m *DataPoint) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on DataPoint with the rules defined in
+// the proto definition for this message. If any rules are violated, the
+// result is a list of violation errors wrapped in DataPointMultiError, or nil
+// if none found.
+func (m *DataPoint) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *DataPoint) validate(all bool) error {
 	if m == nil {
 		return nil
 	}
 
+	var errors []error
+
 	if l := utf8.RuneCountInString(m.GetUniqId()); l < 5 || l > 40 {
-		return DataPointValidationError{
+		err := DataPointValidationError{
 			field:  "UniqId",
 			reason: "value length must be between 5 and 40 runes, inclusive",
 		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
 	}
 
 	if utf8.RuneCountInString(m.GetAttr()) > 40 {
-		return DataPointValidationError{
+		err := DataPointValidationError{
 			field:  "Attr",
 			reason: "value length must be at most 40 runes",
 		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
 	}
 
-	if v, ok := interface{}(m.GetTs()).(interface{ Validate() error }); ok {
+	if all {
+		switch v := interface{}(m.GetTs()).(type) {
+		case interface{ ValidateAll() error }:
+			if err := v.ValidateAll(); err != nil {
+				errors = append(errors, DataPointValidationError{
+					field:  "Ts",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		case interface{ Validate() error }:
+			if err := v.Validate(); err != nil {
+				errors = append(errors, DataPointValidationError{
+					field:  "Ts",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		}
+	} else if v, ok := interface{}(m.GetTs()).(interface{ Validate() error }); ok {
 		if err := v.Validate(); err != nil {
 			return DataPointValidationError{
 				field:  "Ts",
@@ -86,15 +130,38 @@ func (m *DataPoint) Validate() error {
 		// no validation rules for BytesVal
 
 	default:
-		return DataPointValidationError{
+		err := DataPointValidationError{
 			field:  "ValOneof",
 			reason: "value is required",
 		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
 
 	}
 
+	if len(errors) > 0 {
+		return DataPointMultiError(errors)
+	}
 	return nil
 }
+
+// DataPointMultiError is an error wrapping multiple validation errors returned
+// by DataPoint.ValidateAll() if the designated constraints aren't met.
+type DataPointMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m DataPointMultiError) Error() string {
+	var msgs []string
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m DataPointMultiError) AllErrors() []error { return m }
 
 // DataPointValidationError is the validation error returned by
 // DataPoint.Validate if the designated constraints aren't met.

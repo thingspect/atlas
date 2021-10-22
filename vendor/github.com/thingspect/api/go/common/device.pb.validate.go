@@ -11,6 +11,7 @@ import (
 	"net/mail"
 	"net/url"
 	"regexp"
+	"sort"
 	"strings"
 	"time"
 	"unicode/utf8"
@@ -31,51 +32,82 @@ var (
 	_ = (*url.URL)(nil)
 	_ = (*mail.Address)(nil)
 	_ = anypb.Any{}
+	_ = sort.Sort
 )
 
 // define the regex for a UUID once up-front
 var _device_uuidPattern = regexp.MustCompile("^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$")
 
 // Validate checks the field values on Device with the rules defined in the
-// proto definition for this message. If any rules are violated, an error is returned.
+// proto definition for this message. If any rules are violated, the first
+// error encountered is returned, or nil if there are no violations.
 func (m *Device) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on Device with the rules defined in the
+// proto definition for this message. If any rules are violated, the result is
+// a list of violation errors wrapped in DeviceMultiError, or nil if none found.
+func (m *Device) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *Device) validate(all bool) error {
 	if m == nil {
 		return nil
 	}
+
+	var errors []error
 
 	// no validation rules for Id
 
 	// no validation rules for OrgId
 
 	if l := utf8.RuneCountInString(m.GetUniqId()); l < 5 || l > 40 {
-		return DeviceValidationError{
+		err := DeviceValidationError{
 			field:  "UniqId",
 			reason: "value length must be between 5 and 40 runes, inclusive",
 		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
 	}
 
 	if l := utf8.RuneCountInString(m.GetName()); l < 5 || l > 80 {
-		return DeviceValidationError{
+		err := DeviceValidationError{
 			field:  "Name",
 			reason: "value length must be between 5 and 80 runes, inclusive",
 		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
 	}
 
 	if _, ok := _Device_Status_InLookup[m.GetStatus()]; !ok {
-		return DeviceValidationError{
+		err := DeviceValidationError{
 			field:  "Status",
 			reason: "value must be in list [3 6]",
 		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
 	}
 
 	if m.GetToken() != "" {
 
 		if err := m._validateUuid(m.GetToken()); err != nil {
-			return DeviceValidationError{
+			err = DeviceValidationError{
 				field:  "Token",
 				reason: "value must be a valid UUID",
 				cause:  err,
 			}
+			if !all {
+				return err
+			}
+			errors = append(errors, err)
 		}
 
 	}
@@ -88,24 +120,51 @@ func (m *Device) Validate() error {
 		_, _ = idx, item
 
 		if _, exists := _Device_Tags_Unique[item]; exists {
-			return DeviceValidationError{
+			err := DeviceValidationError{
 				field:  fmt.Sprintf("Tags[%v]", idx),
 				reason: "repeated value must contain unique items",
 			}
+			if !all {
+				return err
+			}
+			errors = append(errors, err)
 		} else {
 			_Device_Tags_Unique[item] = struct{}{}
 		}
 
 		if utf8.RuneCountInString(item) > 255 {
-			return DeviceValidationError{
+			err := DeviceValidationError{
 				field:  fmt.Sprintf("Tags[%v]", idx),
 				reason: "value length must be at most 255 runes",
 			}
+			if !all {
+				return err
+			}
+			errors = append(errors, err)
 		}
 
 	}
 
-	if v, ok := interface{}(m.GetCreatedAt()).(interface{ Validate() error }); ok {
+	if all {
+		switch v := interface{}(m.GetCreatedAt()).(type) {
+		case interface{ ValidateAll() error }:
+			if err := v.ValidateAll(); err != nil {
+				errors = append(errors, DeviceValidationError{
+					field:  "CreatedAt",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		case interface{ Validate() error }:
+			if err := v.Validate(); err != nil {
+				errors = append(errors, DeviceValidationError{
+					field:  "CreatedAt",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		}
+	} else if v, ok := interface{}(m.GetCreatedAt()).(interface{ Validate() error }); ok {
 		if err := v.Validate(); err != nil {
 			return DeviceValidationError{
 				field:  "CreatedAt",
@@ -115,7 +174,26 @@ func (m *Device) Validate() error {
 		}
 	}
 
-	if v, ok := interface{}(m.GetUpdatedAt()).(interface{ Validate() error }); ok {
+	if all {
+		switch v := interface{}(m.GetUpdatedAt()).(type) {
+		case interface{ ValidateAll() error }:
+			if err := v.ValidateAll(); err != nil {
+				errors = append(errors, DeviceValidationError{
+					field:  "UpdatedAt",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		case interface{ Validate() error }:
+			if err := v.Validate(); err != nil {
+				errors = append(errors, DeviceValidationError{
+					field:  "UpdatedAt",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		}
+	} else if v, ok := interface{}(m.GetUpdatedAt()).(interface{ Validate() error }); ok {
 		if err := v.Validate(); err != nil {
 			return DeviceValidationError{
 				field:  "UpdatedAt",
@@ -125,6 +203,9 @@ func (m *Device) Validate() error {
 		}
 	}
 
+	if len(errors) > 0 {
+		return DeviceMultiError(errors)
+	}
 	return nil
 }
 
@@ -135,6 +216,22 @@ func (m *Device) _validateUuid(uuid string) error {
 
 	return nil
 }
+
+// DeviceMultiError is an error wrapping multiple validation errors returned by
+// Device.ValidateAll() if the designated constraints aren't met.
+type DeviceMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m DeviceMultiError) Error() string {
+	var msgs []string
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m DeviceMultiError) AllErrors() []error { return m }
 
 // DeviceValidationError is the validation error returned by Device.Validate if
 // the designated constraints aren't met.

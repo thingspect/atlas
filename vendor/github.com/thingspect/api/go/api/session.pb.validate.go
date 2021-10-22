@@ -11,6 +11,7 @@ import (
 	"net/mail"
 	"net/url"
 	"regexp"
+	"sort"
 	"strings"
 	"time"
 	"unicode/utf8"
@@ -33,6 +34,7 @@ var (
 	_ = (*url.URL)(nil)
 	_ = (*mail.Address)(nil)
 	_ = anypb.Any{}
+	_ = sort.Sort
 
 	_ = common.Role(0)
 )
@@ -41,12 +43,26 @@ var (
 var _session_uuidPattern = regexp.MustCompile("^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$")
 
 // Validate checks the field values on LoginRequest with the rules defined in
-// the proto definition for this message. If any rules are violated, an error
-// is returned.
+// the proto definition for this message. If any rules are violated, the first
+// error encountered is returned, or nil if there are no violations.
 func (m *LoginRequest) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on LoginRequest with the rules defined
+// in the proto definition for this message. If any rules are violated, the
+// result is a list of violation errors wrapped in LoginRequestMultiError, or
+// nil if none found.
+func (m *LoginRequest) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *LoginRequest) validate(all bool) error {
 	if m == nil {
 		return nil
 	}
+
+	var errors []error
 
 	// no validation rules for Email
 
@@ -54,8 +70,27 @@ func (m *LoginRequest) Validate() error {
 
 	// no validation rules for Password
 
+	if len(errors) > 0 {
+		return LoginRequestMultiError(errors)
+	}
 	return nil
 }
+
+// LoginRequestMultiError is an error wrapping multiple validation errors
+// returned by LoginRequest.ValidateAll() if the designated constraints aren't met.
+type LoginRequestMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m LoginRequestMultiError) Error() string {
+	var msgs []string
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m LoginRequestMultiError) AllErrors() []error { return m }
 
 // LoginRequestValidationError is the validation error returned by
 // LoginRequest.Validate if the designated constraints aren't met.
@@ -112,16 +147,49 @@ var _ interface {
 } = LoginRequestValidationError{}
 
 // Validate checks the field values on LoginResponse with the rules defined in
-// the proto definition for this message. If any rules are violated, an error
-// is returned.
+// the proto definition for this message. If any rules are violated, the first
+// error encountered is returned, or nil if there are no violations.
 func (m *LoginResponse) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on LoginResponse with the rules defined
+// in the proto definition for this message. If any rules are violated, the
+// result is a list of violation errors wrapped in LoginResponseMultiError, or
+// nil if none found.
+func (m *LoginResponse) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *LoginResponse) validate(all bool) error {
 	if m == nil {
 		return nil
 	}
 
+	var errors []error
+
 	// no validation rules for Token
 
-	if v, ok := interface{}(m.GetExpiresAt()).(interface{ Validate() error }); ok {
+	if all {
+		switch v := interface{}(m.GetExpiresAt()).(type) {
+		case interface{ ValidateAll() error }:
+			if err := v.ValidateAll(); err != nil {
+				errors = append(errors, LoginResponseValidationError{
+					field:  "ExpiresAt",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		case interface{ Validate() error }:
+			if err := v.Validate(); err != nil {
+				errors = append(errors, LoginResponseValidationError{
+					field:  "ExpiresAt",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		}
+	} else if v, ok := interface{}(m.GetExpiresAt()).(interface{ Validate() error }); ok {
 		if err := v.Validate(); err != nil {
 			return LoginResponseValidationError{
 				field:  "ExpiresAt",
@@ -131,8 +199,28 @@ func (m *LoginResponse) Validate() error {
 		}
 	}
 
+	if len(errors) > 0 {
+		return LoginResponseMultiError(errors)
+	}
 	return nil
 }
+
+// LoginResponseMultiError is an error wrapping multiple validation errors
+// returned by LoginResponse.ValidateAll() if the designated constraints
+// aren't met.
+type LoginResponseMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m LoginResponseMultiError) Error() string {
+	var msgs []string
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m LoginResponseMultiError) AllErrors() []error { return m }
 
 // LoginResponseValidationError is the validation error returned by
 // LoginResponse.Validate if the designated constraints aren't met.
@@ -189,31 +277,72 @@ var _ interface {
 } = LoginResponseValidationError{}
 
 // Validate checks the field values on Key with the rules defined in the proto
-// definition for this message. If any rules are violated, an error is returned.
+// definition for this message. If any rules are violated, the first error
+// encountered is returned, or nil if there are no violations.
 func (m *Key) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on Key with the rules defined in the
+// proto definition for this message. If any rules are violated, the result is
+// a list of violation errors wrapped in KeyMultiError, or nil if none found.
+func (m *Key) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *Key) validate(all bool) error {
 	if m == nil {
 		return nil
 	}
+
+	var errors []error
 
 	// no validation rules for Id
 
 	// no validation rules for OrgId
 
 	if l := utf8.RuneCountInString(m.GetName()); l < 5 || l > 80 {
-		return KeyValidationError{
+		err := KeyValidationError{
 			field:  "Name",
 			reason: "value length must be between 5 and 80 runes, inclusive",
 		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
 	}
 
 	if _, ok := _Key_Role_InLookup[m.GetRole()]; !ok {
-		return KeyValidationError{
+		err := KeyValidationError{
 			field:  "Role",
 			reason: "value must be in list [3 6 7 9 12 15]",
 		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
 	}
 
-	if v, ok := interface{}(m.GetCreatedAt()).(interface{ Validate() error }); ok {
+	if all {
+		switch v := interface{}(m.GetCreatedAt()).(type) {
+		case interface{ ValidateAll() error }:
+			if err := v.ValidateAll(); err != nil {
+				errors = append(errors, KeyValidationError{
+					field:  "CreatedAt",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		case interface{ Validate() error }:
+			if err := v.Validate(); err != nil {
+				errors = append(errors, KeyValidationError{
+					field:  "CreatedAt",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		}
+	} else if v, ok := interface{}(m.GetCreatedAt()).(interface{ Validate() error }); ok {
 		if err := v.Validate(); err != nil {
 			return KeyValidationError{
 				field:  "CreatedAt",
@@ -223,8 +352,27 @@ func (m *Key) Validate() error {
 		}
 	}
 
+	if len(errors) > 0 {
+		return KeyMultiError(errors)
+	}
 	return nil
 }
+
+// KeyMultiError is an error wrapping multiple validation errors returned by
+// Key.ValidateAll() if the designated constraints aren't met.
+type KeyMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m KeyMultiError) Error() string {
+	var msgs []string
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m KeyMultiError) AllErrors() []error { return m }
 
 // KeyValidationError is the validation error returned by Key.Validate if the
 // designated constraints aren't met.
@@ -290,21 +438,58 @@ var _Key_Role_InLookup = map[common.Role]struct{}{
 }
 
 // Validate checks the field values on CreateKeyRequest with the rules defined
-// in the proto definition for this message. If any rules are violated, an
-// error is returned.
+// in the proto definition for this message. If any rules are violated, the
+// first error encountered is returned, or nil if there are no violations.
 func (m *CreateKeyRequest) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on CreateKeyRequest with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the result is a list of violation errors wrapped in
+// CreateKeyRequestMultiError, or nil if none found.
+func (m *CreateKeyRequest) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *CreateKeyRequest) validate(all bool) error {
 	if m == nil {
 		return nil
 	}
 
+	var errors []error
+
 	if m.GetKey() == nil {
-		return CreateKeyRequestValidationError{
+		err := CreateKeyRequestValidationError{
 			field:  "Key",
 			reason: "value is required",
 		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
 	}
 
-	if v, ok := interface{}(m.GetKey()).(interface{ Validate() error }); ok {
+	if all {
+		switch v := interface{}(m.GetKey()).(type) {
+		case interface{ ValidateAll() error }:
+			if err := v.ValidateAll(); err != nil {
+				errors = append(errors, CreateKeyRequestValidationError{
+					field:  "Key",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		case interface{ Validate() error }:
+			if err := v.Validate(); err != nil {
+				errors = append(errors, CreateKeyRequestValidationError{
+					field:  "Key",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		}
+	} else if v, ok := interface{}(m.GetKey()).(interface{ Validate() error }); ok {
 		if err := v.Validate(); err != nil {
 			return CreateKeyRequestValidationError{
 				field:  "Key",
@@ -314,8 +499,28 @@ func (m *CreateKeyRequest) Validate() error {
 		}
 	}
 
+	if len(errors) > 0 {
+		return CreateKeyRequestMultiError(errors)
+	}
 	return nil
 }
+
+// CreateKeyRequestMultiError is an error wrapping multiple validation errors
+// returned by CreateKeyRequest.ValidateAll() if the designated constraints
+// aren't met.
+type CreateKeyRequestMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m CreateKeyRequestMultiError) Error() string {
+	var msgs []string
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m CreateKeyRequestMultiError) AllErrors() []error { return m }
 
 // CreateKeyRequestValidationError is the validation error returned by
 // CreateKeyRequest.Validate if the designated constraints aren't met.
@@ -372,14 +577,47 @@ var _ interface {
 } = CreateKeyRequestValidationError{}
 
 // Validate checks the field values on CreateKeyResponse with the rules defined
-// in the proto definition for this message. If any rules are violated, an
-// error is returned.
+// in the proto definition for this message. If any rules are violated, the
+// first error encountered is returned, or nil if there are no violations.
 func (m *CreateKeyResponse) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on CreateKeyResponse with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the result is a list of violation errors wrapped in
+// CreateKeyResponseMultiError, or nil if none found.
+func (m *CreateKeyResponse) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *CreateKeyResponse) validate(all bool) error {
 	if m == nil {
 		return nil
 	}
 
-	if v, ok := interface{}(m.GetKey()).(interface{ Validate() error }); ok {
+	var errors []error
+
+	if all {
+		switch v := interface{}(m.GetKey()).(type) {
+		case interface{ ValidateAll() error }:
+			if err := v.ValidateAll(); err != nil {
+				errors = append(errors, CreateKeyResponseValidationError{
+					field:  "Key",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		case interface{ Validate() error }:
+			if err := v.Validate(); err != nil {
+				errors = append(errors, CreateKeyResponseValidationError{
+					field:  "Key",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		}
+	} else if v, ok := interface{}(m.GetKey()).(interface{ Validate() error }); ok {
 		if err := v.Validate(); err != nil {
 			return CreateKeyResponseValidationError{
 				field:  "Key",
@@ -391,8 +629,28 @@ func (m *CreateKeyResponse) Validate() error {
 
 	// no validation rules for Token
 
+	if len(errors) > 0 {
+		return CreateKeyResponseMultiError(errors)
+	}
 	return nil
 }
+
+// CreateKeyResponseMultiError is an error wrapping multiple validation errors
+// returned by CreateKeyResponse.ValidateAll() if the designated constraints
+// aren't met.
+type CreateKeyResponseMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m CreateKeyResponseMultiError) Error() string {
+	var msgs []string
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m CreateKeyResponseMultiError) AllErrors() []error { return m }
 
 // CreateKeyResponseValidationError is the validation error returned by
 // CreateKeyResponse.Validate if the designated constraints aren't met.
@@ -451,21 +709,42 @@ var _ interface {
 } = CreateKeyResponseValidationError{}
 
 // Validate checks the field values on DeleteKeyRequest with the rules defined
-// in the proto definition for this message. If any rules are violated, an
-// error is returned.
+// in the proto definition for this message. If any rules are violated, the
+// first error encountered is returned, or nil if there are no violations.
 func (m *DeleteKeyRequest) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on DeleteKeyRequest with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the result is a list of violation errors wrapped in
+// DeleteKeyRequestMultiError, or nil if none found.
+func (m *DeleteKeyRequest) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *DeleteKeyRequest) validate(all bool) error {
 	if m == nil {
 		return nil
 	}
 
+	var errors []error
+
 	if err := m._validateUuid(m.GetId()); err != nil {
-		return DeleteKeyRequestValidationError{
+		err = DeleteKeyRequestValidationError{
 			field:  "Id",
 			reason: "value must be a valid UUID",
 			cause:  err,
 		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
 	}
 
+	if len(errors) > 0 {
+		return DeleteKeyRequestMultiError(errors)
+	}
 	return nil
 }
 
@@ -476,6 +755,23 @@ func (m *DeleteKeyRequest) _validateUuid(uuid string) error {
 
 	return nil
 }
+
+// DeleteKeyRequestMultiError is an error wrapping multiple validation errors
+// returned by DeleteKeyRequest.ValidateAll() if the designated constraints
+// aren't met.
+type DeleteKeyRequestMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m DeleteKeyRequestMultiError) Error() string {
+	var msgs []string
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m DeleteKeyRequestMultiError) AllErrors() []error { return m }
 
 // DeleteKeyRequestValidationError is the validation error returned by
 // DeleteKeyRequest.Validate if the designated constraints aren't met.
@@ -532,24 +828,62 @@ var _ interface {
 } = DeleteKeyRequestValidationError{}
 
 // Validate checks the field values on ListKeysRequest with the rules defined
-// in the proto definition for this message. If any rules are violated, an
-// error is returned.
+// in the proto definition for this message. If any rules are violated, the
+// first error encountered is returned, or nil if there are no violations.
 func (m *ListKeysRequest) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on ListKeysRequest with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the result is a list of violation errors wrapped in
+// ListKeysRequestMultiError, or nil if none found.
+func (m *ListKeysRequest) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *ListKeysRequest) validate(all bool) error {
 	if m == nil {
 		return nil
 	}
 
+	var errors []error
+
 	if m.GetPageSize() > 250 {
-		return ListKeysRequestValidationError{
+		err := ListKeysRequestValidationError{
 			field:  "PageSize",
 			reason: "value must be less than or equal to 250",
 		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
 	}
 
 	// no validation rules for PageToken
 
+	if len(errors) > 0 {
+		return ListKeysRequestMultiError(errors)
+	}
 	return nil
 }
+
+// ListKeysRequestMultiError is an error wrapping multiple validation errors
+// returned by ListKeysRequest.ValidateAll() if the designated constraints
+// aren't met.
+type ListKeysRequestMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m ListKeysRequestMultiError) Error() string {
+	var msgs []string
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m ListKeysRequestMultiError) AllErrors() []error { return m }
 
 // ListKeysRequestValidationError is the validation error returned by
 // ListKeysRequest.Validate if the designated constraints aren't met.
@@ -606,17 +940,50 @@ var _ interface {
 } = ListKeysRequestValidationError{}
 
 // Validate checks the field values on ListKeysResponse with the rules defined
-// in the proto definition for this message. If any rules are violated, an
-// error is returned.
+// in the proto definition for this message. If any rules are violated, the
+// first error encountered is returned, or nil if there are no violations.
 func (m *ListKeysResponse) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on ListKeysResponse with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the result is a list of violation errors wrapped in
+// ListKeysResponseMultiError, or nil if none found.
+func (m *ListKeysResponse) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *ListKeysResponse) validate(all bool) error {
 	if m == nil {
 		return nil
 	}
 
+	var errors []error
+
 	for idx, item := range m.GetKeys() {
 		_, _ = idx, item
 
-		if v, ok := interface{}(item).(interface{ Validate() error }); ok {
+		if all {
+			switch v := interface{}(item).(type) {
+			case interface{ ValidateAll() error }:
+				if err := v.ValidateAll(); err != nil {
+					errors = append(errors, ListKeysResponseValidationError{
+						field:  fmt.Sprintf("Keys[%v]", idx),
+						reason: "embedded message failed validation",
+						cause:  err,
+					})
+				}
+			case interface{ Validate() error }:
+				if err := v.Validate(); err != nil {
+					errors = append(errors, ListKeysResponseValidationError{
+						field:  fmt.Sprintf("Keys[%v]", idx),
+						reason: "embedded message failed validation",
+						cause:  err,
+					})
+				}
+			}
+		} else if v, ok := interface{}(item).(interface{ Validate() error }); ok {
 			if err := v.Validate(); err != nil {
 				return ListKeysResponseValidationError{
 					field:  fmt.Sprintf("Keys[%v]", idx),
@@ -632,8 +999,28 @@ func (m *ListKeysResponse) Validate() error {
 
 	// no validation rules for TotalSize
 
+	if len(errors) > 0 {
+		return ListKeysResponseMultiError(errors)
+	}
 	return nil
 }
+
+// ListKeysResponseMultiError is an error wrapping multiple validation errors
+// returned by ListKeysResponse.ValidateAll() if the designated constraints
+// aren't met.
+type ListKeysResponseMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m ListKeysResponseMultiError) Error() string {
+	var msgs []string
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m ListKeysResponseMultiError) AllErrors() []error { return m }
 
 // ListKeysResponseValidationError is the validation error returned by
 // ListKeysResponse.Validate if the designated constraints aren't met.
