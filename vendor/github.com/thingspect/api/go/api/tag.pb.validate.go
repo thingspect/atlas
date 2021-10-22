@@ -11,6 +11,7 @@ import (
 	"net/mail"
 	"net/url"
 	"regexp"
+	"sort"
 	"strings"
 	"time"
 	"unicode/utf8"
@@ -31,18 +32,53 @@ var (
 	_ = (*url.URL)(nil)
 	_ = (*mail.Address)(nil)
 	_ = anypb.Any{}
+	_ = sort.Sort
 )
 
 // Validate checks the field values on ListTagsRequest with the rules defined
-// in the proto definition for this message. If any rules are violated, an
-// error is returned.
+// in the proto definition for this message. If any rules are violated, the
+// first error encountered is returned, or nil if there are no violations.
 func (m *ListTagsRequest) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on ListTagsRequest with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the result is a list of violation errors wrapped in
+// ListTagsRequestMultiError, or nil if none found.
+func (m *ListTagsRequest) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *ListTagsRequest) validate(all bool) error {
 	if m == nil {
 		return nil
 	}
 
+	var errors []error
+
+	if len(errors) > 0 {
+		return ListTagsRequestMultiError(errors)
+	}
 	return nil
 }
+
+// ListTagsRequestMultiError is an error wrapping multiple validation errors
+// returned by ListTagsRequest.ValidateAll() if the designated constraints
+// aren't met.
+type ListTagsRequestMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m ListTagsRequestMultiError) Error() string {
+	var msgs []string
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m ListTagsRequestMultiError) AllErrors() []error { return m }
 
 // ListTagsRequestValidationError is the validation error returned by
 // ListTagsRequest.Validate if the designated constraints aren't met.
@@ -99,15 +135,49 @@ var _ interface {
 } = ListTagsRequestValidationError{}
 
 // Validate checks the field values on ListTagsResponse with the rules defined
-// in the proto definition for this message. If any rules are violated, an
-// error is returned.
+// in the proto definition for this message. If any rules are violated, the
+// first error encountered is returned, or nil if there are no violations.
 func (m *ListTagsResponse) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on ListTagsResponse with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the result is a list of violation errors wrapped in
+// ListTagsResponseMultiError, or nil if none found.
+func (m *ListTagsResponse) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *ListTagsResponse) validate(all bool) error {
 	if m == nil {
 		return nil
 	}
 
+	var errors []error
+
+	if len(errors) > 0 {
+		return ListTagsResponseMultiError(errors)
+	}
 	return nil
 }
+
+// ListTagsResponseMultiError is an error wrapping multiple validation errors
+// returned by ListTagsResponse.ValidateAll() if the designated constraints
+// aren't met.
+type ListTagsResponseMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m ListTagsResponseMultiError) Error() string {
+	var msgs []string
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m ListTagsResponseMultiError) AllErrors() []error { return m }
 
 // ListTagsResponseValidationError is the validation error returned by
 // ListTagsResponse.Validate if the designated constraints aren't met.

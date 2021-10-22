@@ -11,6 +11,7 @@ import (
 	"net/mail"
 	"net/url"
 	"regexp"
+	"sort"
 	"strings"
 	"time"
 	"unicode/utf8"
@@ -31,17 +32,32 @@ var (
 	_ = (*url.URL)(nil)
 	_ = (*mail.Address)(nil)
 	_ = anypb.Any{}
+	_ = sort.Sort
 )
 
 // define the regex for a UUID once up-front
 var _alert_uuidPattern = regexp.MustCompile("^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$")
 
 // Validate checks the field values on Alert with the rules defined in the
-// proto definition for this message. If any rules are violated, an error is returned.
+// proto definition for this message. If any rules are violated, the first
+// error encountered is returned, or nil if there are no violations.
 func (m *Alert) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on Alert with the rules defined in the
+// proto definition for this message. If any rules are violated, the result is
+// a list of violation errors wrapped in AlertMultiError, or nil if none found.
+func (m *Alert) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *Alert) validate(all bool) error {
 	if m == nil {
 		return nil
 	}
+
+	var errors []error
 
 	// no validation rules for OrgId
 
@@ -55,7 +71,26 @@ func (m *Alert) Validate() error {
 
 	// no validation rules for Error
 
-	if v, ok := interface{}(m.GetCreatedAt()).(interface{ Validate() error }); ok {
+	if all {
+		switch v := interface{}(m.GetCreatedAt()).(type) {
+		case interface{ ValidateAll() error }:
+			if err := v.ValidateAll(); err != nil {
+				errors = append(errors, AlertValidationError{
+					field:  "CreatedAt",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		case interface{ Validate() error }:
+			if err := v.Validate(); err != nil {
+				errors = append(errors, AlertValidationError{
+					field:  "CreatedAt",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		}
+	} else if v, ok := interface{}(m.GetCreatedAt()).(interface{ Validate() error }); ok {
 		if err := v.Validate(); err != nil {
 			return AlertValidationError{
 				field:  "CreatedAt",
@@ -67,8 +102,27 @@ func (m *Alert) Validate() error {
 
 	// no validation rules for TraceId
 
+	if len(errors) > 0 {
+		return AlertMultiError(errors)
+	}
 	return nil
 }
+
+// AlertMultiError is an error wrapping multiple validation errors returned by
+// Alert.ValidateAll() if the designated constraints aren't met.
+type AlertMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m AlertMultiError) Error() string {
+	var msgs []string
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m AlertMultiError) AllErrors() []error { return m }
 
 // AlertValidationError is the validation error returned by Alert.Validate if
 // the designated constraints aren't met.
@@ -125,21 +179,39 @@ var _ interface {
 } = AlertValidationError{}
 
 // Validate checks the field values on ListAlertsRequest with the rules defined
-// in the proto definition for this message. If any rules are violated, an
-// error is returned.
+// in the proto definition for this message. If any rules are violated, the
+// first error encountered is returned, or nil if there are no violations.
 func (m *ListAlertsRequest) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on ListAlertsRequest with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the result is a list of violation errors wrapped in
+// ListAlertsRequestMultiError, or nil if none found.
+func (m *ListAlertsRequest) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *ListAlertsRequest) validate(all bool) error {
 	if m == nil {
 		return nil
 	}
 
+	var errors []error
+
 	if m.GetAlarmId() != "" {
 
 		if err := m._validateUuid(m.GetAlarmId()); err != nil {
-			return ListAlertsRequestValidationError{
+			err = ListAlertsRequestValidationError{
 				field:  "AlarmId",
 				reason: "value must be a valid UUID",
 				cause:  err,
 			}
+			if !all {
+				return err
+			}
+			errors = append(errors, err)
 		}
 
 	}
@@ -147,16 +219,39 @@ func (m *ListAlertsRequest) Validate() error {
 	if m.GetUserId() != "" {
 
 		if err := m._validateUuid(m.GetUserId()); err != nil {
-			return ListAlertsRequestValidationError{
+			err = ListAlertsRequestValidationError{
 				field:  "UserId",
 				reason: "value must be a valid UUID",
 				cause:  err,
 			}
+			if !all {
+				return err
+			}
+			errors = append(errors, err)
 		}
 
 	}
 
-	if v, ok := interface{}(m.GetEndTime()).(interface{ Validate() error }); ok {
+	if all {
+		switch v := interface{}(m.GetEndTime()).(type) {
+		case interface{ ValidateAll() error }:
+			if err := v.ValidateAll(); err != nil {
+				errors = append(errors, ListAlertsRequestValidationError{
+					field:  "EndTime",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		case interface{ Validate() error }:
+			if err := v.Validate(); err != nil {
+				errors = append(errors, ListAlertsRequestValidationError{
+					field:  "EndTime",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		}
+	} else if v, ok := interface{}(m.GetEndTime()).(interface{ Validate() error }); ok {
 		if err := v.Validate(); err != nil {
 			return ListAlertsRequestValidationError{
 				field:  "EndTime",
@@ -166,7 +261,26 @@ func (m *ListAlertsRequest) Validate() error {
 		}
 	}
 
-	if v, ok := interface{}(m.GetStartTime()).(interface{ Validate() error }); ok {
+	if all {
+		switch v := interface{}(m.GetStartTime()).(type) {
+		case interface{ ValidateAll() error }:
+			if err := v.ValidateAll(); err != nil {
+				errors = append(errors, ListAlertsRequestValidationError{
+					field:  "StartTime",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		case interface{ Validate() error }:
+			if err := v.Validate(); err != nil {
+				errors = append(errors, ListAlertsRequestValidationError{
+					field:  "StartTime",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		}
+	} else if v, ok := interface{}(m.GetStartTime()).(interface{ Validate() error }); ok {
 		if err := v.Validate(); err != nil {
 			return ListAlertsRequestValidationError{
 				field:  "StartTime",
@@ -186,17 +300,24 @@ func (m *ListAlertsRequest) Validate() error {
 		if m.GetDeviceId() != "" {
 
 			if err := m._validateUuid(m.GetDeviceId()); err != nil {
-				return ListAlertsRequestValidationError{
+				err = ListAlertsRequestValidationError{
 					field:  "DeviceId",
 					reason: "value must be a valid UUID",
 					cause:  err,
 				}
+				if !all {
+					return err
+				}
+				errors = append(errors, err)
 			}
 
 		}
 
 	}
 
+	if len(errors) > 0 {
+		return ListAlertsRequestMultiError(errors)
+	}
 	return nil
 }
 
@@ -207,6 +328,23 @@ func (m *ListAlertsRequest) _validateUuid(uuid string) error {
 
 	return nil
 }
+
+// ListAlertsRequestMultiError is an error wrapping multiple validation errors
+// returned by ListAlertsRequest.ValidateAll() if the designated constraints
+// aren't met.
+type ListAlertsRequestMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m ListAlertsRequestMultiError) Error() string {
+	var msgs []string
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m ListAlertsRequestMultiError) AllErrors() []error { return m }
 
 // ListAlertsRequestValidationError is the validation error returned by
 // ListAlertsRequest.Validate if the designated constraints aren't met.
@@ -266,16 +404,49 @@ var _ interface {
 
 // Validate checks the field values on ListAlertsResponse with the rules
 // defined in the proto definition for this message. If any rules are
-// violated, an error is returned.
+// violated, the first error encountered is returned, or nil if there are no violations.
 func (m *ListAlertsResponse) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on ListAlertsResponse with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the result is a list of violation errors wrapped in
+// ListAlertsResponseMultiError, or nil if none found.
+func (m *ListAlertsResponse) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *ListAlertsResponse) validate(all bool) error {
 	if m == nil {
 		return nil
 	}
 
+	var errors []error
+
 	for idx, item := range m.GetAlerts() {
 		_, _ = idx, item
 
-		if v, ok := interface{}(item).(interface{ Validate() error }); ok {
+		if all {
+			switch v := interface{}(item).(type) {
+			case interface{ ValidateAll() error }:
+				if err := v.ValidateAll(); err != nil {
+					errors = append(errors, ListAlertsResponseValidationError{
+						field:  fmt.Sprintf("Alerts[%v]", idx),
+						reason: "embedded message failed validation",
+						cause:  err,
+					})
+				}
+			case interface{ Validate() error }:
+				if err := v.Validate(); err != nil {
+					errors = append(errors, ListAlertsResponseValidationError{
+						field:  fmt.Sprintf("Alerts[%v]", idx),
+						reason: "embedded message failed validation",
+						cause:  err,
+					})
+				}
+			}
+		} else if v, ok := interface{}(item).(interface{ Validate() error }); ok {
 			if err := v.Validate(); err != nil {
 				return ListAlertsResponseValidationError{
 					field:  fmt.Sprintf("Alerts[%v]", idx),
@@ -287,8 +458,28 @@ func (m *ListAlertsResponse) Validate() error {
 
 	}
 
+	if len(errors) > 0 {
+		return ListAlertsResponseMultiError(errors)
+	}
 	return nil
 }
+
+// ListAlertsResponseMultiError is an error wrapping multiple validation errors
+// returned by ListAlertsResponse.ValidateAll() if the designated constraints
+// aren't met.
+type ListAlertsResponseMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m ListAlertsResponseMultiError) Error() string {
+	var msgs []string
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m ListAlertsResponseMultiError) AllErrors() []error { return m }
 
 // ListAlertsResponseValidationError is the validation error returned by
 // ListAlertsResponse.Validate if the designated constraints aren't met.
