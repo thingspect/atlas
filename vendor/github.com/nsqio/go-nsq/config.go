@@ -72,7 +72,7 @@ func (s *FullJitterStrategy) Calculate(attempt int) time.Duration {
 
 	backoffDuration := s.cfg.BackoffMultiplier *
 		time.Duration(math.Pow(2, float64(attempt)))
-	return time.Duration(s.rng.Intn(int(backoffDuration)))
+	return time.Duration(s.rng.Int63n(int64(backoffDuration)))
 }
 
 func (s *FullJitterStrategy) setConfig(cfg *Config) {
@@ -110,6 +110,7 @@ type Config struct {
 	// reconnection attempts
 	LookupdPollInterval time.Duration `opt:"lookupd_poll_interval" min:"10ms" max:"5m" default:"60s"`
 	LookupdPollJitter   float64       `opt:"lookupd_poll_jitter" min:"0" max:"1" default:"0.3"`
+	LookupdPollTimeout  time.Duration `opt:"lookupd_poll_timeout" default:"1m"`
 
 	// Maximum duration when REQueueing (for doubling of deferred requeue)
 	MaxRequeueDelay     time.Duration `opt:"max_requeue_delay" min:"0" max:"60m" default:"15m"`
@@ -176,8 +177,10 @@ type Config struct {
 	// The server-side message timeout for messages delivered to this client
 	MsgTimeout time.Duration `opt:"msg_timeout" min:"0"`
 
-	// secret for nsqd authentication (requires nsqd 0.2.29+)
+	// Secret for nsqd authentication (requires nsqd 0.2.29+)
 	AuthSecret string `opt:"auth_secret"`
+	// Use AuthSecret as 'Authorization: Bearer {AuthSecret}' on lookupd queries
+	LookupdAuthorization bool `opt:"skip_lookupd_authorization" default:"true"`
 }
 
 // NewConfig returns a new default nsq configuration.
