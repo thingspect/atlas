@@ -5,7 +5,7 @@
 ## Getting Started
 
 Install [Docker](https://docs.docker.com/get-started/overview/) and
-[Go](https://golang.org/doc/tutorial/getting-started).
+[Go](https://go.dev/dl/).
 
 ```
 docker compose -f build/docker-compose.yml up -d
