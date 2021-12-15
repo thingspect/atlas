@@ -19,6 +19,7 @@ import (
 	"github.com/thingspect/atlas/pkg/test/random"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials"
+	"google.golang.org/grpc/credentials/insecure"
 	"google.golang.org/grpc/encoding/gzip"
 )
 
@@ -76,7 +77,8 @@ func main() {
 
 		switch *grpcTLS {
 		case false:
-			opts = append(opts, grpc.WithInsecure())
+			opts = append(opts, grpc.WithTransportCredentials(
+				insecure.NewCredentials()))
 		case true:
 			opts = append(opts, grpc.WithTransportCredentials(
 				credentials.NewTLS(&tls.Config{MinVersion: tls.VersionTLS12})))
