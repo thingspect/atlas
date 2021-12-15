@@ -2,6 +2,7 @@ package lora
 
 import (
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials/insecure"
 )
 
 // Chirpstack holds references to the ChirpStack Application Server and
@@ -24,7 +25,7 @@ func NewChirpstack(addr, apiKey string, orgID, nsID, appID int,
 	// Build Chirpstack AS gRPC connection.
 	opts := []grpc.DialOption{
 		grpc.WithBlock(),
-		grpc.WithInsecure(),
+		grpc.WithTransportCredentials(insecure.NewCredentials()),
 		grpc.WithPerRPCCredentials(&credential{token: apiKey}),
 	}
 	conn, err := grpc.Dial(addr, opts...)

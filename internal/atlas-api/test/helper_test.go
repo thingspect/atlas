@@ -12,6 +12,7 @@ import (
 	iapi "github.com/thingspect/atlas/internal/atlas-api/api"
 	"github.com/thingspect/atlas/pkg/test/random"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials/insecure"
 )
 
 // credential provides token-based credentials for gRPC.
@@ -66,7 +67,7 @@ func authGRPCConn(role common.Role) (string, *grpc.ClientConn, error) {
 
 	opts := []grpc.DialOption{
 		grpc.WithBlock(),
-		grpc.WithInsecure(),
+		grpc.WithTransportCredentials(insecure.NewCredentials()),
 		grpc.WithPerRPCCredentials(&credential{token: login.Token}),
 	}
 	authConn, err := grpc.Dial(iapi.GRPCHost+iapi.GRPCPort, opts...)
@@ -93,7 +94,7 @@ func keyGRPCConn(conn *grpc.ClientConn, role common.Role) (*grpc.ClientConn,
 
 	opts := []grpc.DialOption{
 		grpc.WithBlock(),
-		grpc.WithInsecure(),
+		grpc.WithTransportCredentials(insecure.NewCredentials()),
 		grpc.WithPerRPCCredentials(&credential{token: createKey.Token}),
 	}
 	keyConn, err := grpc.Dial(iapi.GRPCHost+iapi.GRPCPort, opts...)
