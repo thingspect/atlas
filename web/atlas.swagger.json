@@ -3,7 +3,7 @@
   "info": {
     "title": "Atlas",
     "description": "Getting started with the Atlas API:\n- Log in with `/v1/sessions/login` using your provided credentials. Authorize below using the provided token.\n- (Optional) Create an `BUILDER` role API key with `/v1/sessions/keys`. Re-authorize using the provided token.\n\nPublish and verify data points:\n- Create a device with `/v1/devices`. Include a notable `tag` for future use.\n- Publish data with `/v1/datapoints`. The `attr` and `val` fields can be arbitrarily chosen.\n- Inspect the received data with `/v1/datapoints/latest` using the device's `uniqID`.\n\nPublish data points and receive alerts:\n- Update your user with `/v1/users/{user.id}` to include a notable `tag`.\n- Create a rule with `/v1/rules`. The `deviceTag` field should match a tag of the device. The `expr` field can be simply `true`.\n- Create an alarm with `/v1/rules/{alarm.ruleID}/alarms`. The `type` field should match data that is available in the user's fields, such as `EMAIL`. The `userTags` field should include a tag of the user.\n- Publish data for the device, as done in the previous section. The `attr` field should match the `attr` of the rule.\n- Verify the alert is received by the user on the configured `type` method.\n- Inspect the created event with `/v1/events` using the device's `uniqID`.\n- Inspect the created alert with `/v1/alerts` using the device's `uniqID`.",
-    "version": "0.1.7",
+    "version": "0.1.8",
     "contact": {
       "name": "Thingspect",
       "url": "https://www.thingspect.com/",
