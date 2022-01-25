@@ -1,5 +1,6 @@
 package gateway
 
+//nolint:staticcheck // third-party dependency
 import (
 	"github.com/brocaar/chirpstack-api/go/v3/gw"
 

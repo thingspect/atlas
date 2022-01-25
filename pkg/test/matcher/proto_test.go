@@ -21,6 +21,8 @@ func runProto(p protoer, vIn *token.Web) error {
 }
 
 func TestProtoMatcher(t *testing.T) {
+	t.Parallel()
+
 	protoer := NewMockprotoer(gomock.NewController(t))
 	protoer.EXPECT().f(NewProtoMatcher(&token.Web{})).Return(
 		nil).Times(1)

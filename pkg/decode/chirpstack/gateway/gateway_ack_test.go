@@ -2,6 +2,7 @@
 
 package gateway
 
+//nolint:staticcheck // third-party dependency
 import (
 	"fmt"
 	"testing"

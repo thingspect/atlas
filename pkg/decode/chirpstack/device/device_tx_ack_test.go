@@ -2,6 +2,7 @@
 
 package device
 
+//nolint:staticcheck // third-party dependency
 import (
 	"encoding/base64"
 	"encoding/hex"

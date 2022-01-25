@@ -1,5 +1,6 @@
 package device
 
+//nolint:staticcheck // third-party dependency
 import (
 	as "github.com/brocaar/chirpstack-api/go/v3/as/integration"
 

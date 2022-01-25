@@ -21,6 +21,8 @@ func runRecent(r recenter, t time.Time) error {
 }
 
 func TestRecentMatcher(t *testing.T) {
+	t.Parallel()
+
 	recenter := NewMockrecenter(gomock.NewController(t))
 	recenter.EXPECT().f(NewRecentMatcher(2 * time.Second)).Return(nil).Times(1)
 
