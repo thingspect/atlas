@@ -44,12 +44,9 @@ func TestGatewayAck(t *testing.T) {
 					{Status: gw.TxAckStatus_TOO_LATE},
 				},
 			}, []*decode.Point{
-				{
-					Attr:  "raw_gateway",
-					Value: `{"items":[{"status":` + `"TOO_LATE"}]}`,
-				}, {
-					Attr: "ack", Value: "TOO_LATE",
-				},
+				{Attr: "raw_gateway", Value: `{"items":[{"status":` +
+					`"TOO_LATE"}]}`},
+				{Attr: "ack", Value: "TOO_LATE"},
 			}, "",
 		},
 		// Gateway ACK bad length.

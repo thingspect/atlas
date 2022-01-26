@@ -52,6 +52,14 @@ func TestDeviceUp(t *testing.T) {
 	}{
 		// Device Uplink.
 		{
+			&as.UplinkEvent{}, []*decode.Point{
+				{Attr: "raw_device", Value: `{}`},
+				{Attr: "adr", Value: false},
+				{Attr: "data_rate", Value: int32(0)},
+				{Attr: "confirmed", Value: false},
+			}, time.Now(), nil, "",
+		},
+		{
 			&as.UplinkEvent{RxInfo: []*gw.UplinkRXInfo{{}}}, []*decode.Point{
 				{Attr: "raw_device", Value: `{"rxInfo":[{}]}`},
 				{Attr: "channel", Value: int32(0)},

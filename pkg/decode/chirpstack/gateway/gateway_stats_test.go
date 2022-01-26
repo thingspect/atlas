@@ -45,7 +45,9 @@ func TestGatewayStats(t *testing.T) {
 	}{
 		// Gateway Stats.
 		{
-			&gw.GatewayStats{}, []*decode.Point{{Attr: "raw_gateway", Value: `{}`}}, "",
+			&gw.GatewayStats{}, []*decode.Point{
+				{Attr: "raw_gateway", Value: `{}`},
+			}, "",
 		},
 		{
 			&gw.GatewayStats{
@@ -54,77 +56,46 @@ func TestGatewayStats(t *testing.T) {
 				TxPacketsReceived: 3, TxPacketsEmitted: 4,
 				MetaData: map[string]string{"aaa": "bbb"},
 			}, []*decode.Point{
-				{
-					Attr: "raw_gateway",
-					Value: fmt.Sprintf(`{"gatewayID":"%s","ip":"127.0.0.1",`+
-						`"time":"%s","rxPacketsReceived":1,`+
-						`"rxPacketsReceivedOK":2,"txPacketsReceived":3,`+
-						`"txPacketsEmitted":4,"metaData":{"aaa":"bbb"}}`,
-						b64UniqID, now.Format(time.RFC3339Nano)),
-				},
-				{
-					Attr: "id", Value: uniqID,
-				},
-				{
-					Attr: "ip", Value: "127.0.0.1",
-				},
-				{
-					Attr: "time", Value: strconv.FormatInt(now.Unix(), 10),
-				},
-				{
-					Attr: "rx_received", Value: int32(1),
-				},
-				{
-					Attr: "rx_received_valid", Value: int32(2),
-				},
-				{
-					Attr: "tx_received", Value: int32(3),
-				},
-				{
-					Attr: "tx_transmitted", Value: int32(4),
-				},
-				{
-					Attr: "aaa", Value: "bbb",
-				},
+				{Attr: "raw_gateway", Value: fmt.Sprintf(`{"gatewayID":"%s",`+
+					`"ip":"127.0.0.1","time":"%s","rxPacketsReceived":1,`+
+					`"rxPacketsReceivedOK":2,"txPacketsReceived":3,`+
+					`"txPacketsEmitted":4,"metaData":{"aaa":"bbb"}}`, b64UniqID,
+					now.Format(time.RFC3339Nano))},
+				{Attr: "id", Value: uniqID},
+				{Attr: "ip", Value: "127.0.0.1"},
+				{Attr: "time", Value: strconv.FormatInt(now.Unix(), 10)},
+				{Attr: "rx_received", Value: int32(1)},
+				{Attr: "rx_received_valid", Value: int32(2)},
+				{Attr: "tx_received", Value: int32(3)},
+				{Attr: "tx_transmitted", Value: int32(4)},
+				{Attr: "aaa", Value: "bbb"},
 			}, "",
 		},
 		{
 			&gw.GatewayStats{
 				MetaData: map[string]string{"str_cell_status": "DISCONNECTED"},
 			}, []*decode.Point{
-				{
-					Attr:  "raw_gateway",
-					Value: `{"metaData":{"str_cell_status":"DISCONNECTED"}}`,
-				},
-				{
-					Attr: "cell_status", Value: "DISCONNECTED",
-				},
+				{Attr: "raw_gateway", Value: `{"metaData":{"str_cell_status":` +
+					`"DISCONNECTED"}}`},
+				{Attr: "cell_status", Value: "DISCONNECTED"},
 			}, "",
 		},
 		{
 			&gw.GatewayStats{
 				MetaData: map[string]string{"int_hour": "1612391935"},
 			}, []*decode.Point{
-				{
-					Attr:  "raw_gateway",
-					Value: `{"metaData":{"int_hour":"1612391935"}}`,
-				},
-				{
-					Attr: "hour", Value: int32(1612391935),
-				},
+				{Attr: "raw_gateway", Value: `{"metaData":{"int_hour":` +
+					`"1612391935"}}`},
+				{Attr: "hour", Value: int32(1612391935)},
 			}, "",
 		},
 		{
 			&gw.GatewayStats{
 				MetaData: map[string]string{"fl64_uptime": "13379004.3"},
 			}, []*decode.Point{
-				{
-					Attr:  "raw_gateway",
-					Value: `{"metaData":{"fl64_uptime":"13379004.3"}}`,
-				},
-				{
-					Attr: "uptime", Value: 13379004.3,
-				},
+				{Attr: "raw_gateway", Value: `{"metaData":{"fl64_uptime":` +
+					`"13379004.3"}}`},
+				{Attr: "uptime", Value: 13379004.3},
 			}, "",
 		},
 		// Gateway Stats bad length.
@@ -135,10 +106,7 @@ func TestGatewayStats(t *testing.T) {
 		{
 			&gw.GatewayStats{MetaData: map[string]string{"int_hour": "aaa"}},
 			[]*decode.Point{
-				{
-					Attr:  "raw_gateway",
-					Value: `{"metaData":{"int_hour":"aaa"}}`,
-				},
+				{Attr: "raw_gateway", Value: `{"metaData":{"int_hour":"aaa"}}`},
 			},
 			`strconv.ParseInt: parsing "aaa": invalid syntax`,
 		},
@@ -146,10 +114,8 @@ func TestGatewayStats(t *testing.T) {
 		{
 			&gw.GatewayStats{MetaData: map[string]string{"fl64_time": "bbb"}},
 			[]*decode.Point{
-				{
-					Attr:  "raw_gateway",
-					Value: `{"metaData":{"fl64_time":"bbb"}}`,
-				},
+				{Attr: "raw_gateway", Value: `{"metaData":{"fl64_time":` +
+					`"bbb"}}`},
 			},
 			`strconv.ParseFloat: parsing "bbb": invalid syntax`,
 		},

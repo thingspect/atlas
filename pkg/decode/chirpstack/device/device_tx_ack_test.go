@@ -19,7 +19,7 @@ import (
 	"github.com/thingspect/atlas/pkg/test/random"
 )
 
-func TestDeviceTxAck(t *testing.T) {
+func TestDeviceTXAck(t *testing.T) {
 	t.Parallel()
 
 	gatewayID := random.String(16)
@@ -30,7 +30,7 @@ func TestDeviceTxAck(t *testing.T) {
 	b64GatewayID := base64.StdEncoding.EncodeToString(bGatewayID)
 	t.Logf("b64GatewayID: %v", b64GatewayID)
 
-	// Device TX ACK payloads, see deviceTxAck() for format description.
+	// Device TX ACK payloads, see deviceTXAck() for format description.
 	tests := []struct {
 		inp *as.TxAckEvent
 		res []*decode.Point
@@ -74,7 +74,7 @@ func TestDeviceTxAck(t *testing.T) {
 				require.NoError(t, err)
 			}
 
-			res, err := deviceTxAck(bInp)
+			res, err := deviceTXAck(bInp)
 			t.Logf("res, err: %#v, %v", res, err)
 			require.Equal(t, lTest.res, res)
 			if lTest.err == "" {

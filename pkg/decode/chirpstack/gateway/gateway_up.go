@@ -10,6 +10,7 @@ import (
 	//lint:ignore SA1019 // third-party dependency
 	"github.com/golang/protobuf/proto"
 	"github.com/thingspect/atlas/pkg/decode"
+	"github.com/thingspect/atlas/pkg/decode/chirpstack"
 )
 
 // gatewayUp parses a gateway Uplink payload from a []byte according to the
@@ -45,21 +46,7 @@ func gatewayUp(body []byte) ([]*decode.Point, error) {
 	}
 
 	// Parse UplinkRXInfo.
-	if upMsg.RxInfo != nil {
-		if upMsg.RxInfo.Rssi != 0 {
-			msgs = append(msgs, &decode.Point{
-				Attr: "lora_rssi", Value: upMsg.RxInfo.Rssi,
-			})
-		}
-		if upMsg.RxInfo.LoraSnr != 0 {
-			msgs = append(msgs, &decode.Point{
-				Attr: "snr", Value: upMsg.RxInfo.LoraSnr,
-			})
-		}
-		msgs = append(msgs, &decode.Point{
-			Attr: "channel", Value: int32(upMsg.RxInfo.Channel),
-		})
-	}
+	msgs = append(msgs, chirpstack.ParseRXInfo(upMsg.RxInfo)...)
 
 	return msgs, nil
 }

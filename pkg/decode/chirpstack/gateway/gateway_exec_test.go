@@ -35,20 +35,11 @@ func TestGatewayExec(t *testing.T) {
 				Stdout: []byte("STDOUT"), Stderr: []byte("STDERR"),
 				Error: "TOO_LATE",
 			}, []*decode.Point{
-				{
-					Attr: "raw_gateway",
-					Value: `{"stdout":"U1RET1VU","stderr":"U1RERVJS","error":` +
-						`"TOO_LATE"}`,
-				},
-				{
-					Attr: "exec_stdout", Value: "STDOUT",
-				},
-				{
-					Attr: "exec_stderr", Value: "STDERR",
-				},
-				{
-					Attr: "exec_error", Value: "TOO_LATE",
-				},
+				{Attr: "raw_gateway", Value: `{"stdout":"U1RET1VU","stderr":` +
+					`"U1RERVJS","error":"TOO_LATE"}`},
+				{Attr: "exec_stdout", Value: "STDOUT"},
+				{Attr: "exec_stderr", Value: "STDERR"},
+				{Attr: "exec_error", Value: "TOO_LATE"},
 			}, "",
 		},
 		// Gateway Exec bad length.
