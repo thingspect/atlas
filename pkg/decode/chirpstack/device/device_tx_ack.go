@@ -14,9 +14,9 @@ import (
 	"github.com/thingspect/atlas/pkg/decode"
 )
 
-// deviceTxAck parses a device TX ACK payload from a []byte according to the
+// deviceTXAck parses a device TX ACK payload from a []byte according to the
 // spec.
-func deviceTxAck(body []byte) ([]*decode.Point, error) {
+func deviceTXAck(body []byte) ([]*decode.Point, error) {
 	txAckMsg := &as.TxAckEvent{}
 	if err := proto.Unmarshal(body, txAckMsg); err != nil {
 		return nil, err

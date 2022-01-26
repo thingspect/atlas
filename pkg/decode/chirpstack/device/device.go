@@ -30,7 +30,7 @@ func Parse(event string, body []byte) ([]*decode.Point, *timestamppb.Timestamp,
 
 		return msgs, timestamppb.Now(), nil, err
 	case "txack":
-		msgs, err := deviceTxAck(body)
+		msgs, err := deviceTXAck(body)
 
 		return msgs, timestamppb.Now(), nil, err
 	default:

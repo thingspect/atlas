@@ -63,6 +63,13 @@ func TestDeviceJoin(t *testing.T) {
 	}{
 		// Device Join.
 		{
+			&as.JoinEvent{}, []*decode.Point{
+				{Attr: "raw_device", Value: `{}`},
+				{Attr: "join", Value: true},
+				{Attr: "data_rate", Value: int32(0)},
+			}, time.Now(), "",
+		},
+		{
 			&as.JoinEvent{RxInfo: []*gw.UplinkRXInfo{{}}}, []*decode.Point{
 				{Attr: "raw_device", Value: `{"rxInfo":[{}]}`},
 				{Attr: "join", Value: true},

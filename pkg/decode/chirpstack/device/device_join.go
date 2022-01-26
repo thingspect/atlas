@@ -3,9 +3,6 @@ package device
 //nolint:staticcheck // third-party dependency
 import (
 	"encoding/hex"
-	"sort"
-	"strconv"
-	"time"
 
 	as "github.com/brocaar/chirpstack-api/go/v3/as/integration"
 
@@ -15,6 +12,7 @@ import (
 	//lint:ignore SA1019 // third-party dependency
 	"github.com/golang/protobuf/proto"
 	"github.com/thingspect/atlas/pkg/decode"
+	"github.com/thingspect/atlas/pkg/decode/chirpstack"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
@@ -47,49 +45,8 @@ func deviceJoin(body []byte) ([]*decode.Point, *timestamppb.Timestamp, error) {
 	}
 
 	// Parse UplinkRXInfos.
-	joinTime := timestamppb.Now()
-	if len(joinMsg.RxInfo) > 0 {
-		// Sort joinMsg.RxInfo by strongest RSSI.
-		sort.Slice(joinMsg.RxInfo, func(i, j int) bool {
-			return joinMsg.RxInfo[i].Rssi > joinMsg.RxInfo[j].Rssi
-		})
-
-		if len(joinMsg.RxInfo[0].GatewayId) != 0 {
-			msgs = append(msgs, &decode.Point{
-				Attr:  "gateway_id",
-				Value: hex.EncodeToString(joinMsg.RxInfo[0].GatewayId),
-			})
-		}
-
-		// Populate time channel if it is provided by the gateway. Use it as
-		// joinTime if it is accurate.
-		if joinMsg.RxInfo[0].Time != nil {
-			msgs = append(msgs, &decode.Point{
-				Attr:  "time",
-				Value: strconv.FormatInt(joinMsg.RxInfo[0].Time.Seconds, 10),
-			})
-
-			ts := joinMsg.RxInfo[0].Time.AsTime()
-			if ts.Before(joinTime.AsTime()) &&
-				time.Since(ts) < decode.ValidWindow {
-				joinTime = joinMsg.RxInfo[0].Time
-			}
-		}
-
-		if joinMsg.RxInfo[0].Rssi != 0 {
-			msgs = append(msgs, &decode.Point{
-				Attr: "lora_rssi", Value: joinMsg.RxInfo[0].Rssi,
-			})
-		}
-		if joinMsg.RxInfo[0].LoraSnr != 0 {
-			msgs = append(msgs, &decode.Point{
-				Attr: "snr", Value: joinMsg.RxInfo[0].LoraSnr,
-			})
-		}
-		msgs = append(msgs, &decode.Point{
-			Attr: "channel", Value: int32(joinMsg.RxInfo[0].Channel),
-		})
-	}
+	joinTime, rxMsgs := chirpstack.ParseRXInfos(joinMsg.RxInfo)
+	msgs = append(msgs, rxMsgs...)
 
 	// Parse UplinkTXInfo.
 	if joinMsg.TxInfo != nil && joinMsg.TxInfo.Frequency != 0 {
