@@ -8,7 +8,6 @@ import (
 
 	"github.com/mennanov/fmutils"
 	"github.com/thingspect/api/go/api"
-	"github.com/thingspect/api/go/common"
 	"github.com/thingspect/atlas/internal/atlas-api/session"
 	"github.com/thingspect/atlas/pkg/alog"
 	"github.com/thingspect/atlas/pkg/template"
@@ -34,8 +33,8 @@ type Alarmer interface {
 func (ra *RuleAlarm) CreateAlarm(ctx context.Context,
 	req *api.CreateAlarmRequest) (*api.Alarm, error) {
 	sess, ok := session.FromContext(ctx)
-	if !ok || sess.Role < common.Role_BUILDER {
-		return nil, errPerm(common.Role_BUILDER)
+	if !ok || sess.Role < api.Role_BUILDER {
+		return nil, errPerm(api.Role_BUILDER)
 	}
 
 	req.Alarm.OrgId = sess.OrgID
@@ -58,8 +57,8 @@ func (ra *RuleAlarm) CreateAlarm(ctx context.Context,
 func (ra *RuleAlarm) GetAlarm(ctx context.Context,
 	req *api.GetAlarmRequest) (*api.Alarm, error) {
 	sess, ok := session.FromContext(ctx)
-	if !ok || sess.Role < common.Role_VIEWER {
-		return nil, errPerm(common.Role_VIEWER)
+	if !ok || sess.Role < api.Role_VIEWER {
+		return nil, errPerm(api.Role_VIEWER)
 	}
 
 	alarm, err := ra.alarmDAO.Read(ctx, req.Id, sess.OrgID, req.RuleId)
@@ -75,8 +74,8 @@ func (ra *RuleAlarm) GetAlarm(ctx context.Context,
 func (ra *RuleAlarm) UpdateAlarm(ctx context.Context,
 	req *api.UpdateAlarmRequest) (*api.Alarm, error) {
 	sess, ok := session.FromContext(ctx)
-	if !ok || sess.Role < common.Role_BUILDER {
-		return nil, errPerm(common.Role_BUILDER)
+	if !ok || sess.Role < api.Role_BUILDER {
+		return nil, errPerm(api.Role_BUILDER)
 	}
 
 	if req.Alarm == nil {
@@ -125,8 +124,8 @@ func (ra *RuleAlarm) UpdateAlarm(ctx context.Context,
 func (ra *RuleAlarm) DeleteAlarm(ctx context.Context,
 	req *api.DeleteAlarmRequest) (*emptypb.Empty, error) {
 	sess, ok := session.FromContext(ctx)
-	if !ok || sess.Role < common.Role_BUILDER {
-		return nil, errPerm(common.Role_BUILDER)
+	if !ok || sess.Role < api.Role_BUILDER {
+		return nil, errPerm(api.Role_BUILDER)
 	}
 
 	if err := ra.alarmDAO.Delete(ctx, req.Id, sess.OrgID,
@@ -147,8 +146,8 @@ func (ra *RuleAlarm) DeleteAlarm(ctx context.Context,
 func (ra *RuleAlarm) ListAlarms(ctx context.Context,
 	req *api.ListAlarmsRequest) (*api.ListAlarmsResponse, error) {
 	sess, ok := session.FromContext(ctx)
-	if !ok || sess.Role < common.Role_VIEWER {
-		return nil, errPerm(common.Role_VIEWER)
+	if !ok || sess.Role < api.Role_VIEWER {
+		return nil, errPerm(api.Role_VIEWER)
 	}
 
 	if req.PageSize == 0 {
@@ -191,8 +190,8 @@ func (ra *RuleAlarm) ListAlarms(ctx context.Context,
 func (ra *RuleAlarm) TestAlarm(ctx context.Context,
 	req *api.TestAlarmRequest) (*api.TestAlarmResponse, error) {
 	sess, ok := session.FromContext(ctx)
-	if !ok || sess.Role < common.Role_BUILDER {
-		return nil, errPerm(common.Role_BUILDER)
+	if !ok || sess.Role < api.Role_BUILDER {
+		return nil, errPerm(api.Role_BUILDER)
 	}
 
 	subj, err := template.Generate(req.Point, req.Rule, req.Device,

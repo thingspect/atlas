@@ -5,7 +5,7 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/thingspect/api/go/common"
+	"github.com/thingspect/api/go/api"
 	"github.com/thingspect/atlas/internal/atlas-api/crypto"
 	"github.com/thingspect/atlas/pkg/alog"
 	"github.com/thingspect/atlas/pkg/dao"
@@ -48,7 +48,7 @@ func errToStatus(err error) error {
 }
 
 // errPerm returns a PermissionDenied status due to insufficient role.
-func errPerm(role common.Role) error {
+func errPerm(role api.Role) error {
 	return status.Error(codes.PermissionDenied,
 		fmt.Sprintf("permission denied, %s role required", role.String()))
 }

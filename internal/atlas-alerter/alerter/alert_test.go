@@ -32,19 +32,19 @@ func TestAlertMessages(t *testing.T) {
 	org := random.Org("ale")
 
 	appAlarm := random.Alarm("ale", org.Id, uuid.NewString())
-	appAlarm.Status = common.Status_ACTIVE
+	appAlarm.Status = api.Status_ACTIVE
 	appAlarm.Type = api.AlarmType_APP
 
 	smsAlarm := random.Alarm("ale", org.Id, uuid.NewString())
-	smsAlarm.Status = common.Status_ACTIVE
+	smsAlarm.Status = api.Status_ACTIVE
 	smsAlarm.Type = api.AlarmType_SMS
 
 	emailAlarm := random.Alarm("ale", org.Id, uuid.NewString())
-	emailAlarm.Status = common.Status_ACTIVE
+	emailAlarm.Status = api.Status_ACTIVE
 	emailAlarm.Type = api.AlarmType_EMAIL
 
 	disAlarm := random.Alarm("ale", org.Id, uuid.NewString())
-	disAlarm.Status = common.Status_DISABLED
+	disAlarm.Status = api.Status_DISABLED
 
 	tests := []struct {
 		inpEOut       *message.EventerOut
@@ -226,23 +226,23 @@ func TestAlertMessagesError(t *testing.T) {
 	org := random.Org("ale")
 
 	appAlarm := random.Alarm("ale", uuid.NewString(), uuid.NewString())
-	appAlarm.Status = common.Status_ACTIVE
+	appAlarm.Status = api.Status_ACTIVE
 	appAlarm.Type = api.AlarmType_APP
 
 	badSubj := random.Alarm("ale", uuid.NewString(), uuid.NewString())
-	badSubj.Status = common.Status_ACTIVE
+	badSubj.Status = api.Status_ACTIVE
 	badSubj.SubjectTemplate = `{{if`
 
 	badBody := random.Alarm("ale", uuid.NewString(), uuid.NewString())
-	badBody.Status = common.Status_ACTIVE
+	badBody.Status = api.Status_ACTIVE
 	badBody.BodyTemplate = `{{if`
 
 	unspecType := random.Alarm("ale", uuid.NewString(), uuid.NewString())
-	unspecType.Status = common.Status_ACTIVE
+	unspecType.Status = api.Status_ACTIVE
 	unspecType.Type = api.AlarmType_ALARM_TYPE_UNSPECIFIED
 
 	unknownType := random.Alarm("ale", uuid.NewString(), uuid.NewString())
-	unknownType.Status = common.Status_ACTIVE
+	unknownType.Status = api.Status_ACTIVE
 	unknownType.Type = 999
 
 	tests := []struct {
@@ -282,31 +282,31 @@ func TestAlertMessagesError(t *testing.T) {
 		// Missing rule.
 		{
 			&message.EventerOut{
-				Point: &common.DataPoint{}, Device: &common.Device{},
+				Point: &common.DataPoint{}, Device: &api.Device{},
 			}, nil, nil, nil, nil, nil, nil, true, nil, nil, nil, 0, 0, 0, 0, 0,
 			0,
 		},
 		// Orger error.
 		{
 			&message.EventerOut{
-				Point: &common.DataPoint{}, Device: &common.Device{},
-				Rule: &common.Rule{},
+				Point: &common.DataPoint{}, Device: &api.Device{},
+				Rule: &api.Rule{},
 			}, nil, errTestProc, nil, nil, nil, nil, true, nil, nil, nil, 1, 0,
 			0, 0, 0, 0,
 		},
 		// Alarmer error.
 		{
 			&message.EventerOut{
-				Point: &common.DataPoint{}, Device: &common.Device{},
-				Rule: &common.Rule{},
+				Point: &common.DataPoint{}, Device: &api.Device{},
+				Rule: &api.Rule{},
 			}, org, nil, nil, errTestProc, nil, nil, true, nil, nil, nil, 1, 1,
 			0, 0, 0, 0,
 		},
 		// Userer error.
 		{
 			&message.EventerOut{
-				Point: &common.DataPoint{}, Device: &common.Device{},
-				Rule: &common.Rule{},
+				Point: &common.DataPoint{}, Device: &api.Device{},
+				Rule: &api.Rule{},
 			}, org, nil,
 			[]*api.Alarm{appAlarm},
 			nil, nil, errTestProc, true,
@@ -315,8 +315,8 @@ func TestAlertMessagesError(t *testing.T) {
 		// Bad alarm subject.
 		{
 			&message.EventerOut{
-				Point: &common.DataPoint{}, Device: &common.Device{},
-				Rule: &common.Rule{},
+				Point: &common.DataPoint{}, Device: &api.Device{},
+				Rule: &api.Rule{},
 			}, org, nil, []*api.Alarm{badSubj}, nil, []*api.User{
 				random.User("ale", uuid.NewString()),
 			}, nil, true, nil, nil, nil, 1, 1, 1, 0, 0, 0,
@@ -324,8 +324,8 @@ func TestAlertMessagesError(t *testing.T) {
 		// Bad alarm body.
 		{
 			&message.EventerOut{
-				Point: &common.DataPoint{}, Device: &common.Device{},
-				Rule: &common.Rule{},
+				Point: &common.DataPoint{}, Device: &api.Device{},
+				Rule: &api.Rule{},
 			}, org, nil, []*api.Alarm{badBody}, nil, []*api.User{
 				random.User("ale", uuid.NewString()),
 			}, nil, true, nil, nil, nil, 1, 1, 1, 0, 0, 0,
@@ -333,8 +333,8 @@ func TestAlertMessagesError(t *testing.T) {
 		// Cacher error.
 		{
 			&message.EventerOut{
-				Point: &common.DataPoint{}, Device: &common.Device{},
-				Rule: &common.Rule{},
+				Point: &common.DataPoint{}, Device: &api.Device{},
+				Rule: &api.Rule{},
 			}, org, nil, []*api.Alarm{appAlarm}, nil, []*api.User{
 				random.User("ale", uuid.NewString()),
 			}, nil, false, errTestProc, nil, nil, 1, 1, 1, 1, 0, 0,
@@ -342,8 +342,8 @@ func TestAlertMessagesError(t *testing.T) {
 		// Notifier error.
 		{
 			&message.EventerOut{
-				Point: &common.DataPoint{}, Device: &common.Device{},
-				Rule: &common.Rule{},
+				Point: &common.DataPoint{}, Device: &api.Device{},
+				Rule: &api.Rule{},
 			}, org, nil, []*api.Alarm{appAlarm}, nil, []*api.User{
 				random.User("ale", uuid.NewString()),
 			}, nil, true, nil, errTestProc, nil, 1, 1, 1, 1, 1, 1,
@@ -351,8 +351,8 @@ func TestAlertMessagesError(t *testing.T) {
 		// Unspecified alarm type.
 		{
 			&message.EventerOut{
-				Point: &common.DataPoint{}, Device: &common.Device{},
-				Rule: &common.Rule{},
+				Point: &common.DataPoint{}, Device: &api.Device{},
+				Rule: &api.Rule{},
 			}, org, nil, []*api.Alarm{unspecType}, nil, []*api.User{
 				random.User("ale", uuid.NewString()),
 			}, nil, true, nil, nil, nil, 1, 1, 1, 1, 0, 1,
@@ -360,8 +360,8 @@ func TestAlertMessagesError(t *testing.T) {
 		// Unknown alarm type.
 		{
 			&message.EventerOut{
-				Point: &common.DataPoint{}, Device: &common.Device{},
-				Rule: &common.Rule{},
+				Point: &common.DataPoint{}, Device: &api.Device{},
+				Rule: &api.Rule{},
 			}, org, nil, []*api.Alarm{unknownType}, nil, []*api.User{
 				random.User("ale", uuid.NewString()),
 			}, nil, true, nil, nil, nil, 1, 1, 1, 1, 0, 1,
@@ -369,8 +369,8 @@ func TestAlertMessagesError(t *testing.T) {
 		// Alerter error.
 		{
 			&message.EventerOut{
-				Point: &common.DataPoint{}, Device: &common.Device{},
-				Rule: &common.Rule{},
+				Point: &common.DataPoint{}, Device: &api.Device{},
+				Rule: &api.Rule{},
 			}, org, nil, []*api.Alarm{appAlarm}, nil, []*api.User{
 				random.User("ale", uuid.NewString()),
 			}, nil, true, nil, nil, errTestProc, 1, 1, 1, 1, 1, 1,

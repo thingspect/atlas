@@ -215,7 +215,7 @@ func TestUpdateAlarm(t *testing.T) {
 
 		// Update alarm fields.
 		createAlarm.Name = "api-alarm-" + random.String(10)
-		createAlarm.Status = common.Status_DISABLED
+		createAlarm.Status = api.Status_DISABLED
 		createAlarm.Type = api.AlarmType_SMS
 		createAlarm.UserTags = random.Tags("api-alarm", 2)
 
@@ -267,7 +267,7 @@ func TestUpdateAlarm(t *testing.T) {
 		// Update alarm fields.
 		part := &api.Alarm{
 			Id: createAlarm.Id, RuleId: createRule.Id, Name: "api-alarm-" +
-				random.String(10), Status: common.Status_DISABLED,
+				random.String(10), Status: api.Status_DISABLED,
 			Type: api.AlarmType_SMS, UserTags: random.Tags("api-alarm", 2),
 		}
 
@@ -395,7 +395,7 @@ func TestUpdateAlarm(t *testing.T) {
 		// Update alarm fields.
 		part := &api.Alarm{
 			Id: createAlarm.Id, RuleId: uuid.NewString(), Name: "api-alarm-" +
-				random.String(10), Status: common.Status_DISABLED,
+				random.String(10), Status: api.Status_DISABLED,
 		}
 
 		updateAlarm, err := raCli.UpdateAlarm(ctx, &api.UpdateAlarmRequest{
@@ -453,7 +453,7 @@ func TestUpdateAlarm(t *testing.T) {
 		// Update alarm fields.
 		createAlarm.RuleId = uuid.NewString()
 		createAlarm.Name = "api-alarm-" + random.String(10)
-		createAlarm.Status = common.Status_DISABLED
+		createAlarm.Status = api.Status_DISABLED
 
 		updateAlarm, err := raCli.UpdateAlarm(ctx,
 			&api.UpdateAlarmRequest{Alarm: createAlarm})
@@ -675,7 +675,7 @@ func TestListAlarms(t *testing.T) {
 
 	alarmIDs := []string{}
 	alarmNames := []string{}
-	alarmStatuses := []common.Status{}
+	alarmStatuses := []api.Status{}
 	for i := 0; i < 3; i++ {
 		createAlarm, err := raCli.CreateAlarm(ctx, &api.CreateAlarmRequest{
 			Alarm: random.Alarm("api-alarm", uuid.NewString(), createRule.Id),
@@ -801,12 +801,12 @@ func TestTestAlarm(t *testing.T) {
 		rule.Name = "test rule"
 
 		dev := random.Device("api-alarm", uuid.NewString())
-		dev.Status = common.Status_ACTIVE
+		dev.Status = api.Status_ACTIVE
 
 		tests := []struct {
 			inpPoint *common.DataPoint
-			inpRule  *common.Rule
-			inpDev   *common.Device
+			inpRule  *api.Rule
+			inpDev   *api.Device
 			inpTempl string
 			res      string
 			err      string

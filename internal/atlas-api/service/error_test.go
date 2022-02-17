@@ -8,7 +8,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/require"
-	"github.com/thingspect/api/go/common"
+	"github.com/thingspect/api/go/api"
 	"github.com/thingspect/atlas/pkg/dao"
 	"github.com/thingspect/atlas/pkg/test/random"
 	"google.golang.org/grpc/codes"
@@ -68,9 +68,9 @@ func TestErrPerm(t *testing.T) {
 		t.Run(fmt.Sprintf("Can generate %v", lTest), func(t *testing.T) {
 			t.Parallel()
 
-			role := []common.Role{
-				common.Role_CONTACT, common.Role_VIEWER, common.Role_BUILDER,
-				common.Role_ADMIN, common.Role_SYS_ADMIN,
+			role := []api.Role{
+				api.Role_CONTACT, api.Role_VIEWER, api.Role_BUILDER,
+				api.Role_ADMIN, api.Role_SYS_ADMIN,
 			}[random.Intn(5)]
 
 			err := errPerm(role)

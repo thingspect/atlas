@@ -8,7 +8,6 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/thingspect/api/go/api"
-	"github.com/thingspect/api/go/common"
 	iapi "github.com/thingspect/atlas/internal/atlas-api/api"
 	"github.com/thingspect/atlas/pkg/test/random"
 	"google.golang.org/grpc"
@@ -35,7 +34,7 @@ func (c *credential) RequireTransportSecurity() bool {
 	return false
 }
 
-func authGRPCConn(role common.Role) (string, *grpc.ClientConn, error) {
+func authGRPCConn(role api.Role) (string, *grpc.ClientConn, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 14*time.Second)
 	defer cancel()
 
@@ -46,7 +45,7 @@ func authGRPCConn(role common.Role) (string, *grpc.ClientConn, error) {
 
 	user := random.User("api-helper", createOrg.Id)
 	user.Role = role
-	user.Status = common.Status_ACTIVE
+	user.Status = api.Status_ACTIVE
 	createUser, err := globalUserDAO.Create(ctx, user)
 	if err != nil {
 		return "", nil, err
@@ -78,7 +77,7 @@ func authGRPCConn(role common.Role) (string, *grpc.ClientConn, error) {
 	return createOrg.Id, authConn, nil
 }
 
-func keyGRPCConn(conn *grpc.ClientConn, role common.Role) (*grpc.ClientConn,
+func keyGRPCConn(conn *grpc.ClientConn, role api.Role) (*grpc.ClientConn,
 	error) {
 	key := random.Key("api-key", uuid.NewString())
 	key.Role = role

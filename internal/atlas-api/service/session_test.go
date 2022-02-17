@@ -12,7 +12,6 @@ import (
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/require"
 	"github.com/thingspect/api/go/api"
-	"github.com/thingspect/api/go/common"
 	"github.com/thingspect/atlas/internal/atlas-api/session"
 	"github.com/thingspect/atlas/pkg/cache"
 	"github.com/thingspect/atlas/pkg/dao"
@@ -30,8 +29,8 @@ func TestLogin(t *testing.T) {
 
 		org := random.Org("api-session")
 		user := random.User("api-session", org.Id)
-		user.Role = common.Role_ADMIN
-		user.Status = common.Status_ACTIVE
+		user.Role = api.Role_ADMIN
+		user.Status = api.Status_ACTIVE
 
 		userer := NewMockUserer(gomock.NewController(t))
 		userer.EXPECT().ReadByEmail(gomock.Any(), user.Email, org.Name).
@@ -61,7 +60,7 @@ func TestLogin(t *testing.T) {
 
 		org := random.Org("api-session")
 		user := random.User("api-session", org.Id)
-		user.Status = common.Status_ACTIVE
+		user.Status = api.Status_ACTIVE
 
 		userer := NewMockUserer(gomock.NewController(t))
 		userer.EXPECT().ReadByEmail(gomock.Any(), user.Email, org.Name).
@@ -89,7 +88,7 @@ func TestLogin(t *testing.T) {
 
 		org := random.Org("api-session")
 		user := random.User("api-session", org.Id)
-		user.Status = common.Status_ACTIVE
+		user.Status = api.Status_ACTIVE
 
 		userer := NewMockUserer(gomock.NewController(t))
 		userer.EXPECT().ReadByEmail(gomock.Any(), user.Email, org.Name).
@@ -117,7 +116,7 @@ func TestLogin(t *testing.T) {
 
 		org := random.Org("api-session")
 		user := random.User("api-session", org.Id)
-		user.Status = common.Status_DISABLED
+		user.Status = api.Status_DISABLED
 
 		userer := NewMockUserer(gomock.NewController(t))
 		userer.EXPECT().ReadByEmail(gomock.Any(), user.Email, org.Name).
@@ -145,8 +144,8 @@ func TestLogin(t *testing.T) {
 
 		org := random.Org("api-session")
 		user := random.User("api-session", org.Id)
-		user.Role = common.Role_CONTACT
-		user.Status = common.Status_ACTIVE
+		user.Role = api.Role_CONTACT
+		user.Status = api.Status_ACTIVE
 
 		userer := NewMockUserer(gomock.NewController(t))
 		userer.EXPECT().ReadByEmail(gomock.Any(), user.Email, org.Name).
@@ -174,8 +173,8 @@ func TestLogin(t *testing.T) {
 
 		org := random.Org("api-session")
 		user := random.User("api-session", org.Id)
-		user.Role = common.Role_ADMIN
-		user.Status = common.Status_ACTIVE
+		user.Role = api.Role_ADMIN
+		user.Status = api.Status_ACTIVE
 
 		userer := NewMockUserer(gomock.NewController(t))
 		userer.EXPECT().ReadByEmail(gomock.Any(), user.Email, org.Name).
@@ -202,7 +201,7 @@ func TestCreateKey(t *testing.T) {
 		t.Parallel()
 
 		key := random.Key("api-key", uuid.NewString())
-		key.Role = common.Role_ADMIN
+		key.Role = api.Role_ADMIN
 		retKey, _ := proto.Clone(key).(*api.Key)
 
 		keyer := NewMockKeyer(gomock.NewController(t))
@@ -214,7 +213,7 @@ func TestCreateKey(t *testing.T) {
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
 			context.Background(), &session.Session{
-				OrgID: key.OrgId, Role: common.Role_ADMIN,
+				OrgID: key.OrgId, Role: api.Role_ADMIN,
 			}), testTimeout)
 		defer cancel()
 
@@ -243,7 +242,7 @@ func TestCreateKey(t *testing.T) {
 		createKey, err := keySvc.CreateKey(ctx, &api.CreateKeyRequest{})
 		t.Logf("createKey, err: %+v, %v", createKey, err)
 		require.Nil(t, createKey)
-		require.Equal(t, errPerm(common.Role_ADMIN), err)
+		require.Equal(t, errPerm(api.Role_ADMIN), err)
 	})
 
 	t.Run("Create key with insufficient role", func(t *testing.T) {
@@ -251,7 +250,7 @@ func TestCreateKey(t *testing.T) {
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
 			context.Background(), &session.Session{
-				OrgID: uuid.NewString(), Role: common.Role_BUILDER,
+				OrgID: uuid.NewString(), Role: api.Role_BUILDER,
 			}), testTimeout)
 		defer cancel()
 
@@ -259,18 +258,18 @@ func TestCreateKey(t *testing.T) {
 		createKey, err := keySvc.CreateKey(ctx, &api.CreateKeyRequest{})
 		t.Logf("createKey, err: %+v, %v", createKey, err)
 		require.Nil(t, createKey)
-		require.Equal(t, errPerm(common.Role_ADMIN), err)
+		require.Equal(t, errPerm(api.Role_ADMIN), err)
 	})
 
 	t.Run("Create sysadmin key as non-sysadmin", func(t *testing.T) {
 		t.Parallel()
 
 		key := random.Key("api-key", uuid.NewString())
-		key.Role = common.Role_SYS_ADMIN
+		key.Role = api.Role_SYS_ADMIN
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
 			context.Background(), &session.Session{
-				OrgID: uuid.NewString(), Role: common.Role_ADMIN,
+				OrgID: uuid.NewString(), Role: api.Role_ADMIN,
 			}), testTimeout)
 		defer cancel()
 
@@ -286,7 +285,7 @@ func TestCreateKey(t *testing.T) {
 		t.Parallel()
 
 		key := random.Key("api-key", uuid.NewString())
-		key.Role = common.Role_BUILDER
+		key.Role = api.Role_BUILDER
 
 		keyer := NewMockKeyer(gomock.NewController(t))
 		keyer.EXPECT().Create(gomock.Any(), key).Return(nil,
@@ -294,7 +293,7 @@ func TestCreateKey(t *testing.T) {
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
 			context.Background(), &session.Session{
-				OrgID: key.OrgId, Role: common.Role_ADMIN,
+				OrgID: key.OrgId, Role: api.Role_ADMIN,
 			}), testTimeout)
 		defer cancel()
 
@@ -310,7 +309,7 @@ func TestCreateKey(t *testing.T) {
 		t.Parallel()
 
 		key := random.Key("api-key", uuid.NewString())
-		key.Role = common.Role_BUILDER
+		key.Role = api.Role_BUILDER
 		retKey, _ := proto.Clone(key).(*api.Key)
 
 		keyer := NewMockKeyer(gomock.NewController(t))
@@ -318,7 +317,7 @@ func TestCreateKey(t *testing.T) {
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
 			context.Background(), &session.Session{
-				OrgID: uuid.NewString(), Role: common.Role_ADMIN,
+				OrgID: uuid.NewString(), Role: api.Role_ADMIN,
 			}), testTimeout)
 		defer cancel()
 
@@ -346,7 +345,7 @@ func TestDeleteKey(t *testing.T) {
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
 			context.Background(), &session.Session{
-				OrgID: uuid.NewString(), Role: common.Role_ADMIN,
+				OrgID: uuid.NewString(), Role: api.Role_ADMIN,
 			}), testTimeout)
 		defer cancel()
 
@@ -366,7 +365,7 @@ func TestDeleteKey(t *testing.T) {
 		keySvc := NewSession(nil, nil, nil, nil)
 		_, err := keySvc.DeleteKey(ctx, &api.DeleteKeyRequest{})
 		t.Logf("err: %v", err)
-		require.Equal(t, errPerm(common.Role_ADMIN), err)
+		require.Equal(t, errPerm(api.Role_ADMIN), err)
 	})
 
 	t.Run("Delete key with insufficient role", func(t *testing.T) {
@@ -374,14 +373,14 @@ func TestDeleteKey(t *testing.T) {
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
 			context.Background(), &session.Session{
-				OrgID: uuid.NewString(), Role: common.Role_BUILDER,
+				OrgID: uuid.NewString(), Role: api.Role_BUILDER,
 			}), testTimeout)
 		defer cancel()
 
 		keySvc := NewSession(nil, nil, nil, nil)
 		_, err := keySvc.DeleteKey(ctx, &api.DeleteKeyRequest{})
 		t.Logf("err: %v", err)
-		require.Equal(t, errPerm(common.Role_ADMIN), err)
+		require.Equal(t, errPerm(api.Role_ADMIN), err)
 	})
 
 	t.Run("Delete key with cacher error", func(t *testing.T) {
@@ -393,7 +392,7 @@ func TestDeleteKey(t *testing.T) {
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
 			context.Background(), &session.Session{
-				OrgID: uuid.NewString(), Role: common.Role_ADMIN,
+				OrgID: uuid.NewString(), Role: api.Role_ADMIN,
 			}), testTimeout)
 		defer cancel()
 
@@ -417,7 +416,7 @@ func TestDeleteKey(t *testing.T) {
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
 			context.Background(), &session.Session{
-				OrgID: uuid.NewString(), Role: common.Role_ADMIN,
+				OrgID: uuid.NewString(), Role: api.Role_ADMIN,
 			}), testTimeout)
 		defer cancel()
 
@@ -449,7 +448,7 @@ func TestListKeys(t *testing.T) {
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
 			context.Background(), &session.Session{
-				OrgID: orgID, Role: common.Role_ADMIN,
+				OrgID: orgID, Role: api.Role_ADMIN,
 			}), testTimeout)
 		defer cancel()
 
@@ -489,7 +488,7 @@ func TestListKeys(t *testing.T) {
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
 			context.Background(), &session.Session{
-				OrgID: orgID, Role: common.Role_ADMIN,
+				OrgID: orgID, Role: api.Role_ADMIN,
 			}), testTimeout)
 		defer cancel()
 
@@ -520,7 +519,7 @@ func TestListKeys(t *testing.T) {
 		listKeys, err := keySvc.ListKeys(ctx, &api.ListKeysRequest{})
 		t.Logf("listKeys, err: %+v, %v", listKeys, err)
 		require.Nil(t, listKeys)
-		require.Equal(t, errPerm(common.Role_ADMIN), err)
+		require.Equal(t, errPerm(api.Role_ADMIN), err)
 	})
 
 	t.Run("List keys by invalid page token", func(t *testing.T) {
@@ -528,7 +527,7 @@ func TestListKeys(t *testing.T) {
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
 			context.Background(), &session.Session{
-				OrgID: uuid.NewString(), Role: common.Role_ADMIN,
+				OrgID: uuid.NewString(), Role: api.Role_ADMIN,
 			}), testTimeout)
 		defer cancel()
 
@@ -551,7 +550,7 @@ func TestListKeys(t *testing.T) {
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
 			context.Background(), &session.Session{
-				OrgID: "aaa", Role: common.Role_ADMIN,
+				OrgID: "aaa", Role: api.Role_ADMIN,
 			}), testTimeout)
 		defer cancel()
 
@@ -581,7 +580,7 @@ func TestListKeys(t *testing.T) {
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
 			context.Background(), &session.Session{
-				OrgID: orgID, Role: common.Role_ADMIN,
+				OrgID: orgID, Role: api.Role_ADMIN,
 			}), testTimeout)
 		defer cancel()
 

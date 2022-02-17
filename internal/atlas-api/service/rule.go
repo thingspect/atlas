@@ -8,7 +8,6 @@ import (
 
 	"github.com/mennanov/fmutils"
 	"github.com/thingspect/api/go/api"
-	"github.com/thingspect/api/go/common"
 	"github.com/thingspect/atlas/internal/atlas-api/session"
 	"github.com/thingspect/atlas/pkg/alog"
 	"github.com/thingspect/atlas/pkg/rule"
@@ -23,12 +22,12 @@ import (
 
 // Ruler defines the methods provided by a rule.DAO.
 type Ruler interface {
-	Create(ctx context.Context, rule *common.Rule) (*common.Rule, error)
-	Read(ctx context.Context, ruleID, orgID string) (*common.Rule, error)
-	Update(ctx context.Context, rule *common.Rule) (*common.Rule, error)
+	Create(ctx context.Context, rule *api.Rule) (*api.Rule, error)
+	Read(ctx context.Context, ruleID, orgID string) (*api.Rule, error)
+	Update(ctx context.Context, rule *api.Rule) (*api.Rule, error)
 	Delete(ctx context.Context, ruleID, orgID string) error
 	List(ctx context.Context, orgID string, lBoundTS time.Time, prevID string,
-		limit int32) ([]*common.Rule, int32, error)
+		limit int32) ([]*api.Rule, int32, error)
 }
 
 // RuleAlarm service contains functions to query and modify rules and alarms.
@@ -49,10 +48,10 @@ func NewRuleAlarm(ruleDAO Ruler, alarmDAO Alarmer) *RuleAlarm {
 
 // CreateRule creates a rule.
 func (ra *RuleAlarm) CreateRule(ctx context.Context,
-	req *api.CreateRuleRequest) (*common.Rule, error) {
+	req *api.CreateRuleRequest) (*api.Rule, error) {
 	sess, ok := session.FromContext(ctx)
-	if !ok || sess.Role < common.Role_BUILDER {
-		return nil, errPerm(common.Role_BUILDER)
+	if !ok || sess.Role < api.Role_BUILDER {
+		return nil, errPerm(api.Role_BUILDER)
 	}
 
 	req.Rule.OrgId = sess.OrgID
@@ -73,10 +72,10 @@ func (ra *RuleAlarm) CreateRule(ctx context.Context,
 
 // GetRule retrieves a rule by ID.
 func (ra *RuleAlarm) GetRule(ctx context.Context,
-	req *api.GetRuleRequest) (*common.Rule, error) {
+	req *api.GetRuleRequest) (*api.Rule, error) {
 	sess, ok := session.FromContext(ctx)
-	if !ok || sess.Role < common.Role_VIEWER {
-		return nil, errPerm(common.Role_VIEWER)
+	if !ok || sess.Role < api.Role_VIEWER {
+		return nil, errPerm(api.Role_VIEWER)
 	}
 
 	rule, err := ra.ruleDAO.Read(ctx, req.Id, sess.OrgID)
@@ -90,10 +89,10 @@ func (ra *RuleAlarm) GetRule(ctx context.Context,
 // UpdateRule updates a rule. Update actions validate after merge to support
 // partial updates.
 func (ra *RuleAlarm) UpdateRule(ctx context.Context,
-	req *api.UpdateRuleRequest) (*common.Rule, error) {
+	req *api.UpdateRuleRequest) (*api.Rule, error) {
 	sess, ok := session.FromContext(ctx)
-	if !ok || sess.Role < common.Role_BUILDER {
-		return nil, errPerm(common.Role_BUILDER)
+	if !ok || sess.Role < api.Role_BUILDER {
+		return nil, errPerm(api.Role_BUILDER)
 	}
 
 	if req.Rule == nil {
@@ -138,8 +137,8 @@ func (ra *RuleAlarm) UpdateRule(ctx context.Context,
 func (ra *RuleAlarm) DeleteRule(ctx context.Context,
 	req *api.DeleteRuleRequest) (*emptypb.Empty, error) {
 	sess, ok := session.FromContext(ctx)
-	if !ok || sess.Role < common.Role_BUILDER {
-		return nil, errPerm(common.Role_BUILDER)
+	if !ok || sess.Role < api.Role_BUILDER {
+		return nil, errPerm(api.Role_BUILDER)
 	}
 
 	if err := ra.ruleDAO.Delete(ctx, req.Id, sess.OrgID); err != nil {
@@ -159,8 +158,8 @@ func (ra *RuleAlarm) DeleteRule(ctx context.Context,
 func (ra *RuleAlarm) ListRules(ctx context.Context,
 	req *api.ListRulesRequest) (*api.ListRulesResponse, error) {
 	sess, ok := session.FromContext(ctx)
-	if !ok || sess.Role < common.Role_VIEWER {
-		return nil, errPerm(common.Role_VIEWER)
+	if !ok || sess.Role < api.Role_VIEWER {
+		return nil, errPerm(api.Role_VIEWER)
 	}
 
 	if req.PageSize == 0 {
@@ -203,8 +202,8 @@ func (ra *RuleAlarm) ListRules(ctx context.Context,
 func (ra *RuleAlarm) TestRule(ctx context.Context,
 	req *api.TestRuleRequest) (*api.TestRuleResponse, error) {
 	sess, ok := session.FromContext(ctx)
-	if !ok || sess.Role < common.Role_BUILDER {
-		return nil, errPerm(common.Role_BUILDER)
+	if !ok || sess.Role < api.Role_BUILDER {
+		return nil, errPerm(api.Role_BUILDER)
 	}
 
 	if req.Point.Attr != req.Rule.Attr {

@@ -6,7 +6,6 @@ import (
 	"context"
 
 	"github.com/thingspect/api/go/api"
-	"github.com/thingspect/api/go/common"
 	"github.com/thingspect/atlas/internal/atlas-api/session"
 )
 
@@ -33,8 +32,8 @@ func NewTag(tagDAO Tagger) *Tag {
 func (t *Tag) ListTags(ctx context.Context,
 	req *api.ListTagsRequest) (*api.ListTagsResponse, error) {
 	sess, ok := session.FromContext(ctx)
-	if !ok || sess.Role < common.Role_VIEWER {
-		return nil, errPerm(common.Role_VIEWER)
+	if !ok || sess.Role < api.Role_VIEWER {
+		return nil, errPerm(api.Role_VIEWER)
 	}
 
 	tags, err := t.tagDAO.List(ctx, sess.OrgID)

@@ -10,7 +10,7 @@ import (
 	time "time"
 
 	gomock "github.com/golang/mock/gomock"
-	common "github.com/thingspect/api/go/common"
+	api "github.com/thingspect/api/go/api"
 )
 
 // MockRuler is a mock of Ruler interface.
@@ -37,10 +37,10 @@ func (m *MockRuler) EXPECT() *MockRulerMockRecorder {
 }
 
 // Create mocks base method.
-func (m *MockRuler) Create(ctx context.Context, rule *common.Rule) (*common.Rule, error) {
+func (m *MockRuler) Create(ctx context.Context, rule *api.Rule) (*api.Rule, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Create", ctx, rule)
-	ret0, _ := ret[0].(*common.Rule)
+	ret0, _ := ret[0].(*api.Rule)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
@@ -66,10 +66,10 @@ func (mr *MockRulerMockRecorder) Delete(ctx, ruleID, orgID interface{}) *gomock.
 }
 
 // List mocks base method.
-func (m *MockRuler) List(ctx context.Context, orgID string, lBoundTS time.Time, prevID string, limit int32) ([]*common.Rule, int32, error) {
+func (m *MockRuler) List(ctx context.Context, orgID string, lBoundTS time.Time, prevID string, limit int32) ([]*api.Rule, int32, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "List", ctx, orgID, lBoundTS, prevID, limit)
-	ret0, _ := ret[0].([]*common.Rule)
+	ret0, _ := ret[0].([]*api.Rule)
 	ret1, _ := ret[1].(int32)
 	ret2, _ := ret[2].(error)
 	return ret0, ret1, ret2
@@ -82,10 +82,10 @@ func (mr *MockRulerMockRecorder) List(ctx, orgID, lBoundTS, prevID, limit interf
 }
 
 // Read mocks base method.
-func (m *MockRuler) Read(ctx context.Context, ruleID, orgID string) (*common.Rule, error) {
+func (m *MockRuler) Read(ctx context.Context, ruleID, orgID string) (*api.Rule, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Read", ctx, ruleID, orgID)
-	ret0, _ := ret[0].(*common.Rule)
+	ret0, _ := ret[0].(*api.Rule)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
@@ -97,10 +97,10 @@ func (mr *MockRulerMockRecorder) Read(ctx, ruleID, orgID interface{}) *gomock.Ca
 }
 
 // Update mocks base method.
-func (m *MockRuler) Update(ctx context.Context, rule *common.Rule) (*common.Rule, error) {
+func (m *MockRuler) Update(ctx context.Context, rule *api.Rule) (*api.Rule, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Update", ctx, rule)
-	ret0, _ := ret[0].(*common.Rule)
+	ret0, _ := ret[0].(*api.Rule)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }

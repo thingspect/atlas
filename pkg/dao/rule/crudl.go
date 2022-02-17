@@ -6,7 +6,7 @@ import (
 	"time"
 
 	"github.com/jackc/pgtype"
-	"github.com/thingspect/api/go/common"
+	"github.com/thingspect/api/go/api"
 	"github.com/thingspect/atlas/pkg/alog"
 	"github.com/thingspect/atlas/pkg/dao"
 	"google.golang.org/protobuf/types/known/timestamppb"
@@ -20,7 +20,7 @@ RETURNING id
 `
 
 // Create creates a rule in the database.
-func (d *DAO) Create(ctx context.Context, rule *common.Rule) (*common.Rule,
+func (d *DAO) Create(ctx context.Context, rule *api.Rule) (*api.Rule,
 	error) {
 	now := time.Now().UTC().Truncate(time.Microsecond)
 	rule.CreatedAt = timestamppb.New(now)
@@ -42,9 +42,9 @@ WHERE (id, org_id) = ($1, $2)
 `
 
 // Read retrieves a rule by ID and org ID.
-func (d *DAO) Read(ctx context.Context, ruleID, orgID string) (*common.Rule,
+func (d *DAO) Read(ctx context.Context, ruleID, orgID string) (*api.Rule,
 	error) {
-	rule := &common.Rule{}
+	rule := &api.Rule{}
 	var status string
 	var createdAt, updatedAt time.Time
 
@@ -54,7 +54,7 @@ func (d *DAO) Read(ctx context.Context, ruleID, orgID string) (*common.Rule,
 		return nil, dao.DBToSentinel(err)
 	}
 
-	rule.Status = common.Status(common.Status_value[status])
+	rule.Status = api.Status(api.Status_value[status])
 	rule.CreatedAt = timestamppb.New(createdAt)
 	rule.UpdatedAt = timestamppb.New(updatedAt)
 
@@ -71,7 +71,7 @@ RETURNING created_at
 
 // Update updates a rule in the database. CreatedAt should not update, so it
 // is safe to override it at the DAO level.
-func (d *DAO) Update(ctx context.Context, rule *common.Rule) (*common.Rule,
+func (d *DAO) Update(ctx context.Context, rule *api.Rule) (*api.Rule,
 	error) {
 	var createdAt time.Time
 	updatedAt := time.Now().UTC().Truncate(time.Microsecond)
@@ -135,7 +135,7 @@ LIMIT %d
 // do not apply a limit. List returns a slice of rules, a total count, and an
 // error value.
 func (d *DAO) List(ctx context.Context, orgID string, lBoundTS time.Time,
-	prevID string, limit int32) ([]*common.Rule, int32, error) {
+	prevID string, limit int32) ([]*api.Rule, int32, error) {
 	// Run count query.
 	var count int32
 	if err := d.pg.QueryRowContext(ctx, countRules, orgID).Scan(
@@ -170,9 +170,9 @@ func (d *DAO) List(ctx context.Context, orgID string, lBoundTS time.Time,
 		}
 	}()
 
-	var rules []*common.Rule
+	var rules []*api.Rule
 	for rows.Next() {
-		rule := &common.Rule{}
+		rule := &api.Rule{}
 		var status string
 		var createdAt, updatedAt time.Time
 
@@ -182,7 +182,7 @@ func (d *DAO) List(ctx context.Context, orgID string, lBoundTS time.Time,
 			return nil, 0, dao.DBToSentinel(err)
 		}
 
-		rule.Status = common.Status(common.Status_value[status])
+		rule.Status = api.Status(api.Status_value[status])
 		rule.CreatedAt = timestamppb.New(createdAt)
 		rule.UpdatedAt = timestamppb.New(updatedAt)
 		rules = append(rules, rule)
@@ -209,7 +209,7 @@ ORDER BY created_at
 // ListByTags retrieves all active rules by org ID, attribute, and any matching
 // device tags.
 func (d *DAO) ListByTags(ctx context.Context, orgID string, attr string,
-	deviceTags []string) ([]*common.Rule, error) {
+	deviceTags []string) ([]*api.Rule, error) {
 	var tags pgtype.VarcharArray
 	if err := tags.Set(deviceTags); err != nil {
 		return nil, dao.DBToSentinel(err)
@@ -226,9 +226,9 @@ func (d *DAO) ListByTags(ctx context.Context, orgID string, attr string,
 		}
 	}()
 
-	var rules []*common.Rule
+	var rules []*api.Rule
 	for rows.Next() {
-		rule := &common.Rule{}
+		rule := &api.Rule{}
 		var status string
 		var createdAt, updatedAt time.Time
 
@@ -238,7 +238,7 @@ func (d *DAO) ListByTags(ctx context.Context, orgID string, attr string,
 			return nil, dao.DBToSentinel(err)
 		}
 
-		rule.Status = common.Status(common.Status_value[status])
+		rule.Status = api.Status(api.Status_value[status])
 		rule.CreatedAt = timestamppb.New(createdAt)
 		rule.UpdatedAt = timestamppb.New(updatedAt)
 		rules = append(rules, rule)

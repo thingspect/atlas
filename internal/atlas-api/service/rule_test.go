@@ -32,14 +32,14 @@ func TestCreateRule(t *testing.T) {
 		t.Parallel()
 
 		rule := random.Rule("api-rule", uuid.NewString())
-		retRule, _ := proto.Clone(rule).(*common.Rule)
+		retRule, _ := proto.Clone(rule).(*api.Rule)
 
 		ruler := NewMockRuler(gomock.NewController(t))
 		ruler.EXPECT().Create(gomock.Any(), rule).Return(retRule, nil).Times(1)
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
 			context.Background(), &session.Session{
-				OrgID: rule.OrgId, Role: common.Role_ADMIN,
+				OrgID: rule.OrgId, Role: api.Role_ADMIN,
 			}), testTimeout)
 		defer cancel()
 
@@ -67,7 +67,7 @@ func TestCreateRule(t *testing.T) {
 		createRule, err := raSvc.CreateRule(ctx, &api.CreateRuleRequest{})
 		t.Logf("createRule, err: %+v, %v", createRule, err)
 		require.Nil(t, createRule)
-		require.Equal(t, errPerm(common.Role_BUILDER), err)
+		require.Equal(t, errPerm(api.Role_BUILDER), err)
 	})
 
 	t.Run("Create rule with insufficient role", func(t *testing.T) {
@@ -75,7 +75,7 @@ func TestCreateRule(t *testing.T) {
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
 			context.Background(), &session.Session{
-				OrgID: uuid.NewString(), Role: common.Role_VIEWER,
+				OrgID: uuid.NewString(), Role: api.Role_VIEWER,
 			}), testTimeout)
 		defer cancel()
 
@@ -83,7 +83,7 @@ func TestCreateRule(t *testing.T) {
 		createRule, err := raSvc.CreateRule(ctx, &api.CreateRuleRequest{})
 		t.Logf("createRule, err: %+v, %v", createRule, err)
 		require.Nil(t, createRule)
-		require.Equal(t, errPerm(common.Role_BUILDER), err)
+		require.Equal(t, errPerm(api.Role_BUILDER), err)
 	})
 
 	t.Run("Create invalid rule", func(t *testing.T) {
@@ -98,7 +98,7 @@ func TestCreateRule(t *testing.T) {
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
 			context.Background(), &session.Session{
-				OrgID: rule.OrgId, Role: common.Role_ADMIN,
+				OrgID: rule.OrgId, Role: api.Role_ADMIN,
 			}), testTimeout)
 		defer cancel()
 
@@ -120,7 +120,7 @@ func TestGetRule(t *testing.T) {
 		t.Parallel()
 
 		rule := random.Rule("api-rule", uuid.NewString())
-		retRule, _ := proto.Clone(rule).(*common.Rule)
+		retRule, _ := proto.Clone(rule).(*api.Rule)
 
 		ruler := NewMockRuler(gomock.NewController(t))
 		ruler.EXPECT().Read(gomock.Any(), rule.Id, rule.OrgId).Return(retRule,
@@ -128,7 +128,7 @@ func TestGetRule(t *testing.T) {
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
 			context.Background(), &session.Session{
-				OrgID: rule.OrgId, Role: common.Role_ADMIN,
+				OrgID: rule.OrgId, Role: api.Role_ADMIN,
 			}), testTimeout)
 		defer cancel()
 
@@ -154,7 +154,7 @@ func TestGetRule(t *testing.T) {
 		getRule, err := raSvc.GetRule(ctx, &api.GetRuleRequest{})
 		t.Logf("getRule, err: %+v, %v", getRule, err)
 		require.Nil(t, getRule)
-		require.Equal(t, errPerm(common.Role_VIEWER), err)
+		require.Equal(t, errPerm(api.Role_VIEWER), err)
 	})
 
 	t.Run("Get rule with insufficient role", func(t *testing.T) {
@@ -162,7 +162,7 @@ func TestGetRule(t *testing.T) {
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
 			context.Background(), &session.Session{
-				OrgID: uuid.NewString(), Role: common.Role_CONTACT,
+				OrgID: uuid.NewString(), Role: api.Role_CONTACT,
 			}), testTimeout)
 		defer cancel()
 
@@ -170,7 +170,7 @@ func TestGetRule(t *testing.T) {
 		getRule, err := raSvc.GetRule(ctx, &api.GetRuleRequest{})
 		t.Logf("getRule, err: %+v, %v", getRule, err)
 		require.Nil(t, getRule)
-		require.Equal(t, errPerm(common.Role_VIEWER), err)
+		require.Equal(t, errPerm(api.Role_VIEWER), err)
 	})
 
 	t.Run("Get rule by unknown ID", func(t *testing.T) {
@@ -182,7 +182,7 @@ func TestGetRule(t *testing.T) {
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
 			context.Background(), &session.Session{
-				OrgID: uuid.NewString(), Role: common.Role_ADMIN,
+				OrgID: uuid.NewString(), Role: api.Role_ADMIN,
 			}), testTimeout)
 		defer cancel()
 
@@ -203,14 +203,14 @@ func TestUpdateRule(t *testing.T) {
 		t.Parallel()
 
 		rule := random.Rule("api-rule", uuid.NewString())
-		retRule, _ := proto.Clone(rule).(*common.Rule)
+		retRule, _ := proto.Clone(rule).(*api.Rule)
 
 		ruler := NewMockRuler(gomock.NewController(t))
 		ruler.EXPECT().Update(gomock.Any(), rule).Return(retRule, nil).Times(1)
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
 			context.Background(), &session.Session{
-				OrgID: rule.OrgId, Role: common.Role_ADMIN,
+				OrgID: rule.OrgId, Role: api.Role_ADMIN,
 			}), testTimeout)
 		defer cancel()
 
@@ -232,16 +232,16 @@ func TestUpdateRule(t *testing.T) {
 		t.Parallel()
 
 		rule := random.Rule("api-rule", uuid.NewString())
-		retRule, _ := proto.Clone(rule).(*common.Rule)
-		part := &common.Rule{
-			Id: rule.Id, Status: common.Status_ACTIVE, Expr: `true`,
+		retRule, _ := proto.Clone(rule).(*api.Rule)
+		part := &api.Rule{
+			Id: rule.Id, Status: api.Status_ACTIVE, Expr: `true`,
 		}
-		merged := &common.Rule{
+		merged := &api.Rule{
 			Id: rule.Id, OrgId: rule.OrgId, Name: rule.Name,
 			Status: part.Status, DeviceTag: rule.DeviceTag, Attr: rule.Attr,
 			Expr: part.Expr,
 		}
-		retMerged, _ := proto.Clone(merged).(*common.Rule)
+		retMerged, _ := proto.Clone(merged).(*api.Rule)
 
 		ruler := NewMockRuler(gomock.NewController(t))
 		ruler.EXPECT().Read(gomock.Any(), rule.Id, rule.OrgId).Return(retRule,
@@ -251,7 +251,7 @@ func TestUpdateRule(t *testing.T) {
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
 			context.Background(), &session.Session{
-				OrgID: rule.OrgId, Role: common.Role_ADMIN,
+				OrgID: rule.OrgId, Role: api.Role_ADMIN,
 			}), testTimeout)
 		defer cancel()
 
@@ -281,7 +281,7 @@ func TestUpdateRule(t *testing.T) {
 		updateRule, err := raSvc.UpdateRule(ctx, &api.UpdateRuleRequest{})
 		t.Logf("updateRule, err: %+v, %v", updateRule, err)
 		require.Nil(t, updateRule)
-		require.Equal(t, errPerm(common.Role_BUILDER), err)
+		require.Equal(t, errPerm(api.Role_BUILDER), err)
 	})
 
 	t.Run("Update rule with insufficient role", func(t *testing.T) {
@@ -289,7 +289,7 @@ func TestUpdateRule(t *testing.T) {
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
 			context.Background(), &session.Session{
-				OrgID: uuid.NewString(), Role: common.Role_VIEWER,
+				OrgID: uuid.NewString(), Role: api.Role_VIEWER,
 			}), testTimeout)
 		defer cancel()
 
@@ -297,7 +297,7 @@ func TestUpdateRule(t *testing.T) {
 		updateRule, err := raSvc.UpdateRule(ctx, &api.UpdateRuleRequest{})
 		t.Logf("updateRule, err: %+v, %v", updateRule, err)
 		require.Nil(t, updateRule)
-		require.Equal(t, errPerm(common.Role_BUILDER), err)
+		require.Equal(t, errPerm(api.Role_BUILDER), err)
 	})
 
 	t.Run("Update nil rule", func(t *testing.T) {
@@ -305,7 +305,7 @@ func TestUpdateRule(t *testing.T) {
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
 			context.Background(), &session.Session{
-				OrgID: uuid.NewString(), Role: common.Role_ADMIN,
+				OrgID: uuid.NewString(), Role: api.Role_ADMIN,
 			}), testTimeout)
 		defer cancel()
 
@@ -326,7 +326,7 @@ func TestUpdateRule(t *testing.T) {
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
 			context.Background(), &session.Session{
-				OrgID: uuid.NewString(), Role: common.Role_ADMIN,
+				OrgID: uuid.NewString(), Role: api.Role_ADMIN,
 			}), testTimeout)
 		defer cancel()
 
@@ -346,7 +346,7 @@ func TestUpdateRule(t *testing.T) {
 		t.Parallel()
 
 		orgID := uuid.NewString()
-		part := &common.Rule{Id: uuid.NewString(), Status: common.Status_ACTIVE}
+		part := &api.Rule{Id: uuid.NewString(), Status: api.Status_ACTIVE}
 
 		ruler := NewMockRuler(gomock.NewController(t))
 		ruler.EXPECT().Read(gomock.Any(), part.Id, orgID).
@@ -354,7 +354,7 @@ func TestUpdateRule(t *testing.T) {
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
 			context.Background(), &session.Session{
-				OrgID: orgID, Role: common.Role_ADMIN,
+				OrgID: orgID, Role: api.Role_ADMIN,
 			}), testTimeout)
 		defer cancel()
 
@@ -377,7 +377,7 @@ func TestUpdateRule(t *testing.T) {
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
 			context.Background(), &session.Session{
-				OrgID: rule.OrgId, Role: common.Role_ADMIN,
+				OrgID: rule.OrgId, Role: api.Role_ADMIN,
 			}), testTimeout)
 		defer cancel()
 
@@ -404,7 +404,7 @@ func TestUpdateRule(t *testing.T) {
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
 			context.Background(), &session.Session{
-				OrgID: rule.OrgId, Role: common.Role_ADMIN,
+				OrgID: rule.OrgId, Role: api.Role_ADMIN,
 			}), testTimeout)
 		defer cancel()
 
@@ -431,7 +431,7 @@ func TestDeleteRule(t *testing.T) {
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
 			context.Background(), &session.Session{
-				OrgID: uuid.NewString(), Role: common.Role_ADMIN,
+				OrgID: uuid.NewString(), Role: api.Role_ADMIN,
 			}), testTimeout)
 		defer cancel()
 
@@ -452,7 +452,7 @@ func TestDeleteRule(t *testing.T) {
 		raSvc := NewRuleAlarm(nil, nil)
 		_, err := raSvc.DeleteRule(ctx, &api.DeleteRuleRequest{})
 		t.Logf("err: %v", err)
-		require.Equal(t, errPerm(common.Role_BUILDER), err)
+		require.Equal(t, errPerm(api.Role_BUILDER), err)
 	})
 
 	t.Run("Delete rule with insufficient role", func(t *testing.T) {
@@ -460,14 +460,14 @@ func TestDeleteRule(t *testing.T) {
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
 			context.Background(), &session.Session{
-				OrgID: uuid.NewString(), Role: common.Role_VIEWER,
+				OrgID: uuid.NewString(), Role: api.Role_VIEWER,
 			}), testTimeout)
 		defer cancel()
 
 		raSvc := NewRuleAlarm(nil, nil)
 		_, err := raSvc.DeleteRule(ctx, &api.DeleteRuleRequest{})
 		t.Logf("err: %v", err)
-		require.Equal(t, errPerm(common.Role_BUILDER), err)
+		require.Equal(t, errPerm(api.Role_BUILDER), err)
 	})
 
 	t.Run("Delete rule by unknown ID", func(t *testing.T) {
@@ -479,7 +479,7 @@ func TestDeleteRule(t *testing.T) {
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
 			context.Background(), &session.Session{
-				OrgID: uuid.NewString(), Role: common.Role_ADMIN,
+				OrgID: uuid.NewString(), Role: api.Role_ADMIN,
 			}), testTimeout)
 		defer cancel()
 
@@ -500,7 +500,7 @@ func TestListRules(t *testing.T) {
 
 		orgID := uuid.NewString()
 
-		rules := []*common.Rule{
+		rules := []*api.Rule{
 			random.Rule("api-rule", uuid.NewString()),
 			random.Rule("api-rule", uuid.NewString()),
 			random.Rule("api-rule", uuid.NewString()),
@@ -512,7 +512,7 @@ func TestListRules(t *testing.T) {
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
 			context.Background(), &session.Session{
-				OrgID: orgID, Role: common.Role_ADMIN,
+				OrgID: orgID, Role: api.Role_ADMIN,
 			}), testTimeout)
 		defer cancel()
 
@@ -536,7 +536,7 @@ func TestListRules(t *testing.T) {
 
 		orgID := uuid.NewString()
 
-		rules := []*common.Rule{
+		rules := []*api.Rule{
 			random.Rule("api-rule", uuid.NewString()),
 			random.Rule("api-rule", uuid.NewString()),
 			random.Rule("api-rule", uuid.NewString()),
@@ -552,7 +552,7 @@ func TestListRules(t *testing.T) {
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
 			context.Background(), &session.Session{
-				OrgID: orgID, Role: common.Role_ADMIN,
+				OrgID: orgID, Role: api.Role_ADMIN,
 			}), testTimeout)
 		defer cancel()
 
@@ -585,7 +585,7 @@ func TestListRules(t *testing.T) {
 		listRules, err := raSvc.ListRules(ctx, &api.ListRulesRequest{})
 		t.Logf("listRules, err: %+v, %v", listRules, err)
 		require.Nil(t, listRules)
-		require.Equal(t, errPerm(common.Role_VIEWER), err)
+		require.Equal(t, errPerm(api.Role_VIEWER), err)
 	})
 
 	t.Run("List rules with insufficient role", func(t *testing.T) {
@@ -593,7 +593,7 @@ func TestListRules(t *testing.T) {
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
 			context.Background(), &session.Session{
-				OrgID: uuid.NewString(), Role: common.Role_CONTACT,
+				OrgID: uuid.NewString(), Role: api.Role_CONTACT,
 			}), testTimeout)
 		defer cancel()
 
@@ -601,7 +601,7 @@ func TestListRules(t *testing.T) {
 		listRules, err := raSvc.ListRules(ctx, &api.ListRulesRequest{})
 		t.Logf("listRules, err: %+v, %v", listRules, err)
 		require.Nil(t, listRules)
-		require.Equal(t, errPerm(common.Role_VIEWER), err)
+		require.Equal(t, errPerm(api.Role_VIEWER), err)
 	})
 
 	t.Run("List rules by invalid page token", func(t *testing.T) {
@@ -609,7 +609,7 @@ func TestListRules(t *testing.T) {
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
 			context.Background(), &session.Session{
-				OrgID: uuid.NewString(), Role: common.Role_ADMIN,
+				OrgID: uuid.NewString(), Role: api.Role_ADMIN,
 			}), testTimeout)
 		defer cancel()
 
@@ -632,7 +632,7 @@ func TestListRules(t *testing.T) {
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
 			context.Background(), &session.Session{
-				OrgID: "aaa", Role: common.Role_ADMIN,
+				OrgID: "aaa", Role: api.Role_ADMIN,
 			}), testTimeout)
 		defer cancel()
 
@@ -649,7 +649,7 @@ func TestListRules(t *testing.T) {
 
 		orgID := uuid.NewString()
 
-		rules := []*common.Rule{
+		rules := []*api.Rule{
 			random.Rule("api-rule", uuid.NewString()),
 			random.Rule("api-rule", uuid.NewString()),
 			random.Rule("api-rule", uuid.NewString()),
@@ -662,7 +662,7 @@ func TestListRules(t *testing.T) {
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
 			context.Background(), &session.Session{
-				OrgID: orgID, Role: common.Role_ADMIN,
+				OrgID: orgID, Role: api.Role_ADMIN,
 			}), testTimeout)
 		defer cancel()
 
@@ -756,14 +756,14 @@ func TestTestRule(t *testing.T) {
 
 				ctx, cancel := context.WithTimeout(session.NewContext(
 					context.Background(), &session.Session{
-						OrgID: uuid.NewString(), Role: common.Role_ADMIN,
+						OrgID: uuid.NewString(), Role: api.Role_ADMIN,
 					}),
 					testTimeout)
 				defer cancel()
 
 				raSvc := NewRuleAlarm(nil, nil)
 				testRes, err := raSvc.TestRule(ctx, &api.TestRuleRequest{
-					Point: lTest.inpPoint, Rule: &common.Rule{
+					Point: lTest.inpPoint, Rule: &api.Rule{
 						Attr: lTest.inpPoint.Attr, Expr: lTest.inpRuleExpr,
 					},
 				})
@@ -790,7 +790,7 @@ func TestTestRule(t *testing.T) {
 		testRes, err := raSvc.TestRule(ctx, &api.TestRuleRequest{})
 		t.Logf("testRes, err: %+v, %v", testRes, err)
 		require.Nil(t, testRes)
-		require.Equal(t, errPerm(common.Role_BUILDER), err)
+		require.Equal(t, errPerm(api.Role_BUILDER), err)
 	})
 
 	t.Run("Test rule with insufficient role", func(t *testing.T) {
@@ -798,7 +798,7 @@ func TestTestRule(t *testing.T) {
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
 			context.Background(), &session.Session{
-				OrgID: uuid.NewString(), Role: common.Role_VIEWER,
+				OrgID: uuid.NewString(), Role: api.Role_VIEWER,
 			}), testTimeout)
 		defer cancel()
 
@@ -806,7 +806,7 @@ func TestTestRule(t *testing.T) {
 		testRes, err := raSvc.TestRule(ctx, &api.TestRuleRequest{})
 		t.Logf("testRes, err: %+v, %v", testRes, err)
 		require.Nil(t, testRes)
-		require.Equal(t, errPerm(common.Role_BUILDER), err)
+		require.Equal(t, errPerm(api.Role_BUILDER), err)
 	})
 
 	t.Run("Test invalid rule attribute", func(t *testing.T) {
@@ -817,7 +817,7 @@ func TestTestRule(t *testing.T) {
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
 			context.Background(), &session.Session{
-				OrgID: rule.OrgId, Role: common.Role_ADMIN,
+				OrgID: rule.OrgId, Role: api.Role_ADMIN,
 			}), testTimeout)
 		defer cancel()
 

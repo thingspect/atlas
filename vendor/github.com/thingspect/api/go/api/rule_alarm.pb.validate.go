@@ -17,8 +17,6 @@ import (
 	"unicode/utf8"
 
 	"google.golang.org/protobuf/types/known/anypb"
-
-	common "github.com/thingspect/api/go/common"
 )
 
 // ensure the imports are used
@@ -35,12 +33,230 @@ var (
 	_ = (*mail.Address)(nil)
 	_ = anypb.Any{}
 	_ = sort.Sort
-
-	_ = common.Status(0)
 )
 
 // define the regex for a UUID once up-front
 var _rule_alarm_uuidPattern = regexp.MustCompile("^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$")
+
+// Validate checks the field values on Rule with the rules defined in the proto
+// definition for this message. If any rules are violated, the first error
+// encountered is returned, or nil if there are no violations.
+func (m *Rule) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on Rule with the rules defined in the
+// proto definition for this message. If any rules are violated, the result is
+// a list of violation errors wrapped in RuleMultiError, or nil if none found.
+func (m *Rule) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *Rule) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	// no validation rules for Id
+
+	// no validation rules for OrgId
+
+	if l := utf8.RuneCountInString(m.GetName()); l < 5 || l > 80 {
+		err := RuleValidationError{
+			field:  "Name",
+			reason: "value length must be between 5 and 80 runes, inclusive",
+		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
+	}
+
+	if _, ok := _Rule_Status_InLookup[m.GetStatus()]; !ok {
+		err := RuleValidationError{
+			field:  "Status",
+			reason: "value must be in list [3 6]",
+		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
+	}
+
+	if utf8.RuneCountInString(m.GetDeviceTag()) > 255 {
+		err := RuleValidationError{
+			field:  "DeviceTag",
+			reason: "value length must be at most 255 runes",
+		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
+	}
+
+	if utf8.RuneCountInString(m.GetAttr()) > 40 {
+		err := RuleValidationError{
+			field:  "Attr",
+			reason: "value length must be at most 40 runes",
+		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
+	}
+
+	if utf8.RuneCountInString(m.GetExpr()) > 1024 {
+		err := RuleValidationError{
+			field:  "Expr",
+			reason: "value length must be at most 1024 runes",
+		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
+	}
+
+	if all {
+		switch v := interface{}(m.GetCreatedAt()).(type) {
+		case interface{ ValidateAll() error }:
+			if err := v.ValidateAll(); err != nil {
+				errors = append(errors, RuleValidationError{
+					field:  "CreatedAt",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		case interface{ Validate() error }:
+			if err := v.Validate(); err != nil {
+				errors = append(errors, RuleValidationError{
+					field:  "CreatedAt",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		}
+	} else if v, ok := interface{}(m.GetCreatedAt()).(interface{ Validate() error }); ok {
+		if err := v.Validate(); err != nil {
+			return RuleValidationError{
+				field:  "CreatedAt",
+				reason: "embedded message failed validation",
+				cause:  err,
+			}
+		}
+	}
+
+	if all {
+		switch v := interface{}(m.GetUpdatedAt()).(type) {
+		case interface{ ValidateAll() error }:
+			if err := v.ValidateAll(); err != nil {
+				errors = append(errors, RuleValidationError{
+					field:  "UpdatedAt",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		case interface{ Validate() error }:
+			if err := v.Validate(); err != nil {
+				errors = append(errors, RuleValidationError{
+					field:  "UpdatedAt",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		}
+	} else if v, ok := interface{}(m.GetUpdatedAt()).(interface{ Validate() error }); ok {
+		if err := v.Validate(); err != nil {
+			return RuleValidationError{
+				field:  "UpdatedAt",
+				reason: "embedded message failed validation",
+				cause:  err,
+			}
+		}
+	}
+
+	if len(errors) > 0 {
+		return RuleMultiError(errors)
+	}
+
+	return nil
+}
+
+// RuleMultiError is an error wrapping multiple validation errors returned by
+// Rule.ValidateAll() if the designated constraints aren't met.
+type RuleMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m RuleMultiError) Error() string {
+	var msgs []string
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m RuleMultiError) AllErrors() []error { return m }
+
+// RuleValidationError is the validation error returned by Rule.Validate if the
+// designated constraints aren't met.
+type RuleValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e RuleValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e RuleValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e RuleValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e RuleValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e RuleValidationError) ErrorName() string { return "RuleValidationError" }
+
+// Error satisfies the builtin error interface
+func (e RuleValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sRule.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = RuleValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = RuleValidationError{}
+
+var _Rule_Status_InLookup = map[Status]struct{}{
+	3: {},
+	6: {},
+}
 
 // Validate checks the field values on CreateRuleRequest with the rules defined
 // in the proto definition for this message. If any rules are violated, the
@@ -107,6 +323,7 @@ func (m *CreateRuleRequest) validate(all bool) error {
 	if len(errors) > 0 {
 		return CreateRuleRequestMultiError(errors)
 	}
+
 	return nil
 }
 
@@ -220,6 +437,7 @@ func (m *GetRuleRequest) validate(all bool) error {
 	if len(errors) > 0 {
 		return GetRuleRequestMultiError(errors)
 	}
+
 	return nil
 }
 
@@ -396,6 +614,7 @@ func (m *UpdateRuleRequest) validate(all bool) error {
 	if len(errors) > 0 {
 		return UpdateRuleRequestMultiError(errors)
 	}
+
 	return nil
 }
 
@@ -509,6 +728,7 @@ func (m *DeleteRuleRequest) validate(all bool) error {
 	if len(errors) > 0 {
 		return DeleteRuleRequestMultiError(errors)
 	}
+
 	return nil
 }
 
@@ -631,6 +851,7 @@ func (m *ListRulesRequest) validate(all bool) error {
 	if len(errors) > 0 {
 		return ListRulesRequestMultiError(errors)
 	}
+
 	return nil
 }
 
@@ -768,6 +989,7 @@ func (m *ListRulesResponse) validate(all bool) error {
 	if len(errors) > 0 {
 		return ListRulesResponseMultiError(errors)
 	}
+
 	return nil
 }
 
@@ -949,6 +1171,7 @@ func (m *TestRuleRequest) validate(all bool) error {
 	if len(errors) > 0 {
 		return TestRuleRequestMultiError(errors)
 	}
+
 	return nil
 }
 
@@ -1050,6 +1273,7 @@ func (m *TestRuleResponse) validate(all bool) error {
 	if len(errors) > 0 {
 		return TestRuleResponseMultiError(errors)
 	}
+
 	return nil
 }
 
@@ -1320,6 +1544,7 @@ func (m *Alarm) validate(all bool) error {
 	if len(errors) > 0 {
 		return AlarmMultiError(errors)
 	}
+
 	return nil
 }
 
@@ -1393,7 +1618,7 @@ var _ interface {
 	ErrorName() string
 } = AlarmValidationError{}
 
-var _Alarm_Status_InLookup = map[common.Status]struct{}{
+var _Alarm_Status_InLookup = map[Status]struct{}{
 	3: {},
 	6: {},
 }
@@ -1469,6 +1694,7 @@ func (m *CreateAlarmRequest) validate(all bool) error {
 	if len(errors) > 0 {
 		return CreateAlarmRequestMultiError(errors)
 	}
+
 	return nil
 }
 
@@ -1594,6 +1820,7 @@ func (m *GetAlarmRequest) validate(all bool) error {
 	if len(errors) > 0 {
 		return GetAlarmRequestMultiError(errors)
 	}
+
 	return nil
 }
 
@@ -1770,6 +1997,7 @@ func (m *UpdateAlarmRequest) validate(all bool) error {
 	if len(errors) > 0 {
 		return UpdateAlarmRequestMultiError(errors)
 	}
+
 	return nil
 }
 
@@ -1895,6 +2123,7 @@ func (m *DeleteAlarmRequest) validate(all bool) error {
 	if len(errors) > 0 {
 		return DeleteAlarmRequestMultiError(errors)
 	}
+
 	return nil
 }
 
@@ -2033,6 +2262,7 @@ func (m *ListAlarmsRequest) validate(all bool) error {
 	if len(errors) > 0 {
 		return ListAlarmsRequestMultiError(errors)
 	}
+
 	return nil
 }
 
@@ -2180,6 +2410,7 @@ func (m *ListAlarmsResponse) validate(all bool) error {
 	if len(errors) > 0 {
 		return ListAlarmsResponseMultiError(errors)
 	}
+
 	return nil
 }
 
@@ -2441,6 +2672,7 @@ func (m *TestAlarmRequest) validate(all bool) error {
 	if len(errors) > 0 {
 		return TestAlarmRequestMultiError(errors)
 	}
+
 	return nil
 }
 
@@ -2542,6 +2774,7 @@ func (m *TestAlarmResponse) validate(all bool) error {
 	if len(errors) > 0 {
 		return TestAlarmResponseMultiError(errors)
 	}
+
 	return nil
 }
 

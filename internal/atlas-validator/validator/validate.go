@@ -6,7 +6,7 @@ import (
 	"errors"
 	"time"
 
-	"github.com/thingspect/api/go/common"
+	"github.com/thingspect/api/go/api"
 	"github.com/thingspect/atlas/api/go/message"
 	"github.com/thingspect/atlas/pkg/alog"
 	"github.com/thingspect/atlas/pkg/dao"
@@ -81,7 +81,7 @@ func (val *Validator) validateMessages() {
 				"actual: %v", dev.OrgId, vIn.OrgId)
 
 			continue
-		case dev.Status != common.Status_ACTIVE:
+		case dev.Status != api.Status_ACTIVE:
 			msg.Ack()
 			metric.Incr("invalid", map[string]string{"func": "disabled"})
 			logger.Debugf("validateMessages device disabled: %+v", vIn)

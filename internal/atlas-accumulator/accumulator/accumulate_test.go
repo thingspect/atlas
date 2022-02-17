@@ -11,6 +11,7 @@ import (
 	"github.com/golang/mock/gomock"
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/require"
+	"github.com/thingspect/api/go/api"
 	"github.com/thingspect/api/go/common"
 	"github.com/thingspect/atlas/api/go/message"
 	"github.com/thingspect/atlas/pkg/consterr"
@@ -126,15 +127,15 @@ func TestAccumulateMessagesError(t *testing.T) {
 		{&message.ValidatorOut{Point: &common.DataPoint{}}, nil, 0},
 		// Duplicate data point.
 		{&message.ValidatorOut{
-			Point: &common.DataPoint{}, Device: &common.Device{},
+			Point: &common.DataPoint{}, Device: &api.Device{},
 		}, dao.ErrAlreadyExists, 1},
 		// Invalid data point.
 		{&message.ValidatorOut{
-			Point: &common.DataPoint{}, Device: &common.Device{},
+			Point: &common.DataPoint{}, Device: &api.Device{},
 		}, dao.ErrInvalidFormat, 1},
 		// DataPointer error.
 		{&message.ValidatorOut{
-			Point: &common.DataPoint{}, Device: &common.Device{},
+			Point: &common.DataPoint{}, Device: &api.Device{},
 		}, errTestProc, 1},
 	}
 

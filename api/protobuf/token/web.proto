@@ -1,7 +1,7 @@
 syntax = "proto3";
 package thingspect.int.token;
 
-import "common/role.proto";
+import "api/role.proto";
 import "google/protobuf/timestamp.proto";
 
 option go_package = "github.com/thingspect/atlas/api/go/token";
@@ -21,7 +21,7 @@ message Web {
   bytes org_id = 3;
 
   // User role.
-  common.Role role = 4;
+  api.Role role = 4;
 
   // Token expiration timestamp. If present, nanos should be zeroed for compactness. Will not be present for API key use.
   google.protobuf.Timestamp expires_at = 5;

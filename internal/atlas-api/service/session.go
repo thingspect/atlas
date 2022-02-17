@@ -7,7 +7,6 @@ import (
 	"time"
 
 	"github.com/thingspect/api/go/api"
-	"github.com/thingspect/api/go/common"
 	"github.com/thingspect/atlas/internal/atlas-api/crypto"
 	"github.com/thingspect/atlas/internal/atlas-api/key"
 	"github.com/thingspect/atlas/internal/atlas-api/session"
@@ -71,7 +70,7 @@ func (s *Session) Login(ctx context.Context,
 		user.OrgId)
 
 	if err := crypto.CompareHashPass(hash, req.Password); err != nil ||
-		user.Status != common.Status_ACTIVE || user.Role < common.Role_VIEWER {
+		user.Status != api.Status_ACTIVE || user.Role < api.Role_VIEWER {
 		logger.Debugf("Login crypto.CompareHashPass err, user.Status: %v, %s",
 			err, user.Status)
 
@@ -93,13 +92,13 @@ func (s *Session) CreateKey(ctx context.Context,
 	req *api.CreateKeyRequest) (*api.CreateKeyResponse, error) {
 	logger := alog.FromContext(ctx)
 	sess, ok := session.FromContext(ctx)
-	if !ok || sess.Role < common.Role_ADMIN {
-		return nil, errPerm(common.Role_ADMIN)
+	if !ok || sess.Role < api.Role_ADMIN {
+		return nil, errPerm(api.Role_ADMIN)
 	}
 
 	// Only system admins can create keys with system admin role.
-	if sess.Role < common.Role_SYS_ADMIN &&
-		req.Key.Role == common.Role_SYS_ADMIN {
+	if sess.Role < api.Role_SYS_ADMIN &&
+		req.Key.Role == api.Role_SYS_ADMIN {
 		return nil, status.Error(codes.PermissionDenied,
 			"permission denied, role modification not allowed")
 	}
@@ -131,8 +130,8 @@ func (s *Session) CreateKey(ctx context.Context,
 func (s *Session) DeleteKey(ctx context.Context,
 	req *api.DeleteKeyRequest) (*emptypb.Empty, error) {
 	sess, ok := session.FromContext(ctx)
-	if !ok || sess.Role < common.Role_ADMIN {
-		return nil, errPerm(common.Role_ADMIN)
+	if !ok || sess.Role < api.Role_ADMIN {
+		return nil, errPerm(api.Role_ADMIN)
 	}
 
 	// Disable API key before removing record. If a faulty key ID is given,
@@ -160,8 +159,8 @@ func (s *Session) DeleteKey(ctx context.Context,
 func (s *Session) ListKeys(ctx context.Context,
 	req *api.ListKeysRequest) (*api.ListKeysResponse, error) {
 	sess, ok := session.FromContext(ctx)
-	if !ok || sess.Role < common.Role_ADMIN {
-		return nil, errPerm(common.Role_ADMIN)
+	if !ok || sess.Role < api.Role_ADMIN {
+		return nil, errPerm(api.Role_ADMIN)
 	}
 
 	if req.PageSize == 0 {

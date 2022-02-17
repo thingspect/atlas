@@ -6,7 +6,6 @@ import (
 	"time"
 
 	"github.com/thingspect/api/go/api"
-	"github.com/thingspect/api/go/common"
 	"github.com/thingspect/atlas/pkg/alog"
 	"github.com/thingspect/atlas/pkg/dao"
 	"google.golang.org/protobuf/types/known/timestamppb"
@@ -48,7 +47,7 @@ func (d *DAO) read(ctx context.Context, keyID, orgID string) (*api.Key, error) {
 		return nil, dao.DBToSentinel(err)
 	}
 
-	key.Role = common.Role(common.Role_value[role])
+	key.Role = api.Role(api.Role_value[role])
 	key.CreatedAt = timestamppb.New(createdAt)
 
 	return key, nil
@@ -147,7 +146,7 @@ func (d *DAO) List(ctx context.Context, orgID string, lBoundTS time.Time,
 			return nil, 0, dao.DBToSentinel(err)
 		}
 
-		key.Role = common.Role(common.Role_value[role])
+		key.Role = api.Role(api.Role_value[role])
 		key.CreatedAt = timestamppb.New(createdAt)
 		keys = append(keys, key)
 	}

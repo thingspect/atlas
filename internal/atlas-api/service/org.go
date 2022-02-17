@@ -8,7 +8,6 @@ import (
 
 	"github.com/mennanov/fmutils"
 	"github.com/thingspect/api/go/api"
-	"github.com/thingspect/api/go/common"
 	"github.com/thingspect/atlas/internal/atlas-api/session"
 	"github.com/thingspect/atlas/pkg/alog"
 	"google.golang.org/grpc"
@@ -47,8 +46,8 @@ func NewOrg(orgDAO Orger) *Org {
 func (o *Org) CreateOrg(ctx context.Context,
 	req *api.CreateOrgRequest) (*api.Org, error) {
 	sess, ok := session.FromContext(ctx)
-	if !ok || sess.Role < common.Role_SYS_ADMIN {
-		return nil, errPerm(common.Role_SYS_ADMIN)
+	if !ok || sess.Role < api.Role_SYS_ADMIN {
+		return nil, errPerm(api.Role_SYS_ADMIN)
 	}
 
 	org, err := o.orgDAO.Create(ctx, req.Org)
@@ -69,8 +68,8 @@ func (o *Org) CreateOrg(ctx context.Context,
 func (o *Org) GetOrg(ctx context.Context, req *api.GetOrgRequest) (*api.Org,
 	error) {
 	sess, ok := session.FromContext(ctx)
-	if !ok || (sess.Role < common.Role_SYS_ADMIN && req.Id != sess.OrgID) {
-		return nil, errPerm(common.Role_SYS_ADMIN)
+	if !ok || (sess.Role < api.Role_SYS_ADMIN && req.Id != sess.OrgID) {
+		return nil, errPerm(api.Role_SYS_ADMIN)
 	}
 
 	org, err := o.orgDAO.Read(ctx, req.Id)
@@ -87,7 +86,7 @@ func (o *Org) UpdateOrg(ctx context.Context,
 	req *api.UpdateOrgRequest) (*api.Org, error) {
 	sess, ok := session.FromContext(ctx)
 	if !ok {
-		return nil, errPerm(common.Role_SYS_ADMIN)
+		return nil, errPerm(api.Role_SYS_ADMIN)
 	}
 
 	if req.Org == nil {
@@ -96,9 +95,9 @@ func (o *Org) UpdateOrg(ctx context.Context,
 	}
 
 	// Admins can only update their own org, system admins can update any org.
-	if (sess.Role < common.Role_SYS_ADMIN && req.Org.Id != sess.OrgID) ||
-		(sess.Role < common.Role_ADMIN && req.Org.Id == sess.OrgID) {
-		return nil, errPerm(common.Role_SYS_ADMIN)
+	if (sess.Role < api.Role_SYS_ADMIN && req.Org.Id != sess.OrgID) ||
+		(sess.Role < api.Role_ADMIN && req.Org.Id == sess.OrgID) {
+		return nil, errPerm(api.Role_SYS_ADMIN)
 	}
 
 	// Perform partial update if directed.
@@ -137,8 +136,8 @@ func (o *Org) UpdateOrg(ctx context.Context,
 func (o *Org) DeleteOrg(ctx context.Context,
 	req *api.DeleteOrgRequest) (*emptypb.Empty, error) {
 	sess, ok := session.FromContext(ctx)
-	if !ok || sess.Role < common.Role_SYS_ADMIN {
-		return nil, errPerm(common.Role_SYS_ADMIN)
+	if !ok || sess.Role < api.Role_SYS_ADMIN {
+		return nil, errPerm(api.Role_SYS_ADMIN)
 	}
 
 	if err := o.orgDAO.Delete(ctx, req.Id); err != nil {
@@ -159,11 +158,11 @@ func (o *Org) ListOrgs(ctx context.Context,
 	req *api.ListOrgsRequest) (*api.ListOrgsResponse, error) {
 	sess, ok := session.FromContext(ctx)
 	if !ok {
-		return nil, errPerm(common.Role_SYS_ADMIN)
+		return nil, errPerm(api.Role_SYS_ADMIN)
 	}
 
 	// If the org does not have sufficient role, return only their org.
-	if sess.Role < common.Role_SYS_ADMIN {
+	if sess.Role < api.Role_SYS_ADMIN {
 		org, err := o.orgDAO.Read(ctx, sess.OrgID)
 		if err != nil {
 			return nil, errToStatus(err)

@@ -10,7 +10,6 @@ import (
 
 	gomock "github.com/golang/mock/gomock"
 	api "github.com/thingspect/api/go/api"
-	common "github.com/thingspect/api/go/common"
 )
 
 // Mockruler is a mock of ruler interface.
@@ -37,10 +36,10 @@ func (m *Mockruler) EXPECT() *MockrulerMockRecorder {
 }
 
 // ListByTags mocks base method.
-func (m *Mockruler) ListByTags(ctx context.Context, orgID, attr string, deviceTags []string) ([]*common.Rule, error) {
+func (m *Mockruler) ListByTags(ctx context.Context, orgID, attr string, deviceTags []string) ([]*api.Rule, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "ListByTags", ctx, orgID, attr, deviceTags)
-	ret0, _ := ret[0].([]*common.Rule)
+	ret0, _ := ret[0].([]*api.Rule)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }

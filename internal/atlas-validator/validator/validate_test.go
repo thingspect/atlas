@@ -10,6 +10,7 @@ import (
 	"github.com/golang/mock/gomock"
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/require"
+	"github.com/thingspect/api/go/api"
 	"github.com/thingspect/api/go/common"
 	"github.com/thingspect/atlas/api/go/message"
 	"github.com/thingspect/atlas/pkg/consterr"
@@ -26,7 +27,7 @@ func TestValidateMessages(t *testing.T) {
 	t.Parallel()
 
 	dev := random.Device("val", uuid.NewString())
-	dev.Status = common.Status_ACTIVE
+	dev.Status = api.Status_ACTIVE
 	now := timestamppb.New(time.Now().Add(-15 * time.Minute))
 	traceID := uuid.NewString()
 	boolVal := &common.DataPoint_BoolVal{
@@ -176,32 +177,32 @@ func TestValidateMessagesError(t *testing.T) {
 
 	tests := []struct {
 		inpVIn    *message.ValidatorIn
-		inpStatus common.Status
+		inpStatus api.Status
 		inpErr    error
 		inpTimes  int
 	}{
 		// Bad payload.
 		{
-			nil, common.Status_ACTIVE, nil, 0,
+			nil, api.Status_ACTIVE, nil, 0,
 		},
 		// Missing data point.
 		{
-			&message.ValidatorIn{}, common.Status_ACTIVE, nil, 0,
+			&message.ValidatorIn{}, api.Status_ACTIVE, nil, 0,
 		},
 		// Device not found.
 		{
 			&message.ValidatorIn{Point: &common.DataPoint{}},
-			common.Status_ACTIVE, dao.ErrNotFound, 1,
+			api.Status_ACTIVE, dao.ErrNotFound, 1,
 		},
 		// Devicer error.
 		{
 			&message.ValidatorIn{Point: &common.DataPoint{}},
-			common.Status_ACTIVE, errTestProc, 1,
+			api.Status_ACTIVE, errTestProc, 1,
 		},
 		// Missing value.
 		{
 			&message.ValidatorIn{Point: &common.DataPoint{}},
-			common.Status_ACTIVE, nil, 1,
+			api.Status_ACTIVE, nil, 1,
 		},
 		// Invalid org ID.
 		{
@@ -210,7 +211,7 @@ func TestValidateMessagesError(t *testing.T) {
 					UniqId: random.String(16), Attr: random.String(10),
 					ValOneof: &common.DataPoint_IntVal{},
 				}, OrgId: "val-aaa",
-			}, common.Status_ACTIVE, nil, 1,
+			}, api.Status_ACTIVE, nil, 1,
 		},
 		// Device status.
 		{
@@ -219,7 +220,7 @@ func TestValidateMessagesError(t *testing.T) {
 					UniqId: random.String(16), Attr: random.String(10),
 					ValOneof: &common.DataPoint_IntVal{},
 				}, OrgId: orgID,
-			}, common.Status_DISABLED, nil, 1,
+			}, api.Status_DISABLED, nil, 1,
 		},
 		// Invalid token.
 		{
@@ -228,7 +229,7 @@ func TestValidateMessagesError(t *testing.T) {
 					UniqId: random.String(16), Attr: random.String(10),
 					ValOneof: &common.DataPoint_IntVal{}, Token: "val-aaa",
 				}, OrgId: orgID,
-			}, common.Status_ACTIVE, nil, 1,
+			}, api.Status_ACTIVE, nil, 1,
 		},
 	}
 

@@ -7,7 +7,6 @@ import (
 	"time"
 
 	"github.com/thingspect/api/go/api"
-	"github.com/thingspect/api/go/common"
 	"github.com/thingspect/atlas/internal/atlas-api/session"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -38,8 +37,8 @@ func NewAlert(aleDAO Alerter) *Alert {
 func (a *Alert) ListAlerts(ctx context.Context,
 	req *api.ListAlertsRequest) (*api.ListAlertsResponse, error) {
 	sess, ok := session.FromContext(ctx)
-	if !ok || sess.Role < common.Role_VIEWER {
-		return nil, errPerm(common.Role_VIEWER)
+	if !ok || sess.Role < api.Role_VIEWER {
+		return nil, errPerm(api.Role_VIEWER)
 	}
 
 	var uniqID string

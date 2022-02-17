@@ -9,7 +9,7 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/require"
-	"github.com/thingspect/api/go/common"
+	"github.com/thingspect/api/go/api"
 	"github.com/thingspect/atlas/pkg/dao"
 	"github.com/thingspect/atlas/pkg/test/random"
 	"google.golang.org/protobuf/proto"
@@ -31,7 +31,7 @@ func TestCreate(t *testing.T) {
 		t.Parallel()
 
 		rule := random.Rule("dao-rule", createOrg.Id)
-		createRule, _ := proto.Clone(rule).(*common.Rule)
+		createRule, _ := proto.Clone(rule).(*api.Rule)
 
 		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
 		defer cancel()
@@ -153,8 +153,8 @@ func TestUpdate(t *testing.T) {
 
 		// Update rule fields.
 		createRule.Name = "dao-rule-" + random.String(10)
-		createRule.Status = common.Status_DISABLED
-		updateRule, _ := proto.Clone(createRule).(*common.Rule)
+		createRule.Status = api.Status_DISABLED
+		updateRule, _ := proto.Clone(createRule).(*api.Rule)
 
 		updateRule, err = globalRuleDAO.Update(ctx, updateRule)
 		t.Logf("createRule, updateRule, err: %+v, %+v, %v", createRule,
@@ -311,7 +311,7 @@ func TestList(t *testing.T) {
 
 	ruleIDs := []string{}
 	ruleNames := []string{}
-	ruleStatuses := []common.Status{}
+	ruleStatuses := []api.Status{}
 	ruleTSes := []time.Time{}
 	for i := 0; i < 3; i++ {
 		createRule, err := globalRuleDAO.Create(ctx, random.Rule("dao-rule",
@@ -436,7 +436,7 @@ func TestListByTags(t *testing.T) {
 	ruleAttrs := []string{}
 	for i := 0; i < 3; i++ {
 		rule := random.Rule("dao-rule", createOrg.Id)
-		rule.Status = common.Status_ACTIVE
+		rule.Status = api.Status_ACTIVE
 		createRule, err := globalRuleDAO.Create(ctx, rule)
 		t.Logf("createRule, err: %+v, %v", createRule, err)
 		require.NoError(t, err)
@@ -463,11 +463,11 @@ func TestListByTags(t *testing.T) {
 		require.Equal(t, listRules[0].Attr, ruleAttrs[len(ruleAttrs)-1])
 	})
 
-	t.Run("List rules by valid org ID and common attr", func(t *testing.T) {
+	t.Run("List rules by valid org ID and api attr", func(t *testing.T) {
 		t.Parallel()
 
 		rule := random.Rule("dao-rule", createOrg.Id)
-		rule.Status = common.Status_ACTIVE
+		rule.Status = api.Status_ACTIVE
 		rule.Attr = ruleAttrs[0]
 
 		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)

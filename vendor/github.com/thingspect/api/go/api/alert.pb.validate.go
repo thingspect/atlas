@@ -105,6 +105,7 @@ func (m *Alert) validate(all bool) error {
 	if len(errors) > 0 {
 		return AlertMultiError(errors)
 	}
+
 	return nil
 }
 
@@ -318,6 +319,7 @@ func (m *ListAlertsRequest) validate(all bool) error {
 	if len(errors) > 0 {
 		return ListAlertsRequestMultiError(errors)
 	}
+
 	return nil
 }
 
@@ -461,6 +463,7 @@ func (m *ListAlertsResponse) validate(all bool) error {
 	if len(errors) > 0 {
 		return ListAlertsResponseMultiError(errors)
 	}
+
 	return nil
 }
 

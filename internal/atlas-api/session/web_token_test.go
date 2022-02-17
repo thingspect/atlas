@@ -12,7 +12,6 @@ import (
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/require"
 	"github.com/thingspect/api/go/api"
-	"github.com/thingspect/api/go/common"
 	"github.com/thingspect/atlas/api/go/token"
 	"github.com/thingspect/atlas/internal/atlas-api/crypto"
 	"github.com/thingspect/atlas/pkg/test/random"
@@ -60,7 +59,7 @@ func TestGenerateWebToken(t *testing.T) {
 
 			res, exp, err := GenerateWebToken(lTest.inpKey, &api.User{
 				Id: lTest.inpUserID, OrgId: lTest.inpOrgID,
-				Role: common.Role_BUILDER,
+				Role: api.Role_BUILDER,
 			})
 			t.Logf("res, exp, err: %v, %+v, %#v", res, exp, err)
 			require.GreaterOrEqual(t, len(res), lTest.resMinLen)
@@ -116,7 +115,7 @@ func TestGenerateKeyToken(t *testing.T) {
 			t.Parallel()
 
 			res, err := GenerateKeyToken(lTest.inpKey, lTest.inpKeyID,
-				lTest.inpOrgID, common.Role_BUILDER)
+				lTest.inpOrgID, api.Role_BUILDER)
 			t.Logf("res, err: %v, %#v", res, err)
 			require.GreaterOrEqual(t, len(res), lTest.resMinLen)
 			if lTest.err == "" {

@@ -5,7 +5,6 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/thingspect/api/go/api"
-	"github.com/thingspect/api/go/common"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
@@ -20,36 +19,36 @@ func Org(prefix string) *api.Org {
 }
 
 // Device generates a random device with prefixed identifiers.
-func Device(prefix, orgID string) *common.Device {
-	return &common.Device{
+func Device(prefix, orgID string) *api.Device {
+	return &api.Device{
 		Id:     uuid.NewString(),
 		OrgId:  orgID,
 		UniqId: prefix + "-" + String(16),
 		Name:   prefix + "-" + String(10),
-		Status: []common.Status{
-			common.Status_ACTIVE,
-			common.Status_DISABLED,
+		Status: []api.Status{
+			api.Status_ACTIVE,
+			api.Status_DISABLED,
 		}[Intn(2)],
 		Token: uuid.NewString(),
-		Decoder: []common.Decoder{
-			common.Decoder_RAW,
-			common.Decoder_GATEWAY,
-			common.Decoder_RADIO_BRIDGE_DOOR_V1,
-			common.Decoder_RADIO_BRIDGE_DOOR_V2,
+		Decoder: []api.Decoder{
+			api.Decoder_RAW,
+			api.Decoder_GATEWAY,
+			api.Decoder_RADIO_BRIDGE_DOOR_V1,
+			api.Decoder_RADIO_BRIDGE_DOOR_V2,
 		}[Intn(4)],
 		Tags: Tags(prefix, Intn(4)+1),
 	}
 }
 
 // Rule generates a random rule with prefixed identifiers.
-func Rule(prefix, orgID string) *common.Rule {
-	return &common.Rule{
+func Rule(prefix, orgID string) *api.Rule {
+	return &api.Rule{
 		Id:    uuid.NewString(),
 		OrgId: orgID,
 		Name:  prefix + "-" + String(10),
-		Status: []common.Status{
-			common.Status_ACTIVE,
-			common.Status_DISABLED,
+		Status: []api.Status{
+			api.Status_ACTIVE,
+			api.Status_DISABLED,
 		}[Intn(2)],
 		DeviceTag: prefix + "-" + String(10),
 		Attr:      prefix + "-" + String(10),
@@ -75,9 +74,9 @@ func Alarm(prefix, orgID, ruleID string) *api.Alarm {
 		OrgId:  orgID,
 		RuleId: ruleID,
 		Name:   prefix + "-" + String(10),
-		Status: []common.Status{
-			common.Status_ACTIVE,
-			common.Status_DISABLED,
+		Status: []api.Status{
+			api.Status_ACTIVE,
+			api.Status_DISABLED,
 		}[Intn(2)],
 		Type: []api.AlarmType{
 			api.AlarmType_APP,
@@ -115,17 +114,17 @@ func User(prefix, orgID string) *api.User {
 		Name:  prefix + "-" + String(10),
 		Email: prefix + "-" + Email(),
 		Phone: []string{"", "+15125551212"}[Intn(2)],
-		Role: []common.Role{
-			common.Role_CONTACT,
-			common.Role_VIEWER,
-			common.Role_PUBLISHER,
-			common.Role_BUILDER,
-			common.Role_ADMIN,
-			common.Role_SYS_ADMIN,
+		Role: []api.Role{
+			api.Role_CONTACT,
+			api.Role_VIEWER,
+			api.Role_PUBLISHER,
+			api.Role_BUILDER,
+			api.Role_ADMIN,
+			api.Role_SYS_ADMIN,
 		}[Intn(6)],
-		Status: []common.Status{
-			common.Status_ACTIVE,
-			common.Status_DISABLED,
+		Status: []api.Status{
+			api.Status_ACTIVE,
+			api.Status_DISABLED,
 		}[Intn(2)],
 		Tags:   Tags(prefix, Intn(4)+1),
 		AppKey: []string{"", String(30)}[Intn(2)],
@@ -138,12 +137,12 @@ func Key(prefix, orgID string) *api.Key {
 		Id:    uuid.NewString(),
 		OrgId: orgID,
 		Name:  prefix + "-" + String(10),
-		Role: []common.Role{
-			common.Role_CONTACT,
-			common.Role_VIEWER,
-			common.Role_BUILDER,
-			common.Role_ADMIN,
-			common.Role_SYS_ADMIN,
+		Role: []api.Role{
+			api.Role_CONTACT,
+			api.Role_VIEWER,
+			api.Role_BUILDER,
+			api.Role_ADMIN,
+			api.Role_SYS_ADMIN,
 		}[Intn(5)],
 	}
 }

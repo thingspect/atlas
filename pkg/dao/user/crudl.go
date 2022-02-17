@@ -7,7 +7,6 @@ import (
 
 	"github.com/jackc/pgtype"
 	"github.com/thingspect/api/go/api"
-	"github.com/thingspect/api/go/common"
 	"github.com/thingspect/atlas/pkg/alog"
 	"github.com/thingspect/atlas/pkg/dao"
 	"google.golang.org/protobuf/types/known/timestamppb"
@@ -61,8 +60,8 @@ func (d *DAO) Read(ctx context.Context, userID, orgID string) (*api.User,
 		return nil, dao.DBToSentinel(err)
 	}
 
-	user.Role = common.Role(common.Role_value[role])
-	user.Status = common.Status(common.Status_value[status])
+	user.Role = api.Role(api.Role_value[role])
+	user.Status = api.Status(api.Status_value[status])
 	if err := tags.AssignTo(&user.Tags); err != nil {
 		return nil, dao.DBToSentinel(err)
 	}
@@ -96,8 +95,8 @@ func (d *DAO) ReadByEmail(ctx context.Context, email,
 		return nil, nil, dao.DBToSentinel(err)
 	}
 
-	user.Role = common.Role(common.Role_value[role])
-	user.Status = common.Status(common.Status_value[status])
+	user.Role = api.Role(api.Role_value[role])
+	user.Status = api.Status(api.Status_value[status])
 	if err := tags.AssignTo(&user.Tags); err != nil {
 		return nil, nil, dao.DBToSentinel(err)
 	}
@@ -281,8 +280,8 @@ func (d *DAO) List(ctx context.Context, orgID string, lBoundTS time.Time,
 			return nil, 0, dao.DBToSentinel(err)
 		}
 
-		user.Role = common.Role(common.Role_value[role])
-		user.Status = common.Status(common.Status_value[status])
+		user.Role = api.Role(api.Role_value[role])
+		user.Status = api.Status(api.Status_value[status])
 		if err := tags.AssignTo(&user.Tags); err != nil {
 			return nil, 0, dao.DBToSentinel(err)
 		}
@@ -342,8 +341,8 @@ func (d *DAO) ListByTags(ctx context.Context, orgID string,
 			return nil, dao.DBToSentinel(err)
 		}
 
-		user.Role = common.Role(common.Role_value[role])
-		user.Status = common.Status(common.Status_value[status])
+		user.Role = api.Role(api.Role_value[role])
+		user.Status = api.Status(api.Status_value[status])
 		if err := tags.AssignTo(&user.Tags); err != nil {
 			return nil, dao.DBToSentinel(err)
 		}

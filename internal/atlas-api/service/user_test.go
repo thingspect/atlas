@@ -12,7 +12,6 @@ import (
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/require"
 	"github.com/thingspect/api/go/api"
-	"github.com/thingspect/api/go/common"
 	"github.com/thingspect/atlas/internal/atlas-api/crypto"
 	"github.com/thingspect/atlas/internal/atlas-api/session"
 	"github.com/thingspect/atlas/pkg/dao"
@@ -31,17 +30,17 @@ func TestCreateUser(t *testing.T) {
 		t.Parallel()
 
 		user := random.User("api-user", uuid.NewString())
-		user.Role = common.Role_BUILDER
+		user.Role = api.Role_BUILDER
 		retUser, _ := proto.Clone(user).(*api.User)
 		retUser.Tags = append(retUser.Tags,
-			strings.ToLower(common.Role_BUILDER.String()))
+			strings.ToLower(api.Role_BUILDER.String()))
 
 		userer := NewMockUserer(gomock.NewController(t))
 		userer.EXPECT().Create(gomock.Any(), user).Return(retUser, nil).Times(1)
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
 			context.Background(), &session.Session{
-				OrgID: user.OrgId, Role: common.Role_ADMIN,
+				OrgID: user.OrgId, Role: api.Role_ADMIN,
 			}), testTimeout)
 		defer cancel()
 
@@ -68,7 +67,7 @@ func TestCreateUser(t *testing.T) {
 		createUser, err := userSvc.CreateUser(ctx, &api.CreateUserRequest{})
 		t.Logf("createUser, err: %+v, %v", createUser, err)
 		require.Nil(t, createUser)
-		require.Equal(t, errPerm(common.Role_ADMIN), err)
+		require.Equal(t, errPerm(api.Role_ADMIN), err)
 	})
 
 	t.Run("Create user with insufficient role", func(t *testing.T) {
@@ -76,7 +75,7 @@ func TestCreateUser(t *testing.T) {
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
 			context.Background(), &session.Session{
-				OrgID: uuid.NewString(), Role: common.Role_BUILDER,
+				OrgID: uuid.NewString(), Role: api.Role_BUILDER,
 			}), testTimeout)
 		defer cancel()
 
@@ -84,18 +83,18 @@ func TestCreateUser(t *testing.T) {
 		createUser, err := userSvc.CreateUser(ctx, &api.CreateUserRequest{})
 		t.Logf("createUser, err: %+v, %v", createUser, err)
 		require.Nil(t, createUser)
-		require.Equal(t, errPerm(common.Role_ADMIN), err)
+		require.Equal(t, errPerm(api.Role_ADMIN), err)
 	})
 
 	t.Run("Create sysadmin user as non-sysadmin", func(t *testing.T) {
 		t.Parallel()
 
 		user := random.User("api-user", uuid.NewString())
-		user.Role = common.Role_SYS_ADMIN
+		user.Role = api.Role_SYS_ADMIN
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
 			context.Background(), &session.Session{
-				OrgID: uuid.NewString(), Role: common.Role_ADMIN,
+				OrgID: uuid.NewString(), Role: api.Role_ADMIN,
 			}), testTimeout)
 		defer cancel()
 
@@ -112,7 +111,7 @@ func TestCreateUser(t *testing.T) {
 		t.Parallel()
 
 		user := random.User("api-user", uuid.NewString())
-		user.Role = common.Role_BUILDER
+		user.Role = api.Role_BUILDER
 
 		userer := NewMockUserer(gomock.NewController(t))
 		userer.EXPECT().Create(gomock.Any(), user).Return(nil,
@@ -120,7 +119,7 @@ func TestCreateUser(t *testing.T) {
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
 			context.Background(), &session.Session{
-				OrgID: user.OrgId, Role: common.Role_ADMIN,
+				OrgID: user.OrgId, Role: api.Role_ADMIN,
 			}), testTimeout)
 		defer cancel()
 
@@ -137,12 +136,12 @@ func TestCreateUser(t *testing.T) {
 		t.Parallel()
 
 		user := random.User("api-user", uuid.NewString())
-		user.Role = common.Role_BUILDER
+		user.Role = api.Role_BUILDER
 		user.Phone = random.String(10)
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
 			context.Background(), &session.Session{
-				OrgID: uuid.NewString(), Role: common.Role_ADMIN,
+				OrgID: uuid.NewString(), Role: api.Role_ADMIN,
 			}), testTimeout)
 		defer cancel()
 
@@ -171,7 +170,7 @@ func TestGetUser(t *testing.T) {
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
 			context.Background(), &session.Session{
-				OrgID: user.OrgId, Role: common.Role_ADMIN,
+				OrgID: user.OrgId, Role: api.Role_ADMIN,
 			}), testTimeout)
 		defer cancel()
 
@@ -197,7 +196,7 @@ func TestGetUser(t *testing.T) {
 		getUser, err := userSvc.GetUser(ctx, &api.GetUserRequest{})
 		t.Logf("getUser, err: %+v, %v", getUser, err)
 		require.Nil(t, getUser)
-		require.Equal(t, errPerm(common.Role_ADMIN), err)
+		require.Equal(t, errPerm(api.Role_ADMIN), err)
 	})
 
 	t.Run("Get user with insufficient role", func(t *testing.T) {
@@ -206,7 +205,7 @@ func TestGetUser(t *testing.T) {
 		ctx, cancel := context.WithTimeout(session.NewContext(
 			context.Background(), &session.Session{
 				UserID: uuid.NewString(), OrgID: uuid.NewString(),
-				Role: common.Role_VIEWER,
+				Role: api.Role_VIEWER,
 			}), testTimeout)
 		defer cancel()
 
@@ -214,7 +213,7 @@ func TestGetUser(t *testing.T) {
 		getUser, err := userSvc.GetUser(ctx, &api.GetUserRequest{})
 		t.Logf("getUser, err: %+v, %v", getUser, err)
 		require.Nil(t, getUser)
-		require.Equal(t, errPerm(common.Role_ADMIN), err)
+		require.Equal(t, errPerm(api.Role_ADMIN), err)
 	})
 
 	t.Run("Get user by unknown ID", func(t *testing.T) {
@@ -226,7 +225,7 @@ func TestGetUser(t *testing.T) {
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
 			context.Background(), &session.Session{
-				OrgID: uuid.NewString(), Role: common.Role_ADMIN,
+				OrgID: uuid.NewString(), Role: api.Role_ADMIN,
 			}), testTimeout)
 		defer cancel()
 
@@ -246,7 +245,7 @@ func TestUpdateUser(t *testing.T) {
 		t.Parallel()
 
 		user := random.User("api-user", uuid.NewString())
-		user.Role = common.Role_ADMIN
+		user.Role = api.Role_ADMIN
 		retUser, _ := proto.Clone(user).(*api.User)
 
 		userer := NewMockUserer(gomock.NewController(t))
@@ -254,7 +253,7 @@ func TestUpdateUser(t *testing.T) {
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
 			context.Background(), &session.Session{
-				OrgID: user.OrgId, Role: common.Role_ADMIN,
+				OrgID: user.OrgId, Role: api.Role_ADMIN,
 			}), testTimeout)
 		defer cancel()
 
@@ -275,10 +274,10 @@ func TestUpdateUser(t *testing.T) {
 		t.Parallel()
 
 		user := random.User("api-user", uuid.NewString())
-		user.Role = common.Role_ADMIN
+		user.Role = api.Role_ADMIN
 		retUser, _ := proto.Clone(user).(*api.User)
 		part := &api.User{
-			Id: user.Id, Status: common.Status_ACTIVE,
+			Id: user.Id, Status: api.Status_ACTIVE,
 			Tags: random.Tags("api-user", 2),
 		}
 		merged := &api.User{
@@ -296,7 +295,7 @@ func TestUpdateUser(t *testing.T) {
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
 			context.Background(), &session.Session{
-				OrgID: user.OrgId, Role: common.Role_ADMIN,
+				OrgID: user.OrgId, Role: api.Role_ADMIN,
 			}), testTimeout)
 		defer cancel()
 
@@ -326,7 +325,7 @@ func TestUpdateUser(t *testing.T) {
 		updateUser, err := userSvc.UpdateUser(ctx, &api.UpdateUserRequest{})
 		t.Logf("updateUser, err: %+v, %v", updateUser, err)
 		require.Nil(t, updateUser)
-		require.Equal(t, errPerm(common.Role_ADMIN), err)
+		require.Equal(t, errPerm(api.Role_ADMIN), err)
 	})
 
 	t.Run("Update nil user", func(t *testing.T) {
@@ -334,7 +333,7 @@ func TestUpdateUser(t *testing.T) {
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
 			context.Background(), &session.Session{
-				OrgID: uuid.NewString(), Role: common.Role_ADMIN,
+				OrgID: uuid.NewString(), Role: api.Role_ADMIN,
 			}), testTimeout)
 		defer cancel()
 
@@ -353,7 +352,7 @@ func TestUpdateUser(t *testing.T) {
 		ctx, cancel := context.WithTimeout(session.NewContext(
 			context.Background(), &session.Session{
 				UserID: uuid.NewString(), OrgID: uuid.NewString(),
-				Role: common.Role_VIEWER,
+				Role: api.Role_VIEWER,
 			}), testTimeout)
 		defer cancel()
 
@@ -363,18 +362,18 @@ func TestUpdateUser(t *testing.T) {
 		})
 		t.Logf("updateUser, err: %+v, %v", updateUser, err)
 		require.Nil(t, updateUser)
-		require.Equal(t, errPerm(common.Role_ADMIN), err)
+		require.Equal(t, errPerm(api.Role_ADMIN), err)
 	})
 
 	t.Run("Update user role with insufficient role", func(t *testing.T) {
 		t.Parallel()
 
 		user := random.User("api-user", uuid.NewString())
-		user.Role = common.Role_VIEWER
+		user.Role = api.Role_VIEWER
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
 			context.Background(), &session.Session{
-				UserID: user.Id, OrgID: user.OrgId, Role: common.Role_BUILDER,
+				UserID: user.Id, OrgID: user.OrgId, Role: api.Role_BUILDER,
 			}), testTimeout)
 		defer cancel()
 
@@ -391,11 +390,11 @@ func TestUpdateUser(t *testing.T) {
 		t.Parallel()
 
 		user := random.User("api-user", uuid.NewString())
-		user.Role = common.Role_SYS_ADMIN
+		user.Role = api.Role_SYS_ADMIN
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
 			context.Background(), &session.Session{
-				UserID: user.Id, OrgID: user.OrgId, Role: common.Role_ADMIN,
+				UserID: user.Id, OrgID: user.OrgId, Role: api.Role_ADMIN,
 			}), testTimeout)
 		defer cancel()
 
@@ -412,12 +411,12 @@ func TestUpdateUser(t *testing.T) {
 		t.Parallel()
 
 		user := random.User("api-user", uuid.NewString())
-		user.Role = common.Role_ADMIN
+		user.Role = api.Role_ADMIN
 		user.Phone = random.String(10)
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
 			context.Background(), &session.Session{
-				OrgID: user.OrgId, Role: common.Role_ADMIN,
+				OrgID: user.OrgId, Role: api.Role_ADMIN,
 			}), testTimeout)
 		defer cancel()
 
@@ -434,11 +433,11 @@ func TestUpdateUser(t *testing.T) {
 		t.Parallel()
 
 		user := random.User("api-user", uuid.NewString())
-		user.Role = common.Role_ADMIN
+		user.Role = api.Role_ADMIN
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
 			context.Background(), &session.Session{
-				OrgID: uuid.NewString(), Role: common.Role_ADMIN,
+				OrgID: uuid.NewString(), Role: api.Role_ADMIN,
 			}), testTimeout)
 		defer cancel()
 
@@ -458,7 +457,7 @@ func TestUpdateUser(t *testing.T) {
 		t.Parallel()
 
 		orgID := uuid.NewString()
-		part := &api.User{Id: uuid.NewString(), Status: common.Status_ACTIVE}
+		part := &api.User{Id: uuid.NewString(), Status: api.Status_ACTIVE}
 
 		userer := NewMockUserer(gomock.NewController(t))
 		userer.EXPECT().Read(gomock.Any(), part.Id, orgID).
@@ -466,7 +465,7 @@ func TestUpdateUser(t *testing.T) {
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
 			context.Background(), &session.Session{
-				OrgID: orgID, Role: common.Role_ADMIN,
+				OrgID: orgID, Role: api.Role_ADMIN,
 			}), testTimeout)
 		defer cancel()
 
@@ -486,11 +485,11 @@ func TestUpdateUser(t *testing.T) {
 
 		user := random.User("api-user", uuid.NewString())
 		user.Email = random.String(10)
-		user.Role = common.Role_ADMIN
+		user.Role = api.Role_ADMIN
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
 			context.Background(), &session.Session{
-				OrgID: user.OrgId, Role: common.Role_ADMIN,
+				OrgID: user.OrgId, Role: api.Role_ADMIN,
 			}), testTimeout)
 		defer cancel()
 
@@ -510,7 +509,7 @@ func TestUpdateUser(t *testing.T) {
 
 		user := random.User("api-user", uuid.NewString())
 		user.Email = random.String(54) + random.Email()
-		user.Role = common.Role_ADMIN
+		user.Role = api.Role_ADMIN
 
 		userer := NewMockUserer(gomock.NewController(t))
 		userer.EXPECT().Update(gomock.Any(), user).Return(nil,
@@ -518,7 +517,7 @@ func TestUpdateUser(t *testing.T) {
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
 			context.Background(), &session.Session{
-				OrgID: user.OrgId, Role: common.Role_ADMIN,
+				OrgID: user.OrgId, Role: api.Role_ADMIN,
 			}), testTimeout)
 		defer cancel()
 
@@ -544,7 +543,7 @@ func TestUpdateUserPassword(t *testing.T) {
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
 			context.Background(), &session.Session{
-				OrgID: uuid.NewString(), Role: common.Role_ADMIN,
+				OrgID: uuid.NewString(), Role: api.Role_ADMIN,
 			}), testTimeout)
 		defer cancel()
 
@@ -567,7 +566,7 @@ func TestUpdateUserPassword(t *testing.T) {
 		_, err := userSvc.UpdateUserPassword(ctx,
 			&api.UpdateUserPasswordRequest{})
 		t.Logf("err: %v", err)
-		require.Equal(t, errPerm(common.Role_ADMIN), err)
+		require.Equal(t, errPerm(api.Role_ADMIN), err)
 	})
 
 	t.Run("Update user password with insufficient role", func(t *testing.T) {
@@ -576,7 +575,7 @@ func TestUpdateUserPassword(t *testing.T) {
 		ctx, cancel := context.WithTimeout(session.NewContext(
 			context.Background(), &session.Session{
 				UserID: uuid.NewString(), OrgID: uuid.NewString(),
-				Role: common.Role_VIEWER,
+				Role: api.Role_VIEWER,
 			}), testTimeout)
 		defer cancel()
 
@@ -584,7 +583,7 @@ func TestUpdateUserPassword(t *testing.T) {
 		_, err := userSvc.UpdateUserPassword(ctx,
 			&api.UpdateUserPasswordRequest{})
 		t.Logf("err: %v", err)
-		require.Equal(t, errPerm(common.Role_ADMIN), err)
+		require.Equal(t, errPerm(api.Role_ADMIN), err)
 	})
 
 	t.Run("Update user password with weak password", func(t *testing.T) {
@@ -592,7 +591,7 @@ func TestUpdateUserPassword(t *testing.T) {
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
 			context.Background(), &session.Session{
-				OrgID: uuid.NewString(), Role: common.Role_ADMIN,
+				OrgID: uuid.NewString(), Role: api.Role_ADMIN,
 			}), testTimeout)
 		defer cancel()
 
@@ -615,7 +614,7 @@ func TestUpdateUserPassword(t *testing.T) {
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
 			context.Background(), &session.Session{
-				OrgID: uuid.NewString(), Role: common.Role_ADMIN,
+				OrgID: uuid.NewString(), Role: api.Role_ADMIN,
 			}), testTimeout)
 		defer cancel()
 
@@ -641,7 +640,7 @@ func TestDeleteUser(t *testing.T) {
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
 			context.Background(), &session.Session{
-				OrgID: uuid.NewString(), Role: common.Role_ADMIN,
+				OrgID: uuid.NewString(), Role: api.Role_ADMIN,
 			}), testTimeout)
 		defer cancel()
 
@@ -661,7 +660,7 @@ func TestDeleteUser(t *testing.T) {
 		userSvc := NewUser(nil)
 		_, err := userSvc.DeleteUser(ctx, &api.DeleteUserRequest{})
 		t.Logf("err: %v", err)
-		require.Equal(t, errPerm(common.Role_ADMIN), err)
+		require.Equal(t, errPerm(api.Role_ADMIN), err)
 	})
 
 	t.Run("Delete user with insufficient role", func(t *testing.T) {
@@ -669,14 +668,14 @@ func TestDeleteUser(t *testing.T) {
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
 			context.Background(), &session.Session{
-				OrgID: uuid.NewString(), Role: common.Role_BUILDER,
+				OrgID: uuid.NewString(), Role: api.Role_BUILDER,
 			}), testTimeout)
 		defer cancel()
 
 		userSvc := NewUser(nil)
 		_, err := userSvc.DeleteUser(ctx, &api.DeleteUserRequest{})
 		t.Logf("err: %v", err)
-		require.Equal(t, errPerm(common.Role_ADMIN), err)
+		require.Equal(t, errPerm(api.Role_ADMIN), err)
 	})
 
 	t.Run("Delete user by unknown ID", func(t *testing.T) {
@@ -688,7 +687,7 @@ func TestDeleteUser(t *testing.T) {
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
 			context.Background(), &session.Session{
-				OrgID: uuid.NewString(), Role: common.Role_ADMIN,
+				OrgID: uuid.NewString(), Role: api.Role_ADMIN,
 			}), testTimeout)
 		defer cancel()
 
@@ -720,7 +719,7 @@ func TestListUsers(t *testing.T) {
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
 			context.Background(), &session.Session{
-				OrgID: orgID, Role: common.Role_ADMIN,
+				OrgID: orgID, Role: api.Role_ADMIN,
 			}), testTimeout)
 		defer cancel()
 
@@ -760,7 +759,7 @@ func TestListUsers(t *testing.T) {
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
 			context.Background(), &session.Session{
-				OrgID: orgID, Role: common.Role_ADMIN,
+				OrgID: orgID, Role: api.Role_ADMIN,
 			}), testTimeout)
 		defer cancel()
 
@@ -792,14 +791,14 @@ func TestListUsers(t *testing.T) {
 		listUsers, err := userSvc.ListUsers(ctx, &api.ListUsersRequest{})
 		t.Logf("listUsers, err: %+v, %v", listUsers, err)
 		require.Nil(t, listUsers)
-		require.Equal(t, errPerm(common.Role_ADMIN), err)
+		require.Equal(t, errPerm(api.Role_ADMIN), err)
 	})
 
 	t.Run("List no users by key role", func(t *testing.T) {
 		t.Parallel()
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
-			context.Background(), &session.Session{Role: common.Role_VIEWER}),
+			context.Background(), &session.Session{Role: api.Role_VIEWER}),
 			testTimeout)
 		defer cancel()
 
@@ -827,7 +826,7 @@ func TestListUsers(t *testing.T) {
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
 			context.Background(), &session.Session{
-				UserID: user.Id, OrgID: user.OrgId, Role: common.Role_VIEWER,
+				UserID: user.Id, OrgID: user.OrgId, Role: api.Role_VIEWER,
 			}), testTimeout)
 		defer cancel()
 
@@ -858,7 +857,7 @@ func TestListUsers(t *testing.T) {
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
 			context.Background(), &session.Session{
-				UserID: user.Id, OrgID: user.OrgId, Role: common.Role_VIEWER,
+				UserID: user.Id, OrgID: user.OrgId, Role: api.Role_VIEWER,
 			}), testTimeout)
 		defer cancel()
 
@@ -874,7 +873,7 @@ func TestListUsers(t *testing.T) {
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
 			context.Background(), &session.Session{
-				OrgID: uuid.NewString(), Role: common.Role_ADMIN,
+				OrgID: uuid.NewString(), Role: api.Role_ADMIN,
 			}), testTimeout)
 		defer cancel()
 
@@ -897,7 +896,7 @@ func TestListUsers(t *testing.T) {
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
 			context.Background(), &session.Session{
-				OrgID: "aaa", Role: common.Role_ADMIN,
+				OrgID: "aaa", Role: api.Role_ADMIN,
 			}), testTimeout)
 		defer cancel()
 
@@ -927,7 +926,7 @@ func TestListUsers(t *testing.T) {
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
 			context.Background(), &session.Session{
-				OrgID: orgID, Role: common.Role_ADMIN,
+				OrgID: orgID, Role: api.Role_ADMIN,
 			}), testTimeout)
 		defer cancel()
 

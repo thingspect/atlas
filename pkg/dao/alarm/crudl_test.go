@@ -10,7 +10,6 @@ import (
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/require"
 	"github.com/thingspect/api/go/api"
-	"github.com/thingspect/api/go/common"
 	"github.com/thingspect/atlas/pkg/dao"
 	"github.com/thingspect/atlas/pkg/test/random"
 	"google.golang.org/protobuf/proto"
@@ -195,7 +194,7 @@ func TestUpdate(t *testing.T) {
 
 		// Update alarm fields.
 		createAlarm.Name = "dao-alarm-" + random.String(10)
-		createAlarm.Status = common.Status_DISABLED
+		createAlarm.Status = api.Status_DISABLED
 		createAlarm.Type = api.AlarmType_APP
 		createAlarm.UserTags = random.Tags("dao-alarm", 2)
 		updateAlarm, _ := proto.Clone(createAlarm).(*api.Alarm)

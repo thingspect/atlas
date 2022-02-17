@@ -10,6 +10,7 @@ import (
 	"github.com/golang/mock/gomock"
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/require"
+	"github.com/thingspect/api/go/api"
 	"github.com/thingspect/api/go/common"
 	"github.com/thingspect/atlas/api/go/message"
 	"github.com/thingspect/atlas/pkg/consterr"
@@ -32,14 +33,14 @@ func TestDecodeMessages(t *testing.T) {
 
 	tests := []struct {
 		inpDIn     *message.DecoderIn
-		inpDecoder common.Decoder
+		inpDecoder api.Decoder
 		res        []*message.ValidatorIn
 	}{
 		{
 			&message.DecoderIn{
 				UniqId: uniqID, Data: []byte{0x19, 0x03, 0x01}, Ts: now,
 				TraceId: traceID,
-			}, common.Decoder_RADIO_BRIDGE_DOOR_V1, []*message.ValidatorIn{
+			}, api.Decoder_RADIO_BRIDGE_DOOR_V1, []*message.ValidatorIn{
 				{
 					Point: &common.DataPoint{
 						UniqId: uniqID, Attr: "count",
@@ -59,7 +60,7 @@ func TestDecodeMessages(t *testing.T) {
 			&message.DecoderIn{
 				UniqId: uniqID, Data: []byte{0x1a, 0x03, 0x00}, Ts: now,
 				TraceId: traceID,
-			}, common.Decoder_RADIO_BRIDGE_DOOR_V2, []*message.ValidatorIn{
+			}, api.Decoder_RADIO_BRIDGE_DOOR_V2, []*message.ValidatorIn{
 				{
 					Point: &common.DataPoint{
 						UniqId: uniqID, Attr: "count",
@@ -148,20 +149,20 @@ func TestDecodeMessagesError(t *testing.T) {
 
 	tests := []struct {
 		inpDIn     *message.DecoderIn
-		inpDecoder common.Decoder
+		inpDecoder api.Decoder
 		inpErr     error
 		inpTimes   int
 	}{
 		// Empty data.
-		{&message.DecoderIn{}, common.Decoder_RAW, nil, 1},
+		{&message.DecoderIn{}, api.Decoder_RAW, nil, 1},
 		// Bad payload.
-		{nil, common.Decoder_RAW, nil, 0},
+		{nil, api.Decoder_RAW, nil, 0},
 		// Device not found.
-		{&message.DecoderIn{}, common.Decoder_RAW, dao.ErrNotFound, 1},
+		{&message.DecoderIn{}, api.Decoder_RAW, dao.ErrNotFound, 1},
 		// Devicer error.
-		{&message.DecoderIn{}, common.Decoder_RAW, errTestProc, 1},
+		{&message.DecoderIn{}, api.Decoder_RAW, errTestProc, 1},
 		// Decode error.
-		{&message.DecoderIn{}, common.Decoder(999), nil, 1},
+		{&message.DecoderIn{}, api.Decoder(999), nil, 1},
 	}
 
 	for _, test := range tests {

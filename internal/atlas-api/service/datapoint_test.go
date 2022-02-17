@@ -44,7 +44,7 @@ func TestPublishDataPoints(t *testing.T) {
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
 			context.Background(), &session.Session{
-				OrgID: orgID, Role: common.Role_PUBLISHER,
+				OrgID: orgID, Role: api.Role_PUBLISHER,
 			}), testTimeout)
 		defer cancel()
 
@@ -98,7 +98,7 @@ func TestPublishDataPoints(t *testing.T) {
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
 			context.Background(), &session.Session{
-				OrgID: orgID, Role: common.Role_ADMIN,
+				OrgID: orgID, Role: api.Role_ADMIN,
 			}), testTimeout)
 		defer cancel()
 
@@ -149,7 +149,7 @@ func TestPublishDataPoints(t *testing.T) {
 		dpSvc := NewDataPoint(nil, "", nil)
 		_, err := dpSvc.PublishDataPoints(ctx, &api.PublishDataPointsRequest{})
 		t.Logf("err: %v", err)
-		require.Equal(t, errPerm(common.Role_PUBLISHER), err)
+		require.Equal(t, errPerm(api.Role_PUBLISHER), err)
 	})
 
 	t.Run("Publish data point with insufficient role", func(t *testing.T) {
@@ -157,14 +157,14 @@ func TestPublishDataPoints(t *testing.T) {
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
 			context.Background(), &session.Session{
-				OrgID: uuid.NewString(), Role: common.Role_VIEWER,
+				OrgID: uuid.NewString(), Role: api.Role_VIEWER,
 			}), testTimeout)
 		defer cancel()
 
 		dpSvc := NewDataPoint(nil, "", nil)
 		_, err := dpSvc.PublishDataPoints(ctx, &api.PublishDataPointsRequest{})
 		t.Logf("err: %v", err)
-		require.Equal(t, errPerm(common.Role_PUBLISHER), err)
+		require.Equal(t, errPerm(api.Role_PUBLISHER), err)
 	})
 
 	t.Run("Publish valid data point with bad queue", func(t *testing.T) {
@@ -184,7 +184,7 @@ func TestPublishDataPoints(t *testing.T) {
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
 			context.Background(), &session.Session{
-				OrgID: orgID, Role: common.Role_ADMIN,
+				OrgID: orgID, Role: api.Role_ADMIN,
 			}), testTimeout)
 		defer cancel()
 
@@ -219,7 +219,7 @@ func TestListDataPoints(t *testing.T) {
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
 			context.Background(), &session.Session{
-				OrgID: orgID, Role: common.Role_ADMIN,
+				OrgID: orgID, Role: api.Role_ADMIN,
 			}), testTimeout)
 		defer cancel()
 
@@ -262,7 +262,7 @@ func TestListDataPoints(t *testing.T) {
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
 			context.Background(), &session.Session{
-				OrgID: orgID, Role: common.Role_ADMIN,
+				OrgID: orgID, Role: api.Role_ADMIN,
 			}), testTimeout)
 		defer cancel()
 
@@ -296,7 +296,7 @@ func TestListDataPoints(t *testing.T) {
 			&api.ListDataPointsRequest{})
 		t.Logf("listPoints, err: %+v, %v", listPoints, err)
 		require.Nil(t, listPoints)
-		require.Equal(t, errPerm(common.Role_VIEWER), err)
+		require.Equal(t, errPerm(api.Role_VIEWER), err)
 	})
 
 	t.Run("List data points with insufficient role", func(t *testing.T) {
@@ -304,7 +304,7 @@ func TestListDataPoints(t *testing.T) {
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
 			context.Background(), &session.Session{
-				OrgID: uuid.NewString(), Role: common.Role_CONTACT,
+				OrgID: uuid.NewString(), Role: api.Role_CONTACT,
 			}), testTimeout)
 		defer cancel()
 
@@ -313,7 +313,7 @@ func TestListDataPoints(t *testing.T) {
 			&api.ListDataPointsRequest{})
 		t.Logf("listPoints, err: %+v, %v", listPoints, err)
 		require.Nil(t, listPoints)
-		require.Equal(t, errPerm(common.Role_VIEWER), err)
+		require.Equal(t, errPerm(api.Role_VIEWER), err)
 	})
 
 	t.Run("List data points by invalid time range", func(t *testing.T) {
@@ -321,7 +321,7 @@ func TestListDataPoints(t *testing.T) {
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
 			context.Background(), &session.Session{
-				OrgID: uuid.NewString(), Role: common.Role_ADMIN,
+				OrgID: uuid.NewString(), Role: api.Role_ADMIN,
 			}), testTimeout)
 		defer cancel()
 
@@ -347,7 +347,7 @@ func TestListDataPoints(t *testing.T) {
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
 			context.Background(), &session.Session{
-				OrgID: "aaa", Role: common.Role_ADMIN,
+				OrgID: "aaa", Role: api.Role_ADMIN,
 			}), testTimeout)
 		defer cancel()
 
@@ -383,7 +383,7 @@ func TestLatestDataPoints(t *testing.T) {
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
 			context.Background(), &session.Session{
-				OrgID: orgID, Role: common.Role_ADMIN,
+				OrgID: orgID, Role: api.Role_ADMIN,
 			}), testTimeout)
 		defer cancel()
 
@@ -425,7 +425,7 @@ func TestLatestDataPoints(t *testing.T) {
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
 			context.Background(), &session.Session{
-				OrgID: orgID, Role: common.Role_ADMIN,
+				OrgID: orgID, Role: api.Role_ADMIN,
 			}), testTimeout)
 		defer cancel()
 
@@ -460,7 +460,7 @@ func TestLatestDataPoints(t *testing.T) {
 			&api.LatestDataPointsRequest{})
 		t.Logf("latPoints, err: %+v, %v", latPoints, err)
 		require.Nil(t, latPoints)
-		require.Equal(t, errPerm(common.Role_VIEWER), err)
+		require.Equal(t, errPerm(api.Role_VIEWER), err)
 	})
 
 	t.Run("Latest data points with insufficient role", func(t *testing.T) {
@@ -468,7 +468,7 @@ func TestLatestDataPoints(t *testing.T) {
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
 			context.Background(), &session.Session{
-				OrgID: uuid.NewString(), Role: common.Role_CONTACT,
+				OrgID: uuid.NewString(), Role: api.Role_CONTACT,
 			}), testTimeout)
 		defer cancel()
 
@@ -477,7 +477,7 @@ func TestLatestDataPoints(t *testing.T) {
 			&api.LatestDataPointsRequest{})
 		t.Logf("latPoints, err: %+v, %v", latPoints, err)
 		require.Nil(t, latPoints)
-		require.Equal(t, errPerm(common.Role_VIEWER), err)
+		require.Equal(t, errPerm(api.Role_VIEWER), err)
 	})
 
 	t.Run("Latest data points by invalid org ID", func(t *testing.T) {
@@ -489,7 +489,7 @@ func TestLatestDataPoints(t *testing.T) {
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
 			context.Background(), &session.Session{
-				OrgID: "aaa", Role: common.Role_ADMIN,
+				OrgID: "aaa", Role: api.Role_ADMIN,
 			}), testTimeout)
 		defer cancel()
 

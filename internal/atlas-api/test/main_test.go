@@ -9,8 +9,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/thingspect/api/go/common"
-	"github.com/thingspect/atlas/internal/atlas-api/api"
+	"github.com/thingspect/api/go/api"
+	iapi "github.com/thingspect/atlas/internal/atlas-api/api"
 	"github.com/thingspect/atlas/internal/atlas-api/config"
 	"github.com/thingspect/atlas/internal/atlas-api/crypto"
 	"github.com/thingspect/atlas/pkg/dao"
@@ -76,7 +76,7 @@ func TestMain(m *testing.M) {
 	log.Printf("TestMain cfg.NSQPubTopic: %v", cfg.NSQPubTopic)
 
 	// Set up API.
-	a, err := api.New(cfg)
+	a, err := iapi.New(cfg)
 	if err != nil {
 		log.Fatalf("TestMain api.New: %v", err)
 	}
@@ -110,41 +110,41 @@ func TestMain(m *testing.M) {
 		grpc.WithTransportCredentials(insecure.NewCredentials()),
 		grpc.WithDefaultCallOptions(grpc.UseCompressor(gzip.Name)),
 	}
-	globalNoAuthGRPCConn, err = grpc.Dial(api.GRPCHost+api.GRPCPort, opts...)
+	globalNoAuthGRPCConn, err = grpc.Dial(iapi.GRPCHost+iapi.GRPCPort, opts...)
 	if err != nil {
 		log.Fatalf("TestMain grpc.Dial: %v", err)
 	}
 
 	// Build authenticated gRPC connections.
-	globalAdminOrgID, globalAdminGRPCConn, err = authGRPCConn(common.Role_ADMIN)
+	globalAdminOrgID, globalAdminGRPCConn, err = authGRPCConn(api.Role_ADMIN)
 	if err != nil {
 		log.Fatalf("TestMain globalAdminGRPCConn authGRPCConn: %v", err)
 	}
 
-	_, secondaryAdminGRPCConn, err = authGRPCConn(common.Role_ADMIN)
+	_, secondaryAdminGRPCConn, err = authGRPCConn(api.Role_ADMIN)
 	if err != nil {
 		log.Fatalf("TestMain secondaryAdminGRPCConn authGRPCConn: %v", err)
 	}
 
-	_, secondaryViewerGRPCConn, err = authGRPCConn(common.Role_VIEWER)
+	_, secondaryViewerGRPCConn, err = authGRPCConn(api.Role_VIEWER)
 	if err != nil {
 		log.Fatalf("TestMain secondaryViewerGRPCConn authGRPCConn: %v", err)
 	}
 
-	_, secondarySysAdminGRPCConn, err = authGRPCConn(common.Role_SYS_ADMIN)
+	_, secondarySysAdminGRPCConn, err = authGRPCConn(api.Role_SYS_ADMIN)
 	if err != nil {
 		log.Fatalf("TestMain secondarySysAdminGRPCConn authGRPCConn: %v", err)
 	}
 
 	// Build API key-based gRPC connections.
 	globalAdminKeyGRPCConn, err = keyGRPCConn(globalAdminGRPCConn,
-		common.Role_ADMIN)
+		api.Role_ADMIN)
 	if err != nil {
 		log.Fatalf("TestMain globalAdminKeyGRPCConn keyGRPCConn: %v", err)
 	}
 
 	secondaryViewerKeyGRPCConn, err = keyGRPCConn(secondaryAdminGRPCConn,
-		common.Role_VIEWER)
+		api.Role_VIEWER)
 	if err != nil {
 		log.Fatalf("TestMain secondaryViewerKeyGRPCConn keyGRPCConn: %v", err)
 	}
@@ -152,7 +152,7 @@ func TestMain(m *testing.M) {
 	// Set up NSQ subscription to verify published messages. Use a unique
 	// channel for each test run. This prevents failed tests from interfering
 	// with the next run, but does require eventual cleaning.
-	subChannel := api.ServiceName + "-test-" + random.String(10)
+	subChannel := iapi.ServiceName + "-test-" + random.String(10)
 	nsq, err := queue.NewNSQ(cfg.NSQPubAddr, nil, subChannel)
 	if err != nil {
 		log.Fatalf("TestMain queue.NewNSQ: %v", err)

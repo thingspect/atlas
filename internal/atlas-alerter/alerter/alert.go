@@ -6,7 +6,6 @@ import (
 	"time"
 
 	"github.com/thingspect/api/go/api"
-	"github.com/thingspect/api/go/common"
 	"github.com/thingspect/atlas/api/go/message"
 	"github.com/thingspect/atlas/pkg/alog"
 	"github.com/thingspect/atlas/pkg/consterr"
@@ -84,7 +83,7 @@ func (ale *Alerter) alertMessages() {
 		// no guarantees of alarms or users being assigned to an event.
 		for _, a := range alarms {
 			// Validate alarm.
-			if a.Status != common.Status_ACTIVE {
+			if a.Status != api.Status_ACTIVE {
 				continue
 			}
 

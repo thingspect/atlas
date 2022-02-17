@@ -38,7 +38,7 @@ func TestEventMessages(t *testing.T) {
 	require.NoError(t, err)
 
 	sRule := random.Rule("ev", createOrg.Id)
-	sRule.Status = common.Status_ACTIVE
+	sRule.Status = api.Status_ACTIVE
 	sRule.DeviceTag = singleDev.Tags[0]
 	sRule.Attr = "ev-motion"
 	sRule.Expr = `true`
@@ -53,7 +53,7 @@ func TestEventMessages(t *testing.T) {
 	require.NoError(t, err)
 
 	dRule1 := random.Rule("ev", createOrg.Id)
-	dRule1.Status = common.Status_ACTIVE
+	dRule1.Status = api.Status_ACTIVE
 	dRule1.DeviceTag = doubleDev.Tags[0]
 	dRule1.Attr = "ev-temp"
 	dRule1.Expr = `true`
@@ -61,7 +61,7 @@ func TestEventMessages(t *testing.T) {
 	t.Logf("doubleRule1, err: %+v, %v", doubleRule1, err)
 	require.NoError(t, err)
 
-	dRule2, _ := proto.Clone(dRule1).(*common.Rule)
+	dRule2, _ := proto.Clone(dRule1).(*api.Rule)
 	dRule2.DeviceTag = doubleDev.Tags[1]
 	doubleRule2, err := globalRuleDAO.Create(ctx, dRule2)
 	t.Logf("doubleRule2, err: %+v, %v", doubleRule2, err)
@@ -194,7 +194,7 @@ func TestEventMessagesError(t *testing.T) {
 	require.NoError(t, err)
 
 	rule := random.Rule("ev", createOrg.Id)
-	rule.Status = common.Status_ACTIVE
+	rule.Status = api.Status_ACTIVE
 	rule.DeviceTag = createDev.Tags[0]
 	rule.Attr = "ev-motion"
 	rule.Expr = `1 + "aaa"`
@@ -209,7 +209,7 @@ func TestEventMessagesError(t *testing.T) {
 		{nil},
 		// Missing data point.
 		{
-			&message.ValidatorOut{Device: &common.Device{Id: createDev.Id}},
+			&message.ValidatorOut{Device: &api.Device{Id: createDev.Id}},
 		},
 		// Missing device.
 		{
