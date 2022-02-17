@@ -9,7 +9,7 @@ import (
 	"os/signal"
 	"syscall"
 
-	"github.com/thingspect/api/go/common"
+	"github.com/thingspect/api/go/api"
 	"github.com/thingspect/atlas/internal/atlas-validator/config"
 	"github.com/thingspect/atlas/pkg/alog"
 	"github.com/thingspect/atlas/pkg/dao"
@@ -22,7 +22,7 @@ const ServiceName = "validator"
 
 // devicer defines the methods provided by a device.DAO.
 type devicer interface {
-	ReadByUniqID(ctx context.Context, uniqID string) (*common.Device, error)
+	ReadByUniqID(ctx context.Context, uniqID string) (*api.Device, error)
 }
 
 // Validator holds references to the database and message broker connections.

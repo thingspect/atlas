@@ -10,7 +10,6 @@ import (
 
 	"github.com/mennanov/fmutils"
 	"github.com/thingspect/api/go/api"
-	"github.com/thingspect/api/go/common"
 	"github.com/thingspect/atlas/internal/atlas-api/crypto"
 	"github.com/thingspect/atlas/internal/atlas-api/session"
 	"github.com/thingspect/atlas/pkg/alog"
@@ -57,13 +56,13 @@ func NewUser(userDAO Userer) *User {
 func (u *User) CreateUser(ctx context.Context,
 	req *api.CreateUserRequest) (*api.User, error) {
 	sess, ok := session.FromContext(ctx)
-	if !ok || sess.Role < common.Role_ADMIN {
-		return nil, errPerm(common.Role_ADMIN)
+	if !ok || sess.Role < api.Role_ADMIN {
+		return nil, errPerm(api.Role_ADMIN)
 	}
 
 	// Only system admins can elevate to system admin.
-	if sess.Role < common.Role_SYS_ADMIN &&
-		req.User.Role == common.Role_SYS_ADMIN {
+	if sess.Role < api.Role_SYS_ADMIN &&
+		req.User.Role == api.Role_SYS_ADMIN {
 		return nil, status.Error(codes.PermissionDenied,
 			"permission denied, role modification not allowed")
 	}
@@ -96,8 +95,8 @@ func (u *User) CreateUser(ctx context.Context,
 func (u *User) GetUser(ctx context.Context,
 	req *api.GetUserRequest) (*api.User, error) {
 	sess, ok := session.FromContext(ctx)
-	if !ok || (sess.Role < common.Role_ADMIN && req.Id != sess.UserID) {
-		return nil, errPerm(common.Role_ADMIN)
+	if !ok || (sess.Role < api.Role_ADMIN && req.Id != sess.UserID) {
+		return nil, errPerm(api.Role_ADMIN)
 	}
 
 	user, err := u.userDAO.Read(ctx, req.Id, sess.OrgID)
@@ -114,7 +113,7 @@ func (u *User) UpdateUser(ctx context.Context,
 	req *api.UpdateUserRequest) (*api.User, error) {
 	sess, ok := session.FromContext(ctx)
 	if !ok {
-		return nil, errPerm(common.Role_ADMIN)
+		return nil, errPerm(api.Role_ADMIN)
 	}
 
 	if req.User == nil {
@@ -124,15 +123,15 @@ func (u *User) UpdateUser(ctx context.Context,
 	req.User.OrgId = sess.OrgID
 
 	// Non-admins can only update their own user.
-	if sess.Role < common.Role_ADMIN && req.User.Id != sess.UserID {
-		return nil, errPerm(common.Role_ADMIN)
+	if sess.Role < api.Role_ADMIN && req.User.Id != sess.UserID {
+		return nil, errPerm(api.Role_ADMIN)
 	}
 
 	// Only admins can update roles, and only system admins can elevate to
 	// system admin.
-	if (sess.Role < common.Role_ADMIN && req.User.Role != sess.Role) ||
-		(sess.Role < common.Role_SYS_ADMIN &&
-			req.User.Role == common.Role_SYS_ADMIN) {
+	if (sess.Role < api.Role_ADMIN && req.User.Role != sess.Role) ||
+		(sess.Role < api.Role_SYS_ADMIN &&
+			req.User.Role == api.Role_SYS_ADMIN) {
 		return nil, status.Error(codes.PermissionDenied,
 			"permission denied, role modification not allowed")
 	}
@@ -182,8 +181,8 @@ func (u *User) UpdateUser(ctx context.Context,
 func (u *User) UpdateUserPassword(ctx context.Context,
 	req *api.UpdateUserPasswordRequest) (*emptypb.Empty, error) {
 	sess, ok := session.FromContext(ctx)
-	if !ok || (sess.Role < common.Role_ADMIN && req.Id != sess.UserID) {
-		return nil, errPerm(common.Role_ADMIN)
+	if !ok || (sess.Role < api.Role_ADMIN && req.Id != sess.UserID) {
+		return nil, errPerm(api.Role_ADMIN)
 	}
 
 	if err := crypto.CheckPass(req.Password); err != nil {
@@ -210,8 +209,8 @@ func (u *User) UpdateUserPassword(ctx context.Context,
 func (u *User) DeleteUser(ctx context.Context,
 	req *api.DeleteUserRequest) (*emptypb.Empty, error) {
 	sess, ok := session.FromContext(ctx)
-	if !ok || sess.Role < common.Role_ADMIN {
-		return nil, errPerm(common.Role_ADMIN)
+	if !ok || sess.Role < api.Role_ADMIN {
+		return nil, errPerm(api.Role_ADMIN)
 	}
 
 	if err := u.userDAO.Delete(ctx, req.Id, sess.OrgID); err != nil {
@@ -232,16 +231,16 @@ func (u *User) ListUsers(ctx context.Context,
 	req *api.ListUsersRequest) (*api.ListUsersResponse, error) {
 	sess, ok := session.FromContext(ctx)
 	if !ok {
-		return nil, errPerm(common.Role_ADMIN)
+		return nil, errPerm(api.Role_ADMIN)
 	}
 
 	// If the user does not have sufficient role, return only their user. Will
 	// not be found for API key tokens.
-	if sess.Role < common.Role_ADMIN && sess.UserID == "" {
+	if sess.Role < api.Role_ADMIN && sess.UserID == "" {
 		return &api.ListUsersResponse{}, nil
 	}
 
-	if sess.Role < common.Role_ADMIN {
+	if sess.Role < api.Role_ADMIN {
 		user, err := u.userDAO.Read(ctx, sess.UserID, sess.OrgID)
 		if err != nil {
 			return nil, errToStatus(err)

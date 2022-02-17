@@ -6,7 +6,7 @@ deps:
 	go install google.golang.org/protobuf/cmd/protoc-gen-go@latest
 
 message:
-	protoc -I=../protobuf -I=/tmp/googleapis -I=/tmp/pgv \
+	protoc -I=../protobuf -I=/tmp/googleapis -I=/tmp/grpc-gateway -I=/tmp/pgv \
 	--go_out=. --go_opt=paths=source_relative \
 	message/decoder_in.proto \
 	message/eventer_out.proto \

@@ -60,6 +60,7 @@ func (m *ListTagsRequest) validate(all bool) error {
 	if len(errors) > 0 {
 		return ListTagsRequestMultiError(errors)
 	}
+
 	return nil
 }
 
@@ -159,6 +160,7 @@ func (m *ListTagsResponse) validate(all bool) error {
 	if len(errors) > 0 {
 		return ListTagsResponseMultiError(errors)
 	}
+
 	return nil
 }
 

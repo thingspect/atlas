@@ -9,7 +9,7 @@ import (
 	reflect "reflect"
 
 	gomock "github.com/golang/mock/gomock"
-	common "github.com/thingspect/api/go/common"
+	api "github.com/thingspect/api/go/api"
 )
 
 // Mockdevicer is a mock of devicer interface.
@@ -36,10 +36,10 @@ func (m *Mockdevicer) EXPECT() *MockdevicerMockRecorder {
 }
 
 // ReadByUniqID mocks base method.
-func (m *Mockdevicer) ReadByUniqID(ctx context.Context, uniqID string) (*common.Device, error) {
+func (m *Mockdevicer) ReadByUniqID(ctx context.Context, uniqID string) (*api.Device, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "ReadByUniqID", ctx, uniqID)
-	ret0, _ := ret[0].(*common.Device)
+	ret0, _ := ret[0].(*api.Device)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }

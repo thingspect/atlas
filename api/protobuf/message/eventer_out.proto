@@ -1,9 +1,9 @@
 syntax = "proto3";
 package thingspect.int.message;
 
+import "api/device.proto";
+import "api/rule_alarm.proto";
 import "common/datapoint.proto";
-import "common/device.proto";
-import "common/rule.proto";
 
 option go_package = "github.com/thingspect/atlas/api/go/message";
 
@@ -13,8 +13,8 @@ message EventerOut {
   common.DataPoint point = 1;
 
   // Device.
-  common.Device device = 2;
+  api.Device device = 2;
 
   // Rule.
-  common.Rule rule = 3;
+  api.Rule rule = 3;
 }

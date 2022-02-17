@@ -11,7 +11,6 @@ import (
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/require"
 	"github.com/thingspect/api/go/api"
-	"github.com/thingspect/api/go/common"
 	"github.com/thingspect/atlas/internal/atlas-api/session"
 	"github.com/thingspect/atlas/pkg/dao"
 	"github.com/thingspect/atlas/pkg/test/matcher"
@@ -39,7 +38,7 @@ func TestListAlerts(t *testing.T) {
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
 			context.Background(), &session.Session{
-				OrgID: alert.OrgId, Role: common.Role_ADMIN,
+				OrgID: alert.OrgId, Role: api.Role_ADMIN,
 			}), testTimeout)
 		defer cancel()
 
@@ -77,7 +76,7 @@ func TestListAlerts(t *testing.T) {
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
 			context.Background(), &session.Session{
-				OrgID: alert.OrgId, Role: common.Role_ADMIN,
+				OrgID: alert.OrgId, Role: api.Role_ADMIN,
 			}), testTimeout)
 		defer cancel()
 
@@ -114,7 +113,7 @@ func TestListAlerts(t *testing.T) {
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
 			context.Background(), &session.Session{
-				OrgID: alert.OrgId, Role: common.Role_ADMIN,
+				OrgID: alert.OrgId, Role: api.Role_ADMIN,
 			}), testTimeout)
 		defer cancel()
 
@@ -144,7 +143,7 @@ func TestListAlerts(t *testing.T) {
 		listAlerts, err := aleSvc.ListAlerts(ctx, &api.ListAlertsRequest{})
 		t.Logf("listAlerts, err: %+v, %v", listAlerts, err)
 		require.Nil(t, listAlerts)
-		require.Equal(t, errPerm(common.Role_VIEWER), err)
+		require.Equal(t, errPerm(api.Role_VIEWER), err)
 	})
 
 	t.Run("List alerts with insufficient role", func(t *testing.T) {
@@ -152,7 +151,7 @@ func TestListAlerts(t *testing.T) {
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
 			context.Background(), &session.Session{
-				OrgID: uuid.NewString(), Role: common.Role_CONTACT,
+				OrgID: uuid.NewString(), Role: api.Role_CONTACT,
 			}), testTimeout)
 		defer cancel()
 
@@ -160,7 +159,7 @@ func TestListAlerts(t *testing.T) {
 		listAlerts, err := aleSvc.ListAlerts(ctx, &api.ListAlertsRequest{})
 		t.Logf("listAlerts, err: %+v, %v", listAlerts, err)
 		require.Nil(t, listAlerts)
-		require.Equal(t, errPerm(common.Role_VIEWER), err)
+		require.Equal(t, errPerm(api.Role_VIEWER), err)
 	})
 
 	t.Run("List alerts by invalid time range", func(t *testing.T) {
@@ -168,7 +167,7 @@ func TestListAlerts(t *testing.T) {
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
 			context.Background(), &session.Session{
-				OrgID: uuid.NewString(), Role: common.Role_ADMIN,
+				OrgID: uuid.NewString(), Role: api.Role_ADMIN,
 			}), testTimeout)
 		defer cancel()
 
@@ -194,7 +193,7 @@ func TestListAlerts(t *testing.T) {
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
 			context.Background(), &session.Session{
-				OrgID: "aaa", Role: common.Role_ADMIN,
+				OrgID: "aaa", Role: api.Role_ADMIN,
 			}), testTimeout)
 		defer cancel()
 

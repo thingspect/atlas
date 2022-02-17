@@ -10,6 +10,7 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/require"
+	"github.com/thingspect/api/go/api"
 	"github.com/thingspect/api/go/common"
 	"github.com/thingspect/atlas/api/go/message"
 	"github.com/thingspect/atlas/pkg/test/random"
@@ -34,7 +35,7 @@ func TestValidateMessages(t *testing.T) {
 	require.NoError(t, err)
 
 	dev := random.Device("val", createOrg.Id)
-	dev.Status = common.Status_ACTIVE
+	dev.Status = api.Status_ACTIVE
 	createDev, err := globalDevDAO.Create(ctx, dev)
 	t.Logf("createDev, err: %+v, %v", createDev, err)
 	require.NoError(t, err)
@@ -158,13 +159,13 @@ func TestValidateMessagesError(t *testing.T) {
 	require.NoError(t, err)
 
 	dev := random.Device("val", createOrg.Id)
-	dev.Status = common.Status_ACTIVE
+	dev.Status = api.Status_ACTIVE
 	createDev, err := globalDevDAO.Create(ctx, dev)
 	t.Logf("createDev, err: %+v, %v", createDev, err)
 	require.NoError(t, err)
 
 	disDev := random.Device("val", createOrg.Id)
-	disDev.Status = common.Status_DISABLED
+	disDev.Status = api.Status_DISABLED
 	createDisDev, err := globalDevDAO.Create(ctx, disDev)
 	t.Logf("createDisDev, err: %+v, %v", createDisDev, err)
 	require.NoError(t, err)

@@ -11,7 +11,6 @@ import (
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/require"
 	"github.com/thingspect/api/go/api"
-	"github.com/thingspect/api/go/common"
 	"github.com/thingspect/atlas/pkg/dao"
 	"github.com/thingspect/atlas/pkg/test/random"
 	"google.golang.org/protobuf/proto"
@@ -235,8 +234,8 @@ func TestUpdate(t *testing.T) {
 		createUser.Name = "dao-user-" + random.String(10)
 		createUser.Email = "dao-user-" + random.Email()
 		createUser.Phone = "+15125553434"
-		createUser.Role = common.Role_ADMIN
-		createUser.Status = common.Status_DISABLED
+		createUser.Role = api.Role_ADMIN
+		createUser.Status = api.Status_DISABLED
 		createUser.Tags = nil
 		createUser.AppKey = random.String(30)
 		updateUser, _ := proto.Clone(createUser).(*api.User)
@@ -313,7 +312,7 @@ func TestUpdate(t *testing.T) {
 
 		// Update user fields.
 		createUser.Email = "dao-user-" + random.String(80)
-		createUser.Status = common.Status_DISABLED
+		createUser.Status = api.Status_DISABLED
 		updateUser, _ := proto.Clone(createUser).(*api.User)
 
 		updateUser, err = globalUserDAO.Update(ctx, updateUser)
@@ -463,7 +462,7 @@ func TestList(t *testing.T) {
 
 	userIDs := []string{}
 	userNames := []string{}
-	userRoles := []common.Role{}
+	userRoles := []api.Role{}
 	userTags := [][]string{}
 	userAppKeys := []string{}
 	userTSes := []time.Time{}
@@ -638,7 +637,7 @@ func TestListByTags(t *testing.T) {
 	userTags := [][]string{}
 	for i := 0; i < 3; i++ {
 		user := random.User("dao-user", createOrg.Id)
-		user.Status = common.Status_ACTIVE
+		user.Status = api.Status_ACTIVE
 		createUser, err := globalUserDAO.Create(ctx, user)
 		t.Logf("createUser, err: %+v, %v", createUser, err)
 		require.NoError(t, err)
@@ -664,14 +663,14 @@ func TestListByTags(t *testing.T) {
 		require.Equal(t, listUsers[0].Tags, userTags[len(userTags)-1])
 	})
 
-	t.Run("List users by valid org ID and common tag", func(t *testing.T) {
+	t.Run("List users by valid org ID and api tag", func(t *testing.T) {
 		t.Parallel()
 
 		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
 		defer cancel()
 
 		user := random.User("dao-user", createOrg.Id)
-		user.Status = common.Status_ACTIVE
+		user.Status = api.Status_ACTIVE
 		user.Tags = []string{userTags[0][0]}
 
 		createUser, err := globalUserDAO.Create(ctx, user)

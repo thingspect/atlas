@@ -56,8 +56,8 @@ func (d *DataPoint) PublishDataPoints(ctx context.Context,
 	req *api.PublishDataPointsRequest) (*emptypb.Empty, error) {
 	logger := alog.FromContext(ctx)
 	sess, ok := session.FromContext(ctx)
-	if !ok || sess.Role < common.Role_PUBLISHER {
-		return nil, errPerm(common.Role_PUBLISHER)
+	if !ok || sess.Role < api.Role_PUBLISHER {
+		return nil, errPerm(api.Role_PUBLISHER)
 	}
 
 	logger.Logger = logger.WithStr("paylType", "api")
@@ -106,8 +106,8 @@ func (d *DataPoint) PublishDataPoints(ctx context.Context,
 func (d *DataPoint) ListDataPoints(ctx context.Context,
 	req *api.ListDataPointsRequest) (*api.ListDataPointsResponse, error) {
 	sess, ok := session.FromContext(ctx)
-	if !ok || sess.Role < common.Role_VIEWER {
-		return nil, errPerm(common.Role_VIEWER)
+	if !ok || sess.Role < api.Role_VIEWER {
+		return nil, errPerm(api.Role_VIEWER)
 	}
 
 	var uniqID string
@@ -149,8 +149,8 @@ func (d *DataPoint) ListDataPoints(ctx context.Context,
 func (d *DataPoint) LatestDataPoints(ctx context.Context,
 	req *api.LatestDataPointsRequest) (*api.LatestDataPointsResponse, error) {
 	sess, ok := session.FromContext(ctx)
-	if !ok || sess.Role < common.Role_VIEWER {
-		return nil, errPerm(common.Role_VIEWER)
+	if !ok || sess.Role < api.Role_VIEWER {
+		return nil, errPerm(api.Role_VIEWER)
 	}
 
 	var uniqID string

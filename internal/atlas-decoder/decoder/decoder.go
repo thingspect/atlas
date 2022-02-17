@@ -9,7 +9,7 @@ import (
 	"os/signal"
 	"syscall"
 
-	"github.com/thingspect/api/go/common"
+	"github.com/thingspect/api/go/api"
 	"github.com/thingspect/atlas/internal/atlas-decoder/config"
 	"github.com/thingspect/atlas/pkg/alog"
 	"github.com/thingspect/atlas/pkg/dao"
@@ -23,7 +23,7 @@ const ServiceName = "decoder"
 
 // devicer defines the methods provided by a device.DAO.
 type devicer interface {
-	ReadByUniqID(ctx context.Context, uniqID string) (*common.Device, error)
+	ReadByUniqID(ctx context.Context, uniqID string) (*api.Device, error)
 }
 
 // Decoder holds references to the database and message broker connections.

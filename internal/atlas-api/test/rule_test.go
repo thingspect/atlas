@@ -162,7 +162,7 @@ func TestUpdateRule(t *testing.T) {
 
 		// Update rule fields.
 		createRule.Name = "api-rule-" + random.String(10)
-		createRule.Status = common.Status_DISABLED
+		createRule.Status = api.Status_DISABLED
 
 		updateRule, err := raCli.UpdateRule(ctx,
 			&api.UpdateRuleRequest{Rule: createRule})
@@ -201,8 +201,8 @@ func TestUpdateRule(t *testing.T) {
 		require.NoError(t, err)
 
 		// Update rule fields.
-		part := &common.Rule{Id: createRule.Id, Name: "api-rule-" +
-			random.String(10), Status: common.Status_DISABLED, Expr: `false`}
+		part := &api.Rule{Id: createRule.Id, Name: "api-rule-" +
+			random.String(10), Status: api.Status_DISABLED, Expr: `false`}
 
 		updateRule, err := raCli.UpdateRule(ctx, &api.UpdateRuleRequest{
 			Rule: part, UpdateMask: &fieldmaskpb.FieldMask{
@@ -460,7 +460,7 @@ func TestListRules(t *testing.T) {
 
 	ruleIDs := []string{}
 	ruleNames := []string{}
-	ruleStatuses := []common.Status{}
+	ruleStatuses := []api.Status{}
 	for i := 0; i < 3; i++ {
 		raCli := api.NewRuleAlarmServiceClient(globalAdminGRPCConn)
 		createRule, err := raCli.CreateRule(ctx, &api.CreateRuleRequest{

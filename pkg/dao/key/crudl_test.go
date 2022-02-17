@@ -10,7 +10,6 @@ import (
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/require"
 	"github.com/thingspect/api/go/api"
-	"github.com/thingspect/api/go/common"
 	"github.com/thingspect/atlas/pkg/dao"
 	"github.com/thingspect/atlas/pkg/test/random"
 	"google.golang.org/protobuf/proto"
@@ -208,7 +207,7 @@ func TestList(t *testing.T) {
 
 	keyIDs := []string{}
 	keyNames := []string{}
-	keyRoles := []common.Role{}
+	keyRoles := []api.Role{}
 	keyTSes := []time.Time{}
 	for i := 0; i < 3; i++ {
 		createKey, err := globalKeyDAO.Create(ctx, random.Key("dao-key",

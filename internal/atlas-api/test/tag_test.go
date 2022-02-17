@@ -9,7 +9,6 @@ import (
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/require"
 	"github.com/thingspect/api/go/api"
-	"github.com/thingspect/api/go/common"
 	"github.com/thingspect/atlas/pkg/test/random"
 )
 
@@ -35,7 +34,7 @@ func TestListTags(t *testing.T) {
 
 	for i := 0; i < 3; i++ {
 		user := random.User("api-user", uuid.NewString())
-		user.Role = common.Role_BUILDER
+		user.Role = api.Role_BUILDER
 
 		userCli := api.NewUserServiceClient(globalAdminGRPCConn)
 		createUser, err := userCli.CreateUser(ctx, &api.CreateUserRequest{

@@ -8,7 +8,6 @@ import (
 
 	"github.com/mennanov/fmutils"
 	"github.com/thingspect/api/go/api"
-	"github.com/thingspect/api/go/common"
 	"github.com/thingspect/atlas/internal/atlas-api/lora"
 	"github.com/thingspect/atlas/internal/atlas-api/session"
 	"github.com/thingspect/atlas/pkg/alog"
@@ -22,12 +21,12 @@ import (
 
 // Devicer defines the methods provided by a device.DAO.
 type Devicer interface {
-	Create(ctx context.Context, dev *common.Device) (*common.Device, error)
-	Read(ctx context.Context, devID, orgID string) (*common.Device, error)
-	Update(ctx context.Context, dev *common.Device) (*common.Device, error)
+	Create(ctx context.Context, dev *api.Device) (*api.Device, error)
+	Read(ctx context.Context, devID, orgID string) (*api.Device, error)
+	Update(ctx context.Context, dev *api.Device) (*api.Device, error)
 	Delete(ctx context.Context, devID, orgID string) error
 	List(ctx context.Context, orgID string, lBoundTS time.Time, prevID string,
-		limit int32, tag string) ([]*common.Device, int32, error)
+		limit int32, tag string) ([]*api.Device, int32, error)
 }
 
 // Device service contains functions to query and modify devices.
@@ -48,10 +47,10 @@ func NewDevice(devDAO Devicer, lora lora.Loraer) *Device {
 
 // CreateDevice creates a device.
 func (d *Device) CreateDevice(ctx context.Context,
-	req *api.CreateDeviceRequest) (*common.Device, error) {
+	req *api.CreateDeviceRequest) (*api.Device, error) {
 	sess, ok := session.FromContext(ctx)
-	if !ok || sess.Role < common.Role_BUILDER {
-		return nil, errPerm(common.Role_BUILDER)
+	if !ok || sess.Role < api.Role_BUILDER {
+		return nil, errPerm(api.Role_BUILDER)
 	}
 
 	req.Device.OrgId = sess.OrgID
@@ -75,8 +74,8 @@ func (d *Device) CreateDeviceLoRaWAN(ctx context.Context,
 	req *api.CreateDeviceLoRaWANRequest) (*emptypb.Empty, error) {
 	logger := alog.FromContext(ctx)
 	sess, ok := session.FromContext(ctx)
-	if !ok || sess.Role < common.Role_BUILDER {
-		return nil, errPerm(common.Role_BUILDER)
+	if !ok || sess.Role < api.Role_BUILDER {
+		return nil, errPerm(api.Role_BUILDER)
 	}
 
 	dev, err := d.devDAO.Read(ctx, req.Id, sess.OrgID)
@@ -106,10 +105,10 @@ func (d *Device) CreateDeviceLoRaWAN(ctx context.Context,
 
 // GetDevice retrieves a device by ID.
 func (d *Device) GetDevice(ctx context.Context,
-	req *api.GetDeviceRequest) (*common.Device, error) {
+	req *api.GetDeviceRequest) (*api.Device, error) {
 	sess, ok := session.FromContext(ctx)
-	if !ok || sess.Role < common.Role_VIEWER {
-		return nil, errPerm(common.Role_VIEWER)
+	if !ok || sess.Role < api.Role_VIEWER {
+		return nil, errPerm(api.Role_VIEWER)
 	}
 
 	dev, err := d.devDAO.Read(ctx, req.Id, sess.OrgID)
@@ -123,10 +122,10 @@ func (d *Device) GetDevice(ctx context.Context,
 // UpdateDevice updates a device. Update actions validate after merge to support
 // partial updates.
 func (d *Device) UpdateDevice(ctx context.Context,
-	req *api.UpdateDeviceRequest) (*common.Device, error) {
+	req *api.UpdateDeviceRequest) (*api.Device, error) {
 	sess, ok := session.FromContext(ctx)
-	if !ok || sess.Role < common.Role_BUILDER {
-		return nil, errPerm(common.Role_BUILDER)
+	if !ok || sess.Role < api.Role_BUILDER {
+		return nil, errPerm(api.Role_BUILDER)
 	}
 
 	if req.Device == nil {
@@ -175,8 +174,8 @@ func (d *Device) DeleteDeviceLoRaWAN(ctx context.Context,
 	req *api.DeleteDeviceLoRaWANRequest) (*emptypb.Empty, error) {
 	logger := alog.FromContext(ctx)
 	sess, ok := session.FromContext(ctx)
-	if !ok || sess.Role < common.Role_BUILDER {
-		return nil, errPerm(common.Role_BUILDER)
+	if !ok || sess.Role < api.Role_BUILDER {
+		return nil, errPerm(api.Role_BUILDER)
 	}
 
 	dev, err := d.devDAO.Read(ctx, req.Id, sess.OrgID)
@@ -214,8 +213,8 @@ func (d *Device) DeleteDeviceLoRaWAN(ctx context.Context,
 func (d *Device) DeleteDevice(ctx context.Context,
 	req *api.DeleteDeviceRequest) (*emptypb.Empty, error) {
 	sess, ok := session.FromContext(ctx)
-	if !ok || sess.Role < common.Role_BUILDER {
-		return nil, errPerm(common.Role_BUILDER)
+	if !ok || sess.Role < api.Role_BUILDER {
+		return nil, errPerm(api.Role_BUILDER)
 	}
 
 	if err := d.devDAO.Delete(ctx, req.Id, sess.OrgID); err != nil {
@@ -235,8 +234,8 @@ func (d *Device) DeleteDevice(ctx context.Context,
 func (d *Device) ListDevices(ctx context.Context,
 	req *api.ListDevicesRequest) (*api.ListDevicesResponse, error) {
 	sess, ok := session.FromContext(ctx)
-	if !ok || sess.Role < common.Role_VIEWER {
-		return nil, errPerm(common.Role_VIEWER)
+	if !ok || sess.Role < api.Role_VIEWER {
+		return nil, errPerm(api.Role_VIEWER)
 	}
 
 	if req.PageSize == 0 {

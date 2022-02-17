@@ -6,7 +6,6 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/thingspect/api/go/api"
-	"github.com/thingspect/api/go/common"
 	"github.com/thingspect/atlas/api/go/token"
 	"github.com/thingspect/atlas/internal/atlas-api/crypto"
 	"github.com/thingspect/atlas/pkg/consterr"
@@ -68,7 +67,7 @@ func GenerateWebToken(pwtKey []byte, user *api.User) (string,
 // GenerateKeyToken generates an encrypted protobuf API key token in raw (no
 // padding) base64 format. It returns the token and an error value.
 func GenerateKeyToken(pwtKey []byte, keyID, orgID string,
-	role common.Role) (string, error) {
+	role api.Role) (string, error) {
 	// Convert keyID and orgID to bytes.
 	keyUUID, err := uuid.Parse(keyID)
 	if err != nil {

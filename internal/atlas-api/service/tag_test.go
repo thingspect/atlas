@@ -10,7 +10,6 @@ import (
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/require"
 	"github.com/thingspect/api/go/api"
-	"github.com/thingspect/api/go/common"
 	"github.com/thingspect/atlas/internal/atlas-api/session"
 	"github.com/thingspect/atlas/pkg/dao"
 	"github.com/thingspect/atlas/pkg/test/random"
@@ -33,7 +32,7 @@ func TestListTags(t *testing.T) {
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
 			context.Background(), &session.Session{
-				OrgID: orgID, Role: common.Role_ADMIN,
+				OrgID: orgID, Role: api.Role_ADMIN,
 			}), testTimeout)
 		defer cancel()
 
@@ -60,7 +59,7 @@ func TestListTags(t *testing.T) {
 		listTags, err := tagSvc.ListTags(ctx, &api.ListTagsRequest{})
 		t.Logf("listTags, err: %+v, %v", listTags, err)
 		require.Nil(t, listTags)
-		require.Equal(t, errPerm(common.Role_VIEWER), err)
+		require.Equal(t, errPerm(api.Role_VIEWER), err)
 	})
 
 	t.Run("List tags with insufficient role", func(t *testing.T) {
@@ -68,7 +67,7 @@ func TestListTags(t *testing.T) {
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
 			context.Background(), &session.Session{
-				OrgID: uuid.NewString(), Role: common.Role_CONTACT,
+				OrgID: uuid.NewString(), Role: api.Role_CONTACT,
 			}), testTimeout)
 		defer cancel()
 
@@ -76,7 +75,7 @@ func TestListTags(t *testing.T) {
 		listTags, err := tagSvc.ListTags(ctx, &api.ListTagsRequest{})
 		t.Logf("listTags, err: %+v, %v", listTags, err)
 		require.Nil(t, listTags)
-		require.Equal(t, errPerm(common.Role_VIEWER), err)
+		require.Equal(t, errPerm(api.Role_VIEWER), err)
 	})
 
 	t.Run("List tags by invalid org ID", func(t *testing.T) {
@@ -88,7 +87,7 @@ func TestListTags(t *testing.T) {
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
 			context.Background(), &session.Session{
-				OrgID: "aaa", Role: common.Role_ADMIN,
+				OrgID: "aaa", Role: api.Role_ADMIN,
 			}), testTimeout)
 		defer cancel()
 

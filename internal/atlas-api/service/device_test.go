@@ -11,7 +11,6 @@ import (
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/require"
 	"github.com/thingspect/api/go/api"
-	"github.com/thingspect/api/go/common"
 	"github.com/thingspect/atlas/internal/atlas-api/lora"
 	"github.com/thingspect/atlas/internal/atlas-api/session"
 	"github.com/thingspect/atlas/pkg/dao"
@@ -30,14 +29,14 @@ func TestCreateDevice(t *testing.T) {
 		t.Parallel()
 
 		dev := random.Device("api-device", uuid.NewString())
-		retDev, _ := proto.Clone(dev).(*common.Device)
+		retDev, _ := proto.Clone(dev).(*api.Device)
 
 		devicer := NewMockDevicer(gomock.NewController(t))
 		devicer.EXPECT().Create(gomock.Any(), dev).Return(retDev, nil).Times(1)
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
 			context.Background(), &session.Session{
-				OrgID: dev.OrgId, Role: common.Role_ADMIN,
+				OrgID: dev.OrgId, Role: api.Role_ADMIN,
 			}), testTimeout)
 		defer cancel()
 
@@ -65,7 +64,7 @@ func TestCreateDevice(t *testing.T) {
 		createDev, err := devSvc.CreateDevice(ctx, &api.CreateDeviceRequest{})
 		t.Logf("createDev, err: %+v, %v", createDev, err)
 		require.Nil(t, createDev)
-		require.Equal(t, errPerm(common.Role_BUILDER), err)
+		require.Equal(t, errPerm(api.Role_BUILDER), err)
 	})
 
 	t.Run("Create device with insufficient role", func(t *testing.T) {
@@ -73,7 +72,7 @@ func TestCreateDevice(t *testing.T) {
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
 			context.Background(), &session.Session{
-				OrgID: uuid.NewString(), Role: common.Role_VIEWER,
+				OrgID: uuid.NewString(), Role: api.Role_VIEWER,
 			}), testTimeout)
 		defer cancel()
 
@@ -81,7 +80,7 @@ func TestCreateDevice(t *testing.T) {
 		createDev, err := devSvc.CreateDevice(ctx, &api.CreateDeviceRequest{})
 		t.Logf("createDev, err: %+v, %v", createDev, err)
 		require.Nil(t, createDev)
-		require.Equal(t, errPerm(common.Role_BUILDER), err)
+		require.Equal(t, errPerm(api.Role_BUILDER), err)
 	})
 
 	t.Run("Create invalid device", func(t *testing.T) {
@@ -96,7 +95,7 @@ func TestCreateDevice(t *testing.T) {
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
 			context.Background(), &session.Session{
-				OrgID: dev.OrgId, Role: common.Role_ADMIN,
+				OrgID: dev.OrgId, Role: api.Role_ADMIN,
 			}), testTimeout)
 		defer cancel()
 
@@ -129,7 +128,7 @@ func TestCreateDeviceLoRaWAN(t *testing.T) {
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
 			context.Background(), &session.Session{
-				OrgID: dev.OrgId, Role: common.Role_ADMIN,
+				OrgID: dev.OrgId, Role: api.Role_ADMIN,
 			}), testTimeout)
 		defer cancel()
 
@@ -159,7 +158,7 @@ func TestCreateDeviceLoRaWAN(t *testing.T) {
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
 			context.Background(), &session.Session{
-				OrgID: dev.OrgId, Role: common.Role_ADMIN,
+				OrgID: dev.OrgId, Role: api.Role_ADMIN,
 			}), testTimeout)
 		defer cancel()
 
@@ -187,7 +186,7 @@ func TestCreateDeviceLoRaWAN(t *testing.T) {
 		_, err := devSvc.CreateDeviceLoRaWAN(ctx,
 			&api.CreateDeviceLoRaWANRequest{})
 		t.Logf("err: %v", err)
-		require.Equal(t, errPerm(common.Role_BUILDER), err)
+		require.Equal(t, errPerm(api.Role_BUILDER), err)
 	})
 
 	t.Run("Create configuration with insufficient role", func(t *testing.T) {
@@ -195,7 +194,7 @@ func TestCreateDeviceLoRaWAN(t *testing.T) {
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
 			context.Background(), &session.Session{
-				OrgID: uuid.NewString(), Role: common.Role_VIEWER,
+				OrgID: uuid.NewString(), Role: api.Role_VIEWER,
 			}), testTimeout)
 		defer cancel()
 
@@ -203,7 +202,7 @@ func TestCreateDeviceLoRaWAN(t *testing.T) {
 		_, err := devSvc.CreateDeviceLoRaWAN(ctx,
 			&api.CreateDeviceLoRaWANRequest{})
 		t.Logf("err: %v", err)
-		require.Equal(t, errPerm(common.Role_BUILDER), err)
+		require.Equal(t, errPerm(api.Role_BUILDER), err)
 	})
 
 	t.Run("Create configuration by unknown ID", func(t *testing.T) {
@@ -215,7 +214,7 @@ func TestCreateDeviceLoRaWAN(t *testing.T) {
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
 			context.Background(), &session.Session{
-				OrgID: uuid.NewString(), Role: common.Role_ADMIN,
+				OrgID: uuid.NewString(), Role: api.Role_ADMIN,
 			}), testTimeout)
 		defer cancel()
 
@@ -242,7 +241,7 @@ func TestCreateDeviceLoRaWAN(t *testing.T) {
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
 			context.Background(), &session.Session{
-				OrgID: dev.OrgId, Role: common.Role_ADMIN,
+				OrgID: dev.OrgId, Role: api.Role_ADMIN,
 			}), testTimeout)
 		defer cancel()
 
@@ -269,7 +268,7 @@ func TestGetDevice(t *testing.T) {
 		t.Parallel()
 
 		dev := random.Device("api-device", uuid.NewString())
-		retDev, _ := proto.Clone(dev).(*common.Device)
+		retDev, _ := proto.Clone(dev).(*api.Device)
 
 		devicer := NewMockDevicer(gomock.NewController(t))
 		devicer.EXPECT().Read(gomock.Any(), dev.Id, dev.OrgId).Return(retDev,
@@ -277,7 +276,7 @@ func TestGetDevice(t *testing.T) {
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
 			context.Background(), &session.Session{
-				OrgID: dev.OrgId, Role: common.Role_ADMIN,
+				OrgID: dev.OrgId, Role: api.Role_ADMIN,
 			}), testTimeout)
 		defer cancel()
 
@@ -303,7 +302,7 @@ func TestGetDevice(t *testing.T) {
 		getDev, err := devSvc.GetDevice(ctx, &api.GetDeviceRequest{})
 		t.Logf("getDev, err: %+v, %v", getDev, err)
 		require.Nil(t, getDev)
-		require.Equal(t, errPerm(common.Role_VIEWER), err)
+		require.Equal(t, errPerm(api.Role_VIEWER), err)
 	})
 
 	t.Run("Get device with insufficient role", func(t *testing.T) {
@@ -311,7 +310,7 @@ func TestGetDevice(t *testing.T) {
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
 			context.Background(), &session.Session{
-				OrgID: uuid.NewString(), Role: common.Role_CONTACT,
+				OrgID: uuid.NewString(), Role: api.Role_CONTACT,
 			}), testTimeout)
 		defer cancel()
 
@@ -319,7 +318,7 @@ func TestGetDevice(t *testing.T) {
 		getDev, err := devSvc.GetDevice(ctx, &api.GetDeviceRequest{})
 		t.Logf("getDev, err: %+v, %v", getDev, err)
 		require.Nil(t, getDev)
-		require.Equal(t, errPerm(common.Role_VIEWER), err)
+		require.Equal(t, errPerm(api.Role_VIEWER), err)
 	})
 
 	t.Run("Get device by unknown ID", func(t *testing.T) {
@@ -331,7 +330,7 @@ func TestGetDevice(t *testing.T) {
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
 			context.Background(), &session.Session{
-				OrgID: uuid.NewString(), Role: common.Role_ADMIN,
+				OrgID: uuid.NewString(), Role: api.Role_ADMIN,
 			}), testTimeout)
 		defer cancel()
 
@@ -352,14 +351,14 @@ func TestUpdateDevice(t *testing.T) {
 		t.Parallel()
 
 		dev := random.Device("api-device", uuid.NewString())
-		retDev, _ := proto.Clone(dev).(*common.Device)
+		retDev, _ := proto.Clone(dev).(*api.Device)
 
 		devicer := NewMockDevicer(gomock.NewController(t))
 		devicer.EXPECT().Update(gomock.Any(), dev).Return(retDev, nil).Times(1)
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
 			context.Background(), &session.Session{
-				OrgID: dev.OrgId, Role: common.Role_ADMIN,
+				OrgID: dev.OrgId, Role: api.Role_ADMIN,
 			}), testTimeout)
 		defer cancel()
 
@@ -381,17 +380,17 @@ func TestUpdateDevice(t *testing.T) {
 		t.Parallel()
 
 		dev := random.Device("api-device", uuid.NewString())
-		retDev, _ := proto.Clone(dev).(*common.Device)
-		part := &common.Device{
-			Id: dev.Id, Status: common.Status_ACTIVE,
-			Decoder: common.Decoder_GATEWAY, Tags: random.Tags("api-device", 2),
+		retDev, _ := proto.Clone(dev).(*api.Device)
+		part := &api.Device{
+			Id: dev.Id, Status: api.Status_ACTIVE,
+			Decoder: api.Decoder_GATEWAY, Tags: random.Tags("api-device", 2),
 		}
-		merged := &common.Device{
+		merged := &api.Device{
 			Id: dev.Id, OrgId: dev.OrgId, UniqId: dev.UniqId, Name: dev.Name,
 			Status: part.Status, Token: dev.Token, Decoder: part.Decoder,
 			Tags: part.Tags,
 		}
-		retMerged, _ := proto.Clone(merged).(*common.Device)
+		retMerged, _ := proto.Clone(merged).(*api.Device)
 
 		devicer := NewMockDevicer(gomock.NewController(t))
 		devicer.EXPECT().Read(gomock.Any(), dev.Id, dev.OrgId).Return(retDev,
@@ -401,7 +400,7 @@ func TestUpdateDevice(t *testing.T) {
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
 			context.Background(), &session.Session{
-				OrgID: dev.OrgId, Role: common.Role_ADMIN,
+				OrgID: dev.OrgId, Role: api.Role_ADMIN,
 			}), testTimeout)
 		defer cancel()
 
@@ -431,7 +430,7 @@ func TestUpdateDevice(t *testing.T) {
 		updateDev, err := devSvc.UpdateDevice(ctx, &api.UpdateDeviceRequest{})
 		t.Logf("updateDev, err: %+v, %v", updateDev, err)
 		require.Nil(t, updateDev)
-		require.Equal(t, errPerm(common.Role_BUILDER), err)
+		require.Equal(t, errPerm(api.Role_BUILDER), err)
 	})
 
 	t.Run("Update device with insufficient role", func(t *testing.T) {
@@ -439,7 +438,7 @@ func TestUpdateDevice(t *testing.T) {
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
 			context.Background(), &session.Session{
-				OrgID: uuid.NewString(), Role: common.Role_VIEWER,
+				OrgID: uuid.NewString(), Role: api.Role_VIEWER,
 			}), testTimeout)
 		defer cancel()
 
@@ -447,7 +446,7 @@ func TestUpdateDevice(t *testing.T) {
 		updateDev, err := devSvc.UpdateDevice(ctx, &api.UpdateDeviceRequest{})
 		t.Logf("updateDev, err: %+v, %v", updateDev, err)
 		require.Nil(t, updateDev)
-		require.Equal(t, errPerm(common.Role_BUILDER), err)
+		require.Equal(t, errPerm(api.Role_BUILDER), err)
 	})
 
 	t.Run("Update nil device", func(t *testing.T) {
@@ -455,7 +454,7 @@ func TestUpdateDevice(t *testing.T) {
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
 			context.Background(), &session.Session{
-				OrgID: uuid.NewString(), Role: common.Role_ADMIN,
+				OrgID: uuid.NewString(), Role: api.Role_ADMIN,
 			}), testTimeout)
 		defer cancel()
 
@@ -476,7 +475,7 @@ func TestUpdateDevice(t *testing.T) {
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
 			context.Background(), &session.Session{
-				OrgID: uuid.NewString(), Role: common.Role_ADMIN,
+				OrgID: uuid.NewString(), Role: api.Role_ADMIN,
 			}), testTimeout)
 		defer cancel()
 
@@ -496,7 +495,7 @@ func TestUpdateDevice(t *testing.T) {
 		t.Parallel()
 
 		orgID := uuid.NewString()
-		part := &common.Device{Id: uuid.NewString(), Status: common.Status_ACTIVE}
+		part := &api.Device{Id: uuid.NewString(), Status: api.Status_ACTIVE}
 
 		devicer := NewMockDevicer(gomock.NewController(t))
 		devicer.EXPECT().Read(gomock.Any(), part.Id, orgID).
@@ -504,7 +503,7 @@ func TestUpdateDevice(t *testing.T) {
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
 			context.Background(), &session.Session{
-				OrgID: orgID, Role: common.Role_ADMIN,
+				OrgID: orgID, Role: api.Role_ADMIN,
 			}), testTimeout)
 		defer cancel()
 
@@ -527,7 +526,7 @@ func TestUpdateDevice(t *testing.T) {
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
 			context.Background(), &session.Session{
-				OrgID: dev.OrgId, Role: common.Role_ADMIN,
+				OrgID: dev.OrgId, Role: api.Role_ADMIN,
 			}), testTimeout)
 		defer cancel()
 
@@ -554,7 +553,7 @@ func TestUpdateDevice(t *testing.T) {
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
 			context.Background(), &session.Session{
-				OrgID: dev.OrgId, Role: common.Role_ADMIN,
+				OrgID: dev.OrgId, Role: api.Role_ADMIN,
 			}), testTimeout)
 		defer cancel()
 
@@ -589,7 +588,7 @@ func TestDeleteDeviceLoRaWAN(t *testing.T) {
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
 			context.Background(), &session.Session{
-				OrgID: dev.OrgId, Role: common.Role_ADMIN,
+				OrgID: dev.OrgId, Role: api.Role_ADMIN,
 			}), testTimeout)
 		defer cancel()
 
@@ -619,7 +618,7 @@ func TestDeleteDeviceLoRaWAN(t *testing.T) {
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
 			context.Background(), &session.Session{
-				OrgID: dev.OrgId, Role: common.Role_ADMIN,
+				OrgID: dev.OrgId, Role: api.Role_ADMIN,
 			}), testTimeout)
 		defer cancel()
 
@@ -640,7 +639,7 @@ func TestDeleteDeviceLoRaWAN(t *testing.T) {
 		_, err := devSvc.DeleteDeviceLoRaWAN(ctx,
 			&api.DeleteDeviceLoRaWANRequest{})
 		t.Logf("err: %v", err)
-		require.Equal(t, errPerm(common.Role_BUILDER), err)
+		require.Equal(t, errPerm(api.Role_BUILDER), err)
 	})
 
 	t.Run("Delete configurations with insufficient role", func(t *testing.T) {
@@ -648,7 +647,7 @@ func TestDeleteDeviceLoRaWAN(t *testing.T) {
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
 			context.Background(), &session.Session{
-				OrgID: uuid.NewString(), Role: common.Role_VIEWER,
+				OrgID: uuid.NewString(), Role: api.Role_VIEWER,
 			}), testTimeout)
 		defer cancel()
 
@@ -656,7 +655,7 @@ func TestDeleteDeviceLoRaWAN(t *testing.T) {
 		_, err := devSvc.DeleteDeviceLoRaWAN(ctx,
 			&api.DeleteDeviceLoRaWANRequest{})
 		t.Logf("err: %v", err)
-		require.Equal(t, errPerm(common.Role_BUILDER), err)
+		require.Equal(t, errPerm(api.Role_BUILDER), err)
 	})
 
 	t.Run("Delete configurations by unknown ID", func(t *testing.T) {
@@ -668,7 +667,7 @@ func TestDeleteDeviceLoRaWAN(t *testing.T) {
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
 			context.Background(), &session.Session{
-				OrgID: uuid.NewString(), Role: common.Role_ADMIN,
+				OrgID: uuid.NewString(), Role: api.Role_ADMIN,
 			}), testTimeout)
 		defer cancel()
 
@@ -694,7 +693,7 @@ func TestDeleteDeviceLoRaWAN(t *testing.T) {
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
 			context.Background(), &session.Session{
-				OrgID: dev.OrgId, Role: common.Role_ADMIN,
+				OrgID: dev.OrgId, Role: api.Role_ADMIN,
 			}), testTimeout)
 		defer cancel()
 
@@ -723,7 +722,7 @@ func TestDeleteDeviceLoRaWAN(t *testing.T) {
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
 			context.Background(), &session.Session{
-				OrgID: dev.OrgId, Role: common.Role_ADMIN,
+				OrgID: dev.OrgId, Role: api.Role_ADMIN,
 			}), testTimeout)
 		defer cancel()
 
@@ -748,7 +747,7 @@ func TestDeleteDevice(t *testing.T) {
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
 			context.Background(), &session.Session{
-				OrgID: uuid.NewString(), Role: common.Role_ADMIN,
+				OrgID: uuid.NewString(), Role: api.Role_ADMIN,
 			}), testTimeout)
 		defer cancel()
 
@@ -769,7 +768,7 @@ func TestDeleteDevice(t *testing.T) {
 		devSvc := NewDevice(nil, nil)
 		_, err := devSvc.DeleteDevice(ctx, &api.DeleteDeviceRequest{})
 		t.Logf("err: %v", err)
-		require.Equal(t, errPerm(common.Role_BUILDER), err)
+		require.Equal(t, errPerm(api.Role_BUILDER), err)
 	})
 
 	t.Run("Delete device with insufficient role", func(t *testing.T) {
@@ -777,14 +776,14 @@ func TestDeleteDevice(t *testing.T) {
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
 			context.Background(), &session.Session{
-				OrgID: uuid.NewString(), Role: common.Role_VIEWER,
+				OrgID: uuid.NewString(), Role: api.Role_VIEWER,
 			}), testTimeout)
 		defer cancel()
 
 		devSvc := NewDevice(nil, nil)
 		_, err := devSvc.DeleteDevice(ctx, &api.DeleteDeviceRequest{})
 		t.Logf("err: %v", err)
-		require.Equal(t, errPerm(common.Role_BUILDER), err)
+		require.Equal(t, errPerm(api.Role_BUILDER), err)
 	})
 
 	t.Run("Delete device by unknown ID", func(t *testing.T) {
@@ -796,7 +795,7 @@ func TestDeleteDevice(t *testing.T) {
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
 			context.Background(), &session.Session{
-				OrgID: uuid.NewString(), Role: common.Role_ADMIN,
+				OrgID: uuid.NewString(), Role: api.Role_ADMIN,
 			}), testTimeout)
 		defer cancel()
 
@@ -817,7 +816,7 @@ func TestListDevices(t *testing.T) {
 
 		orgID := uuid.NewString()
 
-		devs := []*common.Device{
+		devs := []*api.Device{
 			random.Device("api-device", uuid.NewString()),
 			random.Device("api-device", uuid.NewString()),
 			random.Device("api-device", uuid.NewString()),
@@ -829,7 +828,7 @@ func TestListDevices(t *testing.T) {
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
 			context.Background(), &session.Session{
-				OrgID: orgID, Role: common.Role_ADMIN,
+				OrgID: orgID, Role: api.Role_ADMIN,
 			}), testTimeout)
 		defer cancel()
 
@@ -853,7 +852,7 @@ func TestListDevices(t *testing.T) {
 
 		orgID := uuid.NewString()
 
-		devs := []*common.Device{
+		devs := []*api.Device{
 			random.Device("api-device", uuid.NewString()),
 			random.Device("api-device", uuid.NewString()),
 			random.Device("api-device", uuid.NewString()),
@@ -869,7 +868,7 @@ func TestListDevices(t *testing.T) {
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
 			context.Background(), &session.Session{
-				OrgID: orgID, Role: common.Role_ADMIN,
+				OrgID: orgID, Role: api.Role_ADMIN,
 			}), testTimeout)
 		defer cancel()
 
@@ -902,7 +901,7 @@ func TestListDevices(t *testing.T) {
 		listDevs, err := devSvc.ListDevices(ctx, &api.ListDevicesRequest{})
 		t.Logf("listDevs, err: %+v, %v", listDevs, err)
 		require.Nil(t, listDevs)
-		require.Equal(t, errPerm(common.Role_VIEWER), err)
+		require.Equal(t, errPerm(api.Role_VIEWER), err)
 	})
 
 	t.Run("List devices with insufficient role", func(t *testing.T) {
@@ -910,7 +909,7 @@ func TestListDevices(t *testing.T) {
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
 			context.Background(), &session.Session{
-				OrgID: uuid.NewString(), Role: common.Role_CONTACT,
+				OrgID: uuid.NewString(), Role: api.Role_CONTACT,
 			}), testTimeout)
 		defer cancel()
 
@@ -918,7 +917,7 @@ func TestListDevices(t *testing.T) {
 		listDevs, err := devSvc.ListDevices(ctx, &api.ListDevicesRequest{})
 		t.Logf("listDevs, err: %+v, %v", listDevs, err)
 		require.Nil(t, listDevs)
-		require.Equal(t, errPerm(common.Role_VIEWER), err)
+		require.Equal(t, errPerm(api.Role_VIEWER), err)
 	})
 
 	t.Run("List devices by invalid page token", func(t *testing.T) {
@@ -926,7 +925,7 @@ func TestListDevices(t *testing.T) {
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
 			context.Background(), &session.Session{
-				OrgID: uuid.NewString(), Role: common.Role_ADMIN,
+				OrgID: uuid.NewString(), Role: api.Role_ADMIN,
 			}), testTimeout)
 		defer cancel()
 
@@ -950,7 +949,7 @@ func TestListDevices(t *testing.T) {
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
 			context.Background(), &session.Session{
-				OrgID: "aaa", Role: common.Role_ADMIN,
+				OrgID: "aaa", Role: api.Role_ADMIN,
 			}), testTimeout)
 		defer cancel()
 
@@ -967,7 +966,7 @@ func TestListDevices(t *testing.T) {
 
 		orgID := uuid.NewString()
 
-		devs := []*common.Device{
+		devs := []*api.Device{
 			random.Device("api-device", uuid.NewString()),
 			random.Device("api-device", uuid.NewString()),
 			random.Device("api-device", uuid.NewString()),
@@ -980,7 +979,7 @@ func TestListDevices(t *testing.T) {
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
 			context.Background(), &session.Session{
-				OrgID: orgID, Role: common.Role_ADMIN,
+				OrgID: orgID, Role: api.Role_ADMIN,
 			}), testTimeout)
 		defer cancel()
 

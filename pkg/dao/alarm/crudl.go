@@ -7,7 +7,6 @@ import (
 
 	"github.com/jackc/pgtype"
 	"github.com/thingspect/api/go/api"
-	"github.com/thingspect/api/go/common"
 	"github.com/thingspect/atlas/pkg/alog"
 	"github.com/thingspect/atlas/pkg/dao"
 	"google.golang.org/protobuf/types/known/timestamppb"
@@ -64,7 +63,7 @@ func (d *DAO) Read(ctx context.Context, alarmID, orgID,
 		return nil, dao.DBToSentinel(err)
 	}
 
-	alarm.Status = common.Status(common.Status_value[status])
+	alarm.Status = api.Status(api.Status_value[status])
 	alarm.Type = api.AlarmType(api.AlarmType_value[alarmType])
 	if err := tags.AssignTo(&alarm.UserTags); err != nil {
 		return nil, dao.DBToSentinel(err)
@@ -230,7 +229,7 @@ func (d *DAO) List(ctx context.Context, orgID string, lBoundTS time.Time,
 			return nil, 0, dao.DBToSentinel(err)
 		}
 
-		alarm.Status = common.Status(common.Status_value[status])
+		alarm.Status = api.Status(api.Status_value[status])
 		alarm.Type = api.AlarmType(api.AlarmType_value[alarmType])
 		if err := tags.AssignTo(&alarm.UserTags); err != nil {
 			return nil, 0, dao.DBToSentinel(err)

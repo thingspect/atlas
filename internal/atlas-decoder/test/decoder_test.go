@@ -11,6 +11,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	"github.com/thingspect/api/go/api"
 	"github.com/thingspect/api/go/common"
 	"github.com/thingspect/atlas/api/go/message"
 	"github.com/thingspect/atlas/pkg/test/random"
@@ -32,8 +33,8 @@ func TestDecodeMessages(t *testing.T) {
 	require.NoError(t, err)
 
 	dev := random.Device("dec", createOrg.Id)
-	dev.Status = common.Status_ACTIVE
-	dev.Decoder = common.Decoder_RADIO_BRIDGE_DOOR_V2
+	dev.Status = api.Status_ACTIVE
+	dev.Decoder = api.Decoder_RADIO_BRIDGE_DOOR_V2
 	createDev, err := globalDevDAO.Create(ctx, dev)
 	t.Logf("createDev, err: %+v, %v", createDev, err)
 	require.NoError(t, err)
@@ -133,15 +134,15 @@ func TestDecodeMessagesError(t *testing.T) {
 	require.NoError(t, err)
 
 	dev := random.Device("dec", createOrg.Id)
-	dev.Status = common.Status_ACTIVE
-	dev.Decoder = common.Decoder_RAW
+	dev.Status = api.Status_ACTIVE
+	dev.Decoder = api.Decoder_RAW
 	createDev, err := globalDevDAO.Create(ctx, dev)
 	t.Logf("createDev, err: %+v, %v", createDev, err)
 	require.NoError(t, err)
 
 	invDev := random.Device("dec", createOrg.Id)
-	invDev.Status = common.Status_ACTIVE
-	invDev.Decoder = common.Decoder(999)
+	invDev.Status = api.Status_ACTIVE
+	invDev.Decoder = api.Decoder(999)
 	createInvDev, err := globalDevDAO.Create(ctx, invDev)
 	t.Logf("createInvDev, err: %+v, %v", createInvDev, err)
 	require.NoError(t, err)

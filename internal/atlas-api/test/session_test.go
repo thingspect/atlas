@@ -10,7 +10,6 @@ import (
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/require"
 	"github.com/thingspect/api/go/api"
-	"github.com/thingspect/api/go/common"
 	iapi "github.com/thingspect/atlas/internal/atlas-api/api"
 	"github.com/thingspect/atlas/internal/atlas-api/session"
 	"github.com/thingspect/atlas/pkg/test/random"
@@ -29,8 +28,8 @@ func TestLogin(t *testing.T) {
 	require.NoError(t, err)
 
 	user := random.User("api-session", createOrg.Id)
-	user.Role = common.Role_ADMIN
-	user.Status = common.Status_ACTIVE
+	user.Role = api.Role_ADMIN
+	user.Status = api.Status_ACTIVE
 	createUser, err := globalUserDAO.Create(ctx, user)
 	t.Logf("createUser, err: %+v, %v", createUser, err)
 	require.NoError(t, err)
@@ -41,7 +40,7 @@ func TestLogin(t *testing.T) {
 	require.NoError(t, err)
 
 	disUser := random.User("api-session", createOrg.Id)
-	disUser.Status = common.Status_DISABLED
+	disUser.Status = api.Status_DISABLED
 	createDisUser, err := globalUserDAO.Create(ctx, disUser)
 	t.Logf("createDisUser, err: %+v, %v", createDisUser, err)
 	require.NoError(t, err)
@@ -52,8 +51,8 @@ func TestLogin(t *testing.T) {
 	require.NoError(t, err)
 
 	contUser := random.User("api-session", createOrg.Id)
-	contUser.Role = common.Role_CONTACT
-	contUser.Status = common.Status_ACTIVE
+	contUser.Role = api.Role_CONTACT
+	contUser.Status = api.Status_ACTIVE
 	createContUser, err := globalUserDAO.Create(ctx, contUser)
 	t.Logf("createContUser, err: %+v, %v", createContUser, err)
 	require.NoError(t, err)
@@ -158,7 +157,7 @@ func TestCreateKey(t *testing.T) {
 		t.Parallel()
 
 		key := random.Key("api-key", uuid.NewString())
-		key.Role = common.Role_BUILDER
+		key.Role = api.Role_BUILDER
 
 		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
 		defer cancel()
@@ -193,7 +192,7 @@ func TestCreateKey(t *testing.T) {
 		t.Parallel()
 
 		key := random.Key("api-key", uuid.NewString())
-		key.Role = common.Role_SYS_ADMIN
+		key.Role = api.Role_SYS_ADMIN
 
 		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
 		defer cancel()
@@ -235,7 +234,7 @@ func TestDeleteKey(t *testing.T) {
 		t.Parallel()
 
 		key := random.Key("api-key", uuid.NewString())
-		key.Role = common.Role_BUILDER
+		key.Role = api.Role_BUILDER
 
 		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
 		defer cancel()
@@ -271,7 +270,7 @@ func TestDeleteKey(t *testing.T) {
 		t.Parallel()
 
 		key := random.Key("api-key", uuid.NewString())
-		key.Role = common.Role_ADMIN
+		key.Role = api.Role_ADMIN
 
 		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
 		defer cancel()
@@ -335,7 +334,7 @@ func TestDeleteKey(t *testing.T) {
 		t.Parallel()
 
 		key := random.Key("api-key", uuid.NewString())
-		key.Role = common.Role_BUILDER
+		key.Role = api.Role_BUILDER
 
 		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
 		defer cancel()
@@ -363,10 +362,10 @@ func TestListKeys(t *testing.T) {
 
 	keyIDs := []string{}
 	keyNames := []string{}
-	keyRoles := []common.Role{}
+	keyRoles := []api.Role{}
 	for i := 0; i < 3; i++ {
 		key := random.Key("api-key", uuid.NewString())
-		key.Role = common.Role_BUILDER
+		key.Role = api.Role_BUILDER
 
 		sessCli := api.NewSessionServiceClient(globalAdminGRPCConn)
 		createKey, err := sessCli.CreateKey(ctx,

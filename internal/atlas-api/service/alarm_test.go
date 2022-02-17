@@ -38,7 +38,7 @@ func TestCreateAlarm(t *testing.T) {
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
 			context.Background(), &session.Session{
-				OrgID: alarm.OrgId, Role: common.Role_ADMIN,
+				OrgID: alarm.OrgId, Role: api.Role_ADMIN,
 			}), testTimeout)
 		defer cancel()
 
@@ -66,7 +66,7 @@ func TestCreateAlarm(t *testing.T) {
 		createAlarm, err := raSvc.CreateAlarm(ctx, &api.CreateAlarmRequest{})
 		t.Logf("createAlarm, err: %+v, %v", createAlarm, err)
 		require.Nil(t, createAlarm)
-		require.Equal(t, errPerm(common.Role_BUILDER), err)
+		require.Equal(t, errPerm(api.Role_BUILDER), err)
 	})
 
 	t.Run("Create alarm with insufficient role", func(t *testing.T) {
@@ -74,7 +74,7 @@ func TestCreateAlarm(t *testing.T) {
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
 			context.Background(), &session.Session{
-				OrgID: uuid.NewString(), Role: common.Role_VIEWER,
+				OrgID: uuid.NewString(), Role: api.Role_VIEWER,
 			}), testTimeout)
 		defer cancel()
 
@@ -82,7 +82,7 @@ func TestCreateAlarm(t *testing.T) {
 		createAlarm, err := raSvc.CreateAlarm(ctx, &api.CreateAlarmRequest{})
 		t.Logf("createAlarm, err: %+v, %v", createAlarm, err)
 		require.Nil(t, createAlarm)
-		require.Equal(t, errPerm(common.Role_BUILDER), err)
+		require.Equal(t, errPerm(api.Role_BUILDER), err)
 	})
 
 	t.Run("Create invalid alarm", func(t *testing.T) {
@@ -97,7 +97,7 @@ func TestCreateAlarm(t *testing.T) {
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
 			context.Background(), &session.Session{
-				OrgID: alarm.OrgId, Role: common.Role_ADMIN,
+				OrgID: alarm.OrgId, Role: api.Role_ADMIN,
 			}), testTimeout)
 		defer cancel()
 
@@ -127,7 +127,7 @@ func TestGetAlarm(t *testing.T) {
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
 			context.Background(), &session.Session{
-				OrgID: alarm.OrgId, Role: common.Role_ADMIN,
+				OrgID: alarm.OrgId, Role: api.Role_ADMIN,
 			}), testTimeout)
 		defer cancel()
 
@@ -155,7 +155,7 @@ func TestGetAlarm(t *testing.T) {
 		getAlarm, err := raSvc.GetAlarm(ctx, &api.GetAlarmRequest{})
 		t.Logf("getAlarm, err: %+v, %v", getAlarm, err)
 		require.Nil(t, getAlarm)
-		require.Equal(t, errPerm(common.Role_VIEWER), err)
+		require.Equal(t, errPerm(api.Role_VIEWER), err)
 	})
 
 	t.Run("Get rule with insufficient role", func(t *testing.T) {
@@ -163,7 +163,7 @@ func TestGetAlarm(t *testing.T) {
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
 			context.Background(), &session.Session{
-				OrgID: uuid.NewString(), Role: common.Role_CONTACT,
+				OrgID: uuid.NewString(), Role: api.Role_CONTACT,
 			}), testTimeout)
 		defer cancel()
 
@@ -171,7 +171,7 @@ func TestGetAlarm(t *testing.T) {
 		getAlarm, err := raSvc.GetAlarm(ctx, &api.GetAlarmRequest{})
 		t.Logf("getAlarm, err: %+v, %v", getAlarm, err)
 		require.Nil(t, getAlarm)
-		require.Equal(t, errPerm(common.Role_VIEWER), err)
+		require.Equal(t, errPerm(api.Role_VIEWER), err)
 	})
 
 	t.Run("Get rule by unknown ID", func(t *testing.T) {
@@ -183,7 +183,7 @@ func TestGetAlarm(t *testing.T) {
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
 			context.Background(), &session.Session{
-				OrgID: uuid.NewString(), Role: common.Role_ADMIN,
+				OrgID: uuid.NewString(), Role: api.Role_ADMIN,
 			}), testTimeout)
 		defer cancel()
 
@@ -212,7 +212,7 @@ func TestUpdateAlarm(t *testing.T) {
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
 			context.Background(), &session.Session{
-				OrgID: alarm.OrgId, Role: common.Role_ADMIN,
+				OrgID: alarm.OrgId, Role: api.Role_ADMIN,
 			}), testTimeout)
 		defer cancel()
 
@@ -236,7 +236,7 @@ func TestUpdateAlarm(t *testing.T) {
 		alarm := random.Alarm("api-alarm", uuid.NewString(), uuid.NewString())
 		retAlarm, _ := proto.Clone(alarm).(*api.Alarm)
 		part := &api.Alarm{
-			Id: alarm.Id, RuleId: alarm.RuleId, Status: common.Status_ACTIVE,
+			Id: alarm.Id, RuleId: alarm.RuleId, Status: api.Status_ACTIVE,
 			SubjectTemplate: `test`, UserTags: random.Tags("api-alarm", 2),
 		}
 		merged := &api.Alarm{
@@ -256,7 +256,7 @@ func TestUpdateAlarm(t *testing.T) {
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
 			context.Background(), &session.Session{
-				OrgID: alarm.OrgId, Role: common.Role_ADMIN,
+				OrgID: alarm.OrgId, Role: api.Role_ADMIN,
 			}), testTimeout)
 		defer cancel()
 
@@ -287,7 +287,7 @@ func TestUpdateAlarm(t *testing.T) {
 		updateAlarm, err := raSvc.UpdateAlarm(ctx, &api.UpdateAlarmRequest{})
 		t.Logf("updateAlarm, err: %+v, %v", updateAlarm, err)
 		require.Nil(t, updateAlarm)
-		require.Equal(t, errPerm(common.Role_BUILDER), err)
+		require.Equal(t, errPerm(api.Role_BUILDER), err)
 	})
 
 	t.Run("Update alarm with insufficient role", func(t *testing.T) {
@@ -295,7 +295,7 @@ func TestUpdateAlarm(t *testing.T) {
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
 			context.Background(), &session.Session{
-				OrgID: uuid.NewString(), Role: common.Role_VIEWER,
+				OrgID: uuid.NewString(), Role: api.Role_VIEWER,
 			}), testTimeout)
 		defer cancel()
 
@@ -303,7 +303,7 @@ func TestUpdateAlarm(t *testing.T) {
 		updateAlarm, err := raSvc.UpdateAlarm(ctx, &api.UpdateAlarmRequest{})
 		t.Logf("updateAlarm, err: %+v, %v", updateAlarm, err)
 		require.Nil(t, updateAlarm)
-		require.Equal(t, errPerm(common.Role_BUILDER), err)
+		require.Equal(t, errPerm(api.Role_BUILDER), err)
 	})
 
 	t.Run("Update nil alarm", func(t *testing.T) {
@@ -311,7 +311,7 @@ func TestUpdateAlarm(t *testing.T) {
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
 			context.Background(), &session.Session{
-				OrgID: uuid.NewString(), Role: common.Role_ADMIN,
+				OrgID: uuid.NewString(), Role: api.Role_ADMIN,
 			}), testTimeout)
 		defer cancel()
 
@@ -332,7 +332,7 @@ func TestUpdateAlarm(t *testing.T) {
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
 			context.Background(), &session.Session{
-				OrgID: uuid.NewString(), Role: common.Role_ADMIN,
+				OrgID: uuid.NewString(), Role: api.Role_ADMIN,
 			}), testTimeout)
 		defer cancel()
 
@@ -354,7 +354,7 @@ func TestUpdateAlarm(t *testing.T) {
 		orgID := uuid.NewString()
 		part := &api.Alarm{
 			Id: uuid.NewString(), RuleId: uuid.NewString(),
-			Status: common.Status_ACTIVE,
+			Status: api.Status_ACTIVE,
 		}
 
 		alarmer := NewMockAlarmer(gomock.NewController(t))
@@ -363,7 +363,7 @@ func TestUpdateAlarm(t *testing.T) {
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
 			context.Background(), &session.Session{
-				OrgID: orgID, Role: common.Role_ADMIN,
+				OrgID: orgID, Role: api.Role_ADMIN,
 			}), testTimeout)
 		defer cancel()
 
@@ -386,7 +386,7 @@ func TestUpdateAlarm(t *testing.T) {
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
 			context.Background(), &session.Session{
-				OrgID: alarm.OrgId, Role: common.Role_ADMIN,
+				OrgID: alarm.OrgId, Role: api.Role_ADMIN,
 			}), testTimeout)
 		defer cancel()
 
@@ -413,7 +413,7 @@ func TestUpdateAlarm(t *testing.T) {
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
 			context.Background(), &session.Session{
-				OrgID: alarm.OrgId, Role: common.Role_ADMIN,
+				OrgID: alarm.OrgId, Role: api.Role_ADMIN,
 			}), testTimeout)
 		defer cancel()
 
@@ -440,7 +440,7 @@ func TestDeleteAlarm(t *testing.T) {
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
 			context.Background(), &session.Session{
-				OrgID: uuid.NewString(), Role: common.Role_ADMIN,
+				OrgID: uuid.NewString(), Role: api.Role_ADMIN,
 			}), testTimeout)
 		defer cancel()
 
@@ -461,7 +461,7 @@ func TestDeleteAlarm(t *testing.T) {
 		raSvc := NewRuleAlarm(nil, nil)
 		_, err := raSvc.DeleteAlarm(ctx, &api.DeleteAlarmRequest{})
 		t.Logf("err: %v", err)
-		require.Equal(t, errPerm(common.Role_BUILDER), err)
+		require.Equal(t, errPerm(api.Role_BUILDER), err)
 	})
 
 	t.Run("Delete rule with insufficient role", func(t *testing.T) {
@@ -469,14 +469,14 @@ func TestDeleteAlarm(t *testing.T) {
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
 			context.Background(), &session.Session{
-				OrgID: uuid.NewString(), Role: common.Role_VIEWER,
+				OrgID: uuid.NewString(), Role: api.Role_VIEWER,
 			}), testTimeout)
 		defer cancel()
 
 		raSvc := NewRuleAlarm(nil, nil)
 		_, err := raSvc.DeleteAlarm(ctx, &api.DeleteAlarmRequest{})
 		t.Logf("err: %v", err)
-		require.Equal(t, errPerm(common.Role_BUILDER), err)
+		require.Equal(t, errPerm(api.Role_BUILDER), err)
 	})
 
 	t.Run("Delete rule by unknown ID", func(t *testing.T) {
@@ -488,7 +488,7 @@ func TestDeleteAlarm(t *testing.T) {
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
 			context.Background(), &session.Session{
-				OrgID: uuid.NewString(), Role: common.Role_ADMIN,
+				OrgID: uuid.NewString(), Role: api.Role_ADMIN,
 			}), testTimeout)
 		defer cancel()
 
@@ -521,7 +521,7 @@ func TestListAlarms(t *testing.T) {
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
 			context.Background(), &session.Session{
-				OrgID: orgID, Role: common.Role_ADMIN,
+				OrgID: orgID, Role: api.Role_ADMIN,
 			}), testTimeout)
 		defer cancel()
 
@@ -562,7 +562,7 @@ func TestListAlarms(t *testing.T) {
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
 			context.Background(), &session.Session{
-				OrgID: orgID, Role: common.Role_ADMIN,
+				OrgID: orgID, Role: api.Role_ADMIN,
 			}), testTimeout)
 		defer cancel()
 
@@ -595,7 +595,7 @@ func TestListAlarms(t *testing.T) {
 		listAlarms, err := raSvc.ListAlarms(ctx, &api.ListAlarmsRequest{})
 		t.Logf("listAlarms, err: %+v, %v", listAlarms, err)
 		require.Nil(t, listAlarms)
-		require.Equal(t, errPerm(common.Role_VIEWER), err)
+		require.Equal(t, errPerm(api.Role_VIEWER), err)
 	})
 
 	t.Run("List alarms with insufficient role", func(t *testing.T) {
@@ -603,7 +603,7 @@ func TestListAlarms(t *testing.T) {
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
 			context.Background(), &session.Session{
-				OrgID: uuid.NewString(), Role: common.Role_CONTACT,
+				OrgID: uuid.NewString(), Role: api.Role_CONTACT,
 			}), testTimeout)
 		defer cancel()
 
@@ -611,7 +611,7 @@ func TestListAlarms(t *testing.T) {
 		listAlarms, err := raSvc.ListAlarms(ctx, &api.ListAlarmsRequest{})
 		t.Logf("listAlarms, err: %+v, %v", listAlarms, err)
 		require.Nil(t, listAlarms)
-		require.Equal(t, errPerm(common.Role_VIEWER), err)
+		require.Equal(t, errPerm(api.Role_VIEWER), err)
 	})
 
 	t.Run("List alarms by invalid page token", func(t *testing.T) {
@@ -619,7 +619,7 @@ func TestListAlarms(t *testing.T) {
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
 			context.Background(), &session.Session{
-				OrgID: uuid.NewString(), Role: common.Role_ADMIN,
+				OrgID: uuid.NewString(), Role: api.Role_ADMIN,
 			}), testTimeout)
 		defer cancel()
 
@@ -643,7 +643,7 @@ func TestListAlarms(t *testing.T) {
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
 			context.Background(), &session.Session{
-				OrgID: "aaa", Role: common.Role_ADMIN,
+				OrgID: "aaa", Role: api.Role_ADMIN,
 			}), testTimeout)
 		defer cancel()
 
@@ -673,7 +673,7 @@ func TestListAlarms(t *testing.T) {
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
 			context.Background(), &session.Session{
-				OrgID: orgID, Role: common.Role_ADMIN,
+				OrgID: orgID, Role: api.Role_ADMIN,
 			}), testTimeout)
 		defer cancel()
 
@@ -705,8 +705,8 @@ func TestTestAlarm(t *testing.T) {
 
 		tests := []struct {
 			inpPoint *common.DataPoint
-			inpRule  *common.Rule
-			inpDev   *common.Device
+			inpRule  *api.Rule
+			inpDev   *api.Device
 			inpTempl string
 			res      string
 			err      string
@@ -717,14 +717,14 @@ func TestTestAlarm(t *testing.T) {
 			{
 				&common.DataPoint{
 					ValOneof: &common.DataPoint_IntVal{IntVal: 40},
-				}, &common.Rule{Name: "test rule"}, nil, `point value is an ` +
+				}, &api.Rule{Name: "test rule"}, nil, `point value is an ` +
 					`integer: {{.pointVal}}, rule name is: {{.rule.Name}}`,
 				"point value is an integer: 40, rule name is: test rule", "",
 			},
 			{
 				&common.DataPoint{
 					ValOneof: &common.DataPoint_Fl64Val{Fl64Val: 37.7},
-				}, nil, &common.Device{Status: common.Status_ACTIVE}, `point ` +
+				}, nil, &api.Device{Status: api.Status_ACTIVE}, `point ` +
 					`value is a float: {{.pointVal}}, device status is: ` +
 					`{{.device.Status}}`,
 				"point value is a float: 37.7, device status is: ACTIVE", "",
@@ -766,7 +766,7 @@ func TestTestAlarm(t *testing.T) {
 
 				ctx, cancel := context.WithTimeout(session.NewContext(
 					context.Background(), &session.Session{
-						OrgID: uuid.NewString(), Role: common.Role_ADMIN,
+						OrgID: uuid.NewString(), Role: api.Role_ADMIN,
 					}),
 					testTimeout)
 				defer cancel()
@@ -802,7 +802,7 @@ func TestTestAlarm(t *testing.T) {
 		testRes, err := raSvc.TestAlarm(ctx, &api.TestAlarmRequest{})
 		t.Logf("testRes, err: %+v, %v", testRes, err)
 		require.Nil(t, testRes)
-		require.Equal(t, errPerm(common.Role_BUILDER), err)
+		require.Equal(t, errPerm(api.Role_BUILDER), err)
 	})
 
 	t.Run("Test alarm with insufficient role", func(t *testing.T) {
@@ -810,7 +810,7 @@ func TestTestAlarm(t *testing.T) {
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
 			context.Background(), &session.Session{
-				OrgID: uuid.NewString(), Role: common.Role_VIEWER,
+				OrgID: uuid.NewString(), Role: api.Role_VIEWER,
 			}), testTimeout)
 		defer cancel()
 
@@ -818,7 +818,7 @@ func TestTestAlarm(t *testing.T) {
 		testRes, err := raSvc.TestAlarm(ctx, &api.TestAlarmRequest{})
 		t.Logf("testRes, err: %+v, %v", testRes, err)
 		require.Nil(t, testRes)
-		require.Equal(t, errPerm(common.Role_BUILDER), err)
+		require.Equal(t, errPerm(api.Role_BUILDER), err)
 	})
 
 	t.Run("Test alarm with invalid body template", func(t *testing.T) {
@@ -826,7 +826,7 @@ func TestTestAlarm(t *testing.T) {
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
 			context.Background(), &session.Session{
-				OrgID: uuid.NewString(), Role: common.Role_ADMIN,
+				OrgID: uuid.NewString(), Role: api.Role_ADMIN,
 			}), testTimeout)
 		defer cancel()
 

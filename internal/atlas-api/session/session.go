@@ -6,7 +6,7 @@ import (
 	"context"
 
 	"github.com/google/uuid"
-	"github.com/thingspect/api/go/common"
+	"github.com/thingspect/api/go/api"
 )
 
 // Session represents session metadata as retrieved from an encrypted token.
@@ -16,7 +16,7 @@ type Session struct {
 	UserID  string
 	KeyID   string
 	OrgID   string
-	Role    common.Role
+	Role    api.Role
 	TraceID uuid.UUID
 }
 

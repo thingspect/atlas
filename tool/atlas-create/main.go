@@ -11,7 +11,6 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/thingspect/api/go/api"
-	"github.com/thingspect/api/go/common"
 	"github.com/thingspect/atlas/internal/atlas-api/crypto"
 	"github.com/thingspect/atlas/pkg/dao"
 	"github.com/thingspect/atlas/pkg/dao/org"
@@ -142,9 +141,9 @@ func main() {
 		u := &api.User{
 			OrgId:  orgID,
 			Email:  flag.Arg(2),
-			Role:   common.Role_ADMIN,
-			Status: common.Status_ACTIVE,
-			Tags:   []string{strings.ToLower(common.Role_ADMIN.String())},
+			Role:   api.Role_ADMIN,
+			Status: api.Status_ACTIVE,
+			Tags:   []string{strings.ToLower(api.Role_ADMIN.String())},
 		}
 
 		userDAO := user.NewDAO(pg)

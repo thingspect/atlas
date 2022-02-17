@@ -8,7 +8,6 @@ package api
 
 import (
 	context "context"
-	common "github.com/thingspect/api/go/common"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
@@ -25,15 +24,15 @@ const _ = grpc.SupportPackageIsVersion7
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type RuleAlarmServiceClient interface {
 	// Create a rule. Rules define how events are generated.
-	CreateRule(ctx context.Context, in *CreateRuleRequest, opts ...grpc.CallOption) (*common.Rule, error)
+	CreateRule(ctx context.Context, in *CreateRuleRequest, opts ...grpc.CallOption) (*Rule, error)
 	// Create an alarm. Alarms define how alerts are generated.
 	CreateAlarm(ctx context.Context, in *CreateAlarmRequest, opts ...grpc.CallOption) (*Alarm, error)
 	// Get a rule by ID. Rules define how events are generated.
-	GetRule(ctx context.Context, in *GetRuleRequest, opts ...grpc.CallOption) (*common.Rule, error)
+	GetRule(ctx context.Context, in *GetRuleRequest, opts ...grpc.CallOption) (*Rule, error)
 	// Get an alarm by ID. Alarms define how alerts are generated.
 	GetAlarm(ctx context.Context, in *GetAlarmRequest, opts ...grpc.CallOption) (*Alarm, error)
 	// Update a rule. Rules define how events are generated.
-	UpdateRule(ctx context.Context, in *UpdateRuleRequest, opts ...grpc.CallOption) (*common.Rule, error)
+	UpdateRule(ctx context.Context, in *UpdateRuleRequest, opts ...grpc.CallOption) (*Rule, error)
 	// Update an alarm. Alarms define how alerts are generated.
 	UpdateAlarm(ctx context.Context, in *UpdateAlarmRequest, opts ...grpc.CallOption) (*Alarm, error)
 	// Delete a rule by ID. Rules define how events are generated.
@@ -58,8 +57,8 @@ func NewRuleAlarmServiceClient(cc grpc.ClientConnInterface) RuleAlarmServiceClie
 	return &ruleAlarmServiceClient{cc}
 }
 
-func (c *ruleAlarmServiceClient) CreateRule(ctx context.Context, in *CreateRuleRequest, opts ...grpc.CallOption) (*common.Rule, error) {
-	out := new(common.Rule)
+func (c *ruleAlarmServiceClient) CreateRule(ctx context.Context, in *CreateRuleRequest, opts ...grpc.CallOption) (*Rule, error) {
+	out := new(Rule)
 	err := c.cc.Invoke(ctx, "/thingspect.api.RuleAlarmService/CreateRule", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -76,8 +75,8 @@ func (c *ruleAlarmServiceClient) CreateAlarm(ctx context.Context, in *CreateAlar
 	return out, nil
 }
 
-func (c *ruleAlarmServiceClient) GetRule(ctx context.Context, in *GetRuleRequest, opts ...grpc.CallOption) (*common.Rule, error) {
-	out := new(common.Rule)
+func (c *ruleAlarmServiceClient) GetRule(ctx context.Context, in *GetRuleRequest, opts ...grpc.CallOption) (*Rule, error) {
+	out := new(Rule)
 	err := c.cc.Invoke(ctx, "/thingspect.api.RuleAlarmService/GetRule", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -94,8 +93,8 @@ func (c *ruleAlarmServiceClient) GetAlarm(ctx context.Context, in *GetAlarmReque
 	return out, nil
 }
 
-func (c *ruleAlarmServiceClient) UpdateRule(ctx context.Context, in *UpdateRuleRequest, opts ...grpc.CallOption) (*common.Rule, error) {
-	out := new(common.Rule)
+func (c *ruleAlarmServiceClient) UpdateRule(ctx context.Context, in *UpdateRuleRequest, opts ...grpc.CallOption) (*Rule, error) {
+	out := new(Rule)
 	err := c.cc.Invoke(ctx, "/thingspect.api.RuleAlarmService/UpdateRule", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -171,15 +170,15 @@ func (c *ruleAlarmServiceClient) TestAlarm(ctx context.Context, in *TestAlarmReq
 // for forward compatibility
 type RuleAlarmServiceServer interface {
 	// Create a rule. Rules define how events are generated.
-	CreateRule(context.Context, *CreateRuleRequest) (*common.Rule, error)
+	CreateRule(context.Context, *CreateRuleRequest) (*Rule, error)
 	// Create an alarm. Alarms define how alerts are generated.
 	CreateAlarm(context.Context, *CreateAlarmRequest) (*Alarm, error)
 	// Get a rule by ID. Rules define how events are generated.
-	GetRule(context.Context, *GetRuleRequest) (*common.Rule, error)
+	GetRule(context.Context, *GetRuleRequest) (*Rule, error)
 	// Get an alarm by ID. Alarms define how alerts are generated.
 	GetAlarm(context.Context, *GetAlarmRequest) (*Alarm, error)
 	// Update a rule. Rules define how events are generated.
-	UpdateRule(context.Context, *UpdateRuleRequest) (*common.Rule, error)
+	UpdateRule(context.Context, *UpdateRuleRequest) (*Rule, error)
 	// Update an alarm. Alarms define how alerts are generated.
 	UpdateAlarm(context.Context, *UpdateAlarmRequest) (*Alarm, error)
 	// Delete a rule by ID. Rules define how events are generated.
@@ -201,19 +200,19 @@ type RuleAlarmServiceServer interface {
 type UnimplementedRuleAlarmServiceServer struct {
 }
 
-func (UnimplementedRuleAlarmServiceServer) CreateRule(context.Context, *CreateRuleRequest) (*common.Rule, error) {
+func (UnimplementedRuleAlarmServiceServer) CreateRule(context.Context, *CreateRuleRequest) (*Rule, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateRule not implemented")
 }
 func (UnimplementedRuleAlarmServiceServer) CreateAlarm(context.Context, *CreateAlarmRequest) (*Alarm, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateAlarm not implemented")
 }
-func (UnimplementedRuleAlarmServiceServer) GetRule(context.Context, *GetRuleRequest) (*common.Rule, error) {
+func (UnimplementedRuleAlarmServiceServer) GetRule(context.Context, *GetRuleRequest) (*Rule, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetRule not implemented")
 }
 func (UnimplementedRuleAlarmServiceServer) GetAlarm(context.Context, *GetAlarmRequest) (*Alarm, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetAlarm not implemented")
 }
-func (UnimplementedRuleAlarmServiceServer) UpdateRule(context.Context, *UpdateRuleRequest) (*common.Rule, error) {
+func (UnimplementedRuleAlarmServiceServer) UpdateRule(context.Context, *UpdateRuleRequest) (*Rule, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateRule not implemented")
 }
 func (UnimplementedRuleAlarmServiceServer) UpdateAlarm(context.Context, *UpdateAlarmRequest) (*Alarm, error) {

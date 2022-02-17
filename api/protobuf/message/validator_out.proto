@@ -1,8 +1,8 @@
 syntax = "proto3";
 package thingspect.int.message;
 
+import "api/device.proto";
 import "common/datapoint.proto";
-import "common/device.proto";
 
 option go_package = "github.com/thingspect/atlas/api/go/message";
 
@@ -12,5 +12,5 @@ message ValidatorOut {
   common.DataPoint point = 1;
 
   // Device.
-  common.Device device = 2;
+  api.Device device = 2;
 }

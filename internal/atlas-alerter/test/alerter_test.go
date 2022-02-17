@@ -42,19 +42,19 @@ func TestAlertMessages(t *testing.T) {
 			require.NoError(t, err)
 
 			rule := random.Rule("ale", createOrg.Id)
-			rule.Status = common.Status_ACTIVE
+			rule.Status = api.Status_ACTIVE
 			createRule, err := globalRuleDAO.Create(ctx, rule)
 			t.Logf("createRule, err: %+v, %v", createRule, err)
 			require.NoError(t, err)
 
 			user := random.User("dao-user", createOrg.Id)
-			user.Status = common.Status_ACTIVE
+			user.Status = api.Status_ACTIVE
 			createUser, err := globalUserDAO.Create(ctx, user)
 			t.Logf("createUser, err: %+v, %v", createUser, err)
 			require.NoError(t, err)
 
 			alarm := random.Alarm("ale", createOrg.Id, createRule.Id)
-			alarm.Status = common.Status_ACTIVE
+			alarm.Status = api.Status_ACTIVE
 			alarm.Type = lAlarmType
 			alarm.UserTags = createUser.Tags
 			createAlarm, err := globalAlarmDAO.Create(ctx, alarm)
@@ -131,19 +131,19 @@ func TestAlertMessagesRepeat(t *testing.T) {
 			require.NoError(t, err)
 
 			rule := random.Rule("ale", createOrg.Id)
-			rule.Status = common.Status_ACTIVE
+			rule.Status = api.Status_ACTIVE
 			createRule, err := globalRuleDAO.Create(ctx, rule)
 			t.Logf("createRule, err: %+v, %v", createRule, err)
 			require.NoError(t, err)
 
 			user := random.User("dao-user", createOrg.Id)
-			user.Status = common.Status_ACTIVE
+			user.Status = api.Status_ACTIVE
 			createUser, err := globalUserDAO.Create(ctx, user)
 			t.Logf("createUser, err: %+v, %v", createUser, err)
 			require.NoError(t, err)
 
 			alarm := random.Alarm("ale", createOrg.Id, createRule.Id)
-			alarm.Status = common.Status_ACTIVE
+			alarm.Status = api.Status_ACTIVE
 			alarm.Type = lAlarmType
 			alarm.UserTags = createUser.Tags
 			createAlarm, err := globalAlarmDAO.Create(ctx, alarm)
@@ -212,25 +212,25 @@ func TestAlertMessagesError(t *testing.T) {
 	require.NoError(t, err)
 
 	badSubjRule := random.Rule("ale", createOrg.Id)
-	badSubjRule.Status = common.Status_ACTIVE
+	badSubjRule.Status = api.Status_ACTIVE
 	createBadSubjRule, err := globalRuleDAO.Create(ctx, badSubjRule)
 	t.Logf("createBadSubjRule, err: %+v, %v", createBadSubjRule, err)
 	require.NoError(t, err)
 
 	unspecTypeRule := random.Rule("ale", createOrg.Id)
-	unspecTypeRule.Status = common.Status_ACTIVE
+	unspecTypeRule.Status = api.Status_ACTIVE
 	createUnspecTypeRule, err := globalRuleDAO.Create(ctx, unspecTypeRule)
 	t.Logf("createUnspecTypeRule, err: %+v, %v", createUnspecTypeRule, err)
 	require.NoError(t, err)
 
 	user := random.User("dao-user", createOrg.Id)
-	user.Status = common.Status_ACTIVE
+	user.Status = api.Status_ACTIVE
 	createUser, err := globalUserDAO.Create(ctx, user)
 	t.Logf("createUser, err: %+v, %v", createUser, err)
 	require.NoError(t, err)
 
 	badSubjAlarm := random.Alarm("ale", createOrg.Id, createBadSubjRule.Id)
-	badSubjAlarm.Status = common.Status_ACTIVE
+	badSubjAlarm.Status = api.Status_ACTIVE
 	badSubjAlarm.Type = api.AlarmType_APP
 	badSubjAlarm.UserTags = createUser.Tags
 	badSubjAlarm.SubjectTemplate = `{{if`
@@ -240,7 +240,7 @@ func TestAlertMessagesError(t *testing.T) {
 
 	unspecTypeAlarm := random.Alarm("ale", createOrg.Id,
 		createUnspecTypeRule.Id)
-	unspecTypeAlarm.Status = common.Status_ACTIVE
+	unspecTypeAlarm.Status = api.Status_ACTIVE
 	unspecTypeAlarm.Type = api.AlarmType_ALARM_TYPE_UNSPECIFIED
 	unspecTypeAlarm.UserTags = createUser.Tags
 	createUnspecTypeAlarm, err := globalAlarmDAO.Create(ctx, unspecTypeAlarm)
@@ -260,7 +260,7 @@ func TestAlertMessagesError(t *testing.T) {
 		// Bad payload.
 		{nil, uuid.NewString(), nil},
 		// Missing data point.
-		{&message.EventerOut{Device: &common.Device{}}, uuid.NewString(), nil},
+		{&message.EventerOut{Device: &api.Device{}}, uuid.NewString(), nil},
 		// Missing device.
 		{
 			&message.EventerOut{Point: &common.DataPoint{}}, uuid.NewString(),
@@ -269,7 +269,7 @@ func TestAlertMessagesError(t *testing.T) {
 		// Missing rule.
 		{
 			&message.EventerOut{
-				Point: &common.DataPoint{}, Device: &common.Device{},
+				Point: &common.DataPoint{}, Device: &api.Device{},
 			}, uuid.NewString(), nil,
 		},
 		// Unknown org. If this fails due to msg.Requeue(), remove it.

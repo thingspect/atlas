@@ -108,6 +108,7 @@ func (m *PublishDataPointsRequest) validate(all bool) error {
 	if len(errors) > 0 {
 		return PublishDataPointsRequestMultiError(errors)
 	}
+
 	return nil
 }
 
@@ -313,6 +314,7 @@ func (m *ListDataPointsRequest) validate(all bool) error {
 	if len(errors) > 0 {
 		return ListDataPointsRequestMultiError(errors)
 	}
+
 	return nil
 }
 
@@ -456,6 +458,7 @@ func (m *ListDataPointsResponse) validate(all bool) error {
 	if len(errors) > 0 {
 		return ListDataPointsResponseMultiError(errors)
 	}
+
 	return nil
 }
 
@@ -592,6 +595,7 @@ func (m *LatestDataPointsRequest) validate(all bool) error {
 	if len(errors) > 0 {
 		return LatestDataPointsRequestMultiError(errors)
 	}
+
 	return nil
 }
 
@@ -735,6 +739,7 @@ func (m *LatestDataPointsResponse) validate(all bool) error {
 	if len(errors) > 0 {
 		return LatestDataPointsResponseMultiError(errors)
 	}
+
 	return nil
 }
 
