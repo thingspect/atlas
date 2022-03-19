@@ -19,8 +19,9 @@ VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
 
 // Create creates a data point in the database. Data points are retrieved
 // elsewhere in bulk, so only an error value is returned.
-func (d *DAO) Create(ctx context.Context, point *common.DataPoint,
-	orgID string) error {
+func (d *DAO) Create(
+	ctx context.Context, point *common.DataPoint, orgID string,
+) error {
 	// Truncate timestamp to milliseconds for deduplication.
 	createdAt := point.Ts.AsTime().UTC().Truncate(time.Millisecond)
 
@@ -81,8 +82,10 @@ ORDER BY d.created_at DESC
 // List retrieves all data points by org ID, UniqID or device ID, optional
 // attribute, and [end, start) times. If both uniqID and devID are provided,
 // uniqID takes precedence and devID is ignored.
-func (d *DAO) List(ctx context.Context, orgID, uniqID, devID, attr string, end,
-	start time.Time) ([]*common.DataPoint, error) {
+func (d *DAO) List(
+	ctx context.Context, orgID, uniqID, devID, attr string, end,
+	start time.Time,
+) ([]*common.DataPoint, error) {
 	// Build list query.
 	query := listDataPointsByUniqID
 	args := []interface{}{orgID}
@@ -229,8 +232,9 @@ ORDER BY
 // Latest retrieves the latest data point for each of a device's attributes by
 // org ID and UniqID or device ID. If both uniqID and devID are provided, uniqID
 // takes precedence and devID is ignored.
-func (d *DAO) Latest(ctx context.Context, orgID, uniqID,
-	devID string) ([]*common.DataPoint, error) {
+func (d *DAO) Latest(ctx context.Context, orgID, uniqID, devID string) (
+	[]*common.DataPoint, error,
+) {
 	// Build latest query.
 	query := latestDataPointsByUniqID
 	args := []interface{}{orgID}

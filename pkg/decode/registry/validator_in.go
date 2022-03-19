@@ -9,8 +9,9 @@ import (
 )
 
 // PointToVIn converts a parsed Point to ValidatorIn.
-func PointToVIn(traceID, uniqID string, point *decode.Point,
-	ts *timestamppb.Timestamp) *message.ValidatorIn {
+func PointToVIn(
+	traceID, uniqID string, point *decode.Point, ts *timestamppb.Timestamp,
+) *message.ValidatorIn {
 	vIn := &message.ValidatorIn{
 		Point: &common.DataPoint{
 			UniqId:  uniqID,

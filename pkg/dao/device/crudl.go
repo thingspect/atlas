@@ -21,8 +21,9 @@ RETURNING id, token
 `
 
 // Create creates a device in the database.
-func (d *DAO) Create(ctx context.Context, dev *api.Device) (*api.Device,
-	error) {
+func (d *DAO) Create(ctx context.Context, dev *api.Device) (
+	*api.Device, error,
+) {
 	dev.UniqId = strings.ToLower(dev.UniqId)
 
 	var tags pgtype.VarcharArray
@@ -51,8 +52,9 @@ WHERE (id, org_id) = ($1, $2)
 `
 
 // Read retrieves a device by ID and org ID.
-func (d *DAO) Read(ctx context.Context, devID, orgID string) (*api.Device,
-	error) {
+func (d *DAO) Read(ctx context.Context, devID, orgID string) (
+	*api.Device, error,
+) {
 	dev := &api.Device{}
 	var status, decoder string
 	var tags pgtype.VarcharArray
@@ -84,8 +86,9 @@ WHERE uniq_id = $1
 
 // ReadByUniqID retrieves a device by UniqID. This method does not limit by org
 // ID and should only be used in the service layer.
-func (d *DAO) ReadByUniqID(ctx context.Context, uniqID string) (*api.Device,
-	error) {
+func (d *DAO) ReadByUniqID(ctx context.Context, uniqID string) (
+	*api.Device, error,
+) {
 	dev := &api.Device{}
 	var status, decoder string
 	var tags pgtype.VarcharArray
@@ -118,8 +121,9 @@ RETURNING created_at
 
 // Update updates a device in the database. CreatedAt should not update, so it
 // is safe to override it at the DAO level.
-func (d *DAO) Update(ctx context.Context, dev *api.Device) (*api.Device,
-	error) {
+func (d *DAO) Update(ctx context.Context, dev *api.Device) (
+	*api.Device, error,
+) {
 	dev.UniqId = strings.ToLower(dev.UniqId)
 
 	var tags pgtype.VarcharArray
@@ -197,8 +201,10 @@ LIMIT %d
 // If lBoundTS and prevID are zero values, the first page of results is
 // returned. Limits of 0 or less do not apply a limit. List returns a slice of
 // devices, a total count, and an error value.
-func (d *DAO) List(ctx context.Context, orgID string, lBoundTS time.Time,
-	prevID string, limit int32, tag string) ([]*api.Device, int32, error) {
+func (d *DAO) List(
+	ctx context.Context, orgID string, lBoundTS time.Time, prevID string,
+	limit int32, tag string,
+) ([]*api.Device, int32, error) {
 	// Build count query.
 	cQuery := countDevices
 	cArgs := []interface{}{orgID}

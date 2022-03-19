@@ -56,8 +56,10 @@ ORDER BY e.created_at DESC
 // List retrieves all events by org ID, UniqID or device ID, optional rule ID,
 // and [end, start) times. If both uniqID and devID are provided, uniqID takes
 // precedence and devID is ignored.
-func (d *DAO) List(ctx context.Context, orgID, uniqID, devID, ruleID string,
-	end, start time.Time) ([]*api.Event, error) {
+func (d *DAO) List(
+	ctx context.Context, orgID, uniqID, devID, ruleID string, end,
+	start time.Time,
+) ([]*api.Event, error) {
 	// Build list query.
 	query := listEventsByUniqID
 	args := []interface{}{orgID}
@@ -147,8 +149,9 @@ ORDER BY e.created_at DESC
 
 // Latest retrieves the latest events for each of an organization's devices by
 // org ID and optional rule ID.
-func (d *DAO) Latest(ctx context.Context, orgID, ruleID string) ([]*api.Event,
-	error) {
+func (d *DAO) Latest(ctx context.Context, orgID, ruleID string) (
+	[]*api.Event, error,
+) {
 	// Build latest query.
 	query := latestEvents
 	args := []interface{}{orgID}

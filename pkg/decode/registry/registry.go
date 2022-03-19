@@ -35,8 +35,9 @@ func New() *Registry {
 }
 
 // Decode parses a device data payload by matching Registry function.
-func (reg Registry) Decode(decoder api.Decoder,
-	body []byte) ([]*decode.Point, error) {
+func (reg Registry) Decode(decoder api.Decoder, body []byte) (
+	[]*decode.Point, error,
+) {
 	decFunc, ok := reg.funcs[decoder]
 	if !ok {
 		return nil, fmt.Errorf("%w: %s", ErrNotFound, decoder)

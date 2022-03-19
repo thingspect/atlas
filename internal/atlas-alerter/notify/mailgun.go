@@ -36,8 +36,9 @@ func (te *mailgunError) Error() string {
 }
 
 // sendEmail calls the Messages API to send an email.
-func (t *mailgun) sendEmail(ctx context.Context, from, to, subject,
-	body string) error {
+func (t *mailgun) sendEmail(
+	ctx context.Context, from, to, subject, body string,
+) error {
 	// Create request.
 	vals := url.Values{}
 	vals.Set("from", from)

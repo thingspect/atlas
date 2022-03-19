@@ -24,8 +24,9 @@ var _ Queuer = &nsqQueue{}
 // NewNSQ builds a new Queuer and returns it and an error value. If lookupAddrs
 // is nil, pubAddr is used for subscriptions. subChannel may be empty for a
 // publish-only Queue.
-func NewNSQ(pubAddr string, lookupAddrs []string, subChannel string) (Queuer,
-	error) {
+func NewNSQ(pubAddr string, lookupAddrs []string, subChannel string) (
+	Queuer, error,
+) {
 	config := nsq.NewConfig()
 
 	producer, err := nsq.NewProducer(pubAddr, config)

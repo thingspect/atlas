@@ -39,8 +39,9 @@ func ParseRXInfo(rxInfo *gw.UplinkRXInfo) []*decode.Point {
 }
 
 // ParseRXInfos parses a gateway UplinkRXInfo slice according to the spec.
-func ParseRXInfos(rxInfos []*gw.UplinkRXInfo) (*timestamppb.Timestamp,
-	[]*decode.Point) {
+func ParseRXInfos(
+	rxInfos []*gw.UplinkRXInfo,
+) (*timestamppb.Timestamp, []*decode.Point) {
 	msgTime := timestamppb.Now()
 
 	if len(rxInfos) == 0 {

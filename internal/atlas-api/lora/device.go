@@ -7,8 +7,9 @@ import (
 )
 
 // CreateDevice creates a device by UniqID and application key.
-func (cs *Chirpstack) CreateDevice(ctx context.Context, uniqID,
-	appKey string) error {
+func (cs *Chirpstack) CreateDevice(
+	ctx context.Context, uniqID, appKey string,
+) error {
 	devCli := as.NewDeviceServiceClient(cs.conn)
 	if _, err := devCli.Create(ctx, &as.CreateDeviceRequest{Device: &as.Device{
 		DevEui:          uniqID,

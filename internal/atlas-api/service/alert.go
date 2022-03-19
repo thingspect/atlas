@@ -34,8 +34,9 @@ func NewAlert(aleDAO Alerter) *Alert {
 
 // ListAlerts retrieves all alerts for a device, alarm, and/or user in a [end,
 // start) time range, in descending timestamp order.
-func (a *Alert) ListAlerts(ctx context.Context,
-	req *api.ListAlertsRequest) (*api.ListAlertsResponse, error) {
+func (a *Alert) ListAlerts(ctx context.Context, req *api.ListAlertsRequest) (
+	*api.ListAlertsResponse, error,
+) {
 	sess, ok := session.FromContext(ctx)
 	if !ok || sess.Role < api.Role_VIEWER {
 		return nil, errPerm(api.Role_VIEWER)

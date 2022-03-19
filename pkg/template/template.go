@@ -12,8 +12,9 @@ import (
 
 // Generate generates HTML-safe output from templates using the Go template
 // engine: https://golang.org/pkg/html/template/
-func Generate(point *common.DataPoint, rule *api.Rule, dev *api.Device,
-	templ string) (string, error) {
+func Generate(
+	point *common.DataPoint, rule *api.Rule, dev *api.Device, templ string,
+) (string, error) {
 	env := map[string]interface{}{
 		"point":  point,
 		"rule":   rule,

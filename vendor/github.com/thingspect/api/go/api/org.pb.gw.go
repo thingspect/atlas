@@ -403,12 +403,13 @@ func RegisterOrgServiceHandlerServer(ctx context.Context, mux *runtime.ServeMux,
 		var stream runtime.ServerTransportStream
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		rctx, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/thingspect.api.OrgService/CreateOrg", runtime.WithHTTPPathPattern("/v1/organizations"))
+		var err error
+		ctx, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/thingspect.api.OrgService/CreateOrg", runtime.WithHTTPPathPattern("/v1/organizations"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := local_request_OrgService_CreateOrg_0(rctx, inboundMarshaler, server, req, pathParams)
+		resp, md, err := local_request_OrgService_CreateOrg_0(ctx, inboundMarshaler, server, req, pathParams)
 		md.HeaderMD, md.TrailerMD = metadata.Join(md.HeaderMD, stream.Header()), metadata.Join(md.TrailerMD, stream.Trailer())
 		ctx = runtime.NewServerMetadataContext(ctx, md)
 		if err != nil {
@@ -426,12 +427,13 @@ func RegisterOrgServiceHandlerServer(ctx context.Context, mux *runtime.ServeMux,
 		var stream runtime.ServerTransportStream
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		rctx, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/thingspect.api.OrgService/GetOrg", runtime.WithHTTPPathPattern("/v1/organizations/{id}"))
+		var err error
+		ctx, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/thingspect.api.OrgService/GetOrg", runtime.WithHTTPPathPattern("/v1/organizations/{id}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := local_request_OrgService_GetOrg_0(rctx, inboundMarshaler, server, req, pathParams)
+		resp, md, err := local_request_OrgService_GetOrg_0(ctx, inboundMarshaler, server, req, pathParams)
 		md.HeaderMD, md.TrailerMD = metadata.Join(md.HeaderMD, stream.Header()), metadata.Join(md.TrailerMD, stream.Trailer())
 		ctx = runtime.NewServerMetadataContext(ctx, md)
 		if err != nil {
@@ -449,12 +451,13 @@ func RegisterOrgServiceHandlerServer(ctx context.Context, mux *runtime.ServeMux,
 		var stream runtime.ServerTransportStream
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		rctx, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/thingspect.api.OrgService/UpdateOrg", runtime.WithHTTPPathPattern("/v1/organizations/{org.id}"))
+		var err error
+		ctx, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/thingspect.api.OrgService/UpdateOrg", runtime.WithHTTPPathPattern("/v1/organizations/{org.id}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := local_request_OrgService_UpdateOrg_0(rctx, inboundMarshaler, server, req, pathParams)
+		resp, md, err := local_request_OrgService_UpdateOrg_0(ctx, inboundMarshaler, server, req, pathParams)
 		md.HeaderMD, md.TrailerMD = metadata.Join(md.HeaderMD, stream.Header()), metadata.Join(md.TrailerMD, stream.Trailer())
 		ctx = runtime.NewServerMetadataContext(ctx, md)
 		if err != nil {
@@ -472,12 +475,13 @@ func RegisterOrgServiceHandlerServer(ctx context.Context, mux *runtime.ServeMux,
 		var stream runtime.ServerTransportStream
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		rctx, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/thingspect.api.OrgService/UpdateOrg", runtime.WithHTTPPathPattern("/v1/organizations/{org.id}"))
+		var err error
+		ctx, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/thingspect.api.OrgService/UpdateOrg", runtime.WithHTTPPathPattern("/v1/organizations/{org.id}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := local_request_OrgService_UpdateOrg_1(rctx, inboundMarshaler, server, req, pathParams)
+		resp, md, err := local_request_OrgService_UpdateOrg_1(ctx, inboundMarshaler, server, req, pathParams)
 		md.HeaderMD, md.TrailerMD = metadata.Join(md.HeaderMD, stream.Header()), metadata.Join(md.TrailerMD, stream.Trailer())
 		ctx = runtime.NewServerMetadataContext(ctx, md)
 		if err != nil {
@@ -495,12 +499,13 @@ func RegisterOrgServiceHandlerServer(ctx context.Context, mux *runtime.ServeMux,
 		var stream runtime.ServerTransportStream
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		rctx, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/thingspect.api.OrgService/DeleteOrg", runtime.WithHTTPPathPattern("/v1/organizations/{id}"))
+		var err error
+		ctx, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/thingspect.api.OrgService/DeleteOrg", runtime.WithHTTPPathPattern("/v1/organizations/{id}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := local_request_OrgService_DeleteOrg_0(rctx, inboundMarshaler, server, req, pathParams)
+		resp, md, err := local_request_OrgService_DeleteOrg_0(ctx, inboundMarshaler, server, req, pathParams)
 		md.HeaderMD, md.TrailerMD = metadata.Join(md.HeaderMD, stream.Header()), metadata.Join(md.TrailerMD, stream.Trailer())
 		ctx = runtime.NewServerMetadataContext(ctx, md)
 		if err != nil {
@@ -518,12 +523,13 @@ func RegisterOrgServiceHandlerServer(ctx context.Context, mux *runtime.ServeMux,
 		var stream runtime.ServerTransportStream
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		rctx, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/thingspect.api.OrgService/ListOrgs", runtime.WithHTTPPathPattern("/v1/organizations"))
+		var err error
+		ctx, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/thingspect.api.OrgService/ListOrgs", runtime.WithHTTPPathPattern("/v1/organizations"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := local_request_OrgService_ListOrgs_0(rctx, inboundMarshaler, server, req, pathParams)
+		resp, md, err := local_request_OrgService_ListOrgs_0(ctx, inboundMarshaler, server, req, pathParams)
 		md.HeaderMD, md.TrailerMD = metadata.Join(md.HeaderMD, stream.Header()), metadata.Join(md.TrailerMD, stream.Trailer())
 		ctx = runtime.NewServerMetadataContext(ctx, md)
 		if err != nil {
@@ -580,12 +586,13 @@ func RegisterOrgServiceHandlerClient(ctx context.Context, mux *runtime.ServeMux,
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		rctx, err := runtime.AnnotateContext(ctx, mux, req, "/thingspect.api.OrgService/CreateOrg", runtime.WithHTTPPathPattern("/v1/organizations"))
+		var err error
+		ctx, err = runtime.AnnotateContext(ctx, mux, req, "/thingspect.api.OrgService/CreateOrg", runtime.WithHTTPPathPattern("/v1/organizations"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := request_OrgService_CreateOrg_0(rctx, inboundMarshaler, client, req, pathParams)
+		resp, md, err := request_OrgService_CreateOrg_0(ctx, inboundMarshaler, client, req, pathParams)
 		ctx = runtime.NewServerMetadataContext(ctx, md)
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
@@ -600,12 +607,13 @@ func RegisterOrgServiceHandlerClient(ctx context.Context, mux *runtime.ServeMux,
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		rctx, err := runtime.AnnotateContext(ctx, mux, req, "/thingspect.api.OrgService/GetOrg", runtime.WithHTTPPathPattern("/v1/organizations/{id}"))
+		var err error
+		ctx, err = runtime.AnnotateContext(ctx, mux, req, "/thingspect.api.OrgService/GetOrg", runtime.WithHTTPPathPattern("/v1/organizations/{id}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := request_OrgService_GetOrg_0(rctx, inboundMarshaler, client, req, pathParams)
+		resp, md, err := request_OrgService_GetOrg_0(ctx, inboundMarshaler, client, req, pathParams)
 		ctx = runtime.NewServerMetadataContext(ctx, md)
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
@@ -620,12 +628,13 @@ func RegisterOrgServiceHandlerClient(ctx context.Context, mux *runtime.ServeMux,
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		rctx, err := runtime.AnnotateContext(ctx, mux, req, "/thingspect.api.OrgService/UpdateOrg", runtime.WithHTTPPathPattern("/v1/organizations/{org.id}"))
+		var err error
+		ctx, err = runtime.AnnotateContext(ctx, mux, req, "/thingspect.api.OrgService/UpdateOrg", runtime.WithHTTPPathPattern("/v1/organizations/{org.id}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := request_OrgService_UpdateOrg_0(rctx, inboundMarshaler, client, req, pathParams)
+		resp, md, err := request_OrgService_UpdateOrg_0(ctx, inboundMarshaler, client, req, pathParams)
 		ctx = runtime.NewServerMetadataContext(ctx, md)
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
@@ -640,12 +649,13 @@ func RegisterOrgServiceHandlerClient(ctx context.Context, mux *runtime.ServeMux,
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		rctx, err := runtime.AnnotateContext(ctx, mux, req, "/thingspect.api.OrgService/UpdateOrg", runtime.WithHTTPPathPattern("/v1/organizations/{org.id}"))
+		var err error
+		ctx, err = runtime.AnnotateContext(ctx, mux, req, "/thingspect.api.OrgService/UpdateOrg", runtime.WithHTTPPathPattern("/v1/organizations/{org.id}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := request_OrgService_UpdateOrg_1(rctx, inboundMarshaler, client, req, pathParams)
+		resp, md, err := request_OrgService_UpdateOrg_1(ctx, inboundMarshaler, client, req, pathParams)
 		ctx = runtime.NewServerMetadataContext(ctx, md)
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
@@ -660,12 +670,13 @@ func RegisterOrgServiceHandlerClient(ctx context.Context, mux *runtime.ServeMux,
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		rctx, err := runtime.AnnotateContext(ctx, mux, req, "/thingspect.api.OrgService/DeleteOrg", runtime.WithHTTPPathPattern("/v1/organizations/{id}"))
+		var err error
+		ctx, err = runtime.AnnotateContext(ctx, mux, req, "/thingspect.api.OrgService/DeleteOrg", runtime.WithHTTPPathPattern("/v1/organizations/{id}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := request_OrgService_DeleteOrg_0(rctx, inboundMarshaler, client, req, pathParams)
+		resp, md, err := request_OrgService_DeleteOrg_0(ctx, inboundMarshaler, client, req, pathParams)
 		ctx = runtime.NewServerMetadataContext(ctx, md)
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
@@ -680,12 +691,13 @@ func RegisterOrgServiceHandlerClient(ctx context.Context, mux *runtime.ServeMux,
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		rctx, err := runtime.AnnotateContext(ctx, mux, req, "/thingspect.api.OrgService/ListOrgs", runtime.WithHTTPPathPattern("/v1/organizations"))
+		var err error
+		ctx, err = runtime.AnnotateContext(ctx, mux, req, "/thingspect.api.OrgService/ListOrgs", runtime.WithHTTPPathPattern("/v1/organizations"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := request_OrgService_ListOrgs_0(rctx, inboundMarshaler, client, req, pathParams)
+		resp, md, err := request_OrgService_ListOrgs_0(ctx, inboundMarshaler, client, req, pathParams)
 		ctx = runtime.NewServerMetadataContext(ctx, md)
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)

@@ -94,8 +94,9 @@ func (ing *Ingestor) decodeMessages() {
 // dataPointToVIn converts a DataPoint to ValidatorIn. The DataPoint is embedded
 // in ValidatorIn to avoid copying or use of Clone/reflection. Tests should take
 // this into account.
-func dataPointToVIn(traceID, paylToken string, topicParts []string,
-	point *common.DataPoint) *message.ValidatorIn {
+func dataPointToVIn(
+	traceID, paylToken string, topicParts []string, point *common.DataPoint,
+) *message.ValidatorIn {
 	vIn := &message.ValidatorIn{
 		Point: point,
 		OrgId: topicParts[1],

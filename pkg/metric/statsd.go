@@ -53,8 +53,9 @@ func (s *statsD) Set(stat string, value int, tags map[string]string) {
 }
 
 // Timing submits a statsd timing metric in milliseconds.
-func (s *statsD) Timing(stat string, value time.Duration,
-	tags map[string]string) {
+func (s *statsD) Timing(
+	stat string, value time.Duration, tags map[string]string,
+) {
 	s.client.Timing(stat, int64(value/time.Millisecond), tagsToSTags(tags)...)
 }
 

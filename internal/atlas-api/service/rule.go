@@ -47,8 +47,9 @@ func NewRuleAlarm(ruleDAO Ruler, alarmDAO Alarmer) *RuleAlarm {
 }
 
 // CreateRule creates a rule.
-func (ra *RuleAlarm) CreateRule(ctx context.Context,
-	req *api.CreateRuleRequest) (*api.Rule, error) {
+func (ra *RuleAlarm) CreateRule(
+	ctx context.Context, req *api.CreateRuleRequest,
+) (*api.Rule, error) {
 	sess, ok := session.FromContext(ctx)
 	if !ok || sess.Role < api.Role_BUILDER {
 		return nil, errPerm(api.Role_BUILDER)
@@ -71,8 +72,9 @@ func (ra *RuleAlarm) CreateRule(ctx context.Context,
 }
 
 // GetRule retrieves a rule by ID.
-func (ra *RuleAlarm) GetRule(ctx context.Context,
-	req *api.GetRuleRequest) (*api.Rule, error) {
+func (ra *RuleAlarm) GetRule(ctx context.Context, req *api.GetRuleRequest) (
+	*api.Rule, error,
+) {
 	sess, ok := session.FromContext(ctx)
 	if !ok || sess.Role < api.Role_VIEWER {
 		return nil, errPerm(api.Role_VIEWER)
@@ -88,8 +90,9 @@ func (ra *RuleAlarm) GetRule(ctx context.Context,
 
 // UpdateRule updates a rule. Update actions validate after merge to support
 // partial updates.
-func (ra *RuleAlarm) UpdateRule(ctx context.Context,
-	req *api.UpdateRuleRequest) (*api.Rule, error) {
+func (ra *RuleAlarm) UpdateRule(
+	ctx context.Context, req *api.UpdateRuleRequest,
+) (*api.Rule, error) {
 	sess, ok := session.FromContext(ctx)
 	if !ok || sess.Role < api.Role_BUILDER {
 		return nil, errPerm(api.Role_BUILDER)
@@ -134,8 +137,9 @@ func (ra *RuleAlarm) UpdateRule(ctx context.Context,
 }
 
 // DeleteRule deletes a rule by ID.
-func (ra *RuleAlarm) DeleteRule(ctx context.Context,
-	req *api.DeleteRuleRequest) (*emptypb.Empty, error) {
+func (ra *RuleAlarm) DeleteRule(
+	ctx context.Context, req *api.DeleteRuleRequest,
+) (*emptypb.Empty, error) {
 	sess, ok := session.FromContext(ctx)
 	if !ok || sess.Role < api.Role_BUILDER {
 		return nil, errPerm(api.Role_BUILDER)
@@ -155,8 +159,9 @@ func (ra *RuleAlarm) DeleteRule(ctx context.Context,
 }
 
 // ListRules retrieves all rules.
-func (ra *RuleAlarm) ListRules(ctx context.Context,
-	req *api.ListRulesRequest) (*api.ListRulesResponse, error) {
+func (ra *RuleAlarm) ListRules(ctx context.Context, req *api.ListRulesRequest) (
+	*api.ListRulesResponse, error,
+) {
 	sess, ok := session.FromContext(ctx)
 	if !ok || sess.Role < api.Role_VIEWER {
 		return nil, errPerm(api.Role_VIEWER)
@@ -199,8 +204,9 @@ func (ra *RuleAlarm) ListRules(ctx context.Context,
 }
 
 // TestRule tests a rule.
-func (ra *RuleAlarm) TestRule(ctx context.Context,
-	req *api.TestRuleRequest) (*api.TestRuleResponse, error) {
+func (ra *RuleAlarm) TestRule(ctx context.Context, req *api.TestRuleRequest) (
+	*api.TestRuleResponse, error,
+) {
 	sess, ok := session.FromContext(ctx)
 	if !ok || sess.Role < api.Role_BUILDER {
 		return nil, errPerm(api.Role_BUILDER)

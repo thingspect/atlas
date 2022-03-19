@@ -47,8 +47,9 @@ WHERE (id, org_id) = ($1, $2)
 `
 
 // Read retrieves a user by ID and org ID.
-func (d *DAO) Read(ctx context.Context, userID, orgID string) (*api.User,
-	error) {
+func (d *DAO) Read(ctx context.Context, userID, orgID string) (
+	*api.User, error,
+) {
 	user := &api.User{}
 	var role, status string
 	var tags pgtype.VarcharArray
@@ -80,8 +81,9 @@ WHERE (u.email, o.name) = ($1, $2)
 `
 
 // ReadByEmail retrieves a user and password hash by email and org name.
-func (d *DAO) ReadByEmail(ctx context.Context, email,
-	orgName string) (*api.User, []byte, error) {
+func (d *DAO) ReadByEmail(ctx context.Context, email, orgName string) (
+	*api.User, []byte, error,
+) {
 	user := &api.User{}
 	var passHash []byte
 	var role, status string
@@ -145,8 +147,9 @@ WHERE (id, org_id) = ($3, $4)
 `
 
 // UpdatePassword updates a user's password by ID and org ID.
-func (d *DAO) UpdatePassword(ctx context.Context, userID, orgID string,
-	passHash []byte) error {
+func (d *DAO) UpdatePassword(
+	ctx context.Context, userID, orgID string, passHash []byte,
+) error {
 	// Verify a user exists before attempting to update it. Do not remap the
 	// error.
 	if _, err := d.Read(ctx, userID, orgID); err != nil {
@@ -214,8 +217,10 @@ LIMIT %d
 // If lBoundTS and prevID are zero values, the first page of results is
 // returned. Limits of 0 or less do not apply a limit. List returns a slice of
 // users, a total count, and an error value.
-func (d *DAO) List(ctx context.Context, orgID string, lBoundTS time.Time,
-	prevID string, limit int32, tag string) ([]*api.User, int32, error) {
+func (d *DAO) List(
+	ctx context.Context, orgID string, lBoundTS time.Time, prevID string,
+	limit int32, tag string,
+) ([]*api.User, int32, error) {
 	// Build count query.
 	cQuery := countUsers
 	cArgs := []interface{}{orgID}
@@ -310,8 +315,9 @@ ORDER BY created_at
 `
 
 // ListByTags retrieves all active users by org ID and any matching tags.
-func (d *DAO) ListByTags(ctx context.Context, orgID string,
-	tags []string) ([]*api.User, error) {
+func (d *DAO) ListByTags(ctx context.Context, orgID string, tags []string) (
+	[]*api.User, error,
+) {
 	var tagArr pgtype.VarcharArray
 	if err := tagArr.Set(tags); err != nil {
 		return nil, dao.DBToSentinel(err)
