@@ -36,21 +36,24 @@ func NewRedis(redisAddr string) (Cacher, error) {
 }
 
 // Set sets key to value.
-func (r *redisCache) Set(ctx context.Context, key string,
-	value interface{}) error {
+func (r *redisCache) Set(
+	ctx context.Context, key string, value interface{},
+) error {
 	return r.SetTTL(ctx, key, value, 0)
 }
 
 // SetTTL sets key to value with expiration.
-func (r *redisCache) SetTTL(ctx context.Context, key string, value interface{},
-	exp time.Duration) error {
+func (r *redisCache) SetTTL(
+	ctx context.Context, key string, value interface{}, exp time.Duration,
+) error {
 	return r.client.Set(ctx, key, value, exp).Err()
 }
 
 // Get retrieves a string value by key. If the key does not exist, the boolean
 // returned is set to false.
-func (r *redisCache) Get(ctx context.Context, key string) (bool, string,
-	error) {
+func (r *redisCache) Get(ctx context.Context, key string) (
+	bool, string, error,
+) {
 	s, err := r.client.Get(ctx, key).Result()
 	if errors.Is(err, redis.Nil) {
 		return false, "", nil
@@ -64,8 +67,9 @@ func (r *redisCache) Get(ctx context.Context, key string) (bool, string,
 
 // GetB retrieves a []byte value by key. If the key does not exist, the boolean
 // returned is set to false.
-func (r *redisCache) GetB(ctx context.Context, key string) (bool, []byte,
-	error) {
+func (r *redisCache) GetB(ctx context.Context, key string) (
+	bool, []byte, error,
+) {
 	b, err := r.client.Get(ctx, key).Bytes()
 	if errors.Is(err, redis.Nil) {
 		return false, nil, nil
@@ -79,8 +83,9 @@ func (r *redisCache) GetB(ctx context.Context, key string) (bool, []byte,
 
 // GetI retrieves an int64 value by key. If the key does not exist, the boolean
 // returned is set to false.
-func (r *redisCache) GetI(ctx context.Context, key string) (bool, int64,
-	error) {
+func (r *redisCache) GetI(ctx context.Context, key string) (
+	bool, int64, error,
+) {
 	i, err := r.client.Get(ctx, key).Int64()
 	if errors.Is(err, redis.Nil) {
 		return false, 0, nil
@@ -94,15 +99,17 @@ func (r *redisCache) GetI(ctx context.Context, key string) (bool, int64,
 
 // SetIfNotExist sets key to value if the key does not exist. If it is
 // successful, it returns true.
-func (r *redisCache) SetIfNotExist(ctx context.Context, key string,
-	value interface{}) (bool, error) {
+func (r *redisCache) SetIfNotExist(
+	ctx context.Context, key string, value interface{},
+) (bool, error) {
 	return r.SetIfNotExistTTL(ctx, key, value, 0)
 }
 
 // SetIfNotExistTTL sets key to value, with expiration, if the key does not
 // exist. If it is successful, it returns true.
-func (r *redisCache) SetIfNotExistTTL(ctx context.Context, key string,
-	value interface{}, exp time.Duration) (bool, error) {
+func (r *redisCache) SetIfNotExistTTL(
+	ctx context.Context, key string, value interface{}, exp time.Duration,
+) (bool, error) {
 	return r.client.SetNX(ctx, key, value, exp).Result()
 }
 

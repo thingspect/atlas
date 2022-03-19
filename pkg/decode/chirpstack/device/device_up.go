@@ -20,8 +20,9 @@ import (
 // Points, a timestamp, and a data []byte are built from successful parse
 // results. If a fatal error is encountered, it is returned along with any valid
 // points.
-func deviceUp(body []byte) ([]*decode.Point, *timestamppb.Timestamp, []byte,
-	error) {
+func deviceUp(body []byte) (
+	[]*decode.Point, *timestamppb.Timestamp, []byte, error,
+) {
 	upMsg := &as.UplinkEvent{}
 	if err := proto.Unmarshal(body, upMsg); err != nil {
 		return nil, nil, nil, err

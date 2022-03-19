@@ -20,8 +20,7 @@ RETURNING id
 `
 
 // Create creates a rule in the database.
-func (d *DAO) Create(ctx context.Context, rule *api.Rule) (*api.Rule,
-	error) {
+func (d *DAO) Create(ctx context.Context, rule *api.Rule) (*api.Rule, error) {
 	now := time.Now().UTC().Truncate(time.Microsecond)
 	rule.CreatedAt = timestamppb.New(now)
 	rule.UpdatedAt = timestamppb.New(now)
@@ -42,8 +41,9 @@ WHERE (id, org_id) = ($1, $2)
 `
 
 // Read retrieves a rule by ID and org ID.
-func (d *DAO) Read(ctx context.Context, ruleID, orgID string) (*api.Rule,
-	error) {
+func (d *DAO) Read(ctx context.Context, ruleID, orgID string) (
+	*api.Rule, error,
+) {
 	rule := &api.Rule{}
 	var status string
 	var createdAt, updatedAt time.Time
@@ -71,8 +71,7 @@ RETURNING created_at
 
 // Update updates a rule in the database. CreatedAt should not update, so it
 // is safe to override it at the DAO level.
-func (d *DAO) Update(ctx context.Context, rule *api.Rule) (*api.Rule,
-	error) {
+func (d *DAO) Update(ctx context.Context, rule *api.Rule) (*api.Rule, error) {
 	var createdAt time.Time
 	updatedAt := time.Now().UTC().Truncate(time.Microsecond)
 	rule.UpdatedAt = timestamppb.New(updatedAt)
@@ -134,8 +133,10 @@ LIMIT %d
 // are zero values, the first page of results is returned. Limits of 0 or less
 // do not apply a limit. List returns a slice of rules, a total count, and an
 // error value.
-func (d *DAO) List(ctx context.Context, orgID string, lBoundTS time.Time,
-	prevID string, limit int32) ([]*api.Rule, int32, error) {
+func (d *DAO) List(
+	ctx context.Context, orgID string, lBoundTS time.Time, prevID string,
+	limit int32,
+) ([]*api.Rule, int32, error) {
 	// Run count query.
 	var count int32
 	if err := d.pg.QueryRowContext(ctx, countRules, orgID).Scan(
@@ -208,8 +209,9 @@ ORDER BY created_at
 
 // ListByTags retrieves all active rules by org ID, attribute, and any matching
 // device tags.
-func (d *DAO) ListByTags(ctx context.Context, orgID string, attr string,
-	deviceTags []string) ([]*api.Rule, error) {
+func (d *DAO) ListByTags(
+	ctx context.Context, orgID string, attr string, deviceTags []string,
+) ([]*api.Rule, error) {
 	var tags pgtype.VarcharArray
 	if err := tags.Set(deviceTags); err != nil {
 		return nil, dao.DBToSentinel(err)

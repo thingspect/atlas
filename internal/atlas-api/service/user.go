@@ -53,8 +53,9 @@ func NewUser(userDAO Userer) *User {
 }
 
 // CreateUser creates a user.
-func (u *User) CreateUser(ctx context.Context,
-	req *api.CreateUserRequest) (*api.User, error) {
+func (u *User) CreateUser(ctx context.Context, req *api.CreateUserRequest) (
+	*api.User, error,
+) {
 	sess, ok := session.FromContext(ctx)
 	if !ok || sess.Role < api.Role_ADMIN {
 		return nil, errPerm(api.Role_ADMIN)
@@ -92,8 +93,9 @@ func (u *User) CreateUser(ctx context.Context,
 }
 
 // GetUser retrieves a user by ID.
-func (u *User) GetUser(ctx context.Context,
-	req *api.GetUserRequest) (*api.User, error) {
+func (u *User) GetUser(ctx context.Context, req *api.GetUserRequest) (
+	*api.User, error,
+) {
 	sess, ok := session.FromContext(ctx)
 	if !ok || (sess.Role < api.Role_ADMIN && req.Id != sess.UserID) {
 		return nil, errPerm(api.Role_ADMIN)
@@ -109,8 +111,9 @@ func (u *User) GetUser(ctx context.Context,
 
 // UpdateUser updates a user. Update actions validate after merge to support
 // partial updates.
-func (u *User) UpdateUser(ctx context.Context,
-	req *api.UpdateUserRequest) (*api.User, error) {
+func (u *User) UpdateUser(ctx context.Context, req *api.UpdateUserRequest) (
+	*api.User, error,
+) {
 	sess, ok := session.FromContext(ctx)
 	if !ok {
 		return nil, errPerm(api.Role_ADMIN)
@@ -178,8 +181,9 @@ func (u *User) UpdateUser(ctx context.Context,
 }
 
 // UpdateUserPassword updates a user's password by ID.
-func (u *User) UpdateUserPassword(ctx context.Context,
-	req *api.UpdateUserPasswordRequest) (*emptypb.Empty, error) {
+func (u *User) UpdateUserPassword(
+	ctx context.Context, req *api.UpdateUserPasswordRequest,
+) (*emptypb.Empty, error) {
 	sess, ok := session.FromContext(ctx)
 	if !ok || (sess.Role < api.Role_ADMIN && req.Id != sess.UserID) {
 		return nil, errPerm(api.Role_ADMIN)
@@ -206,8 +210,9 @@ func (u *User) UpdateUserPassword(ctx context.Context,
 }
 
 // DeleteUser deletes a user by ID.
-func (u *User) DeleteUser(ctx context.Context,
-	req *api.DeleteUserRequest) (*emptypb.Empty, error) {
+func (u *User) DeleteUser(ctx context.Context, req *api.DeleteUserRequest) (
+	*emptypb.Empty, error,
+) {
 	sess, ok := session.FromContext(ctx)
 	if !ok || sess.Role < api.Role_ADMIN {
 		return nil, errPerm(api.Role_ADMIN)
@@ -227,8 +232,9 @@ func (u *User) DeleteUser(ctx context.Context,
 }
 
 // ListUsers retrieves all users.
-func (u *User) ListUsers(ctx context.Context,
-	req *api.ListUsersRequest) (*api.ListUsersResponse, error) {
+func (u *User) ListUsers(ctx context.Context, req *api.ListUsersRequest) (
+	*api.ListUsersResponse, error,
+) {
 	sess, ok := session.FromContext(ctx)
 	if !ok {
 		return nil, errPerm(api.Role_ADMIN)

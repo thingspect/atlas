@@ -46,8 +46,9 @@ func NewDevice(devDAO Devicer, lora lora.Loraer) *Device {
 }
 
 // CreateDevice creates a device.
-func (d *Device) CreateDevice(ctx context.Context,
-	req *api.CreateDeviceRequest) (*api.Device, error) {
+func (d *Device) CreateDevice(
+	ctx context.Context, req *api.CreateDeviceRequest,
+) (*api.Device, error) {
 	sess, ok := session.FromContext(ctx)
 	if !ok || sess.Role < api.Role_BUILDER {
 		return nil, errPerm(api.Role_BUILDER)
@@ -70,8 +71,9 @@ func (d *Device) CreateDevice(ctx context.Context,
 }
 
 // CreateDeviceLoRaWAN adds LoRaWAN configuration to a device.
-func (d *Device) CreateDeviceLoRaWAN(ctx context.Context,
-	req *api.CreateDeviceLoRaWANRequest) (*emptypb.Empty, error) {
+func (d *Device) CreateDeviceLoRaWAN(
+	ctx context.Context, req *api.CreateDeviceLoRaWANRequest,
+) (*emptypb.Empty, error) {
 	logger := alog.FromContext(ctx)
 	sess, ok := session.FromContext(ctx)
 	if !ok || sess.Role < api.Role_BUILDER {
@@ -104,8 +106,9 @@ func (d *Device) CreateDeviceLoRaWAN(ctx context.Context,
 }
 
 // GetDevice retrieves a device by ID.
-func (d *Device) GetDevice(ctx context.Context,
-	req *api.GetDeviceRequest) (*api.Device, error) {
+func (d *Device) GetDevice(ctx context.Context, req *api.GetDeviceRequest) (
+	*api.Device, error,
+) {
 	sess, ok := session.FromContext(ctx)
 	if !ok || sess.Role < api.Role_VIEWER {
 		return nil, errPerm(api.Role_VIEWER)
@@ -121,8 +124,9 @@ func (d *Device) GetDevice(ctx context.Context,
 
 // UpdateDevice updates a device. Update actions validate after merge to support
 // partial updates.
-func (d *Device) UpdateDevice(ctx context.Context,
-	req *api.UpdateDeviceRequest) (*api.Device, error) {
+func (d *Device) UpdateDevice(
+	ctx context.Context, req *api.UpdateDeviceRequest,
+) (*api.Device, error) {
 	sess, ok := session.FromContext(ctx)
 	if !ok || sess.Role < api.Role_BUILDER {
 		return nil, errPerm(api.Role_BUILDER)
@@ -170,8 +174,9 @@ func (d *Device) UpdateDevice(ctx context.Context,
 }
 
 // DeleteDeviceLoRaWAN removes LoRaWAN configuration from a device.
-func (d *Device) DeleteDeviceLoRaWAN(ctx context.Context,
-	req *api.DeleteDeviceLoRaWANRequest) (*emptypb.Empty, error) {
+func (d *Device) DeleteDeviceLoRaWAN(
+	ctx context.Context, req *api.DeleteDeviceLoRaWANRequest,
+) (*emptypb.Empty, error) {
 	logger := alog.FromContext(ctx)
 	sess, ok := session.FromContext(ctx)
 	if !ok || sess.Role < api.Role_BUILDER {
@@ -210,8 +215,9 @@ func (d *Device) DeleteDeviceLoRaWAN(ctx context.Context,
 }
 
 // DeleteDevice deletes a device by ID.
-func (d *Device) DeleteDevice(ctx context.Context,
-	req *api.DeleteDeviceRequest) (*emptypb.Empty, error) {
+func (d *Device) DeleteDevice(
+	ctx context.Context, req *api.DeleteDeviceRequest,
+) (*emptypb.Empty, error) {
 	sess, ok := session.FromContext(ctx)
 	if !ok || sess.Role < api.Role_BUILDER {
 		return nil, errPerm(api.Role_BUILDER)
@@ -231,8 +237,9 @@ func (d *Device) DeleteDevice(ctx context.Context,
 }
 
 // ListDevices retrieves all devices.
-func (d *Device) ListDevices(ctx context.Context,
-	req *api.ListDevicesRequest) (*api.ListDevicesResponse, error) {
+func (d *Device) ListDevices(
+	ctx context.Context, req *api.ListDevicesRequest,
+) (*api.ListDevicesResponse, error) {
 	sess, ok := session.FromContext(ctx)
 	if !ok || sess.Role < api.Role_VIEWER {
 		return nil, errPerm(api.Role_VIEWER)

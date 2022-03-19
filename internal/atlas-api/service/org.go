@@ -43,8 +43,9 @@ func NewOrg(orgDAO Orger) *Org {
 }
 
 // CreateOrg creates an organization.
-func (o *Org) CreateOrg(ctx context.Context,
-	req *api.CreateOrgRequest) (*api.Org, error) {
+func (o *Org) CreateOrg(ctx context.Context, req *api.CreateOrgRequest) (
+	*api.Org, error,
+) {
 	sess, ok := session.FromContext(ctx)
 	if !ok || sess.Role < api.Role_SYS_ADMIN {
 		return nil, errPerm(api.Role_SYS_ADMIN)
@@ -65,8 +66,9 @@ func (o *Org) CreateOrg(ctx context.Context,
 }
 
 // GetOrg retrieves an organization by ID.
-func (o *Org) GetOrg(ctx context.Context, req *api.GetOrgRequest) (*api.Org,
-	error) {
+func (o *Org) GetOrg(ctx context.Context, req *api.GetOrgRequest) (
+	*api.Org, error,
+) {
 	sess, ok := session.FromContext(ctx)
 	if !ok || (sess.Role < api.Role_SYS_ADMIN && req.Id != sess.OrgID) {
 		return nil, errPerm(api.Role_SYS_ADMIN)
@@ -82,8 +84,9 @@ func (o *Org) GetOrg(ctx context.Context, req *api.GetOrgRequest) (*api.Org,
 
 // UpdateOrg updates an organization. Update actions validate after merge to
 // support partial updates.
-func (o *Org) UpdateOrg(ctx context.Context,
-	req *api.UpdateOrgRequest) (*api.Org, error) {
+func (o *Org) UpdateOrg(ctx context.Context, req *api.UpdateOrgRequest) (
+	*api.Org, error,
+) {
 	sess, ok := session.FromContext(ctx)
 	if !ok {
 		return nil, errPerm(api.Role_SYS_ADMIN)
@@ -133,8 +136,9 @@ func (o *Org) UpdateOrg(ctx context.Context,
 }
 
 // DeleteOrg deletes an organization by ID.
-func (o *Org) DeleteOrg(ctx context.Context,
-	req *api.DeleteOrgRequest) (*emptypb.Empty, error) {
+func (o *Org) DeleteOrg(ctx context.Context, req *api.DeleteOrgRequest) (
+	*emptypb.Empty, error,
+) {
 	sess, ok := session.FromContext(ctx)
 	if !ok || sess.Role < api.Role_SYS_ADMIN {
 		return nil, errPerm(api.Role_SYS_ADMIN)
@@ -154,8 +158,9 @@ func (o *Org) DeleteOrg(ctx context.Context,
 }
 
 // ListOrgs retrieves all organizations.
-func (o *Org) ListOrgs(ctx context.Context,
-	req *api.ListOrgsRequest) (*api.ListOrgsResponse, error) {
+func (o *Org) ListOrgs(ctx context.Context, req *api.ListOrgsRequest) (
+	*api.ListOrgsResponse, error,
+) {
 	sess, ok := session.FromContext(ctx)
 	if !ok {
 		return nil, errPerm(api.Role_SYS_ADMIN)

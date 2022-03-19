@@ -20,8 +20,9 @@ RETURNING id
 `
 
 // Create creates an alarm in the database.
-func (d *DAO) Create(ctx context.Context, alarm *api.Alarm) (*api.Alarm,
-	error) {
+func (d *DAO) Create(ctx context.Context, alarm *api.Alarm) (
+	*api.Alarm, error,
+) {
 	var tags pgtype.VarcharArray
 	if err := tags.Set(alarm.UserTags); err != nil {
 		return nil, dao.DBToSentinel(err)
@@ -49,8 +50,9 @@ WHERE (id, org_id, rule_id) = ($1, $2, $3)
 `
 
 // Read retrieves an alarm by ID, org ID, and rule ID.
-func (d *DAO) Read(ctx context.Context, alarmID, orgID,
-	ruleID string) (*api.Alarm, error) {
+func (d *DAO) Read(ctx context.Context, alarmID, orgID, ruleID string) (
+	*api.Alarm, error,
+) {
 	alarm := &api.Alarm{}
 	var status, alarmType string
 	var tags pgtype.VarcharArray
@@ -84,8 +86,9 @@ RETURNING created_at
 
 // Update updates an alarm in the database. CreatedAt should not update, so it
 // is safe to override it at the DAO level.
-func (d *DAO) Update(ctx context.Context, alarm *api.Alarm) (*api.Alarm,
-	error) {
+func (d *DAO) Update(ctx context.Context, alarm *api.Alarm) (
+	*api.Alarm, error,
+) {
 	var tags pgtype.VarcharArray
 	if err := tags.Set(alarm.UserTags); err != nil {
 		return nil, dao.DBToSentinel(err)
@@ -162,8 +165,10 @@ LIMIT %d
 // If lBoundTS and prevID are zero values, the first page of results is
 // returned. Limits of 0 or less do not apply a limit. List returns a slice of
 // alarms, a total count, and an error value.
-func (d *DAO) List(ctx context.Context, orgID string, lBoundTS time.Time,
-	prevID string, limit int32, ruleID string) ([]*api.Alarm, int32, error) {
+func (d *DAO) List(
+	ctx context.Context, orgID string, lBoundTS time.Time, prevID string,
+	limit int32, ruleID string,
+) ([]*api.Alarm, int32, error) {
 	// Build count query.
 	cQuery := countAlarms
 	cArgs := []interface{}{orgID}

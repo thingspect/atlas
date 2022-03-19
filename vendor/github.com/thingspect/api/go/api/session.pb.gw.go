@@ -199,12 +199,13 @@ func RegisterSessionServiceHandlerServer(ctx context.Context, mux *runtime.Serve
 		var stream runtime.ServerTransportStream
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		rctx, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/thingspect.api.SessionService/Login", runtime.WithHTTPPathPattern("/v1/sessions/login"))
+		var err error
+		ctx, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/thingspect.api.SessionService/Login", runtime.WithHTTPPathPattern("/v1/sessions/login"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := local_request_SessionService_Login_0(rctx, inboundMarshaler, server, req, pathParams)
+		resp, md, err := local_request_SessionService_Login_0(ctx, inboundMarshaler, server, req, pathParams)
 		md.HeaderMD, md.TrailerMD = metadata.Join(md.HeaderMD, stream.Header()), metadata.Join(md.TrailerMD, stream.Trailer())
 		ctx = runtime.NewServerMetadataContext(ctx, md)
 		if err != nil {
@@ -222,12 +223,13 @@ func RegisterSessionServiceHandlerServer(ctx context.Context, mux *runtime.Serve
 		var stream runtime.ServerTransportStream
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		rctx, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/thingspect.api.SessionService/CreateKey", runtime.WithHTTPPathPattern("/v1/sessions/keys"))
+		var err error
+		ctx, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/thingspect.api.SessionService/CreateKey", runtime.WithHTTPPathPattern("/v1/sessions/keys"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := local_request_SessionService_CreateKey_0(rctx, inboundMarshaler, server, req, pathParams)
+		resp, md, err := local_request_SessionService_CreateKey_0(ctx, inboundMarshaler, server, req, pathParams)
 		md.HeaderMD, md.TrailerMD = metadata.Join(md.HeaderMD, stream.Header()), metadata.Join(md.TrailerMD, stream.Trailer())
 		ctx = runtime.NewServerMetadataContext(ctx, md)
 		if err != nil {
@@ -245,12 +247,13 @@ func RegisterSessionServiceHandlerServer(ctx context.Context, mux *runtime.Serve
 		var stream runtime.ServerTransportStream
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		rctx, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/thingspect.api.SessionService/DeleteKey", runtime.WithHTTPPathPattern("/v1/sessions/keys/{id}"))
+		var err error
+		ctx, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/thingspect.api.SessionService/DeleteKey", runtime.WithHTTPPathPattern("/v1/sessions/keys/{id}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := local_request_SessionService_DeleteKey_0(rctx, inboundMarshaler, server, req, pathParams)
+		resp, md, err := local_request_SessionService_DeleteKey_0(ctx, inboundMarshaler, server, req, pathParams)
 		md.HeaderMD, md.TrailerMD = metadata.Join(md.HeaderMD, stream.Header()), metadata.Join(md.TrailerMD, stream.Trailer())
 		ctx = runtime.NewServerMetadataContext(ctx, md)
 		if err != nil {
@@ -268,12 +271,13 @@ func RegisterSessionServiceHandlerServer(ctx context.Context, mux *runtime.Serve
 		var stream runtime.ServerTransportStream
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		rctx, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/thingspect.api.SessionService/ListKeys", runtime.WithHTTPPathPattern("/v1/sessions/keys"))
+		var err error
+		ctx, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/thingspect.api.SessionService/ListKeys", runtime.WithHTTPPathPattern("/v1/sessions/keys"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := local_request_SessionService_ListKeys_0(rctx, inboundMarshaler, server, req, pathParams)
+		resp, md, err := local_request_SessionService_ListKeys_0(ctx, inboundMarshaler, server, req, pathParams)
 		md.HeaderMD, md.TrailerMD = metadata.Join(md.HeaderMD, stream.Header()), metadata.Join(md.TrailerMD, stream.Trailer())
 		ctx = runtime.NewServerMetadataContext(ctx, md)
 		if err != nil {
@@ -330,12 +334,13 @@ func RegisterSessionServiceHandlerClient(ctx context.Context, mux *runtime.Serve
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		rctx, err := runtime.AnnotateContext(ctx, mux, req, "/thingspect.api.SessionService/Login", runtime.WithHTTPPathPattern("/v1/sessions/login"))
+		var err error
+		ctx, err = runtime.AnnotateContext(ctx, mux, req, "/thingspect.api.SessionService/Login", runtime.WithHTTPPathPattern("/v1/sessions/login"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := request_SessionService_Login_0(rctx, inboundMarshaler, client, req, pathParams)
+		resp, md, err := request_SessionService_Login_0(ctx, inboundMarshaler, client, req, pathParams)
 		ctx = runtime.NewServerMetadataContext(ctx, md)
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
@@ -350,12 +355,13 @@ func RegisterSessionServiceHandlerClient(ctx context.Context, mux *runtime.Serve
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		rctx, err := runtime.AnnotateContext(ctx, mux, req, "/thingspect.api.SessionService/CreateKey", runtime.WithHTTPPathPattern("/v1/sessions/keys"))
+		var err error
+		ctx, err = runtime.AnnotateContext(ctx, mux, req, "/thingspect.api.SessionService/CreateKey", runtime.WithHTTPPathPattern("/v1/sessions/keys"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := request_SessionService_CreateKey_0(rctx, inboundMarshaler, client, req, pathParams)
+		resp, md, err := request_SessionService_CreateKey_0(ctx, inboundMarshaler, client, req, pathParams)
 		ctx = runtime.NewServerMetadataContext(ctx, md)
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
@@ -370,12 +376,13 @@ func RegisterSessionServiceHandlerClient(ctx context.Context, mux *runtime.Serve
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		rctx, err := runtime.AnnotateContext(ctx, mux, req, "/thingspect.api.SessionService/DeleteKey", runtime.WithHTTPPathPattern("/v1/sessions/keys/{id}"))
+		var err error
+		ctx, err = runtime.AnnotateContext(ctx, mux, req, "/thingspect.api.SessionService/DeleteKey", runtime.WithHTTPPathPattern("/v1/sessions/keys/{id}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := request_SessionService_DeleteKey_0(rctx, inboundMarshaler, client, req, pathParams)
+		resp, md, err := request_SessionService_DeleteKey_0(ctx, inboundMarshaler, client, req, pathParams)
 		ctx = runtime.NewServerMetadataContext(ctx, md)
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
@@ -390,12 +397,13 @@ func RegisterSessionServiceHandlerClient(ctx context.Context, mux *runtime.Serve
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		rctx, err := runtime.AnnotateContext(ctx, mux, req, "/thingspect.api.SessionService/ListKeys", runtime.WithHTTPPathPattern("/v1/sessions/keys"))
+		var err error
+		ctx, err = runtime.AnnotateContext(ctx, mux, req, "/thingspect.api.SessionService/ListKeys", runtime.WithHTTPPathPattern("/v1/sessions/keys"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := request_SessionService_ListKeys_0(rctx, inboundMarshaler, client, req, pathParams)
+		resp, md, err := request_SessionService_ListKeys_0(ctx, inboundMarshaler, client, req, pathParams)
 		ctx = runtime.NewServerMetadataContext(ctx, md)
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)

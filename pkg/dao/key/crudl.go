@@ -99,8 +99,10 @@ LIMIT %d
 // are zero values, the first page of results is returned. Limits of 0 or less
 // do not apply a limit. List returns a slice of keys, a total count, and an
 // error value.
-func (d *DAO) List(ctx context.Context, orgID string, lBoundTS time.Time,
-	prevID string, limit int32) ([]*api.Key, int32, error) {
+func (d *DAO) List(
+	ctx context.Context, orgID string, lBoundTS time.Time, prevID string,
+	limit int32,
+) ([]*api.Key, int32, error) {
 	// Run count query.
 	var count int32
 	if err := d.pg.QueryRowContext(ctx, countKeys, orgID).Scan(

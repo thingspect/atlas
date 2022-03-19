@@ -24,8 +24,9 @@ const (
 // GenerateWebToken generates an encrypted protobuf web token in raw (no
 // padding) base64 format. It returns the token, expiration time, and an error
 // value.
-func GenerateWebToken(pwtKey []byte, user *api.User) (string,
-	*timestamppb.Timestamp, error) {
+func GenerateWebToken(pwtKey []byte, user *api.User) (
+	string, *timestamppb.Timestamp, error,
+) {
 	// Convert user.Id and user.OrgId to bytes.
 	userUUID, err := uuid.Parse(user.Id)
 	if err != nil {
@@ -66,8 +67,9 @@ func GenerateWebToken(pwtKey []byte, user *api.User) (string,
 
 // GenerateKeyToken generates an encrypted protobuf API key token in raw (no
 // padding) base64 format. It returns the token and an error value.
-func GenerateKeyToken(pwtKey []byte, keyID, orgID string,
-	role api.Role) (string, error) {
+func GenerateKeyToken(pwtKey []byte, keyID, orgID string, role api.Role) (
+	string, error,
+) {
 	// Convert keyID and orgID to bytes.
 	keyUUID, err := uuid.Parse(keyID)
 	if err != nil {

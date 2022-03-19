@@ -523,12 +523,13 @@ func RegisterDeviceServiceHandlerServer(ctx context.Context, mux *runtime.ServeM
 		var stream runtime.ServerTransportStream
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		rctx, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/thingspect.api.DeviceService/CreateDevice", runtime.WithHTTPPathPattern("/v1/devices"))
+		var err error
+		ctx, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/thingspect.api.DeviceService/CreateDevice", runtime.WithHTTPPathPattern("/v1/devices"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := local_request_DeviceService_CreateDevice_0(rctx, inboundMarshaler, server, req, pathParams)
+		resp, md, err := local_request_DeviceService_CreateDevice_0(ctx, inboundMarshaler, server, req, pathParams)
 		md.HeaderMD, md.TrailerMD = metadata.Join(md.HeaderMD, stream.Header()), metadata.Join(md.TrailerMD, stream.Trailer())
 		ctx = runtime.NewServerMetadataContext(ctx, md)
 		if err != nil {
@@ -546,12 +547,13 @@ func RegisterDeviceServiceHandlerServer(ctx context.Context, mux *runtime.ServeM
 		var stream runtime.ServerTransportStream
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		rctx, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/thingspect.api.DeviceService/CreateDeviceLoRaWAN", runtime.WithHTTPPathPattern("/v1/devices/{id}/lorawan"))
+		var err error
+		ctx, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/thingspect.api.DeviceService/CreateDeviceLoRaWAN", runtime.WithHTTPPathPattern("/v1/devices/{id}/lorawan"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := local_request_DeviceService_CreateDeviceLoRaWAN_0(rctx, inboundMarshaler, server, req, pathParams)
+		resp, md, err := local_request_DeviceService_CreateDeviceLoRaWAN_0(ctx, inboundMarshaler, server, req, pathParams)
 		md.HeaderMD, md.TrailerMD = metadata.Join(md.HeaderMD, stream.Header()), metadata.Join(md.TrailerMD, stream.Trailer())
 		ctx = runtime.NewServerMetadataContext(ctx, md)
 		if err != nil {
@@ -569,12 +571,13 @@ func RegisterDeviceServiceHandlerServer(ctx context.Context, mux *runtime.ServeM
 		var stream runtime.ServerTransportStream
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		rctx, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/thingspect.api.DeviceService/GetDevice", runtime.WithHTTPPathPattern("/v1/devices/{id}"))
+		var err error
+		ctx, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/thingspect.api.DeviceService/GetDevice", runtime.WithHTTPPathPattern("/v1/devices/{id}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := local_request_DeviceService_GetDevice_0(rctx, inboundMarshaler, server, req, pathParams)
+		resp, md, err := local_request_DeviceService_GetDevice_0(ctx, inboundMarshaler, server, req, pathParams)
 		md.HeaderMD, md.TrailerMD = metadata.Join(md.HeaderMD, stream.Header()), metadata.Join(md.TrailerMD, stream.Trailer())
 		ctx = runtime.NewServerMetadataContext(ctx, md)
 		if err != nil {
@@ -592,12 +595,13 @@ func RegisterDeviceServiceHandlerServer(ctx context.Context, mux *runtime.ServeM
 		var stream runtime.ServerTransportStream
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		rctx, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/thingspect.api.DeviceService/UpdateDevice", runtime.WithHTTPPathPattern("/v1/devices/{device.id}"))
+		var err error
+		ctx, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/thingspect.api.DeviceService/UpdateDevice", runtime.WithHTTPPathPattern("/v1/devices/{device.id}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := local_request_DeviceService_UpdateDevice_0(rctx, inboundMarshaler, server, req, pathParams)
+		resp, md, err := local_request_DeviceService_UpdateDevice_0(ctx, inboundMarshaler, server, req, pathParams)
 		md.HeaderMD, md.TrailerMD = metadata.Join(md.HeaderMD, stream.Header()), metadata.Join(md.TrailerMD, stream.Trailer())
 		ctx = runtime.NewServerMetadataContext(ctx, md)
 		if err != nil {
@@ -615,12 +619,13 @@ func RegisterDeviceServiceHandlerServer(ctx context.Context, mux *runtime.ServeM
 		var stream runtime.ServerTransportStream
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		rctx, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/thingspect.api.DeviceService/UpdateDevice", runtime.WithHTTPPathPattern("/v1/devices/{device.id}"))
+		var err error
+		ctx, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/thingspect.api.DeviceService/UpdateDevice", runtime.WithHTTPPathPattern("/v1/devices/{device.id}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := local_request_DeviceService_UpdateDevice_1(rctx, inboundMarshaler, server, req, pathParams)
+		resp, md, err := local_request_DeviceService_UpdateDevice_1(ctx, inboundMarshaler, server, req, pathParams)
 		md.HeaderMD, md.TrailerMD = metadata.Join(md.HeaderMD, stream.Header()), metadata.Join(md.TrailerMD, stream.Trailer())
 		ctx = runtime.NewServerMetadataContext(ctx, md)
 		if err != nil {
@@ -638,12 +643,13 @@ func RegisterDeviceServiceHandlerServer(ctx context.Context, mux *runtime.ServeM
 		var stream runtime.ServerTransportStream
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		rctx, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/thingspect.api.DeviceService/DeleteDeviceLoRaWAN", runtime.WithHTTPPathPattern("/v1/devices/{id}/lorawan"))
+		var err error
+		ctx, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/thingspect.api.DeviceService/DeleteDeviceLoRaWAN", runtime.WithHTTPPathPattern("/v1/devices/{id}/lorawan"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := local_request_DeviceService_DeleteDeviceLoRaWAN_0(rctx, inboundMarshaler, server, req, pathParams)
+		resp, md, err := local_request_DeviceService_DeleteDeviceLoRaWAN_0(ctx, inboundMarshaler, server, req, pathParams)
 		md.HeaderMD, md.TrailerMD = metadata.Join(md.HeaderMD, stream.Header()), metadata.Join(md.TrailerMD, stream.Trailer())
 		ctx = runtime.NewServerMetadataContext(ctx, md)
 		if err != nil {
@@ -661,12 +667,13 @@ func RegisterDeviceServiceHandlerServer(ctx context.Context, mux *runtime.ServeM
 		var stream runtime.ServerTransportStream
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		rctx, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/thingspect.api.DeviceService/DeleteDevice", runtime.WithHTTPPathPattern("/v1/devices/{id}"))
+		var err error
+		ctx, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/thingspect.api.DeviceService/DeleteDevice", runtime.WithHTTPPathPattern("/v1/devices/{id}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := local_request_DeviceService_DeleteDevice_0(rctx, inboundMarshaler, server, req, pathParams)
+		resp, md, err := local_request_DeviceService_DeleteDevice_0(ctx, inboundMarshaler, server, req, pathParams)
 		md.HeaderMD, md.TrailerMD = metadata.Join(md.HeaderMD, stream.Header()), metadata.Join(md.TrailerMD, stream.Trailer())
 		ctx = runtime.NewServerMetadataContext(ctx, md)
 		if err != nil {
@@ -684,12 +691,13 @@ func RegisterDeviceServiceHandlerServer(ctx context.Context, mux *runtime.ServeM
 		var stream runtime.ServerTransportStream
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		rctx, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/thingspect.api.DeviceService/ListDevices", runtime.WithHTTPPathPattern("/v1/devices"))
+		var err error
+		ctx, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/thingspect.api.DeviceService/ListDevices", runtime.WithHTTPPathPattern("/v1/devices"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := local_request_DeviceService_ListDevices_0(rctx, inboundMarshaler, server, req, pathParams)
+		resp, md, err := local_request_DeviceService_ListDevices_0(ctx, inboundMarshaler, server, req, pathParams)
 		md.HeaderMD, md.TrailerMD = metadata.Join(md.HeaderMD, stream.Header()), metadata.Join(md.TrailerMD, stream.Trailer())
 		ctx = runtime.NewServerMetadataContext(ctx, md)
 		if err != nil {
@@ -746,12 +754,13 @@ func RegisterDeviceServiceHandlerClient(ctx context.Context, mux *runtime.ServeM
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		rctx, err := runtime.AnnotateContext(ctx, mux, req, "/thingspect.api.DeviceService/CreateDevice", runtime.WithHTTPPathPattern("/v1/devices"))
+		var err error
+		ctx, err = runtime.AnnotateContext(ctx, mux, req, "/thingspect.api.DeviceService/CreateDevice", runtime.WithHTTPPathPattern("/v1/devices"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := request_DeviceService_CreateDevice_0(rctx, inboundMarshaler, client, req, pathParams)
+		resp, md, err := request_DeviceService_CreateDevice_0(ctx, inboundMarshaler, client, req, pathParams)
 		ctx = runtime.NewServerMetadataContext(ctx, md)
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
@@ -766,12 +775,13 @@ func RegisterDeviceServiceHandlerClient(ctx context.Context, mux *runtime.ServeM
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		rctx, err := runtime.AnnotateContext(ctx, mux, req, "/thingspect.api.DeviceService/CreateDeviceLoRaWAN", runtime.WithHTTPPathPattern("/v1/devices/{id}/lorawan"))
+		var err error
+		ctx, err = runtime.AnnotateContext(ctx, mux, req, "/thingspect.api.DeviceService/CreateDeviceLoRaWAN", runtime.WithHTTPPathPattern("/v1/devices/{id}/lorawan"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := request_DeviceService_CreateDeviceLoRaWAN_0(rctx, inboundMarshaler, client, req, pathParams)
+		resp, md, err := request_DeviceService_CreateDeviceLoRaWAN_0(ctx, inboundMarshaler, client, req, pathParams)
 		ctx = runtime.NewServerMetadataContext(ctx, md)
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
@@ -786,12 +796,13 @@ func RegisterDeviceServiceHandlerClient(ctx context.Context, mux *runtime.ServeM
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		rctx, err := runtime.AnnotateContext(ctx, mux, req, "/thingspect.api.DeviceService/GetDevice", runtime.WithHTTPPathPattern("/v1/devices/{id}"))
+		var err error
+		ctx, err = runtime.AnnotateContext(ctx, mux, req, "/thingspect.api.DeviceService/GetDevice", runtime.WithHTTPPathPattern("/v1/devices/{id}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := request_DeviceService_GetDevice_0(rctx, inboundMarshaler, client, req, pathParams)
+		resp, md, err := request_DeviceService_GetDevice_0(ctx, inboundMarshaler, client, req, pathParams)
 		ctx = runtime.NewServerMetadataContext(ctx, md)
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
@@ -806,12 +817,13 @@ func RegisterDeviceServiceHandlerClient(ctx context.Context, mux *runtime.ServeM
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		rctx, err := runtime.AnnotateContext(ctx, mux, req, "/thingspect.api.DeviceService/UpdateDevice", runtime.WithHTTPPathPattern("/v1/devices/{device.id}"))
+		var err error
+		ctx, err = runtime.AnnotateContext(ctx, mux, req, "/thingspect.api.DeviceService/UpdateDevice", runtime.WithHTTPPathPattern("/v1/devices/{device.id}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := request_DeviceService_UpdateDevice_0(rctx, inboundMarshaler, client, req, pathParams)
+		resp, md, err := request_DeviceService_UpdateDevice_0(ctx, inboundMarshaler, client, req, pathParams)
 		ctx = runtime.NewServerMetadataContext(ctx, md)
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
@@ -826,12 +838,13 @@ func RegisterDeviceServiceHandlerClient(ctx context.Context, mux *runtime.ServeM
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		rctx, err := runtime.AnnotateContext(ctx, mux, req, "/thingspect.api.DeviceService/UpdateDevice", runtime.WithHTTPPathPattern("/v1/devices/{device.id}"))
+		var err error
+		ctx, err = runtime.AnnotateContext(ctx, mux, req, "/thingspect.api.DeviceService/UpdateDevice", runtime.WithHTTPPathPattern("/v1/devices/{device.id}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := request_DeviceService_UpdateDevice_1(rctx, inboundMarshaler, client, req, pathParams)
+		resp, md, err := request_DeviceService_UpdateDevice_1(ctx, inboundMarshaler, client, req, pathParams)
 		ctx = runtime.NewServerMetadataContext(ctx, md)
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
@@ -846,12 +859,13 @@ func RegisterDeviceServiceHandlerClient(ctx context.Context, mux *runtime.ServeM
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		rctx, err := runtime.AnnotateContext(ctx, mux, req, "/thingspect.api.DeviceService/DeleteDeviceLoRaWAN", runtime.WithHTTPPathPattern("/v1/devices/{id}/lorawan"))
+		var err error
+		ctx, err = runtime.AnnotateContext(ctx, mux, req, "/thingspect.api.DeviceService/DeleteDeviceLoRaWAN", runtime.WithHTTPPathPattern("/v1/devices/{id}/lorawan"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := request_DeviceService_DeleteDeviceLoRaWAN_0(rctx, inboundMarshaler, client, req, pathParams)
+		resp, md, err := request_DeviceService_DeleteDeviceLoRaWAN_0(ctx, inboundMarshaler, client, req, pathParams)
 		ctx = runtime.NewServerMetadataContext(ctx, md)
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
@@ -866,12 +880,13 @@ func RegisterDeviceServiceHandlerClient(ctx context.Context, mux *runtime.ServeM
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		rctx, err := runtime.AnnotateContext(ctx, mux, req, "/thingspect.api.DeviceService/DeleteDevice", runtime.WithHTTPPathPattern("/v1/devices/{id}"))
+		var err error
+		ctx, err = runtime.AnnotateContext(ctx, mux, req, "/thingspect.api.DeviceService/DeleteDevice", runtime.WithHTTPPathPattern("/v1/devices/{id}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := request_DeviceService_DeleteDevice_0(rctx, inboundMarshaler, client, req, pathParams)
+		resp, md, err := request_DeviceService_DeleteDevice_0(ctx, inboundMarshaler, client, req, pathParams)
 		ctx = runtime.NewServerMetadataContext(ctx, md)
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
@@ -886,12 +901,13 @@ func RegisterDeviceServiceHandlerClient(ctx context.Context, mux *runtime.ServeM
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		rctx, err := runtime.AnnotateContext(ctx, mux, req, "/thingspect.api.DeviceService/ListDevices", runtime.WithHTTPPathPattern("/v1/devices"))
+		var err error
+		ctx, err = runtime.AnnotateContext(ctx, mux, req, "/thingspect.api.DeviceService/ListDevices", runtime.WithHTTPPathPattern("/v1/devices"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := request_DeviceService_ListDevices_0(rctx, inboundMarshaler, client, req, pathParams)
+		resp, md, err := request_DeviceService_ListDevices_0(ctx, inboundMarshaler, client, req, pathParams)
 		ctx = runtime.NewServerMetadataContext(ctx, md)
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)

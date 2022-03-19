@@ -74,8 +74,10 @@ ORDER BY e.created_at DESC
 // List retrieves all alerts by org ID, [end, start) times, and any of the
 // following: UniqID, device ID, alarm ID, and user ID. If both uniqID and devID
 // are provided, uniqID takes precedence and devID is ignored.
-func (d *DAO) List(ctx context.Context, orgID, uniqID, devID, alarmID,
-	userID string, end, start time.Time) ([]*api.Alert, error) {
+func (d *DAO) List(
+	ctx context.Context, orgID, uniqID, devID, alarmID, userID string, end,
+	start time.Time,
+) ([]*api.Alert, error) {
 	// Build list query.
 	var query string
 	args := []interface{}{orgID}

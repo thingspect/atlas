@@ -29,8 +29,9 @@ var _ Queuer = &mqttQueue{}
 
 // NewMQTT builds a new Queuer and returns it and an error value. connectTimeout
 // should usually be set to DefaultMQTTConnectTimeout.
-func NewMQTT(addr, user, pass, clientID string,
-	connectTimeout time.Duration) (Queuer, error) {
+func NewMQTT(addr, user, pass, clientID string, connectTimeout time.Duration) (
+	Queuer, error,
+) {
 	// Build client options and assign to a client.
 	opts := mqtt.NewClientOptions().
 		AddBroker(addr).

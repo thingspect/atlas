@@ -30,8 +30,9 @@ type Alarmer interface {
 }
 
 // CreateAlarm creates an alarm.
-func (ra *RuleAlarm) CreateAlarm(ctx context.Context,
-	req *api.CreateAlarmRequest) (*api.Alarm, error) {
+func (ra *RuleAlarm) CreateAlarm(
+	ctx context.Context, req *api.CreateAlarmRequest,
+) (*api.Alarm, error) {
 	sess, ok := session.FromContext(ctx)
 	if !ok || sess.Role < api.Role_BUILDER {
 		return nil, errPerm(api.Role_BUILDER)
@@ -54,8 +55,9 @@ func (ra *RuleAlarm) CreateAlarm(ctx context.Context,
 }
 
 // GetAlarm retrieves an alarm by ID.
-func (ra *RuleAlarm) GetAlarm(ctx context.Context,
-	req *api.GetAlarmRequest) (*api.Alarm, error) {
+func (ra *RuleAlarm) GetAlarm(ctx context.Context, req *api.GetAlarmRequest) (
+	*api.Alarm, error,
+) {
 	sess, ok := session.FromContext(ctx)
 	if !ok || sess.Role < api.Role_VIEWER {
 		return nil, errPerm(api.Role_VIEWER)
@@ -71,8 +73,9 @@ func (ra *RuleAlarm) GetAlarm(ctx context.Context,
 
 // UpdateAlarm updates an alarm. Update actions validate after merge to support
 // partial updates.
-func (ra *RuleAlarm) UpdateAlarm(ctx context.Context,
-	req *api.UpdateAlarmRequest) (*api.Alarm, error) {
+func (ra *RuleAlarm) UpdateAlarm(
+	ctx context.Context, req *api.UpdateAlarmRequest,
+) (*api.Alarm, error) {
 	sess, ok := session.FromContext(ctx)
 	if !ok || sess.Role < api.Role_BUILDER {
 		return nil, errPerm(api.Role_BUILDER)
@@ -121,8 +124,9 @@ func (ra *RuleAlarm) UpdateAlarm(ctx context.Context,
 }
 
 // DeleteAlarm deletes an alarm by ID.
-func (ra *RuleAlarm) DeleteAlarm(ctx context.Context,
-	req *api.DeleteAlarmRequest) (*emptypb.Empty, error) {
+func (ra *RuleAlarm) DeleteAlarm(
+	ctx context.Context, req *api.DeleteAlarmRequest,
+) (*emptypb.Empty, error) {
 	sess, ok := session.FromContext(ctx)
 	if !ok || sess.Role < api.Role_BUILDER {
 		return nil, errPerm(api.Role_BUILDER)
@@ -143,8 +147,9 @@ func (ra *RuleAlarm) DeleteAlarm(ctx context.Context,
 }
 
 // ListAlarms retrieves alarms.
-func (ra *RuleAlarm) ListAlarms(ctx context.Context,
-	req *api.ListAlarmsRequest) (*api.ListAlarmsResponse, error) {
+func (ra *RuleAlarm) ListAlarms(
+	ctx context.Context, req *api.ListAlarmsRequest,
+) (*api.ListAlarmsResponse, error) {
 	sess, ok := session.FromContext(ctx)
 	if !ok || sess.Role < api.Role_VIEWER {
 		return nil, errPerm(api.Role_VIEWER)
@@ -187,8 +192,9 @@ func (ra *RuleAlarm) ListAlarms(ctx context.Context,
 }
 
 // TestAlarm tests an alarm.
-func (ra *RuleAlarm) TestAlarm(ctx context.Context,
-	req *api.TestAlarmRequest) (*api.TestAlarmResponse, error) {
+func (ra *RuleAlarm) TestAlarm(ctx context.Context, req *api.TestAlarmRequest) (
+	*api.TestAlarmResponse, error,
+) {
 	sess, ok := session.FromContext(ctx)
 	if !ok || sess.Role < api.Role_BUILDER {
 		return nil, errPerm(api.Role_BUILDER)

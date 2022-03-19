@@ -46,8 +46,9 @@ type lookup struct {
 // lookupCarrier calls the Lookup API to retrieve information about a phone
 // number's carrier. This function does not require a populated
 // twilio.accountSID or twilio.phone.
-func (t *twilio) lookupCarrier(ctx context.Context,
-	phone string) (*lookup, error) {
+func (t *twilio) lookupCarrier(ctx context.Context, phone string) (
+	*lookup, error,
+) {
 	// Create request.
 	req, err := http.NewRequestWithContext(ctx, "GET", fmt.Sprintf(lookupURL,
 		phone), nil)

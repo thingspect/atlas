@@ -41,8 +41,9 @@ type DataPoint struct {
 }
 
 // NewDataPoint instantiates and returns a new DataPoint service.
-func NewDataPoint(pubQueue queue.Queuer, pubTopic string,
-	dpDAO DataPointer) *DataPoint {
+func NewDataPoint(
+	pubQueue queue.Queuer, pubTopic string, dpDAO DataPointer,
+) *DataPoint {
 	return &DataPoint{
 		dpQueue:     pubQueue,
 		vInPubTopic: pubTopic,
@@ -52,8 +53,9 @@ func NewDataPoint(pubQueue queue.Queuer, pubTopic string,
 }
 
 // PublishDataPoints publishes a data point.
-func (d *DataPoint) PublishDataPoints(ctx context.Context,
-	req *api.PublishDataPointsRequest) (*emptypb.Empty, error) {
+func (d *DataPoint) PublishDataPoints(
+	ctx context.Context, req *api.PublishDataPointsRequest,
+) (*emptypb.Empty, error) {
 	logger := alog.FromContext(ctx)
 	sess, ok := session.FromContext(ctx)
 	if !ok || sess.Role < api.Role_PUBLISHER {
@@ -103,8 +105,9 @@ func (d *DataPoint) PublishDataPoints(ctx context.Context,
 
 // ListDataPoints retrieves all data points for a device in a [end, start) time
 // range, in descending timestamp order.
-func (d *DataPoint) ListDataPoints(ctx context.Context,
-	req *api.ListDataPointsRequest) (*api.ListDataPointsResponse, error) {
+func (d *DataPoint) ListDataPoints(
+	ctx context.Context, req *api.ListDataPointsRequest,
+) (*api.ListDataPointsResponse, error) {
 	sess, ok := session.FromContext(ctx)
 	if !ok || sess.Role < api.Role_VIEWER {
 		return nil, errPerm(api.Role_VIEWER)
@@ -146,8 +149,9 @@ func (d *DataPoint) ListDataPoints(ctx context.Context,
 
 // LatestDataPoints retrieves the latest data point for each of a device's
 // attributes.
-func (d *DataPoint) LatestDataPoints(ctx context.Context,
-	req *api.LatestDataPointsRequest) (*api.LatestDataPointsResponse, error) {
+func (d *DataPoint) LatestDataPoints(
+	ctx context.Context, req *api.LatestDataPointsRequest,
+) (*api.LatestDataPointsResponse, error) {
 	sess, ok := session.FromContext(ctx)
 	if !ok || sess.Role < api.Role_VIEWER {
 		return nil, errPerm(api.Role_VIEWER)

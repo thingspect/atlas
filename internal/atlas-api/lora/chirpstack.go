@@ -20,8 +20,9 @@ type Chirpstack struct {
 var _ Loraer = &Chirpstack{}
 
 // NewChirpstack builds a new Loraer and returns it and an error value.
-func NewChirpstack(addr, apiKey string, orgID, nsID, appID int,
-	devProfID string) (Loraer, error) {
+func NewChirpstack(
+	addr, apiKey string, orgID, nsID, appID int, devProfID string,
+) (Loraer, error) {
 	// Build Chirpstack AS gRPC connection.
 	opts := []grpc.DialOption{
 		grpc.WithBlock(),

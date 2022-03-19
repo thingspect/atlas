@@ -32,8 +32,9 @@ func NewMemory() Cacher {
 }
 
 // Set sets key to value.
-func (m *memoryCache) Set(ctx context.Context, key string,
-	value interface{}) error {
+func (m *memoryCache) Set(
+	ctx context.Context, key string, value interface{},
+) error {
 	m.cacheMu.Lock()
 	defer m.cacheMu.Unlock()
 
@@ -41,8 +42,9 @@ func (m *memoryCache) Set(ctx context.Context, key string,
 }
 
 // SetTTL sets key to value with expiration.
-func (m *memoryCache) SetTTL(ctx context.Context, key string, value interface{},
-	exp time.Duration) error {
+func (m *memoryCache) SetTTL(
+	ctx context.Context, key string, value interface{}, exp time.Duration,
+) error {
 	m.cacheMu.Lock()
 	defer m.cacheMu.Unlock()
 
@@ -51,8 +53,9 @@ func (m *memoryCache) SetTTL(ctx context.Context, key string, value interface{},
 
 // Get retrieves a string value by key. If the key does not exist, the boolean
 // returned is set to false.
-func (m *memoryCache) Get(ctx context.Context, key string) (bool, string,
-	error) {
+func (m *memoryCache) Get(ctx context.Context, key string) (
+	bool, string, error,
+) {
 	m.cacheMu.RLock()
 	defer m.cacheMu.RUnlock()
 
@@ -74,8 +77,9 @@ func (m *memoryCache) Get(ctx context.Context, key string) (bool, string,
 
 // GetB retrieves a []byte value by key. If the key does not exist, the boolean
 // returned is set to false.
-func (m *memoryCache) GetB(ctx context.Context, key string) (bool, []byte,
-	error) {
+func (m *memoryCache) GetB(ctx context.Context, key string) (
+	bool, []byte, error,
+) {
 	m.cacheMu.RLock()
 	defer m.cacheMu.RUnlock()
 
@@ -97,8 +101,9 @@ func (m *memoryCache) GetB(ctx context.Context, key string) (bool, []byte,
 
 // GetI retrieves an int64 value by key. If the key does not exist, the boolean
 // returned is set to false.
-func (m *memoryCache) GetI(ctx context.Context, key string) (bool, int64,
-	error) {
+func (m *memoryCache) GetI(ctx context.Context, key string) (
+	bool, int64, error,
+) {
 	m.cacheMu.RLock()
 	defer m.cacheMu.RUnlock()
 
@@ -120,15 +125,17 @@ func (m *memoryCache) GetI(ctx context.Context, key string) (bool, int64,
 
 // SetIfNotExist sets key to value if the key does not exist. If it is
 // successful, it returns true.
-func (m *memoryCache) SetIfNotExist(ctx context.Context, key string,
-	value interface{}) (bool, error) {
+func (m *memoryCache) SetIfNotExist(
+	ctx context.Context, key string, value interface{},
+) (bool, error) {
 	return m.SetIfNotExistTTL(ctx, key, value, ttlcache.ItemExpireWithGlobalTTL)
 }
 
 // SetIfNotExistTTL sets key to value, with expiration, if the key does not
 // exist. If it is successful, it returns true.
-func (m *memoryCache) SetIfNotExistTTL(ctx context.Context, key string,
-	value interface{}, exp time.Duration) (bool, error) {
+func (m *memoryCache) SetIfNotExistTTL(
+	ctx context.Context, key string, value interface{}, exp time.Duration,
+) (bool, error) {
 	m.cacheMu.Lock()
 	defer m.cacheMu.Unlock()
 

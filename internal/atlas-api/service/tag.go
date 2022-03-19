@@ -29,8 +29,9 @@ func NewTag(tagDAO Tagger) *Tag {
 }
 
 // ListTags retrieves all tags.
-func (t *Tag) ListTags(ctx context.Context,
-	req *api.ListTagsRequest) (*api.ListTagsResponse, error) {
+func (t *Tag) ListTags(ctx context.Context, req *api.ListTagsRequest) (
+	*api.ListTagsResponse, error,
+) {
 	sess, ok := session.FromContext(ctx)
 	if !ok || sess.Role < api.Role_VIEWER {
 		return nil, errPerm(api.Role_VIEWER)

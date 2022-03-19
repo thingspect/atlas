@@ -12,8 +12,9 @@ import (
 // optional data []byte, and a timestamp are built from successful parse
 // results. If a fatal error is encountered, it is returned along with any valid
 // points.
-func Parse(event string, body []byte) ([]*decode.Point, *timestamppb.Timestamp,
-	[]byte, error) {
+func Parse(event string, body []byte) (
+	[]*decode.Point, *timestamppb.Timestamp, []byte, error,
+) {
 	switch event {
 	case "up":
 		return deviceUp(body)

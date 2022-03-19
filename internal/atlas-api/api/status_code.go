@@ -15,8 +15,9 @@ import (
 const grpcStatusCodeKey = "Grpc-Metadata-Atlas-Status-Code"
 
 // statusCode modifies the HTTP response status code based on header.
-func statusCode(ctx context.Context, w http.ResponseWriter,
-	p proto.Message) error {
+func statusCode(
+	ctx context.Context, w http.ResponseWriter, p proto.Message,
+) error {
 	md, ok := runtime.ServerMetadataFromContext(ctx)
 	if !ok {
 		return nil
