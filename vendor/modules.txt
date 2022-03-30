@@ -1,9 +1,9 @@
 # github.com/NYTimes/gziphandler v1.1.1
 ## explicit; go 1.11
 github.com/NYTimes/gziphandler
-# github.com/ReneKroon/ttlcache/v2 v2.11.0
-## explicit; go 1.15
-github.com/ReneKroon/ttlcache/v2
+# github.com/ReneKroon/ttlcache/v3 v3.0.0-beta
+## explicit; go 1.18
+github.com/ReneKroon/ttlcache/v3
 # github.com/antonmedv/expr v1.9.0
 ## explicit; go 1.13
 github.com/antonmedv/expr
@@ -80,7 +80,7 @@ github.com/gregdel/pushover
 github.com/grpc-ecosystem/grpc-gateway/internal
 github.com/grpc-ecosystem/grpc-gateway/runtime
 github.com/grpc-ecosystem/grpc-gateway/utilities
-# github.com/grpc-ecosystem/grpc-gateway/v2 v2.9.0
+# github.com/grpc-ecosystem/grpc-gateway/v2 v2.10.0
 ## explicit; go 1.17
 github.com/grpc-ecosystem/grpc-gateway/v2/internal/httprule
 github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-openapiv2/options
@@ -135,17 +135,17 @@ github.com/smira/go-statsd
 ## explicit; go 1.13
 github.com/stretchr/testify/assert
 github.com/stretchr/testify/require
-# github.com/thingspect/api/go v0.1.11
-## explicit; go 1.17
+# github.com/thingspect/api/go v0.1.12
+## explicit; go 1.18
 github.com/thingspect/api/go/api
 github.com/thingspect/api/go/common
 github.com/thingspect/api/go/mqtt
-# golang.org/x/crypto v0.0.0-20220315160706-3147a52a75dd
+# golang.org/x/crypto v0.0.0-20220321153916-2c7772ba3064
 ## explicit; go 1.17
 golang.org/x/crypto/bcrypt
 golang.org/x/crypto/blowfish
 golang.org/x/crypto/pbkdf2
-# golang.org/x/net v0.0.0-20220225172249-27dd8689420f
+# golang.org/x/net v0.0.0-20220325170049-de3da57026de
 ## explicit; go 1.17
 golang.org/x/net/http/httpguts
 golang.org/x/net/http2
@@ -158,7 +158,7 @@ golang.org/x/net/trace
 # golang.org/x/sync v0.0.0-20210220032951-036812b2e83c
 ## explicit
 golang.org/x/sync/singleflight
-# golang.org/x/sys v0.0.0-20220319134239-a9b59b0215f8
+# golang.org/x/sys v0.0.0-20220330033206-e17cdc41300f
 ## explicit; go 1.17
 golang.org/x/sys/internal/unsafeheader
 golang.org/x/sys/unix
@@ -177,7 +177,7 @@ golang.org/x/text/transform
 golang.org/x/text/unicode/bidi
 golang.org/x/text/unicode/norm
 golang.org/x/text/width
-# google.golang.org/genproto v0.0.0-20220317150908-0efb43f6373e
+# google.golang.org/genproto v0.0.0-20220329172620-7be39ac1afc7
 ## explicit; go 1.15
 google.golang.org/genproto/googleapis/api/annotations
 google.golang.org/genproto/googleapis/api/httpbody
@@ -232,8 +232,8 @@ google.golang.org/grpc/serviceconfig
 google.golang.org/grpc/stats
 google.golang.org/grpc/status
 google.golang.org/grpc/tap
-# google.golang.org/protobuf v1.27.1
-## explicit; go 1.9
+# google.golang.org/protobuf v1.28.0
+## explicit; go 1.11
 google.golang.org/protobuf/encoding/protojson
 google.golang.org/protobuf/encoding/prototext
 google.golang.org/protobuf/encoding/protowire

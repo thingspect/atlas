@@ -7,7 +7,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/ReneKroon/ttlcache/v2"
+	"github.com/ReneKroon/ttlcache/v3"
 	"github.com/stretchr/testify/require"
 	"github.com/thingspect/atlas/pkg/test/random"
 )

@@ -36,15 +36,13 @@ func NewRedis(redisAddr string) (Cacher, error) {
 }
 
 // Set sets key to value.
-func (r *redisCache) Set(
-	ctx context.Context, key string, value interface{},
-) error {
+func (r *redisCache) Set(ctx context.Context, key string, value any) error {
 	return r.SetTTL(ctx, key, value, 0)
 }
 
 // SetTTL sets key to value with expiration.
 func (r *redisCache) SetTTL(
-	ctx context.Context, key string, value interface{}, exp time.Duration,
+	ctx context.Context, key string, value any, exp time.Duration,
 ) error {
 	return r.client.Set(ctx, key, value, exp).Err()
 }
@@ -99,16 +97,16 @@ func (r *redisCache) GetI(ctx context.Context, key string) (
 
 // SetIfNotExist sets key to value if the key does not exist. If it is
 // successful, it returns true.
-func (r *redisCache) SetIfNotExist(
-	ctx context.Context, key string, value interface{},
-) (bool, error) {
+func (r *redisCache) SetIfNotExist(ctx context.Context, key string, value any) (
+	bool, error,
+) {
 	return r.SetIfNotExistTTL(ctx, key, value, 0)
 }
 
 // SetIfNotExistTTL sets key to value, with expiration, if the key does not
 // exist. If it is successful, it returns true.
 func (r *redisCache) SetIfNotExistTTL(
-	ctx context.Context, key string, value interface{}, exp time.Duration,
+	ctx context.Context, key string, value any, exp time.Duration,
 ) (bool, error) {
 	return r.client.SetNX(ctx, key, value, exp).Result()
 }

@@ -127,7 +127,7 @@ func (mr *MockCacherMockRecorder) Incr(ctx, key interface{}) *gomock.Call {
 }
 
 // Set mocks base method.
-func (m *MockCacher) Set(ctx context.Context, key string, value interface{}) error {
+func (m *MockCacher) Set(ctx context.Context, key string, value any) error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Set", ctx, key, value)
 	ret0, _ := ret[0].(error)
@@ -141,7 +141,7 @@ func (mr *MockCacherMockRecorder) Set(ctx, key, value interface{}) *gomock.Call 
 }
 
 // SetIfNotExist mocks base method.
-func (m *MockCacher) SetIfNotExist(ctx context.Context, key string, value interface{}) (bool, error) {
+func (m *MockCacher) SetIfNotExist(ctx context.Context, key string, value any) (bool, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "SetIfNotExist", ctx, key, value)
 	ret0, _ := ret[0].(bool)
@@ -156,7 +156,7 @@ func (mr *MockCacherMockRecorder) SetIfNotExist(ctx, key, value interface{}) *go
 }
 
 // SetIfNotExistTTL mocks base method.
-func (m *MockCacher) SetIfNotExistTTL(ctx context.Context, key string, value interface{}, exp time.Duration) (bool, error) {
+func (m *MockCacher) SetIfNotExistTTL(ctx context.Context, key string, value any, exp time.Duration) (bool, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "SetIfNotExistTTL", ctx, key, value, exp)
 	ret0, _ := ret[0].(bool)
@@ -171,7 +171,7 @@ func (mr *MockCacherMockRecorder) SetIfNotExistTTL(ctx, key, value, exp interfac
 }
 
 // SetTTL mocks base method.
-func (m *MockCacher) SetTTL(ctx context.Context, key string, value interface{}, exp time.Duration) error {
+func (m *MockCacher) SetTTL(ctx context.Context, key string, value any, exp time.Duration) error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "SetTTL", ctx, key, value, exp)
 	ret0, _ := ret[0].(error)

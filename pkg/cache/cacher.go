@@ -11,10 +11,9 @@ import (
 // Cacher defines the methods provided by a Cache.
 type Cacher interface {
 	// Set sets key to value.
-	Set(ctx context.Context, key string, value interface{}) error
+	Set(ctx context.Context, key string, value any) error
 	// SetTTL sets key to value with expiration.
-	SetTTL(ctx context.Context, key string, value interface{},
-		exp time.Duration) error
+	SetTTL(ctx context.Context, key string, value any, exp time.Duration) error
 	// Get retrieves a string value by key. If the key does not exist, the
 	// boolean returned is set to false.
 	Get(ctx context.Context, key string) (bool, string, error)
@@ -26,11 +25,10 @@ type Cacher interface {
 	GetI(ctx context.Context, key string) (bool, int64, error)
 	// SetIfNotExist sets key to value if the key does not exist. If it is
 	// successful, it returns true.
-	SetIfNotExist(ctx context.Context, key string, value interface{}) (bool,
-		error)
+	SetIfNotExist(ctx context.Context, key string, value any) (bool, error)
 	// SetIfNotExistTTL sets key to value, with expiration, if the key does not
 	// exist. If it is successful, it returns true.
-	SetIfNotExistTTL(ctx context.Context, key string, value interface{},
+	SetIfNotExistTTL(ctx context.Context, key string, value any,
 		exp time.Duration) (bool, error)
 	// Incr increments an int64 value at key by one. If the key does not exist,
 	// the value is set to 1. The incremented value is returned.

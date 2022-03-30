@@ -7,7 +7,7 @@ jobs:
     name: Build
     runs-on: ubuntu-latest
     container:
-      image: golang:1.17-alpine
+      image: golang:1.18-alpine
       env:
         TEST_REDIS_HOST: redis
         TEST_PG_URI: pgx://postgres:postgres@postgres/atlas_test
