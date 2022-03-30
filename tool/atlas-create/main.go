@@ -120,7 +120,7 @@ func main() {
 		ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
 		createOrg, err := orgDAO.Create(ctx, &api.Org{
 			Name:        flag.Arg(1),
-			DisplayName: strings.Title(strings.ToLower(flag.Arg(1))),
+			DisplayName: flag.Arg(1),
 			Email:       "noreply@" + emailParts[1],
 		})
 		cancel()

@@ -6,7 +6,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/ReneKroon/ttlcache/v2"
+	"github.com/ReneKroon/ttlcache/v3"
 	"github.com/thingspect/atlas/pkg/consterr"
 )
 
@@ -16,7 +16,7 @@ var errWrongType consterr.Error = "value wrong type"
 // implements the Cacher interface. An additional RWMutex is used to support
 // transactions.
 type memoryCache struct {
-	cache   *ttlcache.Cache
+	cache   *ttlcache.Cache[string, any]
 	cacheMu sync.RWMutex
 }
 
@@ -25,16 +25,14 @@ var _ Cacher = &memoryCache{}
 
 // NewMemory builds a new Cacher and returns it.
 func NewMemory() Cacher {
-	cache := ttlcache.NewCache()
+	cache := ttlcache.NewCache[string, any]()
 	cache.SkipTTLExtensionOnHit(true)
 
 	return &memoryCache{cache: cache}
 }
 
 // Set sets key to value.
-func (m *memoryCache) Set(
-	ctx context.Context, key string, value interface{},
-) error {
+func (m *memoryCache) Set(ctx context.Context, key string, value any) error {
 	m.cacheMu.Lock()
 	defer m.cacheMu.Unlock()
 
@@ -43,7 +41,7 @@ func (m *memoryCache) Set(
 
 // SetTTL sets key to value with expiration.
 func (m *memoryCache) SetTTL(
-	ctx context.Context, key string, value interface{}, exp time.Duration,
+	ctx context.Context, key string, value any, exp time.Duration,
 ) error {
 	m.cacheMu.Lock()
 	defer m.cacheMu.Unlock()
@@ -126,7 +124,7 @@ func (m *memoryCache) GetI(ctx context.Context, key string) (
 // SetIfNotExist sets key to value if the key does not exist. If it is
 // successful, it returns true.
 func (m *memoryCache) SetIfNotExist(
-	ctx context.Context, key string, value interface{},
+	ctx context.Context, key string, value any,
 ) (bool, error) {
 	return m.SetIfNotExistTTL(ctx, key, value, ttlcache.ItemExpireWithGlobalTTL)
 }
@@ -134,7 +132,7 @@ func (m *memoryCache) SetIfNotExist(
 // SetIfNotExistTTL sets key to value, with expiration, if the key does not
 // exist. If it is successful, it returns true.
 func (m *memoryCache) SetIfNotExistTTL(
-	ctx context.Context, key string, value interface{}, exp time.Duration,
+	ctx context.Context, key string, value any, exp time.Duration,
 ) (bool, error) {
 	m.cacheMu.Lock()
 	defer m.cacheMu.Unlock()
