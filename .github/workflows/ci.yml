@@ -9,6 +9,7 @@ jobs:
     container:
       image: golang:1.18-alpine
       env:
+        GOFLAGS: -buildvcs=false
         TEST_REDIS_HOST: redis
         TEST_PG_URI: pgx://postgres:postgres@postgres/atlas_test
         TEST_NSQ_PUB_ADDR: nsqd:4150
@@ -67,6 +68,7 @@ jobs:
           apk add --no-cache docker
           docker version
           docker login -u thingspect -p ${{ secrets.GHCR_PAT }} ghcr.io
+          git config --global --add safe.directory /__w/atlas/atlas
           TAG=$(git rev-parse --short=8 HEAD)
           #docker buildx create --use
           #docker buildx build -f build/Dockerfile -t ghcr.io/thingspect/atlas:${TAG} --platform linux/amd64,linux/arm64 --push .
