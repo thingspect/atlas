@@ -2,7 +2,7 @@
 
 This directory contains the
 [Protobuf](https://developers.google.com/protocol-buffers/) internal definitions
-for the [Thingspect](https://www.thingspect.com/) Atlas platform. API design is
+for the [Thingspect](http://www.thingspect.com/) Atlas platform. API design is
 based on the Google [API Design Guide](https://cloud.google.com/apis/design).
 
 ## Getting Started
