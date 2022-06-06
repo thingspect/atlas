@@ -28,6 +28,14 @@ curl -v -X POST -d '{"email":"testadmin@thingspect.com", "orgName":"testorg", "p
 OpenAPI live docs are available at
 [http://localhost:8000/](http://localhost:8000/).
 
+## Deploying
+
+Docker [Compose](https://docs.docker.com/compose/) files for the Atlas platform
+and its dependencies are available in `build/deploy/`. These can be used for a
+single-system deploy, or as templates for orchestration tooling such as
+[Nomad](https://www.nomadproject.io/) or [Kubernetes](https://kubernetes.io/).
+Keys should be provided where applicable.
+
 ## Use of Build Tags In Tests
 
 All non-generated test files should have build tags, including `main_test.go`.
