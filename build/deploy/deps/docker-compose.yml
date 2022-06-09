@@ -34,7 +34,7 @@ services:
       - ./volume/mosquitto/config:/mosquitto/config
       - ./volume/mosquitto/data:/mosquitto/data
   redis:
-    image: redis:6-alpine
+    image: redis:7-alpine
     command: redis-server --save 300 1 --save 60 100 --appendonly no
     volumes:
       - ./volume/redis:/data
