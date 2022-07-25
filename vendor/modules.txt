@@ -80,7 +80,7 @@ github.com/gregdel/pushover
 github.com/grpc-ecosystem/grpc-gateway/internal
 github.com/grpc-ecosystem/grpc-gateway/runtime
 github.com/grpc-ecosystem/grpc-gateway/utilities
-# github.com/grpc-ecosystem/grpc-gateway/v2 v2.10.3
+# github.com/grpc-ecosystem/grpc-gateway/v2 v2.11.0
 ## explicit; go 1.17
 github.com/grpc-ecosystem/grpc-gateway/v2/internal/httprule
 github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-openapiv2/options
@@ -141,17 +141,17 @@ github.com/smira/go-statsd
 ## explicit; go 1.13
 github.com/stretchr/testify/assert
 github.com/stretchr/testify/require
-# github.com/thingspect/api/go v0.1.14
+# github.com/thingspect/api/go v0.1.15
 ## explicit; go 1.18
 github.com/thingspect/api/go/api
 github.com/thingspect/api/go/common
 github.com/thingspect/api/go/mqtt
-# golang.org/x/crypto v0.0.0-20220622213112-05595931fe9d
+# golang.org/x/crypto v0.0.0-20220722155217-630584e8d5aa
 ## explicit; go 1.17
 golang.org/x/crypto/bcrypt
 golang.org/x/crypto/blowfish
 golang.org/x/crypto/pbkdf2
-# golang.org/x/net v0.0.0-20220708220712-1185a9018129
+# golang.org/x/net v0.0.0-20220722155237-a158d28d115b
 ## explicit; go 1.17
 golang.org/x/net/http/httpguts
 golang.org/x/net/http2
@@ -161,11 +161,11 @@ golang.org/x/net/internal/socks
 golang.org/x/net/internal/timeseries
 golang.org/x/net/proxy
 golang.org/x/net/trace
-# golang.org/x/sync v0.0.0-20220601150217-0de741cfad7f
+# golang.org/x/sync v0.0.0-20220722155255-886fb9371eb4
 ## explicit
 golang.org/x/sync/semaphore
 golang.org/x/sync/singleflight
-# golang.org/x/sys v0.0.0-20220708085239-5a0f0661e09d
+# golang.org/x/sys v0.0.0-20220722155257-8c9f86f7a55f
 ## explicit; go 1.17
 golang.org/x/sys/internal/unsafeheader
 golang.org/x/sys/unix
@@ -184,13 +184,13 @@ golang.org/x/text/transform
 golang.org/x/text/unicode/bidi
 golang.org/x/text/unicode/norm
 golang.org/x/text/width
-# google.golang.org/genproto v0.0.0-20220711132622-b6f31b0ceb50
-## explicit; go 1.15
+# google.golang.org/genproto v0.0.0-20220725144611-272f38e5d71b
+## explicit; go 1.18
 google.golang.org/genproto/googleapis/api/annotations
 google.golang.org/genproto/googleapis/api/httpbody
 google.golang.org/genproto/googleapis/rpc/status
 google.golang.org/genproto/protobuf/field_mask
-# google.golang.org/grpc v1.47.0
+# google.golang.org/grpc v1.48.0
 ## explicit; go 1.14
 google.golang.org/grpc
 google.golang.org/grpc/attributes
