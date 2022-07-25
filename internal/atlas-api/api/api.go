@@ -8,6 +8,7 @@ import (
 	"os"
 	"os/signal"
 	"syscall"
+	"time"
 
 	"github.com/NYTimes/gziphandler"
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
@@ -216,8 +217,9 @@ func New(cfg *config.Config) (*API, error) {
 	return &API{
 		grpcSrv: srv,
 		httpSrv: &http.Server{
-			Addr:    httpPort,
-			Handler: gziphandler.GzipHandler(mux),
+			Addr:              httpPort,
+			Handler:           gziphandler.GzipHandler(mux),
+			ReadHeaderTimeout: 60 * time.Second,
 		},
 		httpCancel: cancel,
 	}, nil
