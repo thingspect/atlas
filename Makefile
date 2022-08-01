@@ -34,7 +34,7 @@ lint:
 	staticcheck -checks all ./...
 
 	go install github.com/golangci/golangci-lint/cmd/golangci-lint@latest
-	golangci-lint --version
+	golangci-lint version
 	golangci-lint run -E bidichk,durationcheck,errname,exportloopref \
 	-E forcetypeassert,goconst,godot,goerr113,gofumpt,gosec,nlreturn,prealloc \
 	-E unconvert,unparam --exclude-use-default=false
