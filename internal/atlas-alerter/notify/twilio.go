@@ -50,8 +50,8 @@ func (t *twilio) lookupCarrier(ctx context.Context, phone string) (
 	*lookup, error,
 ) {
 	// Create request.
-	req, err := http.NewRequestWithContext(ctx, "GET", fmt.Sprintf(lookupURL,
-		phone), nil)
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet,
+		fmt.Sprintf(lookupURL, phone), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -99,8 +99,8 @@ func (t *twilio) sendSMS(ctx context.Context, to, body string) error {
 	vals.Set("Body", body)
 	r := strings.NewReader(vals.Encode())
 
-	req, err := http.NewRequestWithContext(ctx, "POST", fmt.Sprintf(smsURL,
-		t.accountSID), r)
+	req, err := http.NewRequestWithContext(ctx, http.MethodPost,
+		fmt.Sprintf(smsURL, t.accountSID), r)
 	if err != nil {
 		return err
 	}

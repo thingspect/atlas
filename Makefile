@@ -37,7 +37,7 @@ lint:
 	golangci-lint version
 	golangci-lint run -E bidichk,durationcheck,errname,exportloopref \
 	-E forcetypeassert,goconst,godot,goerr113,gofumpt,gosec,nlreturn,prealloc \
-	-E unconvert,unparam --exclude-use-default=false
+	-E unconvert,unparam,usestdlibvars --exclude-use-default=false
 
 init_db:
 	echo FLUSHALL|nc -w 2 $(TEST_REDIS_HOST) 6379

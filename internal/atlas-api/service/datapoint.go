@@ -4,6 +4,8 @@ package service
 
 import (
 	"context"
+	"net/http"
+	"strconv"
 	"time"
 
 	"github.com/thingspect/api/go/api"
@@ -96,7 +98,7 @@ func (d *DataPoint) PublishDataPoints(
 	}
 
 	if err := grpc.SetHeader(ctx, metadata.Pairs(StatusCodeKey,
-		"202")); err != nil {
+		strconv.Itoa(http.StatusAccepted))); err != nil {
 		logger.Errorf("PublishDataPoints grpc.SetHeader: %v", err)
 	}
 

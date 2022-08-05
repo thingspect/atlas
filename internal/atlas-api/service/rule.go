@@ -4,6 +4,8 @@ package service
 
 import (
 	"context"
+	"net/http"
+	"strconv"
 	"time"
 
 	"github.com/mennanov/fmutils"
@@ -63,7 +65,7 @@ func (ra *RuleAlarm) CreateRule(
 	}
 
 	if err := grpc.SetHeader(ctx, metadata.Pairs(StatusCodeKey,
-		"201")); err != nil {
+		strconv.Itoa(http.StatusCreated))); err != nil {
 		logger := alog.FromContext(ctx)
 		logger.Errorf("CreateRule grpc.SetHeader: %v", err)
 	}
@@ -150,7 +152,7 @@ func (ra *RuleAlarm) DeleteRule(
 	}
 
 	if err := grpc.SetHeader(ctx, metadata.Pairs(StatusCodeKey,
-		"204")); err != nil {
+		strconv.Itoa(http.StatusNoContent))); err != nil {
 		logger := alog.FromContext(ctx)
 		logger.Errorf("DeleteRule grpc.SetHeader: %v", err)
 	}
