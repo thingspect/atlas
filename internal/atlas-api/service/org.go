@@ -4,6 +4,8 @@ package service
 
 import (
 	"context"
+	"net/http"
+	"strconv"
 	"time"
 
 	"github.com/mennanov/fmutils"
@@ -57,7 +59,7 @@ func (o *Org) CreateOrg(ctx context.Context, req *api.CreateOrgRequest) (
 	}
 
 	if err := grpc.SetHeader(ctx, metadata.Pairs(StatusCodeKey,
-		"201")); err != nil {
+		strconv.Itoa(http.StatusCreated))); err != nil {
 		logger := alog.FromContext(ctx)
 		logger.Errorf("CreateOrg grpc.SetHeader: %v", err)
 	}
@@ -149,7 +151,7 @@ func (o *Org) DeleteOrg(ctx context.Context, req *api.DeleteOrgRequest) (
 	}
 
 	if err := grpc.SetHeader(ctx, metadata.Pairs(StatusCodeKey,
-		"204")); err != nil {
+		strconv.Itoa(http.StatusNoContent))); err != nil {
 		logger := alog.FromContext(ctx)
 		logger.Errorf("DeleteOrg grpc.SetHeader: %v", err)
 	}

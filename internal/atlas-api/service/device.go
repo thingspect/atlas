@@ -4,6 +4,8 @@ package service
 
 import (
 	"context"
+	"net/http"
+	"strconv"
 	"time"
 
 	"github.com/mennanov/fmutils"
@@ -62,7 +64,7 @@ func (d *Device) CreateDevice(
 	}
 
 	if err := grpc.SetHeader(ctx, metadata.Pairs(StatusCodeKey,
-		"201")); err != nil {
+		strconv.Itoa(http.StatusCreated))); err != nil {
 		logger := alog.FromContext(ctx)
 		logger.Errorf("CreateDevice grpc.SetHeader: %v", err)
 	}
@@ -98,7 +100,7 @@ func (d *Device) CreateDeviceLoRaWAN(
 	}
 
 	if err := grpc.SetHeader(ctx, metadata.Pairs(StatusCodeKey,
-		"204")); err != nil {
+		strconv.Itoa(http.StatusNoContent))); err != nil {
 		logger.Errorf("CreateDeviceLoRaWAN grpc.SetHeader: %v", err)
 	}
 
@@ -207,7 +209,7 @@ func (d *Device) DeleteDeviceLoRaWAN(
 	}
 
 	if err := grpc.SetHeader(ctx, metadata.Pairs(StatusCodeKey,
-		"204")); err != nil {
+		strconv.Itoa(http.StatusNoContent))); err != nil {
 		logger.Errorf("DeleteDeviceLoRaWAN grpc.SetHeader: %v", err)
 	}
 
@@ -228,7 +230,7 @@ func (d *Device) DeleteDevice(
 	}
 
 	if err := grpc.SetHeader(ctx, metadata.Pairs(StatusCodeKey,
-		"204")); err != nil {
+		strconv.Itoa(http.StatusNoContent))); err != nil {
 		logger := alog.FromContext(ctx)
 		logger.Errorf("DeleteDevice grpc.SetHeader: %v", err)
 	}

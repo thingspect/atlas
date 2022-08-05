@@ -4,7 +4,9 @@ package service
 
 import (
 	"context"
+	"net/http"
 	"regexp"
+	"strconv"
 	"strings"
 	"time"
 
@@ -84,7 +86,7 @@ func (u *User) CreateUser(ctx context.Context, req *api.CreateUserRequest) (
 	}
 
 	if err := grpc.SetHeader(ctx, metadata.Pairs(StatusCodeKey,
-		"201")); err != nil {
+		strconv.Itoa(http.StatusCreated))); err != nil {
 		logger := alog.FromContext(ctx)
 		logger.Errorf("CreateUser grpc.SetHeader: %v", err)
 	}
@@ -223,7 +225,7 @@ func (u *User) DeleteUser(ctx context.Context, req *api.DeleteUserRequest) (
 	}
 
 	if err := grpc.SetHeader(ctx, metadata.Pairs(StatusCodeKey,
-		"204")); err != nil {
+		strconv.Itoa(http.StatusNoContent))); err != nil {
 		logger := alog.FromContext(ctx)
 		logger.Errorf("DeleteUser grpc.SetHeader: %v", err)
 	}

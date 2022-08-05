@@ -4,6 +4,8 @@ package service
 
 import (
 	"context"
+	"net/http"
+	"strconv"
 	"time"
 
 	"github.com/thingspect/api/go/api"
@@ -122,7 +124,7 @@ func (s *Session) CreateKey(ctx context.Context, req *api.CreateKeyRequest) (
 	}
 
 	if err := grpc.SetHeader(ctx, metadata.Pairs(StatusCodeKey,
-		"201")); err != nil {
+		strconv.Itoa(http.StatusCreated))); err != nil {
 		logger.Errorf("CreateKey grpc.SetHeader: %v", err)
 	}
 
@@ -151,7 +153,7 @@ func (s *Session) DeleteKey(ctx context.Context, req *api.DeleteKeyRequest) (
 	}
 
 	if err := grpc.SetHeader(ctx, metadata.Pairs(StatusCodeKey,
-		"204")); err != nil {
+		strconv.Itoa(http.StatusNoContent))); err != nil {
 		logger := alog.FromContext(ctx)
 		logger.Errorf("DeleteKey grpc.SetHeader: %v", err)
 	}

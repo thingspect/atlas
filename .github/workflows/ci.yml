@@ -16,7 +16,7 @@ jobs:
         TEST_NSQ_LOOKUP_ADDRS: nsqlookupd:4161
         TEST_MQTT_ADDR: tcp://mqtt:1883
     env:
-      SLACK_WEBHOOK_URL: https://hooks.slack.com/services/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
+      SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
     services:
       postgres:
         image: postgres:12-alpine

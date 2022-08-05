@@ -24,13 +24,15 @@ func TestStatusCode(t *testing.T) {
 	t.Run("Modify status code", func(t *testing.T) {
 		t.Parallel()
 
-		mdHeader := metadata.MD{service.StatusCodeKey: []string{"201"}}
-		wHeader := http.Header{grpcStatusCodeKey: []string{"201"}}
+		mdHeader := metadata.MD{service.StatusCodeKey: []string{strconv.Itoa(
+			http.StatusCreated)}}
+		wHeader := http.Header{grpcStatusCodeKey: []string{strconv.Itoa(
+			http.StatusCreated)}}
 		t.Logf("mdHeader, wHeader: %+v, %+v", mdHeader, wHeader)
 
 		respWriter := NewMockResponseWriter(gomock.NewController(t))
 		respWriter.EXPECT().Header().Return(wHeader).Times(1)
-		respWriter.EXPECT().WriteHeader(201).Times(1)
+		respWriter.EXPECT().WriteHeader(http.StatusCreated).Times(1)
 
 		ctx, cancel := context.WithTimeout(runtime.NewServerMetadataContext(
 			context.Background(), runtime.ServerMetadata{HeaderMD: mdHeader}),
@@ -94,7 +96,8 @@ func TestStatusCode(t *testing.T) {
 		t.Parallel()
 
 		mdHeader := metadata.MD{service.StatusCodeKey: []string{"aaa"}}
-		wHeader := http.Header{grpcStatusCodeKey: []string{"201"}}
+		wHeader := http.Header{grpcStatusCodeKey: []string{strconv.Itoa(
+			http.StatusCreated)}}
 		t.Logf("mdHeader, wHeader: %+v, %+v", mdHeader, wHeader)
 
 		respWriter := NewMockResponseWriter(gomock.NewController(t))
@@ -111,7 +114,7 @@ func TestStatusCode(t *testing.T) {
 		t.Logf("mdHeader, wHeader: %+v, %+v", mdHeader, wHeader)
 		require.Equal(t, metadata.MD{service.StatusCodeKey: []string{"aaa"}},
 			mdHeader)
-		require.Equal(t, http.Header{grpcStatusCodeKey: []string{"201"}},
-			wHeader)
+		require.Equal(t, http.Header{grpcStatusCodeKey: []string{strconv.Itoa(
+			http.StatusCreated)}}, wHeader)
 	})
 }
