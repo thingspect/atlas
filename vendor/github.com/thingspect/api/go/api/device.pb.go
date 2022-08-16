@@ -273,6 +273,7 @@ type CreateDeviceLoRaWANRequest struct {
 	// LoRaWAN configuration type.
 	//
 	// Types that are assignable to TypeOneof:
+	//
 	//	*CreateDeviceLoRaWANRequest_GatewayLorawanType
 	//	*CreateDeviceLoRaWANRequest_DeviceLorawanType
 	TypeOneof isCreateDeviceLoRaWANRequest_TypeOneof `protobuf_oneof:"type_oneof"`

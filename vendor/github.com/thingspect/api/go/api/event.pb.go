@@ -117,6 +117,7 @@ type ListEventsRequest struct {
 	// Device identifier.
 	//
 	// Types that are assignable to IdOneof:
+	//
 	//	*ListEventsRequest_UniqId
 	//	*ListEventsRequest_DeviceId
 	IdOneof isListEventsRequest_IdOneof `protobuf_oneof:"id_oneof"`

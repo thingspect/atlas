@@ -36,6 +36,7 @@ type DataPoint struct {
 	// Attribute value.
 	//
 	// Types that are assignable to ValOneof:
+	//
 	//	*DataPoint_IntVal
 	//	*DataPoint_Fl64Val
 	//	*DataPoint_StrVal
