@@ -13,7 +13,8 @@ package crypto
 // sed '/^.\{0,9\}$/d' 10-million-password-list-top-100000.txt|tr '[:upper:]' \
 // '[:lower:]'|sort -u
 //
-//#nosec G101 // false positive for hardcoded credentials
+// #nosec G101 // false positive for hardcoded credentials
+//
 //nolint:misspell // false positive for directly imported list
 const weakPasswords = `
 ..qlvvcvdeero

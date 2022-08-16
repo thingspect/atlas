@@ -139,7 +139,7 @@ func (d *DAO) Update(ctx context.Context, user *api.User) (*api.User, error) {
 	return user, nil
 }
 
-//#nosec G101 // false positive for hardcoded credentials
+// #nosec G101 // false positive for hardcoded credentials
 const updateUserPassword = `
 UPDATE users
 SET password_hash = $1, updated_at = $2

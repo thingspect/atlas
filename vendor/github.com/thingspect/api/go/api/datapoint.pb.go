@@ -84,6 +84,7 @@ type ListDataPointsRequest struct {
 	// Device identifier.
 	//
 	// Types that are assignable to IdOneof:
+	//
 	//	*ListDataPointsRequest_UniqId
 	//	*ListDataPointsRequest_DeviceId
 	IdOneof isListDataPointsRequest_IdOneof `protobuf_oneof:"id_oneof"`
@@ -245,6 +246,7 @@ type LatestDataPointsRequest struct {
 	// Device identifier.
 	//
 	// Types that are assignable to IdOneof:
+	//
 	//	*LatestDataPointsRequest_UniqId
 	//	*LatestDataPointsRequest_DeviceId
 	IdOneof isLatestDataPointsRequest_IdOneof `protobuf_oneof:"id_oneof"`

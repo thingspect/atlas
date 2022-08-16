@@ -50,7 +50,7 @@ const (
 )
 
 // errPWTLength is returned due to insufficient key length.
-//#nosec G101 // false positive for hardcoded credentials
+// #nosec G101 // false positive for hardcoded credentials
 const errPWTLength consterr.Error = "pwt key must be 32 bytes"
 
 // API holds references to the gRPC and HTTP servers.

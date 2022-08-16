@@ -197,6 +197,7 @@ type ListAlertsRequest struct {
 	// Device identifier.
 	//
 	// Types that are assignable to IdOneof:
+	//
 	//	*ListAlertsRequest_UniqId
 	//	*ListAlertsRequest_DeviceId
 	IdOneof isListAlertsRequest_IdOneof `protobuf_oneof:"id_oneof"`
