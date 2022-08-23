@@ -3,7 +3,7 @@ package queue
 
 //go:generate mockgen -source queuer.go -destination mock_queuer.go -package queue
 
-// Prime is the single-byte payload used by a prime a Queue.
+// Prime is the single-byte payload used to prime a Queue.
 const Prime = 0x00
 
 // Messager defines the methods provided by a Message. Messages are not
