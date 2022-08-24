@@ -1,3 +1,4 @@
+// Package main runs the Hash tool.
 package main
 
 import (

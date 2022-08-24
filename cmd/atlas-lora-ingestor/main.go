@@ -1,3 +1,4 @@
+// Package main starts the LoRa Ingestor service.
 package main
 
 import (

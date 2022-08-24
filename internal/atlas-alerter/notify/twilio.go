@@ -73,7 +73,7 @@ func (t *twilio) lookupCarrier(ctx context.Context, phone string) (
 	d := json.NewDecoder(resp.Body)
 
 	// Read response and decode.
-	if resp.StatusCode >= 400 {
+	if resp.StatusCode >= http.StatusBadRequest {
 		te := &twilioError{}
 		if err = d.Decode(te); err != nil {
 			return nil, err
@@ -121,7 +121,7 @@ func (t *twilio) sendSMS(ctx context.Context, to, body string) error {
 	}()
 
 	// Read response and decode.
-	if resp.StatusCode >= 400 {
+	if resp.StatusCode >= http.StatusBadRequest {
 		te := &twilioError{}
 		d := json.NewDecoder(resp.Body)
 		if err = d.Decode(te); err != nil {

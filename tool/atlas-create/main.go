@@ -1,3 +1,4 @@
+// Package main runs the Create tool.
 package main
 
 import (
