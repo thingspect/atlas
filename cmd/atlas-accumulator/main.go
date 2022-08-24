@@ -1,3 +1,4 @@
+// Package main starts the Accumulator service.
 package main
 
 import (

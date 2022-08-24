@@ -1,3 +1,4 @@
+// Package main starts the MQTT Ingestor service.
 package main
 
 import (

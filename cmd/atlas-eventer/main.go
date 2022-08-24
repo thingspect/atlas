@@ -1,3 +1,4 @@
+// Package main starts the Eventer service.
 package main
 
 import (

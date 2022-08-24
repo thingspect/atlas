@@ -74,7 +74,7 @@ func (t *mailgun) sendEmail(
 		return err
 	}
 
-	if resp.StatusCode >= 400 {
+	if resp.StatusCode >= http.StatusBadRequest {
 		te := &mailgunError{}
 		// Handle Mailgun mixing JSON and plain text responses.
 		if err = json.Unmarshal(respBody, te); err != nil {

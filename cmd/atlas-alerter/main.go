@@ -1,3 +1,4 @@
+// Package main starts the Alerter service.
 package main
 
 import (

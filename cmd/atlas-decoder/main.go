@@ -1,3 +1,4 @@
+// Package main starts the Decoder service.
 package main
 
 import (

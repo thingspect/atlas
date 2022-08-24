@@ -1,3 +1,4 @@
+// Package main starts the Validator service.
 package main
 
 import (
