@@ -1,13 +1,14 @@
 package device
 
-//nolint:staticcheck // third-party dependency
 import (
 	as "github.com/brocaar/chirpstack-api/go/v3/as/integration"
 
 	//lint:ignore SA1019 // third-party dependency
+	//nolint:staticcheck // third-party dependency
 	"github.com/golang/protobuf/jsonpb"
 
 	//lint:ignore SA1019 // third-party dependency
+	//nolint:staticcheck // third-party dependency
 	"github.com/golang/protobuf/proto"
 	"github.com/thingspect/atlas/pkg/decode"
 )

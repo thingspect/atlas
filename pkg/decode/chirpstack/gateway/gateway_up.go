@@ -1,13 +1,14 @@
 package gateway
 
-//nolint:staticcheck // third-party dependency
 import (
 	"github.com/brocaar/chirpstack-api/go/v3/gw"
 
 	//lint:ignore SA1019 // third-party dependency
+	//nolint:staticcheck // third-party dependency
 	"github.com/golang/protobuf/jsonpb"
 
 	//lint:ignore SA1019 // third-party dependency
+	//nolint:staticcheck // third-party dependency
 	"github.com/golang/protobuf/proto"
 	"github.com/thingspect/atlas/pkg/decode"
 	"github.com/thingspect/atlas/pkg/decode/chirpstack"

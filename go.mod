@@ -16,14 +16,14 @@ require (
 	github.com/grpc-ecosystem/grpc-gateway/v2 v2.11.3
 	github.com/jackc/pgconn v1.13.0
 	github.com/jackc/pgtype v1.12.0
-	github.com/jackc/pgx/v4 v4.17.0
+	github.com/jackc/pgx/v4 v4.17.2
 	github.com/mennanov/fmutils v0.2.0
 	github.com/nsqio/go-nsq v1.1.0
-	github.com/rs/zerolog v1.27.0
+	github.com/rs/zerolog v1.28.0
 	github.com/smira/go-statsd v1.3.2
 	github.com/stretchr/testify v1.8.0
 	github.com/thingspect/api/go v1.0.1
-	golang.org/x/crypto v0.0.0-20220817201139-bc19a97f63c8
+	golang.org/x/crypto v0.0.0-20220829220503-c86fa9a7ed90
 	google.golang.org/grpc v1.49.0
 	google.golang.org/protobuf v1.28.1
 )
@@ -44,10 +44,10 @@ require (
 	github.com/mattn/go-colorable v0.1.13 // indirect
 	github.com/mattn/go-isatty v0.0.16 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
-	golang.org/x/net v0.0.0-20220822230855-b0a4917ee28c // indirect
-	golang.org/x/sync v0.0.0-20220819030929-7fc1605a5dde // indirect
-	golang.org/x/sys v0.0.0-20220823224334-20c2bfdbfe24 // indirect
+	golang.org/x/net v0.0.0-20220907135653-1e95f45603a7 // indirect
+	golang.org/x/sync v0.0.0-20220907140024-f12130a52804 // indirect
+	golang.org/x/sys v0.0.0-20220907062415-87db552b00fd // indirect
 	golang.org/x/text v0.3.7 // indirect
-	google.golang.org/genproto v0.0.0-20220822174746-9e6da59bd2fc // indirect
+	google.golang.org/genproto v0.0.0-20220908141613-51c1cc9bc6d0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )

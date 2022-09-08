@@ -39,6 +39,9 @@ lint:
 	-E forcetypeassert,goconst,godot,goerr113,gofumpt,gosec,nlreturn,prealloc \
 	-E unconvert,unparam,usestdlibvars --exclude-use-default=false
 
+	go install golang.org/x/vuln/cmd/govulncheck@latest
+	govulncheck -test ./...
+
 init_db:
 	echo FLUSHALL|nc -w 2 $(TEST_REDIS_HOST) 6379
 
