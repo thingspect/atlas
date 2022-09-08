@@ -2,7 +2,6 @@
 
 package ingestor
 
-//nolint:staticcheck // third-party dependency
 import (
 	"encoding/base64"
 	"encoding/hex"
@@ -14,6 +13,7 @@ import (
 	"github.com/brocaar/chirpstack-api/go/v3/gw"
 
 	//lint:ignore SA1019 // third-party dependency
+	//nolint:staticcheck // third-party dependency
 	"github.com/golang/protobuf/proto"
 	"github.com/stretchr/testify/require"
 	"github.com/thingspect/api/go/common"
