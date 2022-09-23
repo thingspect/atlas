@@ -1,33 +1,25 @@
 package gateway
 
 import (
-	"github.com/brocaar/chirpstack-api/go/v3/gw"
+	"strings"
 
-	//lint:ignore SA1019 // third-party dependency
-	//nolint:staticcheck // third-party dependency
-	"github.com/golang/protobuf/jsonpb"
-
-	//lint:ignore SA1019 // third-party dependency
-	//nolint:staticcheck // third-party dependency
-	"github.com/golang/protobuf/proto"
+	"github.com/chirpstack/chirpstack/api/go/v4/gw"
 	"github.com/thingspect/atlas/pkg/decode"
+	"google.golang.org/protobuf/encoding/protojson"
+	"google.golang.org/protobuf/proto"
 )
 
 // gatewayAck parses a gateway Downlink ACK payload from a []byte according to
 // the spec.
 func gatewayAck(body []byte) ([]*decode.Point, error) {
-	ackMsg := &gw.DownlinkTXAck{}
+	ackMsg := &gw.DownlinkTxAck{}
 	if err := proto.Unmarshal(body, ackMsg); err != nil {
 		return nil, err
 	}
 
-	// Build raw gateway payload for debugging.
-	marshaler := &jsonpb.Marshaler{}
-	gw, err := marshaler.MarshalToString(ackMsg)
-	if err != nil {
-		return nil, err
-	}
-	msgs := []*decode.Point{{Attr: "raw_gateway", Value: gw}}
+	// Build raw device and data payloads for debugging, with consistent output.
+	msgs := []*decode.Point{{Attr: "raw_gateway", Value: strings.ReplaceAll(
+		protojson.MarshalOptions{}.Format(ackMsg), " ", "")}}
 
 	// Parse DownlinkTXAckItems.
 	for _, item := range ackMsg.Items {

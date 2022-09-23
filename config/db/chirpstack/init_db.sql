@@ -1,2 +1,2 @@
-CREATE DATABASE chirpstack_ns;
-CREATE DATABASE chirpstack_as;
+CREATE ROLE chirpstack LOGIN PASSWORD 'notasecurepassword';
+CREATE DATABASE chirpstack OWNER chirpstack;

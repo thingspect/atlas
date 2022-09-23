@@ -6,13 +6,10 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/brocaar/chirpstack-api/go/v3/gw"
-
-	//lint:ignore SA1019 // third-party dependency
-	//nolint:staticcheck // third-party dependency
-	"github.com/golang/protobuf/proto"
+	"github.com/chirpstack/chirpstack/api/go/v4/gw"
 	"github.com/stretchr/testify/require"
 	"github.com/thingspect/atlas/pkg/decode"
+	"google.golang.org/protobuf/proto"
 )
 
 func TestGatewayUp(t *testing.T) {
@@ -31,30 +28,28 @@ func TestGatewayUp(t *testing.T) {
 			}, "",
 		},
 		{
-			&gw.UplinkFrame{RxInfo: &gw.UplinkRXInfo{}}, []*decode.Point{
+			&gw.UplinkFrame{RxInfo: &gw.UplinkRxInfo{}}, []*decode.Point{
 				{Attr: "raw_gateway", Value: `{"rxInfo":{}}`},
 				{Attr: "channel", Value: int32(0)},
 			}, "",
 		},
 		{
 			&gw.UplinkFrame{
-				TxInfo: &gw.UplinkTXInfo{
-					Frequency: 902700000, ModulationInfo: &gw.UplinkTXInfo_LoraModulationInfo{
-						LoraModulationInfo: &gw.LoRaModulationInfo{
-							SpreadingFactor: 7,
+				TxInfo: &gw.UplinkTxInfo{
+					Frequency: 902700000, Modulation: &gw.Modulation{
+						Parameters: &gw.Modulation_Lora{
+							Lora: &gw.LoraModulationInfo{SpreadingFactor: 7},
 						},
 					},
-				}, RxInfo: &gw.UplinkRXInfo{
-					Rssi: -74, LoraSnr: 7.8, Channel: 2,
-				},
+				}, RxInfo: &gw.UplinkRxInfo{Rssi: -74, Snr: 7, Channel: 2},
 			}, []*decode.Point{
 				{Attr: "raw_gateway", Value: `{"txInfo":{"frequency":` +
-					`902700000,"loRaModulationInfo":{"spreadingFactor":7}},` +
-					`"rxInfo":{"rssi":-74,"loRaSNR":7.8,"channel":2}}`},
+					`902700000,"modulation":{"lora":{"spreadingFactor":7}}},` +
+					`"rxInfo":{"rssi":-74,"snr":7,"channel":2}}`},
 				{Attr: "frequency", Value: int32(902700000)},
 				{Attr: "sf", Value: int32(7)},
 				{Attr: "lora_rssi", Value: int32(-74)},
-				{Attr: "snr", Value: 7.8},
+				{Attr: "snr", Value: float64(7)},
 				{Attr: "channel", Value: int32(2)},
 			}, "",
 		},

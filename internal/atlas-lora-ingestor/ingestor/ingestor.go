@@ -20,7 +20,7 @@ const ServiceName = "lora-ingestor"
 // Constants used for MQTT topic configuration.
 const (
 	sharedPref   = "$share/loragroup/"
-	mqttGWTopic  = "lora/gateway/#"
+	mqttGWTopic  = "lora/+/gateway/#"
 	mqttDevTopic = "lora/application/+/device/+/event/+"
 )
 

@@ -8,12 +8,12 @@ deps:
 message:
 	protoc -I=../protobuf -I=/tmp/googleapis -I=/tmp/grpc-gateway -I=/tmp/pgv \
 	--go_out=. --go_opt=paths=source_relative \
-	message/decoder_in.proto \
-	message/eventer_out.proto \
-	message/validator_in.proto \
-	message/validator_out.proto
+	message/thingspect_decoder_in.proto \
+	message/thingspect_eventer_out.proto \
+	message/thingspect_validator_in.proto \
+	message/thingspect_validator_out.proto
 
 token:
 	protoc -I=../protobuf --go_out=. --go_opt=paths=source_relative \
-	token/web.proto \
-	token/page.proto
+	token/thingspect_web.proto \
+	token/thingspect_page.proto

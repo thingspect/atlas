@@ -3,18 +3,17 @@
 package chirpstack
 
 import (
-	"encoding/hex"
 	"sort"
 	"strconv"
 	"time"
 
-	"github.com/brocaar/chirpstack-api/go/v3/gw"
+	"github.com/chirpstack/chirpstack/api/go/v4/gw"
 	"github.com/thingspect/atlas/pkg/decode"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
-// ParseRXInfo parses a gateway UplinkRXInfo payload according to the spec.
-func ParseRXInfo(rxInfo *gw.UplinkRXInfo) []*decode.Point {
+// ParseRXInfo parses a gateway UplinkRxInfo payload according to the spec.
+func ParseRXInfo(rxInfo *gw.UplinkRxInfo) []*decode.Point {
 	if rxInfo == nil {
 		return nil
 	}
@@ -26,9 +25,9 @@ func ParseRXInfo(rxInfo *gw.UplinkRXInfo) []*decode.Point {
 			Attr: "lora_rssi", Value: rxInfo.Rssi,
 		})
 	}
-	if rxInfo.LoraSnr != 0 {
+	if rxInfo.Snr != 0 {
 		msgs = append(msgs, &decode.Point{
-			Attr: "snr", Value: rxInfo.LoraSnr,
+			Attr: "snr", Value: float64(rxInfo.Snr),
 		})
 	}
 	msgs = append(msgs, &decode.Point{
@@ -38,10 +37,10 @@ func ParseRXInfo(rxInfo *gw.UplinkRXInfo) []*decode.Point {
 	return msgs
 }
 
-// ParseRXInfos parses a gateway UplinkRXInfo slice according to the spec.
-func ParseRXInfos(
-	rxInfos []*gw.UplinkRXInfo,
-) (*timestamppb.Timestamp, []*decode.Point) {
+// ParseRXInfos parses a gateway UplinkRxInfo slice according to the spec.
+func ParseRXInfos(rxInfos []*gw.UplinkRxInfo) (
+	*timestamppb.Timestamp, []*decode.Point,
+) {
 	msgTime := timestamppb.Now()
 
 	if len(rxInfos) == 0 {
@@ -55,9 +54,9 @@ func ParseRXInfos(
 		return rxInfos[i].Rssi > rxInfos[j].Rssi
 	})
 
-	if len(rxInfos[0].GatewayId) != 0 {
+	if rxInfos[0].GatewayId != "" {
 		msgs = append(msgs, &decode.Point{
-			Attr: "gateway_id", Value: hex.EncodeToString(rxInfos[0].GatewayId),
+			Attr: "gateway_id", Value: rxInfos[0].GatewayId,
 		})
 	}
 

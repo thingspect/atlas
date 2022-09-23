@@ -1,0 +1,28 @@
+syntax = "proto3";
+package thingspect.int.token;
+
+import "api/thingspect_role.proto";
+import "google/protobuf/timestamp.proto";
+
+option go_package = "github.com/thingspect/atlas/api/go/token";
+
+// Web represents a web or API key token.
+message Web {
+  // User identifier.
+  oneof id_oneof {
+    // User ID (UUID). Either user ID or key ID must be provided.
+    bytes user_id = 1;
+
+    // Key ID (UUID). Either user ID or key ID must be provided.
+    bytes key_id = 2;
+  }
+
+  // Organization ID (UUID).
+  bytes org_id = 3;
+
+  // User role.
+  api.Role role = 4;
+
+  // Token expiration timestamp. If present, nanos should be zeroed for compactness. Will not be present for API key use.
+  google.protobuf.Timestamp expires_at = 5;
+}

@@ -1,7 +1,7 @@
 version: "3"
 services:
   postgres:
-    image: postgres:12-alpine
+    image: postgres:14-alpine
     ports:
       - "5432:5432"
     environment:
@@ -9,23 +9,29 @@ services:
       - POSTGRES_DB=atlas
     volumes:
       - ./volume/postgres:/var/lib/postgresql/data
+
   nsqlookupd:
     image: nsqio/nsq:v1.2.1
     command: /nsqlookupd --log-level=warn
+
   nsqd:
     image: nsqio/nsq:v1.2.1
     command: /nsqd --lookupd-tcp-address=nsqlookupd:4160 --broadcast-address=nsqd --log-level=warn
+    restart: on-failure
     depends_on:
       - nsqlookupd
     volumes:
       - ./volume/nsqd:/data
+
   nsqadmin:
     image: nsqio/nsq:v1.2.1
     command: /nsqadmin --lookupd-http-address=nsqlookupd:4161 --log-level=warn
+    restart: on-failure
     depends_on:
       - nsqlookupd
     ports:
       - "4171:4171"
+
   mqtt:
     image: eclipse-mosquitto:2.0
     ports:
@@ -33,64 +39,43 @@ services:
     volumes:
       - ./volume/mosquitto/config:/mosquitto/config
       - ./volume/mosquitto/data:/mosquitto/data
+
   redis:
     image: redis:7-alpine
     command: redis-server --save 300 1 --save 60 100 --appendonly no
     volumes:
       - ./volume/redis:/data
-  chirpstack-network-server:
-    image: chirpstack/chirpstack-network-server:3.16
+
+  chirpstack:
+    image: chirpstack/chirpstack:4.0
+    command: -c /etc/chirpstack
+    restart: on-failure
     depends_on:
       - postgres
       - mqtt
       - redis
-    environment:
-      - GENERAL__LOG_LEVEL=3
-      - POSTGRESQL__DSN=postgres://postgres:notasecurepassword@postgres/chirpstack_ns?sslmode=disable
-      - REDIS__URL=redis://redis:6379
-      - NETWORK_SERVER__NET_ID=b86498
-      - NETWORK_SERVER__BAND__NAME=US915
-      - NETWORK_SERVER__NETWORK_SETTINGS__ENABLED_UPLINK_CHANNELS=0,1,2,3,4,5,6,7,64
-      - NETWORK_SERVER__GATEWAY__BACKEND__MQTT__EVENT_TOPIC=$$share/csgroup/lora/gateway/+/event/+
-      - NETWORK_SERVER__GATEWAY__BACKEND__MQTT__COMMAND_TOPIC_TEMPLATE=lora/gateway/{{ .GatewayID }}/command/{{ .CommandType }}
-      - NETWORK_SERVER__GATEWAY__BACKEND__MQTT__SERVER=tcp://mqtt:1883
-      - NETWORK_SERVER__GATEWAY__BACKEND__MQTT__USERNAME=chirpstack-ns
-      - NETWORK_SERVER__GATEWAY__BACKEND__MQTT__PASSWORD=notasecurepassword
-      - NETWORK_SERVER__GATEWAY__BACKEND__MQTT__CLIENT_ID=chirpstack-network-server-1
-      - NETWORK_SERVER__GATEWAY__BACKEND__MQTT__MAX_RECONNECT_INTERVAL=5s
-      - JOIN_SERVER__DEFAULT__SERVER=http://chirpstack-application-server:8003
-      - MONITORING__BIND=0.0.0.0:9323
-      - MONITORING__HEALTHCHECK_ENDPOINT=true
-  chirpstack-application-server:
-    image: chirpstack/chirpstack-application-server:3.17
     ports:
       - "8080:8080"
-    depends_on:
-      - postgres
-      - mqtt
-      - redis
     environment:
-      - GENERAL__LOG_LEVEL=3
-      - POSTGRESQL__DSN=postgres://postgres:notasecurepassword@postgres/chirpstack_as?sslmode=disable
-      - REDIS__URL=redis://redis:6379
-      - APPLICATION_SERVER__INTEGRATION__MARSHALER=protobuf
-      - APPLICATION_SERVER__INTEGRATION__MQTT__EVENT_TOPIC_TEMPLATE=lora/application/{{ .ApplicationID }}/device/{{ .DevEUI }}/event/{{ .EventType }}
-      - APPLICATION_SERVER__INTEGRATION__MQTT__COMMAND_TOPIC_TEMPLATE=lora/application/{{ .ApplicationID }}/device/{{ .DevEUI }}/command/{{ .CommandType }}
-      - APPLICATION_SERVER__INTEGRATION__MQTT__SERVER=tcp://mqtt:1883
-      - APPLICATION_SERVER__INTEGRATION__MQTT__USERNAME=chirpstack-as
-      - APPLICATION_SERVER__INTEGRATION__MQTT__PASSWORD=notasecurepassword
-      - APPLICATION_SERVER__INTEGRATION__MQTT__CLIENT_ID=chirpstack-application-server-1
-      - APPLICATION_SERVER__INTEGRATION__MQTT__MAX_RECONNECT_INTERVAL=5s
-      - APPLICATION_SERVER__API__PUBLIC_HOST=chirpstack-application-server:8001
-      - APPLICATION_SERVER__EXTERNAL_API__JWT_SECRET=notasecurekey
-      - MONITORING__BIND=0.0.0.0:9323
-      - MONITORING__HEALTHCHECK_ENDPOINT=true
+      - CS_POSTGRESQL_DSN=postgres://chirpstack:notasecurepassword@postgres/chirpstack?sslmode=disable
+      - CS_REDIS_SERVER=redis
+      - CS_NETWORK_NET_ID=b86498
+      - CS_API_SECRET=notasecurekey
+      - CS_MQTT_SERVER=tcp://mqtt:1883
+      - CS_MQTT_PASSWORD=notasecurepassword
+      - CS_INTEGRATION_MQTT_CLIENT_ID=chirpstack-1
+      - CS_REGION_US915_0_MQTT_CLIENT_ID=chirpstack-us915-0-1
+      - CS_REGION_US915_1_MQTT_CLIENT_ID=chirpstack-us915-1-1
+    volumes:
+      - ./volume/chirpstack:/etc/chirpstack
+
   dogstatsd:
     image: datadog/dogstatsd:latest
     environment:
       - DD_API_KEY=notasecurekey
       - DD_DOGSTATSD_NON_LOCAL_TRAFFIC=true
       - DD_ENV=dev
+
   logspout:
     image: gliderlabs/logspout:latest
     command: syslog+tls://logs-01.loggly.com:6514

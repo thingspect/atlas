@@ -3,20 +3,19 @@ package lora
 import (
 	"context"
 
-	as "github.com/brocaar/chirpstack-api/go/v3/as/external/api"
-	"github.com/brocaar/chirpstack-api/go/v3/common"
+	"github.com/chirpstack/chirpstack/api/go/v4/api"
+	"github.com/chirpstack/chirpstack/api/go/v4/common"
 )
 
 // CreateGateway creates a gateway by UniqID.
 func (cs *Chirpstack) CreateGateway(ctx context.Context, uniqID string) error {
-	gwCli := as.NewGatewayServiceClient(cs.conn)
-	_, err := gwCli.Create(ctx, &as.CreateGatewayRequest{Gateway: &as.Gateway{
-		Id:              uniqID,
-		Name:            uniqID,
-		Description:     uniqID,
-		Location:        &common.Location{},
-		OrganizationId:  cs.orgID,
-		NetworkServerId: cs.nsID,
+	gwCli := api.NewGatewayServiceClient(cs.conn)
+	_, err := gwCli.Create(ctx, &api.CreateGatewayRequest{Gateway: &api.Gateway{
+		GatewayId:   uniqID,
+		Name:        uniqID,
+		Description: uniqID,
+		Location:    &common.Location{},
+		TenantId:    cs.tenantID,
 	}})
 
 	return err
@@ -24,8 +23,8 @@ func (cs *Chirpstack) CreateGateway(ctx context.Context, uniqID string) error {
 
 // DeleteGateway deletes a gateway by UniqID.
 func (cs *Chirpstack) DeleteGateway(ctx context.Context, uniqID string) error {
-	gwCli := as.NewGatewayServiceClient(cs.conn)
-	_, err := gwCli.Delete(ctx, &as.DeleteGatewayRequest{Id: uniqID})
+	gwCli := api.NewGatewayServiceClient(cs.conn)
+	_, err := gwCli.Delete(ctx, &api.DeleteGatewayRequest{GatewayId: uniqID})
 
 	return err
 }

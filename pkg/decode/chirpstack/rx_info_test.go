@@ -3,14 +3,12 @@
 package chirpstack
 
 import (
-	"encoding/base64"
-	"encoding/hex"
 	"fmt"
 	"strconv"
 	"testing"
 	"time"
 
-	"github.com/brocaar/chirpstack-api/go/v3/gw"
+	"github.com/chirpstack/chirpstack/api/go/v4/gw"
 	"github.com/stretchr/testify/require"
 	"github.com/thingspect/atlas/pkg/decode"
 	"github.com/thingspect/atlas/pkg/test/random"
@@ -21,27 +19,27 @@ import (
 func TestParseRXInfo(t *testing.T) {
 	t.Parallel()
 
-	// Gateway UplinkRXInfo payloads, see ParseRXInfo() for format description.
+	// Gateway UplinkRxInfo payloads, see ParseRXInfo() for format description.
 	tests := []struct {
-		inp *gw.UplinkRXInfo
+		inp *gw.UplinkRxInfo
 		res []*decode.Point
 	}{
-		// Gateway UplinkRXInfo.
+		// Gateway UplinkRxInfo.
 		{
-			&gw.UplinkRXInfo{}, []*decode.Point{
+			&gw.UplinkRxInfo{}, []*decode.Point{
 				{Attr: "channel", Value: int32(0)},
 			},
 		},
 		{
-			&gw.UplinkRXInfo{
-				Rssi: -74, LoraSnr: 7.8, Channel: 2,
+			&gw.UplinkRxInfo{
+				Rssi: -74, Snr: 7, Channel: 2,
 			}, []*decode.Point{
 				{Attr: "lora_rssi", Value: int32(-74)},
-				{Attr: "snr", Value: 7.8},
+				{Attr: "snr", Value: float64(7)},
 				{Attr: "channel", Value: int32(2)},
 			},
 		},
-		// Gateway UplinkRXInfo bad length.
+		// Gateway UplinkRxInfo bad length.
 		{
 			nil, nil,
 		},
@@ -64,56 +62,50 @@ func TestParseRXInfos(t *testing.T) {
 	t.Parallel()
 
 	gatewayID := random.String(16)
-	bGatewayID, err := hex.DecodeString(gatewayID)
-	require.NoError(t, err)
-	t.Logf("bGatewayID: %x", bGatewayID)
-
-	b64GatewayID := base64.StdEncoding.EncodeToString(bGatewayID)
-	t.Logf("b64GatewayID: %v", b64GatewayID)
 
 	now := time.Now().UTC().Add(-15 * time.Minute)
 	tsNow := timestamppb.New(now)
 	bad := time.Now().UTC().Add(time.Minute)
 	tsBad := timestamppb.New(bad)
 
-	// Gateway UplinkRXInfo slices, see ParseRXInfos() for format description.
+	// Gateway UplinkRxInfo slices, see ParseRXInfos() for format description.
 	tests := []struct {
-		inp       []*gw.UplinkRXInfo
+		inp       []*gw.UplinkRxInfo
 		resTS     *timestamppb.Timestamp
 		resPoints []*decode.Point
 	}{
-		// Gateway UplinkRXInfos.
+		// Gateway UplinkRxInfos.
 		{
-			[]*gw.UplinkRXInfo{
+			[]*gw.UplinkRxInfo{
 				{},
 			}, nil, []*decode.Point{
 				{Attr: "channel", Value: int32(0)},
 			},
 		},
 		{
-			[]*gw.UplinkRXInfo{
-				{GatewayId: []byte("aaa"), Time: tsNow, Rssi: -80, LoraSnr: 1},
-				{GatewayId: bGatewayID, Time: tsNow, Rssi: -74, LoraSnr: 7.8},
+			[]*gw.UplinkRxInfo{
+				{GatewayId: "aaa", Time: tsNow, Rssi: -80, Snr: 1},
+				{GatewayId: gatewayID, Time: tsNow, Rssi: -74, Snr: 7},
 			}, tsNow, []*decode.Point{
 				{Attr: "gateway_id", Value: gatewayID},
 				{Attr: "time", Value: strconv.FormatInt(now.Unix(), 10)},
 				{Attr: "lora_rssi", Value: int32(-74)},
-				{Attr: "snr", Value: 7.8},
+				{Attr: "snr", Value: float64(7)},
 				{Attr: "channel", Value: int32(0)},
 			},
 		},
 		{
-			[]*gw.UplinkRXInfo{
-				{GatewayId: bGatewayID, Time: tsBad, Rssi: -74, LoraSnr: 7.8},
+			[]*gw.UplinkRxInfo{
+				{GatewayId: gatewayID, Time: tsBad, Rssi: -74, Snr: 7},
 			}, nil, []*decode.Point{
 				{Attr: "gateway_id", Value: gatewayID},
 				{Attr: "time", Value: strconv.FormatInt(bad.Unix(), 10)},
 				{Attr: "lora_rssi", Value: int32(-74)},
-				{Attr: "snr", Value: 7.8},
+				{Attr: "snr", Value: float64(7)},
 				{Attr: "channel", Value: int32(0)},
 			},
 		},
-		// Gateway UplinkRXInfo bad length.
+		// Gateway UplinkRxInfo bad length.
 		{
 			nil, nil, nil,
 		},
