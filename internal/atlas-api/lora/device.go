@@ -3,26 +3,28 @@ package lora
 import (
 	"context"
 
-	as "github.com/brocaar/chirpstack-api/go/v3/as/external/api"
+	"github.com/chirpstack/chirpstack/api/go/v4/api"
 )
 
 // CreateDevice creates a device by UniqID and application key.
 func (cs *Chirpstack) CreateDevice(
 	ctx context.Context, uniqID, appKey string,
 ) error {
-	devCli := as.NewDeviceServiceClient(cs.conn)
-	if _, err := devCli.Create(ctx, &as.CreateDeviceRequest{Device: &as.Device{
-		DevEui:          uniqID,
-		Name:            uniqID,
-		ApplicationId:   cs.appID,
-		Description:     uniqID,
-		DeviceProfileId: cs.devProfID,
-	}}); err != nil {
+	devCli := api.NewDeviceServiceClient(cs.conn)
+	if _, err := devCli.Create(ctx, &api.CreateDeviceRequest{
+		Device: &api.Device{
+			DevEui:          uniqID,
+			Name:            uniqID,
+			ApplicationId:   cs.appID,
+			Description:     uniqID,
+			DeviceProfileId: cs.devProfID,
+		},
+	}); err != nil {
 		return err
 	}
 
-	if _, err := devCli.CreateKeys(ctx, &as.CreateDeviceKeysRequest{
-		DeviceKeys: &as.DeviceKeys{
+	if _, err := devCli.CreateKeys(ctx, &api.CreateDeviceKeysRequest{
+		DeviceKeys: &api.DeviceKeys{
 			DevEui: uniqID,
 			NwkKey: appKey,
 		},
@@ -39,8 +41,8 @@ func (cs *Chirpstack) CreateDevice(
 
 // DeleteDevice deletes a device by UniqID.
 func (cs *Chirpstack) DeleteDevice(ctx context.Context, uniqID string) error {
-	devCli := as.NewDeviceServiceClient(cs.conn)
-	_, err := devCli.Delete(ctx, &as.DeleteDeviceRequest{DevEui: uniqID})
+	devCli := api.NewDeviceServiceClient(cs.conn)
+	_, err := devCli.Delete(ctx, &api.DeleteDeviceRequest{DevEui: uniqID})
 
 	return err
 }

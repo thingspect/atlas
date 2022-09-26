@@ -31,25 +31,25 @@ func (ing *Ingestor) decodeGateways() {
 		}
 		logger := alog.WithFields(logFields)
 
-		// Parse and validate topic in formats: 'lora/gateway/+/event/+' and
-		// 'lora/gateway/+/state/+'. A state type is considered an event.
+		// Parse and validate topic in formats: 'lora/+/gateway/+/event/+' and
+		// 'lora/+/gateway/+/state/+'. A state type is considered an event.
 		topic := msg.Topic()
 		topicParts := strings.Split(topic, "/")
-		if len(topicParts) != 5 ||
+		if len(topicParts) != 6 ||
 			topicParts[0] != "lora" ||
-			topicParts[1] != "gateway" ||
-			(topicParts[3] != "event" && topicParts[3] != "state") {
+			topicParts[2] != "gateway" ||
+			(topicParts[4] != "event" && topicParts[4] != "state") {
 			metric.Incr("error", map[string]string{"func": "topic"})
-			logger.Errorf("decodeGateways malformed topic: %v", topic)
+			logger.Errorf("decodeGateways unknown topic: %v", topic)
 
 			continue
 		}
-		logger = logger.WithStr("uniqID", topicParts[2])
-		logger = logger.WithStr("event", topicParts[4])
+		logger = logger.WithStr("uniqID", topicParts[3])
+		logger = logger.WithStr("event", topicParts[5])
 
 		// Decode payload. Continue execution in the presence of errors, as
 		// valid points may be returned.
-		points, err := gateway.Parse(topicParts[4], msg.Payload())
+		points, err := gateway.Parse(topicParts[5], msg.Payload())
 		if err != nil {
 			metric.Incr("error", map[string]string{"func": "decode"})
 			logger.Errorf("decodeGateways gateway.Gateway: %v", err)
@@ -59,7 +59,7 @@ func (ing *Ingestor) decodeGateways() {
 
 		// Build and publish ValidatorIn messages.
 		for _, point := range points {
-			vIn := registry.PointToVIn(traceID, topicParts[2], point,
+			vIn := registry.PointToVIn(traceID, topicParts[3], point,
 				timestamppb.Now())
 
 			bVIn, err := proto.Marshal(vIn)
@@ -115,7 +115,7 @@ func (ing *Ingestor) decodeDevices() {
 			topicParts[1] != "application" || topicParts[3] != "device" ||
 			topicParts[5] != "event" {
 			metric.Incr("error", map[string]string{"func": "topic"})
-			logger.Errorf("decodeDevices malformed topic: %v", topic)
+			logger.Errorf("decodeDevices unknown topic: %v", topic)
 
 			continue
 		}

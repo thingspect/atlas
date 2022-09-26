@@ -1,18 +1,20 @@
 version: "3"
 services:
   postgres:
-    image: postgres:12-alpine
+    image: postgres:14-alpine
     # command: postgres -c log_statement=all
     ports:
       - "127.0.0.1:5432:5432"
     environment:
       - POSTGRES_PASSWORD=postgres
       - POSTGRES_DB=atlas_test
+
   nsqlookupd:
     image: nsqio/nsq:v1.2.1
     command: /nsqlookupd --log-level=warn
     ports:
       - "127.0.0.1:4161:4161"
+
   nsqd_nsqadmin:
     image: nsqio/nsq:v1.2.1
     # Run nsqd and nsqadmin in the same container to support a broadcast address
@@ -21,18 +23,21 @@ services:
       sh -c '/nsqadmin --lookupd-http-address=nsqlookupd:4161 --log-level=warn &
       /nsqd --lookupd-tcp-address=nsqlookupd:4160 --broadcast-address=127.0.0.1
       --log-level=warn'
+    restart: on-failure
     stop_grace_period: 1s
     depends_on:
       - nsqlookupd
     ports:
       - "127.0.0.1:4150:4150"
       - "127.0.0.1:4171:4171"
+
   mqtt:
     image: eclipse-mosquitto:2.0
     ports:
       - "127.0.0.1:1883:1883"
     volumes:
       - ./volume/mosquitto:/mosquitto/config
+
   redis:
     image: redis:7-alpine
     ports:

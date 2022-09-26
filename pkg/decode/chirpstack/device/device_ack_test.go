@@ -6,13 +6,10 @@ import (
 	"fmt"
 	"testing"
 
-	as "github.com/brocaar/chirpstack-api/go/v3/as/integration"
-
-	//lint:ignore SA1019 // third-party dependency
-	//nolint:staticcheck // third-party dependency
-	"github.com/golang/protobuf/proto"
+	"github.com/chirpstack/chirpstack/api/go/v4/integration"
 	"github.com/stretchr/testify/require"
 	"github.com/thingspect/atlas/pkg/decode"
+	"google.golang.org/protobuf/proto"
 )
 
 func TestDeviceAck(t *testing.T) {
@@ -20,16 +17,16 @@ func TestDeviceAck(t *testing.T) {
 
 	// Device ACK payloads, see deviceAck() for format description.
 	tests := []struct {
-		inp *as.AckEvent
+		inp *integration.AckEvent
 		res []*decode.Point
 		err string
 	}{
 		// Device ACK.
-		{&as.AckEvent{}, []*decode.Point{
+		{&integration.AckEvent{}, []*decode.Point{
 			{Attr: "raw_device", Value: `{}`},
 			{Attr: "ack", Value: ackTimeout},
 		}, ""},
-		{&as.AckEvent{Acknowledged: true}, []*decode.Point{
+		{&integration.AckEvent{Acknowledged: true}, []*decode.Point{
 			{Attr: "raw_device", Value: `{"acknowledged":true}`},
 			{Attr: "ack", Value: ackOK},
 		}, ""},

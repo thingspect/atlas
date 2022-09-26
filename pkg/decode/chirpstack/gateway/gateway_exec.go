@@ -1,16 +1,12 @@
 package gateway
 
 import (
-	"github.com/brocaar/chirpstack-api/go/v3/gw"
+	"strings"
 
-	//lint:ignore SA1019 // third-party dependency
-	//nolint:staticcheck // third-party dependency
-	"github.com/golang/protobuf/jsonpb"
-
-	//lint:ignore SA1019 // third-party dependency
-	//nolint:staticcheck // third-party dependency
-	"github.com/golang/protobuf/proto"
+	"github.com/chirpstack/chirpstack/api/go/v4/gw"
 	"github.com/thingspect/atlas/pkg/decode"
+	"google.golang.org/protobuf/encoding/protojson"
+	"google.golang.org/protobuf/proto"
 )
 
 // gatewayExec parses a gateway exec command response payload from a []byte
@@ -21,13 +17,9 @@ func gatewayExec(body []byte) ([]*decode.Point, error) {
 		return nil, err
 	}
 
-	// Build raw gateway payload for debugging.
-	marshaler := &jsonpb.Marshaler{}
-	gw, err := marshaler.MarshalToString(execMsg)
-	if err != nil {
-		return nil, err
-	}
-	msgs := []*decode.Point{{Attr: "raw_gateway", Value: gw}}
+	// Build raw device and data payloads for debugging, with consistent output.
+	msgs := []*decode.Point{{Attr: "raw_gateway", Value: strings.ReplaceAll(
+		protojson.MarshalOptions{}.Format(execMsg), " ", "")}}
 
 	// Parse GatewayCommandExecResponse.
 	if len(execMsg.Stdout) != 0 {

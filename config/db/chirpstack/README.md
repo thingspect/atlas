@@ -7,5 +7,5 @@ available in Homebrew as part of the `libpq` package.
 
 ```
 psql -h localhost -p 2432 postgres postgres -f init_db.sql
-psql -h localhost -p 2432 chirpstack_as postgres -f init_ext.sql
+psql -h localhost -p 2432 chirpstack postgres -f init_ext.sql
 ```

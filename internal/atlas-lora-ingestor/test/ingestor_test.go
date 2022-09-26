@@ -9,17 +9,14 @@ import (
 	"testing"
 	"time"
 
-	as "github.com/brocaar/chirpstack-api/go/v3/as/integration"
-	"github.com/brocaar/chirpstack-api/go/v3/gw"
-
-	//lint:ignore SA1019 // third-party dependency
-	//nolint:staticcheck // third-party dependency
-	"github.com/golang/protobuf/proto"
+	"github.com/chirpstack/chirpstack/api/go/v4/gw"
+	"github.com/chirpstack/chirpstack/api/go/v4/integration"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"github.com/thingspect/api/go/common"
 	"github.com/thingspect/atlas/api/go/message"
 	"github.com/thingspect/atlas/pkg/test/random"
+	"google.golang.org/protobuf/proto"
 )
 
 const testTimeout = 6 * time.Second
@@ -33,8 +30,8 @@ func TestDecodeGateways(t *testing.T) {
 		res      []*message.ValidatorIn
 	}{
 		{
-			"lora/gateway/" + uniqID + "/event/up", &gw.UplinkFrame{
-				RxInfo: &gw.UplinkRXInfo{Rssi: -74},
+			"lora/us915_0/gateway/" + uniqID + "/event/up", &gw.UplinkFrame{
+				RxInfo: &gw.UplinkRxInfo{Rssi: -74},
 			}, []*message.ValidatorIn{
 				{
 					Point: &common.DataPoint{
@@ -59,14 +56,14 @@ func TestDecodeGateways(t *testing.T) {
 			},
 		},
 		{
-			"lora/gateway/" + uniqID + "/event/stats", &gw.GatewayStats{
+			"lora/us915_0/gateway/" + uniqID + "/event/stats", &gw.GatewayStats{
 				RxPacketsReceivedOk: 2,
 			}, []*message.ValidatorIn{
 				{
 					Point: &common.DataPoint{
 						UniqId: uniqID, Attr: "raw_gateway",
 						ValOneof: &common.DataPoint_StrVal{
-							StrVal: `{"rxPacketsReceivedOK":2}`,
+							StrVal: `{"rxPacketsReceivedOk":2}`,
 						},
 					}, SkipToken: true,
 				},
@@ -79,8 +76,8 @@ func TestDecodeGateways(t *testing.T) {
 			},
 		},
 		{
-			"lora/gateway/" + uniqID + "/event/ack", &gw.DownlinkTXAck{
-				Items: []*gw.DownlinkTXAckItem{{Status: gw.TxAckStatus_OK}},
+			"lora/us915_0/gateway/" + uniqID + "/event/ack", &gw.DownlinkTxAck{
+				Items: []*gw.DownlinkTxAckItem{{Status: gw.TxAckStatus_OK}},
 			}, []*message.ValidatorIn{
 				{
 					Point: &common.DataPoint{
@@ -99,7 +96,7 @@ func TestDecodeGateways(t *testing.T) {
 			},
 		},
 		{
-			"lora/gateway/" + uniqID + "/event/exec",
+			"lora/us915_0/gateway/" + uniqID + "/event/exec",
 			&gw.GatewayCommandExecResponse{Stdout: []byte("STDOUT")},
 			[]*message.ValidatorIn{
 				{
@@ -119,7 +116,7 @@ func TestDecodeGateways(t *testing.T) {
 			},
 		},
 		{
-			"lora/gateway/" + uniqID + "/state/conn", &gw.ConnState{
+			"lora/us915_0/gateway/" + uniqID + "/state/conn", &gw.ConnState{
 				State: gw.ConnState_ONLINE,
 			}, []*message.ValidatorIn{
 				{
@@ -175,7 +172,7 @@ func TestDecodeGateways(t *testing.T) {
 					// Testify does not currently support protobuf equality:
 					// https://github.com/stretchr/testify/issues/758
 					if !proto.Equal(res, vIn) {
-						t.Errorf("\nExpect: %+v\nActual: %+v", lTest.res, vIn)
+						t.Errorf("\nExpect: %+v\nActual: %+v", res, vIn)
 					}
 				case <-time.After(testTimeout):
 					t.Error("Message timed out")
@@ -187,6 +184,7 @@ func TestDecodeGateways(t *testing.T) {
 
 func TestDecodeDevices(t *testing.T) {
 	uniqID := random.String(16)
+	devAddr := random.String(16)
 
 	bData := random.Bytes(10)
 	b64Data := base64.StdEncoding.EncodeToString(bData)
@@ -200,7 +198,7 @@ func TestDecodeDevices(t *testing.T) {
 	}{
 		{
 			"lora/application/1/device/" + uniqID + "/event/up",
-			&as.UplinkEvent{Data: bData},
+			&integration.UplinkEvent{Data: bData},
 			[]*message.ValidatorIn{
 				{
 					Point: &common.DataPoint{
@@ -241,13 +239,13 @@ func TestDecodeDevices(t *testing.T) {
 		},
 		{
 			"lora/application/2/device/" + uniqID + "/event/join",
-			&as.JoinEvent{RxInfo: []*gw.UplinkRXInfo{{}}, Dr: 3},
+			&integration.JoinEvent{DevAddr: devAddr},
 			[]*message.ValidatorIn{
 				{
 					Point: &common.DataPoint{
 						UniqId: uniqID, Attr: "raw_device",
 						ValOneof: &common.DataPoint_StrVal{
-							StrVal: `{"rxInfo":[{}],"dr":3}`,
+							StrVal: fmt.Sprintf(`{"devAddr":"%s"}`, devAddr),
 						},
 					}, SkipToken: true,
 				},
@@ -259,23 +257,17 @@ func TestDecodeDevices(t *testing.T) {
 				},
 				{
 					Point: &common.DataPoint{
-						UniqId: uniqID, Attr: "channel",
-						ValOneof: &common.DataPoint_IntVal{IntVal: 0},
-					}, SkipToken: true,
-				},
-				{
-					Point: &common.DataPoint{
-						UniqId: uniqID, Attr: "data_rate",
-						ValOneof: &common.DataPoint_IntVal{IntVal: 3},
+						UniqId: uniqID, Attr: "devaddr",
+						ValOneof: &common.DataPoint_StrVal{StrVal: devAddr},
 					}, SkipToken: true,
 				},
 			},
 			nil,
 		},
 		{
-			"lora/application/3/device/" + uniqID + "/event/ack", &as.AckEvent{
-				Acknowledged: true,
-			}, []*message.ValidatorIn{
+			"lora/application/3/device/" + uniqID + "/event/ack",
+			&integration.AckEvent{Acknowledged: true},
+			[]*message.ValidatorIn{
 				{
 					Point: &common.DataPoint{
 						UniqId: uniqID, Attr: "raw_device",
@@ -290,23 +282,30 @@ func TestDecodeDevices(t *testing.T) {
 						ValOneof: &common.DataPoint_StrVal{StrVal: "OK"},
 					}, SkipToken: true,
 				},
-			}, nil,
+			},
+			nil,
 		},
 		{
-			"lora/application/4/device/" + uniqID + "/event/error",
-			&as.ErrorEvent{Type: as.ErrorType_OTAA},
+			"lora/application/4/device/" + uniqID + "/event/log",
+			&integration.LogEvent{Code: integration.LogCode_OTAA},
 			[]*message.ValidatorIn{
 				{
 					Point: &common.DataPoint{
 						UniqId: uniqID, Attr: "raw_device",
 						ValOneof: &common.DataPoint_StrVal{
-							StrVal: `{"type":"OTAA"}`,
+							StrVal: `{"code":"OTAA"}`,
 						},
 					}, SkipToken: true,
 				},
 				{
 					Point: &common.DataPoint{
-						UniqId: uniqID, Attr: "error_type",
+						UniqId: uniqID, Attr: "log_level",
+						ValOneof: &common.DataPoint_StrVal{StrVal: "INFO"},
+					}, SkipToken: true,
+				},
+				{
+					Point: &common.DataPoint{
+						UniqId: uniqID, Attr: "log_code",
 						ValOneof: &common.DataPoint_StrVal{StrVal: "OTAA"},
 					}, SkipToken: true,
 				},
@@ -315,7 +314,7 @@ func TestDecodeDevices(t *testing.T) {
 		},
 		{
 			"lora/application/5/device/" + uniqID + "/event/txack",
-			&as.TxAckEvent{},
+			&integration.TxAckEvent{},
 			[]*message.ValidatorIn{
 				{
 					Point: &common.DataPoint{
@@ -326,7 +325,7 @@ func TestDecodeDevices(t *testing.T) {
 				{
 					Point: &common.DataPoint{
 						UniqId:   uniqID,
-						Attr:     "ack_gateway_tx",
+						Attr:     "tx_queued",
 						ValOneof: &common.DataPoint_BoolVal{BoolVal: true},
 					}, SkipToken: true,
 				},
@@ -370,8 +369,7 @@ func TestDecodeDevices(t *testing.T) {
 					// Testify does not currently support protobuf equality:
 					// https://github.com/stretchr/testify/issues/758
 					if !proto.Equal(res, vIn) {
-						t.Errorf("\nExpect: %+v\nActual: %+v", lTest.resVIn,
-							vIn)
+						t.Errorf("\nExpect: %+v\nActual: %+v", res, vIn)
 					}
 				case <-time.After(testTimeout):
 					t.Error("Message timed out")
@@ -424,7 +422,7 @@ func TestDecodeGatewaysDevicesError(t *testing.T) {
 		},
 		// Bad payload.
 		{
-			"lora/gateway/" + uniqID + "/event/up", []byte("ing-aaa"),
+			"lora/us915_0/gateway/" + uniqID + "/event/up", []byte("ing-aaa"),
 		},
 		{
 			"lora/application/1/device/" + uniqID + "/event/up",

@@ -36,19 +36,19 @@ func TestParse(t *testing.T) {
 		{"join", "", []*decode.Point{
 			{Attr: "raw_device", Value: `{}`},
 			{Attr: "join", Value: true},
-			{Attr: "data_rate", Value: int32(0)},
 		}, nil},
 		{"ack", "", []*decode.Point{
 			{Attr: "raw_device", Value: `{}`},
 			{Attr: "ack", Value: ackTimeout},
 		}, nil},
-		{"error", "", []*decode.Point{
+		{"log", "", []*decode.Point{
 			{Attr: "raw_device", Value: `{}`},
-			{Attr: "error_type", Value: "UNKNOWN"},
+			{Attr: "log_level", Value: "INFO"},
+			{Attr: "log_code", Value: "UNKNOWN"},
 		}, nil},
 		{"txack", "", []*decode.Point{
 			{Attr: "raw_device", Value: `{}`},
-			{Attr: "ack_gateway_tx", Value: true},
+			{Attr: "tx_queued", Value: true},
 		}, nil},
 		// Device unknown event type.
 		{badEvent, "", nil, fmt.Errorf("%w: %s, %x", decode.ErrUnknownEvent,

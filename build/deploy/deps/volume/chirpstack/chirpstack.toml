@@ -1,0 +1,27 @@
+[postgresql]
+dsn="$CS_POSTGRESQL_DSN"
+
+[redis]
+servers=["redis://$CS_REDIS_SERVER"]
+
+[network]
+net_id="$CS_NETWORK_NET_ID"
+enabled_regions=[
+  "us915_0",
+  "us915_1",
+]
+
+[api]
+secret="$CS_API_SECRET"
+
+[integration]
+enabled=["mqtt"]
+
+[integration.mqtt]
+event_topic="lora/application/{{application_id}}/device/{{dev_eui}}/event/{{event}}"
+command_topic="lora/application/{{application_id}}/device/{{dev_eui}}/command/{{command}}"
+json=false
+server="$CS_MQTT_SERVER"
+username="chirpstack"
+password="$CS_MQTT_PASSWORD"
+client_id="$CS_INTEGRATION_MQTT_CLIENT_ID"

@@ -1,48 +1,38 @@
 package device
 
 import (
-	"encoding/hex"
+	"strings"
 
-	as "github.com/brocaar/chirpstack-api/go/v3/as/integration"
-
-	//lint:ignore SA1019 // third-party dependency
-	//nolint:staticcheck // third-party dependency
-	"github.com/golang/protobuf/jsonpb"
-
-	//lint:ignore SA1019 // third-party dependency
-	//nolint:staticcheck // third-party dependency
-	"github.com/golang/protobuf/proto"
+	"github.com/chirpstack/chirpstack/api/go/v4/integration"
 	"github.com/thingspect/atlas/pkg/decode"
+	"google.golang.org/protobuf/encoding/protojson"
+	"google.golang.org/protobuf/proto"
 )
 
 // deviceTXAck parses a device TX ACK payload from a []byte according to the
 // spec.
 func deviceTXAck(body []byte) ([]*decode.Point, error) {
-	txAckMsg := &as.TxAckEvent{}
+	txAckMsg := &integration.TxAckEvent{}
 	if err := proto.Unmarshal(body, txAckMsg); err != nil {
 		return nil, err
 	}
 
-	// Build raw device payload for debugging.
-	marshaler := &jsonpb.Marshaler{}
-	gw, err := marshaler.MarshalToString(txAckMsg)
-	if err != nil {
-		return nil, err
-	}
-	msgs := []*decode.Point{{Attr: "raw_device", Value: gw}}
+	// Build raw device and data payloads for debugging, with consistent output.
+	msgs := []*decode.Point{{Attr: "raw_device", Value: strings.ReplaceAll(
+		protojson.MarshalOptions{}.Format(txAckMsg), " ", "")}}
 
 	// Parse TxAckEvent.
-	msgs = append(msgs, &decode.Point{Attr: "ack_gateway_tx", Value: true})
-	if len(txAckMsg.GatewayId) != 0 {
+	msgs = append(msgs, &decode.Point{Attr: "tx_queued", Value: true})
+	if txAckMsg.GatewayId != "" {
 		msgs = append(msgs, &decode.Point{
-			Attr: "gateway_id", Value: hex.EncodeToString(txAckMsg.GatewayId),
+			Attr: "tx_gateway_id", Value: txAckMsg.GatewayId,
 		})
 	}
 
 	// Parse DownlinkTXInfo.
 	if txAckMsg.TxInfo != nil && txAckMsg.TxInfo.Frequency != 0 {
 		msgs = append(msgs, &decode.Point{
-			Attr: "frequency", Value: int32(txAckMsg.TxInfo.Frequency),
+			Attr: "tx_frequency", Value: int32(txAckMsg.TxInfo.Frequency),
 		})
 	}
 

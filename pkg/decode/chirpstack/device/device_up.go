@@ -2,18 +2,13 @@ package device
 
 import (
 	"encoding/hex"
+	"strings"
 
-	as "github.com/brocaar/chirpstack-api/go/v3/as/integration"
-
-	//lint:ignore SA1019 // third-party dependency
-	//nolint:staticcheck // third-party dependency
-	"github.com/golang/protobuf/jsonpb"
-
-	//lint:ignore SA1019 // third-party dependency
-	//nolint:staticcheck // third-party dependency
-	"github.com/golang/protobuf/proto"
+	"github.com/chirpstack/chirpstack/api/go/v4/integration"
 	"github.com/thingspect/atlas/pkg/decode"
 	"github.com/thingspect/atlas/pkg/decode/chirpstack"
+	"google.golang.org/protobuf/encoding/protojson"
+	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
@@ -24,18 +19,14 @@ import (
 func deviceUp(body []byte) (
 	[]*decode.Point, *timestamppb.Timestamp, []byte, error,
 ) {
-	upMsg := &as.UplinkEvent{}
+	upMsg := &integration.UplinkEvent{}
 	if err := proto.Unmarshal(body, upMsg); err != nil {
 		return nil, nil, nil, err
 	}
 
-	// Build raw device and data payloads for debugging.
-	marshaler := &jsonpb.Marshaler{}
-	gw, err := marshaler.MarshalToString(upMsg)
-	if err != nil {
-		return nil, nil, upMsg.Data, err
-	}
-	msgs := []*decode.Point{{Attr: "raw_device", Value: gw}}
+	// Build raw device and data payloads for debugging, with consistent output.
+	msgs := []*decode.Point{{Attr: "raw_device", Value: strings.ReplaceAll(
+		protojson.MarshalOptions{}.Format(upMsg), " ", "")}}
 
 	if upMsg.Data != nil {
 		msgs = append(msgs, &decode.Point{
@@ -60,7 +51,7 @@ func deviceUp(body []byte) (
 		Attr: "data_rate", Value: int32(upMsg.Dr),
 	})
 	msgs = append(msgs, &decode.Point{
-		Attr: "confirmed", Value: upMsg.ConfirmedUplink,
+		Attr: "confirmed", Value: upMsg.Confirmed,
 	})
 
 	return msgs, upTime, upMsg.Data, nil

@@ -10,15 +10,12 @@ import (
 	"testing"
 	"time"
 
-	as "github.com/brocaar/chirpstack-api/go/v3/as/integration"
-	"github.com/brocaar/chirpstack-api/go/v3/gw"
-
-	//lint:ignore SA1019 // third-party dependency
-	//nolint:staticcheck // third-party dependency
-	"github.com/golang/protobuf/proto"
+	"github.com/chirpstack/chirpstack/api/go/v4/gw"
+	"github.com/chirpstack/chirpstack/api/go/v4/integration"
 	"github.com/stretchr/testify/require"
 	"github.com/thingspect/atlas/pkg/decode"
 	"github.com/thingspect/atlas/pkg/test/random"
+	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
@@ -26,14 +23,8 @@ func TestDeviceUp(t *testing.T) {
 	t.Parallel()
 
 	gatewayID := random.String(16)
-	bGatewayID, err := hex.DecodeString(gatewayID)
-	require.NoError(t, err)
-	t.Logf("bGatewayID: %x", bGatewayID)
 
-	b64GatewayID := base64.StdEncoding.EncodeToString(bGatewayID)
-	t.Logf("b64GatewayID: %v", b64GatewayID)
-
-	// Truncate to nearest second for compatibility with jsonpb.Marshaler and
+	// Truncate to nearest second for compatibility with protojson.Format and
 	// time.RFC3339Nano formatting.
 	now := time.Now().UTC().Add(-15 * time.Minute).Truncate(time.Second)
 	tsNow := timestamppb.New(now)
@@ -44,7 +35,7 @@ func TestDeviceUp(t *testing.T) {
 
 	// Device Uplink payloads, see deviceUp() for format description.
 	tests := []struct {
-		inp       *as.UplinkEvent
+		inp       *integration.UplinkEvent
 		resPoints []*decode.Point
 		resTime   time.Time
 		resData   []byte
@@ -52,7 +43,7 @@ func TestDeviceUp(t *testing.T) {
 	}{
 		// Device Uplink.
 		{
-			&as.UplinkEvent{}, []*decode.Point{
+			&integration.UplinkEvent{}, []*decode.Point{
 				{Attr: "raw_device", Value: `{}`},
 				{Attr: "adr", Value: false},
 				{Attr: "data_rate", Value: int32(0)},
@@ -60,39 +51,38 @@ func TestDeviceUp(t *testing.T) {
 			}, time.Now(), nil, "",
 		},
 		{
-			&as.UplinkEvent{RxInfo: []*gw.UplinkRXInfo{{}}}, []*decode.Point{
+			&integration.UplinkEvent{RxInfo: []*gw.UplinkRxInfo{{}}},
+			[]*decode.Point{
 				{Attr: "raw_device", Value: `{"rxInfo":[{}]}`},
 				{Attr: "channel", Value: int32(0)},
 				{Attr: "adr", Value: false},
 				{Attr: "data_rate", Value: int32(0)},
 				{Attr: "confirmed", Value: false},
-			}, time.Now(), nil, "",
+			},
+			time.Now(), nil, "",
 		},
 		{
-			&as.UplinkEvent{
-				RxInfo: []*gw.UplinkRXInfo{
+			&integration.UplinkEvent{
+				RxInfo: []*gw.UplinkRxInfo{
 					{
-						GatewayId: []byte("aaa"), Time: tsNow, Rssi: -80,
-						LoraSnr: 1,
+						GatewayId: "aaa", Time: tsNow, Rssi: -80, Snr: 1,
 					}, {
-						GatewayId: bGatewayID, Time: tsNow, Rssi: -74,
-						LoraSnr: 7.8,
+						GatewayId: gatewayID, Time: tsNow, Rssi: -74, Snr: 7,
 					},
-				}, TxInfo: &gw.UplinkTXInfo{Frequency: 902700000}, Adr: true,
-				Dr: 3, Data: bData, ConfirmedUplink: true,
+				}, TxInfo: &gw.UplinkTxInfo{Frequency: 902700000}, Adr: true,
+				Dr: 3, Data: bData, Confirmed: true,
 			}, []*decode.Point{
-				{Attr: "raw_device", Value: fmt.Sprintf(`{"rxInfo":[{`+
-					`"gatewayID":"YWFh","time":"%s","rssi":-80,"loRaSNR":1},{`+
-					`"gatewayID":"%s","time":"%s","rssi":-74,"loRaSNR":7.8}],`+
-					`"txInfo":{"frequency":902700000},"adr":true,"dr":3,`+
-					`"data":"%s","confirmedUplink":true}`,
-					now.Format(time.RFC3339Nano), b64GatewayID,
-					now.Format(time.RFC3339Nano), b64Data)},
+				{Attr: "raw_device", Value: fmt.Sprintf(`{"adr":true,"dr":3,`+
+					`"confirmed":true,"data":"%s","rxInfo":[{"gatewayId":`+
+					`"aaa","time":"%s","rssi":-80,"snr":1},{"gatewayId":"%s",`+
+					`"time":"%s","rssi":-74,"snr":7}],"txInfo":{"frequency":`+
+					`902700000}}`, b64Data, now.Format(time.RFC3339Nano),
+					gatewayID, now.Format(time.RFC3339Nano))},
 				{Attr: "raw_data", Value: hex.EncodeToString(bData)},
 				{Attr: "gateway_id", Value: gatewayID},
 				{Attr: "time", Value: strconv.FormatInt(now.Unix(), 10)},
 				{Attr: "lora_rssi", Value: int32(-74)},
-				{Attr: "snr", Value: 7.8},
+				{Attr: "snr", Value: float64(7)},
 				{Attr: "channel", Value: int32(0)},
 				{Attr: "frequency", Value: int32(902700000)},
 				{Attr: "adr", Value: true},

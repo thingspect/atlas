@@ -149,7 +149,7 @@ func TestDecodeMessages(t *testing.T) {
 					// Testify does not currently support protobuf equality:
 					// https://github.com/stretchr/testify/issues/758
 					if !proto.Equal(res, vIn) {
-						t.Errorf("\nExpect: %+v\nActual: %+v", lTest.res, vIn)
+						t.Errorf("\nExpect: %+v\nActual: %+v", res, vIn)
 					}
 				case <-time.After(testTimeout):
 					t.Error("Message timed out")

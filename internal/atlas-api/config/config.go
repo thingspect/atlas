@@ -21,9 +21,8 @@ type Config struct {
 
 	LoRaAddr      string
 	LoRaAPIKey    string
-	LoRaOrgID     int
-	LoRaNSID      int
-	LoRaAppID     int
+	LoRaTenantID  string
+	LoRaAppID     string
 	LoRaDevProfID string
 }
 
@@ -44,9 +43,8 @@ func New() *Config {
 
 		LoRaAddr:      config.String(pref+"LORA_ADDR", ""),
 		LoRaAPIKey:    config.String(pref+"LORA_API_KEY", ""),
-		LoRaOrgID:     config.Int(pref+"LORA_ORG_ID", 2),
-		LoRaNSID:      config.Int(pref+"LORA_NS_ID", 1),
-		LoRaAppID:     config.Int(pref+"LORA_APP_ID", 1),
+		LoRaTenantID:  config.String(pref+"LORA_TENANT_ID", ""),
+		LoRaAppID:     config.String(pref+"LORA_APP_ID", ""),
 		LoRaDevProfID: config.String(pref+"LORA_DEV_PROF_ID", ""),
 	}
 }

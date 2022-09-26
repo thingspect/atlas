@@ -16,15 +16,15 @@ github.com/antonmedv/expr/optimizer
 github.com/antonmedv/expr/parser
 github.com/antonmedv/expr/parser/lexer
 github.com/antonmedv/expr/vm
-# github.com/brocaar/chirpstack-api/go/v3 v3.12.5
-## explicit; go 1.16
-github.com/brocaar/chirpstack-api/go/v3/as/external/api
-github.com/brocaar/chirpstack-api/go/v3/as/integration
-github.com/brocaar/chirpstack-api/go/v3/common
-github.com/brocaar/chirpstack-api/go/v3/gw
 # github.com/cespare/xxhash/v2 v2.1.2
 ## explicit; go 1.11
 github.com/cespare/xxhash/v2
+# github.com/chirpstack/chirpstack/api/go/v4 v4.0.0
+## explicit; go 1.16
+github.com/chirpstack/chirpstack/api/go/v4/api
+github.com/chirpstack/chirpstack/api/go/v4/common
+github.com/chirpstack/chirpstack/api/go/v4/gw
+github.com/chirpstack/chirpstack/api/go/v4/integration
 # github.com/davecgh/go-spew v1.1.1
 ## explicit
 github.com/davecgh/go-spew/spew
@@ -53,16 +53,12 @@ github.com/go-redis/redis/v8/internal/util
 github.com/golang/mock/gomock
 # github.com/golang/protobuf v1.5.2
 ## explicit; go 1.9
-github.com/golang/protobuf/descriptor
 github.com/golang/protobuf/jsonpb
 github.com/golang/protobuf/proto
-github.com/golang/protobuf/protoc-gen-go/descriptor
 github.com/golang/protobuf/ptypes
 github.com/golang/protobuf/ptypes/any
 github.com/golang/protobuf/ptypes/duration
-github.com/golang/protobuf/ptypes/empty
 github.com/golang/protobuf/ptypes/timestamp
-github.com/golang/protobuf/ptypes/wrappers
 # github.com/golang/snappy v0.0.4
 ## explicit
 github.com/golang/snappy
@@ -75,11 +71,6 @@ github.com/gorilla/websocket
 # github.com/gregdel/pushover v1.1.0
 ## explicit; go 1.14
 github.com/gregdel/pushover
-# github.com/grpc-ecosystem/grpc-gateway v1.16.0
-## explicit; go 1.14
-github.com/grpc-ecosystem/grpc-gateway/internal
-github.com/grpc-ecosystem/grpc-gateway/runtime
-github.com/grpc-ecosystem/grpc-gateway/utilities
 # github.com/grpc-ecosystem/grpc-gateway/v2 v2.11.3
 ## explicit; go 1.17
 github.com/grpc-ecosystem/grpc-gateway/v2/internal/httprule
@@ -141,7 +132,7 @@ github.com/smira/go-statsd
 ## explicit; go 1.13
 github.com/stretchr/testify/assert
 github.com/stretchr/testify/require
-# github.com/thingspect/api/go v1.0.1
+# github.com/thingspect/api/go v1.0.2
 ## explicit; go 1.19
 github.com/thingspect/api/go/api
 github.com/thingspect/api/go/common
@@ -151,7 +142,7 @@ github.com/thingspect/api/go/mqtt
 golang.org/x/crypto/bcrypt
 golang.org/x/crypto/blowfish
 golang.org/x/crypto/pbkdf2
-# golang.org/x/net v0.0.0-20220920152717-4a395b0a80a1
+# golang.org/x/net v0.0.0-20220921203646-d300de134e69
 ## explicit; go 1.17
 golang.org/x/net/http/httpguts
 golang.org/x/net/http2
@@ -183,7 +174,7 @@ golang.org/x/text/transform
 golang.org/x/text/unicode/bidi
 golang.org/x/text/unicode/norm
 golang.org/x/text/width
-# google.golang.org/genproto v0.0.0-20220920164045-a2a065f3c118
+# google.golang.org/genproto v0.0.0-20220921223823-23cae91e6737
 ## explicit; go 1.19
 google.golang.org/genproto/googleapis/api/annotations
 google.golang.org/genproto/googleapis/api/httpbody

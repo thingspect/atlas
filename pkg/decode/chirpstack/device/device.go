@@ -19,15 +19,15 @@ func Parse(event string, body []byte) (
 	case "up":
 		return deviceUp(body)
 	case "join":
-		msgs, ts, err := deviceJoin(body)
+		msgs, err := deviceJoin(body)
 
-		return msgs, ts, nil, err
+		return msgs, timestamppb.Now(), nil, err
 	case "ack":
 		msgs, err := deviceAck(body)
 
 		return msgs, timestamppb.Now(), nil, err
-	case "error":
-		msgs, err := deviceError(body)
+	case "log":
+		msgs, err := deviceLog(body)
 
 		return msgs, timestamppb.Now(), nil, err
 	case "txack":

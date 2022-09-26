@@ -1,8 +1,9 @@
 version: "3"
 services:
   atlas-api:
-    image: ghcr.io/thingspect/atlas:842c74db
+    image: ghcr.io/thingspect/atlas:9b3243bb
     command: atlas-api
+    restart: on-failure
     ports:
       - "8000:8000"
       - "50051:50051"
@@ -12,12 +13,16 @@ services:
       - API_REDIS_HOST=redis
       - API_PWT_KEY=AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=
       - API_NSQ_PUB_ADDR=nsqd:4150
-      - API_LORA_ADDR=chirpstack-application-server:8080
+      - API_LORA_ADDR=chirpstack:8080
       - API_LORA_API_KEY=notasecurekey
-      - API_LORA_DEV_PROF_ID=c53a390c-1b0b-436c-8984-9b328d6210c5
+      - API_LORA_TENANT_ID=00000000-0000-0000-0000-000000000000
+      - API_LORA_APP_ID=00000000-0000-0000-0000-000000000000
+      - API_LORA_DEV_PROF_ID=00000000-0000-0000-0000-000000000000
+
   atlas-mqtt-ingestor:
-    image: ghcr.io/thingspect/atlas:842c74db
+    image: ghcr.io/thingspect/atlas:9b3243bb
     command: atlas-mqtt-ingestor
+    restart: on-failure
     depends_on:
       - atlas-validator
     environment:
@@ -25,9 +30,11 @@ services:
       - MQTT_INGEST_MQTT_ADDR=tcp://mqtt:1883
       - MQTT_INGEST_MQTT_PASS=notasecurepassword
       - MQTT_INGEST_NSQ_PUB_ADDR=nsqd:4150
+
   atlas-lora-ingestor:
-    image: ghcr.io/thingspect/atlas:842c74db
+    image: ghcr.io/thingspect/atlas:9b3243bb
     command: atlas-lora-ingestor
+    restart: on-failure
     depends_on:
       - atlas-validator
       - atlas-decoder
@@ -36,9 +43,11 @@ services:
       - LORA_INGEST_MQTT_ADDR=tcp://mqtt:1883
       - LORA_INGEST_MQTT_PASS=notasecurepassword
       - LORA_INGEST_NSQ_PUB_ADDR=nsqd:4150
+
   atlas-decoder:
-    image: ghcr.io/thingspect/atlas:842c74db
+    image: ghcr.io/thingspect/atlas:9b3243bb
     command: atlas-decoder
+    restart: on-failure
     depends_on:
       - atlas-validator
     environment:
@@ -46,9 +55,11 @@ services:
       - DECODER_PG_URI=postgres://postgres:notasecurepassword@postgres/atlas
       - DECODER_NSQ_PUB_ADDR=nsqd:4150
       - DECODER_NSQ_LOOKUP_ADDRS=nsqlookupd:4161
+
   atlas-validator:
-    image: ghcr.io/thingspect/atlas:842c74db
+    image: ghcr.io/thingspect/atlas:9b3243bb
     command: atlas-validator
+    restart: on-failure
     depends_on:
       - atlas-accumulator
       - atlas-eventer
@@ -57,17 +68,21 @@ services:
       - VALIDATOR_PG_URI=postgres://postgres:notasecurepassword@postgres/atlas
       - VALIDATOR_NSQ_PUB_ADDR=nsqd:4150
       - VALIDATOR_NSQ_LOOKUP_ADDRS=nsqlookupd:4161
+
   atlas-accumulator:
-    image: ghcr.io/thingspect/atlas:842c74db
+    image: ghcr.io/thingspect/atlas:9b3243bb
     command: atlas-accumulator
+    restart: on-failure
     environment:
       - ACCUMULATOR_STATSD_ADDR=dogstatsd:8125
       - ACCUMULATOR_PG_URI=postgres://postgres:notasecurepassword@postgres/atlas
       - ACCUMULATOR_NSQ_PUB_ADDR=nsqd:4150
       - ACCUMULATOR_NSQ_LOOKUP_ADDRS=nsqlookupd:4161
+
   atlas-eventer:
-    image: ghcr.io/thingspect/atlas:842c74db
+    image: ghcr.io/thingspect/atlas:9b3243bb
     command: atlas-eventer
+    restart: on-failure
     depends_on:
       - atlas-alerter
     environment:
@@ -75,9 +90,11 @@ services:
       - EVENTER_PG_URI=postgres://postgres:notasecurepassword@postgres/atlas
       - EVENTER_NSQ_PUB_ADDR=nsqd:4150
       - EVENTER_NSQ_LOOKUP_ADDRS=nsqlookupd:4161
+
   atlas-alerter:
-    image: ghcr.io/thingspect/atlas:842c74db
+    image: ghcr.io/thingspect/atlas:9b3243bb
     command: atlas-alerter
+    restart: on-failure
     environment:
       - ALERTER_STATSD_ADDR=dogstatsd:8125
       - ALERTER_PG_URI=postgres://postgres:notasecurepassword@postgres/atlas

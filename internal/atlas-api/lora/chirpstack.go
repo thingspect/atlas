@@ -8,9 +8,8 @@ import (
 // Chirpstack holds references to the ChirpStack Application Server and
 // implements the Loraer interface.
 type Chirpstack struct {
-	orgID     int64
-	nsID      int64
-	appID     int64
+	tenantID  string
+	appID     string
 	devProfID string
 
 	conn *grpc.ClientConn
@@ -20,9 +19,9 @@ type Chirpstack struct {
 var _ Loraer = &Chirpstack{}
 
 // NewChirpstack builds a new Loraer and returns it and an error value.
-func NewChirpstack(
-	addr, apiKey string, orgID, nsID, appID int, devProfID string,
-) (Loraer, error) {
+func NewChirpstack(addr, apiKey, tenantID, appID, devProfID string) (
+	Loraer, error,
+) {
 	// Build Chirpstack AS gRPC connection.
 	opts := []grpc.DialOption{
 		grpc.WithBlock(),
@@ -35,9 +34,8 @@ func NewChirpstack(
 	}
 
 	return &Chirpstack{
-		orgID:     int64(orgID),
-		nsID:      int64(nsID),
-		appID:     int64(appID),
+		tenantID:  tenantID,
+		appID:     appID,
 		devProfID: devProfID,
 
 		conn: conn,

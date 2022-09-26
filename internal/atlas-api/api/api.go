@@ -92,7 +92,7 @@ func New(cfg *config.Config) (*API, error) {
 		cs = lora.NewFake()
 	} else {
 		cs, err = lora.NewChirpstack(cfg.LoRaAddr, cfg.LoRaAPIKey,
-			cfg.LoRaOrgID, cfg.LoRaNSID, cfg.LoRaAppID, cfg.LoRaDevProfID)
+			cfg.LoRaTenantID, cfg.LoRaAppID, cfg.LoRaDevProfID)
 		if err != nil {
 			return nil, err
 		}

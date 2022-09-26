@@ -6,13 +6,10 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/brocaar/chirpstack-api/go/v3/gw"
-
-	//lint:ignore SA1019 // third-party dependency
-	//nolint:staticcheck // third-party dependency
-	"github.com/golang/protobuf/proto"
+	"github.com/chirpstack/chirpstack/api/go/v4/gw"
 	"github.com/stretchr/testify/require"
 	"github.com/thingspect/atlas/pkg/decode"
+	"google.golang.org/protobuf/proto"
 )
 
 func TestGatewayConn(t *testing.T) {

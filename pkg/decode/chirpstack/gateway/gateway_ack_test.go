@@ -6,13 +6,10 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/brocaar/chirpstack-api/go/v3/gw"
-
-	//lint:ignore SA1019 // third-party dependency
-	//nolint:staticcheck // third-party dependency
-	"github.com/golang/protobuf/proto"
+	"github.com/chirpstack/chirpstack/api/go/v4/gw"
 	"github.com/stretchr/testify/require"
 	"github.com/thingspect/atlas/pkg/decode"
+	"google.golang.org/protobuf/proto"
 )
 
 func TestGatewayAck(t *testing.T) {
@@ -20,27 +17,27 @@ func TestGatewayAck(t *testing.T) {
 
 	// Gateway ACK payloads, see gatewayAck() for format description.
 	tests := []struct {
-		inp *gw.DownlinkTXAck
+		inp *gw.DownlinkTxAck
 		res []*decode.Point
 		err string
 	}{
 		// Gateway ACK.
 		{
-			&gw.DownlinkTXAck{}, []*decode.Point{
+			&gw.DownlinkTxAck{}, []*decode.Point{
 				{Attr: "raw_gateway", Value: `{}`},
 			}, "",
 		},
 		{
-			&gw.DownlinkTXAck{
-				Items: []*gw.DownlinkTXAckItem{{Status: gw.TxAckStatus_OK}},
+			&gw.DownlinkTxAck{
+				Items: []*gw.DownlinkTxAckItem{{Status: gw.TxAckStatus_OK}},
 			}, []*decode.Point{
 				{Attr: "raw_gateway", Value: `{"items":[{"status":"OK"}]}`},
 				{Attr: "ack", Value: "OK"},
 			}, "",
 		},
 		{
-			&gw.DownlinkTXAck{
-				Items: []*gw.DownlinkTXAckItem{
+			&gw.DownlinkTxAck{
+				Items: []*gw.DownlinkTxAckItem{
 					{Status: gw.TxAckStatus_TOO_LATE},
 				},
 			}, []*decode.Point{
