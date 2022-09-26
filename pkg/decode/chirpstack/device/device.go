@@ -34,6 +34,10 @@ func Parse(event string, body []byte) (
 		msgs, err := deviceTXAck(body)
 
 		return msgs, timestamppb.Now(), nil, err
+	case "status":
+		msgs, err := deviceStatus(body)
+
+		return msgs, timestamppb.Now(), nil, err
 	default:
 		return nil, nil, nil, fmt.Errorf("%w: %s, %x", decode.ErrUnknownEvent,
 			event, body)
