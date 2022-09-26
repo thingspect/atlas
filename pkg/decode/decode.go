@@ -22,5 +22,5 @@ const ErrUnknownEvent consterr.Error = "unknown event type"
 // string, bool, and []byte.
 type Point struct {
 	Attr  string
-	Value interface{}
+	Value any
 }

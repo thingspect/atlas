@@ -50,6 +50,10 @@ func TestParse(t *testing.T) {
 			{Attr: "raw_device", Value: `{}`},
 			{Attr: "tx_queued", Value: true},
 		}, nil},
+		{"status", "", []*decode.Point{
+			{Attr: "raw_device", Value: `{}`},
+			{Attr: "ext_power", Value: false},
+		}, nil},
 		// Device unknown event type.
 		{badEvent, "", nil, fmt.Errorf("%w: %s, %x", decode.ErrUnknownEvent,
 			badEvent, []byte{})},

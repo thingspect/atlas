@@ -58,18 +58,18 @@ func TestPointToVIn(t *testing.T) {
 			},
 		},
 		{
-			&decode.Point{Attr: "snr", Value: 7.8}, &message.ValidatorIn{
+			&decode.Point{Attr: "lora_snr", Value: 7.8}, &message.ValidatorIn{
 				Point: &common.DataPoint{
-					UniqId: uniqID, Attr: "snr",
+					UniqId: uniqID, Attr: "lora_snr",
 					ValOneof: &common.DataPoint_Fl64Val{Fl64Val: 7.8}, Ts: now,
 					TraceId: traceID,
 				}, SkipToken: true,
 			},
 		},
 		{
-			&decode.Point{Attr: "snr", Value: float32(7.0)},
+			&decode.Point{Attr: "lora_snr", Value: float32(7.0)},
 			&message.ValidatorIn{Point: &common.DataPoint{
-				UniqId: uniqID, Attr: "snr",
+				UniqId: uniqID, Attr: "lora_snr",
 				ValOneof: &common.DataPoint_Fl64Val{Fl64Val: 7.0}, Ts: now,
 				TraceId: traceID,
 			}, SkipToken: true},

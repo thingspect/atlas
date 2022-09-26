@@ -400,6 +400,25 @@ func TestDecodeDevices(t *testing.T) {
 				},
 			},
 		},
+		{
+			"lora/application/6/device/" + uniqID + "/event/status",
+			&integration.StatusEvent{},
+			[]*message.ValidatorIn{
+				{
+					Point: &common.DataPoint{
+						UniqId: uniqID, Attr: "raw_device",
+						ValOneof: &common.DataPoint_StrVal{StrVal: `{}`},
+					}, SkipToken: true,
+				},
+				{
+					Point: &common.DataPoint{
+						UniqId:   uniqID,
+						Attr:     "ext_power",
+						ValOneof: &common.DataPoint_BoolVal{BoolVal: false},
+					}, SkipToken: true,
+				},
+			},
+		},
 	}
 
 	for _, test := range tests {

@@ -49,7 +49,7 @@ func TestGatewayUp(t *testing.T) {
 				{Attr: "frequency", Value: int32(902700000)},
 				{Attr: "sf", Value: int32(7)},
 				{Attr: "lora_rssi", Value: int32(-74)},
-				{Attr: "snr", Value: float64(7)},
+				{Attr: "lora_snr", Value: float64(7)},
 				{Attr: "channel", Value: int32(2)},
 			}, "",
 		},

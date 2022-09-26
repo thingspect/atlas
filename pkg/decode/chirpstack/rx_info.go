@@ -27,7 +27,7 @@ func ParseRXInfo(rxInfo *gw.UplinkRxInfo) []*decode.Point {
 	}
 	if rxInfo.Snr != 0 {
 		msgs = append(msgs, &decode.Point{
-			Attr: "snr", Value: float64(rxInfo.Snr),
+			Attr: "lora_snr", Value: float64(rxInfo.Snr),
 		})
 	}
 	msgs = append(msgs, &decode.Point{
