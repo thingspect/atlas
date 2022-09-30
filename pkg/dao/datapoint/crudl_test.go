@@ -38,14 +38,14 @@ func TestCreate(t *testing.T) {
 		}{
 			{
 				&common.DataPoint{
-					UniqId: "dao-point-" + random.String(16), Attr: "motion",
+					UniqId: "dao-point-" + random.String(16), Attr: "count",
 					ValOneof: &common.DataPoint_IntVal{IntVal: 123},
 					Ts:       timestamppb.Now(), TraceId: uuid.NewString(),
 				},
 			},
 			{
 				&common.DataPoint{
-					UniqId: "dao-point-" + random.String(16), Attr: "temp",
+					UniqId: "dao-point-" + random.String(16), Attr: "temp_c",
 					ValOneof: &common.DataPoint_Fl64Val{Fl64Val: 9.3},
 					Ts:       timestamppb.Now(), TraceId: uuid.NewString(),
 				},
@@ -53,7 +53,7 @@ func TestCreate(t *testing.T) {
 			{
 				&common.DataPoint{
 					UniqId: "dao-point-" + random.String(16), Attr: "power",
-					ValOneof: &common.DataPoint_StrVal{StrVal: "batt"},
+					ValOneof: &common.DataPoint_StrVal{StrVal: "line"},
 					Ts:       timestamppb.Now(), TraceId: uuid.NewString(),
 				},
 			},
@@ -104,7 +104,7 @@ func TestCreate(t *testing.T) {
 		}{
 			{
 				&common.DataPoint{
-					UniqId: "dao-point-" + random.String(40), Attr: "motion",
+					UniqId: "dao-point-" + random.String(40), Attr: "count",
 					ValOneof: &common.DataPoint_IntVal{IntVal: 123},
 					Ts:       timestamppb.Now(), TraceId: uuid.NewString(),
 				}, dao.ErrInvalidFormat,
@@ -147,7 +147,7 @@ func TestCreate(t *testing.T) {
 		require.NoError(t, err)
 
 		point := &common.DataPoint{
-			UniqId: "dao-point-" + random.String(16), Attr: "motion",
+			UniqId: "dao-point-" + random.String(16), Attr: "count",
 			ValOneof: &common.DataPoint_IntVal{IntVal: 123},
 			Ts:       timestamppb.Now(), TraceId: uuid.NewString(),
 		}
@@ -182,18 +182,18 @@ func TestList(t *testing.T) {
 
 		points := []*common.DataPoint{
 			{
-				UniqId: createDev.UniqId, Attr: "motion",
+				UniqId: createDev.UniqId, Attr: "count",
 				ValOneof: &common.DataPoint_IntVal{IntVal: 123},
 				TraceId:  uuid.NewString(),
 			},
 			{
-				UniqId: createDev.UniqId, Attr: "temp",
+				UniqId: createDev.UniqId, Attr: "temp_c",
 				ValOneof: &common.DataPoint_Fl64Val{Fl64Val: 9.3},
 				TraceId:  uuid.NewString(),
 			},
 			{
 				UniqId: createDev.UniqId, Attr: "power",
-				ValOneof: &common.DataPoint_StrVal{StrVal: "batt"},
+				ValOneof: &common.DataPoint_StrVal{StrVal: "line"},
 				TraceId:  uuid.NewString(),
 			},
 			{
@@ -209,7 +209,7 @@ func TestList(t *testing.T) {
 				}, TraceId: uuid.NewString(),
 			},
 			{
-				UniqId: createDev.UniqId, Attr: "motion",
+				UniqId: createDev.UniqId, Attr: "count",
 				ValOneof: &common.DataPoint_IntVal{IntVal: 321},
 				TraceId:  uuid.NewString(),
 			},
@@ -273,7 +273,7 @@ func TestList(t *testing.T) {
 
 		// Verify results by UniqID and attribute.
 		listPointsUniqID, err = globalDPDAO.List(ctx, createOrg.Id,
-			createDev.UniqId, "", "motion", points[0].Ts.AsTime(),
+			createDev.UniqId, "", "count", points[0].Ts.AsTime(),
 			points[len(points)-1].Ts.AsTime().Add(-time.Millisecond))
 		t.Logf("listPointsUniqID, err: %+v, %v", listPointsUniqID, err)
 		require.NoError(t, err)
@@ -283,7 +283,7 @@ func TestList(t *testing.T) {
 		// https://github.com/stretchr/testify/issues/758
 		mcount := 0
 		for _, point := range points {
-			if point.Attr == "motion" {
+			if point.Attr == "count" {
 				if !proto.Equal(point, listPointsUniqID[mcount]) {
 					t.Fatalf("\nExpect: %+v\nActual: %+v", point,
 						listPointsUniqID[mcount])
@@ -304,7 +304,7 @@ func TestList(t *testing.T) {
 		require.NoError(t, err)
 
 		point := &common.DataPoint{
-			UniqId: "dao-point-" + random.String(16), Attr: "motion",
+			UniqId: "dao-point-" + random.String(16), Attr: "count",
 			ValOneof: &common.DataPoint_IntVal{IntVal: 123},
 			Ts:       timestamppb.Now(), TraceId: uuid.NewString(),
 		}
@@ -355,18 +355,18 @@ func TestLatest(t *testing.T) {
 
 		points := []*common.DataPoint{
 			{
-				UniqId: createDev.UniqId, Attr: "motion",
+				UniqId: createDev.UniqId, Attr: "count",
 				ValOneof: &common.DataPoint_IntVal{IntVal: 123},
 				TraceId:  uuid.NewString(),
 			},
 			{
-				UniqId: createDev.UniqId, Attr: "temp",
+				UniqId: createDev.UniqId, Attr: "temp_c",
 				ValOneof: &common.DataPoint_Fl64Val{Fl64Val: 9.3},
 				TraceId:  uuid.NewString(),
 			},
 			{
 				UniqId: createDev.UniqId, Attr: "power",
-				ValOneof: &common.DataPoint_StrVal{StrVal: "batt"},
+				ValOneof: &common.DataPoint_StrVal{StrVal: "line"},
 				TraceId:  uuid.NewString(),
 			},
 			{
@@ -450,7 +450,7 @@ func TestLatest(t *testing.T) {
 		require.NoError(t, err)
 
 		point := &common.DataPoint{
-			UniqId: "dao-point-" + random.String(16), Attr: "motion",
+			UniqId: "dao-point-" + random.String(16), Attr: "count",
 			ValOneof: &common.DataPoint_IntVal{IntVal: 123},
 			Ts:       timestamppb.Now(), TraceId: uuid.NewString(),
 		}

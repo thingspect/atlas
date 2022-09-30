@@ -23,7 +23,7 @@ func TestPublishDataPoints(t *testing.T) {
 
 	t.Run("Publish valid data point", func(t *testing.T) {
 		point := &common.DataPoint{
-			UniqId: "api-point-" + random.String(16), Attr: "motion",
+			UniqId: "api-point-" + random.String(16), Attr: "count",
 			ValOneof: &common.DataPoint_IntVal{IntVal: 123},
 			Ts:       timestamppb.New(time.Now().Add(-15 * time.Minute)),
 		}
@@ -67,7 +67,7 @@ func TestPublishDataPoints(t *testing.T) {
 
 	t.Run("Publish valid data point without timestamp", func(t *testing.T) {
 		point := &common.DataPoint{
-			UniqId: "api-point-" + random.String(16), Attr: "motion",
+			UniqId: "api-point-" + random.String(16), Attr: "count",
 			ValOneof: &common.DataPoint_IntVal{IntVal: 123},
 		}
 
@@ -114,7 +114,7 @@ func TestPublishDataPoints(t *testing.T) {
 
 	t.Run("Publish data point with insufficient role", func(t *testing.T) {
 		point := &common.DataPoint{
-			UniqId: "api-point-" + random.String(16), Attr: "motion",
+			UniqId: "api-point-" + random.String(16), Attr: "count",
 			ValOneof: &common.DataPoint_IntVal{IntVal: 123},
 			Ts:       timestamppb.New(time.Now().Add(-15 * time.Minute)),
 		}
@@ -133,7 +133,7 @@ func TestPublishDataPoints(t *testing.T) {
 
 	t.Run("Publish invalid data point", func(t *testing.T) {
 		point := &common.DataPoint{
-			UniqId: "api-point-" + random.String(40), Attr: "motion",
+			UniqId: "api-point-" + random.String(40), Attr: "count",
 			ValOneof: &common.DataPoint_IntVal{IntVal: 123},
 			Ts:       timestamppb.New(time.Now().Add(-15 * time.Minute)),
 		}
@@ -171,18 +171,18 @@ func TestListDataPoints(t *testing.T) {
 
 		points := []*common.DataPoint{
 			{
-				UniqId: createDev.UniqId, Attr: "motion",
+				UniqId: createDev.UniqId, Attr: "count",
 				ValOneof: &common.DataPoint_IntVal{IntVal: 123},
 				TraceId:  uuid.NewString(),
 			},
 			{
-				UniqId: createDev.UniqId, Attr: "temp",
+				UniqId: createDev.UniqId, Attr: "temp_c",
 				ValOneof: &common.DataPoint_Fl64Val{Fl64Val: 9.3},
 				TraceId:  uuid.NewString(),
 			},
 			{
 				UniqId: createDev.UniqId, Attr: "power",
-				ValOneof: &common.DataPoint_StrVal{StrVal: "batt"},
+				ValOneof: &common.DataPoint_StrVal{StrVal: "line"},
 				TraceId:  uuid.NewString(),
 			},
 			{
@@ -198,7 +198,7 @@ func TestListDataPoints(t *testing.T) {
 				}, TraceId: uuid.NewString(),
 			},
 			{
-				UniqId: createDev.UniqId, Attr: "motion",
+				UniqId: createDev.UniqId, Attr: "count",
 				ValOneof: &common.DataPoint_IntVal{IntVal: 321},
 				TraceId:  uuid.NewString(),
 			},
@@ -274,7 +274,7 @@ func TestListDataPoints(t *testing.T) {
 			&api.ListDataPointsRequest{
 				IdOneof: &api.ListDataPointsRequest_UniqId{
 					UniqId: createDev.UniqId,
-				}, Attr: "motion",
+				}, Attr: "count",
 				StartTime: timestamppb.New(points[len(points)-1].Ts.AsTime().
 					Add(-time.Millisecond)),
 			})
@@ -286,7 +286,7 @@ func TestListDataPoints(t *testing.T) {
 		// https://github.com/stretchr/testify/issues/758
 		mcount := 0
 		for _, point := range points {
-			if point.Attr == "motion" {
+			if point.Attr == "count" {
 				if !proto.Equal(point, listPointsUniqID.Points[mcount]) {
 					t.Fatalf("\nExpect: %+v\nActual: %+v", point,
 						listPointsUniqID.Points[mcount])
@@ -300,7 +300,7 @@ func TestListDataPoints(t *testing.T) {
 		t.Parallel()
 
 		point := &common.DataPoint{
-			UniqId: "api-point-" + random.String(16), Attr: "motion",
+			UniqId: "api-point-" + random.String(16), Attr: "count",
 			ValOneof: &common.DataPoint_IntVal{IntVal: 123},
 			Ts:       timestamppb.Now(), TraceId: uuid.NewString(),
 		}
@@ -382,18 +382,18 @@ func TestLatestDataPoints(t *testing.T) {
 
 		points := []*common.DataPoint{
 			{
-				UniqId: createDev.UniqId, Attr: "motion",
+				UniqId: createDev.UniqId, Attr: "count",
 				ValOneof: &common.DataPoint_IntVal{IntVal: 123},
 				TraceId:  uuid.NewString(),
 			},
 			{
-				UniqId: createDev.UniqId, Attr: "temp",
+				UniqId: createDev.UniqId, Attr: "temp_c",
 				ValOneof: &common.DataPoint_Fl64Val{Fl64Val: 9.3},
 				TraceId:  uuid.NewString(),
 			},
 			{
 				UniqId: createDev.UniqId, Attr: "power",
-				ValOneof: &common.DataPoint_StrVal{StrVal: "batt"},
+				ValOneof: &common.DataPoint_StrVal{StrVal: "line"},
 				TraceId:  uuid.NewString(),
 			},
 			{
@@ -478,7 +478,7 @@ func TestLatestDataPoints(t *testing.T) {
 		t.Parallel()
 
 		point := &common.DataPoint{
-			UniqId: "api-point-" + random.String(16), Attr: "motion",
+			UniqId: "api-point-" + random.String(16), Attr: "count",
 			ValOneof: &common.DataPoint_IntVal{IntVal: 123},
 			Ts:       timestamppb.Now(), TraceId: uuid.NewString(),
 		}

@@ -40,13 +40,13 @@ func TestEventMessages(t *testing.T) {
 	}{
 		{
 			&message.ValidatorOut{Point: &common.DataPoint{
-				Attr: "motion", Ts: now,
+				Attr: "count", Ts: now,
 				TraceId: traceID,
 			}},
 			[]*api.Rule{{Id: ruleID, Expr: `true`}},
 			1,
 			[]*message.EventerOut{{Point: &common.DataPoint{
-				Attr: "motion",
+				Attr: "count",
 				Ts:   now, TraceId: traceID,
 			}, Rule: &api.Rule{
 				Id:   ruleID,
@@ -54,18 +54,18 @@ func TestEventMessages(t *testing.T) {
 			}}},
 		},
 		{&message.ValidatorOut{Point: &common.DataPoint{
-			Attr: "temp", Ts: now,
+			Attr: "temp_c", Ts: now,
 			TraceId: traceID,
 		}}, []*api.Rule{
 			{Id: ruleID, Expr: `true`},
 			{Id: ruleID, Expr: `true`},
 		}, 2, []*message.EventerOut{
 			{
-				Point: &common.DataPoint{Attr: "temp", Ts: now, TraceId: traceID},
+				Point: &common.DataPoint{Attr: "temp_c", Ts: now, TraceId: traceID},
 				Rule:  &api.Rule{Id: ruleID, Expr: `true`},
 			},
 			{
-				Point: &common.DataPoint{Attr: "temp", Ts: now, TraceId: traceID},
+				Point: &common.DataPoint{Attr: "temp_c", Ts: now, TraceId: traceID},
 				Rule:  &api.Rule{Id: ruleID, Expr: `true`},
 			},
 		}},

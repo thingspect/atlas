@@ -731,9 +731,9 @@ func TestTestAlarm(t *testing.T) {
 			},
 			{
 				&common.DataPoint{
-					ValOneof: &common.DataPoint_StrVal{StrVal: "batt"},
+					ValOneof: &common.DataPoint_StrVal{StrVal: "line"},
 				}, nil, nil, `point value is a string: {{.pointVal}}`,
-				"point value is a string: batt", "",
+				"point value is a string: line", "",
 			},
 			{
 				&common.DataPoint{

@@ -41,13 +41,13 @@ func TestValidateMessages(t *testing.T) {
 		{
 			&message.ValidatorIn{
 				Point: &common.DataPoint{
-					UniqId: dev.UniqId, Attr: "motion",
+					UniqId: dev.UniqId, Attr: "count",
 					ValOneof: &common.DataPoint_IntVal{IntVal: 123}, Ts: now,
 					Token: dev.Token, TraceId: traceID,
 				}, OrgId: dev.OrgId,
 			}, &message.ValidatorOut{
 				Point: &common.DataPoint{
-					UniqId: dev.UniqId, Attr: "motion",
+					UniqId: dev.UniqId, Attr: "count",
 					ValOneof: &common.DataPoint_IntVal{IntVal: 123}, Ts: now,
 					Token: dev.Token, TraceId: traceID,
 				}, Device: dev,
@@ -56,13 +56,13 @@ func TestValidateMessages(t *testing.T) {
 		{
 			&message.ValidatorIn{
 				Point: &common.DataPoint{
-					UniqId: dev.UniqId, Attr: "temp",
+					UniqId: dev.UniqId, Attr: "temp_c",
 					ValOneof: &common.DataPoint_Fl64Val{Fl64Val: 9.3}, Ts: now,
 					Token: dev.Token, TraceId: traceID,
 				}, OrgId: dev.OrgId,
 			}, &message.ValidatorOut{
 				Point: &common.DataPoint{
-					UniqId: dev.UniqId, Attr: "temp",
+					UniqId: dev.UniqId, Attr: "temp_c",
 					ValOneof: &common.DataPoint_Fl64Val{Fl64Val: 9.3}, Ts: now,
 					Token: dev.Token, TraceId: traceID,
 				}, Device: dev,
@@ -72,13 +72,13 @@ func TestValidateMessages(t *testing.T) {
 			&message.ValidatorIn{
 				Point: &common.DataPoint{
 					UniqId: dev.UniqId, Attr: "power",
-					ValOneof: &common.DataPoint_StrVal{StrVal: "batt"}, Ts: now,
+					ValOneof: &common.DataPoint_StrVal{StrVal: "line"}, Ts: now,
 					Token: dev.Token, TraceId: traceID,
 				}, OrgId: dev.OrgId,
 			}, &message.ValidatorOut{
 				Point: &common.DataPoint{
 					UniqId: dev.UniqId, Attr: "power",
-					ValOneof: &common.DataPoint_StrVal{StrVal: "batt"}, Ts: now,
+					ValOneof: &common.DataPoint_StrVal{StrVal: "line"}, Ts: now,
 					Token: dev.Token, TraceId: traceID,
 				}, Device: dev,
 			},

@@ -729,8 +729,8 @@ func TestTestRule(t *testing.T) {
 			},
 			{
 				&common.DataPoint{
-					ValOneof: &common.DataPoint_StrVal{StrVal: "batt"},
-				}, `pointVal == line`, false, "",
+					ValOneof: &common.DataPoint_StrVal{StrVal: "line"},
+				}, `pointVal == battery`, false, "",
 			},
 			{
 				&common.DataPoint{

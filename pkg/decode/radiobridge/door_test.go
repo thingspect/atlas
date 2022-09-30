@@ -32,7 +32,7 @@ func TestDoor(t *testing.T) {
 			{Attr: "proto", Value: int32(1)},
 			{Attr: "count", Value: int32(4)},
 			{Attr: "tamper", Value: false},
-			{Attr: "battery_volt", Value: 3.1},
+			{Attr: "battery_v", Value: 3.1},
 		}, ""},
 		// Tamper.
 		{"1c0200", []*decode.Point{
