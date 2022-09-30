@@ -41,12 +41,12 @@ func TestDecodeMessages(t *testing.T) {
 			"",
 			[]*common.DataPoint{
 				{
-					UniqId: uniqIDPoint, Attr: "motion",
+					UniqId: uniqIDPoint, Attr: "count",
 					ValOneof: &common.DataPoint_IntVal{IntVal: 123}, Ts: now,
 					Token: pointToken,
 				},
 				{
-					UniqId: uniqIDPoint, Attr: "motion",
+					UniqId: uniqIDPoint, Attr: "count",
 					ValOneof: &common.DataPoint_IntVal{IntVal: 321}, Ts: now,
 					Token: pointToken,
 				},
@@ -54,14 +54,14 @@ func TestDecodeMessages(t *testing.T) {
 			[]*message.ValidatorIn{
 				{
 					Point: &common.DataPoint{
-						UniqId: uniqIDPoint, Attr: "motion",
+						UniqId: uniqIDPoint, Attr: "count",
 						ValOneof: &common.DataPoint_IntVal{IntVal: 123},
 						Ts:       now, Token: pointToken,
 					}, OrgId: orgID,
 				},
 				{
 					Point: &common.DataPoint{
-						UniqId: uniqIDPoint, Attr: "motion",
+						UniqId: uniqIDPoint, Attr: "count",
 						ValOneof: &common.DataPoint_IntVal{IntVal: 321},
 						Ts:       now, Token: pointToken,
 					}, OrgId: orgID,
@@ -73,14 +73,14 @@ func TestDecodeMessages(t *testing.T) {
 			paylToken,
 			[]*common.DataPoint{
 				{
-					Attr:     "temp",
+					Attr:     "temp_c",
 					ValOneof: &common.DataPoint_Fl64Val{Fl64Val: 9.3},
 				},
 			},
 			[]*message.ValidatorIn{
 				{
 					Point: &common.DataPoint{
-						UniqId: uniqIDTopic, Attr: "temp",
+						UniqId: uniqIDTopic, Attr: "temp_c",
 						ValOneof: &common.DataPoint_Fl64Val{Fl64Val: 9.3},
 						Token:    paylToken,
 					}, OrgId: orgID,
@@ -93,14 +93,14 @@ func TestDecodeMessages(t *testing.T) {
 			[]*common.DataPoint{
 				{
 					Attr:     "power",
-					ValOneof: &common.DataPoint_StrVal{StrVal: "batt"},
+					ValOneof: &common.DataPoint_StrVal{StrVal: "line"},
 				},
 			},
 			[]*message.ValidatorIn{
 				{
 					Point: &common.DataPoint{
 						UniqId: uniqIDTopic, Attr: "power",
-						ValOneof: &common.DataPoint_StrVal{StrVal: "batt"},
+						ValOneof: &common.DataPoint_StrVal{StrVal: "line"},
 						Token:    paylToken,
 					}, OrgId: orgID,
 				},
@@ -259,12 +259,12 @@ func TestDataPointToVIn(t *testing.T) {
 	}{
 		{
 			[]string{"v1", orgID}, "", &common.DataPoint{
-				UniqId: uniqIDPoint, Attr: "motion",
+				UniqId: uniqIDPoint, Attr: "count",
 				ValOneof: &common.DataPoint_IntVal{IntVal: 123}, Ts: now,
 				Token: pointToken,
 			}, &message.ValidatorIn{
 				Point: &common.DataPoint{
-					UniqId: uniqIDPoint, Attr: "motion",
+					UniqId: uniqIDPoint, Attr: "count",
 					ValOneof: &common.DataPoint_IntVal{IntVal: 123}, Ts: now,
 					Token: pointToken, TraceId: traceID,
 				}, OrgId: orgID,
@@ -272,10 +272,10 @@ func TestDataPointToVIn(t *testing.T) {
 		},
 		{
 			[]string{"v1", orgID, uniqIDTopic}, paylToken, &common.DataPoint{
-				Attr: "temp", ValOneof: &common.DataPoint_Fl64Val{Fl64Val: 9.3},
+				Attr: "temp_c", ValOneof: &common.DataPoint_Fl64Val{Fl64Val: 9.3},
 			}, &message.ValidatorIn{
 				Point: &common.DataPoint{
-					UniqId: uniqIDTopic, Attr: "temp",
+					UniqId: uniqIDTopic, Attr: "temp_c",
 					ValOneof: &common.DataPoint_Fl64Val{Fl64Val: 9.3},
 					Token:    paylToken, TraceId: traceID,
 				}, OrgId: orgID,
@@ -284,11 +284,11 @@ func TestDataPointToVIn(t *testing.T) {
 		{
 			[]string{"v1", orgID, uniqIDTopic}, paylToken, &common.DataPoint{
 				Attr:     "power",
-				ValOneof: &common.DataPoint_StrVal{StrVal: "batt"},
+				ValOneof: &common.DataPoint_StrVal{StrVal: "line"},
 			}, &message.ValidatorIn{
 				Point: &common.DataPoint{
 					UniqId: uniqIDTopic, Attr: "power",
-					ValOneof: &common.DataPoint_StrVal{StrVal: "batt"},
+					ValOneof: &common.DataPoint_StrVal{StrVal: "line"},
 					Token:    paylToken, TraceId: traceID,
 				}, OrgId: orgID,
 			},

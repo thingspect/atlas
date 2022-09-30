@@ -78,13 +78,13 @@ func TestValidateMessages(t *testing.T) {
 			&message.ValidatorIn{
 				Point: &common.DataPoint{
 					UniqId: createDev.UniqId, Attr: "val-power",
-					ValOneof: &common.DataPoint_StrVal{StrVal: "batt"}, Ts: now,
+					ValOneof: &common.DataPoint_StrVal{StrVal: "line"}, Ts: now,
 					Token: createDev.Token, TraceId: traceID,
 				}, OrgId: createOrg.Id,
 			}, &message.ValidatorOut{
 				Point: &common.DataPoint{
 					UniqId: createDev.UniqId, Attr: "val-power",
-					ValOneof: &common.DataPoint_StrVal{StrVal: "batt"}, Ts: now,
+					ValOneof: &common.DataPoint_StrVal{StrVal: "line"}, Ts: now,
 					Token: createDev.Token, TraceId: traceID,
 				}, Device: dev,
 			},

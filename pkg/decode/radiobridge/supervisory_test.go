@@ -25,7 +25,7 @@ func TestSupervisory(t *testing.T) {
 			{Attr: "proto", Value: int32(1)},
 			{Attr: "count", Value: int32(4)},
 			{Attr: "tamper", Value: false},
-			{Attr: "battery_volt", Value: 3.1},
+			{Attr: "battery_v", Value: 3.1},
 		}, ""},
 		{"1401170127", []*decode.Point{
 			{Attr: "proto", Value: int32(1)},
@@ -35,21 +35,21 @@ func TestSupervisory(t *testing.T) {
 			{Attr: "error", Value: "last_downlink"},
 			{Attr: "error", Value: "tamper_since_reset"},
 			{Attr: "tamper", Value: true},
-			{Attr: "battery_volt", Value: 2.7},
+			{Attr: "battery_v", Value: 2.7},
 		}, ""},
 		// Supervisory event count.
 		{"1701080130ffffffff1234", []*decode.Point{
 			{Attr: "proto", Value: int32(1)},
 			{Attr: "count", Value: int32(7)},
 			{Attr: "tamper", Value: false},
-			{Attr: "battery_volt", Value: float64(3)},
+			{Attr: "battery_v", Value: float64(3)},
 			{Attr: "total_count", Value: int32(4660)},
 		}, ""},
 		{"1401080132000000000002", []*decode.Point{
 			{Attr: "proto", Value: int32(1)},
 			{Attr: "count", Value: int32(4)},
 			{Attr: "tamper", Value: false},
-			{Attr: "battery_volt", Value: 3.2},
+			{Attr: "battery_v", Value: 3.2},
 			{Attr: "total_count", Value: int32(2)},
 		}, ""},
 		// Supervisory bad length.
@@ -66,7 +66,7 @@ func TestSupervisory(t *testing.T) {
 			{Attr: "proto", Value: int32(1)},
 			{Attr: "count", Value: int32(7)},
 			{Attr: "tamper", Value: false},
-			{Attr: "battery_volt", Value: float64(3)},
+			{Attr: "battery_v", Value: float64(3)},
 			{Attr: "total_count", Value: int32(4660)},
 		}, "supervisory format unused trailing bytes: " +
 			"1701080130ffffffff1234ff"},

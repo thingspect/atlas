@@ -41,9 +41,9 @@ func TestGenerate(t *testing.T) {
 		},
 		{
 			&common.DataPoint{ValOneof: &common.DataPoint_StrVal{
-				StrVal: "batt",
+				StrVal: "line",
 			}}, nil, nil, `point value is a string: {{.pointVal}}`,
-			"point value is a string: batt", "",
+			"point value is a string: line", "",
 		},
 		{
 			&common.DataPoint{ValOneof: &common.DataPoint_BoolVal{

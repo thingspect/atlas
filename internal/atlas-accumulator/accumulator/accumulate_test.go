@@ -36,7 +36,7 @@ func TestAccumulateMessages(t *testing.T) {
 		{
 			&message.ValidatorOut{
 				Point: &common.DataPoint{
-					UniqId: random.String(16), Attr: "motion",
+					UniqId: random.String(16), Attr: "count",
 					ValOneof: &common.DataPoint_IntVal{IntVal: 123},
 					Ts: timestamppb.New(time.Now().Add(
 						-15 * time.Minute)), Token: uuid.NewString(),
@@ -47,7 +47,7 @@ func TestAccumulateMessages(t *testing.T) {
 		{
 			&message.ValidatorOut{
 				Point: &common.DataPoint{
-					UniqId: random.String(16), Attr: "temp",
+					UniqId: random.String(16), Attr: "temp_c",
 					ValOneof: &common.DataPoint_Fl64Val{Fl64Val: 9.3},
 					Ts: timestamppb.New(time.Now().Add(
 						-15 * time.Minute)), Token: uuid.NewString(),
@@ -59,7 +59,7 @@ func TestAccumulateMessages(t *testing.T) {
 			&message.ValidatorOut{
 				Point: &common.DataPoint{
 					UniqId: random.String(16), Attr: "power",
-					ValOneof: &common.DataPoint_StrVal{StrVal: "batt"},
+					ValOneof: &common.DataPoint_StrVal{StrVal: "line"},
 					Ts: timestamppb.New(time.Now().Add(
 						-15 * time.Minute)), Token: uuid.NewString(),
 					TraceId: uuid.NewString(),

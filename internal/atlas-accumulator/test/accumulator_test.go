@@ -61,7 +61,7 @@ func TestAccumulateMessages(t *testing.T) {
 			&message.ValidatorOut{
 				Point: &common.DataPoint{
 					UniqId: "acc-" + random.String(16), Attr: "acc-power",
-					ValOneof: &common.DataPoint_StrVal{StrVal: "batt"}, Ts: now,
+					ValOneof: &common.DataPoint_StrVal{StrVal: "line"}, Ts: now,
 					Token: uuid.NewString(), TraceId: uuid.NewString(),
 				}, Device: createDev,
 			},

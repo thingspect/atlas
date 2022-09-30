@@ -32,7 +32,7 @@ func TestPublishDataPoints(t *testing.T) {
 
 		orgID := uuid.NewString()
 		point := &common.DataPoint{
-			UniqId: "api-point-" + random.String(16), Attr: "motion",
+			UniqId: "api-point-" + random.String(16), Attr: "count",
 			ValOneof: &common.DataPoint_IntVal{IntVal: 123},
 			Ts:       timestamppb.New(time.Now().Add(-15 * time.Minute)),
 		}
@@ -87,7 +87,7 @@ func TestPublishDataPoints(t *testing.T) {
 
 		orgID := uuid.NewString()
 		point := &common.DataPoint{
-			UniqId: "api-point-" + random.String(16), Attr: "motion",
+			UniqId: "api-point-" + random.String(16), Attr: "count",
 			ValOneof: &common.DataPoint_IntVal{IntVal: 123},
 		}
 
@@ -172,7 +172,7 @@ func TestPublishDataPoints(t *testing.T) {
 
 		orgID := uuid.NewString()
 		point := &common.DataPoint{
-			UniqId: "api-point-" + random.String(16), Attr: "motion",
+			UniqId: "api-point-" + random.String(16), Attr: "count",
 			ValOneof: &common.DataPoint_IntVal{IntVal: 123},
 			Ts:       timestamppb.New(time.Now().Add(-15 * time.Minute)),
 		}
@@ -204,7 +204,7 @@ func TestListDataPoints(t *testing.T) {
 		t.Parallel()
 
 		point := &common.DataPoint{
-			UniqId: "api-point-" + random.String(16), Attr: "motion",
+			UniqId: "api-point-" + random.String(16), Attr: "count",
 			ValOneof: &common.DataPoint_IntVal{IntVal: 123},
 			Ts:       timestamppb.Now(), TraceId: uuid.NewString(),
 		}
@@ -246,7 +246,7 @@ func TestListDataPoints(t *testing.T) {
 		t.Parallel()
 
 		point := &common.DataPoint{
-			UniqId: "api-point-" + random.String(16), Attr: "motion",
+			UniqId: "api-point-" + random.String(16), Attr: "count",
 			ValOneof: &common.DataPoint_IntVal{IntVal: 123},
 			Ts:       timestamppb.Now(), TraceId: uuid.NewString(),
 		}
@@ -370,7 +370,7 @@ func TestLatestDataPoints(t *testing.T) {
 		t.Parallel()
 
 		point := &common.DataPoint{
-			UniqId: "api-point-" + random.String(16), Attr: "motion",
+			UniqId: "api-point-" + random.String(16), Attr: "count",
 			ValOneof: &common.DataPoint_IntVal{IntVal: 123},
 			Ts:       timestamppb.Now(), TraceId: uuid.NewString(),
 		}
@@ -411,7 +411,7 @@ func TestLatestDataPoints(t *testing.T) {
 		t.Parallel()
 
 		point := &common.DataPoint{
-			UniqId: "api-point-" + random.String(16), Attr: "motion",
+			UniqId: "api-point-" + random.String(16), Attr: "count",
 			ValOneof: &common.DataPoint_IntVal{IntVal: 123},
 			Ts:       timestamppb.Now(), TraceId: uuid.NewString(),
 		}
