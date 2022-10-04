@@ -25,11 +25,9 @@ func (ing *Ingestor) decodeGateways() {
 
 		// Set up logging fields.
 		traceID := uuid.NewString()
-		logFields := map[string]interface{}{
-			"type":    "gateway",
-			"traceID": traceID,
-		}
-		logger := alog.WithFields(logFields)
+		logger := alog.
+			WithField("type", "gateway").
+			WithField("traceID", traceID)
 
 		// Parse and validate topic in formats: 'lora/+/gateway/+/event/+' and
 		// 'lora/+/gateway/+/state/+'. A state type is considered an event.
@@ -44,8 +42,8 @@ func (ing *Ingestor) decodeGateways() {
 
 			continue
 		}
-		logger = logger.WithStr("uniqID", topicParts[3])
-		logger = logger.WithStr("event", topicParts[5])
+		logger = logger.WithField("uniqID", topicParts[3])
+		logger = logger.WithField("event", topicParts[5])
 
 		// Decode payload. Continue execution in the presence of errors, as
 		// valid points may be returned.
@@ -101,11 +99,9 @@ func (ing *Ingestor) decodeDevices() {
 
 		// Set up logging fields.
 		traceID := uuid.NewString()
-		logFields := map[string]interface{}{
-			"type":    "device",
-			"traceID": traceID,
-		}
-		logger := alog.WithFields(logFields)
+		logger := alog.
+			WithField("type", "device").
+			WithField("traceID", traceID)
 
 		// Parse and validate topic in format:
 		// 'lora/application/+/device/+/event/+'.
@@ -119,8 +115,8 @@ func (ing *Ingestor) decodeDevices() {
 
 			continue
 		}
-		logger = logger.WithStr("uniqID", topicParts[4])
-		logger = logger.WithStr("event", topicParts[6])
+		logger = logger.WithField("uniqID", topicParts[4])
+		logger = logger.WithField("event", topicParts[6])
 
 		// Decode payload. Continue execution in the presence of errors, as
 		// valid points may be included.

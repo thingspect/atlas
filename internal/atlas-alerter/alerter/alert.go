@@ -43,13 +43,11 @@ func (ale *Alerter) alertMessages() {
 		}
 
 		// Set up logging fields.
-		logFields := map[string]interface{}{
-			"traceID": eOut.Point.TraceId,
-			"orgID":   eOut.Device.OrgId,
-			"uniqID":  eOut.Point.UniqId,
-			"devID":   eOut.Device.Id,
-		}
-		logger := alog.WithFields(logFields)
+		logger := alog.
+			WithField("traceID", eOut.Point.TraceId).
+			WithField("orgID", eOut.Device.OrgId).
+			WithField("uniqID", eOut.Point.UniqId).
+			WithField("devID", eOut.Device.Id)
 
 		// Retrieve org.
 		ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
@@ -160,6 +158,8 @@ func (ale *Alerter) alertMessages() {
 				case api.AlarmType_EMAIL:
 					err = ale.notify.Email(ctx, org.DisplayName, org.Email,
 						user.Email, subj, body)
+				case api.AlarmType_ALARM_TYPE_UNSPECIFIED:
+					fallthrough
 				default:
 					err = ErrUnknownAlarm
 				}

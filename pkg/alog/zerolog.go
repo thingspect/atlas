@@ -55,14 +55,9 @@ func (z *zlog) WithLevel(level string) Logger {
 	return &zlog{zl: z.zl.Level(zlevel)}
 }
 
-// WithStr returns a derived Logger with a string field.
-func (z *zlog) WithStr(key, val string) Logger {
+// WithField returns a derived Logger with a string field.
+func (z *zlog) WithField(key, val string) Logger {
 	return &zlog{zl: z.zl.With().Str(key, val).Logger()}
-}
-
-// WithFields returns a derived Logger using a map to set fields.
-func (z *zlog) WithFields(fields map[string]interface{}) Logger {
-	return &zlog{zl: z.zl.With().Fields(fields).Logger()}
 }
 
 // Debug logs a new message with debug level.

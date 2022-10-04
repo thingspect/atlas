@@ -25,7 +25,7 @@ func (ing *Ingestor) decodeMessages() {
 
 		// Set up logging fields.
 		traceID := uuid.NewString()
-		logger := alog.WithStr("traceID", traceID)
+		logger := alog.WithField("traceID", traceID)
 
 		// Parse and validate topic in format: 'v1/:orgID[/:uniqID][/json]'.
 		topic := msg.Topic()
@@ -36,18 +36,18 @@ func (ing *Ingestor) decodeMessages() {
 
 			continue
 		}
-		logger = logger.WithStr("orgID", topicParts[1])
+		logger = logger.WithField("orgID", topicParts[1])
 
 		// Unmarshal payload based on topic and format.
 		payl := &mqtt.Payload{}
 		var err error
 
 		if topicParts[len(topicParts)-1] == "json" {
-			logger = logger.WithStr("paylType", "json")
+			logger = logger.WithField("paylType", "json")
 			topicParts = topicParts[:len(topicParts)-1]
 			err = protojson.Unmarshal(msg.Payload(), payl)
 		} else {
-			logger = logger.WithStr("paylType", "proto")
+			logger = logger.WithField("paylType", "proto")
 			err = proto.Unmarshal(msg.Payload(), payl)
 		}
 		if err != nil {

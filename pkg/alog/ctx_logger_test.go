@@ -16,7 +16,7 @@ const testTimeout = 2 * time.Second
 func TestNewFromContext(t *testing.T) {
 	t.Parallel()
 
-	logger := &CtxLogger{Logger: WithStr(random.String(10), random.String(10))}
+	logger := &CtxLogger{Logger: WithField(random.String(10), random.String(10))}
 	t.Logf("logger: %+v", logger)
 
 	ctx, cancel := context.WithTimeout(context.Background(), testTimeout)

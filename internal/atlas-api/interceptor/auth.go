@@ -60,12 +60,12 @@ func Auth(
 		// Add logging fields.
 		logger := alog.FromContext(ctx)
 		if sess.UserID != "" {
-			logger.Logger = logger.WithStr("userID", sess.UserID)
+			logger.Logger = logger.WithField("userID", sess.UserID)
 		} else {
-			logger.Logger = logger.WithStr("keyID", sess.KeyID)
+			logger.Logger = logger.WithField("keyID", sess.KeyID)
 		}
-		logger.Logger = logger.WithStr("orgID", sess.OrgID)
-		logger.Logger = logger.WithStr("traceID", sess.TraceID.String())
+		logger.Logger = logger.WithField("orgID", sess.OrgID)
+		logger.Logger = logger.WithField("traceID", sess.TraceID.String())
 
 		ctx = session.NewContext(ctx, sess)
 

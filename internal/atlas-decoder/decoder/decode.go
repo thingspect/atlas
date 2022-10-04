@@ -39,11 +39,9 @@ func (dec *Decoder) decodeMessages() {
 		}
 
 		// Set up logging fields.
-		logFields := map[string]interface{}{
-			"traceID": dIn.TraceId,
-			"uniqID":  dIn.UniqId,
-		}
-		logger := alog.WithFields(logFields)
+		logger := alog.
+			WithField("traceID", dIn.TraceId).
+			WithField("uniqID", dIn.UniqId)
 
 		// Retrieve device.
 		ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
@@ -63,8 +61,8 @@ func (dec *Decoder) decodeMessages() {
 
 			continue
 		}
-		logger = logger.WithStr("orgID", dev.OrgId)
-		logger = logger.WithStr("devID", dev.Id)
+		logger = logger.WithField("orgID", dev.OrgId)
+		logger = logger.WithField("devID", dev.Id)
 
 		// Decode data payload. Continue execution in the presence of errors, as
 		// valid points may be returned.

@@ -37,13 +37,11 @@ func (acc *Accumulator) accumulateMessages() {
 		}
 
 		// Set up logging fields.
-		logFields := map[string]interface{}{
-			"traceID": vOut.Point.TraceId,
-			"orgID":   vOut.Device.OrgId,
-			"uniqID":  vOut.Point.UniqId,
-			"devID":   vOut.Device.Id,
-		}
-		logger := alog.WithFields(logFields)
+		logger := alog.
+			WithField("traceID", vOut.Point.TraceId).
+			WithField("orgID", vOut.Device.OrgId).
+			WithField("uniqID", vOut.Point.UniqId).
+			WithField("devID", vOut.Device.Id)
 
 		// Create data point.
 		ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)

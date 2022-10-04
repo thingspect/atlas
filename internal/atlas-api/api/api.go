@@ -34,9 +34,7 @@ import (
 	"github.com/thingspect/atlas/pkg/queue"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
-
-	// encoding/gzip imported for use by UseCompressor CallOption.
-	_ "google.golang.org/grpc/encoding/gzip"
+	_ "google.golang.org/grpc/encoding/gzip" // For UseCompressor CallOption.
 )
 
 // ServiceName provides consistent naming, including logs and metrics.
