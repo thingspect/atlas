@@ -39,12 +39,10 @@ func (val *Validator) validateMessages() {
 		}
 
 		// Set up logging fields.
-		logFields := map[string]interface{}{
-			"traceID": vIn.Point.TraceId,
-			"orgID":   vIn.OrgId,
-			"uniqID":  vIn.Point.UniqId,
-		}
-		logger := alog.WithFields(logFields)
+		logger := alog.
+			WithField("traceID", vIn.Point.TraceId).
+			WithField("orgID", vIn.OrgId).
+			WithField("uniqID", vIn.Point.UniqId)
 
 		// Retrieve device.
 		ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
@@ -64,7 +62,7 @@ func (val *Validator) validateMessages() {
 
 			continue
 		}
-		logger = logger.WithStr("devID", dev.Id)
+		logger = logger.WithField("devID", dev.Id)
 
 		// Perform validation.
 		switch err := vIn.Point.Validate(); {

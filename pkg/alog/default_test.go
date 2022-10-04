@@ -70,43 +70,16 @@ func TestDefaultJSON(t *testing.T) {
 	}
 }
 
-func TestDefaultWithStr(t *testing.T) {
+func TestDefaultWithField(t *testing.T) {
 	t.Parallel()
 
-	logger := WithStr(random.String(10), random.String(10))
+	logger := WithField(random.String(10), random.String(10))
 	t.Logf("logger: %#v", logger)
 
 	for i := 0; i < 5; i++ {
 		lTest := i
 
 		t.Run(fmt.Sprintf("Can log %v with string", lTest), func(t *testing.T) {
-			t.Parallel()
-
-			logger.Debug("Debug")
-			logger.Debugf("Debugf: %v", lTest)
-			logger.Info("Info")
-			logger.Infof("Infof: %v", lTest)
-			logger.Error("Error")
-			logger.Errorf("Errorf: %v", lTest)
-			// Do not test Fatal* due to os.Exit.
-		})
-	}
-}
-
-func TestDefaultWithFields(t *testing.T) {
-	t.Parallel()
-
-	fields := map[string]interface{}{
-		random.String(10): random.String(10),
-		random.String(10): random.Intn(99),
-	}
-	logger := WithFields(fields)
-	t.Logf("logger: %#v", logger)
-
-	for i := 0; i < 5; i++ {
-		lTest := i
-
-		t.Run(fmt.Sprintf("Can log %v with fields", lTest), func(t *testing.T) {
 			t.Parallel()
 
 			logger.Debug("Debug")

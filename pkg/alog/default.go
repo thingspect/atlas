@@ -37,15 +37,10 @@ func SetDefault(l Logger) {
 	logger = l
 }
 
-// WithStr returns a derived Logger from the default Logger with a string field.
-func WithStr(key, val string) Logger {
-	return Default().WithStr(key, val)
-}
-
-// WithFields returns a derived Logger from the default Logger using a map to
-// set fields.
-func WithFields(fields map[string]interface{}) Logger {
-	return Default().WithFields(fields)
+// WithField returns a derived Logger from the default Logger with a string
+// field.
+func WithField(key, val string) Logger {
+	return Default().WithField(key, val)
 }
 
 // Debug logs a new message with debug level.

@@ -23,7 +23,7 @@ func Log(skipPaths map[string]struct{}) grpc.UnaryServerInterceptor {
 		handler grpc.UnaryHandler,
 	) (interface{}, error) {
 		// Set up logging fields and context.
-		logger := &alog.CtxLogger{Logger: alog.WithStr("path", info.FullMethod)}
+		logger := &alog.CtxLogger{Logger: alog.WithField("path", info.FullMethod)}
 		ctx = alog.NewContext(ctx, logger)
 
 		start := time.Now()
@@ -41,17 +41,15 @@ func Log(skipPaths map[string]struct{}) grpc.UnaryServerInterceptor {
 		}
 
 		// Add additional logging fields.
-		logFields := map[string]interface{}{
-			"durms": fmt.Sprintf("%d", dur/time.Millisecond),
-			"code":  status.Code(err).String(),
-		}
-		logger.Logger = logger.WithFields(logFields)
+		logger.Logger = logger.
+			WithField("durms", fmt.Sprintf("%d", dur/time.Millisecond)).
+			WithField("code", status.Code(err).String())
 
 		// Populate additional fields with metadata.
 		if md, ok := metadata.FromIncomingContext(ctx); ok {
 			for k, v := range md {
 				if !strings.Contains(k, "authorization") {
-					logger.Logger = logger.WithStr(k, strings.Join(v, ","))
+					logger.Logger = logger.WithField(k, strings.Join(v, ","))
 				}
 			}
 		}

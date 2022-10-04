@@ -70,7 +70,7 @@ func (s *Session) Login(ctx context.Context, req *api.LoginRequest) (
 		return nil, status.Error(codes.Unauthenticated, "unauthorized")
 	}
 
-	logger.Logger = logger.WithStr("userID", user.Id).WithStr("orgID",
+	logger.Logger = logger.WithField("userID", user.Id).WithField("orgID",
 		user.OrgId)
 
 	if err := crypto.CompareHashPass(hash, req.Password); err != nil ||

@@ -6,8 +6,7 @@ import (
 	"net/url"
 	"time"
 
-	// pgx/stdlib imported for database/sql.
-	_ "github.com/jackc/pgx/v4/stdlib"
+	_ "github.com/jackc/pgx/v4/stdlib" // For database/sql.
 )
 
 // NewPgDB builds, configures, and verifies a new database/sql DB using the pgx

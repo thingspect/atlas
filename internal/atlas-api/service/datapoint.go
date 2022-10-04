@@ -64,7 +64,7 @@ func (d *DataPoint) PublishDataPoints(
 		return nil, errPerm(api.Role_PUBLISHER)
 	}
 
-	logger.Logger = logger.WithStr("paylType", "api")
+	logger.Logger = logger.WithField("paylType", "api")
 
 	// Build and publish ValidatorIn messages.
 	for _, point := range req.Points {

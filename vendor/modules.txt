@@ -35,7 +35,7 @@ github.com/dgryski/go-rendezvous
 ## explicit; go 1.14
 github.com/eclipse/paho.mqtt.golang
 github.com/eclipse/paho.mqtt.golang/packets
-# github.com/envoyproxy/protoc-gen-validate v0.6.8
+# github.com/envoyproxy/protoc-gen-validate v0.6.13
 ## explicit; go 1.12
 github.com/envoyproxy/protoc-gen-validate/validate
 # github.com/go-redis/redis/v8 v8.11.5
@@ -142,7 +142,7 @@ github.com/thingspect/api/go/mqtt
 golang.org/x/crypto/bcrypt
 golang.org/x/crypto/blowfish
 golang.org/x/crypto/pbkdf2
-# golang.org/x/net v0.0.0-20220927171203-f486391704dc
+# golang.org/x/net v0.0.0-20221004154528-8021a29435af
 ## explicit; go 1.17
 golang.org/x/net/http/httpguts
 golang.org/x/net/http2

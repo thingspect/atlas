@@ -7,11 +7,8 @@ package alog
 type Logger interface {
 	// WithLevel returns a derived Logger with the level set to level.
 	WithLevel(level string) Logger
-
-	// WithStr returns a derived Logger with a string field.
-	WithStr(key, val string) Logger
-	// WithFields returns a derived Logger using a map to set fields.
-	WithFields(fields map[string]interface{}) Logger
+	// WithField returns a derived Logger with a string field.
+	WithField(key, val string) Logger
 
 	// Debug logs a new message with debug level.
 	Debug(v ...interface{})
