@@ -41,7 +41,7 @@ jobs:
         image: redis:6-alpine
     steps:
       - name: Deps
-        # Names are duplicated as IDs for important steps for use by Notify
+        # Names are duplicated as IDs for use by Notify
         id: Deps
         # Add packages needed to support builds and tests
         run: |

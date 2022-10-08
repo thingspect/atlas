@@ -32,11 +32,18 @@ func TestDecodeMessages(t *testing.T) {
 	t.Logf("createOrg, err: %+v, %v", createOrg, err)
 	require.NoError(t, err)
 
-	dev := random.Device("dec", createOrg.Id)
-	dev.Status = api.Status_ACTIVE
-	dev.Decoder = api.Decoder_RADIO_BRIDGE_DOOR_V2
-	createDev, err := globalDevDAO.Create(ctx, dev)
-	t.Logf("createDev, err: %+v, %v", createDev, err)
+	doorDev := random.Device("dec", createOrg.Id)
+	doorDev.Status = api.Status_ACTIVE
+	doorDev.Decoder = api.Decoder_RADIO_BRIDGE_DOOR_V2
+	createDoorDev, err := globalDevDAO.Create(ctx, doorDev)
+	t.Logf("createDoorDev, err: %+v, %v", createDoorDev, err)
+	require.NoError(t, err)
+
+	co2Dev := random.Device("dec", createOrg.Id)
+	co2Dev.Status = api.Status_ACTIVE
+	co2Dev.Decoder = api.Decoder_GLOBALSAT_CO2
+	createCO2Dev, err := globalDevDAO.Create(ctx, co2Dev)
+	t.Logf("createCO2Dev, err: %+v, %v", createCO2Dev, err)
 	require.NoError(t, err)
 
 	tests := []struct {
@@ -45,18 +52,18 @@ func TestDecodeMessages(t *testing.T) {
 	}{
 		{
 			&message.DecoderIn{
-				UniqId: dev.UniqId, Data: []byte{0x19, 0x03, 0x01}, Ts: now,
+				UniqId: doorDev.UniqId, Data: []byte{0x19, 0x03, 0x01}, Ts: now,
 				TraceId: traceID,
 			}, []*message.ValidatorIn{
 				{
 					Point: &common.DataPoint{
-						UniqId: dev.UniqId, Attr: "count",
+						UniqId: doorDev.UniqId, Attr: "count",
 						ValOneof: &common.DataPoint_IntVal{IntVal: 9}, Ts: now,
 						TraceId: traceID,
 					}, SkipToken: true,
 				}, {
 					Point: &common.DataPoint{
-						UniqId: dev.UniqId, Attr: "open",
+						UniqId: doorDev.UniqId, Attr: "open",
 						ValOneof: &common.DataPoint_BoolVal{BoolVal: true},
 						Ts:       now, TraceId: traceID,
 					}, SkipToken: true,
@@ -65,19 +72,55 @@ func TestDecodeMessages(t *testing.T) {
 		},
 		{
 			&message.DecoderIn{
-				UniqId: dev.UniqId, Data: []byte{0x1a, 0x03, 0x00}, Ts: now,
+				UniqId: doorDev.UniqId, Data: []byte{0x1a, 0x03, 0x00}, Ts: now,
 				TraceId: traceID,
 			}, []*message.ValidatorIn{
 				{
 					Point: &common.DataPoint{
-						UniqId: dev.UniqId, Attr: "count",
+						UniqId: doorDev.UniqId, Attr: "count",
 						ValOneof: &common.DataPoint_IntVal{IntVal: 10}, Ts: now,
 						TraceId: traceID,
 					}, SkipToken: true,
 				}, {
 					Point: &common.DataPoint{
-						UniqId: dev.UniqId, Attr: "open",
+						UniqId: doorDev.UniqId, Attr: "open",
 						ValOneof: &common.DataPoint_BoolVal{BoolVal: false},
+						Ts:       now, TraceId: traceID,
+					}, SkipToken: true,
+				},
+			},
+		},
+		{
+			&message.DecoderIn{
+				UniqId: co2Dev.UniqId, Data: []byte{
+					0x01, 0x09, 0x61, 0x13, 0x95, 0x02, 0x92,
+				}, Ts: now, TraceId: traceID,
+			}, []*message.ValidatorIn{
+				{
+					Point: &common.DataPoint{
+						UniqId: co2Dev.UniqId, Attr: "temp_c",
+						ValOneof: &common.DataPoint_Fl64Val{Fl64Val: 24},
+						Ts:       now, TraceId: traceID,
+					}, SkipToken: true,
+				},
+				{
+					Point: &common.DataPoint{
+						UniqId: co2Dev.UniqId, Attr: "temp_f",
+						ValOneof: &common.DataPoint_Fl64Val{Fl64Val: 75.2},
+						Ts:       now, TraceId: traceID,
+					}, SkipToken: true,
+				},
+				{
+					Point: &common.DataPoint{
+						UniqId: co2Dev.UniqId, Attr: "humidity_pct",
+						ValOneof: &common.DataPoint_Fl64Val{Fl64Val: 50.13},
+						Ts:       now, TraceId: traceID,
+					}, SkipToken: true,
+				},
+				{
+					Point: &common.DataPoint{
+						UniqId: co2Dev.UniqId, Attr: "co2_ppm",
+						ValOneof: &common.DataPoint_IntVal{IntVal: 658},
 						Ts:       now, TraceId: traceID,
 					}, SkipToken: true,
 				},

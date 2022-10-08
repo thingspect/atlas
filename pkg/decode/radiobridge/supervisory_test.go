@@ -53,7 +53,7 @@ func TestSupervisory(t *testing.T) {
 			{Attr: "total_count", Value: int32(2)},
 		}, ""},
 		// Supervisory bad length.
-		{"", nil, "supervisory format bad length: "},
+		{"00010203", nil, "supervisory format bad length: 00010203"},
 		// Supervisory bad identifier.
 		{"1402080131", nil, "supervisory format bad identifier: 1402080131"},
 		// Supervisory bad error bitmap.

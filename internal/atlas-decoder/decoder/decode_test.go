@@ -76,6 +76,42 @@ func TestDecodeMessages(t *testing.T) {
 				},
 			},
 		},
+		{
+			&message.DecoderIn{
+				UniqId: uniqID, Data: []byte{
+					0x01, 0x09, 0x61, 0x13, 0x95, 0x02, 0x92,
+				}, Ts: now, TraceId: traceID,
+			}, api.Decoder_GLOBALSAT_CO2, []*message.ValidatorIn{
+				{
+					Point: &common.DataPoint{
+						UniqId: uniqID, Attr: "temp_c",
+						ValOneof: &common.DataPoint_Fl64Val{Fl64Val: 24},
+						Ts:       now, TraceId: traceID,
+					}, SkipToken: true,
+				},
+				{
+					Point: &common.DataPoint{
+						UniqId: uniqID, Attr: "temp_f",
+						ValOneof: &common.DataPoint_Fl64Val{Fl64Val: 75.2},
+						Ts:       now, TraceId: traceID,
+					}, SkipToken: true,
+				},
+				{
+					Point: &common.DataPoint{
+						UniqId: uniqID, Attr: "humidity_pct",
+						ValOneof: &common.DataPoint_Fl64Val{Fl64Val: 50.13},
+						Ts:       now, TraceId: traceID,
+					}, SkipToken: true,
+				},
+				{
+					Point: &common.DataPoint{
+						UniqId: uniqID, Attr: "co2_ppm",
+						ValOneof: &common.DataPoint_IntVal{IntVal: 658},
+						Ts:       now, TraceId: traceID,
+					}, SkipToken: true,
+				},
+			},
+		},
 	}
 
 	for _, test := range tests {
