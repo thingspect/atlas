@@ -14,8 +14,7 @@ import (
 
 // deviceUp parses a device Uplink payload from a []byte according to the spec.
 // Points, a timestamp, and a data []byte are built from successful parse
-// results. If a fatal error is encountered, it is returned along with any valid
-// points.
+// results.
 func deviceUp(body []byte) (
 	[]*decode.Point, *timestamppb.Timestamp, []byte, error,
 ) {

@@ -36,7 +36,8 @@ func TestLinkQuality(t *testing.T) {
 			{Attr: "device_snr", Value: int32(11)},
 		}, ""},
 		// Link Quality bad length.
-		{"", nil, "link quality format bad length: "},
+		{"00010203", nil, "link quality format bad length: 00010203"},
+		{"000102030405", nil, "link quality format bad length: 000102030405"},
 		// Link Quality bad identifier.
 		{"1dfc010000", nil, "link quality format bad identifier: 1dfc010000"},
 	}

@@ -52,7 +52,7 @@ func TestReset(t *testing.T) {
 			{Attr: "ver", Value: "31.31.31"},
 		}, ""},
 		// Reset bad length.
-		{"", nil, "reset format bad length: "},
+		{"00010203040506", nil, "reset format bad length: 00010203040506"},
 		// Reset bad identifier.
 		{"100101120102181c", nil, "reset format bad identifier: " +
 			"100101120102181c"},

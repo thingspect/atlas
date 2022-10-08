@@ -32,7 +32,8 @@ func TestTamper(t *testing.T) {
 			{Attr: "tamper", Value: false},
 		}, ""},
 		// Tamper bad length.
-		{"", nil, "tamper format bad length: "},
+		{"0001", nil, "tamper format bad length: 0001"},
+		{"00010203", nil, "tamper format bad length: 00010203"},
 		// Tamper bad identifier.
 		{"1c0300", nil, "tamper format bad identifier: 1c0300"},
 	}

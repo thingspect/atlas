@@ -58,7 +58,7 @@ func TestDoor(t *testing.T) {
 			{Attr: "open", Value: false},
 		}, ""},
 		// Door bad length.
-		{"", nil, "door format bad length: "},
+		{"0001", nil, "door format bad length: 0001"},
 		// Door bad identifier.
 		{"190401", nil, "door format bad identifier: 190401"},
 		// Door unused trailing bytes.

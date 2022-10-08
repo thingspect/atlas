@@ -7,6 +7,7 @@ import (
 	"github.com/thingspect/api/go/api"
 	"github.com/thingspect/atlas/pkg/consterr"
 	"github.com/thingspect/atlas/pkg/decode"
+	"github.com/thingspect/atlas/pkg/decode/globalsat"
 	"github.com/thingspect/atlas/pkg/decode/radiobridge"
 )
 
@@ -30,6 +31,9 @@ func New() *Registry {
 			api.Decoder_GATEWAY:              noOpDecoder,
 			api.Decoder_RADIO_BRIDGE_DOOR_V1: radiobridge.Door,
 			api.Decoder_RADIO_BRIDGE_DOOR_V2: radiobridge.Door,
+			api.Decoder_GLOBALSAT_CO2:        globalsat.CO2,
+			api.Decoder_GLOBALSAT_CO:         globalsat.CO,
+			api.Decoder_GLOBALSAT_PM25:       globalsat.PM25,
 		},
 	}
 }

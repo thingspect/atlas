@@ -32,18 +32,19 @@ func TestDecode(t *testing.T) {
 		err        error
 	}{
 		// Decoder.
-		{
-			api.Decoder_RAW, "", nil, nil,
-		},
-		{
-			api.Decoder_RADIO_BRIDGE_DOOR_V2, "190301", []*decode.Point{
-				{Attr: "count", Value: int32(9)}, {Attr: "open", Value: true},
-			}, nil,
-		},
+		{api.Decoder_RAW, "", nil, nil},
+		{api.Decoder_RADIO_BRIDGE_DOOR_V2, "190301", []*decode.Point{
+			{Attr: "count", Value: int32(9)},
+			{Attr: "open", Value: true},
+		}, nil},
+		{api.Decoder_GLOBALSAT_CO2, "01096113950292", []*decode.Point{
+			{Attr: "temp_c", Value: float64(24)},
+			{Attr: "temp_f", Value: 75.2},
+			{Attr: "humidity_pct", Value: 50.13},
+			{Attr: "co2_ppm", Value: int32(658)},
+		}, nil},
 		// Decoder function not found.
-		{
-			api.Decoder(999), "", nil, fmt.Errorf("%w: 999", ErrNotFound),
-		},
+		{api.Decoder(999), "", nil, fmt.Errorf("%w: 999", ErrNotFound)},
 	}
 
 	for _, test := range tests {
