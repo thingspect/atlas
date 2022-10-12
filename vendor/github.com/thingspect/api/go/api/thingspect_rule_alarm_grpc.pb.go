@@ -23,29 +23,29 @@ const _ = grpc.SupportPackageIsVersion7
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type RuleAlarmServiceClient interface {
-	// Create a rule. Rules define how events are generated.
+	// Create a rule. Rules generate events when conditions are met.
 	CreateRule(ctx context.Context, in *CreateRuleRequest, opts ...grpc.CallOption) (*Rule, error)
-	// Create an alarm. Alarms define how alerts are generated.
+	// Create an alarm. Alarms generate alerts via parent rules.
 	CreateAlarm(ctx context.Context, in *CreateAlarmRequest, opts ...grpc.CallOption) (*Alarm, error)
-	// Get a rule by ID. Rules define how events are generated.
+	// Get a rule by ID. Rules generate events when conditions are met.
 	GetRule(ctx context.Context, in *GetRuleRequest, opts ...grpc.CallOption) (*Rule, error)
-	// Get an alarm by ID. Alarms define how alerts are generated.
+	// Get an alarm by ID. Alarms generate alerts via parent rules.
 	GetAlarm(ctx context.Context, in *GetAlarmRequest, opts ...grpc.CallOption) (*Alarm, error)
-	// Update a rule. Rules define how events are generated.
+	// Update a rule. Rules generate events when conditions are met.
 	UpdateRule(ctx context.Context, in *UpdateRuleRequest, opts ...grpc.CallOption) (*Rule, error)
-	// Update an alarm. Alarms define how alerts are generated.
+	// Update an alarm. Alarms generate alerts via parent rules.
 	UpdateAlarm(ctx context.Context, in *UpdateAlarmRequest, opts ...grpc.CallOption) (*Alarm, error)
-	// Delete a rule by ID. Rules define how events are generated.
+	// Delete a rule by ID. Rules generate events when conditions are met.
 	DeleteRule(ctx context.Context, in *DeleteRuleRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
-	// Delete an alarm by ID. Alarms define how alerts are generated.
+	// Delete an alarm by ID. Alarms generate alerts via parent rules.
 	DeleteAlarm(ctx context.Context, in *DeleteAlarmRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
-	// List all rules. Rules define how events are generated.
+	// List all rules. Rules generate events when conditions are met.
 	ListRules(ctx context.Context, in *ListRulesRequest, opts ...grpc.CallOption) (*ListRulesResponse, error)
-	// List alarms. Alarms define how alerts are generated.
+	// List alarms. Alarms generate alerts via parent rules.
 	ListAlarms(ctx context.Context, in *ListAlarmsRequest, opts ...grpc.CallOption) (*ListAlarmsResponse, error)
-	// Test a rule. Rules define how events are generated.
+	// Test a rule. Rules generate events when conditions are met.
 	TestRule(ctx context.Context, in *TestRuleRequest, opts ...grpc.CallOption) (*TestRuleResponse, error)
-	// Test an alarm. Alarms define how alerts are generated.
+	// Test an alarm. Alarms generate alerts via parent rules.
 	TestAlarm(ctx context.Context, in *TestAlarmRequest, opts ...grpc.CallOption) (*TestAlarmResponse, error)
 }
 
@@ -169,29 +169,29 @@ func (c *ruleAlarmServiceClient) TestAlarm(ctx context.Context, in *TestAlarmReq
 // All implementations must embed UnimplementedRuleAlarmServiceServer
 // for forward compatibility
 type RuleAlarmServiceServer interface {
-	// Create a rule. Rules define how events are generated.
+	// Create a rule. Rules generate events when conditions are met.
 	CreateRule(context.Context, *CreateRuleRequest) (*Rule, error)
-	// Create an alarm. Alarms define how alerts are generated.
+	// Create an alarm. Alarms generate alerts via parent rules.
 	CreateAlarm(context.Context, *CreateAlarmRequest) (*Alarm, error)
-	// Get a rule by ID. Rules define how events are generated.
+	// Get a rule by ID. Rules generate events when conditions are met.
 	GetRule(context.Context, *GetRuleRequest) (*Rule, error)
-	// Get an alarm by ID. Alarms define how alerts are generated.
+	// Get an alarm by ID. Alarms generate alerts via parent rules.
 	GetAlarm(context.Context, *GetAlarmRequest) (*Alarm, error)
-	// Update a rule. Rules define how events are generated.
+	// Update a rule. Rules generate events when conditions are met.
 	UpdateRule(context.Context, *UpdateRuleRequest) (*Rule, error)
-	// Update an alarm. Alarms define how alerts are generated.
+	// Update an alarm. Alarms generate alerts via parent rules.
 	UpdateAlarm(context.Context, *UpdateAlarmRequest) (*Alarm, error)
-	// Delete a rule by ID. Rules define how events are generated.
+	// Delete a rule by ID. Rules generate events when conditions are met.
 	DeleteRule(context.Context, *DeleteRuleRequest) (*emptypb.Empty, error)
-	// Delete an alarm by ID. Alarms define how alerts are generated.
+	// Delete an alarm by ID. Alarms generate alerts via parent rules.
 	DeleteAlarm(context.Context, *DeleteAlarmRequest) (*emptypb.Empty, error)
-	// List all rules. Rules define how events are generated.
+	// List all rules. Rules generate events when conditions are met.
 	ListRules(context.Context, *ListRulesRequest) (*ListRulesResponse, error)
-	// List alarms. Alarms define how alerts are generated.
+	// List alarms. Alarms generate alerts via parent rules.
 	ListAlarms(context.Context, *ListAlarmsRequest) (*ListAlarmsResponse, error)
-	// Test a rule. Rules define how events are generated.
+	// Test a rule. Rules generate events when conditions are met.
 	TestRule(context.Context, *TestRuleRequest) (*TestRuleResponse, error)
-	// Test an alarm. Alarms define how alerts are generated.
+	// Test an alarm. Alarms generate alerts via parent rules.
 	TestAlarm(context.Context, *TestAlarmRequest) (*TestAlarmResponse, error)
 	mustEmbedUnimplementedRuleAlarmServiceServer()
 }
