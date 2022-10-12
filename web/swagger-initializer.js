@@ -14,8 +14,6 @@ window.onload = function() {
       SwaggerUIBundle.plugins.DownloadUrl
     ],
     layout: "StandaloneLayout",
-    defaultModelRendering: "model",
-    defaultModelExpandDepth: 10,
     displayRequestDuration: true
   });
 

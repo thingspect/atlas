@@ -21,8 +21,8 @@ require (
 	github.com/rs/zerolog v1.28.0
 	github.com/smira/go-statsd v1.3.2
 	github.com/stretchr/testify v1.8.0
-	github.com/thingspect/api/go v1.0.3
-	golang.org/x/crypto v0.0.0-20221005025214-4161e89ecf1b
+	github.com/thingspect/api/go v1.0.4
+	golang.org/x/crypto v0.0.0-20221010152910-d6f0a8c073c2
 	google.golang.org/grpc v1.50.0
 	google.golang.org/protobuf v1.28.1
 )
@@ -45,8 +45,8 @@ require (
 	github.com/pmezard/go-difflib v1.0.0 // indirect
 	golang.org/x/net v0.0.0-20221004154528-8021a29435af // indirect
 	golang.org/x/sync v0.0.0-20220929204114-8fcdb60fdcc0 // indirect
-	golang.org/x/sys v0.0.0-20221006211917-84dc82d7e875 // indirect
-	golang.org/x/text v0.3.7 // indirect
-	google.golang.org/genproto v0.0.0-20220930163606-c98284e70a91 // indirect
+	golang.org/x/sys v0.0.0-20221010170243-090e33056c14 // indirect
+	golang.org/x/text v0.3.8 // indirect
+	google.golang.org/genproto v0.0.0-20221010155953-15ba04fc1c0e // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
