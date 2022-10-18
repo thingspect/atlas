@@ -107,6 +107,7 @@ func TestMain(m *testing.M) {
 	// Build unauthenticated gRPC connection.
 	opts := []grpc.DialOption{
 		grpc.WithBlock(),
+		grpc.FailOnNonTempDialError(true),
 		grpc.WithTransportCredentials(insecure.NewCredentials()),
 		grpc.WithDefaultCallOptions(grpc.UseCompressor(gzip.Name)),
 	}

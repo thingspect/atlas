@@ -72,6 +72,7 @@ func main() {
 	case "login":
 		opts := []grpc.DialOption{
 			grpc.WithBlock(),
+			grpc.FailOnNonTempDialError(true),
 			grpc.WithDefaultCallOptions(grpc.UseCompressor(gzip.Name)),
 		}
 
