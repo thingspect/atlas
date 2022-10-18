@@ -283,6 +283,7 @@ func TestDeleteKey(t *testing.T) {
 
 		opts := []grpc.DialOption{
 			grpc.WithBlock(),
+			grpc.FailOnNonTempDialError(true),
 			grpc.WithTransportCredentials(insecure.NewCredentials()),
 			grpc.WithPerRPCCredentials(&credential{token: createKey.Token}),
 		}

@@ -67,6 +67,7 @@ func authGRPCConn(role api.Role) (string, *grpc.ClientConn, error) {
 
 	opts := []grpc.DialOption{
 		grpc.WithBlock(),
+		grpc.FailOnNonTempDialError(true),
 		grpc.WithTransportCredentials(insecure.NewCredentials()),
 		grpc.WithPerRPCCredentials(&credential{token: login.Token}),
 	}
@@ -95,6 +96,7 @@ func keyGRPCConn(conn *grpc.ClientConn, role api.Role) (
 
 	opts := []grpc.DialOption{
 		grpc.WithBlock(),
+		grpc.FailOnNonTempDialError(true),
 		grpc.WithTransportCredentials(insecure.NewCredentials()),
 		grpc.WithPerRPCCredentials(&credential{token: createKey.Token}),
 	}

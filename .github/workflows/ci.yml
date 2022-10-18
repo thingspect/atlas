@@ -19,16 +19,16 @@ jobs:
       SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
     services:
       postgres:
-        image: postgres:12-alpine
+        image: postgres:14-alpine
         env:
           POSTGRES_PASSWORD: postgres
           POSTGRES_DB: atlas_test
       nsqlookupd:
-        image: thingspect/nsqlookupd:v1.2.0
+        image: thingspect/nsqlookupd:v1.2.1
         env:
           LOG_LEVEL: warn
       nsqd:
-        image: thingspect/nsqd:v1.2.0
+        image: thingspect/nsqd:v1.2.1
         env:
           LOOKUP_ADDR: nsqlookupd:4160
           LOG_LEVEL: warn
@@ -38,7 +38,7 @@ jobs:
           - ${{ github.workspace }}/build/volume/mosquitto:/mosquitto/config
         options: --name mqtt
       redis:
-        image: redis:6-alpine
+        image: redis:7-alpine
     steps:
       - name: Deps
         # Names are duplicated as IDs for use by Notify
