@@ -60,5 +60,5 @@ func ParsePageToken(pToken string) (time.Time, string, error) {
 		return time.Time{}, "", err
 	}
 
-	return pt.BoundTs.AsTime().UTC(), lastUUID.String(), nil
+	return pt.BoundTs.AsTime(), lastUUID.String(), nil
 }

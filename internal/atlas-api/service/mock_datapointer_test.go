@@ -37,18 +37,18 @@ func (m *MockDataPointer) EXPECT() *MockDataPointerMockRecorder {
 }
 
 // Latest mocks base method.
-func (m *MockDataPointer) Latest(ctx context.Context, orgID, uniqID, devID string) ([]*common.DataPoint, error) {
+func (m *MockDataPointer) Latest(ctx context.Context, orgID, uniqID, devID string, start time.Time) ([]*common.DataPoint, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Latest", ctx, orgID, uniqID, devID)
+	ret := m.ctrl.Call(m, "Latest", ctx, orgID, uniqID, devID, start)
 	ret0, _ := ret[0].([]*common.DataPoint)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // Latest indicates an expected call of Latest.
-func (mr *MockDataPointerMockRecorder) Latest(ctx, orgID, uniqID, devID interface{}) *gomock.Call {
+func (mr *MockDataPointerMockRecorder) Latest(ctx, orgID, uniqID, devID, start interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Latest", reflect.TypeOf((*MockDataPointer)(nil).Latest), ctx, orgID, uniqID, devID)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Latest", reflect.TypeOf((*MockDataPointer)(nil).Latest), ctx, orgID, uniqID, devID, start)
 }
 
 // List mocks base method.

@@ -54,12 +54,12 @@ func (a *Alert) ListAlerts(ctx context.Context, req *api.ListAlertsRequest) (
 
 	end := time.Now().UTC()
 	if req.EndTime != nil {
-		end = req.EndTime.AsTime().UTC()
+		end = req.EndTime.AsTime()
 	}
 
 	start := end.Add(-24 * time.Hour)
-	if req.StartTime != nil && req.StartTime.AsTime().UTC().Before(end) {
-		start = req.StartTime.AsTime().UTC()
+	if req.StartTime != nil && req.StartTime.AsTime().Before(end) {
+		start = req.StartTime.AsTime()
 	}
 
 	if end.Sub(start) > 90*24*time.Hour {

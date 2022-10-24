@@ -219,6 +219,7 @@ func TestListDataPoints(t *testing.T) {
 			time.Sleep(time.Millisecond)
 		}
 
+		// Flip points to descending timestamp order.
 		sort.Slice(points, func(i, j int) bool {
 			return points[i].Ts.AsTime().After(points[j].Ts.AsTime())
 		})
@@ -380,6 +381,9 @@ func TestLatestDataPoints(t *testing.T) {
 		t.Logf("createDev, err: %+v, %v", createDev, err)
 		require.NoError(t, err)
 
+		dpStart := timestamppb.Now()
+
+		// The first point intentionally sorts first by attribute.
 		points := []*common.DataPoint{
 			{
 				UniqId: createDev.UniqId, Attr: "count",
@@ -410,8 +414,8 @@ func TestLatestDataPoints(t *testing.T) {
 			},
 		}
 
-		for _, point := range points {
-			for i := 0; i < random.Intn(6)+3; i++ {
+		for i, point := range points {
+			for j := 0; j < random.Intn(6)+3; j++ {
 				ctx, cancel := context.WithTimeout(context.Background(),
 					testTimeout)
 				defer cancel()
@@ -419,6 +423,11 @@ func TestLatestDataPoints(t *testing.T) {
 				// Set a new in-place timestamp each pass.
 				point.Ts = timestamppb.New(time.Now().UTC().Truncate(
 					time.Millisecond))
+
+				// Track the first point's latest time.
+				if i == 0 {
+					dpStart = timestamppb.Now()
+				}
 
 				err := globalDPDAO.Create(ctx, point, globalAdminOrgID)
 				t.Logf("err: %v", err)
@@ -454,20 +463,20 @@ func TestLatestDataPoints(t *testing.T) {
 				&api.LatestDataPointsResponse{Points: points}, latPointsUniqID)
 		}
 
-		// Verify results by dev ID.
+		// Verify results by dev ID without oldest point's attribute.
 		latPointsDevID, err := dpCli.LatestDataPoints(ctx,
 			&api.LatestDataPointsRequest{
 				IdOneof: &api.LatestDataPointsRequest_DeviceId{
 					DeviceId: createDev.Id,
-				},
+				}, StartTime: dpStart,
 			})
 		t.Logf("latPointsDevID, err: %+v, %v", latPointsDevID, err)
 		require.NoError(t, err)
-		require.Len(t, latPointsDevID.Points, len(points))
+		require.Len(t, latPointsDevID.Points, len(points)-1)
 
 		// Testify does not currently support protobuf equality:
 		// https://github.com/stretchr/testify/issues/758
-		if !proto.Equal(&api.LatestDataPointsResponse{Points: points},
+		if !proto.Equal(&api.LatestDataPointsResponse{Points: points[1:]},
 			latPointsDevID) {
 			t.Fatalf("\nExpect: %+v\nActual: %+v",
 				&api.LatestDataPointsResponse{Points: points}, latPointsDevID)
@@ -504,6 +513,26 @@ func TestLatestDataPoints(t *testing.T) {
 		t.Logf("latPoints, err: %+v, %v", latPoints, err)
 		require.NoError(t, err)
 		require.Len(t, latPoints.Points, 0)
+	})
+
+	t.Run("Latest data points by invalid time range", func(t *testing.T) {
+		t.Parallel()
+
+		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
+		defer cancel()
+
+		dpCli := api.NewDataPointServiceClient(globalAdminGRPCConn)
+		latPoints, err := dpCli.LatestDataPoints(ctx,
+			&api.LatestDataPointsRequest{
+				IdOneof: &api.LatestDataPointsRequest_DeviceId{
+					DeviceId: uuid.NewString(),
+				}, StartTime: timestamppb.New(
+					time.Now().Add(-91 * 24 * time.Hour)),
+			})
+		t.Logf("latPoints, err: %+v, %v", latPoints, err)
+		require.Nil(t, latPoints)
+		require.EqualError(t, err, "rpc error: code = InvalidArgument desc = "+
+			"maximum time range exceeded")
 	})
 
 	t.Run("Latest data points by invalid dev ID", func(t *testing.T) {

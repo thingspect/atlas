@@ -28,8 +28,8 @@ import (
 type DataPointer interface {
 	List(ctx context.Context, orgID, uniqID, devID, attr string, end,
 		start time.Time) ([]*common.DataPoint, error)
-	Latest(ctx context.Context, orgID, uniqID,
-		devID string) ([]*common.DataPoint, error)
+	Latest(ctx context.Context, orgID, uniqID, devID string,
+		start time.Time) ([]*common.DataPoint, error)
 }
 
 // DataPoint service contains functions to create and query data points.
@@ -127,12 +127,12 @@ func (d *DataPoint) ListDataPoints(
 
 	end := time.Now().UTC()
 	if req.EndTime != nil {
-		end = req.EndTime.AsTime().UTC()
+		end = req.EndTime.AsTime()
 	}
 
 	start := end.Add(-24 * time.Hour)
-	if req.StartTime != nil && req.StartTime.AsTime().UTC().Before(end) {
-		start = req.StartTime.AsTime().UTC()
+	if req.StartTime != nil && req.StartTime.AsTime().Before(end) {
+		start = req.StartTime.AsTime()
 	}
 
 	if end.Sub(start) > 90*24*time.Hour {
@@ -169,7 +169,19 @@ func (d *DataPoint) LatestDataPoints(
 		devID = v.DeviceId
 	}
 
-	points, err := d.dpDAO.Latest(ctx, sess.OrgID, uniqID, devID)
+	now := time.Now().UTC()
+
+	start := now.Add(30 * -24 * time.Hour)
+	if req.StartTime != nil && req.StartTime.AsTime().Before(now) {
+		start = req.StartTime.AsTime()
+	}
+
+	if now.Sub(start) > 90*24*time.Hour {
+		return nil, status.Error(codes.InvalidArgument,
+			"maximum time range exceeded")
+	}
+
+	points, err := d.dpDAO.Latest(ctx, sess.OrgID, uniqID, devID, start)
 	if err != nil {
 		return nil, errToStatus(err)
 	}

@@ -230,6 +230,7 @@ func TestList(t *testing.T) {
 			time.Sleep(time.Millisecond)
 		}
 
+		// Flip points to descending timestamp order.
 		sort.Slice(points, func(i, j int) bool {
 			return points[i].Ts.AsTime().After(points[j].Ts.AsTime())
 		})
@@ -353,6 +354,10 @@ func TestLatest(t *testing.T) {
 		t.Logf("createDev, err: %+v, %v", createDev, err)
 		require.NoError(t, err)
 
+		start := time.Now().UTC().Add(-time.Millisecond)
+		dpStart := time.Time{}
+
+		// The first point intentionally sorts first by attribute.
 		points := []*common.DataPoint{
 			{
 				UniqId: createDev.UniqId, Attr: "count",
@@ -383,15 +388,20 @@ func TestLatest(t *testing.T) {
 			},
 		}
 
-		for _, point := range points {
-			for i := 0; i < random.Intn(6)+3; i++ {
+		for i, point := range points {
+			for j := 0; j < random.Intn(6)+3; j++ {
 				ctx, cancel := context.WithTimeout(context.Background(),
 					testTimeout)
 				defer cancel()
 
-				// Set a new in-place timestamp each pass.
+				// Set a new in-place timestamp each point group.
 				point.Ts = timestamppb.New(time.Now().UTC().Truncate(
 					time.Millisecond))
+
+				// Track the first point's latest time.
+				if i == 0 {
+					dpStart = point.Ts.AsTime()
+				}
 
 				err := globalDPDAO.Create(ctx, point, createOrg.Id)
 				t.Logf("err: %v", err)
@@ -409,7 +419,7 @@ func TestLatest(t *testing.T) {
 
 		// Verify results by UniqID.
 		latPointsUniqID, err := globalDPDAO.Latest(ctx, createOrg.Id,
-			createDev.UniqId, "")
+			createDev.UniqId, "", start)
 		t.Logf("latPointsUniqID, err: %+v, %v", latPointsUniqID, err)
 		require.NoError(t, err)
 		require.Len(t, latPointsUniqID, len(points))
@@ -423,16 +433,16 @@ func TestLatest(t *testing.T) {
 			}
 		}
 
-		// Verify results by dev ID.
+		// Verify results by dev ID without oldest point's attribute.
 		latPointsDevID, err := globalDPDAO.Latest(ctx, createOrg.Id, "",
-			createDev.Id)
+			createDev.Id, dpStart)
 		t.Logf("latPointsDevID, err: %+v, %v", latPointsDevID, err)
 		require.NoError(t, err)
-		require.Len(t, latPointsDevID, len(points))
+		require.Len(t, latPointsDevID, len(points)-1)
 
 		// Testify does not currently support protobuf equality:
 		// https://github.com/stretchr/testify/issues/758
-		for i, point := range points {
+		for i, point := range points[1:] {
 			if !proto.Equal(point, latPointsDevID[i]) {
 				t.Fatalf("\nExpect: %+v\nActual: %+v", point, latPointsDevID[i])
 			}
@@ -460,7 +470,7 @@ func TestLatest(t *testing.T) {
 		require.NoError(t, err)
 
 		latPoints, err := globalDPDAO.Latest(ctx, uuid.NewString(),
-			point.UniqId, "")
+			point.UniqId, "", time.Now().UTC().Add(-15*time.Minute))
 		t.Logf("latPoints, err: %+v, %v", latPoints, err)
 		require.NoError(t, err)
 		require.Len(t, latPoints, 0)
@@ -473,7 +483,7 @@ func TestLatest(t *testing.T) {
 		defer cancel()
 
 		latPoints, err := globalDPDAO.Latest(ctx, uuid.NewString(), "",
-			random.String(10))
+			random.String(10), time.Now().UTC().Add(-15*time.Minute))
 		t.Logf("latPoints, err: %+v, %v", latPoints, err)
 		require.Nil(t, latPoints)
 		require.ErrorIs(t, err, dao.ErrInvalidFormat)

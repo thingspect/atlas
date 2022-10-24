@@ -20,7 +20,7 @@ VALUES ($1, $2, $3, $4, $5)
 // bulk, so only an error value is returned.
 func (d *DAO) Create(ctx context.Context, event *api.Event) error {
 	// Truncate timestamp to milliseconds for deduplication.
-	createdAt := event.CreatedAt.AsTime().UTC().Truncate(time.Millisecond)
+	createdAt := event.CreatedAt.AsTime().Truncate(time.Millisecond)
 
 	_, err := d.pg.ExecContext(ctx, createEvent, event.OrgId,
 		strings.ToLower(event.UniqId), event.RuleId, createdAt, event.TraceId)

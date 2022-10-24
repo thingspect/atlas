@@ -378,7 +378,8 @@ func TestLatestDataPoints(t *testing.T) {
 		orgID := uuid.NewString()
 
 		datapointer := NewMockDataPointer(gomock.NewController(t))
-		datapointer.EXPECT().Latest(gomock.Any(), orgID, point.UniqId, "").
+		datapointer.EXPECT().Latest(gomock.Any(), orgID, point.UniqId, "",
+			matcher.NewRecentMatcher(30*24*time.Hour+2*time.Second)).
 			Return([]*common.DataPoint{retPoint}, nil).Times(1)
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
@@ -390,7 +391,9 @@ func TestLatestDataPoints(t *testing.T) {
 		dpSvc := NewDataPoint(nil, "", datapointer)
 		latPoints, err := dpSvc.LatestDataPoints(ctx,
 			&api.LatestDataPointsRequest{
-				IdOneof: &api.LatestDataPointsRequest_UniqId{UniqId: point.UniqId},
+				IdOneof: &api.LatestDataPointsRequest_UniqId{
+					UniqId: point.UniqId,
+				},
 			})
 		t.Logf("point, latPoints, err: %+v, %+v, %v", point, latPoints, err)
 		require.NoError(t, err)
@@ -407,7 +410,7 @@ func TestLatestDataPoints(t *testing.T) {
 		}
 	})
 
-	t.Run("Latest data points by valid dev ID", func(t *testing.T) {
+	t.Run("Latest data points by valid dev ID with ts", func(t *testing.T) {
 		t.Parallel()
 
 		point := &common.DataPoint{
@@ -418,9 +421,10 @@ func TestLatestDataPoints(t *testing.T) {
 		retPoint, _ := proto.Clone(point).(*common.DataPoint)
 		orgID := uuid.NewString()
 		devID := uuid.NewString()
+		start := time.Now().UTC().Add(-15 * time.Minute)
 
 		datapointer := NewMockDataPointer(gomock.NewController(t))
-		datapointer.EXPECT().Latest(gomock.Any(), orgID, "", devID).
+		datapointer.EXPECT().Latest(gomock.Any(), orgID, "", devID, start).
 			Return([]*common.DataPoint{retPoint}, nil).Times(1)
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
@@ -432,7 +436,10 @@ func TestLatestDataPoints(t *testing.T) {
 		dpSvc := NewDataPoint(nil, "", datapointer)
 		latPoints, err := dpSvc.LatestDataPoints(ctx,
 			&api.LatestDataPointsRequest{
-				IdOneof: &api.LatestDataPointsRequest_DeviceId{DeviceId: devID},
+				IdOneof: &api.LatestDataPointsRequest_DeviceId{
+					DeviceId: devID,
+				},
+				StartTime: timestamppb.New(start),
 			})
 		t.Logf("point, latPoints, err: %+v, %+v, %v", point, latPoints, err)
 		require.NoError(t, err)
@@ -480,12 +487,37 @@ func TestLatestDataPoints(t *testing.T) {
 		require.Equal(t, errPerm(api.Role_VIEWER), err)
 	})
 
+	t.Run("Latest data points by invalid time range", func(t *testing.T) {
+		t.Parallel()
+
+		ctx, cancel := context.WithTimeout(session.NewContext(
+			context.Background(), &session.Session{
+				OrgID: uuid.NewString(), Role: api.Role_ADMIN,
+			}), testTimeout)
+		defer cancel()
+
+		dpSvc := NewDataPoint(nil, "", nil)
+		latPoints, err := dpSvc.LatestDataPoints(ctx,
+			&api.LatestDataPointsRequest{
+				IdOneof: &api.LatestDataPointsRequest_UniqId{
+					UniqId: "api-point-" + random.String(16),
+				}, StartTime: timestamppb.New(
+					time.Now().Add(-91 * 24 * time.Hour)),
+			})
+		t.Logf("latPoints, err: %+v, %v", latPoints, err)
+		require.Nil(t, latPoints)
+		require.Equal(t, status.Error(codes.InvalidArgument,
+			"maximum time range exceeded"), err)
+	})
+
 	t.Run("Latest data points by invalid org ID", func(t *testing.T) {
 		t.Parallel()
 
 		datapointer := NewMockDataPointer(gomock.NewController(t))
 		datapointer.EXPECT().Latest(gomock.Any(), "aaa", gomock.Any(),
-			gomock.Any()).Return(nil, dao.ErrInvalidFormat).Times(1)
+			gomock.Any(),
+			matcher.NewRecentMatcher(30*24*time.Hour+2*time.Second)).
+			Return(nil, dao.ErrInvalidFormat).Times(1)
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
 			context.Background(), &session.Session{
