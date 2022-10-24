@@ -144,7 +144,7 @@ func TestEventMessages(t *testing.T) {
 				event := &api.Event{
 					OrgId: createOrg.Id, RuleId: res.Rule.Id,
 					UniqId: lTest.inp.Device.UniqId, CreatedAt: timestamppb.New(
-						now.AsTime().UTC().Truncate(time.Millisecond)),
+						now.AsTime().Truncate(time.Millisecond)),
 					TraceId: traceID,
 				}
 

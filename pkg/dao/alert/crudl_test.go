@@ -114,6 +114,7 @@ func TestList(t *testing.T) {
 			time.Sleep(time.Millisecond)
 		}
 
+		// Flip alerts to descending timestamp order.
 		sort.Slice(alerts, func(i, j int) bool {
 			return alerts[i].CreatedAt.AsTime().After(
 				alerts[j].CreatedAt.AsTime())

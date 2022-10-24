@@ -49,6 +49,7 @@ func TestListEvents(t *testing.T) {
 			time.Sleep(time.Millisecond)
 		}
 
+		// Flip events to descending timestamp order.
 		sort.Slice(events, func(i, j int) bool {
 			return events[i].CreatedAt.AsTime().After(
 				events[j].CreatedAt.AsTime())
@@ -203,6 +204,7 @@ func TestLatestEvents(t *testing.T) {
 			time.Sleep(time.Millisecond)
 		}
 
+		// Flip events to descending timestamp order.
 		sort.Slice(events, func(i, j int) bool {
 			return events[i].CreatedAt.AsTime().After(
 				events[j].CreatedAt.AsTime())

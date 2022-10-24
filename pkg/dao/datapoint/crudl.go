@@ -23,7 +23,7 @@ func (d *DAO) Create(
 	ctx context.Context, point *common.DataPoint, orgID string,
 ) error {
 	// Truncate timestamp to milliseconds for deduplication.
-	createdAt := point.Ts.AsTime().UTC().Truncate(time.Millisecond)
+	createdAt := point.Ts.AsTime().Truncate(time.Millisecond)
 
 	var intVal *int32
 	var fl64Val *float64
@@ -182,6 +182,7 @@ FROM
       data_points
     WHERE
       (org_id, uniq_id) = ($1, $2)
+	  AND created_at > $3
     GROUP BY
       org_id,
       uniq_id,
@@ -219,6 +220,7 @@ FROM
       )
     WHERE
       (id.org_id, id.uniq_id, de.id) = ($1, de.uniq_id, $2)
+	  AND id.created_at > $3
     GROUP BY
       id.org_id,
       id.uniq_id,
@@ -230,20 +232,20 @@ ORDER BY
 `
 
 // Latest retrieves the latest data point for each of a device's attributes by
-// org ID and UniqID or device ID. If both uniqID and devID are provided, uniqID
-// takes precedence and devID is ignored.
-func (d *DAO) Latest(ctx context.Context, orgID, uniqID, devID string) (
-	[]*common.DataPoint, error,
-) {
+// org ID, UniqID or device ID, and [now, start) time. If both uniqID and devID
+// are provided, uniqID takes precedence and devID is ignored.
+func (d *DAO) Latest(
+	ctx context.Context, orgID, uniqID, devID string, start time.Time,
+) ([]*common.DataPoint, error) {
 	// Build latest query.
 	query := latestDataPointsByUniqID
 	args := []interface{}{orgID}
 
 	if uniqID == "" && devID != "" {
 		query = latestDataPointsByDevID
-		args = append(args, devID)
+		args = append(args, devID, start)
 	} else {
-		args = append(args, uniqID)
+		args = append(args, uniqID, start)
 	}
 
 	// Run latest query.
