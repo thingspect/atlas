@@ -4,7 +4,7 @@ services:
     image: postgres:14-alpine
     # command: postgres -c log_statement=all
     ports:
-      - "5432:5432"
+      - "127.0.0.1:5439:5432"
     environment:
       - POSTGRES_PASSWORD=notasecurepassword
       - POSTGRES_DB=atlas
@@ -31,7 +31,7 @@ services:
     depends_on:
       - nsqlookupd
     ports:
-      - "4171:4171"
+      - "127.0.0.1:4179:4171"
 
   mqtt:
     image: eclipse-mosquitto:2.0
@@ -56,7 +56,7 @@ services:
       - mqtt
       - redis
     ports:
-      - "8080:8080"
+      - "127.0.0.1:8089:8080"
     environment:
       - CS_POSTGRESQL_DSN=postgres://chirpstack:notasecurepassword@postgres/chirpstack?sslmode=disable
       - CS_REDIS_SERVER=redis
@@ -86,4 +86,6 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock
 networks:
   default:
-    name: deps
+    name: atlas-deps
+    # driver_opts:
+    #   com.docker.network.bridge.host_binding_ipv4: "10.0.0.25"
