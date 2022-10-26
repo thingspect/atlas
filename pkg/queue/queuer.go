@@ -13,12 +13,14 @@ type Messager interface {
 	Topic() string
 	// Payload returns the Messager's payload.
 	Payload() []byte
-	// Ack acknowledges successful processing of a Messager. For an MQTT
-	// Messager, this is performed automatically.
+	// Ack acknowledges successful processing of a Messager.
 	Ack()
 	// Requeue requeues a Messager using a per-message backoff based on the
 	// number of attempts. Requeue should only be used with transient failures
-	// that are likely to resolve. Requeue is not supported by MQTT.
+	// that are likely to resolve.
+	//
+	// Requeue is not supported by MQTT, allow messages to automatically requeue
+	// in the absence of an Ack instead.
 	Requeue()
 }
 
