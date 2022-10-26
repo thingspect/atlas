@@ -71,6 +71,7 @@ func (dec *Decoder) decodeMessages() {
 			metric.Incr("error", map[string]string{"func": "decode"})
 			logger.Errorf("decodeMessages dec.registry.Decode: %v", err)
 		}
+		metric.Incr("processed", nil)
 		logger.Debugf("decodeMessages points: %+v", points)
 
 		// Build and publish ValidatorIn messages.
@@ -100,11 +101,10 @@ func (dec *Decoder) decodeMessages() {
 			logger.Debugf("decodeMessages published: %+v", vIn)
 		}
 
-		// Do not ack on errors, as publish may retry successfully.
+		// Do not ack on points loop errors, as publish may retry successfully.
 		// Deduplication will take place downstream.
 		if successCount == len(points) {
 			msg.Ack()
-			metric.Incr("processed", nil)
 		}
 
 		processCount++

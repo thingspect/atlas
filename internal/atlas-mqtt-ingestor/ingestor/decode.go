@@ -20,7 +20,6 @@ func (ing *Ingestor) decodeMessages() {
 
 	var processCount int
 	for msg := range ing.mqttSub.C() {
-		msg.Ack()
 		metric.Incr("received", nil)
 
 		// Set up logging fields.
@@ -31,6 +30,7 @@ func (ing *Ingestor) decodeMessages() {
 		topic := msg.Topic()
 		topicParts := strings.Split(topic, "/")
 		if len(topicParts) < 2 || len(topicParts) > 4 || topicParts[0] != "v1" {
+			msg.Ack()
 			metric.Incr("error", map[string]string{"func": "topic"})
 			logger.Errorf("decodeMessages malformed topic: %v", topic)
 
@@ -51,6 +51,7 @@ func (ing *Ingestor) decodeMessages() {
 			err = proto.Unmarshal(msg.Payload(), payl)
 		}
 		if err != nil {
+			msg.Ack()
 			metric.Incr("error", map[string]string{"func": "unmarshal"})
 			logger.Errorf("decodeMessages proto.Unmarshal: %v", err)
 
@@ -65,6 +66,7 @@ func (ing *Ingestor) decodeMessages() {
 
 			bVIn, err := proto.Marshal(vIn)
 			if err != nil {
+				msg.Ack()
 				metric.Incr("error", map[string]string{"func": "marshal"})
 				logger.Errorf("decodeMessages proto.Marshal: %v", err)
 
@@ -73,6 +75,7 @@ func (ing *Ingestor) decodeMessages() {
 
 			if err = ing.ingQueue.Publish(ing.vInPubTopic,
 				bVIn); err != nil {
+				// Allow requeue.
 				metric.Incr("error", map[string]string{"func": "publish"})
 				logger.Errorf("decodeMessages ing.decoderQueue.Publish: %v",
 					err)
@@ -84,6 +87,7 @@ func (ing *Ingestor) decodeMessages() {
 			logger.Debugf("decodeMessages published: %+v", vIn)
 		}
 
+		msg.Ack()
 		processCount++
 		if processCount%100 == 0 {
 			alog.Infof("decodeMessages processed %v messages", processCount)

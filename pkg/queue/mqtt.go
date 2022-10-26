@@ -1,10 +1,10 @@
 package queue
 
 import (
-	"log"
 	"time"
 
 	mqtt "github.com/eclipse/paho.mqtt.golang"
+	"github.com/thingspect/atlas/pkg/alog"
 	"github.com/thingspect/atlas/pkg/consterr"
 )
 
@@ -39,7 +39,8 @@ func NewMQTT(addr, user, pass, clientID string, connectTimeout time.Duration) (
 		SetPassword(pass).
 		SetClientID(clientID).
 		SetOrderMatters(false).
-		SetMaxReconnectInterval(connectTimeout)
+		SetMaxReconnectInterval(connectTimeout).
+		SetAutoAckDisabled(true)
 	client := mqtt.NewClient(opts)
 
 	token := client.Connect()
@@ -111,7 +112,7 @@ var _ Messager = &mqttMessage{}
 
 // Requeue is not supported.
 func (mm *mqttMessage) Requeue() {
-	log.Fatal("Requeue unsupported")
+	alog.Fatal("Requeue unsupported")
 }
 
 // Subscribe subscribes to a topic and returns a Subber and an error value.
