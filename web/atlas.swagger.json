@@ -341,7 +341,10 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/Device"
+              "$ref": "#/definitions/Device",
+              "required": [
+                "device"
+              ]
             }
           }
         ],
@@ -398,14 +401,16 @@
                   "description": "Device name."
                 },
                 "status": {
-                  "$ref": "#/definitions/api.Status"
+                  "$ref": "#/definitions/api.Status",
+                  "description": "Device status."
                 },
                 "token": {
                   "type": "string",
                   "description": "Authentication token (UUID). Will be generated at creation time, but can be updated afterward."
                 },
                 "decoder": {
-                  "$ref": "#/definitions/Decoder"
+                  "$ref": "#/definitions/Decoder",
+                  "description": "Device data payload decoder."
                 },
                 "tags": {
                   "type": "array",
@@ -489,14 +494,16 @@
                   "description": "Device name."
                 },
                 "status": {
-                  "$ref": "#/definitions/api.Status"
+                  "$ref": "#/definitions/api.Status",
+                  "description": "Device status."
                 },
                 "token": {
                   "type": "string",
                   "description": "Authentication token (UUID). Will be generated at creation time, but can be updated afterward."
                 },
                 "decoder": {
-                  "$ref": "#/definitions/Decoder"
+                  "$ref": "#/definitions/Decoder",
+                  "description": "Device data payload decoder."
                 },
                 "tags": {
                   "type": "array",
@@ -675,10 +682,12 @@
               "type": "object",
               "properties": {
                 "gatewayLoRaWANType": {
-                  "$ref": "#/definitions/GatewayLoRaWANType"
+                  "$ref": "#/definitions/GatewayLoRaWANType",
+                  "description": "Gateway LoRaWAN configuration type."
                 },
                 "deviceLoRaWANType": {
-                  "$ref": "#/definitions/DeviceLoRaWANType"
+                  "$ref": "#/definitions/DeviceLoRaWANType",
+                  "description": "Device LoRaWAN configuration type."
                 }
               },
               "description": "CreateDeviceLoRaWANRequest is sent to add LoRaWAN configuration to a device."
@@ -853,7 +862,10 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/Org"
+              "$ref": "#/definitions/Org",
+              "required": [
+                "org"
+              ]
             }
           }
         ],
@@ -1146,7 +1158,10 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/Rule"
+              "$ref": "#/definitions/Rule",
+              "required": [
+                "rule"
+              ]
             }
           }
         ],
@@ -1325,10 +1340,12 @@
                   "description": "Alarm name."
                 },
                 "status": {
-                  "$ref": "#/definitions/api.Status"
+                  "$ref": "#/definitions/api.Status",
+                  "description": "Alarm status."
                 },
                 "type": {
-                  "$ref": "#/definitions/AlarmType"
+                  "$ref": "#/definitions/AlarmType",
+                  "description": "Alarm type."
                 },
                 "userTags": {
                   "type": "array",
@@ -1423,10 +1440,12 @@
                   "description": "Alarm name."
                 },
                 "status": {
-                  "$ref": "#/definitions/api.Status"
+                  "$ref": "#/definitions/api.Status",
+                  "description": "Alarm status."
                 },
                 "type": {
-                  "$ref": "#/definitions/AlarmType"
+                  "$ref": "#/definitions/AlarmType",
+                  "description": "Alarm type."
                 },
                 "userTags": {
                   "type": "array",
@@ -1526,10 +1545,12 @@
                   "description": "Alarm name."
                 },
                 "status": {
-                  "$ref": "#/definitions/api.Status"
+                  "$ref": "#/definitions/api.Status",
+                  "description": "Alarm status."
                 },
                 "type": {
-                  "$ref": "#/definitions/AlarmType"
+                  "$ref": "#/definitions/AlarmType",
+                  "description": "Alarm type."
                 },
                 "userTags": {
                   "type": "array",
@@ -1691,7 +1712,8 @@
                   "description": "Rule name."
                 },
                 "status": {
-                  "$ref": "#/definitions/api.Status"
+                  "$ref": "#/definitions/api.Status",
+                  "description": "Rule status."
                 },
                 "deviceTag": {
                   "type": "string",
@@ -1776,7 +1798,8 @@
                   "description": "Rule name."
                 },
                 "status": {
-                  "$ref": "#/definitions/api.Status"
+                  "$ref": "#/definitions/api.Status",
+                  "description": "Rule status."
                 },
                 "deviceTag": {
                   "type": "string",
@@ -2016,7 +2039,10 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/Key"
+              "$ref": "#/definitions/Key",
+              "required": [
+                "key"
+              ]
             }
           }
         ],
@@ -2196,7 +2222,10 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/User"
+              "$ref": "#/definitions/User",
+              "required": [
+                "user"
+              ]
             }
           }
         ],
@@ -2375,10 +2404,12 @@
                   "description": "User phone number. If specified, must be in valid [E.164](https://www.twilio.com/docs/glossary/what-e164) format."
                 },
                 "role": {
-                  "$ref": "#/definitions/Role"
+                  "$ref": "#/definitions/Role",
+                  "description": "User role."
                 },
                 "status": {
-                  "$ref": "#/definitions/api.Status"
+                  "$ref": "#/definitions/api.Status",
+                  "description": "User status."
                 },
                 "tags": {
                   "type": "array",
@@ -2470,10 +2501,12 @@
                   "description": "User phone number. If specified, must be in valid [E.164](https://www.twilio.com/docs/glossary/what-e164) format."
                 },
                 "role": {
-                  "$ref": "#/definitions/Role"
+                  "$ref": "#/definitions/Role",
+                  "description": "User role."
                 },
                 "status": {
-                  "$ref": "#/definitions/api.Status"
+                  "$ref": "#/definitions/api.Status",
+                  "description": "User status."
                 },
                 "tags": {
                   "type": "array",
@@ -2540,10 +2573,12 @@
           "description": "Alarm name."
         },
         "status": {
-          "$ref": "#/definitions/api.Status"
+          "$ref": "#/definitions/api.Status",
+          "description": "Alarm status."
         },
         "type": {
-          "$ref": "#/definitions/AlarmType"
+          "$ref": "#/definitions/AlarmType",
+          "description": "Alarm type."
         },
         "userTags": {
           "type": "array",
@@ -2611,7 +2646,8 @@
           "description": "User ID (UUID)."
         },
         "status": {
-          "$ref": "#/definitions/AlertStatus"
+          "$ref": "#/definitions/AlertStatus",
+          "description": "Alert status."
         },
         "error": {
           "type": "string",
@@ -2652,7 +2688,8 @@
       "type": "object",
       "properties": {
         "key": {
-          "$ref": "#/definitions/Key"
+          "$ref": "#/definitions/Key",
+          "description": "Key message created."
         },
         "token": {
           "type": "string",
@@ -2753,14 +2790,16 @@
           "description": "Device name."
         },
         "status": {
-          "$ref": "#/definitions/api.Status"
+          "$ref": "#/definitions/api.Status",
+          "description": "Device status."
         },
         "token": {
           "type": "string",
           "description": "Authentication token (UUID). Will be generated at creation time, but can be updated afterward."
         },
         "decoder": {
-          "$ref": "#/definitions/Decoder"
+          "$ref": "#/definitions/Decoder",
+          "description": "Device data payload decoder."
         },
         "tags": {
           "type": "array",
@@ -2846,7 +2885,8 @@
           "description": "Key name."
         },
         "role": {
-          "$ref": "#/definitions/Role"
+          "$ref": "#/definitions/Role",
+          "description": "Key role."
         },
         "createdAt": {
           "type": "string",
@@ -3192,7 +3232,8 @@
           "description": "Rule name."
         },
         "status": {
-          "$ref": "#/definitions/api.Status"
+          "$ref": "#/definitions/api.Status",
+          "description": "Rule status."
         },
         "deviceTag": {
           "type": "string",
@@ -3225,16 +3266,20 @@
       "type": "object",
       "properties": {
         "point": {
-          "$ref": "#/definitions/DataPoint"
+          "$ref": "#/definitions/DataPoint",
+          "description": "Data point to test against an alarm."
         },
         "rule": {
-          "$ref": "#/definitions/Rule"
+          "$ref": "#/definitions/Rule",
+          "description": "Rule to test against an alarm."
         },
         "device": {
-          "$ref": "#/definitions/Device"
+          "$ref": "#/definitions/Device",
+          "description": "Device to test against an alarm."
         },
         "alarm": {
-          "$ref": "#/definitions/Alarm"
+          "$ref": "#/definitions/Alarm",
+          "description": "Alarm message to test."
         }
       },
       "description": "TestAlarmRequest is sent to test an alarm.",
@@ -3259,10 +3304,12 @@
       "type": "object",
       "properties": {
         "point": {
-          "$ref": "#/definitions/DataPoint"
+          "$ref": "#/definitions/DataPoint",
+          "description": "Data point to test against a rule."
         },
         "rule": {
-          "$ref": "#/definitions/Rule"
+          "$ref": "#/definitions/Rule",
+          "description": "Rule message to test."
         }
       },
       "description": "TestRuleRequest is sent to test a rule.",
@@ -3307,10 +3354,12 @@
           "description": "User phone number. If specified, must be in valid [E.164](https://www.twilio.com/docs/glossary/what-e164) format."
         },
         "role": {
-          "$ref": "#/definitions/Role"
+          "$ref": "#/definitions/Role",
+          "description": "User role."
         },
         "status": {
-          "$ref": "#/definitions/api.Status"
+          "$ref": "#/definitions/api.Status",
+          "description": "User status."
         },
         "tags": {
           "type": "array",
