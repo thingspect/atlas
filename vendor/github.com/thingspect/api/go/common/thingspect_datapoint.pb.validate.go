@@ -112,24 +112,77 @@ func (m *DataPoint) validate(all bool) error {
 
 	// no validation rules for TraceId
 
-	switch m.ValOneof.(type) {
-
+	oneofValOneofPresent := false
+	switch v := m.ValOneof.(type) {
 	case *DataPoint_IntVal:
+		if v == nil {
+			err := DataPointValidationError{
+				field:  "ValOneof",
+				reason: "oneof value cannot be a typed-nil",
+			}
+			if !all {
+				return err
+			}
+			errors = append(errors, err)
+		}
+		oneofValOneofPresent = true
 		// no validation rules for IntVal
-
 	case *DataPoint_Fl64Val:
+		if v == nil {
+			err := DataPointValidationError{
+				field:  "ValOneof",
+				reason: "oneof value cannot be a typed-nil",
+			}
+			if !all {
+				return err
+			}
+			errors = append(errors, err)
+		}
+		oneofValOneofPresent = true
 		// no validation rules for Fl64Val
-
 	case *DataPoint_StrVal:
+		if v == nil {
+			err := DataPointValidationError{
+				field:  "ValOneof",
+				reason: "oneof value cannot be a typed-nil",
+			}
+			if !all {
+				return err
+			}
+			errors = append(errors, err)
+		}
+		oneofValOneofPresent = true
 		// no validation rules for StrVal
-
 	case *DataPoint_BoolVal:
+		if v == nil {
+			err := DataPointValidationError{
+				field:  "ValOneof",
+				reason: "oneof value cannot be a typed-nil",
+			}
+			if !all {
+				return err
+			}
+			errors = append(errors, err)
+		}
+		oneofValOneofPresent = true
 		// no validation rules for BoolVal
-
 	case *DataPoint_BytesVal:
+		if v == nil {
+			err := DataPointValidationError{
+				field:  "ValOneof",
+				reason: "oneof value cannot be a typed-nil",
+			}
+			if !all {
+				return err
+			}
+			errors = append(errors, err)
+		}
+		oneofValOneofPresent = true
 		// no validation rules for BytesVal
-
 	default:
+		_ = v // ensures v is used
+	}
+	if !oneofValOneofPresent {
 		err := DataPointValidationError{
 			field:  "ValOneof",
 			reason: "value is required",
@@ -138,7 +191,6 @@ func (m *DataPoint) validate(all bool) error {
 			return err
 		}
 		errors = append(errors, err)
-
 	}
 
 	if len(errors) > 0 {

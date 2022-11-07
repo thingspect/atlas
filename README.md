@@ -4,14 +4,15 @@
 
 ## Getting Started
 
-Install [Docker](https://docs.docker.com/get-started/overview/) and
+Install [Docker](https://docs.docker.com/get-started/overview/),
+[Docker Compose](https://docs.docker.com/compose/) (V1 or V2), and
 [Go](https://go.dev/dl/).
 
 ```
-docker compose -f build/docker-compose.yml up -d
+docker-compose -f build/docker-compose.yml up -d
 make test
 RACE=y make test
-docker compose -f build/docker-compose.yml down
+docker-compose -f build/docker-compose.yml down
 ```
 
 ## Running an API Locally
@@ -30,11 +31,11 @@ OpenAPI live docs are available at
 
 ## Deploying
 
-Docker [Compose](https://docs.docker.com/compose/) files for the Atlas platform
-and its dependencies are available in `build/deploy/`. These can be used for a
-single-system deploy, or as templates for orchestration tooling such as
-[Nomad](https://www.nomadproject.io/) or [Kubernetes](https://kubernetes.io/).
-Keys should be provided where applicable.
+[Docker Compose](https://docs.docker.com/compose/) (V1 or V2) files for the
+Atlas platform and its dependencies are available in `build/deploy/`. These can
+be used for a single-system deploy, or as templates for orchestration tooling
+such as [Nomad](https://www.nomadproject.io/) or
+[Kubernetes](https://kubernetes.io/). Keys should be provided where applicable.
 
 ## Use of Build Tags In Tests
 

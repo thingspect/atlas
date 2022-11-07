@@ -291,12 +291,30 @@ func (m *ListAlertsRequest) validate(all bool) error {
 		}
 	}
 
-	switch m.IdOneof.(type) {
-
+	switch v := m.IdOneof.(type) {
 	case *ListAlertsRequest_UniqId:
+		if v == nil {
+			err := ListAlertsRequestValidationError{
+				field:  "IdOneof",
+				reason: "oneof value cannot be a typed-nil",
+			}
+			if !all {
+				return err
+			}
+			errors = append(errors, err)
+		}
 		// no validation rules for UniqId
-
 	case *ListAlertsRequest_DeviceId:
+		if v == nil {
+			err := ListAlertsRequestValidationError{
+				field:  "IdOneof",
+				reason: "oneof value cannot be a typed-nil",
+			}
+			if !all {
+				return err
+			}
+			errors = append(errors, err)
+		}
 
 		if m.GetDeviceId() != "" {
 
@@ -314,6 +332,8 @@ func (m *ListAlertsRequest) validate(all bool) error {
 
 		}
 
+	default:
+		_ = v // ensures v is used
 	}
 
 	if len(errors) > 0 {

@@ -1,10 +1,15 @@
 // Package queue provides functions to publish and subscribe to queues.
 package queue
 
+import "github.com/thingspect/atlas/pkg/consterr"
+
 //go:generate mockgen -source queuer.go -destination mock_queuer.go -package queue
 
 // Prime is the single-byte payload used to prime a Queue.
 const Prime = 0x00
+
+// ErrTimeout is returned when a Queue operation times out.
+const ErrTimeout consterr.Error = "queue: timed out"
 
 // Messager defines the methods provided by a Message. Messages are not
 // guaranteed to be thread-safe, and should only be accessed by their methods.

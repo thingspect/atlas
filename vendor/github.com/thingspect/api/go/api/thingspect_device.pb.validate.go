@@ -469,9 +469,20 @@ func (m *CreateDeviceLoRaWANRequest) validate(all bool) error {
 		errors = append(errors, err)
 	}
 
-	switch m.TypeOneof.(type) {
-
+	oneofTypeOneofPresent := false
+	switch v := m.TypeOneof.(type) {
 	case *CreateDeviceLoRaWANRequest_GatewayLorawanType:
+		if v == nil {
+			err := CreateDeviceLoRaWANRequestValidationError{
+				field:  "TypeOneof",
+				reason: "oneof value cannot be a typed-nil",
+			}
+			if !all {
+				return err
+			}
+			errors = append(errors, err)
+		}
+		oneofTypeOneofPresent = true
 
 		if all {
 			switch v := interface{}(m.GetGatewayLorawanType()).(type) {
@@ -503,6 +514,17 @@ func (m *CreateDeviceLoRaWANRequest) validate(all bool) error {
 		}
 
 	case *CreateDeviceLoRaWANRequest_DeviceLorawanType:
+		if v == nil {
+			err := CreateDeviceLoRaWANRequestValidationError{
+				field:  "TypeOneof",
+				reason: "oneof value cannot be a typed-nil",
+			}
+			if !all {
+				return err
+			}
+			errors = append(errors, err)
+		}
+		oneofTypeOneofPresent = true
 
 		if all {
 			switch v := interface{}(m.GetDeviceLorawanType()).(type) {
@@ -534,6 +556,9 @@ func (m *CreateDeviceLoRaWANRequest) validate(all bool) error {
 		}
 
 	default:
+		_ = v // ensures v is used
+	}
+	if !oneofTypeOneofPresent {
 		err := CreateDeviceLoRaWANRequestValidationError{
 			field:  "TypeOneof",
 			reason: "value is required",
@@ -542,7 +567,6 @@ func (m *CreateDeviceLoRaWANRequest) validate(all bool) error {
 			return err
 		}
 		errors = append(errors, err)
-
 	}
 
 	if len(errors) > 0 {
