@@ -5,11 +5,7 @@ import (
 
 	mqtt "github.com/eclipse/paho.mqtt.golang"
 	"github.com/thingspect/atlas/pkg/alog"
-	"github.com/thingspect/atlas/pkg/consterr"
 )
-
-// ErrTimeout is returned when a Queue operation times out.
-const ErrTimeout consterr.Error = "queue: timed out"
 
 // Constants used for the configuration of MQTT behavior.
 const (

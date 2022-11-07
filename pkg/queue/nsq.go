@@ -79,12 +79,18 @@ func (ns *nsqSub) C() <-chan Messager {
 func (ns *nsqSub) Unsubscribe() error {
 	ns.consumer.Stop()
 
+	t := time.NewTimer(nsqDisconnectTimeout)
+
 	select {
 	case <-ns.consumer.StopChan:
 		close(ns.msgChan)
 
+		if !t.Stop() {
+			<-t.C
+		}
+
 		return nil
-	case <-time.After(nsqDisconnectTimeout):
+	case <-t.C:
 		return ErrTimeout
 	}
 }

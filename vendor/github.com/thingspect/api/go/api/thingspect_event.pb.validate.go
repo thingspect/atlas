@@ -269,12 +269,33 @@ func (m *ListEventsRequest) validate(all bool) error {
 		}
 	}
 
-	switch m.IdOneof.(type) {
-
+	oneofIdOneofPresent := false
+	switch v := m.IdOneof.(type) {
 	case *ListEventsRequest_UniqId:
+		if v == nil {
+			err := ListEventsRequestValidationError{
+				field:  "IdOneof",
+				reason: "oneof value cannot be a typed-nil",
+			}
+			if !all {
+				return err
+			}
+			errors = append(errors, err)
+		}
+		oneofIdOneofPresent = true
 		// no validation rules for UniqId
-
 	case *ListEventsRequest_DeviceId:
+		if v == nil {
+			err := ListEventsRequestValidationError{
+				field:  "IdOneof",
+				reason: "oneof value cannot be a typed-nil",
+			}
+			if !all {
+				return err
+			}
+			errors = append(errors, err)
+		}
+		oneofIdOneofPresent = true
 
 		if m.GetDeviceId() != "" {
 
@@ -293,6 +314,9 @@ func (m *ListEventsRequest) validate(all bool) error {
 		}
 
 	default:
+		_ = v // ensures v is used
+	}
+	if !oneofIdOneofPresent {
 		err := ListEventsRequestValidationError{
 			field:  "IdOneof",
 			reason: "value is required",
@@ -301,7 +325,6 @@ func (m *ListEventsRequest) validate(all bool) error {
 			return err
 		}
 		errors = append(errors, err)
-
 	}
 
 	if len(errors) > 0 {

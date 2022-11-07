@@ -276,12 +276,33 @@ func (m *ListDataPointsRequest) validate(all bool) error {
 		}
 	}
 
-	switch m.IdOneof.(type) {
-
+	oneofIdOneofPresent := false
+	switch v := m.IdOneof.(type) {
 	case *ListDataPointsRequest_UniqId:
+		if v == nil {
+			err := ListDataPointsRequestValidationError{
+				field:  "IdOneof",
+				reason: "oneof value cannot be a typed-nil",
+			}
+			if !all {
+				return err
+			}
+			errors = append(errors, err)
+		}
+		oneofIdOneofPresent = true
 		// no validation rules for UniqId
-
 	case *ListDataPointsRequest_DeviceId:
+		if v == nil {
+			err := ListDataPointsRequestValidationError{
+				field:  "IdOneof",
+				reason: "oneof value cannot be a typed-nil",
+			}
+			if !all {
+				return err
+			}
+			errors = append(errors, err)
+		}
+		oneofIdOneofPresent = true
 
 		if m.GetDeviceId() != "" {
 
@@ -300,6 +321,9 @@ func (m *ListDataPointsRequest) validate(all bool) error {
 		}
 
 	default:
+		_ = v // ensures v is used
+	}
+	if !oneofIdOneofPresent {
 		err := ListDataPointsRequestValidationError{
 			field:  "IdOneof",
 			reason: "value is required",
@@ -308,7 +332,6 @@ func (m *ListDataPointsRequest) validate(all bool) error {
 			return err
 		}
 		errors = append(errors, err)
-
 	}
 
 	if len(errors) > 0 {
@@ -586,12 +609,33 @@ func (m *LatestDataPointsRequest) validate(all bool) error {
 		}
 	}
 
-	switch m.IdOneof.(type) {
-
+	oneofIdOneofPresent := false
+	switch v := m.IdOneof.(type) {
 	case *LatestDataPointsRequest_UniqId:
+		if v == nil {
+			err := LatestDataPointsRequestValidationError{
+				field:  "IdOneof",
+				reason: "oneof value cannot be a typed-nil",
+			}
+			if !all {
+				return err
+			}
+			errors = append(errors, err)
+		}
+		oneofIdOneofPresent = true
 		// no validation rules for UniqId
-
 	case *LatestDataPointsRequest_DeviceId:
+		if v == nil {
+			err := LatestDataPointsRequestValidationError{
+				field:  "IdOneof",
+				reason: "oneof value cannot be a typed-nil",
+			}
+			if !all {
+				return err
+			}
+			errors = append(errors, err)
+		}
+		oneofIdOneofPresent = true
 
 		if m.GetDeviceId() != "" {
 
@@ -610,6 +654,9 @@ func (m *LatestDataPointsRequest) validate(all bool) error {
 		}
 
 	default:
+		_ = v // ensures v is used
+	}
+	if !oneofIdOneofPresent {
 		err := LatestDataPointsRequestValidationError{
 			field:  "IdOneof",
 			reason: "value is required",
@@ -618,7 +665,6 @@ func (m *LatestDataPointsRequest) validate(all bool) error {
 			return err
 		}
 		errors = append(errors, err)
-
 	}
 
 	if len(errors) > 0 {
