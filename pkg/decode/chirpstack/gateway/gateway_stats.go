@@ -54,7 +54,7 @@ func gatewayStats(body []byte) ([]*decode.Point, error) {
 			Attr: "tx_transmitted", Value: int32(statsMsg.TxPacketsEmitted),
 		})
 	}
-	for k, v := range statsMsg.MetaData {
+	for k, v := range statsMsg.Metadata {
 		msgs = append(msgs, &decode.Point{Attr: k, Value: v})
 	}
 

@@ -48,7 +48,7 @@ services:
       - ./volume/redis:/data
 
   chirpstack:
-    image: chirpstack/chirpstack:4.0
+    image: chirpstack/chirpstack:4.1
     command: -c /etc/chirpstack
     restart: on-failure
     depends_on:
@@ -76,6 +76,7 @@ services:
       - DD_API_KEY=notasecurekey
       - DD_DOGSTATSD_NON_LOCAL_TRAFFIC=true
       - DD_ENV=dev
+      - DD_HOSTNAME=atlas-dev.thingspect.com
 
   logspout:
     image: gliderlabs/logspout:latest
