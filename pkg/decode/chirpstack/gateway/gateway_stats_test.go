@@ -43,12 +43,12 @@ func TestGatewayStats(t *testing.T) {
 				GatewayId: uniqID, Time: pNow,
 				RxPacketsReceived: 1, RxPacketsReceivedOk: 2,
 				TxPacketsReceived: 3, TxPacketsEmitted: 4,
-				MetaData: map[string]string{"aaa": "bbb"},
+				Metadata: map[string]string{"aaa": "bbb"},
 			}, []*decode.Point{
 				{Attr: "raw_gateway", Value: fmt.Sprintf(`{"gatewayId":"%s",`+
 					`"time":"%s","rxPacketsReceived":1,`+
 					`"rxPacketsReceivedOk":2,"txPacketsReceived":3,`+
-					`"txPacketsEmitted":4,"metaData":{"aaa":"bbb"}}`, uniqID,
+					`"txPacketsEmitted":4,"metadata":{"aaa":"bbb"}}`, uniqID,
 					now.Format(time.RFC3339Nano))},
 				{Attr: "id", Value: uniqID},
 				{Attr: "time", Value: strconv.FormatInt(now.Unix(), 10)},

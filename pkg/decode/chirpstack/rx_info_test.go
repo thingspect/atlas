@@ -33,10 +33,12 @@ func TestParseRXInfo(t *testing.T) {
 		{
 			&gw.UplinkRxInfo{
 				Rssi: -74, Snr: 7, Channel: 2,
+				Metadata: map[string]string{"aaa": "bbb"},
 			}, []*decode.Point{
 				{Attr: "lora_rssi", Value: int32(-74)},
 				{Attr: "lora_snr", Value: float64(7)},
 				{Attr: "channel", Value: int32(2)},
+				{Attr: "aaa", Value: "bbb"},
 			},
 		},
 		// Gateway UplinkRxInfo bad length.
@@ -84,14 +86,20 @@ func TestParseRXInfos(t *testing.T) {
 		},
 		{
 			[]*gw.UplinkRxInfo{
-				{GatewayId: "aaa", Time: tsNow, Rssi: -80, Snr: 1},
-				{GatewayId: gatewayID, Time: tsNow, Rssi: -74, Snr: 7},
+				{
+					GatewayId: "aaa", Time: tsNow, Rssi: -80, Snr: 1,
+				},
+				{
+					GatewayId: gatewayID, Time: tsNow, Rssi: -74, Snr: 7,
+					Metadata: map[string]string{"aaa": "bbb"},
+				},
 			}, tsNow, []*decode.Point{
 				{Attr: "gateway_id", Value: gatewayID},
 				{Attr: "time", Value: strconv.FormatInt(now.Unix(), 10)},
 				{Attr: "lora_rssi", Value: int32(-74)},
 				{Attr: "lora_snr", Value: float64(7)},
 				{Attr: "channel", Value: int32(0)},
+				{Attr: "aaa", Value: "bbb"},
 			},
 		},
 		{
