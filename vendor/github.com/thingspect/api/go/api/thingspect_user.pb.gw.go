@@ -118,7 +118,7 @@ func local_request_UserService_GetUser_0(ctx context.Context, marshaler runtime.
 }
 
 var (
-	filter_UserService_UpdateUser_0 = &utilities.DoubleArray{Encoding: map[string]int{"user": 0, "id": 1}, Base: []int{1, 2, 1, 0, 0}, Check: []int{0, 1, 2, 3, 2}}
+	filter_UserService_UpdateUser_0 = &utilities.DoubleArray{Encoding: map[string]int{"user": 0, "id": 1}, Base: []int{1, 4, 5, 2, 0, 0, 0, 0}, Check: []int{0, 1, 1, 2, 4, 2, 2, 3}}
 )
 
 func request_UserService_UpdateUser_0(ctx context.Context, marshaler runtime.Marshaler, client UserServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
@@ -204,7 +204,7 @@ func local_request_UserService_UpdateUser_0(ctx context.Context, marshaler runti
 }
 
 var (
-	filter_UserService_UpdateUser_1 = &utilities.DoubleArray{Encoding: map[string]int{"user": 0, "id": 1}, Base: []int{1, 2, 1, 0, 0}, Check: []int{0, 1, 2, 3, 2}}
+	filter_UserService_UpdateUser_1 = &utilities.DoubleArray{Encoding: map[string]int{"user": 0, "id": 1}, Base: []int{1, 4, 5, 2, 0, 0, 0, 0}, Check: []int{0, 1, 1, 2, 4, 2, 2, 3}}
 )
 
 func request_UserService_UpdateUser_1(ctx context.Context, marshaler runtime.Marshaler, client UserServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {

@@ -132,7 +132,7 @@ github.com/smira/go-statsd
 ## explicit; go 1.13
 github.com/stretchr/testify/assert
 github.com/stretchr/testify/require
-# github.com/thingspect/api/go v1.0.7
+# github.com/thingspect/api/go v1.0.8
 ## explicit; go 1.19
 github.com/thingspect/api/go/api
 github.com/thingspect/api/go/common
