@@ -1,6 +1,10 @@
 package conf
 
-import "reflect"
+import (
+	"reflect"
+
+	"github.com/antonmedv/expr/ast"
+)
 
 // OperatorsTable maps binary operators to corresponding list of functions.
 // Functions should be provided in the environment to allow operator overloading.
@@ -23,4 +27,33 @@ func FindSuitableOperatorOverload(fns []string, types TypesTable, l, r reflect.T
 		}
 	}
 	return nil, "", false
+}
+
+type OperatorPatcher struct {
+	Operators OperatorsTable
+	Types     TypesTable
+}
+
+func (p *OperatorPatcher) Visit(node *ast.Node) {
+	binaryNode, ok := (*node).(*ast.BinaryNode)
+	if !ok {
+		return
+	}
+
+	fns, ok := p.Operators[binaryNode.Operator]
+	if !ok {
+		return
+	}
+
+	leftType := binaryNode.Left.Type()
+	rightType := binaryNode.Right.Type()
+
+	_, fn, ok := FindSuitableOperatorOverload(fns, p.Types, leftType, rightType)
+	if ok {
+		newNode := &ast.CallNode{
+			Callee:    &ast.IdentifierNode{Value: fn},
+			Arguments: []ast.Node{binaryNode.Left, binaryNode.Right},
+		}
+		ast.Patch(node, newNode)
+	}
 }
