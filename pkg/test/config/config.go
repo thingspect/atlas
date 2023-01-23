@@ -17,6 +17,8 @@ type Config struct {
 	MQTTAddr string
 	MQTTUser string
 	MQTTPass string
+
+	APIHost string
 }
 
 // New instantiates a test Config, parses the environment, and returns it.
@@ -33,5 +35,7 @@ func New() *Config {
 		MQTTAddr: config.String(pref+"MQTT_ADDR", "tcp://127.0.0.1:1883"),
 		MQTTUser: config.String(pref+"MQTT_USER", "atlas_test"),
 		MQTTPass: config.String(pref+"MQTT_PASS", "notasecurepassword"),
+
+		APIHost: config.String(pref+"API_HOST", "127.0.0.1"),
 	}
 }
