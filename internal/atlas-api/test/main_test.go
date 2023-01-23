@@ -68,12 +68,13 @@ func TestMain(m *testing.M) {
 	cfg.PgURI = testConfig.PgURI
 	cfg.RedisHost = testConfig.RedisHost
 
-	cfg.PWTKey = key
-
 	cfg.NSQPubAddr = testConfig.NSQPubAddr
 	cfg.NSQPubTopic += "-test-" + random.String(10)
 	globalPubTopic = cfg.NSQPubTopic
 	log.Printf("TestMain cfg.NSQPubTopic: %v", cfg.NSQPubTopic)
+
+	cfg.PWTKey = key
+	cfg.APIHost = testConfig.APIHost
 
 	// Set up API.
 	a, err := iapi.New(cfg)

@@ -53,6 +53,7 @@ const errPWTLength consterr.Error = "pwt key must be 32 bytes"
 
 // API holds references to the gRPC and HTTP servers.
 type API struct {
+	apiHost    string
 	grpcSrv    *grpc.Server
 	httpSrv    *http.Server
 	httpCancel context.CancelFunc
@@ -213,9 +214,10 @@ func New(cfg *config.Config) (*API, error) {
 	mux.Handle("/", http.FileServer(http.Dir("web")))
 
 	return &API{
+		apiHost: cfg.APIHost,
 		grpcSrv: srv,
 		httpSrv: &http.Server{
-			Addr:              httpPort,
+			Addr:              cfg.APIHost + httpPort,
 			Handler:           gziphandler.GzipHandler(mux),
 			ReadHeaderTimeout: 60 * time.Second,
 		},
@@ -225,15 +227,14 @@ func New(cfg *config.Config) (*API, error) {
 
 // Serve starts the listener.
 func (api *API) Serve() {
-	//#nosec G102 // service should listen on all interfaces
-	lis, err := net.Listen("tcp", GRPCPort)
+	lis, err := net.Listen("tcp", api.apiHost+GRPCPort)
 	if err != nil {
 		alog.Fatalf("Serve net.Listen: %v", err)
 	}
 
 	// Serve gRPC.
 	go func() {
-		alog.Infof("Listening on %v", GRPCPort)
+		alog.Infof("Listening on %v", api.apiHost+GRPCPort)
 		if err := api.grpcSrv.Serve(lis); err != nil {
 			alog.Fatalf("Serve api.grpcSrv.Serve: %v", err)
 		}
@@ -241,7 +242,7 @@ func (api *API) Serve() {
 
 	// Serve gRPC-gateway.
 	go func() {
-		alog.Infof("Listening on %v", httpPort)
+		alog.Infof("Listening on %v", api.httpSrv.Addr)
 		if err := api.httpSrv.ListenAndServe(); err != nil {
 			alog.Fatalf("Serve api.httpSrv.ListenAndServe: %v", err)
 		}

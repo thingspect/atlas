@@ -14,8 +14,6 @@ type Config struct {
 	PgURI     string
 	RedisHost string
 
-	PWTKey []byte
-
 	NSQPubAddr  string
 	NSQPubTopic string
 
@@ -24,6 +22,9 @@ type Config struct {
 	LoRaTenantID  string
 	LoRaAppID     string
 	LoRaDevProfID string
+
+	PWTKey  []byte
+	APIHost string
 }
 
 // New instantiates a service Config, parses the environment, and returns it.
@@ -36,8 +37,6 @@ func New() *Config {
 			"postgres://postgres:postgres@127.0.0.1/atlas_test"),
 		RedisHost: config.String(pref+"REDIS_HOST", "127.0.0.1"),
 
-		PWTKey: config.ByteSlice(pref + "PWT_KEY"),
-
 		NSQPubAddr:  config.String(pref+"NSQ_PUB_ADDR", "127.0.0.1:4150"),
 		NSQPubTopic: config.String(pref+"NSQ_PUB_TOPIC", "ValidatorIn"),
 
@@ -46,5 +45,8 @@ func New() *Config {
 		LoRaTenantID:  config.String(pref+"LORA_TENANT_ID", ""),
 		LoRaAppID:     config.String(pref+"LORA_APP_ID", ""),
 		LoRaDevProfID: config.String(pref+"LORA_DEV_PROF_ID", ""),
+
+		PWTKey:  config.ByteSlice(pref + "PWT_KEY"),
+		APIHost: config.String(pref+"API_HOST", ""),
 	}
 }
