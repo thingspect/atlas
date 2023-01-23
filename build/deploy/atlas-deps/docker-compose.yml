@@ -1,3 +1,4 @@
+# Atlas service suffix: 9
 version: "3"
 services:
   postgres:

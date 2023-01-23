@@ -5,7 +5,7 @@ go 1.19
 require (
 	github.com/NYTimes/gziphandler v1.1.1
 	github.com/ReneKroon/ttlcache/v3 v3.0.0-beta
-	github.com/antonmedv/expr v1.9.0
+	github.com/antonmedv/expr v1.10.3
 	github.com/chirpstack/chirpstack/api/go/v4 v4.1.3
 	github.com/eclipse/paho.mqtt.golang v1.4.2
 	github.com/go-redis/redis/v8 v8.11.5
@@ -21,9 +21,9 @@ require (
 	github.com/rs/zerolog v1.28.0
 	github.com/smira/go-statsd v1.3.2
 	github.com/stretchr/testify v1.8.1
-	github.com/thingspect/api/go v1.0.8
+	github.com/thingspect/api/go v1.0.9
 	golang.org/x/crypto v0.5.0
-	google.golang.org/grpc v1.51.0
+	google.golang.org/grpc v1.52.0
 	google.golang.org/protobuf v1.28.1
 )
 
@@ -47,6 +47,6 @@ require (
 	golang.org/x/sync v0.1.0 // indirect
 	golang.org/x/sys v0.4.0 // indirect
 	golang.org/x/text v0.6.0 // indirect
-	google.golang.org/genproto v0.0.0-20230104163317-caabf589fcbf // indirect
+	google.golang.org/genproto v0.0.0-20230119192704-9d59e20e5cd1 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
