@@ -32,13 +32,19 @@ func Check(tree *parser.Tree, config *conf.Config) (t reflect.Type, err error) {
 	if v.config.Expect != reflect.Invalid {
 		switch v.config.Expect {
 		case reflect.Int, reflect.Int64, reflect.Float64:
-			if !isNumber(t) {
+			if !isNumber(t) && !isAny(t) {
 				return nil, fmt.Errorf("expected %v, but got %v", v.config.Expect, t)
 			}
 		default:
-			if t == nil || t.Kind() != v.config.Expect {
-				return nil, fmt.Errorf("expected %v, but got %v", v.config.Expect, t)
+			if t != nil {
+				if t.Kind() == reflect.Interface {
+					t = t.Elem()
+				}
+				if t.Kind() == v.config.Expect {
+					return t, nil
+				}
 			}
+			return nil, fmt.Errorf("expected %v, but got %v", v.config.Expect, t)
 		}
 	}
 
@@ -310,7 +316,7 @@ func (v *visitor) BinaryNode(node *ast.BinaryNode) (reflect.Type, info) {
 		if isAny(l) && anyOf(r, isString, isArray, isMap) {
 			return boolType, info{}
 		}
-		if isAny(l) && isAny(r) {
+		if isAny(r) {
 			return boolType, info{}
 		}
 
@@ -562,7 +568,10 @@ func (v *visitor) checkFunc(fn reflect.Type, method bool, node *ast.CallNode, na
 		}
 	}
 
-	if !fn.IsVariadic() {
+	// OnCallTyped doesn't work for functions with variadic arguments,
+	// and doesn't work named function, like `type MyFunc func() int`.
+	// In PkgPath() is an empty string, it's unnamed function.
+	if !fn.IsVariadic() && fn.PkgPath() == "" {
 	funcTypes:
 		for i := range vm.FuncTypes {
 			if i == 0 {

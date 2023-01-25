@@ -49,7 +49,7 @@ services:
       - ./volume/redis:/data
 
   chirpstack:
-    image: chirpstack/chirpstack:4.1
+    image: chirpstack/chirpstack:4.2
     command: -c /etc/chirpstack
     restart: on-failure
     depends_on:

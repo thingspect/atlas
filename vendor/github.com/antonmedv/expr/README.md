@@ -55,7 +55,7 @@ go get github.com/antonmedv/expr
 
 ## Expr Code Editor
 
-<a href="http://bit.ly/expr-code-editor">
+<a href="https://bit.ly/expr-code-editor">
 	<img src="https://antonmedv.github.io/expr/ogimage.png" align="center" alt="Expr Code Editor" width="1200">
 </a>
 
@@ -147,10 +147,11 @@ func main() {
 * [Junglee Games](https://www.jungleegames.com/) uses Expr for an in house marketing retention tool [Project Audience](https://www.linkedin.com/pulse/meet-project-audience-our-no-code-swiss-army-knife-product-bharti).
 * [OpenTelemetry](https://opentelemetry.io) uses Expr in the OpenTelemetry Collector.
 * [Philips Labs](https://github.com/philips-labs/tabia) uses Expr in Tabia, a tool for collecting insights on the characteristics of our code bases.
-* [CodeDNS](https://coredns.io) uses Expr in CoreDNS, a DNS server.
+* [CoreDNS](https://coredns.io) uses Expr in CoreDNS, a DNS server.
 * [Chaos Mesh](https://chaos-mesh.org) uses Expr in Chaos Mesh, a cloud-native Chaos Engineering platform.
 * [Milvus](https://milvus.io) uses Expr in Milvus, an open-source vector database.
 * [Visually.io](https://visually.io) uses Expr as a business rule engine for our personalization targeting algorithm.
+* [Akvorado](https://github.com/akvorado/akvorado) uses Expr to classify exporters and interfaces in network flows.
 
 [Add your company too](https://github.com/antonmedv/expr/edit/master/README.md)
 
