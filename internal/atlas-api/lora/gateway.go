@@ -11,11 +11,12 @@ import (
 func (cs *Chirpstack) CreateGateway(ctx context.Context, uniqID string) error {
 	gwCli := api.NewGatewayServiceClient(cs.conn)
 	_, err := gwCli.Create(ctx, &api.CreateGatewayRequest{Gateway: &api.Gateway{
-		GatewayId:   uniqID,
-		Name:        uniqID,
-		Description: uniqID,
-		Location:    &common.Location{},
-		TenantId:    cs.tenantID,
+		GatewayId:     uniqID,
+		Name:          uniqID,
+		Description:   uniqID,
+		Location:      &common.Location{},
+		TenantId:      cs.tenantID,
+		StatsInterval: 900,
 	}})
 
 	return err
