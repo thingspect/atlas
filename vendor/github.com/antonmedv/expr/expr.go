@@ -5,6 +5,7 @@ import (
 	"reflect"
 
 	"github.com/antonmedv/expr/ast"
+	"github.com/antonmedv/expr/builtin"
 	"github.com/antonmedv/expr/checker"
 	"github.com/antonmedv/expr/compiler"
 	"github.com/antonmedv/expr/conf"
@@ -16,30 +17,6 @@ import (
 
 // Option for configuring config.
 type Option func(c *conf.Config)
-
-// Eval parses, compiles and runs given input.
-func Eval(input string, env interface{}) (interface{}, error) {
-	if _, ok := env.(Option); ok {
-		return nil, fmt.Errorf("misused expr.Eval: second argument (env) should be passed without expr.Env")
-	}
-
-	tree, err := parser.Parse(input)
-	if err != nil {
-		return nil, err
-	}
-
-	program, err := compiler.Compile(tree, nil)
-	if err != nil {
-		return nil, err
-	}
-
-	output, err := vm.Run(program, env)
-	if err != nil {
-		return nil, err
-	}
-
-	return output, nil
-}
 
 // Env specifies expected input of env for type checks.
 // If struct is passed, all fields will be treated as variables,
@@ -124,13 +101,31 @@ func Patch(visitor ast.Visitor) Option {
 	}
 }
 
+// Function adds function to list of functions what will be available in expressions.
+func Function(name string, fn func(params ...interface{}) (interface{}, error), types ...interface{}) Option {
+	return func(c *conf.Config) {
+		ts := make([]reflect.Type, len(types))
+		for i, t := range types {
+			t := reflect.TypeOf(t)
+			if t.Kind() == reflect.Ptr {
+				t = t.Elem()
+			}
+			if t.Kind() != reflect.Func {
+				panic(fmt.Sprintf("expr: type of %s is not a function", name))
+			}
+			ts[i] = t
+		}
+		c.Functions[name] = &builtin.Function{
+			Name:  name,
+			Func:  fn,
+			Types: ts,
+		}
+	}
+}
+
 // Compile parses and compiles given input expression to bytecode program.
 func Compile(input string, ops ...Option) (*vm.Program, error) {
-	config := &conf.Config{
-		Operators: make(map[string][]string),
-		ConstFns:  make(map[string]reflect.Value),
-		Optimize:  true,
-	}
+	config := conf.CreateNew()
 
 	for _, op := range ops {
 		op(config)
@@ -188,4 +183,23 @@ func Compile(input string, ops ...Option) (*vm.Program, error) {
 // Run evaluates given bytecode program.
 func Run(program *vm.Program, env interface{}) (interface{}, error) {
 	return vm.Run(program, env)
+}
+
+// Eval parses, compiles and runs given input.
+func Eval(input string, env interface{}) (interface{}, error) {
+	if _, ok := env.(Option); ok {
+		return nil, fmt.Errorf("misused expr.Eval: second argument (env) should be passed without expr.Env")
+	}
+
+	program, err := Compile(input)
+	if err != nil {
+		return nil, err
+	}
+
+	output, err := Run(program, env)
+	if err != nil {
+		return nil, err
+	}
+
+	return output, nil
 }

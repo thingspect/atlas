@@ -739,7 +739,7 @@ func TestTestRule(t *testing.T) {
 			},
 			{
 				&common.DataPoint{}, `1 + "aaa"`, false,
-				"invalid operation: int + string",
+				"invalid operation: + (mismatched types int and string)",
 			},
 			{
 				&common.DataPoint{}, `"aaa"`, false, rule.ErrNotBool.Error(),

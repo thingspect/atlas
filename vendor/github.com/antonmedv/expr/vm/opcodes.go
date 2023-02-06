@@ -6,11 +6,11 @@ const (
 	OpPush Opcode = iota
 	OpPushInt
 	OpPop
-	OpRot
 	OpLoadConst
 	OpLoadField
 	OpLoadFast
 	OpLoadMethod
+	OpLoadFunc
 	OpFetch
 	OpFetchField
 	OpMethod
@@ -26,6 +26,7 @@ const (
 	OpJumpIfTrue
 	OpJumpIfFalse
 	OpJumpIfNil
+	OpJumpIfNotNil
 	OpJumpIfEnd
 	OpJumpBackward
 	OpIn
@@ -47,8 +48,14 @@ const (
 	OpEndsWith
 	OpSlice
 	OpCall
+	OpCall0
+	OpCall1
+	OpCall2
+	OpCall3
+	OpCallN
 	OpCallFast
 	OpCallTyped
+	OpBuiltin
 	OpArray
 	OpMap
 	OpLen

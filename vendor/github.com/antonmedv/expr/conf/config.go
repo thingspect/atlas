@@ -5,6 +5,7 @@ import (
 	"reflect"
 
 	"github.com/antonmedv/expr/ast"
+	"github.com/antonmedv/expr/builtin"
 	"github.com/antonmedv/expr/vm/runtime"
 )
 
@@ -19,14 +20,26 @@ type Config struct {
 	Strict      bool
 	ConstFns    map[string]reflect.Value
 	Visitors    []ast.Visitor
+	Functions   map[string]*builtin.Function
 }
 
-func New(env interface{}) *Config {
+// CreateNew creates new config with default values.
+func CreateNew() *Config {
 	c := &Config{
 		Operators: make(map[string][]string),
 		ConstFns:  make(map[string]reflect.Value),
+		Functions: make(map[string]*builtin.Function),
 		Optimize:  true,
 	}
+	for _, f := range builtin.Builtins {
+		c.Functions[f.Name] = f
+	}
+	return c
+}
+
+// New creates new config with environment.
+func New(env interface{}) *Config {
+	c := CreateNew()
 	c.WithEnv(env)
 	return c
 }
