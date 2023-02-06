@@ -6,6 +6,7 @@ import (
 	"strings"
 
 	"github.com/antonmedv/expr/ast"
+	"github.com/antonmedv/expr/builtin"
 	"github.com/antonmedv/expr/file"
 	"github.com/antonmedv/expr/vm/runtime"
 )
@@ -17,6 +18,7 @@ type Program struct {
 	Constants []interface{}
 	Bytecode  []Opcode
 	Arguments []int
+	Functions []Function
 }
 
 func (program *Program) Disassemble() string {
@@ -58,6 +60,13 @@ func (program *Program) Disassemble() string {
 			}
 			out += fmt.Sprintf("%v\t%v\t%v\t%v\n", pp, label, arg, c)
 		}
+		builtIn := func(label string) {
+			f, ok := builtin.Builtins[arg]
+			if !ok {
+				panic(fmt.Sprintf("unknown builtin %v", arg))
+			}
+			out += fmt.Sprintf("%v\t%v\t%v\n", pp, "OpBuiltin", f.Name)
+		}
 
 		switch op {
 		case OpPush:
@@ -68,9 +77,6 @@ func (program *Program) Disassemble() string {
 
 		case OpPop:
 			code("OpPop")
-
-		case OpRot:
-			code("OpRot")
 
 		case OpLoadConst:
 			constant("OpLoadConst")
@@ -83,6 +89,9 @@ func (program *Program) Disassemble() string {
 
 		case OpLoadMethod:
 			constant("OpLoadMethod")
+
+		case OpLoadFunc:
+			argument("OpLoadFunc")
 
 		case OpFetch:
 			code("OpFetch")
@@ -128,6 +137,9 @@ func (program *Program) Disassemble() string {
 
 		case OpJumpIfNil:
 			jump("OpJumpIfNil")
+
+		case OpJumpIfNotNil:
+			jump("OpJumpIfNotNil")
 
 		case OpJumpIfEnd:
 			jump("OpJumpIfEnd")
@@ -192,11 +204,29 @@ func (program *Program) Disassemble() string {
 		case OpCall:
 			argument("OpCall")
 
+		case OpCall0:
+			argument("OpCall0")
+
+		case OpCall1:
+			argument("OpCall1")
+
+		case OpCall2:
+			argument("OpCall2")
+
+		case OpCall3:
+			argument("OpCall3")
+
+		case OpCallN:
+			argument("OpCallN")
+
 		case OpCallFast:
 			argument("OpCallFast")
 
 		case OpCallTyped:
 			argument("OpCallTyped")
+
+		case OpBuiltin:
+			builtIn("OpBuiltin")
 
 		case OpArray:
 			code("OpArray")

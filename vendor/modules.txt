@@ -4,10 +4,11 @@ github.com/NYTimes/gziphandler
 # github.com/ReneKroon/ttlcache/v3 v3.0.0-beta
 ## explicit; go 1.18
 github.com/ReneKroon/ttlcache/v3
-# github.com/antonmedv/expr v1.10.5
+# github.com/antonmedv/expr v1.12.0
 ## explicit; go 1.13
 github.com/antonmedv/expr
 github.com/antonmedv/expr/ast
+github.com/antonmedv/expr/builtin
 github.com/antonmedv/expr/checker
 github.com/antonmedv/expr/compiler
 github.com/antonmedv/expr/conf
@@ -39,16 +40,6 @@ github.com/eclipse/paho.mqtt.golang/packets
 # github.com/envoyproxy/protoc-gen-validate v0.9.1
 ## explicit; go 1.17
 github.com/envoyproxy/protoc-gen-validate/validate
-# github.com/go-redis/redis/v9 v9.0.0-rc.2
-## explicit; go 1.17
-github.com/go-redis/redis/v9
-github.com/go-redis/redis/v9/internal
-github.com/go-redis/redis/v9/internal/hashtag
-github.com/go-redis/redis/v9/internal/hscan
-github.com/go-redis/redis/v9/internal/pool
-github.com/go-redis/redis/v9/internal/proto
-github.com/go-redis/redis/v9/internal/rand
-github.com/go-redis/redis/v9/internal/util
 # github.com/golang/mock v1.6.0
 ## explicit; go 1.11
 github.com/golang/mock/gomock
@@ -121,6 +112,16 @@ github.com/nsqio/go-nsq
 # github.com/pmezard/go-difflib v1.0.0
 ## explicit
 github.com/pmezard/go-difflib/difflib
+# github.com/redis/go-redis/v9 v9.0.2
+## explicit; go 1.17
+github.com/redis/go-redis/v9
+github.com/redis/go-redis/v9/internal
+github.com/redis/go-redis/v9/internal/hashtag
+github.com/redis/go-redis/v9/internal/hscan
+github.com/redis/go-redis/v9/internal/pool
+github.com/redis/go-redis/v9/internal/proto
+github.com/redis/go-redis/v9/internal/rand
+github.com/redis/go-redis/v9/internal/util
 # github.com/rs/zerolog v1.29.0
 ## explicit; go 1.15
 github.com/rs/zerolog
@@ -175,7 +176,7 @@ golang.org/x/text/transform
 golang.org/x/text/unicode/bidi
 golang.org/x/text/unicode/norm
 golang.org/x/text/width
-# google.golang.org/genproto v0.0.0-20230127162408-596548ed4efa
+# google.golang.org/genproto v0.0.0-20230202175211-008b39050e57
 ## explicit; go 1.19
 google.golang.org/genproto/googleapis/api
 google.golang.org/genproto/googleapis/api/annotations

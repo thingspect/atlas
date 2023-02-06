@@ -5,7 +5,7 @@ import (
 	"errors"
 	"time"
 
-	"github.com/go-redis/redis/v9"
+	"github.com/redis/go-redis/v9"
 )
 
 // redisCache contains methods to create and query data in Redis and implements

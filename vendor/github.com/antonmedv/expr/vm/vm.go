@@ -8,12 +8,15 @@ import (
 	"regexp"
 	"strings"
 
+	"github.com/antonmedv/expr/builtin"
 	"github.com/antonmedv/expr/file"
 	"github.com/antonmedv/expr/vm/runtime"
 )
 
 var MemoryBudget int = 1e6
 var errorType = reflect.TypeOf((*error)(nil)).Elem()
+
+type Function = func(params ...interface{}) (interface{}, error)
 
 func Run(program *Program, env interface{}) (interface{}, error) {
 	if program == nil {
@@ -51,7 +54,7 @@ func Debug() *VM {
 	return vm
 }
 
-func (vm *VM) Run(program *Program, env interface{}) (out interface{}, err error) {
+func (vm *VM) Run(program *Program, env interface{}) (_ interface{}, err error) {
 	defer func() {
 		if r := recover(); r != nil {
 			f := &file.Error{
@@ -93,12 +96,6 @@ func (vm *VM) Run(program *Program, env interface{}) (out interface{}, err error
 		case OpPop:
 			vm.pop()
 
-		case OpRot:
-			b := vm.pop()
-			a := vm.pop()
-			vm.push(b)
-			vm.push(a)
-
 		case OpLoadConst:
 			vm.push(runtime.Fetch(env, program.Constants[arg]))
 
@@ -110,6 +107,9 @@ func (vm *VM) Run(program *Program, env interface{}) (out interface{}, err error
 
 		case OpLoadMethod:
 			vm.push(runtime.FetchMethod(env, program.Constants[arg].(*runtime.Method)))
+
+		case OpLoadFunc:
+			vm.push(program.Functions[arg])
 
 		case OpFetch:
 			b := vm.pop()
@@ -171,6 +171,11 @@ func (vm *VM) Run(program *Program, env interface{}) (out interface{}, err error
 
 		case OpJumpIfNil:
 			if runtime.IsNil(vm.current()) {
+				vm.ip += arg
+			}
+
+		case OpJumpIfNotNil:
+			if !runtime.IsNil(vm.current()) {
 				vm.ip += arg
 			}
 
@@ -306,6 +311,53 @@ func (vm *VM) Run(program *Program, env interface{}) (out interface{}, err error
 			}
 			vm.push(out[0].Interface())
 
+		case OpCall0:
+			out, err := program.Functions[arg]()
+			if err != nil {
+				panic(err)
+			}
+			vm.push(out)
+
+		case OpCall1:
+			a := vm.pop()
+			out, err := program.Functions[arg](a)
+			if err != nil {
+				panic(err)
+			}
+			vm.push(out)
+
+		case OpCall2:
+			b := vm.pop()
+			a := vm.pop()
+			out, err := program.Functions[arg](a, b)
+			if err != nil {
+				panic(err)
+			}
+			vm.push(out)
+
+		case OpCall3:
+			c := vm.pop()
+			b := vm.pop()
+			a := vm.pop()
+			out, err := program.Functions[arg](a, b, c)
+			if err != nil {
+				panic(err)
+			}
+			vm.push(out)
+
+		case OpCallN:
+			fn := vm.pop().(Function)
+			size := arg
+			in := make([]interface{}, size)
+			for i := int(size) - 1; i >= 0; i-- {
+				in[i] = vm.pop()
+			}
+			out, err := fn(in...)
+			if err != nil {
+				panic(err)
+			}
+			vm.push(out)
+
 		case OpCallFast:
 			fn := vm.pop().(func(...interface{}) interface{})
 			size := arg
@@ -347,7 +399,7 @@ func (vm *VM) Run(program *Program, env interface{}) (out interface{}, err error
 			}
 
 		case OpLen:
-			vm.push(runtime.Length(vm.current()))
+			vm.push(runtime.Len(vm.current()))
 
 		case OpCast:
 			t := arg
@@ -394,6 +446,24 @@ func (vm *VM) Run(program *Program, env interface{}) (out interface{}, err error
 
 		case OpEnd:
 			vm.scopes = vm.scopes[:len(vm.scopes)-1]
+
+		case OpBuiltin:
+			switch arg {
+			case builtin.Len:
+				vm.push(runtime.Len(vm.pop()))
+
+			case builtin.Abs:
+				vm.push(runtime.Abs(vm.pop()))
+
+			case builtin.Int:
+				vm.push(runtime.ToInt(vm.pop()))
+
+			case builtin.Float:
+				vm.push(runtime.ToFloat64(vm.pop()))
+
+			default:
+				panic(fmt.Sprintf("unknown builtin %v", arg))
+			}
 
 		default:
 			panic(fmt.Sprintf("unknown bytecode %#x", op))

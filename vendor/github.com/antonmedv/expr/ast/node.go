@@ -4,6 +4,7 @@ import (
 	"reflect"
 	"regexp"
 
+	"github.com/antonmedv/expr/builtin"
 	"github.com/antonmedv/expr/file"
 )
 
@@ -51,8 +52,8 @@ type IdentifierNode struct {
 	Value       string
 	Deref       bool
 	FieldIndex  []int
-	Method      bool
-	MethodIndex int
+	Method      bool // true if method, false if field
+	MethodIndex int  // index of method, set only if Method is true
 }
 
 type IntegerNode struct {
@@ -124,6 +125,7 @@ type CallNode struct {
 	Arguments []Node
 	Typed     int
 	Fast      bool
+	Func      *builtin.Function
 }
 
 type BuiltinNode struct {
