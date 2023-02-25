@@ -4,7 +4,7 @@ github.com/NYTimes/gziphandler
 # github.com/ReneKroon/ttlcache/v3 v3.0.0-beta
 ## explicit; go 1.18
 github.com/ReneKroon/ttlcache/v3
-# github.com/antonmedv/expr v1.12.0
+# github.com/antonmedv/expr v1.12.1
 ## explicit; go 1.13
 github.com/antonmedv/expr
 github.com/antonmedv/expr/ast
@@ -40,6 +40,9 @@ github.com/eclipse/paho.mqtt.golang/packets
 # github.com/envoyproxy/protoc-gen-validate v0.9.1
 ## explicit; go 1.17
 github.com/envoyproxy/protoc-gen-validate/validate
+# github.com/golang/glog v1.0.0
+## explicit; go 1.11
+github.com/golang/glog
 # github.com/golang/mock v1.6.0
 ## explicit; go 1.11
 github.com/golang/mock/gomock
@@ -63,7 +66,7 @@ github.com/gorilla/websocket
 # github.com/gregdel/pushover v1.1.0
 ## explicit; go 1.14
 github.com/gregdel/pushover
-# github.com/grpc-ecosystem/grpc-gateway/v2 v2.15.0
+# github.com/grpc-ecosystem/grpc-gateway/v2 v2.15.1
 ## explicit; go 1.17
 github.com/grpc-ecosystem/grpc-gateway/v2/internal/httprule
 github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-openapiv2/options
@@ -130,12 +133,12 @@ github.com/rs/zerolog/internal/json
 # github.com/smira/go-statsd v1.3.2
 ## explicit; go 1.12
 github.com/smira/go-statsd
-# github.com/stretchr/testify v1.8.1
+# github.com/stretchr/testify v1.8.2
 ## explicit; go 1.13
 github.com/stretchr/testify/assert
 github.com/stretchr/testify/require
-# github.com/thingspect/api/go v1.0.9
-## explicit; go 1.19
+# github.com/thingspect/api/go v1.0.11
+## explicit; go 1.20
 github.com/thingspect/api/go/api
 github.com/thingspect/api/go/common
 github.com/thingspect/api/go/mqtt
@@ -176,7 +179,7 @@ golang.org/x/text/transform
 golang.org/x/text/unicode/bidi
 golang.org/x/text/unicode/norm
 golang.org/x/text/width
-# google.golang.org/genproto v0.0.0-20230216225411-c8e22ba71e44
+# google.golang.org/genproto v0.0.0-20230223222841-637eb2293923
 ## explicit; go 1.19
 google.golang.org/genproto/googleapis/api
 google.golang.org/genproto/googleapis/api/annotations
