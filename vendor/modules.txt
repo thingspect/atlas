@@ -4,7 +4,7 @@ github.com/NYTimes/gziphandler
 # github.com/ReneKroon/ttlcache/v3 v3.0.0-beta
 ## explicit; go 1.18
 github.com/ReneKroon/ttlcache/v3
-# github.com/antonmedv/expr v1.12.1
+# github.com/antonmedv/expr v1.12.3
 ## explicit; go 1.13
 github.com/antonmedv/expr
 github.com/antonmedv/expr/ast
@@ -21,7 +21,7 @@ github.com/antonmedv/expr/vm/runtime
 # github.com/cespare/xxhash/v2 v2.2.0
 ## explicit; go 1.11
 github.com/cespare/xxhash/v2
-# github.com/chirpstack/chirpstack/api/go/v4 v4.2.0
+# github.com/chirpstack/chirpstack/api/go/v4 v4.3.0
 ## explicit; go 1.16
 github.com/chirpstack/chirpstack/api/go/v4/api
 github.com/chirpstack/chirpstack/api/go/v4/common
@@ -43,7 +43,7 @@ github.com/envoyproxy/protoc-gen-validate/validate
 # github.com/golang/mock v1.6.0
 ## explicit; go 1.11
 github.com/golang/mock/gomock
-# github.com/golang/protobuf v1.5.2
+# github.com/golang/protobuf v1.5.3
 ## explicit; go 1.9
 github.com/golang/protobuf/jsonpb
 github.com/golang/protobuf/proto
@@ -235,7 +235,7 @@ google.golang.org/grpc/serviceconfig
 google.golang.org/grpc/stats
 google.golang.org/grpc/status
 google.golang.org/grpc/tap
-# google.golang.org/protobuf v1.28.1
+# google.golang.org/protobuf v1.29.1
 ## explicit; go 1.11
 google.golang.org/protobuf/encoding/protojson
 google.golang.org/protobuf/encoding/prototext
