@@ -1,3 +1,0 @@
-FROM nsqio/nsq:v1.2.1
-
-CMD /nsqadmin --lookupd-http-address=${LOOKUP_ADDR} --log-level=${LOG_LEVEL}

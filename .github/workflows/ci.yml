@@ -24,11 +24,17 @@ jobs:
           POSTGRES_PASSWORD: postgres
           POSTGRES_DB: atlas_test
       nsqlookupd:
-        image: thingspect/nsqlookupd:v1.2.1
+        image: ghcr.io/thingspect/nsqlookupd:v1.2.1
+        credentials:
+          username: thingspect
+          password: ${{ secrets.GHCR_PAT }}
         env:
           LOG_LEVEL: warn
       nsqd:
-        image: thingspect/nsqd:v1.2.1
+        image: ghcr.io/thingspect/nsqd:v1.2.1
+        credentials:
+          username: thingspect
+          password: ${{ secrets.GHCR_PAT }}
         env:
           LOOKUP_ADDR: nsqlookupd:4160
           LOG_LEVEL: warn
