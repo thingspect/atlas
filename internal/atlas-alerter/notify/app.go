@@ -20,7 +20,7 @@ const (
 )
 
 // ValidateApp verifies that a mobile application user key is valid.
-func (n *notify) ValidateApp(ctx context.Context, userKey string) error {
+func (n *notify) ValidateApp(userKey string) error {
 	po := pushover.New(n.appAPIKey)
 	recipient := pushover.NewRecipient(userKey)
 

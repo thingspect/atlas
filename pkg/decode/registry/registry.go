@@ -21,7 +21,7 @@ type Registry struct {
 
 // noOpDecoder passes through data payloads without decoding. This is for
 // devices that do not use or do not yet have decoders.
-func noOpDecoder(body []byte) ([]*decode.Point, error) { return nil, nil }
+func noOpDecoder(_ []byte) ([]*decode.Point, error) { return nil, nil }
 
 // New returns a Registry with all decoder function mappings loaded.
 func New() *Registry {

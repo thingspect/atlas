@@ -8,7 +8,7 @@ import "context"
 // Notifier defines the methods provided by a Notify.
 type Notifier interface {
 	// ValidateApp verifies that a mobile application user key is valid.
-	ValidateApp(ctx context.Context, userKey string) error
+	ValidateApp(userKey string) error
 	// App sends a push notification to a mobile application. This operation can
 	// block based on rate limiting.
 	App(ctx context.Context, userKey, subject, body string) error
