@@ -77,7 +77,7 @@ func (fs *fakeSub) Unsubscribe() error {
 
 // Subscribe subscribes to the default topic and returns a Subber and an error
 // value. The provided topic is discarded.
-func (f *fakeQueue) Subscribe(topic string) (Subber, error) {
+func (f *fakeQueue) Subscribe(_ string) (Subber, error) {
 	return &fakeSub{msgChan: f.msgChan}, nil
 }
 

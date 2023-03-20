@@ -32,7 +32,7 @@ func NewMemory() Cacher {
 }
 
 // Set sets key to value.
-func (m *memoryCache) Set(ctx context.Context, key string, value any) error {
+func (m *memoryCache) Set(_ context.Context, key string, value any) error {
 	m.cacheMu.Lock()
 	defer m.cacheMu.Unlock()
 
@@ -41,7 +41,7 @@ func (m *memoryCache) Set(ctx context.Context, key string, value any) error {
 
 // SetTTL sets key to value with expiration.
 func (m *memoryCache) SetTTL(
-	ctx context.Context, key string, value any, exp time.Duration,
+	_ context.Context, key string, value any, exp time.Duration,
 ) error {
 	m.cacheMu.Lock()
 	defer m.cacheMu.Unlock()
@@ -51,9 +51,7 @@ func (m *memoryCache) SetTTL(
 
 // Get retrieves a string value by key. If the key does not exist, the boolean
 // returned is set to false.
-func (m *memoryCache) Get(ctx context.Context, key string) (
-	bool, string, error,
-) {
+func (m *memoryCache) Get(_ context.Context, key string) (bool, string, error) {
 	m.cacheMu.RLock()
 	defer m.cacheMu.RUnlock()
 
@@ -75,7 +73,7 @@ func (m *memoryCache) Get(ctx context.Context, key string) (
 
 // GetB retrieves a []byte value by key. If the key does not exist, the boolean
 // returned is set to false.
-func (m *memoryCache) GetB(ctx context.Context, key string) (
+func (m *memoryCache) GetB(_ context.Context, key string) (
 	bool, []byte, error,
 ) {
 	m.cacheMu.RLock()
@@ -99,7 +97,7 @@ func (m *memoryCache) GetB(ctx context.Context, key string) (
 
 // GetI retrieves an int64 value by key. If the key does not exist, the boolean
 // returned is set to false.
-func (m *memoryCache) GetI(ctx context.Context, key string) (
+func (m *memoryCache) GetI(_ context.Context, key string) (
 	bool, int64, error,
 ) {
 	m.cacheMu.RLock()
@@ -132,7 +130,7 @@ func (m *memoryCache) SetIfNotExist(
 // SetIfNotExistTTL sets key to value, with expiration, if the key does not
 // exist. If it is successful, it returns true.
 func (m *memoryCache) SetIfNotExistTTL(
-	ctx context.Context, key string, value any, exp time.Duration,
+	_ context.Context, key string, value any, exp time.Duration,
 ) (bool, error) {
 	m.cacheMu.Lock()
 	defer m.cacheMu.Unlock()
@@ -150,7 +148,7 @@ func (m *memoryCache) SetIfNotExistTTL(
 
 // Incr increments an int64 value at key by one. If the key does not exist, the
 // value is set to 1. The incremented value is returned.
-func (m *memoryCache) Incr(ctx context.Context, key string) (int64, error) {
+func (m *memoryCache) Incr(_ context.Context, key string) (int64, error) {
 	m.cacheMu.Lock()
 	defer m.cacheMu.Unlock()
 
@@ -175,7 +173,7 @@ func (m *memoryCache) Incr(ctx context.Context, key string) (int64, error) {
 }
 
 // Del removes the specified key. A key is ignored if it does not exist.
-func (m *memoryCache) Del(ctx context.Context, key string) error {
+func (m *memoryCache) Del(_ context.Context, key string) error {
 	m.cacheMu.Lock()
 	defer m.cacheMu.Unlock()
 

@@ -91,15 +91,15 @@ func (mr *MockNotifierMockRecorder) VaildateSMS(ctx, phone interface{}) *gomock.
 }
 
 // ValidateApp mocks base method.
-func (m *MockNotifier) ValidateApp(ctx context.Context, userKey string) error {
+func (m *MockNotifier) ValidateApp(userKey string) error {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "ValidateApp", ctx, userKey)
+	ret := m.ctrl.Call(m, "ValidateApp", userKey)
 	ret0, _ := ret[0].(error)
 	return ret0
 }
 
 // ValidateApp indicates an expected call of ValidateApp.
-func (mr *MockNotifierMockRecorder) ValidateApp(ctx, userKey interface{}) *gomock.Call {
+func (mr *MockNotifierMockRecorder) ValidateApp(userKey interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ValidateApp", reflect.TypeOf((*MockNotifier)(nil).ValidateApp), ctx, userKey)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ValidateApp", reflect.TypeOf((*MockNotifier)(nil).ValidateApp), userKey)
 }

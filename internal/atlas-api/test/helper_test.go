@@ -21,7 +21,7 @@ type credential struct {
 
 // GetRequestMetadata returns authentication metadata and implements the
 // PerRPCCredentials interface.
-func (c *credential) GetRequestMetadata(ctx context.Context, uri ...string) (
+func (c *credential) GetRequestMetadata(_ context.Context, _ ...string) (
 	map[string]string, error,
 ) {
 	return map[string]string{

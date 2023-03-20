@@ -29,7 +29,7 @@ func NewTag(tagDAO Tagger) *Tag {
 }
 
 // ListTags retrieves all tags.
-func (t *Tag) ListTags(ctx context.Context, req *api.ListTagsRequest) (
+func (t *Tag) ListTags(ctx context.Context, _ *api.ListTagsRequest) (
 	*api.ListTagsResponse, error,
 ) {
 	sess, ok := session.FromContext(ctx)
