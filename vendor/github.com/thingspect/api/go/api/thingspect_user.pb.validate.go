@@ -100,7 +100,7 @@ func (m *User) validate(all bool) error {
 	if _, ok := _User_Role_InLookup[m.GetRole()]; !ok {
 		err := UserValidationError{
 			field:  "Role",
-			reason: "value must be in list [3 6 7 9 12 15]",
+			reason: "value must be in list [CONTACT VIEWER PUBLISHER BUILDER ADMIN SYS_ADMIN]",
 		}
 		if !all {
 			return err
@@ -111,7 +111,7 @@ func (m *User) validate(all bool) error {
 	if _, ok := _User_Status_InLookup[m.GetStatus()]; !ok {
 		err := UserValidationError{
 			field:  "Status",
-			reason: "value must be in list [3 6]",
+			reason: "value must be in list [ACTIVE DISABLED]",
 		}
 		if !all {
 			return err

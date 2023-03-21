@@ -12,9 +12,9 @@ type Notifier interface {
 	// App sends a push notification to a mobile application. This operation can
 	// block based on rate limiting.
 	App(ctx context.Context, userKey, subject, body string) error
-	// VaildateSMS verifies that a phone number is correct and supported for SMS
+	// ValidateSMS verifies that a phone number is correct and supported for SMS
 	// usage.
-	VaildateSMS(ctx context.Context, phone string) error
+	ValidateSMS(ctx context.Context, phone string) error
 	// SMS sends an SMS notification. Subjects and bodies will be concatenated
 	// with ' - '. This operation can block based on rate limiting.
 	SMS(ctx context.Context, phone, subject, body string) error

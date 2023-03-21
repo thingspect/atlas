@@ -9,6 +9,7 @@ import (
 	"github.com/thingspect/atlas/internal/atlas-api/crypto"
 	"github.com/thingspect/atlas/pkg/alog"
 	"github.com/thingspect/atlas/pkg/dao"
+	"github.com/thingspect/atlas/pkg/notify"
 	"github.com/thingspect/atlas/pkg/rule"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -26,6 +27,8 @@ var errToCode = map[error]codes.Code{
 	dao.ErrAlreadyExists: codes.AlreadyExists,
 	dao.ErrInvalidFormat: codes.InvalidArgument,
 	dao.ErrNotFound:      codes.NotFound,
+	notify.ErrInvalidSMS: codes.InvalidArgument,
+	notify.ErrInvalidApp: codes.InvalidArgument,
 	rule.ErrNotBool:      codes.InvalidArgument,
 }
 

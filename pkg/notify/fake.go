@@ -14,7 +14,7 @@ func NewFake() Notifier {
 	notifier.EXPECT().ValidateApp(gomock.Any()).Return(nil).AnyTimes()
 	notifier.EXPECT().App(gomock.Any(), gomock.Any(), gomock.Any(),
 		gomock.Any()).Return(nil).AnyTimes()
-	notifier.EXPECT().VaildateSMS(gomock.Any(), gomock.Any()).Return(nil).
+	notifier.EXPECT().ValidateSMS(gomock.Any(), gomock.Any()).Return(nil).
 		AnyTimes()
 	notifier.EXPECT().SMS(gomock.Any(), gomock.Any(), gomock.Any(),
 		gomock.Any()).Return(nil).AnyTimes()

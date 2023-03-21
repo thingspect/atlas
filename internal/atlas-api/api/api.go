@@ -31,6 +31,7 @@ import (
 	"github.com/thingspect/atlas/pkg/dao/rule"
 	"github.com/thingspect/atlas/pkg/dao/tag"
 	"github.com/thingspect/atlas/pkg/dao/user"
+	"github.com/thingspect/atlas/pkg/notify"
 	"github.com/thingspect/atlas/pkg/queue"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
@@ -76,6 +77,16 @@ func New(cfg *config.Config) (*API, error) {
 	redis, err := cache.NewRedis(cfg.RedisHost + ":6379")
 	if err != nil {
 		return nil, err
+	}
+
+	// Set up Notifier. Allow a mock for local usage, but warn loudly.
+	var n notify.Notifier
+	if cfg.AppAPIKey == "" || cfg.SMSKeySecret == "" {
+		alog.Error("New notify secrets not found, using notify.NewFake()")
+		n = notify.NewFake()
+	} else {
+		n = notify.New(redis, cfg.AppAPIKey, cfg.SMSKeyID, "", cfg.SMSKeySecret,
+			"", "", "")
 	}
 
 	// Build the NSQ connection for publishing.
@@ -127,7 +138,7 @@ func New(cfg *config.Config) (*API, error) {
 	api.RegisterSessionServiceServer(srv, service.NewSession(user.NewDAO(pg),
 		key.NewDAO(pg), redis, cfg.PWTKey))
 	api.RegisterTagServiceServer(srv, service.NewTag(tag.NewDAO(pg)))
-	api.RegisterUserServiceServer(srv, service.NewUser(user.NewDAO(pg)))
+	api.RegisterUserServiceServer(srv, service.NewUser(user.NewDAO(pg), n))
 
 	// Register gRPC-Gateway handlers.
 	ctx, cancel := context.WithCancel(context.Background())

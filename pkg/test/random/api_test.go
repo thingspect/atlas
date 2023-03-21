@@ -191,6 +191,72 @@ func TestUser(t *testing.T) {
 			require.True(t, strings.HasPrefix(u2.Email, prefix))
 			require.GreaterOrEqual(t, len(u1.Tags), 1)
 			require.GreaterOrEqual(t, len(u2.Tags), 1)
+			require.Empty(t, u1.Phone)
+			require.Empty(t, u2.Phone)
+			require.Empty(t, u1.AppKey)
+			require.Empty(t, u2.AppKey)
+		})
+	}
+}
+
+func TestSMSUser(t *testing.T) {
+	t.Parallel()
+
+	for i := 0; i < 5; i++ {
+		lTest := i
+
+		t.Run(fmt.Sprintf("Can generate %v", lTest), func(t *testing.T) {
+			t.Parallel()
+
+			prefix := String(10)
+			orgID := uuid.NewString()
+
+			u1 := SMSUser(prefix, orgID)
+			u2 := SMSUser(prefix, orgID)
+			t.Logf("u1, u2: %+v, %+v", u1, u2)
+
+			require.NotEqual(t, u1, u2)
+			require.True(t, strings.HasPrefix(u1.Name, prefix))
+			require.True(t, strings.HasPrefix(u2.Name, prefix))
+			require.True(t, strings.HasPrefix(u1.Email, prefix))
+			require.True(t, strings.HasPrefix(u2.Email, prefix))
+			require.GreaterOrEqual(t, len(u1.Tags), 1)
+			require.GreaterOrEqual(t, len(u2.Tags), 1)
+			require.NotEmpty(t, u1.Phone)
+			require.NotEmpty(t, u2.Phone)
+			require.Empty(t, u1.AppKey)
+			require.Empty(t, u2.AppKey)
+		})
+	}
+}
+
+func TestAppUser(t *testing.T) {
+	t.Parallel()
+
+	for i := 0; i < 5; i++ {
+		lTest := i
+
+		t.Run(fmt.Sprintf("Can generate %v", lTest), func(t *testing.T) {
+			t.Parallel()
+
+			prefix := String(10)
+			orgID := uuid.NewString()
+
+			u1 := AppUser(prefix, orgID)
+			u2 := AppUser(prefix, orgID)
+			t.Logf("u1, u2: %+v, %+v", u1, u2)
+
+			require.NotEqual(t, u1, u2)
+			require.True(t, strings.HasPrefix(u1.Name, prefix))
+			require.True(t, strings.HasPrefix(u2.Name, prefix))
+			require.True(t, strings.HasPrefix(u1.Email, prefix))
+			require.True(t, strings.HasPrefix(u2.Email, prefix))
+			require.GreaterOrEqual(t, len(u1.Tags), 1)
+			require.GreaterOrEqual(t, len(u2.Tags), 1)
+			require.Empty(t, u1.Phone)
+			require.Empty(t, u2.Phone)
+			require.NotEmpty(t, u1.AppKey)
+			require.NotEmpty(t, u2.AppKey)
 		})
 	}
 }

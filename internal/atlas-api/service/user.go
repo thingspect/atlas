@@ -15,6 +15,7 @@ import (
 	"github.com/thingspect/atlas/internal/atlas-api/crypto"
 	"github.com/thingspect/atlas/internal/atlas-api/session"
 	"github.com/thingspect/atlas/pkg/alog"
+	"github.com/thingspect/atlas/pkg/notify"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
@@ -45,12 +46,14 @@ type User struct {
 	api.UnimplementedUserServiceServer
 
 	userDAO Userer
+	notify  notify.Notifier
 }
 
 // NewUser instantiates and returns a new User service.
-func NewUser(userDAO Userer) *User {
+func NewUser(userDAO Userer, notify notify.Notifier) *User {
 	return &User{
 		userDAO: userDAO,
+		notify:  notify,
 	}
 }
 
@@ -71,9 +74,22 @@ func (u *User) CreateUser(ctx context.Context, req *api.CreateUserRequest) (
 	}
 
 	// Validate phone number.
-	if req.User.Phone != "" && !rePhone.MatchString(req.User.Phone) {
-		return nil, status.Error(codes.InvalidArgument,
-			"invalid E.164 phone number")
+	if req.User.Phone != "" {
+		if !rePhone.MatchString(req.User.Phone) {
+			return nil, status.Error(codes.InvalidArgument,
+				"invalid E.164 phone number")
+		}
+
+		if err := u.notify.ValidateSMS(ctx, req.User.Phone); err != nil {
+			return nil, errToStatus(err)
+		}
+	}
+
+	// Validate mobile application user key.
+	if req.User.AppKey != "" {
+		if err := u.notify.ValidateApp(req.User.AppKey); err != nil {
+			return nil, errToStatus(err)
+		}
 	}
 
 	req.User.OrgId = sess.OrgID
@@ -142,9 +158,22 @@ func (u *User) UpdateUser(ctx context.Context, req *api.UpdateUserRequest) (
 	}
 
 	// Validate phone number.
-	if req.User.Phone != "" && !rePhone.MatchString(req.User.Phone) {
-		return nil, status.Error(codes.InvalidArgument,
-			"invalid E.164 phone number")
+	if req.User.Phone != "" {
+		if !rePhone.MatchString(req.User.Phone) {
+			return nil, status.Error(codes.InvalidArgument,
+				"invalid E.164 phone number")
+		}
+
+		if err := u.notify.ValidateSMS(ctx, req.User.Phone); err != nil {
+			return nil, errToStatus(err)
+		}
+	}
+
+	// Validate mobile application user key.
+	if req.User.AppKey != "" {
+		if err := u.notify.ValidateApp(req.User.AppKey); err != nil {
+			return nil, errToStatus(err)
+		}
 	}
 
 	// Perform partial update if directed.
