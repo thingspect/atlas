@@ -16,9 +16,9 @@ const (
 	smsRateDelay = 750 * time.Millisecond
 )
 
-// VaildateSMS verifies that a phone number is correct and supported for SMS
+// ValidateSMS verifies that a phone number is correct and supported for SMS
 // usage.
-func (n *notify) VaildateSMS(ctx context.Context, phone string) error {
+func (n *notify) ValidateSMS(ctx context.Context, phone string) error {
 	lookup, err := n.twilio.lookupCarrier(ctx, phone)
 	if err != nil {
 		return err

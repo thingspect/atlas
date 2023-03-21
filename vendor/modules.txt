@@ -4,7 +4,7 @@ github.com/NYTimes/gziphandler
 # github.com/ReneKroon/ttlcache/v3 v3.0.0-beta
 ## explicit; go 1.18
 github.com/ReneKroon/ttlcache/v3
-# github.com/antonmedv/expr v1.12.3
+# github.com/antonmedv/expr v1.12.4
 ## explicit; go 1.13
 github.com/antonmedv/expr
 github.com/antonmedv/expr/ast
@@ -37,8 +37,8 @@ github.com/dgryski/go-rendezvous
 ## explicit; go 1.14
 github.com/eclipse/paho.mqtt.golang
 github.com/eclipse/paho.mqtt.golang/packets
-# github.com/envoyproxy/protoc-gen-validate v0.9.1
-## explicit; go 1.17
+# github.com/envoyproxy/protoc-gen-validate v0.10.1
+## explicit; go 1.19
 github.com/envoyproxy/protoc-gen-validate/validate
 # github.com/golang/mock v1.6.0
 ## explicit; go 1.11
@@ -134,7 +134,7 @@ github.com/smira/go-statsd
 ## explicit; go 1.13
 github.com/stretchr/testify/assert
 github.com/stretchr/testify/require
-# github.com/thingspect/api/go v1.0.12
+# github.com/thingspect/api/go v1.0.13
 ## explicit; go 1.20
 github.com/thingspect/api/go/api
 github.com/thingspect/api/go/common
@@ -176,7 +176,7 @@ golang.org/x/text/transform
 golang.org/x/text/unicode/bidi
 golang.org/x/text/unicode/norm
 golang.org/x/text/width
-# google.golang.org/genproto v0.0.0-20230306155012-7f2fa6fef1f4
+# google.golang.org/genproto v0.0.0-20230320184635-7606e756e683
 ## explicit; go 1.19
 google.golang.org/genproto/googleapis/api
 google.golang.org/genproto/googleapis/api/annotations

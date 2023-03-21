@@ -88,7 +88,7 @@ func (m *Device) validate(all bool) error {
 	if _, ok := _Device_Status_InLookup[m.GetStatus()]; !ok {
 		err := DeviceValidationError{
 			field:  "Status",
-			reason: "value must be in list [3 6]",
+			reason: "value must be in list [ACTIVE DISABLED]",
 		}
 		if !all {
 			return err

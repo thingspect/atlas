@@ -77,7 +77,7 @@ func (m *Rule) validate(all bool) error {
 	if _, ok := _Rule_Status_InLookup[m.GetStatus()]; !ok {
 		err := RuleValidationError{
 			field:  "Status",
-			reason: "value must be in list [3 6]",
+			reason: "value must be in list [ACTIVE DISABLED]",
 		}
 		if !all {
 			return err
@@ -1389,7 +1389,7 @@ func (m *Alarm) validate(all bool) error {
 	if _, ok := _Alarm_Status_InLookup[m.GetStatus()]; !ok {
 		err := AlarmValidationError{
 			field:  "Status",
-			reason: "value must be in list [3 6]",
+			reason: "value must be in list [ACTIVE DISABLED]",
 		}
 		if !all {
 			return err
@@ -1400,7 +1400,7 @@ func (m *Alarm) validate(all bool) error {
 	if _, ok := _Alarm_Type_InLookup[m.GetType()]; !ok {
 		err := AlarmValidationError{
 			field:  "Type",
-			reason: "value must be in list [1 2 3]",
+			reason: "value must be in list [APP SMS EMAIL]",
 		}
 		if !all {
 			return err

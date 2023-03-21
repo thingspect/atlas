@@ -17,6 +17,10 @@ type Config struct {
 	NSQPubAddr  string
 	NSQPubTopic string
 
+	AppAPIKey    string
+	SMSKeyID     string
+	SMSKeySecret string
+
 	LoRaAddr      string
 	LoRaAPIKey    string
 	LoRaTenantID  string
@@ -39,6 +43,11 @@ func New() *Config {
 
 		NSQPubAddr:  config.String(pref+"NSQ_PUB_ADDR", "127.0.0.1:4150"),
 		NSQPubTopic: config.String(pref+"NSQ_PUB_TOPIC", "ValidatorIn"),
+
+		AppAPIKey: config.String(pref+"APP_API_KEY", ""),
+		SMSKeyID: config.String(pref+"SMS_KEY_ID",
+			"SKb62d2a1320d85ad96b07a90fe92e051e"),
+		SMSKeySecret: config.String(pref+"SMS_KEY_SECRET", ""),
 
 		LoRaAddr:      config.String(pref+"LORA_ADDR", ""),
 		LoRaAPIKey:    config.String(pref+"LORA_API_KEY", ""),

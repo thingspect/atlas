@@ -12,7 +12,6 @@ import (
 
 	"github.com/thingspect/api/go/api"
 	"github.com/thingspect/atlas/internal/atlas-alerter/config"
-	"github.com/thingspect/atlas/internal/atlas-alerter/notify"
 	"github.com/thingspect/atlas/pkg/alog"
 	"github.com/thingspect/atlas/pkg/cache"
 	"github.com/thingspect/atlas/pkg/dao"
@@ -20,6 +19,7 @@ import (
 	"github.com/thingspect/atlas/pkg/dao/alert"
 	"github.com/thingspect/atlas/pkg/dao/org"
 	"github.com/thingspect/atlas/pkg/dao/user"
+	"github.com/thingspect/atlas/pkg/notify"
 	"github.com/thingspect/atlas/pkg/queue"
 )
 

@@ -1,6 +1,7 @@
 package random
 
 import (
+	"strconv"
 	"time"
 
 	"github.com/google/uuid"
@@ -113,7 +114,55 @@ func User(prefix, orgID string) *api.User {
 		OrgId: orgID,
 		Name:  prefix + "-" + String(10),
 		Email: prefix + "-" + Email(),
-		Phone: []string{"", "+15125551212"}[Intn(2)],
+		Role: []api.Role{
+			api.Role_CONTACT,
+			api.Role_VIEWER,
+			api.Role_PUBLISHER,
+			api.Role_BUILDER,
+			api.Role_ADMIN,
+			api.Role_SYS_ADMIN,
+		}[Intn(6)],
+		Status: []api.Status{
+			api.Status_ACTIVE,
+			api.Status_DISABLED,
+		}[Intn(2)],
+		Tags: Tags(prefix, Intn(4)+1),
+	}
+}
+
+// SMSUser generates a random SMS user with prefixed identifiers.
+func SMSUser(prefix, orgID string) *api.User {
+	return &api.User{
+		Id:    uuid.NewString(),
+		OrgId: orgID,
+		Name:  prefix + "-" + String(10),
+		Email: prefix + "-" + Email(),
+		// https://en.wikipedia.org/wiki/555_(telephone_number)
+		Phone: "+1" + strconv.Itoa(Intn(900)+100) + "5550" +
+			strconv.Itoa(Intn(100)+100),
+		Role: []api.Role{
+			api.Role_CONTACT,
+			api.Role_VIEWER,
+			api.Role_PUBLISHER,
+			api.Role_BUILDER,
+			api.Role_ADMIN,
+			api.Role_SYS_ADMIN,
+		}[Intn(6)],
+		Status: []api.Status{
+			api.Status_ACTIVE,
+			api.Status_DISABLED,
+		}[Intn(2)],
+		Tags: Tags(prefix, Intn(4)+1),
+	}
+}
+
+// AppUser generates a random mobile application user with prefixed identifiers.
+func AppUser(prefix, orgID string) *api.User {
+	return &api.User{
+		Id:    uuid.NewString(),
+		OrgId: orgID,
+		Name:  prefix + "-" + String(10),
+		Email: prefix + "-" + Email(),
 		Role: []api.Role{
 			api.Role_CONTACT,
 			api.Role_VIEWER,
@@ -127,7 +176,7 @@ func User(prefix, orgID string) *api.User {
 			api.Status_DISABLED,
 		}[Intn(2)],
 		Tags:   Tags(prefix, Intn(4)+1),
-		AppKey: []string{"", String(30)}[Intn(2)],
+		AppKey: String(30),
 	}
 }
 

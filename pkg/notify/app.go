@@ -11,8 +11,8 @@ import (
 	"github.com/thingspect/atlas/pkg/metric"
 )
 
-// ErrInvalidPushover is returned when a user key fails validation.
-const ErrInvalidPushover consterr.Error = "unknown user key"
+// ErrInvalidApp is returned when a user key fails validation.
+const ErrInvalidApp consterr.Error = "unknown user key"
 
 const (
 	appKey       = "notify.app"
@@ -25,11 +25,11 @@ func (n *notify) ValidateApp(userKey string) error {
 	recipient := pushover.NewRecipient(userKey)
 
 	// GetRecipientDetails does not return sentinel errors via the API, return
-	// ErrInvalidPushover based on status.
+	// ErrInvalidApp based on status.
 	det, err := po.GetRecipientDetails(recipient)
 	if errors.Is(err, pushover.ErrInvalidRecipientToken) ||
 		(det != nil && det.Status != 1) {
-		return ErrInvalidPushover
+		return ErrInvalidApp
 	}
 	if err != nil {
 		return err

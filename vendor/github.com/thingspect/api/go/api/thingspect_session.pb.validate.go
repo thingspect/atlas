@@ -313,7 +313,7 @@ func (m *Key) validate(all bool) error {
 	if _, ok := _Key_Role_InLookup[m.GetRole()]; !ok {
 		err := KeyValidationError{
 			field:  "Role",
-			reason: "value must be in list [3 6 7 9 12 15]",
+			reason: "value must be in list [CONTACT VIEWER PUBLISHER BUILDER ADMIN SYS_ADMIN]",
 		}
 		if !all {
 			return err

@@ -76,20 +76,6 @@ func (mr *MockNotifierMockRecorder) SMS(ctx, phone, subject, body interface{}) *
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SMS", reflect.TypeOf((*MockNotifier)(nil).SMS), ctx, phone, subject, body)
 }
 
-// VaildateSMS mocks base method.
-func (m *MockNotifier) VaildateSMS(ctx context.Context, phone string) error {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "VaildateSMS", ctx, phone)
-	ret0, _ := ret[0].(error)
-	return ret0
-}
-
-// VaildateSMS indicates an expected call of VaildateSMS.
-func (mr *MockNotifierMockRecorder) VaildateSMS(ctx, phone interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "VaildateSMS", reflect.TypeOf((*MockNotifier)(nil).VaildateSMS), ctx, phone)
-}
-
 // ValidateApp mocks base method.
 func (m *MockNotifier) ValidateApp(userKey string) error {
 	m.ctrl.T.Helper()
@@ -102,4 +88,18 @@ func (m *MockNotifier) ValidateApp(userKey string) error {
 func (mr *MockNotifierMockRecorder) ValidateApp(userKey interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ValidateApp", reflect.TypeOf((*MockNotifier)(nil).ValidateApp), userKey)
+}
+
+// ValidateSMS mocks base method.
+func (m *MockNotifier) ValidateSMS(ctx context.Context, phone string) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "ValidateSMS", ctx, phone)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// ValidateSMS indicates an expected call of ValidateSMS.
+func (mr *MockNotifierMockRecorder) ValidateSMS(ctx, phone interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ValidateSMS", reflect.TypeOf((*MockNotifier)(nil).ValidateSMS), ctx, phone)
 }
