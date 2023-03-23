@@ -141,7 +141,7 @@ func TestRedisSetTTLGetBShort(t *testing.T) {
 
 	require.NoError(t, redis.SetTTL(ctx, key, val, time.Millisecond))
 
-	time.Sleep(100 * time.Millisecond)
+	time.Sleep(10 * time.Millisecond)
 	ok, res, err := redis.GetB(ctx, key)
 	t.Logf("ok, res, err: %v, %x, %v", ok, res, err)
 	require.False(t, ok)
@@ -257,7 +257,7 @@ func TestRedisSetIfNotExistTTLShort(t *testing.T) {
 	require.True(t, ok)
 	require.NoError(t, err)
 
-	time.Sleep(100 * time.Millisecond)
+	time.Sleep(10 * time.Millisecond)
 	ok, err = redis.SetIfNotExistTTL(ctx, key, random.Bytes(10), testTimeout)
 	t.Logf("ok, err: %v, %v", ok, err)
 	require.True(t, ok)

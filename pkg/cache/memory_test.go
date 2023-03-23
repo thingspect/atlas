@@ -7,7 +7,6 @@ import (
 	"testing"
 	"time"
 
-	"github.com/ReneKroon/ttlcache/v3"
 	"github.com/stretchr/testify/require"
 	"github.com/thingspect/atlas/pkg/test/random"
 )
@@ -49,14 +48,6 @@ func TestMemorySetGet(t *testing.T) {
 	require.False(t, ok)
 	require.Empty(t, res)
 	require.Equal(t, errWrongType, err)
-
-	require.NoError(t, mem.Close())
-
-	ok, res, err = mem.Get(context.Background(), key)
-	t.Logf("ok, res, err: %v, %v, %v", ok, res, err)
-	require.False(t, ok)
-	require.Empty(t, res)
-	require.Equal(t, ttlcache.ErrClosed, err)
 }
 
 func TestMemorySetTTLGetB(t *testing.T) {
@@ -82,21 +73,14 @@ func TestMemorySetTTLGetB(t *testing.T) {
 	require.Empty(t, res)
 	require.NoError(t, err)
 
-	require.NoError(t, mem.Set(context.Background(), key, random.String(10)))
+	require.NoError(t, mem.SetTTL(context.Background(), key, random.String(10),
+		2*time.Second))
 
 	ok, res, err = mem.GetB(context.Background(), key)
 	t.Logf("ok, res, err: %v, %x, %v", ok, res, err)
 	require.False(t, ok)
 	require.Empty(t, res)
 	require.Equal(t, errWrongType, err)
-
-	require.NoError(t, mem.Close())
-
-	ok, res, err = mem.GetB(context.Background(), key)
-	t.Logf("ok, res, err: %v, %x, %v", ok, res, err)
-	require.False(t, ok)
-	require.Empty(t, res)
-	require.Equal(t, ttlcache.ErrClosed, err)
 }
 
 func TestMemorySetTTLGetBShort(t *testing.T) {
@@ -109,7 +93,7 @@ func TestMemorySetTTLGetBShort(t *testing.T) {
 	require.NoError(t, mem.SetTTL(context.Background(), key, val,
 		time.Millisecond))
 
-	time.Sleep(100 * time.Millisecond)
+	time.Sleep(10 * time.Millisecond)
 	ok, res, err := mem.GetB(context.Background(), key)
 	t.Logf("ok, res, err: %v, %x, %v", ok, res, err)
 	require.False(t, ok)
@@ -124,8 +108,7 @@ func TestMemorySetGetI(t *testing.T) {
 	key := "testMemorySetGetI-" + random.String(10)
 	val := int64(random.Intn(999))
 
-	require.NoError(t, mem.SetTTL(context.Background(), key, val,
-		2*time.Second))
+	require.NoError(t, mem.Set(context.Background(), key, val))
 
 	ok, res, err := mem.GetI(context.Background(), key)
 	t.Logf("ok, res, err: %v, %v, %v", ok, res, err)
@@ -147,14 +130,6 @@ func TestMemorySetGetI(t *testing.T) {
 	require.False(t, ok)
 	require.Empty(t, res)
 	require.Equal(t, errWrongType, err)
-
-	require.NoError(t, mem.Close())
-
-	ok, res, err = mem.GetI(context.Background(), key)
-	t.Logf("ok, res, err: %v, %v, %v", ok, res, err)
-	require.False(t, ok)
-	require.Empty(t, res)
-	require.Equal(t, ttlcache.ErrClosed, err)
 }
 
 func TestMemorySetIfNotExist(t *testing.T) {
@@ -205,7 +180,7 @@ func TestMemorySetIfNotExistTTLShort(t *testing.T) {
 	require.True(t, ok)
 	require.NoError(t, err)
 
-	time.Sleep(100 * time.Millisecond)
+	time.Sleep(10 * time.Millisecond)
 	ok, err = mem.SetIfNotExistTTL(context.Background(), key, random.Bytes(10),
 		2*time.Second)
 	t.Logf("ok, err: %v, %v", ok, err)
@@ -239,13 +214,6 @@ func TestMemoryIncr(t *testing.T) {
 	t.Logf("res, err: %v, %v", res, err)
 	require.Empty(t, res)
 	require.Equal(t, errWrongType, err)
-
-	require.NoError(t, mem.Close())
-
-	res, err = mem.Incr(context.Background(), key)
-	t.Logf("res, err: %v, %v", res, err)
-	require.Empty(t, res)
-	require.Equal(t, ttlcache.ErrClosed, err)
 }
 
 func TestMemoryDel(t *testing.T) {
@@ -272,12 +240,6 @@ func TestMemoryDel(t *testing.T) {
 	require.False(t, ok)
 	require.Empty(t, res)
 	require.NoError(t, err)
-
-	require.NoError(t, mem.Close())
-
-	err = mem.Del(context.Background(), key)
-	t.Logf("err: %v", err)
-	require.Equal(t, ttlcache.ErrClosed, err)
 }
 
 func TestMemoryClose(t *testing.T) {

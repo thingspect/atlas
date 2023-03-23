@@ -4,8 +4,7 @@ go 1.20
 
 require (
 	github.com/NYTimes/gziphandler v1.1.1
-	github.com/ReneKroon/ttlcache/v3 v3.0.0-beta
-	github.com/antonmedv/expr v1.12.4
+	github.com/antonmedv/expr v1.12.5
 	github.com/chirpstack/chirpstack/api/go/v4 v4.3.0
 	github.com/eclipse/paho.mqtt.golang v1.4.2
 	github.com/golang/mock v1.6.0
@@ -15,6 +14,7 @@ require (
 	github.com/jackc/pgconn v1.14.0
 	github.com/jackc/pgtype v1.14.0
 	github.com/jackc/pgx/v4 v4.18.1
+	github.com/jellydator/ttlcache/v3 v3.0.1
 	github.com/mennanov/fmutils v0.2.0
 	github.com/nsqio/go-nsq v1.1.0
 	github.com/redis/go-redis/v9 v9.0.2
@@ -23,7 +23,7 @@ require (
 	github.com/stretchr/testify v1.8.2
 	github.com/thingspect/api/go v1.0.13
 	golang.org/x/crypto v0.7.0
-	google.golang.org/grpc v1.53.0
+	google.golang.org/grpc v1.54.0
 	google.golang.org/protobuf v1.30.0
 )
 
@@ -41,12 +41,12 @@ require (
 	github.com/jackc/pgproto3/v2 v2.3.2 // indirect
 	github.com/jackc/pgservicefile v0.0.0-20221227161230-091c0ba34f0a // indirect
 	github.com/mattn/go-colorable v0.1.13 // indirect
-	github.com/mattn/go-isatty v0.0.17 // indirect
+	github.com/mattn/go-isatty v0.0.18 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
 	golang.org/x/net v0.8.0 // indirect
 	golang.org/x/sync v0.1.0 // indirect
 	golang.org/x/sys v0.6.0 // indirect
 	golang.org/x/text v0.8.0 // indirect
-	google.golang.org/genproto v0.0.0-20230320184635-7606e756e683 // indirect
+	google.golang.org/genproto v0.0.0-20230322174352-cde4c949918d // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
