@@ -43,9 +43,10 @@ const ServiceName = "api"
 
 // Constants used for service configuration.
 const (
-	GRPCHost = "127.0.0.1"
-	GRPCPort = ":50051"
-	httpPort = ":8000"
+	GRPCHost  = "127.0.0.1"
+	GRPCPort  = ":50051"
+	httpPort  = ":8000"
+	deviceExp = 15 * time.Minute
 )
 
 // errPWTLength is returned due to insufficient key length.
@@ -129,8 +130,8 @@ func New(cfg *config.Config) (*API, error) {
 	api.RegisterAlertServiceServer(srv, service.NewAlert(alert.NewDAO(pg)))
 	api.RegisterDataPointServiceServer(srv, service.NewDataPoint(nsq,
 		cfg.NSQPubTopic, datapoint.NewDAO(pg)))
-	api.RegisterDeviceServiceServer(srv, service.NewDevice(device.NewDAO(pg),
-		cs))
+	api.RegisterDeviceServiceServer(srv,
+		service.NewDevice(device.NewDAO(pg, redis, deviceExp), cs))
 	api.RegisterEventServiceServer(srv, service.NewEvent(event.NewDAO(pg)))
 	api.RegisterOrgServiceServer(srv, service.NewOrg(org.NewDAO(pg)))
 	api.RegisterRuleAlarmServiceServer(srv,

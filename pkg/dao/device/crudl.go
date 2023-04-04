@@ -10,6 +10,7 @@ import (
 	"github.com/thingspect/api/go/api"
 	"github.com/thingspect/atlas/pkg/alog"
 	"github.com/thingspect/atlas/pkg/dao"
+	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
@@ -56,6 +57,22 @@ func (d *DAO) Read(ctx context.Context, devID, orgID string) (
 	*api.Device, error,
 ) {
 	dev := &api.Device{}
+
+	if d.cache != nil {
+		ok, bDev, err := d.cache.GetB(ctx, devKey(orgID, devID))
+		if err != nil {
+			return nil, dao.DBToSentinel(err)
+		}
+
+		if ok {
+			if err := proto.Unmarshal(bDev, dev); err != nil {
+				return nil, dao.DBToSentinel(err)
+			}
+
+			return dev, nil
+		}
+	}
+
 	var status, decoder string
 	var tags pgtype.VarcharArray
 	var createdAt, updatedAt time.Time
@@ -74,6 +91,23 @@ func (d *DAO) Read(ctx context.Context, devID, orgID string) (
 	dev.CreatedAt = timestamppb.New(createdAt)
 	dev.UpdatedAt = timestamppb.New(updatedAt)
 
+	// Cache write errors should not prevent successful database reads.
+	if d.cache != nil {
+		logger := alog.FromContext(ctx)
+
+		bDev, err := proto.Marshal(dev)
+		if err != nil {
+			logger.Errorf("Read proto.Marshal: %v", err)
+
+			return dev, nil
+		}
+
+		if err = d.cache.SetTTL(ctx, devKey(orgID, devID), bDev,
+			d.exp); err != nil {
+			logger.Errorf("Read d.cache.SetTTL: %v", err)
+		}
+	}
+
 	return dev, nil
 }
 
@@ -90,6 +124,22 @@ func (d *DAO) ReadByUniqID(ctx context.Context, uniqID string) (
 	*api.Device, error,
 ) {
 	dev := &api.Device{}
+
+	if d.cache != nil {
+		ok, bDev, err := d.cache.GetB(ctx, devKeyByUniqID(uniqID))
+		if err != nil {
+			return nil, dao.DBToSentinel(err)
+		}
+
+		if ok {
+			if err := proto.Unmarshal(bDev, dev); err != nil {
+				return nil, dao.DBToSentinel(err)
+			}
+
+			return dev, nil
+		}
+	}
+
 	var status, decoder string
 	var tags pgtype.VarcharArray
 	var createdAt, updatedAt time.Time
@@ -107,6 +157,23 @@ func (d *DAO) ReadByUniqID(ctx context.Context, uniqID string) (
 	}
 	dev.CreatedAt = timestamppb.New(createdAt)
 	dev.UpdatedAt = timestamppb.New(updatedAt)
+
+	// Cache write errors should not prevent successful database reads.
+	if d.cache != nil {
+		logger := alog.FromContext(ctx)
+
+		bDev, err := proto.Marshal(dev)
+		if err != nil {
+			logger.Errorf("ReadByUniqID proto.Marshal: %v", err)
+
+			return dev, nil
+		}
+
+		if err = d.cache.SetTTL(ctx, devKeyByUniqID(uniqID), bDev,
+			d.exp); err != nil {
+			logger.Errorf("ReadByUniqID d.cache.SetTTL: %v", err)
+		}
+	}
 
 	return dev, nil
 }
@@ -143,6 +210,19 @@ func (d *DAO) Update(ctx context.Context, dev *api.Device) (
 
 	dev.CreatedAt = timestamppb.New(createdAt)
 
+	// Invalidate cache on update.
+	if d.cache != nil {
+		if err := d.cache.Del(ctx, devKey(dev.OrgId, dev.Id)); err != nil {
+			logger := alog.FromContext(ctx)
+			logger.Errorf("Update devKey d.cache.Del: %v", err)
+		}
+
+		if err := d.cache.Del(ctx, devKeyByUniqID(dev.UniqId)); err != nil {
+			logger := alog.FromContext(ctx)
+			logger.Errorf("Update devKeyByUniqID d.cache.Del: %v", err)
+		}
+	}
+
 	return dev, nil
 }
 
@@ -155,11 +235,25 @@ WHERE (id, org_id) = ($1, $2)
 func (d *DAO) Delete(ctx context.Context, devID, orgID string) error {
 	// Verify a device exists before attempting to delete it. Do not remap the
 	// error.
-	if _, err := d.Read(ctx, devID, orgID); err != nil {
+	dev, err := d.Read(ctx, devID, orgID)
+	if err != nil {
 		return err
 	}
 
-	_, err := d.pg.ExecContext(ctx, deleteDevice, devID, orgID)
+	_, err = d.pg.ExecContext(ctx, deleteDevice, devID, orgID)
+
+	// Invalidate cache on delete.
+	if d.cache != nil {
+		if err := d.cache.Del(ctx, devKey(orgID, devID)); err != nil {
+			logger := alog.FromContext(ctx)
+			logger.Errorf("Delete devKey d.cache.Del: %v", err)
+		}
+
+		if err := d.cache.Del(ctx, devKeyByUniqID(dev.UniqId)); err != nil {
+			logger := alog.FromContext(ctx)
+			logger.Errorf("Delete devKeyByUniqID d.cache.Del: %v", err)
+		}
+	}
 
 	return dao.DBToSentinel(err)
 }

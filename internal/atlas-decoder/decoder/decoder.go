@@ -63,7 +63,7 @@ func New(cfg *config.Config) (*Decoder, error) {
 	}
 
 	return &Decoder{
-		devDAO: device.NewDAO(pg),
+		devDAO: device.NewDAO(pg, nil, 0),
 		reg:    registry.New(),
 
 		decQueue:    nsq,

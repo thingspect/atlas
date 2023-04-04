@@ -6,15 +6,18 @@ import (
 	"log"
 	"os"
 	"testing"
+	"time"
 
+	"github.com/thingspect/atlas/pkg/cache"
 	"github.com/thingspect/atlas/pkg/dao"
 	"github.com/thingspect/atlas/pkg/dao/org"
 	"github.com/thingspect/atlas/pkg/test/config"
 )
 
 var (
-	globalOrgDAO *org.DAO
-	globalDevDAO *DAO
+	globalOrgDAO      *org.DAO
+	globalDevDAO      *DAO
+	globalDevDAOCache *DAO
 )
 
 func TestMain(m *testing.M) {
@@ -27,7 +30,8 @@ func TestMain(m *testing.M) {
 		log.Fatalf("TestMain dao.NewPgDB: %v", err)
 	}
 	globalOrgDAO = org.NewDAO(pg)
-	globalDevDAO = NewDAO(pg)
+	globalDevDAO = NewDAO(pg, nil, 0)
+	globalDevDAOCache = NewDAO(pg, cache.NewMemory(), time.Minute)
 
 	os.Exit(m.Run())
 }

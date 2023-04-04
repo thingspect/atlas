@@ -17,7 +17,7 @@ require (
 	github.com/jellydator/ttlcache/v3 v3.0.1
 	github.com/mennanov/fmutils v0.2.0
 	github.com/nsqio/go-nsq v1.1.0
-	github.com/redis/go-redis/v9 v9.0.2
+	github.com/redis/go-redis/v9 v9.0.3
 	github.com/rs/zerolog v1.29.0
 	github.com/smira/go-statsd v1.3.2
 	github.com/stretchr/testify v1.8.2
@@ -47,6 +47,6 @@ require (
 	golang.org/x/sync v0.1.0 // indirect
 	golang.org/x/sys v0.6.0 // indirect
 	golang.org/x/text v0.8.0 // indirect
-	google.golang.org/genproto v0.0.0-20230322174352-cde4c949918d // indirect
+	google.golang.org/genproto v0.0.0-20230403163135-c38d8f061ccd // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
