@@ -136,10 +136,10 @@ func ValidateWebToken(pwtKey []byte, ciphertoken string) (*Session, error) {
 	var idUUID uuid.UUID
 	switch id := pwt.IdOneof.(type) {
 	case *token.Web_UserId:
-		copy(idUUID[:], id.UserId)
+		_ = copy(idUUID[:], id.UserId)
 		sess.UserID = idUUID.String()
 	case *token.Web_KeyId:
-		copy(idUUID[:], id.KeyId)
+		_ = copy(idUUID[:], id.KeyId)
 		sess.KeyID = idUUID.String()
 	}
 

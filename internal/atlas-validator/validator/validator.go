@@ -61,7 +61,7 @@ func New(cfg *config.Config) (*Validator, error) {
 	}
 
 	return &Validator{
-		devDAO: device.NewDAO(pg),
+		devDAO: device.NewDAO(pg, nil, 0),
 
 		valQueue:     nsq,
 		vInSub:       vInSub,

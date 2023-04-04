@@ -57,7 +57,7 @@ jobs:
           go env
       - name: Clone
         id: Clone
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
       - name: Restart_MQTT
         id: Restart_MQTT
         # Restart MQTT after volumes have been checked out
@@ -71,19 +71,18 @@ jobs:
         id: Push
         # GitHub Actions does not currently support Docker within a container
         run: |
-          apk add --no-cache docker
+          apk add --no-cache docker docker-cli-buildx
           docker version
           docker login -u thingspect -p ${{ secrets.GHCR_PAT }} ghcr.io
           git config --global --add safe.directory /__w/atlas/atlas
           TAG=$(git rev-parse --short=8 HEAD)
-          #docker buildx create --use
+          docker buildx create --use
           #docker buildx build -f build/Dockerfile -t ghcr.io/thingspect/atlas:${TAG} --platform linux/amd64,linux/arm64 --push .
-          docker build -f build/Dockerfile -t ghcr.io/thingspect/atlas:${TAG} .
-          docker push ghcr.io/thingspect/atlas:${TAG}
-          #docker buildx rm
+          docker buildx build -f build/Dockerfile -t ghcr.io/thingspect/atlas:${TAG} --push .
+          docker buildx rm
           docker logout ghcr.io
       - name: Notify
-        uses: act10ns/slack@v1
+        uses: act10ns/slack@v2
         with:
           status: ${{ job.status }}
           steps: ${{ toJson(steps) }}

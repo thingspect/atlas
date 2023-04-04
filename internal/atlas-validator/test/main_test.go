@@ -71,7 +71,7 @@ func TestMain(m *testing.M) {
 		log.Fatalf("TestMain dao.NewPgDB: %v", err)
 	}
 	globalOrgDAO = org.NewDAO(pg)
-	globalDevDAO = device.NewDAO(pg)
+	globalDevDAO = device.NewDAO(pg, nil, 0)
 
 	// Set up NSQ subscription to verify published messages.
 	globalVOutSub, err = globalValQueue.Subscribe(cfg.NSQPubTopic)
