@@ -33,6 +33,7 @@ func TestMain(m *testing.M) {
 	testConfig := testconfig.New()
 	cfg := config.New()
 	cfg.PgURI = testConfig.PgURI
+	cfg.RedisHost = testConfig.RedisHost
 
 	cfg.NSQPubAddr = testConfig.NSQPubAddr
 	cfg.NSQLookupAddrs = testConfig.NSQLookupAddrs

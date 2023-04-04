@@ -8,10 +8,12 @@ import (
 	"os"
 	"os/signal"
 	"syscall"
+	"time"
 
 	"github.com/thingspect/api/go/api"
 	"github.com/thingspect/atlas/internal/atlas-validator/config"
 	"github.com/thingspect/atlas/pkg/alog"
+	"github.com/thingspect/atlas/pkg/cache"
 	"github.com/thingspect/atlas/pkg/dao"
 	"github.com/thingspect/atlas/pkg/dao/device"
 	"github.com/thingspect/atlas/pkg/queue"
@@ -19,6 +21,9 @@ import (
 
 // ServiceName provides consistent naming, including logs and metrics.
 const ServiceName = "validator"
+
+// deviceExp provides the device DAO device expiration.
+const deviceExp = 15 * time.Minute
 
 // devicer defines the methods provided by a device.DAO.
 type devicer interface {
@@ -42,6 +47,12 @@ func New(cfg *config.Config) (*Validator, error) {
 		return nil, err
 	}
 
+	// Set up cache connection.
+	redis, err := cache.NewRedis(cfg.RedisHost + ":6379")
+	if err != nil {
+		return nil, err
+	}
+
 	// Build the NSQ connection for consuming and publishing.
 	nsq, err := queue.NewNSQ(cfg.NSQPubAddr, cfg.NSQLookupAddrs,
 		cfg.NSQSubChannel)
@@ -61,7 +72,7 @@ func New(cfg *config.Config) (*Validator, error) {
 	}
 
 	return &Validator{
-		devDAO: device.NewDAO(pg, nil, 0),
+		devDAO: device.NewDAO(pg, redis, deviceExp),
 
 		valQueue:     nsq,
 		vInSub:       vInSub,
