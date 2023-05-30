@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/jackc/pgtype"
+	"github.com/jackc/pgx/v5/pgtype"
 	"github.com/thingspect/api/go/api"
 	"github.com/thingspect/atlas/pkg/alog"
 	"github.com/thingspect/atlas/pkg/dao"
@@ -23,17 +23,12 @@ RETURNING id
 func (d *DAO) Create(ctx context.Context, alarm *api.Alarm) (
 	*api.Alarm, error,
 ) {
-	var tags pgtype.VarcharArray
-	if err := tags.Set(alarm.UserTags); err != nil {
-		return nil, dao.DBToSentinel(err)
-	}
-
 	now := time.Now().UTC().Truncate(time.Microsecond)
 	alarm.CreatedAt = timestamppb.New(now)
 	alarm.UpdatedAt = timestamppb.New(now)
 
 	if err := d.pg.QueryRowContext(ctx, createAlarm, alarm.OrgId, alarm.RuleId,
-		alarm.Name, alarm.Status.String(), alarm.Type.String(), tags,
+		alarm.Name, alarm.Status.String(), alarm.Type.String(), alarm.UserTags,
 		alarm.SubjectTemplate, alarm.BodyTemplate, alarm.RepeatInterval,
 		now).Scan(&alarm.Id); err != nil {
 		return nil, dao.DBToSentinel(err)
@@ -55,21 +50,18 @@ func (d *DAO) Read(ctx context.Context, alarmID, orgID, ruleID string) (
 ) {
 	alarm := &api.Alarm{}
 	var status, alarmType string
-	var tags pgtype.VarcharArray
 	var createdAt, updatedAt time.Time
 
 	if err := d.pg.QueryRowContext(ctx, readAlarm, alarmID, orgID, ruleID).Scan(
 		&alarm.Id, &alarm.OrgId, &alarm.RuleId, &alarm.Name, &status,
-		&alarmType, &tags, &alarm.SubjectTemplate, &alarm.BodyTemplate,
-		&alarm.RepeatInterval, &createdAt, &updatedAt); err != nil {
+		&alarmType, pgtype.NewMap().SQLScanner(&alarm.UserTags),
+		&alarm.SubjectTemplate, &alarm.BodyTemplate, &alarm.RepeatInterval,
+		&createdAt, &updatedAt); err != nil {
 		return nil, dao.DBToSentinel(err)
 	}
 
 	alarm.Status = api.Status(api.Status_value[status])
 	alarm.Type = api.AlarmType(api.AlarmType_value[alarmType])
-	if err := tags.AssignTo(&alarm.UserTags); err != nil {
-		return nil, dao.DBToSentinel(err)
-	}
 	alarm.CreatedAt = timestamppb.New(createdAt)
 	alarm.UpdatedAt = timestamppb.New(updatedAt)
 
@@ -89,19 +81,15 @@ RETURNING created_at
 func (d *DAO) Update(ctx context.Context, alarm *api.Alarm) (
 	*api.Alarm, error,
 ) {
-	var tags pgtype.VarcharArray
-	if err := tags.Set(alarm.UserTags); err != nil {
-		return nil, dao.DBToSentinel(err)
-	}
-
 	var createdAt time.Time
 	updatedAt := time.Now().UTC().Truncate(time.Microsecond)
 	alarm.UpdatedAt = timestamppb.New(updatedAt)
 
 	if err := d.pg.QueryRowContext(ctx, updateAlarm, alarm.Name,
-		alarm.Status.String(), alarm.Type.String(), tags, alarm.SubjectTemplate,
-		alarm.BodyTemplate, alarm.RepeatInterval, updatedAt, alarm.Id,
-		alarm.OrgId, alarm.RuleId).Scan(&createdAt); err != nil {
+		alarm.Status.String(), alarm.Type.String(), alarm.UserTags,
+		alarm.SubjectTemplate, alarm.BodyTemplate, alarm.RepeatInterval,
+		updatedAt, alarm.Id, alarm.OrgId,
+		alarm.RuleId).Scan(&createdAt); err != nil {
 		return nil, dao.DBToSentinel(err)
 	}
 
@@ -221,24 +209,21 @@ func (d *DAO) List(
 	}()
 
 	var alarms []*api.Alarm
+	pgtmap := pgtype.NewMap()
 	for rows.Next() {
 		alarm := &api.Alarm{}
 		var status, alarmType string
-		var tags pgtype.VarcharArray
 		var createdAt, updatedAt time.Time
 
 		if err = rows.Scan(&alarm.Id, &alarm.OrgId, &alarm.RuleId, &alarm.Name,
-			&status, &alarmType, &tags, &alarm.SubjectTemplate,
-			&alarm.BodyTemplate, &alarm.RepeatInterval, &createdAt,
-			&updatedAt); err != nil {
+			&status, &alarmType, pgtmap.SQLScanner(&alarm.UserTags),
+			&alarm.SubjectTemplate, &alarm.BodyTemplate, &alarm.RepeatInterval,
+			&createdAt, &updatedAt); err != nil {
 			return nil, 0, dao.DBToSentinel(err)
 		}
 
 		alarm.Status = api.Status(api.Status_value[status])
 		alarm.Type = api.AlarmType(api.AlarmType_value[alarmType])
-		if err := tags.AssignTo(&alarm.UserTags); err != nil {
-			return nil, 0, dao.DBToSentinel(err)
-		}
 		alarm.CreatedAt = timestamppb.New(createdAt)
 		alarm.UpdatedAt = timestamppb.New(updatedAt)
 		alarms = append(alarms, alarm)

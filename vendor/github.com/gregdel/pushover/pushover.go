@@ -26,7 +26,6 @@ var (
 	ErrEmptyURL                  = errors.New("pushover: empty URL, URLTitle needs an URL")
 	ErrEmptyRecipientToken       = errors.New("pushover: empty recipient token")
 	ErrInvalidRecipientToken     = errors.New("pushover: invalid recipient token")
-	ErrInvalidRecipient          = errors.New("pushover: invalid recipient")
 	ErrInvalidHeaders            = errors.New("pushover: invalid headers in server response")
 	ErrInvalidPriority           = errors.New("pushover: invalid priority")
 	ErrInvalidToken              = errors.New("pushover: invalid API token")
@@ -40,6 +39,11 @@ var (
 	ErrMissingEmergencyParameter = errors.New("pushover: missing emergency parameter")
 	ErrInvalidDeviceName         = errors.New("pushover: invalid device name")
 	ErrEmptyReceipt              = errors.New("pushover: empty receipt")
+	ErrGlancesMissingData        = errors.New("pushover: glance update data missing")
+	ErrGlancesTitleTooLong       = errors.New("pushover: glance title too long")
+	ErrGlancesTextTooLong        = errors.New("pushover: glance text too long")
+	ErrGlancesSubtextTooLong     = errors.New("pushover: glance subtext too long")
+	ErrGlancesInvalidPercent     = errors.New("pushover: glance percent must be in range of 0-100")
 )
 
 // API limitations.
@@ -136,7 +140,28 @@ func (p *Pushover) SendMessage(message *Message, recipient *Recipient) (*Respons
 	return message.send(p.token, recipient.token)
 }
 
-// GetReceiptDetails return detailed informations about a receipt. This is used
+// SendGlanceUpdate is used to send glance updates to a recipient.
+// It can be used to display widgets on a smart watch
+func (p *Pushover) SendGlanceUpdate(msg *Glance, rec *Recipient) (*Response, error) {
+	// Validate pushover
+	if err := p.validate(); err != nil {
+		return nil, err
+	}
+
+	// Validate rec
+	if err := rec.validate(); err != nil {
+		return nil, err
+	}
+
+	// Validate msg
+	if err := msg.validate(); err != nil {
+		return nil, err
+	}
+
+	return msg.send(p.token, rec.token)
+}
+
+// GetReceiptDetails return detailed information about a receipt. This is used
 // used to check the acknowledged status of an Emergency notification.
 func (p *Pushover) GetReceiptDetails(receipt string) (*ReceiptDetails, error) {
 	url := fmt.Sprintf("%s/receipts/%s.json?token=%s", APIEndpoint, receipt, p.token)
@@ -161,8 +186,9 @@ func (p *Pushover) GetReceiptDetails(receipt string) (*ReceiptDetails, error) {
 }
 
 // GetRecipientDetails allows to check if a recipient exists, if it's a group
-// and the devices associated to this recipient. It returns an
-// ErrInvalidRecipient if the recipient is not valid in the Pushover API.
+// and the devices associated to this recipient. The Errors field of the
+// RecipientDetails object will contain an error if the recipient is not valid
+// in the Pushover API.
 func (p *Pushover) GetRecipientDetails(recipient *Recipient) (*RecipientDetails, error) {
 	endpoint := fmt.Sprintf("%s/users/validate.json", APIEndpoint)
 
