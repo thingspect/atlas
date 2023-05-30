@@ -6,7 +6,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/jackc/pgtype"
+	"github.com/jackc/pgx/v5/pgtype"
 	"github.com/thingspect/api/go/api"
 	"github.com/thingspect/atlas/pkg/alog"
 	"github.com/thingspect/atlas/pkg/dao"
@@ -27,18 +27,13 @@ func (d *DAO) Create(ctx context.Context, dev *api.Device) (
 ) {
 	dev.UniqId = strings.ToLower(dev.UniqId)
 
-	var tags pgtype.VarcharArray
-	if err := tags.Set(dev.Tags); err != nil {
-		return nil, dao.DBToSentinel(err)
-	}
-
 	now := time.Now().UTC().Truncate(time.Microsecond)
 	dev.CreatedAt = timestamppb.New(now)
 	dev.UpdatedAt = timestamppb.New(now)
 
 	if err := d.pg.QueryRowContext(ctx, createDevice, dev.OrgId, dev.UniqId,
-		dev.Name, dev.Status.String(), dev.Decoder.String(), tags, now).Scan(
-		&dev.Id, &dev.Token); err != nil {
+		dev.Name, dev.Status.String(), dev.Decoder.String(), dev.Tags,
+		now).Scan(&dev.Id, &dev.Token); err != nil {
 		return nil, dao.DBToSentinel(err)
 	}
 
@@ -74,20 +69,17 @@ func (d *DAO) Read(ctx context.Context, devID, orgID string) (
 	}
 
 	var status, decoder string
-	var tags pgtype.VarcharArray
 	var createdAt, updatedAt time.Time
 
 	if err := d.pg.QueryRowContext(ctx, readDevice, devID, orgID).Scan(&dev.Id,
 		&dev.OrgId, &dev.UniqId, &dev.Name, &status, &dev.Token, &decoder,
-		&tags, &createdAt, &updatedAt); err != nil {
+		pgtype.NewMap().SQLScanner(&dev.Tags), &createdAt,
+		&updatedAt); err != nil {
 		return nil, dao.DBToSentinel(err)
 	}
 
 	dev.Status = api.Status(api.Status_value[status])
 	dev.Decoder = api.Decoder(api.Decoder_value[decoder])
-	if err := tags.AssignTo(&dev.Tags); err != nil {
-		return nil, dao.DBToSentinel(err)
-	}
 	dev.CreatedAt = timestamppb.New(createdAt)
 	dev.UpdatedAt = timestamppb.New(updatedAt)
 
@@ -141,20 +133,17 @@ func (d *DAO) ReadByUniqID(ctx context.Context, uniqID string) (
 	}
 
 	var status, decoder string
-	var tags pgtype.VarcharArray
 	var createdAt, updatedAt time.Time
 
 	if err := d.pg.QueryRowContext(ctx, readDeviceByUniqID, uniqID).Scan(
 		&dev.Id, &dev.OrgId, &dev.UniqId, &dev.Name, &status, &dev.Token,
-		&decoder, &tags, &createdAt, &updatedAt); err != nil {
+		&decoder, pgtype.NewMap().SQLScanner(&dev.Tags), &createdAt,
+		&updatedAt); err != nil {
 		return nil, dao.DBToSentinel(err)
 	}
 
 	dev.Status = api.Status(api.Status_value[status])
 	dev.Decoder = api.Decoder(api.Decoder_value[decoder])
-	if err := tags.AssignTo(&dev.Tags); err != nil {
-		return nil, dao.DBToSentinel(err)
-	}
 	dev.CreatedAt = timestamppb.New(createdAt)
 	dev.UpdatedAt = timestamppb.New(updatedAt)
 
@@ -193,18 +182,13 @@ func (d *DAO) Update(ctx context.Context, dev *api.Device) (
 ) {
 	dev.UniqId = strings.ToLower(dev.UniqId)
 
-	var tags pgtype.VarcharArray
-	if err := tags.Set(dev.Tags); err != nil {
-		return nil, dao.DBToSentinel(err)
-	}
-
 	var createdAt time.Time
 	updatedAt := time.Now().UTC().Truncate(time.Microsecond)
 	dev.UpdatedAt = timestamppb.New(updatedAt)
 
 	if err := d.pg.QueryRowContext(ctx, updateDevice, dev.UniqId, dev.Name,
-		dev.Status.String(), dev.Token, dev.Decoder.String(), tags, updatedAt,
-		dev.Id, dev.OrgId).Scan(&createdAt); err != nil {
+		dev.Status.String(), dev.Token, dev.Decoder.String(), dev.Tags,
+		updatedAt, dev.Id, dev.OrgId).Scan(&createdAt); err != nil {
 		return nil, dao.DBToSentinel(err)
 	}
 
@@ -351,22 +335,20 @@ func (d *DAO) List(
 	}()
 
 	var devs []*api.Device
+	pgtmap := pgtype.NewMap()
 	for rows.Next() {
 		dev := &api.Device{}
 		var status, decoder string
-		var tags pgtype.VarcharArray
 		var createdAt, updatedAt time.Time
 
 		if err = rows.Scan(&dev.Id, &dev.OrgId, &dev.UniqId, &dev.Name, &status,
-			&dev.Token, &decoder, &tags, &createdAt, &updatedAt); err != nil {
+			&dev.Token, &decoder, pgtmap.SQLScanner(&dev.Tags), &createdAt,
+			&updatedAt); err != nil {
 			return nil, 0, dao.DBToSentinel(err)
 		}
 
 		dev.Status = api.Status(api.Status_value[status])
 		dev.Decoder = api.Decoder(api.Decoder_value[decoder])
-		if err := tags.AssignTo(&dev.Tags); err != nil {
-			return nil, 0, dao.DBToSentinel(err)
-		}
 		dev.CreatedAt = timestamppb.New(createdAt)
 		dev.UpdatedAt = timestamppb.New(updatedAt)
 		devs = append(devs, dev)

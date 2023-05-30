@@ -8,7 +8,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/jackc/pgconn"
+	"github.com/jackc/pgx/v5/pgconn"
 	"github.com/thingspect/atlas/pkg/alog"
 	"github.com/thingspect/atlas/pkg/consterr"
 )
@@ -46,7 +46,7 @@ func DBToSentinel(err error) error {
 			return ErrInvalidFormat
 		// invalid_text_representation
 		case "22P02":
-			if pgErr.File == "uuid.c" {
+			if pgErr.Routine == "string_to_uuid" {
 				return fmt.Errorf("%w: UUID", ErrInvalidFormat)
 			}
 

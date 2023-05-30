@@ -8,7 +8,7 @@ import (
 	"io"
 	"testing"
 
-	"github.com/jackc/pgconn"
+	"github.com/jackc/pgx/v5/pgconn"
 	"github.com/stretchr/testify/require"
 )
 
@@ -29,7 +29,7 @@ func TestDBToSentinel(t *testing.T) {
 		{&pgconn.PgError{Code: "22001"}, ErrInvalidFormat},
 		{&pgconn.PgError{Code: "22P02"}, ErrInvalidFormat},
 		{
-			&pgconn.PgError{Code: "22P02", File: "uuid.c"},
+			&pgconn.PgError{Code: "22P02", Routine: "string_to_uuid"},
 			fmt.Errorf("%w: UUID", ErrInvalidFormat),
 		},
 		{

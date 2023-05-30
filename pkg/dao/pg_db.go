@@ -6,7 +6,7 @@ import (
 	"net/url"
 	"time"
 
-	_ "github.com/jackc/pgx/v4/stdlib" // For database/sql.
+	_ "github.com/jackc/pgx/v5/stdlib" // For database/sql.
 )
 
 // NewPgDB builds, configures, and verifies a new database/sql DB using the pgx
@@ -17,7 +17,7 @@ func NewPgDB(uri string) (*sql.DB, error) {
 		return nil, err
 	}
 
-	// Normalize scheme as provided to pgx-enabled migrate command in tests.
+	// Override scheme as provided to pgx-enabled migrate command in tests.
 	pgURI.Scheme = "postgres"
 
 	db, err := sql.Open("pgx", pgURI.String())

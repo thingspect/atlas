@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/jackc/pgtype"
 	"github.com/thingspect/api/go/api"
 	"github.com/thingspect/atlas/pkg/alog"
 	"github.com/thingspect/atlas/pkg/dao"
@@ -212,12 +211,7 @@ ORDER BY created_at
 func (d *DAO) ListByTags(
 	ctx context.Context, orgID string, attr string, deviceTags []string,
 ) ([]*api.Rule, error) {
-	var tags pgtype.VarcharArray
-	if err := tags.Set(deviceTags); err != nil {
-		return nil, dao.DBToSentinel(err)
-	}
-
-	rows, err := d.pg.QueryContext(ctx, listByTags, orgID, attr, tags)
+	rows, err := d.pg.QueryContext(ctx, listByTags, orgID, attr, deviceTags)
 	if err != nil {
 		return nil, dao.DBToSentinel(err)
 	}

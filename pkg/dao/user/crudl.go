@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/jackc/pgtype"
+	"github.com/jackc/pgx/v5/pgtype"
 	"github.com/thingspect/api/go/api"
 	"github.com/thingspect/atlas/pkg/alog"
 	"github.com/thingspect/atlas/pkg/dao"
@@ -21,18 +21,13 @@ RETURNING id
 
 // Create creates a user in the database.
 func (d *DAO) Create(ctx context.Context, user *api.User) (*api.User, error) {
-	var tags pgtype.VarcharArray
-	if err := tags.Set(user.Tags); err != nil {
-		return nil, dao.DBToSentinel(err)
-	}
-
 	now := time.Now().UTC().Truncate(time.Microsecond)
 	user.CreatedAt = timestamppb.New(now)
 	user.UpdatedAt = timestamppb.New(now)
 
 	if err := d.pg.QueryRowContext(ctx, createUser, user.OrgId, user.Name,
-		user.Email, user.Phone, user.Role.String(), user.Status.String(), tags,
-		user.AppKey, now).Scan(&user.Id); err != nil {
+		user.Email, user.Phone, user.Role.String(), user.Status.String(),
+		user.Tags, user.AppKey, now).Scan(&user.Id); err != nil {
 		return nil, dao.DBToSentinel(err)
 	}
 
@@ -52,20 +47,17 @@ func (d *DAO) Read(ctx context.Context, userID, orgID string) (
 ) {
 	user := &api.User{}
 	var role, status string
-	var tags pgtype.VarcharArray
 	var createdAt, updatedAt time.Time
 
 	if err := d.pg.QueryRowContext(ctx, readUser, userID, orgID).Scan(&user.Id,
 		&user.OrgId, &user.Name, &user.Email, &user.Phone, &role, &status,
-		&tags, &user.AppKey, &createdAt, &updatedAt); err != nil {
+		pgtype.NewMap().SQLScanner(&user.Tags), &user.AppKey, &createdAt,
+		&updatedAt); err != nil {
 		return nil, dao.DBToSentinel(err)
 	}
 
 	user.Role = api.Role(api.Role_value[role])
 	user.Status = api.Status(api.Status_value[status])
-	if err := tags.AssignTo(&user.Tags); err != nil {
-		return nil, dao.DBToSentinel(err)
-	}
 	user.CreatedAt = timestamppb.New(createdAt)
 	user.UpdatedAt = timestamppb.New(updatedAt)
 
@@ -87,21 +79,17 @@ func (d *DAO) ReadByEmail(ctx context.Context, email, orgName string) (
 	user := &api.User{}
 	var passHash []byte
 	var role, status string
-	var tags pgtype.VarcharArray
 	var createdAt, updatedAt time.Time
 
 	if err := d.pg.QueryRowContext(ctx, readUserByEmail, email, orgName).Scan(
 		&user.Id, &user.OrgId, &user.Name, &user.Email, &user.Phone, &passHash,
-		&role, &status, &tags, &user.AppKey, &createdAt,
-		&updatedAt); err != nil {
+		&role, &status, pgtype.NewMap().SQLScanner(&user.Tags), &user.AppKey,
+		&createdAt, &updatedAt); err != nil {
 		return nil, nil, dao.DBToSentinel(err)
 	}
 
 	user.Role = api.Role(api.Role_value[role])
 	user.Status = api.Status(api.Status_value[status])
-	if err := tags.AssignTo(&user.Tags); err != nil {
-		return nil, nil, dao.DBToSentinel(err)
-	}
 	user.CreatedAt = timestamppb.New(createdAt)
 	user.UpdatedAt = timestamppb.New(updatedAt)
 
@@ -119,18 +107,14 @@ RETURNING created_at
 // Update updates a user in the database. CreatedAt should not update, so it is
 // safe to override it at the DAO level.
 func (d *DAO) Update(ctx context.Context, user *api.User) (*api.User, error) {
-	var tags pgtype.VarcharArray
-	if err := tags.Set(user.Tags); err != nil {
-		return nil, dao.DBToSentinel(err)
-	}
-
 	var createdAt time.Time
 	updatedAt := time.Now().UTC().Truncate(time.Microsecond)
 	user.UpdatedAt = timestamppb.New(updatedAt)
 
 	if err := d.pg.QueryRowContext(ctx, updateUser, user.Name, user.Email,
-		user.Phone, user.Role.String(), user.Status.String(), tags, user.AppKey,
-		updatedAt, user.Id, user.OrgId).Scan(&createdAt); err != nil {
+		user.Phone, user.Role.String(), user.Status.String(), user.Tags,
+		user.AppKey, updatedAt, user.Id,
+		user.OrgId).Scan(&createdAt); err != nil {
 		return nil, dao.DBToSentinel(err)
 	}
 
@@ -273,23 +257,20 @@ func (d *DAO) List(
 	}()
 
 	var users []*api.User
+	pgtmap := pgtype.NewMap()
 	for rows.Next() {
 		user := &api.User{}
 		var role, status string
-		var tags pgtype.VarcharArray
 		var createdAt, updatedAt time.Time
 
 		if err = rows.Scan(&user.Id, &user.OrgId, &user.Name, &user.Email,
-			&user.Phone, &role, &status, &tags, &user.AppKey, &createdAt,
-			&updatedAt); err != nil {
+			&user.Phone, &role, &status, pgtmap.SQLScanner(&user.Tags),
+			&user.AppKey, &createdAt, &updatedAt); err != nil {
 			return nil, 0, dao.DBToSentinel(err)
 		}
 
 		user.Role = api.Role(api.Role_value[role])
 		user.Status = api.Status(api.Status_value[status])
-		if err := tags.AssignTo(&user.Tags); err != nil {
-			return nil, 0, dao.DBToSentinel(err)
-		}
 		user.CreatedAt = timestamppb.New(createdAt)
 		user.UpdatedAt = timestamppb.New(updatedAt)
 		users = append(users, user)
@@ -318,12 +299,7 @@ ORDER BY created_at
 func (d *DAO) ListByTags(ctx context.Context, orgID string, tags []string) (
 	[]*api.User, error,
 ) {
-	var tagArr pgtype.VarcharArray
-	if err := tagArr.Set(tags); err != nil {
-		return nil, dao.DBToSentinel(err)
-	}
-
-	rows, err := d.pg.QueryContext(ctx, listByTags, orgID, tagArr)
+	rows, err := d.pg.QueryContext(ctx, listByTags, orgID, tags)
 	if err != nil {
 		return nil, dao.DBToSentinel(err)
 	}
@@ -335,23 +311,20 @@ func (d *DAO) ListByTags(ctx context.Context, orgID string, tags []string) (
 	}()
 
 	var users []*api.User
+	pgtmap := pgtype.NewMap()
 	for rows.Next() {
 		user := &api.User{}
 		var role, status string
-		var tags pgtype.VarcharArray
 		var createdAt, updatedAt time.Time
 
 		if err = rows.Scan(&user.Id, &user.OrgId, &user.Name, &user.Email,
-			&user.Phone, &role, &status, &tags, &user.AppKey, &createdAt,
-			&updatedAt); err != nil {
+			&user.Phone, &role, &status, pgtmap.SQLScanner(&user.Tags),
+			&user.AppKey, &createdAt, &updatedAt); err != nil {
 			return nil, dao.DBToSentinel(err)
 		}
 
 		user.Role = api.Role(api.Role_value[role])
 		user.Status = api.Status(api.Status_value[status])
-		if err := tags.AssignTo(&user.Tags); err != nil {
-			return nil, dao.DBToSentinel(err)
-		}
 		user.CreatedAt = timestamppb.New(createdAt)
 		user.UpdatedAt = timestamppb.New(updatedAt)
 		users = append(users, user)
