@@ -5,7 +5,7 @@ package matcher
 import (
 	"fmt"
 
-	"github.com/golang/mock/gomock"
+	"go.uber.org/mock/gomock"
 	"google.golang.org/protobuf/proto"
 )
 

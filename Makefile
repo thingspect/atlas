@@ -65,6 +65,6 @@ mod:
 	../api/openapi/atlas.swagger.json web/; fi
 
 generate:
-	go install github.com/golang/mock/mockgen@latest
+	go install go.uber.org/mock/mockgen@latest
 	mockgen -version
 	go generate -x ./...

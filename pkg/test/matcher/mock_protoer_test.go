@@ -7,8 +7,8 @@ package matcher
 import (
 	reflect "reflect"
 
-	gomock "github.com/golang/mock/gomock"
 	token "github.com/thingspect/atlas/api/go/token"
+	gomock "go.uber.org/mock/gomock"
 )
 
 // Mockprotoer is a mock of protoer interface.

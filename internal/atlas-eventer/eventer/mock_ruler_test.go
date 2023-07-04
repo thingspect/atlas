@@ -8,8 +8,8 @@ import (
 	context "context"
 	reflect "reflect"
 
-	gomock "github.com/golang/mock/gomock"
 	api "github.com/thingspect/api/go/api"
+	gomock "go.uber.org/mock/gomock"
 )
 
 // Mockruler is a mock of ruler interface.

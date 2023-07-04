@@ -9,8 +9,8 @@ import (
 	reflect "reflect"
 	time "time"
 
-	gomock "github.com/golang/mock/gomock"
 	api "github.com/thingspect/api/go/api"
+	gomock "go.uber.org/mock/gomock"
 )
 
 // Mockorger is a mock of orger interface.
