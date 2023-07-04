@@ -7,9 +7,9 @@ package matcher
 import (
 	"testing"
 
-	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/require"
 	"github.com/thingspect/atlas/api/go/token"
+	"go.uber.org/mock/gomock"
 )
 
 type protoer interface {

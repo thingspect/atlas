@@ -1,8 +1,8 @@
 package notify
 
 import (
-	"github.com/golang/mock/gomock"
 	"github.com/thingspect/atlas/pkg/alog"
+	"go.uber.org/mock/gomock"
 )
 
 // NewFake builds a new Notifier using a mock and returns it. It may be used in

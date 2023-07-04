@@ -8,8 +8,8 @@ import (
 	context "context"
 	reflect "reflect"
 
-	gomock "github.com/golang/mock/gomock"
 	common "github.com/thingspect/api/go/common"
+	gomock "go.uber.org/mock/gomock"
 )
 
 // Mockdatapointer is a mock of datapointer interface.

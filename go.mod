@@ -7,7 +7,6 @@ require (
 	github.com/antonmedv/expr v1.12.5
 	github.com/chirpstack/chirpstack/api/go/v4 v4.4.0
 	github.com/eclipse/paho.mqtt.golang v1.4.2
-	github.com/golang/mock v1.6.0
 	github.com/google/uuid v1.3.0
 	github.com/gregdel/pushover v1.2.0
 	github.com/grpc-ecosystem/grpc-gateway/v2 v2.16.0
@@ -20,6 +19,7 @@ require (
 	github.com/smira/go-statsd v1.3.2
 	github.com/stretchr/testify v1.8.4
 	github.com/thingspect/api/go v1.0.13
+	go.uber.org/mock v0.1.0
 	golang.org/x/crypto v0.10.0
 	google.golang.org/grpc v1.56.1
 	google.golang.org/protobuf v1.31.0

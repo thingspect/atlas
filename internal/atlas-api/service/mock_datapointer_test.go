@@ -9,8 +9,8 @@ import (
 	reflect "reflect"
 	time "time"
 
-	gomock "github.com/golang/mock/gomock"
 	common "github.com/thingspect/api/go/common"
+	gomock "go.uber.org/mock/gomock"
 )
 
 // MockDataPointer is a mock of DataPointer interface.
