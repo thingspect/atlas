@@ -41,6 +41,10 @@ func deviceJoin(body []byte) ([]*decode.Point, error) {
 				Value: joinMsg.DeviceInfo.DeviceProfileName,
 			})
 		}
+		msgs = append(msgs, &decode.Point{
+			Attr:  "class",
+			Value: joinMsg.DeviceInfo.DeviceClassEnabled.String(),
+		})
 	}
 
 	return msgs, nil
