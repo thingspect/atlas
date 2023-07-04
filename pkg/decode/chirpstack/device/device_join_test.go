@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"testing"
 
+	"github.com/chirpstack/chirpstack/api/go/v4/common"
 	"github.com/chirpstack/chirpstack/api/go/v4/integration"
 	"github.com/stretchr/testify/require"
 	"github.com/thingspect/atlas/pkg/decode"
@@ -36,15 +37,18 @@ func TestDeviceJoin(t *testing.T) {
 			&integration.JoinEvent{
 				DeviceInfo: &integration.DeviceInfo{
 					DeviceProfileName: "1.0.2", DevEui: uniqID,
+					DeviceClassEnabled: common.DeviceClass_CLASS_C,
 				}, DevAddr: devAddr,
 			}, []*decode.Point{
 				{Attr: "raw_device", Value: fmt.Sprintf(`{"deviceInfo":`+
-					`{"deviceProfileName":"1.0.2","devEui":"%s"},"devAddr":`+
-					`"%s"}`, uniqID, devAddr)},
+					`{"deviceProfileName":"1.0.2","devEui":"%s",`+
+					`"deviceClassEnabled":"CLASS_C"},"devAddr":"%s"}`, uniqID,
+					devAddr)},
 				{Attr: "join", Value: true},
 				{Attr: "devaddr", Value: devAddr},
 				{Attr: "id", Value: uniqID},
 				{Attr: "lora_profile", Value: "1.0.2"},
+				{Attr: "class", Value: "CLASS_C"},
 			}, "",
 		},
 		// Device Join bad length.
