@@ -46,13 +46,11 @@ func New() *Config {
 		NSQSubTopic:   config.String(pref+"NSQ_SUB_TOPIC", "EventerOut"),
 		NSQSubChannel: config.String(pref+"NSQ_SUB_CHANNEL", "alerter"),
 
-		AppAPIKey: config.String(pref+"APP_API_KEY", ""),
-		SMSKeyID: config.String(pref+"SMS_KEY_ID",
-			"SKb62d2a1320d85ad96b07a90fe92e051e"),
-		SMSAccountID: config.String(pref+"SMS_ACCOUNT_ID",
-			"ACdefd5896d2acc15061cae169bb9d4836"),
+		AppAPIKey:    config.String(pref+"APP_API_KEY", ""),
+		SMSKeyID:     config.String(pref+"SMS_KEY_ID", ""),
+		SMSAccountID: config.String(pref+"SMS_ACCOUNT_ID", ""),
 		SMSKeySecret: config.String(pref+"SMS_KEY_SECRET", ""),
-		SMSPhone:     config.String(pref+"SMS_PHONE", "+15125432462"),
+		SMSPhone:     config.String(pref+"SMS_PHONE", "+15125550101"),
 		EmailDomain:  config.String(pref+"EMAIL_DOMAIN", "mg.thingspect.com"),
 		EmailAPIKey:  config.String(pref+"EMAIL_API_KEY", ""),
 	}
