@@ -1,27 +1,27 @@
 module github.com/thingspect/atlas
 
-go 1.20
+go 1.21.0
 
 require (
 	github.com/NYTimes/gziphandler v1.1.1
-	github.com/antonmedv/expr v1.12.5
-	github.com/chirpstack/chirpstack/api/go/v4 v4.4.0
-	github.com/eclipse/paho.mqtt.golang v1.4.2
+	github.com/antonmedv/expr v1.13.0
+	github.com/chirpstack/chirpstack/api/go/v4 v4.4.3
+	github.com/eclipse/paho.mqtt.golang v1.4.3
 	github.com/google/uuid v1.3.0
 	github.com/gregdel/pushover v1.2.0
-	github.com/grpc-ecosystem/grpc-gateway/v2 v2.16.0
-	github.com/jackc/pgx/v5 v5.4.1
+	github.com/grpc-ecosystem/grpc-gateway/v2 v2.16.2
+	github.com/jackc/pgx/v5 v5.4.3
 	github.com/jellydator/ttlcache/v3 v3.0.1
 	github.com/mennanov/fmutils v0.2.0
 	github.com/nsqio/go-nsq v1.1.0
 	github.com/redis/go-redis/v9 v9.0.5
-	github.com/rs/zerolog v1.29.1
+	github.com/rs/zerolog v1.30.0
 	github.com/smira/go-statsd v1.3.2
 	github.com/stretchr/testify v1.8.4
-	github.com/thingspect/api/go v1.0.13
-	go.uber.org/mock v0.1.0
-	golang.org/x/crypto v0.10.0
-	google.golang.org/grpc v1.56.1
+	github.com/thingspect/api/go v1.0.14
+	go.uber.org/mock v0.2.0
+	golang.org/x/crypto v0.12.0
+	google.golang.org/grpc v1.57.0
 	google.golang.org/protobuf v1.31.0
 )
 
@@ -35,17 +35,17 @@ require (
 	github.com/gorilla/websocket v1.5.0 // indirect
 	github.com/jackc/pgpassfile v1.0.0 // indirect
 	github.com/jackc/pgservicefile v0.0.0-20221227161230-091c0ba34f0a // indirect
-	github.com/kr/text v0.1.0 // indirect
+	github.com/kr/text v0.2.0 // indirect
 	github.com/mattn/go-colorable v0.1.13 // indirect
 	github.com/mattn/go-isatty v0.0.19 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
-	github.com/rogpeppe/go-internal v1.10.0 // indirect
-	golang.org/x/net v0.11.0 // indirect
+	github.com/rogpeppe/go-internal v1.11.0 // indirect
+	golang.org/x/net v0.14.0 // indirect
 	golang.org/x/sync v0.3.0 // indirect
-	golang.org/x/sys v0.10.0 // indirect
-	golang.org/x/text v0.11.0 // indirect
-	google.golang.org/genproto v0.0.0-20230629202037-9506855d4529 // indirect
-	google.golang.org/genproto/googleapis/api v0.0.0-20230629202037-9506855d4529 // indirect
-	google.golang.org/genproto/googleapis/rpc v0.0.0-20230629202037-9506855d4529 // indirect
+	golang.org/x/sys v0.11.0 // indirect
+	golang.org/x/text v0.12.0 // indirect
+	google.golang.org/genproto v0.0.0-20230814215434-ca7cfce7776a // indirect
+	google.golang.org/genproto/googleapis/api v0.0.0-20230814215434-ca7cfce7776a // indirect
+	google.golang.org/genproto/googleapis/rpc v0.0.0-20230814215434-ca7cfce7776a // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
