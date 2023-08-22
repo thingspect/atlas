@@ -2,39 +2,36 @@ package alog
 
 import (
 	"fmt"
-	"sync"
+	"sync/atomic"
 )
 
-// Since logger is global and may be replaced, locking is required.
-var (
-	logger   Logger
-	loggerMu sync.Mutex
-)
+// logger is an atomic value of type Logger.
+var logger atomic.Value
 
-// NewConsole returns a new Logger with console formatting at the debug level.
-func NewConsole() Logger {
-	return newZlogConsole()
+// NewConsole returns a new Logger with console formatting at the specified
+// level.
+func NewConsole(level string) Logger {
+	return newStlogConsole(level)
 }
 
-// NewJSON returns a new Logger with JSON formatting at the debug level.
-func NewJSON() Logger {
-	return newZlogJSON()
+// NewJSON returns a new Logger with JSON formatting at the specified level.
+func NewJSON(level string) Logger {
+	return newStlogJSON(level)
 }
 
 // Default returns the default logger, which is thread-safe.
 func Default() Logger {
-	loggerMu.Lock()
-	defer loggerMu.Unlock()
+	l, ok := logger.Load().(Logger)
+	if !ok {
+		panic("Default logger.Load: false")
+	}
 
-	return logger
+	return l
 }
 
 // SetDefault sets a new default logger.
 func SetDefault(l Logger) {
-	loggerMu.Lock()
-	defer loggerMu.Unlock()
-
-	logger = l
+	logger.Store(l)
 }
 
 // WithField returns a derived Logger from the default Logger with a string
@@ -44,42 +41,42 @@ func WithField(key, val string) Logger {
 }
 
 // Debug logs a new message with debug level.
-func Debug(v ...interface{}) {
+func Debug(v ...any) {
 	Default().Debug(fmt.Sprint(v...))
 }
 
 // Debugf logs a new formatted message with debug level.
-func Debugf(format string, v ...interface{}) {
+func Debugf(format string, v ...any) {
 	Default().Debugf(format, v...)
 }
 
 // Info logs a new message with info level.
-func Info(v ...interface{}) {
+func Info(v ...any) {
 	Default().Info(fmt.Sprint(v...))
 }
 
 // Infof logs a new formatted message with info level.
-func Infof(format string, v ...interface{}) {
+func Infof(format string, v ...any) {
 	Default().Infof(format, v...)
 }
 
 // Error logs a new message with error level.
-func Error(v ...interface{}) {
+func Error(v ...any) {
 	Default().Error(fmt.Sprint(v...))
 }
 
 // Errorf logs a new formatted message with error level.
-func Errorf(format string, v ...interface{}) {
+func Errorf(format string, v ...any) {
 	Default().Errorf(format, v...)
 }
 
 // Fatal logs a new message with fatal level followed by a call to os.Exit(1).
-func Fatal(v ...interface{}) {
+func Fatal(v ...any) {
 	Default().Fatal(fmt.Sprint(v...))
 }
 
 // Fatalf logs a new formatted message with fatal level followed by a call to
 // os.Exit(1).
-func Fatalf(format string, v ...interface{}) {
+func Fatalf(format string, v ...any) {
 	Default().Fatalf(format, v...)
 }
