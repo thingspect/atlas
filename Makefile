@@ -28,9 +28,7 @@ install:
 	-ldflags="-w" ./$${x}; done
 
 lint:
-# https://github.com/dominikh/go-tools/issues/1433
-#	go install honnef.co/go/tools/cmd/staticcheck@latest
-	go install honnef.co/go/tools/cmd/staticcheck@master
+	go install honnef.co/go/tools/cmd/staticcheck@latest
 	staticcheck -version
 # staticcheck defaults are all,-ST1000,-ST1003,-ST1016,-ST1020,-ST1021,-ST1022
 	staticcheck -checks all ./...

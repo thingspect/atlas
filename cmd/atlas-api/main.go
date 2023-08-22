@@ -11,7 +11,7 @@ import (
 func main() {
 	cfg := config.New()
 
-	alog.SetDefault(alog.NewJSON().WithLevel(cfg.LogLevel).WithField("service",
+	alog.SetDefault(alog.NewJSON(cfg.LogLevel).WithField("service",
 		api.ServiceName))
 	metric.SetStatsD(cfg.StatsDAddr, api.ServiceName)
 
