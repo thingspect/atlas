@@ -17,5 +17,5 @@ message DecoderIn {
   google.protobuf.Timestamp ts = 3;
 
   // Trace ID (UUID).
-  string trace_id = 4;
+  bytes trace_id = 4;
 }

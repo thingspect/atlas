@@ -29,7 +29,7 @@ func TestDecodeMessages(t *testing.T) {
 
 	uniqID := "dec-" + random.String(16)
 	now := timestamppb.New(time.Now().Add(-15 * time.Minute))
-	traceID := uuid.NewString()
+	traceID := uuid.New()
 
 	tests := []struct {
 		inpDIn     *message.DecoderIn
@@ -39,19 +39,19 @@ func TestDecodeMessages(t *testing.T) {
 		{
 			&message.DecoderIn{
 				UniqId: uniqID, Data: []byte{0x19, 0x03, 0x01}, Ts: now,
-				TraceId: traceID,
+				TraceId: traceID[:],
 			}, api.Decoder_RADIO_BRIDGE_DOOR_V1, []*message.ValidatorIn{
 				{
 					Point: &common.DataPoint{
 						UniqId: uniqID, Attr: "count",
 						ValOneof: &common.DataPoint_IntVal{IntVal: 9}, Ts: now,
-						TraceId: traceID,
+						TraceId: traceID.String(),
 					}, SkipToken: true,
 				}, {
 					Point: &common.DataPoint{
 						UniqId: uniqID, Attr: "open",
 						ValOneof: &common.DataPoint_BoolVal{BoolVal: true},
-						Ts:       now, TraceId: traceID,
+						Ts:       now, TraceId: traceID.String(),
 					}, SkipToken: true,
 				},
 			},
@@ -59,19 +59,19 @@ func TestDecodeMessages(t *testing.T) {
 		{
 			&message.DecoderIn{
 				UniqId: uniqID, Data: []byte{0x1a, 0x03, 0x00}, Ts: now,
-				TraceId: traceID,
+				TraceId: traceID[:],
 			}, api.Decoder_RADIO_BRIDGE_DOOR_V2, []*message.ValidatorIn{
 				{
 					Point: &common.DataPoint{
 						UniqId: uniqID, Attr: "count",
 						ValOneof: &common.DataPoint_IntVal{IntVal: 10}, Ts: now,
-						TraceId: traceID,
+						TraceId: traceID.String(),
 					}, SkipToken: true,
 				}, {
 					Point: &common.DataPoint{
 						UniqId: uniqID, Attr: "open",
 						ValOneof: &common.DataPoint_BoolVal{BoolVal: false},
-						Ts:       now, TraceId: traceID,
+						Ts:       now, TraceId: traceID.String(),
 					}, SkipToken: true,
 				},
 			},
@@ -80,34 +80,34 @@ func TestDecodeMessages(t *testing.T) {
 			&message.DecoderIn{
 				UniqId: uniqID, Data: []byte{
 					0x01, 0x09, 0x61, 0x13, 0x95, 0x02, 0x92,
-				}, Ts: now, TraceId: traceID,
+				}, Ts: now, TraceId: traceID[:],
 			}, api.Decoder_GLOBALSAT_CO2, []*message.ValidatorIn{
 				{
 					Point: &common.DataPoint{
 						UniqId: uniqID, Attr: "temp_c",
 						ValOneof: &common.DataPoint_Fl64Val{Fl64Val: 24},
-						Ts:       now, TraceId: traceID,
+						Ts:       now, TraceId: traceID.String(),
 					}, SkipToken: true,
 				},
 				{
 					Point: &common.DataPoint{
 						UniqId: uniqID, Attr: "temp_f",
 						ValOneof: &common.DataPoint_Fl64Val{Fl64Val: 75.2},
-						Ts:       now, TraceId: traceID,
+						Ts:       now, TraceId: traceID.String(),
 					}, SkipToken: true,
 				},
 				{
 					Point: &common.DataPoint{
 						UniqId: uniqID, Attr: "humidity_pct",
 						ValOneof: &common.DataPoint_Fl64Val{Fl64Val: 50.13},
-						Ts:       now, TraceId: traceID,
+						Ts:       now, TraceId: traceID.String(),
 					}, SkipToken: true,
 				},
 				{
 					Point: &common.DataPoint{
 						UniqId: uniqID, Attr: "co2_ppm",
 						ValOneof: &common.DataPoint_IntVal{IntVal: 658},
-						Ts:       now, TraceId: traceID,
+						Ts:       now, TraceId: traceID.String(),
 					}, SkipToken: true,
 				},
 			},

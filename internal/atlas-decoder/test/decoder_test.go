@@ -23,7 +23,7 @@ const testTimeout = 6 * time.Second
 
 func TestDecodeMessages(t *testing.T) {
 	now := timestamppb.New(time.Now().Add(-15 * time.Minute))
-	traceID := uuid.NewString()
+	traceID := uuid.New()
 
 	ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
 	defer cancel()
@@ -53,19 +53,19 @@ func TestDecodeMessages(t *testing.T) {
 		{
 			&message.DecoderIn{
 				UniqId: doorDev.UniqId, Data: []byte{0x19, 0x03, 0x01}, Ts: now,
-				TraceId: traceID,
+				TraceId: traceID[:],
 			}, []*message.ValidatorIn{
 				{
 					Point: &common.DataPoint{
 						UniqId: doorDev.UniqId, Attr: "count",
 						ValOneof: &common.DataPoint_IntVal{IntVal: 9}, Ts: now,
-						TraceId: traceID,
+						TraceId: traceID.String(),
 					}, SkipToken: true,
 				}, {
 					Point: &common.DataPoint{
 						UniqId: doorDev.UniqId, Attr: "open",
 						ValOneof: &common.DataPoint_BoolVal{BoolVal: true},
-						Ts:       now, TraceId: traceID,
+						Ts:       now, TraceId: traceID.String(),
 					}, SkipToken: true,
 				},
 			},
@@ -73,19 +73,19 @@ func TestDecodeMessages(t *testing.T) {
 		{
 			&message.DecoderIn{
 				UniqId: doorDev.UniqId, Data: []byte{0x1a, 0x03, 0x00}, Ts: now,
-				TraceId: traceID,
+				TraceId: traceID[:],
 			}, []*message.ValidatorIn{
 				{
 					Point: &common.DataPoint{
 						UniqId: doorDev.UniqId, Attr: "count",
 						ValOneof: &common.DataPoint_IntVal{IntVal: 10}, Ts: now,
-						TraceId: traceID,
+						TraceId: traceID.String(),
 					}, SkipToken: true,
 				}, {
 					Point: &common.DataPoint{
 						UniqId: doorDev.UniqId, Attr: "open",
 						ValOneof: &common.DataPoint_BoolVal{BoolVal: false},
-						Ts:       now, TraceId: traceID,
+						Ts:       now, TraceId: traceID.String(),
 					}, SkipToken: true,
 				},
 			},
@@ -94,34 +94,34 @@ func TestDecodeMessages(t *testing.T) {
 			&message.DecoderIn{
 				UniqId: co2Dev.UniqId, Data: []byte{
 					0x01, 0x09, 0x61, 0x13, 0x95, 0x02, 0x92,
-				}, Ts: now, TraceId: traceID,
+				}, Ts: now, TraceId: traceID[:],
 			}, []*message.ValidatorIn{
 				{
 					Point: &common.DataPoint{
 						UniqId: co2Dev.UniqId, Attr: "temp_c",
 						ValOneof: &common.DataPoint_Fl64Val{Fl64Val: 24},
-						Ts:       now, TraceId: traceID,
+						Ts:       now, TraceId: traceID.String(),
 					}, SkipToken: true,
 				},
 				{
 					Point: &common.DataPoint{
 						UniqId: co2Dev.UniqId, Attr: "temp_f",
 						ValOneof: &common.DataPoint_Fl64Val{Fl64Val: 75.2},
-						Ts:       now, TraceId: traceID,
+						Ts:       now, TraceId: traceID.String(),
 					}, SkipToken: true,
 				},
 				{
 					Point: &common.DataPoint{
 						UniqId: co2Dev.UniqId, Attr: "humidity_pct",
 						ValOneof: &common.DataPoint_Fl64Val{Fl64Val: 50.13},
-						Ts:       now, TraceId: traceID,
+						Ts:       now, TraceId: traceID.String(),
 					}, SkipToken: true,
 				},
 				{
 					Point: &common.DataPoint{
 						UniqId: co2Dev.UniqId, Attr: "co2_ppm",
 						ValOneof: &common.DataPoint_IntVal{IntVal: 658},
-						Ts:       now, TraceId: traceID,
+						Ts:       now, TraceId: traceID.String(),
 					}, SkipToken: true,
 				},
 			},
@@ -167,7 +167,7 @@ func TestDecodeMessages(t *testing.T) {
 
 func TestDecodeMessagesError(t *testing.T) {
 	now := timestamppb.New(time.Now().Add(-15 * time.Minute))
-	traceID := uuid.NewString()
+	traceID := uuid.New()
 
 	ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
 	defer cancel()
@@ -196,7 +196,7 @@ func TestDecodeMessagesError(t *testing.T) {
 		// Empty data.
 		{
 			&message.DecoderIn{
-				UniqId: createDev.UniqId, Ts: now, TraceId: traceID,
+				UniqId: createDev.UniqId, Ts: now, TraceId: traceID[:],
 			},
 		},
 		// Bad payload.
@@ -204,13 +204,13 @@ func TestDecodeMessagesError(t *testing.T) {
 		// Device not found.
 		{
 			&message.DecoderIn{
-				UniqId: random.String(16), Ts: now, TraceId: traceID,
+				UniqId: random.String(16), Ts: now, TraceId: traceID[:],
 			},
 		},
 		// Decode error, defaults to Decoder zero value when not in registry.
 		{
 			&message.DecoderIn{
-				UniqId: createInvDev.UniqId, Ts: now, TraceId: traceID,
+				UniqId: createInvDev.UniqId, Ts: now, TraceId: traceID[:],
 			},
 		},
 	}

@@ -6,6 +6,7 @@ import (
 	"errors"
 	"time"
 
+	"github.com/google/uuid"
 	"github.com/thingspect/atlas/api/go/message"
 	"github.com/thingspect/atlas/pkg/alog"
 	"github.com/thingspect/atlas/pkg/dao"
@@ -38,9 +39,13 @@ func (dec *Decoder) decodeMessages() {
 			continue
 		}
 
+		// Trace IDs have been authenticated and are safe to copy.
+		var traceID uuid.UUID
+		copy(traceID[:], dIn.TraceId)
+
 		// Set up logging fields.
 		logger := alog.
-			WithField("traceID", dIn.TraceId).
+			WithField("traceID", traceID.String()).
 			WithField("uniqID", dIn.UniqId)
 
 		// Retrieve device.
@@ -77,7 +82,8 @@ func (dec *Decoder) decodeMessages() {
 		// Build and publish ValidatorIn messages.
 		var successCount int
 		for _, point := range points {
-			vIn := registry.PointToVIn(dIn.TraceId, dIn.UniqId, point, dIn.Ts)
+			vIn := registry.PointToVIn(traceID.String(), dIn.UniqId, point,
+				dIn.Ts)
 
 			bVIn, err := proto.Marshal(vIn)
 			if err != nil {
