@@ -2,11 +2,14 @@ package alog
 
 import (
 	"fmt"
-	"sync/atomic"
+	"sync"
 )
 
-// logger is an atomic value of type Logger.
-var logger atomic.Value
+// Since logger is global and may be replaced, locking is required.
+var (
+	logger   Logger
+	loggerMu sync.Mutex
+)
 
 // NewConsole returns a new Logger with console formatting at the specified
 // level.
@@ -21,17 +24,17 @@ func NewJSON(level string) Logger {
 
 // Default returns the default logger, which is thread-safe.
 func Default() Logger {
-	l, ok := logger.Load().(Logger)
-	if !ok {
-		panic("Default logger.Load: false")
-	}
+	loggerMu.Lock()
+	defer loggerMu.Unlock()
 
-	return l
+	return logger
 }
 
 // SetDefault sets a new default logger.
 func SetDefault(l Logger) {
-	logger.Store(l)
+	loggerMu.Lock()
+	logger = l
+	loggerMu.Unlock()
 }
 
 // WithField returns a derived Logger from the default Logger with a string
