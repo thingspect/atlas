@@ -100,10 +100,10 @@ func (ing *Ingestor) decodeDevices() {
 		metric.Incr("received", map[string]string{"type": "device"})
 
 		// Set up logging fields.
-		traceID := uuid.NewString()
+		traceID := uuid.New()
 		logger := alog.
 			WithField("type", "device").
-			WithField("traceID", traceID)
+			WithField("traceID", traceID.String())
 
 		// Parse and validate topic in format:
 		// 'lora/application/+/device/+/event/+'.
@@ -136,7 +136,8 @@ func (ing *Ingestor) decodeDevices() {
 		var successCount int
 
 		for _, point := range points {
-			vIn := registry.PointToVIn(traceID, topicParts[4], point, ts)
+			vIn := registry.PointToVIn(traceID.String(), topicParts[4], point,
+				ts)
 
 			bVIn, err := proto.Marshal(vIn)
 			if err != nil {
@@ -167,7 +168,7 @@ func (ing *Ingestor) decodeDevices() {
 				UniqId:  topicParts[4],
 				Data:    data,
 				Ts:      ts,
-				TraceId: traceID,
+				TraceId: traceID[:],
 			}
 
 			bPIn, err := proto.Marshal(pIn)
