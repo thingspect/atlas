@@ -14,12 +14,12 @@ import (
 func TestStatsD(t *testing.T) {
 	t.Parallel()
 
-	metricer := statsD{
+	metStats := statsD{
 		client: statsd.NewClient("127.0.0.1:8125",
 			statsd.TagStyle(statsd.TagFormatGraphite),
 			statsd.MetricPrefix("teststatsd.")),
 	}
-	t.Logf("metricer: %#v", metricer)
+	t.Logf("metStats: %#v", metStats)
 
 	for i := 0; i < 5; i++ {
 		lTest := i
@@ -27,12 +27,12 @@ func TestStatsD(t *testing.T) {
 		t.Run(fmt.Sprintf("Can send %v", lTest), func(t *testing.T) {
 			t.Parallel()
 
-			metricer.Incr(random.String(10), nil)
-			metricer.Count(random.String(10), random.Intn(99),
+			metStats.Incr(random.String(10), nil)
+			metStats.Count(random.String(10), random.Intn(99),
 				map[string]string{random.String(10): random.String(10)})
-			metricer.Set(random.String(10), random.Intn(99),
+			metStats.Set(random.String(10), random.Intn(99),
 				map[string]string{random.String(10): random.String(10)})
-			metricer.Timing(random.String(10),
+			metStats.Timing(random.String(10),
 				time.Duration(random.Intn(99))*time.Millisecond, nil)
 		})
 	}
@@ -47,12 +47,12 @@ func TestSetStatsD(t *testing.T) {
 		t.Run(fmt.Sprintf("Can send %v", lTest), func(t *testing.T) {
 			t.Parallel()
 
-			metricer.Incr(random.String(10), nil)
-			metricer.Count(random.String(10), random.Intn(99),
+			Incr(random.String(10), nil)
+			Count(random.String(10), random.Intn(99),
 				map[string]string{random.String(10): random.String(10)})
-			metricer.Set(random.String(10), random.Intn(99),
+			Set(random.String(10), random.Intn(99),
 				map[string]string{random.String(10): random.String(10)})
-			metricer.Timing(random.String(10),
+			Timing(random.String(10),
 				time.Duration(random.Intn(99))*time.Millisecond, nil)
 		})
 	}
@@ -69,10 +69,10 @@ func TestNewStatsDNoAddr(t *testing.T) {
 		t.Run(fmt.Sprintf("Can send %v", lTest), func(t *testing.T) {
 			t.Parallel()
 
-			metricer.Incr(random.String(10), nil)
-			metricer.Count(random.String(10), random.Intn(99),
+			Incr(random.String(10), nil)
+			Count(random.String(10), random.Intn(99),
 				map[string]string{random.String(10): random.String(10)})
-			metricer.Timing(random.String(10),
+			Timing(random.String(10),
 				time.Duration(random.Intn(99))*time.Millisecond, nil)
 		})
 	}
