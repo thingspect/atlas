@@ -2,6 +2,7 @@ package parser
 
 import (
 	"fmt"
+	"math"
 	"strconv"
 	"strings"
 
@@ -17,13 +18,19 @@ import (
 var predicates = map[string]struct {
 	arity int
 }{
-	"all":    {2},
-	"none":   {2},
-	"any":    {2},
-	"one":    {2},
-	"filter": {2},
-	"map":    {2},
-	"count":  {2},
+	"all":           {2},
+	"none":          {2},
+	"any":           {2},
+	"one":           {2},
+	"filter":        {2},
+	"map":           {2},
+	"count":         {2},
+	"find":          {2},
+	"findIndex":     {2},
+	"findLast":      {2},
+	"findLastIndex": {2},
+	"groupBy":       {2},
+	"reduce":        {3},
 }
 
 type parser struct {
@@ -42,7 +49,6 @@ type Tree struct {
 
 func Parse(input string) (*Tree, error) {
 	return ParseWithConfig(input, &conf.Config{
-		Pipes:    false,
 		Disabled: map[string]bool{},
 	})
 }
@@ -77,11 +83,11 @@ func ParseWithConfig(input string, config *conf.Config) (*Tree, error) {
 	}, nil
 }
 
-func (p *parser) error(format string, args ...interface{}) {
+func (p *parser) error(format string, args ...any) {
 	p.errorAt(p.current, format, args...)
 }
 
-func (p *parser) errorAt(token Token, format string, args ...interface{}) {
+func (p *parser) errorAt(token Token, format string, args ...any) {
 	if p.err == nil { // show first error
 		p.err = &file.Error{
 			Location: token.Location,
@@ -110,6 +116,12 @@ func (p *parser) expect(kind Kind, values ...string) {
 // parse functions
 
 func (p *parser) parseExpression(precedence int) Node {
+	if precedence == 0 {
+		if p.current.Is(Operator, "let") {
+			return p.parseVariableDeclaration()
+		}
+	}
+
 	nodeLeft := p.parsePrimary()
 
 	prevOperator := ""
@@ -179,6 +191,23 @@ func (p *parser) parseExpression(precedence int) Node {
 	return nodeLeft
 }
 
+func (p *parser) parseVariableDeclaration() Node {
+	p.expect(Operator, "let")
+	variableName := p.current
+	p.expect(Identifier)
+	p.expect(Operator, "=")
+	value := p.parseExpression(0)
+	p.expect(Operator, ";")
+	node := p.parseExpression(0)
+	let := &VariableDeclaratorNode{
+		Name:  variableName.Value,
+		Value: value,
+		Expr:  node,
+	}
+	let.SetLocation(variableName.Location)
+	return let
+}
+
 func (p *parser) parseConditional(node Node) Node {
 	var expr1, expr2 Node
 	for p.current.Is(Operator, "?") && p.err == nil {
@@ -228,10 +257,15 @@ func (p *parser) parsePrimary() Node {
 
 	if p.depth > 0 {
 		if token.Is(Operator, "#") || token.Is(Operator, ".") {
+			name := ""
 			if token.Is(Operator, "#") {
 				p.next()
+				if p.current.Is(Identifier) {
+					name = p.current.Value
+					p.next()
+				}
 			}
-			node := &PointerNode{}
+			node := &PointerNode{Name: name}
 			node.SetLocation(token.Location)
 			return p.parsePostfixExpression(node)
 		}
@@ -277,6 +311,10 @@ func (p *parser) parseSecondary() Node {
 			if err != nil {
 				p.error("invalid hex literal: %v", err)
 			}
+			if number > math.MaxInt {
+				p.error("integer literal is too large")
+				return nil
+			}
 			node := &IntegerNode{Value: int(number)}
 			node.SetLocation(token.Location)
 			return node
@@ -292,6 +330,10 @@ func (p *parser) parseSecondary() Node {
 			number, err := strconv.ParseInt(value, 10, 64)
 			if err != nil {
 				p.error("invalid integer literal: %v", err)
+			}
+			if number > math.MaxInt {
+				p.error("integer literal is too large")
+				return nil
 			}
 			node := &IntegerNode{Value: int(number)}
 			node.SetLocation(token.Location)
@@ -324,6 +366,9 @@ func (p *parser) parseCall(token Token) Node {
 
 		if b, ok := predicates[token.Value]; ok {
 			p.expect(Bracket, "(")
+
+			// TODO: Refactor parser to use builtin.Builtins instead of predicates map.
+
 			if b.arity == 1 {
 				arguments = make([]Node, 1)
 				arguments[0] = p.parseExpression(0)
@@ -333,6 +378,18 @@ func (p *parser) parseCall(token Token) Node {
 				p.expect(Operator, ",")
 				arguments[1] = p.parseClosure()
 			}
+
+			if token.Value == "reduce" {
+				arguments = make([]Node, 2)
+				arguments[0] = p.parseExpression(0)
+				p.expect(Operator, ",")
+				arguments[1] = p.parseClosure()
+				if p.current.Is(Operator, ",") {
+					p.next()
+					arguments = append(arguments, p.parseExpression(0))
+				}
+			}
+
 			p.expect(Bracket, ")")
 
 			node = &BuiltinNode{
@@ -556,11 +613,6 @@ func (p *parser) parsePostfixExpression(node Node) Node {
 }
 
 func (p *parser) parsePipe(node Node) Node {
-	if !p.config.Pipes {
-		p.error("enable Pipes via expr.ExperimentalPipes()")
-		return &NilNode{}
-	}
-
 	identifier := p.current
 	p.expect(Identifier)
 
@@ -568,9 +620,21 @@ func (p *parser) parsePipe(node Node) Node {
 
 	if b, ok := predicates[identifier.Value]; ok {
 		p.expect(Bracket, "(")
+
+		// TODO: Refactor parser to use builtin.Builtins instead of predicates map.
+
 		if b.arity == 2 {
 			arguments = append(arguments, p.parseClosure())
 		}
+
+		if identifier.Value == "reduce" {
+			arguments = append(arguments, p.parseClosure())
+			if p.current.Is(Operator, ",") {
+				p.next()
+				arguments = append(arguments, p.parseExpression(0))
+			}
+		}
+
 		p.expect(Bracket, ")")
 
 		node = &BuiltinNode{

@@ -11,8 +11,8 @@ import (
 )
 
 func TestDefault(t *testing.T) {
-	logger := Default()
-	t.Logf("logger: %#v", logger)
+	logDef := Default()
+	t.Logf("logDef: %#v", logDef)
 
 	for i := 0; i < 5; i++ {
 		lTest := i
@@ -20,12 +20,12 @@ func TestDefault(t *testing.T) {
 		t.Run(fmt.Sprintf("Can log %v", lTest), func(t *testing.T) {
 			t.Parallel()
 
-			logger.Debug("Debug")
-			logger.Debugf("Debugf: %v", lTest)
-			logger.Info("Info")
-			logger.Infof("Infof: %v", lTest)
-			logger.Error("Error")
-			logger.Errorf("Errorf: %v", lTest)
+			logDef.Debug("Debug")
+			logDef.Debugf("Debugf: %v", lTest)
+			logDef.Info("Info")
+			logDef.Infof("Infof: %v", lTest)
+			logDef.Error("Error")
+			logDef.Errorf("Errorf: %v", lTest)
 			// Do not test Fatal* due to os.Exit.
 		})
 	}
