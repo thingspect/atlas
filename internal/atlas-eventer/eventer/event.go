@@ -21,6 +21,7 @@ import (
 // and builds messages for publishing.
 func (ev *Eventer) eventMessages() {
 	alog.Info("eventMessages starting processor")
+	ctx := context.Background()
 
 	var processCount int
 	for msg := range ev.vOutSub.C() {
@@ -49,8 +50,8 @@ func (ev *Eventer) eventMessages() {
 
 		// Retrieve rules. Only active rules with matching tags and attributes
 		// will be returned.
-		ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
-		rules, err := ev.ruleDAO.ListByTags(ctx, vOut.Device.OrgId,
+		dCtx, cancel := context.WithTimeout(ctx, 5*time.Second)
+		rules, err := ev.ruleDAO.ListByTags(dCtx, vOut.Device.OrgId,
 			vOut.Point.Attr, vOut.Device.Tags)
 		cancel()
 		if err != nil {
@@ -64,71 +65,8 @@ func (ev *Eventer) eventMessages() {
 
 		// Evaluate, event, and optionally publish EventerOut messages.
 		for _, r := range rules {
-			res, err := rule.Eval(vOut.Point, r.Expr)
-			if err != nil {
-				metric.Incr("error", map[string]string{"func": "eval"})
-				logger.Errorf("eventMessages rule.Eval: %v", err)
-
-				continue
-			}
-			metric.Incr("evaluated", map[string]string{
-				"result": strconv.FormatBool(res),
-			})
-
-			if res {
-				event := &api.Event{
-					OrgId:     vOut.Device.OrgId,
-					UniqId:    vOut.Device.UniqId,
-					RuleId:    r.Id,
-					CreatedAt: vOut.Point.Ts,
-					TraceId:   vOut.Point.TraceId,
-				}
-
-				ctx, cancel := context.WithTimeout(context.Background(),
-					5*time.Second)
-				err := ev.evDAO.Create(ctx, event)
-				cancel()
-				// Use a duplicate event as a tombstone to protect against
-				// failure mid-loop and support fast-forward. Do not attempt to
-				// coordinate event success with publish failures.
-				if errors.Is(err, dao.ErrAlreadyExists) {
-					metric.Incr("duplicate", nil)
-					logger.Infof("eventMessages duplicate ev.evDAO.Create: "+
-						"%v", err)
-
-					continue
-				}
-				if err != nil {
-					metric.Incr("error", map[string]string{"func": "create"})
-					logger.Errorf("eventMessages ev.evDAO.Create: %v", err)
-
-					continue
-				}
-
-				eOut := &message.EventerOut{
-					Point:  vOut.Point,
-					Device: vOut.Device,
-					Rule:   r,
-				}
-				bEOut, err := proto.Marshal(eOut)
-				if err != nil {
-					metric.Incr("error", map[string]string{"func": "marshal"})
-					logger.Errorf("eventMessages proto.Marshal: %v", err)
-
-					continue
-				}
-
-				if err = ev.evQueue.Publish(ev.eOutPubTopic,
-					bEOut); err != nil {
-					metric.Incr("error", map[string]string{"func": "publish"})
-					logger.Errorf("eventMessages ev.evQueue.Publish: %v", err)
-
-					continue
-				}
-
-				metric.Incr("published", nil)
-				logger.Debugf("eventMessages published: %+v", eOut)
-			}
+			ev.evalRules(alog.NewContext(ctx, &alog.CtxLogger{Logger: logger}),
+				vOut, r)
 		}
 
 		msg.Ack()
@@ -138,5 +76,77 @@ func (ev *Eventer) eventMessages() {
 		if processCount%100 == 0 {
 			alog.Infof("eventMessages processed %v messages", processCount)
 		}
+	}
+}
+
+// evalRules evaluates rules, generates events, and optionally publishes
+// EventerOut messages.
+func (ev *Eventer) evalRules(
+	ctx context.Context, vOut *message.ValidatorOut, r *api.Rule,
+) {
+	logger := alog.FromContext(ctx)
+
+	res, err := rule.Eval(vOut.Point, r.Expr)
+	if err != nil {
+		metric.Incr("error", map[string]string{"func": "eval"})
+		logger.Errorf("eventMessages rule.Eval: %v", err)
+
+		return
+	}
+	metric.Incr("evaluated", map[string]string{
+		"result": strconv.FormatBool(res),
+	})
+
+	if res {
+		event := &api.Event{
+			OrgId:     vOut.Device.OrgId,
+			UniqId:    vOut.Device.UniqId,
+			RuleId:    r.Id,
+			CreatedAt: vOut.Point.Ts,
+			TraceId:   vOut.Point.TraceId,
+		}
+
+		dCtx, cancel := context.WithTimeout(ctx, 5*time.Second)
+		err := ev.evDAO.Create(dCtx, event)
+		cancel()
+		// Use a duplicate event as a tombstone to protect against failure
+		// mid-loop and support fast-forward. Do not attempt to coordinate event
+		// success with publish failures.
+		if errors.Is(err, dao.ErrAlreadyExists) {
+			metric.Incr("duplicate", nil)
+			logger.Infof("eventMessages duplicate ev.evDAO.Create: %v", err)
+
+			return
+		}
+		if err != nil {
+			metric.Incr("error", map[string]string{"func": "create"})
+			logger.Errorf("eventMessages ev.evDAO.Create: %v", err)
+
+			return
+		}
+
+		eOut := &message.EventerOut{
+			Point:  vOut.Point,
+			Device: vOut.Device,
+			Rule:   r,
+		}
+		bEOut, err := proto.Marshal(eOut)
+		if err != nil {
+			metric.Incr("error", map[string]string{"func": "marshal"})
+			logger.Errorf("eventMessages proto.Marshal: %v", err)
+
+			return
+		}
+
+		if err = ev.evQueue.Publish(ev.eOutPubTopic,
+			bEOut); err != nil {
+			metric.Incr("error", map[string]string{"func": "publish"})
+			logger.Errorf("eventMessages ev.evQueue.Publish: %v", err)
+
+			return
+		}
+
+		metric.Incr("published", nil)
+		logger.Debugf("eventMessages published: %+v", eOut)
 	}
 }

@@ -7,7 +7,7 @@ import (
 
 // Since metricer is global and may be replaced, locking is required.
 var (
-	metricer   Metricer
+	metricer   Metricer = &noOpMetric{}
 	metricerMu sync.Mutex
 )
 
@@ -23,9 +23,8 @@ func getDefault() Metricer {
 // setDefault sets a new default metricer.
 func setDefault(m Metricer) {
 	metricerMu.Lock()
-	defer metricerMu.Unlock()
-
 	metricer = m
+	metricerMu.Unlock()
 }
 
 // Incr increments a statsd count metric by 1.
