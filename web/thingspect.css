@@ -1,6 +1,5 @@
 /* https://github.com/swagger-api/swagger-ui/issues/4390#issuecomment-483289639 */
-.topbar-wrapper img[alt="Swagger UI"],
-.topbar-wrapper span {
+.topbar-wrapper svg {
   visibility: collapse;
 }
 
