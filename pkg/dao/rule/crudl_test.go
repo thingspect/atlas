@@ -401,7 +401,7 @@ func TestList(t *testing.T) {
 		t.Logf("listRules, listCount, err: %+v, %v, %v", listRules, listCount,
 			err)
 		require.NoError(t, err)
-		require.Len(t, listRules, 0)
+		require.Empty(t, listRules)
 		require.Equal(t, int32(0), listCount)
 	})
 
@@ -501,7 +501,7 @@ func TestListByTags(t *testing.T) {
 			ruleAttrs[len(ruleAttrs)-1], ruleDeviceTags)
 		t.Logf("listRules, err: %+v, %v", listRules, err)
 		require.NoError(t, err)
-		require.Len(t, listRules, 0)
+		require.Empty(t, listRules)
 	})
 
 	t.Run("List rules by invalid org ID", func(t *testing.T) {

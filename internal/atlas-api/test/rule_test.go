@@ -518,7 +518,7 @@ func TestListRules(t *testing.T) {
 		})
 		t.Logf("nextRules, err: %+v, %v", nextRules, err)
 		require.NoError(t, err)
-		require.GreaterOrEqual(t, len(nextRules.GetRules()), 1)
+		require.NotEmpty(t, nextRules.GetRules())
 		require.GreaterOrEqual(t, nextRules.GetTotalSize(), int32(3))
 	})
 
@@ -532,7 +532,7 @@ func TestListRules(t *testing.T) {
 		listRules, err := secCli.ListRules(ctx, &api.ListRulesRequest{})
 		t.Logf("listRules, err: %+v, %v", listRules, err)
 		require.NoError(t, err)
-		require.Len(t, listRules.GetRules(), 0)
+		require.Empty(t, listRules.GetRules())
 		require.Equal(t, int32(0), listRules.GetTotalSize())
 	})
 

@@ -140,7 +140,7 @@ func TestListAlerts(t *testing.T) {
 		})
 		t.Logf("listAlerts, err: %+v, %v", listAlerts, err)
 		require.NoError(t, err)
-		require.Len(t, listAlerts.GetAlerts(), 0)
+		require.Empty(t, listAlerts.GetAlerts())
 	})
 
 	t.Run("List alerts by invalid time range", func(t *testing.T) {

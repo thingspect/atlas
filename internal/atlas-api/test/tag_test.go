@@ -79,6 +79,6 @@ func TestListTags(t *testing.T) {
 		listTags, err := secCli.ListTags(ctx, &api.ListTagsRequest{})
 		t.Logf("listTags, err: %+v, %v", listTags, err)
 		require.NoError(t, err)
-		require.GreaterOrEqual(t, len(listTags.GetTags()), 1)
+		require.NotEmpty(t, listTags.GetTags())
 	})
 }

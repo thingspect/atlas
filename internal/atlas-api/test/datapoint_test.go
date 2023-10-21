@@ -323,7 +323,7 @@ func TestListDataPoints(t *testing.T) {
 		})
 		t.Logf("listPoints, err: %+v, %v", listPoints, err)
 		require.NoError(t, err)
-		require.Len(t, listPoints.GetPoints(), 0)
+		require.Empty(t, listPoints.GetPoints())
 	})
 
 	t.Run("List data points by invalid time range", func(t *testing.T) {
@@ -512,7 +512,7 @@ func TestLatestDataPoints(t *testing.T) {
 			})
 		t.Logf("latPoints, err: %+v, %v", latPoints, err)
 		require.NoError(t, err)
-		require.Len(t, latPoints.GetPoints(), 0)
+		require.Empty(t, latPoints.GetPoints())
 	})
 
 	t.Run("Latest data points by invalid time range", func(t *testing.T) {

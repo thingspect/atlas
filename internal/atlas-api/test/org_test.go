@@ -481,7 +481,7 @@ func TestListOrgs(t *testing.T) {
 		})
 		t.Logf("nextOrgs, err: %+v, %v", nextOrgs, err)
 		require.NoError(t, err)
-		require.GreaterOrEqual(t, len(nextOrgs.GetOrgs()), 1)
+		require.NotEmpty(t, nextOrgs.GetOrgs())
 		require.GreaterOrEqual(t, nextOrgs.GetTotalSize(), int32(3))
 	})
 

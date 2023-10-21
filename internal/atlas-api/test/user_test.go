@@ -842,7 +842,7 @@ func TestListUsers(t *testing.T) {
 		})
 		t.Logf("nextUsers, err: %+v, %v", nextUsers, err)
 		require.NoError(t, err)
-		require.GreaterOrEqual(t, len(nextUsers.GetUsers()), 1)
+		require.NotEmpty(t, nextUsers.GetUsers())
 		require.GreaterOrEqual(t, nextUsers.GetTotalSize(), int32(3))
 	})
 
@@ -878,7 +878,7 @@ func TestListUsers(t *testing.T) {
 		listUsers, err := secCli.ListUsers(ctx, &api.ListUsersRequest{})
 		t.Logf("listUsers, err: %+v, %v", listUsers, err)
 		require.NoError(t, err)
-		require.Len(t, listUsers.GetUsers(), 0)
+		require.Empty(t, listUsers.GetUsers())
 		require.Equal(t, int32(0), listUsers.GetTotalSize())
 	})
 
