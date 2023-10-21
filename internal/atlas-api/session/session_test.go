@@ -17,7 +17,7 @@ func TestNewUserFromContext(t *testing.T) {
 
 	user := random.User("session", uuid.NewString())
 	sess := &Session{
-		UserID: user.Id, OrgID: user.OrgId, Role: user.Role,
+		UserID: user.GetId(), OrgID: user.GetOrgId(), Role: user.GetRole(),
 		TraceID: uuid.New(),
 	}
 	t.Logf("sess: %+v", sess)
@@ -37,7 +37,7 @@ func TestNewKeyFromContext(t *testing.T) {
 
 	user := random.User("session", uuid.NewString())
 	sess := &Session{
-		KeyID: uuid.NewString(), OrgID: user.OrgId, Role: user.Role,
+		KeyID: uuid.NewString(), OrgID: user.GetOrgId(), Role: user.GetRole(),
 		TraceID: uuid.New(),
 	}
 	t.Logf("sess: %+v", sess)

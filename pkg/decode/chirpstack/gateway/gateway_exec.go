@@ -22,19 +22,19 @@ func gatewayExec(body []byte) ([]*decode.Point, error) {
 		protojson.MarshalOptions{}.Format(execMsg), " ", "")}}
 
 	// Parse GatewayCommandExecResponse.
-	if len(execMsg.Stdout) != 0 {
+	if len(execMsg.GetStdout()) != 0 {
 		msgs = append(msgs, &decode.Point{
-			Attr: "exec_stdout", Value: string(execMsg.Stdout),
+			Attr: "exec_stdout", Value: string(execMsg.GetStdout()),
 		})
 	}
-	if len(execMsg.Stderr) != 0 {
+	if len(execMsg.GetStderr()) != 0 {
 		msgs = append(msgs, &decode.Point{
-			Attr: "exec_stderr", Value: string(execMsg.Stderr),
+			Attr: "exec_stderr", Value: string(execMsg.GetStderr()),
 		})
 	}
-	if execMsg.Error != "" {
+	if execMsg.GetError() != "" {
 		msgs = append(msgs, &decode.Point{
-			Attr: "exec_error", Value: execMsg.Error,
+			Attr: "exec_error", Value: execMsg.GetError(),
 		})
 	}
 

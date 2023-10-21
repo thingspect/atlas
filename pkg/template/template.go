@@ -23,7 +23,7 @@ func Generate(
 
 	// Populate point value for convenience. If point doesn't validate, pointVal
 	// remains unset.
-	switch v := point.ValOneof.(type) {
+	switch v := point.GetValOneof().(type) {
 	case *common.DataPoint_IntVal:
 		env["pointVal"] = v.IntVal
 	case *common.DataPoint_Fl64Val:

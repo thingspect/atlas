@@ -34,10 +34,10 @@ func TestCreateUser(t *testing.T) {
 			&api.CreateUserRequest{User: user})
 		t.Logf("createUser, err: %+v, %v", createUser, err)
 		require.NoError(t, err)
-		require.NotEqual(t, user.Id, createUser.Id)
-		require.WithinDuration(t, time.Now(), createUser.CreatedAt.AsTime(),
+		require.NotEqual(t, user.GetId(), createUser.GetId())
+		require.WithinDuration(t, time.Now(), createUser.GetCreatedAt().AsTime(),
 			2*time.Second)
-		require.WithinDuration(t, time.Now(), createUser.UpdatedAt.AsTime(),
+		require.WithinDuration(t, time.Now(), createUser.GetUpdatedAt().AsTime(),
 			2*time.Second)
 	})
 
@@ -138,7 +138,7 @@ func TestGetUser(t *testing.T) {
 
 		userCli := api.NewUserServiceClient(globalAdminGRPCConn)
 		getUser, err := userCli.GetUser(ctx,
-			&api.GetUserRequest{Id: createUser.Id})
+			&api.GetUserRequest{Id: createUser.GetId()})
 		t.Logf("getUser, err: %+v, %v", getUser, err)
 		require.NoError(t, err)
 
@@ -157,7 +157,7 @@ func TestGetUser(t *testing.T) {
 
 		userCli := api.NewUserServiceClient(secondaryViewerGRPCConn)
 		getUser, err := userCli.GetUser(ctx,
-			&api.GetUserRequest{Id: createUser.Id})
+			&api.GetUserRequest{Id: createUser.GetId()})
 		t.Logf("getUser, err: %+v, %v", getUser, err)
 		require.Nil(t, getUser)
 		require.EqualError(t, err, "rpc error: code = PermissionDenied desc = "+
@@ -172,7 +172,7 @@ func TestGetUser(t *testing.T) {
 
 		userCli := api.NewUserServiceClient(secondaryViewerKeyGRPCConn)
 		getUser, err := userCli.GetUser(ctx,
-			&api.GetUserRequest{Id: createUser.Id})
+			&api.GetUserRequest{Id: createUser.GetId()})
 		t.Logf("getUser, err: %+v, %v", getUser, err)
 		require.Nil(t, getUser)
 		require.EqualError(t, err, "rpc error: code = PermissionDenied desc = "+
@@ -202,7 +202,7 @@ func TestGetUser(t *testing.T) {
 
 		secCli := api.NewUserServiceClient(secondaryAdminGRPCConn)
 		getUser, err := secCli.GetUser(ctx,
-			&api.GetUserRequest{Id: createUser.Id})
+			&api.GetUserRequest{Id: createUser.GetId()})
 		t.Logf("getUser, err: %+v, %v", getUser, err)
 		require.Nil(t, getUser)
 		require.EqualError(t, err, "rpc error: code = NotFound desc = object "+
@@ -239,18 +239,18 @@ func TestUpdateUser(t *testing.T) {
 			&api.UpdateUserRequest{User: createUser})
 		t.Logf("updateUser, err: %+v, %v", updateUser, err)
 		require.NoError(t, err)
-		require.Equal(t, createUser.Name, updateUser.Name)
-		require.Equal(t, createUser.Email, updateUser.Email)
-		require.Equal(t, createUser.Role, updateUser.Role)
-		require.Equal(t, createUser.Status, updateUser.Status)
-		require.Equal(t, createUser.Tags, updateUser.Tags)
-		require.True(t, updateUser.UpdatedAt.AsTime().After(
-			updateUser.CreatedAt.AsTime()))
-		require.WithinDuration(t, createUser.CreatedAt.AsTime(),
-			updateUser.UpdatedAt.AsTime(), 2*time.Second)
+		require.Equal(t, createUser.GetName(), updateUser.GetName())
+		require.Equal(t, createUser.GetEmail(), updateUser.GetEmail())
+		require.Equal(t, createUser.GetRole(), updateUser.GetRole())
+		require.Equal(t, createUser.GetStatus(), updateUser.GetStatus())
+		require.Equal(t, createUser.GetTags(), updateUser.GetTags())
+		require.True(t, updateUser.GetUpdatedAt().AsTime().After(
+			updateUser.GetCreatedAt().AsTime()))
+		require.WithinDuration(t, createUser.GetCreatedAt().AsTime(),
+			updateUser.GetUpdatedAt().AsTime(), 2*time.Second)
 
 		getUser, err := userCli.GetUser(ctx,
-			&api.GetUserRequest{Id: createUser.Id})
+			&api.GetUserRequest{Id: createUser.GetId()})
 		t.Logf("getUser, err: %+v, %v", getUser, err)
 		require.NoError(t, err)
 
@@ -278,7 +278,7 @@ func TestUpdateUser(t *testing.T) {
 
 		// Update user fields.
 		part := &api.User{
-			Id: createUser.Id, Name: "api-user-" + random.String(10),
+			Id: createUser.GetId(), Name: "api-user-" + random.String(10),
 			Email: "api-user-" + random.Email(), Role: api.Role_ADMIN,
 			Status: api.Status_DISABLED, Tags: random.Tags("api-user", 2),
 		}
@@ -290,18 +290,18 @@ func TestUpdateUser(t *testing.T) {
 		})
 		t.Logf("updateUser, err: %+v, %v", updateUser, err)
 		require.NoError(t, err)
-		require.Equal(t, part.Name, updateUser.Name)
-		require.Equal(t, part.Email, updateUser.Email)
-		require.Equal(t, part.Role, updateUser.Role)
-		require.Equal(t, part.Status, updateUser.Status)
-		require.Equal(t, part.Tags, updateUser.Tags)
-		require.True(t, updateUser.UpdatedAt.AsTime().After(
-			updateUser.CreatedAt.AsTime()))
-		require.WithinDuration(t, createUser.CreatedAt.AsTime(),
-			updateUser.UpdatedAt.AsTime(), 2*time.Second)
+		require.Equal(t, part.GetName(), updateUser.GetName())
+		require.Equal(t, part.GetEmail(), updateUser.GetEmail())
+		require.Equal(t, part.GetRole(), updateUser.GetRole())
+		require.Equal(t, part.GetStatus(), updateUser.GetStatus())
+		require.Equal(t, part.GetTags(), updateUser.GetTags())
+		require.True(t, updateUser.GetUpdatedAt().AsTime().After(
+			updateUser.GetCreatedAt().AsTime()))
+		require.WithinDuration(t, createUser.GetCreatedAt().AsTime(),
+			updateUser.GetUpdatedAt().AsTime(), 2*time.Second)
 
 		getUser, err := userCli.GetUser(ctx,
-			&api.GetUserRequest{Id: createUser.Id})
+			&api.GetUserRequest{Id: createUser.GetId()})
 		t.Logf("getUser, err: %+v, %v", getUser, err)
 		require.NoError(t, err)
 
@@ -574,7 +574,7 @@ func TestUpdateUserPassword(t *testing.T) {
 		require.NoError(t, err)
 
 		_, err = userCli.UpdateUserPassword(ctx, &api.UpdateUserPasswordRequest{
-			Id: createUser.Id, Password: random.String(20),
+			Id: createUser.GetId(), Password: random.String(20),
 		})
 		t.Logf("err: %v", err)
 		require.NoError(t, err)
@@ -628,7 +628,7 @@ func TestUpdateUserPassword(t *testing.T) {
 		require.NoError(t, err)
 
 		_, err = userCli.UpdateUserPassword(ctx, &api.UpdateUserPasswordRequest{
-			Id: createUser.Id, Password: "1234567890",
+			Id: createUser.GetId(), Password: "1234567890",
 		})
 		t.Logf("err: %v", err)
 		require.EqualError(t, err, "rpc error: code = InvalidArgument desc = "+
@@ -668,7 +668,7 @@ func TestUpdateUserPassword(t *testing.T) {
 
 		secCli := api.NewUserServiceClient(secondaryAdminGRPCConn)
 		_, err = secCli.UpdateUserPassword(ctx, &api.UpdateUserPasswordRequest{
-			Id: createUser.Id, Password: random.String(20),
+			Id: createUser.GetId(), Password: random.String(20),
 		})
 		t.Logf("err: %v", err)
 		require.EqualError(t, err, "rpc error: code = NotFound desc = object "+
@@ -695,7 +695,7 @@ func TestDeleteUser(t *testing.T) {
 		require.NoError(t, err)
 
 		_, err = userCli.DeleteUser(ctx,
-			&api.DeleteUserRequest{Id: createUser.Id})
+			&api.DeleteUserRequest{Id: createUser.GetId()})
 		t.Logf("err: %v", err)
 		require.NoError(t, err)
 
@@ -708,7 +708,7 @@ func TestDeleteUser(t *testing.T) {
 
 			userCli := api.NewUserServiceClient(globalAdminKeyGRPCConn)
 			getUser, err := userCli.GetUser(ctx,
-				&api.GetUserRequest{Id: createUser.Id})
+				&api.GetUserRequest{Id: createUser.GetId()})
 			t.Logf("getUser, err: %+v, %v", getUser, err)
 			require.Nil(t, getUser)
 			require.EqualError(t, err, "rpc error: code = NotFound desc = "+
@@ -761,7 +761,7 @@ func TestDeleteUser(t *testing.T) {
 
 		secCli := api.NewUserServiceClient(secondaryAdminGRPCConn)
 		_, err = secCli.DeleteUser(ctx,
-			&api.DeleteUserRequest{Id: createUser.Id})
+			&api.DeleteUserRequest{Id: createUser.GetId()})
 		t.Logf("err: %v", err)
 		require.EqualError(t, err, "rpc error: code = NotFound desc = object "+
 			"not found")
@@ -789,11 +789,11 @@ func TestListUsers(t *testing.T) {
 		t.Logf("createUser, err: %+v, %v", createUser, err)
 		require.NoError(t, err)
 
-		userIDs = append(userIDs, createUser.Id)
-		userNames = append(userNames, createUser.Name)
-		userRoles = append(userRoles, createUser.Role)
-		userStatuses = append(userStatuses, createUser.Status)
-		userTags = append(userTags, createUser.Tags)
+		userIDs = append(userIDs, createUser.GetId())
+		userNames = append(userNames, createUser.GetName())
+		userRoles = append(userRoles, createUser.GetRole())
+		userStatuses = append(userStatuses, createUser.GetStatus())
+		userTags = append(userTags, createUser.GetTags())
 	}
 
 	t.Run("List users by valid org ID", func(t *testing.T) {
@@ -806,16 +806,16 @@ func TestListUsers(t *testing.T) {
 		listUsers, err := userCli.ListUsers(ctx, &api.ListUsersRequest{})
 		t.Logf("listUsers, err: %+v, %v", listUsers, err)
 		require.NoError(t, err)
-		require.GreaterOrEqual(t, len(listUsers.Users), 3)
-		require.GreaterOrEqual(t, listUsers.TotalSize, int32(3))
+		require.GreaterOrEqual(t, len(listUsers.GetUsers()), 3)
+		require.GreaterOrEqual(t, listUsers.GetTotalSize(), int32(3))
 
 		var found bool
-		for _, user := range listUsers.Users {
-			if user.Id == userIDs[len(userIDs)-1] &&
-				user.Name == userNames[len(userNames)-1] &&
-				user.Role == userRoles[len(userRoles)-1] &&
-				user.Status == userStatuses[len(userStatuses)-1] &&
-				reflect.DeepEqual(user.Tags, userTags[len(userTags)-1]) {
+		for _, user := range listUsers.GetUsers() {
+			if user.GetId() == userIDs[len(userIDs)-1] &&
+				user.GetName() == userNames[len(userNames)-1] &&
+				user.GetRole() == userRoles[len(userRoles)-1] &&
+				user.GetStatus() == userStatuses[len(userStatuses)-1] &&
+				reflect.DeepEqual(user.GetTags(), userTags[len(userTags)-1]) {
 				found = true
 			}
 		}
@@ -833,17 +833,17 @@ func TestListUsers(t *testing.T) {
 			&api.ListUsersRequest{PageSize: 2})
 		t.Logf("listUsers, err: %+v, %v", listUsers, err)
 		require.NoError(t, err)
-		require.Len(t, listUsers.Users, 2)
-		require.NotEmpty(t, listUsers.NextPageToken)
-		require.GreaterOrEqual(t, listUsers.TotalSize, int32(3))
+		require.Len(t, listUsers.GetUsers(), 2)
+		require.NotEmpty(t, listUsers.GetNextPageToken())
+		require.GreaterOrEqual(t, listUsers.GetTotalSize(), int32(3))
 
 		nextUsers, err := userCli.ListUsers(ctx, &api.ListUsersRequest{
-			PageSize: 2, PageToken: listUsers.NextPageToken,
+			PageSize: 2, PageToken: listUsers.GetNextPageToken(),
 		})
 		t.Logf("nextUsers, err: %+v, %v", nextUsers, err)
 		require.NoError(t, err)
-		require.GreaterOrEqual(t, len(nextUsers.Users), 1)
-		require.GreaterOrEqual(t, nextUsers.TotalSize, int32(3))
+		require.GreaterOrEqual(t, len(nextUsers.GetUsers()), 1)
+		require.GreaterOrEqual(t, nextUsers.GetTotalSize(), int32(3))
 	})
 
 	t.Run("List users with tag filter", func(t *testing.T) {
@@ -857,15 +857,15 @@ func TestListUsers(t *testing.T) {
 			&api.ListUsersRequest{Tag: userTags[2][0]})
 		t.Logf("listUsers, err: %+v, %v", listUsers, err)
 		require.NoError(t, err)
-		require.Len(t, listUsers.Users, 1)
-		require.Equal(t, int32(1), listUsers.TotalSize)
+		require.Len(t, listUsers.GetUsers(), 1)
+		require.Equal(t, int32(1), listUsers.GetTotalSize())
 
-		require.Equal(t, userIDs[len(userIDs)-1], listUsers.Users[0].Id)
-		require.Equal(t, userNames[len(userNames)-1], listUsers.Users[0].Name)
+		require.Equal(t, userIDs[len(userIDs)-1], listUsers.GetUsers()[0].GetId())
+		require.Equal(t, userNames[len(userNames)-1], listUsers.GetUsers()[0].GetName())
 		require.Equal(t, userStatuses[len(userStatuses)-1],
-			listUsers.Users[0].Status)
-		require.Equal(t, userRoles[len(userRoles)-1], listUsers.Users[0].Role)
-		require.Equal(t, userTags[len(userTags)-1], listUsers.Users[0].Tags)
+			listUsers.GetUsers()[0].GetStatus())
+		require.Equal(t, userRoles[len(userRoles)-1], listUsers.GetUsers()[0].GetRole())
+		require.Equal(t, userTags[len(userTags)-1], listUsers.GetUsers()[0].GetTags())
 	})
 
 	t.Run("List no users by key role", func(t *testing.T) {
@@ -878,8 +878,8 @@ func TestListUsers(t *testing.T) {
 		listUsers, err := secCli.ListUsers(ctx, &api.ListUsersRequest{})
 		t.Logf("listUsers, err: %+v, %v", listUsers, err)
 		require.NoError(t, err)
-		require.Len(t, listUsers.Users, 0)
-		require.Equal(t, int32(0), listUsers.TotalSize)
+		require.Len(t, listUsers.GetUsers(), 0)
+		require.Equal(t, int32(0), listUsers.GetTotalSize())
 	})
 
 	t.Run("List own user with non-admin role", func(t *testing.T) {
@@ -892,8 +892,8 @@ func TestListUsers(t *testing.T) {
 		listUsers, err := secCli.ListUsers(ctx, &api.ListUsersRequest{})
 		t.Logf("listUsers, err: %+v, %v", listUsers, err)
 		require.NoError(t, err)
-		require.Len(t, listUsers.Users, 1)
-		require.Equal(t, int32(1), listUsers.TotalSize)
+		require.Len(t, listUsers.GetUsers(), 1)
+		require.Equal(t, int32(1), listUsers.GetTotalSize())
 	})
 
 	t.Run("Lists are isolated by org ID", func(t *testing.T) {
@@ -906,8 +906,8 @@ func TestListUsers(t *testing.T) {
 		listUsers, err := secCli.ListUsers(ctx, &api.ListUsersRequest{})
 		t.Logf("listUsers, err: %+v, %v", listUsers, err)
 		require.NoError(t, err)
-		require.Len(t, listUsers.Users, 1)
-		require.Equal(t, int32(1), listUsers.TotalSize)
+		require.Len(t, listUsers.GetUsers(), 1)
+		require.Equal(t, int32(1), listUsers.GetTotalSize())
 	})
 
 	t.Run("List users by invalid page token", func(t *testing.T) {

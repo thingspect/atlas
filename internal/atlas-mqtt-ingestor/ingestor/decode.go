@@ -61,8 +61,8 @@ func (ing *Ingestor) decodeMessages() {
 		logger.Debugf("decodeMessages payl: %+v", payl)
 
 		// Build and publish ValidatorIn messages.
-		for _, point := range payl.Points {
-			vIn := dataPointToVIn(traceID, payl.Token, topicParts, point)
+		for _, point := range payl.GetPoints() {
+			vIn := dataPointToVIn(traceID, payl.GetToken(), topicParts, point)
 
 			bVIn, err := proto.Marshal(vIn)
 			if err != nil {
@@ -115,7 +115,7 @@ func dataPointToVIn(
 	}
 
 	// Default to current timestamp if not provided.
-	if vIn.Point.Ts == nil {
+	if vIn.GetPoint().GetTs() == nil {
 		vIn.Point.Ts = timestamppb.Now()
 	}
 

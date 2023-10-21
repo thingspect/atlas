@@ -51,14 +51,14 @@ func ParsePageToken(pToken string) (time.Time, string, error) {
 	// Unmarshal page token. A nil error with missing timestamp is treated as an
 	// empty token.
 	pt := &token.Page{}
-	if err := proto.Unmarshal(bPT, pt); err != nil || pt.BoundTs == nil {
+	if err := proto.Unmarshal(bPT, pt); err != nil || pt.GetBoundTs() == nil {
 		return time.Time{}, "", err
 	}
 
-	lastUUID, err := uuid.FromBytes(pt.PrevId)
+	lastUUID, err := uuid.FromBytes(pt.GetPrevId())
 	if err != nil {
 		return time.Time{}, "", err
 	}
 
-	return pt.BoundTs.AsTime(), lastUUID.String(), nil
+	return pt.GetBoundTs().AsTime(), lastUUID.String(), nil
 }

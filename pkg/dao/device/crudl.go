@@ -25,14 +25,14 @@ RETURNING id, token
 func (d *DAO) Create(ctx context.Context, dev *api.Device) (
 	*api.Device, error,
 ) {
-	dev.UniqId = strings.ToLower(dev.UniqId)
+	dev.UniqId = strings.ToLower(dev.GetUniqId())
 
 	now := time.Now().UTC().Truncate(time.Microsecond)
 	dev.CreatedAt = timestamppb.New(now)
 	dev.UpdatedAt = timestamppb.New(now)
 
-	if err := d.pg.QueryRowContext(ctx, createDevice, dev.OrgId, dev.UniqId,
-		dev.Name, dev.Status.String(), dev.Decoder.String(), dev.Tags,
+	if err := d.pg.QueryRowContext(ctx, createDevice, dev.GetOrgId(), dev.GetUniqId(),
+		dev.GetName(), dev.GetStatus().String(), dev.GetDecoder().String(), dev.GetTags(),
 		now).Scan(&dev.Id, &dev.Token); err != nil {
 		return nil, dao.DBToSentinel(err)
 	}
@@ -180,15 +180,15 @@ RETURNING created_at
 func (d *DAO) Update(ctx context.Context, dev *api.Device) (
 	*api.Device, error,
 ) {
-	dev.UniqId = strings.ToLower(dev.UniqId)
+	dev.UniqId = strings.ToLower(dev.GetUniqId())
 
 	var createdAt time.Time
 	updatedAt := time.Now().UTC().Truncate(time.Microsecond)
 	dev.UpdatedAt = timestamppb.New(updatedAt)
 
-	if err := d.pg.QueryRowContext(ctx, updateDevice, dev.UniqId, dev.Name,
-		dev.Status.String(), dev.Token, dev.Decoder.String(), dev.Tags,
-		updatedAt, dev.Id, dev.OrgId).Scan(&createdAt); err != nil {
+	if err := d.pg.QueryRowContext(ctx, updateDevice, dev.GetUniqId(), dev.GetName(),
+		dev.GetStatus().String(), dev.GetToken(), dev.GetDecoder().String(), dev.GetTags(),
+		updatedAt, dev.GetId(), dev.GetOrgId()).Scan(&createdAt); err != nil {
 		return nil, dao.DBToSentinel(err)
 	}
 
@@ -196,12 +196,12 @@ func (d *DAO) Update(ctx context.Context, dev *api.Device) (
 
 	// Invalidate cache on update.
 	if d.cache != nil {
-		if err := d.cache.Del(ctx, devKey(dev.OrgId, dev.Id)); err != nil {
+		if err := d.cache.Del(ctx, devKey(dev.GetOrgId(), dev.GetId())); err != nil {
 			logger := alog.FromContext(ctx)
 			logger.Errorf("Update devKey d.cache.Del: %v", err)
 		}
 
-		if err := d.cache.Del(ctx, devKeyByUniqID(dev.UniqId)); err != nil {
+		if err := d.cache.Del(ctx, devKeyByUniqID(dev.GetUniqId())); err != nil {
 			logger := alog.FromContext(ctx)
 			logger.Errorf("Update devKeyByUniqID d.cache.Del: %v", err)
 		}
@@ -233,7 +233,7 @@ func (d *DAO) Delete(ctx context.Context, devID, orgID string) error {
 			logger.Errorf("Delete devKey d.cache.Del: %v", err)
 		}
 
-		if err := d.cache.Del(ctx, devKeyByUniqID(dev.UniqId)); err != nil {
+		if err := d.cache.Del(ctx, devKeyByUniqID(dev.GetUniqId())); err != nil {
 			logger := alog.FromContext(ctx)
 			logger.Errorf("Delete devKeyByUniqID d.cache.Del: %v", err)
 		}

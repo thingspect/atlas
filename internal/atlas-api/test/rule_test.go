@@ -37,10 +37,10 @@ func TestCreateRule(t *testing.T) {
 			&api.CreateRuleRequest{Rule: rule})
 		t.Logf("createRule, err: %+v, %v", createRule, err)
 		require.NoError(t, err)
-		require.NotEqual(t, rule.Id, createRule.Id)
-		require.WithinDuration(t, time.Now(), createRule.CreatedAt.AsTime(),
+		require.NotEqual(t, rule.GetId(), createRule.GetId())
+		require.WithinDuration(t, time.Now(), createRule.GetCreatedAt().AsTime(),
 			2*time.Second)
-		require.WithinDuration(t, time.Now(), createRule.UpdatedAt.AsTime(),
+		require.WithinDuration(t, time.Now(), createRule.GetUpdatedAt().AsTime(),
 			2*time.Second)
 	})
 
@@ -102,7 +102,7 @@ func TestGetRule(t *testing.T) {
 
 		raCli := api.NewRuleAlarmServiceClient(globalAdminGRPCConn)
 		getRule, err := raCli.GetRule(ctx,
-			&api.GetRuleRequest{Id: createRule.Id})
+			&api.GetRuleRequest{Id: createRule.GetId()})
 		t.Logf("getRule, err: %+v, %v", getRule, err)
 		require.NoError(t, err)
 
@@ -136,7 +136,7 @@ func TestGetRule(t *testing.T) {
 
 		secCli := api.NewRuleAlarmServiceClient(secondaryAdminGRPCConn)
 		getRule, err := secCli.GetRule(ctx,
-			&api.GetRuleRequest{Id: createRule.Id})
+			&api.GetRuleRequest{Id: createRule.GetId()})
 		t.Logf("getRule, err: %+v, %v", getRule, err)
 		require.Nil(t, getRule)
 		require.EqualError(t, err, "rpc error: code = NotFound desc = object "+
@@ -168,15 +168,15 @@ func TestUpdateRule(t *testing.T) {
 			&api.UpdateRuleRequest{Rule: createRule})
 		t.Logf("updateRule, err: %+v, %v", updateRule, err)
 		require.NoError(t, err)
-		require.Equal(t, createRule.CreatedAt.AsTime(),
-			updateRule.CreatedAt.AsTime())
-		require.True(t, updateRule.UpdatedAt.AsTime().After(
-			updateRule.CreatedAt.AsTime()))
-		require.WithinDuration(t, createRule.CreatedAt.AsTime(),
-			updateRule.UpdatedAt.AsTime(), 2*time.Second)
+		require.Equal(t, createRule.GetCreatedAt().AsTime(),
+			updateRule.GetCreatedAt().AsTime())
+		require.True(t, updateRule.GetUpdatedAt().AsTime().After(
+			updateRule.GetCreatedAt().AsTime()))
+		require.WithinDuration(t, createRule.GetCreatedAt().AsTime(),
+			updateRule.GetUpdatedAt().AsTime(), 2*time.Second)
 
 		getRule, err := raCli.GetRule(ctx,
-			&api.GetRuleRequest{Id: createRule.Id})
+			&api.GetRuleRequest{Id: createRule.GetId()})
 		t.Logf("getRule, err: %+v, %v", getRule, err)
 		require.NoError(t, err)
 
@@ -201,7 +201,7 @@ func TestUpdateRule(t *testing.T) {
 		require.NoError(t, err)
 
 		// Update rule fields.
-		part := &api.Rule{Id: createRule.Id, Name: "api-rule-" +
+		part := &api.Rule{Id: createRule.GetId(), Name: "api-rule-" +
 			random.String(10), Status: api.Status_DISABLED, Expr: `false`}
 
 		updateRule, err := raCli.UpdateRule(ctx, &api.UpdateRuleRequest{
@@ -211,15 +211,15 @@ func TestUpdateRule(t *testing.T) {
 		})
 		t.Logf("updateRule, err: %+v, %v", updateRule, err)
 		require.NoError(t, err)
-		require.Equal(t, createRule.CreatedAt.AsTime(),
-			updateRule.CreatedAt.AsTime())
-		require.True(t, updateRule.UpdatedAt.AsTime().After(
-			updateRule.CreatedAt.AsTime()))
-		require.WithinDuration(t, createRule.CreatedAt.AsTime(),
-			updateRule.UpdatedAt.AsTime(), 2*time.Second)
+		require.Equal(t, createRule.GetCreatedAt().AsTime(),
+			updateRule.GetCreatedAt().AsTime())
+		require.True(t, updateRule.GetUpdatedAt().AsTime().After(
+			updateRule.GetCreatedAt().AsTime()))
+		require.WithinDuration(t, createRule.GetCreatedAt().AsTime(),
+			updateRule.GetUpdatedAt().AsTime(), 2*time.Second)
 
 		getRule, err := raCli.GetRule(ctx,
-			&api.GetRuleRequest{Id: createRule.Id})
+			&api.GetRuleRequest{Id: createRule.GetId()})
 		t.Logf("getRule, err: %+v, %v", getRule, err)
 		require.NoError(t, err)
 
@@ -381,7 +381,7 @@ func TestDeleteRule(t *testing.T) {
 		require.NoError(t, err)
 
 		_, err = raCli.DeleteRule(ctx,
-			&api.DeleteRuleRequest{Id: createRule.Id})
+			&api.DeleteRuleRequest{Id: createRule.GetId()})
 		t.Logf("err: %v", err)
 		require.NoError(t, err)
 
@@ -394,7 +394,7 @@ func TestDeleteRule(t *testing.T) {
 
 			raCli := api.NewRuleAlarmServiceClient(globalAdminKeyGRPCConn)
 			getRule, err := raCli.GetRule(ctx,
-				&api.GetRuleRequest{Id: createRule.Id})
+				&api.GetRuleRequest{Id: createRule.GetId()})
 			t.Logf("getRule, err: %+v, %v", getRule, err)
 			require.Nil(t, getRule)
 			require.EqualError(t, err, "rpc error: code = NotFound desc = "+
@@ -445,7 +445,7 @@ func TestDeleteRule(t *testing.T) {
 
 		secCli := api.NewRuleAlarmServiceClient(secondaryAdminGRPCConn)
 		_, err = secCli.DeleteRule(ctx,
-			&api.DeleteRuleRequest{Id: createRule.Id})
+			&api.DeleteRuleRequest{Id: createRule.GetId()})
 		t.Logf("err: %v", err)
 		require.EqualError(t, err, "rpc error: code = NotFound desc = object "+
 			"not found")
@@ -469,9 +469,9 @@ func TestListRules(t *testing.T) {
 		t.Logf("createRule, err: %+v, %v", createRule, err)
 		require.NoError(t, err)
 
-		ruleIDs = append(ruleIDs, createRule.Id)
-		ruleNames = append(ruleNames, createRule.Name)
-		ruleStatuses = append(ruleStatuses, createRule.Status)
+		ruleIDs = append(ruleIDs, createRule.GetId())
+		ruleNames = append(ruleNames, createRule.GetName())
+		ruleStatuses = append(ruleStatuses, createRule.GetStatus())
 	}
 
 	t.Run("List rules by valid org ID", func(t *testing.T) {
@@ -484,14 +484,14 @@ func TestListRules(t *testing.T) {
 		listRules, err := raCli.ListRules(ctx, &api.ListRulesRequest{})
 		t.Logf("listRules, err: %+v, %v", listRules, err)
 		require.NoError(t, err)
-		require.GreaterOrEqual(t, len(listRules.Rules), 3)
-		require.GreaterOrEqual(t, listRules.TotalSize, int32(3))
+		require.GreaterOrEqual(t, len(listRules.GetRules()), 3)
+		require.GreaterOrEqual(t, listRules.GetTotalSize(), int32(3))
 
 		var found bool
-		for _, rule := range listRules.Rules {
-			if rule.Id == ruleIDs[len(ruleIDs)-1] &&
-				rule.Name == ruleNames[len(ruleNames)-1] &&
-				rule.Status == ruleStatuses[len(ruleStatuses)-1] {
+		for _, rule := range listRules.GetRules() {
+			if rule.GetId() == ruleIDs[len(ruleIDs)-1] &&
+				rule.GetName() == ruleNames[len(ruleNames)-1] &&
+				rule.GetStatus() == ruleStatuses[len(ruleStatuses)-1] {
 				found = true
 			}
 		}
@@ -509,17 +509,17 @@ func TestListRules(t *testing.T) {
 			&api.ListRulesRequest{PageSize: 2})
 		t.Logf("listRules, err: %+v, %v", listRules, err)
 		require.NoError(t, err)
-		require.Len(t, listRules.Rules, 2)
-		require.NotEmpty(t, listRules.NextPageToken)
-		require.GreaterOrEqual(t, listRules.TotalSize, int32(3))
+		require.Len(t, listRules.GetRules(), 2)
+		require.NotEmpty(t, listRules.GetNextPageToken())
+		require.GreaterOrEqual(t, listRules.GetTotalSize(), int32(3))
 
 		nextRules, err := raCli.ListRules(ctx, &api.ListRulesRequest{
-			PageSize: 2, PageToken: listRules.NextPageToken,
+			PageSize: 2, PageToken: listRules.GetNextPageToken(),
 		})
 		t.Logf("nextRules, err: %+v, %v", nextRules, err)
 		require.NoError(t, err)
-		require.GreaterOrEqual(t, len(nextRules.Rules), 1)
-		require.GreaterOrEqual(t, nextRules.TotalSize, int32(3))
+		require.GreaterOrEqual(t, len(nextRules.GetRules()), 1)
+		require.GreaterOrEqual(t, nextRules.GetTotalSize(), int32(3))
 	})
 
 	t.Run("Lists are isolated by org ID", func(t *testing.T) {
@@ -532,8 +532,8 @@ func TestListRules(t *testing.T) {
 		listRules, err := secCli.ListRules(ctx, &api.ListRulesRequest{})
 		t.Logf("listRules, err: %+v, %v", listRules, err)
 		require.NoError(t, err)
-		require.Len(t, listRules.Rules, 0)
-		require.Equal(t, int32(0), listRules.TotalSize)
+		require.Len(t, listRules.GetRules(), 0)
+		require.Equal(t, int32(0), listRules.GetTotalSize())
 	})
 
 	t.Run("List rules by invalid page token", func(t *testing.T) {
@@ -633,7 +633,7 @@ func TestTestRule(t *testing.T) {
 				lTest.inpPoint.Attr = "api-rule" + random.String(10)
 
 				rule := random.Rule("api-rule", uuid.NewString())
-				rule.Attr = lTest.inpPoint.Attr
+				rule.Attr = lTest.inpPoint.GetAttr()
 				rule.Expr = lTest.inpRuleExpr
 
 				ctx, cancel := context.WithTimeout(context.Background(),
@@ -646,7 +646,7 @@ func TestTestRule(t *testing.T) {
 				})
 				t.Logf("testRes, err: %+v, %v", testRes, err)
 				if lTest.err == "" {
-					require.Equal(t, lTest.res, testRes.Result)
+					require.Equal(t, lTest.res, testRes.GetResult())
 					require.NoError(t, err)
 				} else {
 					require.Nil(t, testRes)

@@ -22,9 +22,9 @@ func gatewayAck(body []byte) ([]*decode.Point, error) {
 		protojson.MarshalOptions{}.Format(ackMsg), " ", "")}}
 
 	// Parse DownlinkTXAckItems.
-	for _, item := range ackMsg.Items {
+	for _, item := range ackMsg.GetItems() {
 		msgs = append(msgs, &decode.Point{
-			Attr: "ack", Value: item.Status.String(),
+			Attr: "ack", Value: item.GetStatus().String(),
 		})
 	}
 

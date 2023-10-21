@@ -1,7 +1,7 @@
 version: "3"
 services:
   atlas-api:
-    image: ghcr.io/thingspect/atlas:8ef215b5
+    image: ghcr.io/thingspect/atlas:c3fd6a36
     command: atlas-api
     restart: on-failure
     ports:
@@ -22,7 +22,7 @@ services:
       - API_LORA_DEV_PROF_ID=00000000-0000-0000-0000-000000000000
 
   atlas-mqtt-ingestor:
-    image: ghcr.io/thingspect/atlas:8ef215b5
+    image: ghcr.io/thingspect/atlas:c3fd6a36
     command: atlas-mqtt-ingestor
     restart: on-failure
     depends_on:
@@ -34,7 +34,7 @@ services:
       - MQTT_INGEST_NSQ_PUB_ADDR=nsqd:4150
 
   atlas-lora-ingestor:
-    image: ghcr.io/thingspect/atlas:8ef215b5
+    image: ghcr.io/thingspect/atlas:c3fd6a36
     command: atlas-lora-ingestor
     restart: on-failure
     depends_on:
@@ -47,7 +47,7 @@ services:
       - LORA_INGEST_NSQ_PUB_ADDR=nsqd:4150
 
   atlas-decoder:
-    image: ghcr.io/thingspect/atlas:8ef215b5
+    image: ghcr.io/thingspect/atlas:c3fd6a36
     command: atlas-decoder
     restart: on-failure
     depends_on:
@@ -60,7 +60,7 @@ services:
       - DECODER_NSQ_LOOKUP_ADDRS=nsqlookupd:4161
 
   atlas-validator:
-    image: ghcr.io/thingspect/atlas:8ef215b5
+    image: ghcr.io/thingspect/atlas:c3fd6a36
     command: atlas-validator
     restart: on-failure
     depends_on:
@@ -74,7 +74,7 @@ services:
       - VALIDATOR_NSQ_LOOKUP_ADDRS=nsqlookupd:4161
 
   atlas-accumulator:
-    image: ghcr.io/thingspect/atlas:8ef215b5
+    image: ghcr.io/thingspect/atlas:c3fd6a36
     command: atlas-accumulator
     restart: on-failure
     environment:
@@ -84,7 +84,7 @@ services:
       - ACCUMULATOR_NSQ_LOOKUP_ADDRS=nsqlookupd:4161
 
   atlas-eventer:
-    image: ghcr.io/thingspect/atlas:8ef215b5
+    image: ghcr.io/thingspect/atlas:c3fd6a36
     command: atlas-eventer
     restart: on-failure
     depends_on:
@@ -96,7 +96,7 @@ services:
       - EVENTER_NSQ_LOOKUP_ADDRS=nsqlookupd:4161
 
   atlas-alerter:
-    image: ghcr.io/thingspect/atlas:8ef215b5
+    image: ghcr.io/thingspect/atlas:c3fd6a36
     command: atlas-alerter
     restart: on-failure
     environment:

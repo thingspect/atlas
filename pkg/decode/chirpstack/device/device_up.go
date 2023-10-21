@@ -27,31 +27,31 @@ func deviceUp(body []byte) (
 	msgs := []*decode.Point{{Attr: "raw_device", Value: strings.ReplaceAll(
 		protojson.MarshalOptions{}.Format(upMsg), " ", "")}}
 
-	if upMsg.Data != nil {
+	if upMsg.GetData() != nil {
 		msgs = append(msgs, &decode.Point{
-			Attr: "raw_data", Value: hex.EncodeToString(upMsg.Data),
+			Attr: "raw_data", Value: hex.EncodeToString(upMsg.GetData()),
 		})
 	}
 
 	// Parse UplinkRXInfos.
-	upTime, rxMsgs := chirpstack.ParseRXInfos(upMsg.RxInfo)
+	upTime, rxMsgs := chirpstack.ParseRXInfos(upMsg.GetRxInfo())
 	msgs = append(msgs, rxMsgs...)
 
 	// Parse UplinkTXInfo.
-	if upMsg.TxInfo != nil && upMsg.TxInfo.Frequency != 0 {
+	if upMsg.GetTxInfo().GetFrequency() != 0 {
 		msgs = append(msgs, &decode.Point{
-			Attr: "frequency", Value: int32(upMsg.TxInfo.Frequency),
+			Attr: "frequency", Value: int32(upMsg.GetTxInfo().GetFrequency()),
 		})
 	}
 
 	// Parse UplinkEvent.
-	msgs = append(msgs, &decode.Point{Attr: "adr", Value: upMsg.Adr})
+	msgs = append(msgs, &decode.Point{Attr: "adr", Value: upMsg.GetAdr()})
 	msgs = append(msgs, &decode.Point{
-		Attr: "data_rate", Value: int32(upMsg.Dr),
+		Attr: "data_rate", Value: int32(upMsg.GetDr()),
 	})
 	msgs = append(msgs, &decode.Point{
-		Attr: "confirmed", Value: upMsg.Confirmed,
+		Attr: "confirmed", Value: upMsg.GetConfirmed(),
 	})
 
-	return msgs, upTime, upMsg.Data, nil
+	return msgs, upTime, upMsg.GetData(), nil
 }

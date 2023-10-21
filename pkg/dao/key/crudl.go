@@ -22,8 +22,8 @@ func (d *DAO) Create(ctx context.Context, key *api.Key) (*api.Key, error) {
 	now := time.Now().UTC().Truncate(time.Microsecond)
 	key.CreatedAt = timestamppb.New(now)
 
-	if err := d.pg.QueryRowContext(ctx, createKey, key.OrgId, key.Name,
-		key.Role.String(), now).Scan(&key.Id); err != nil {
+	if err := d.pg.QueryRowContext(ctx, createKey, key.GetOrgId(), key.GetName(),
+		key.GetRole().String(), now).Scan(&key.Id); err != nil {
 		return nil, dao.DBToSentinel(err)
 	}
 

@@ -20,13 +20,13 @@ RETURNING id
 
 // Create creates an organization in the database.
 func (d *DAO) Create(ctx context.Context, org *api.Org) (*api.Org, error) {
-	org.Name = strings.ToLower(org.Name)
+	org.Name = strings.ToLower(org.GetName())
 	now := time.Now().UTC().Truncate(time.Microsecond)
 	org.CreatedAt = timestamppb.New(now)
 	org.UpdatedAt = timestamppb.New(now)
 
-	if err := d.pg.QueryRowContext(ctx, createOrg, org.Name, org.DisplayName,
-		org.Email, now).Scan(&org.Id); err != nil {
+	if err := d.pg.QueryRowContext(ctx, createOrg, org.GetName(), org.GetDisplayName(),
+		org.GetEmail(), now).Scan(&org.Id); err != nil {
 		return nil, dao.DBToSentinel(err)
 	}
 
@@ -65,13 +65,13 @@ RETURNING created_at
 // Update updates an organization in the database. CreatedAt should not
 // update, so it is safe to override it at the DAO level.
 func (d *DAO) Update(ctx context.Context, org *api.Org) (*api.Org, error) {
-	org.Name = strings.ToLower(org.Name)
+	org.Name = strings.ToLower(org.GetName())
 	var createdAt time.Time
 	updatedAt := time.Now().UTC().Truncate(time.Microsecond)
 	org.UpdatedAt = timestamppb.New(updatedAt)
 
-	if err := d.pg.QueryRowContext(ctx, updateOrg, org.Name, org.DisplayName,
-		org.Email, updatedAt, org.Id).Scan(&createdAt); err != nil {
+	if err := d.pg.QueryRowContext(ctx, updateOrg, org.GetName(), org.GetDisplayName(),
+		org.GetEmail(), updatedAt, org.GetId()).Scan(&createdAt); err != nil {
 		return nil, dao.DBToSentinel(err)
 	}
 

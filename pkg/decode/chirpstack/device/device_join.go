@@ -22,28 +22,28 @@ func deviceJoin(body []byte) ([]*decode.Point, error) {
 
 	// Parse JoinEvent.
 	msgs = append(msgs, &decode.Point{Attr: "join", Value: true})
-	if joinMsg.DevAddr != "" {
+	if joinMsg.GetDevAddr() != "" {
 		msgs = append(msgs, &decode.Point{
-			Attr: "devaddr", Value: joinMsg.DevAddr,
+			Attr: "devaddr", Value: joinMsg.GetDevAddr(),
 		})
 	}
 
 	// Parse DeviceInfo.
-	if joinMsg.DeviceInfo != nil {
-		if joinMsg.DeviceInfo.DevEui != "" {
+	if joinMsg.GetDeviceInfo() != nil {
+		if joinMsg.GetDeviceInfo().GetDevEui() != "" {
 			msgs = append(msgs, &decode.Point{
-				Attr: "id", Value: joinMsg.DeviceInfo.DevEui,
+				Attr: "id", Value: joinMsg.GetDeviceInfo().GetDevEui(),
 			})
 		}
-		if joinMsg.DeviceInfo.DeviceProfileName != "" {
+		if joinMsg.GetDeviceInfo().GetDeviceProfileName() != "" {
 			msgs = append(msgs, &decode.Point{
 				Attr:  "lora_profile",
-				Value: joinMsg.DeviceInfo.DeviceProfileName,
+				Value: joinMsg.GetDeviceInfo().GetDeviceProfileName(),
 			})
 		}
 		msgs = append(msgs, &decode.Point{
 			Attr:  "class",
-			Value: joinMsg.DeviceInfo.DeviceClassEnabled.String(),
+			Value: joinMsg.GetDeviceInfo().GetDeviceClassEnabled().String(),
 		})
 	}
 

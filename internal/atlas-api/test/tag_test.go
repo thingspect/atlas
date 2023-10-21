@@ -28,8 +28,8 @@ func TestListTags(t *testing.T) {
 		t.Logf("createDev, err: %+v, %v", createDev, err)
 		require.NoError(t, err)
 
-		tCount += len(createDev.Tags)
-		lastTag = createDev.Tags[len(createDev.Tags)-1]
+		tCount += len(createDev.GetTags())
+		lastTag = createDev.GetTags()[len(createDev.GetTags())-1]
 	}
 
 	for i := 0; i < 3; i++ {
@@ -44,8 +44,8 @@ func TestListTags(t *testing.T) {
 		require.NoError(t, err)
 
 		// Don't include role-based tags.
-		tCount += len(createUser.Tags) - 1
-		lastTag = createUser.Tags[len(createUser.Tags)-1]
+		tCount += len(createUser.GetTags()) - 1
+		lastTag = createUser.GetTags()[len(createUser.GetTags())-1]
 	}
 
 	t.Run("List tags by valid org ID", func(t *testing.T) {
@@ -58,10 +58,10 @@ func TestListTags(t *testing.T) {
 		listTags, err := tagCli.ListTags(ctx, &api.ListTagsRequest{})
 		t.Logf("listTags, err: %+v, %v", listTags, err)
 		require.NoError(t, err)
-		require.GreaterOrEqual(t, len(listTags.Tags), tCount)
+		require.GreaterOrEqual(t, len(listTags.GetTags()), tCount)
 
 		var found bool
-		for _, tag := range listTags.Tags {
+		for _, tag := range listTags.GetTags() {
 			if tag == lastTag {
 				found = true
 			}
@@ -79,6 +79,6 @@ func TestListTags(t *testing.T) {
 		listTags, err := secCli.ListTags(ctx, &api.ListTagsRequest{})
 		t.Logf("listTags, err: %+v, %v", listTags, err)
 		require.NoError(t, err)
-		require.GreaterOrEqual(t, len(listTags.Tags), 1)
+		require.GreaterOrEqual(t, len(listTags.GetTags()), 1)
 	})
 }

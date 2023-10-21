@@ -23,38 +23,38 @@ func gatewayStats(body []byte) ([]*decode.Point, error) {
 		protojson.MarshalOptions{}.Format(statsMsg), " ", "")}}
 
 	// Parse GatewayStats.
-	if len(statsMsg.GatewayId) != 0 {
+	if len(statsMsg.GetGatewayId()) != 0 {
 		msgs = append(msgs, &decode.Point{
-			Attr: "id", Value: statsMsg.GatewayId,
+			Attr: "id", Value: statsMsg.GetGatewayId(),
 		})
 	}
-	if statsMsg.Time != nil {
+	if statsMsg.GetTime() != nil {
 		msgs = append(msgs, &decode.Point{
-			Attr: "time", Value: strconv.FormatInt(statsMsg.Time.Seconds, 10),
+			Attr: "time", Value: strconv.FormatInt(statsMsg.GetTime().GetSeconds(), 10),
 		})
 	}
-	if statsMsg.RxPacketsReceived != 0 {
+	if statsMsg.GetRxPacketsReceived() != 0 {
 		msgs = append(msgs, &decode.Point{
-			Attr: "rx_received", Value: int32(statsMsg.RxPacketsReceived),
+			Attr: "rx_received", Value: int32(statsMsg.GetRxPacketsReceived()),
 		})
 	}
-	if statsMsg.RxPacketsReceivedOk != 0 {
+	if statsMsg.GetRxPacketsReceivedOk() != 0 {
 		msgs = append(msgs, &decode.Point{
 			Attr:  "rx_received_valid",
-			Value: int32(statsMsg.RxPacketsReceivedOk),
+			Value: int32(statsMsg.GetRxPacketsReceivedOk()),
 		})
 	}
-	if statsMsg.TxPacketsReceived != 0 {
+	if statsMsg.GetTxPacketsReceived() != 0 {
 		msgs = append(msgs, &decode.Point{
-			Attr: "tx_received", Value: int32(statsMsg.TxPacketsReceived),
+			Attr: "tx_received", Value: int32(statsMsg.GetTxPacketsReceived()),
 		})
 	}
-	if statsMsg.TxPacketsEmitted != 0 {
+	if statsMsg.GetTxPacketsEmitted() != 0 {
 		msgs = append(msgs, &decode.Point{
-			Attr: "tx_transmitted", Value: int32(statsMsg.TxPacketsEmitted),
+			Attr: "tx_transmitted", Value: int32(statsMsg.GetTxPacketsEmitted()),
 		})
 	}
-	for k, v := range statsMsg.Metadata {
+	for k, v := range statsMsg.GetMetadata() {
 		msgs = append(msgs, &decode.Point{Attr: k, Value: v})
 	}
 

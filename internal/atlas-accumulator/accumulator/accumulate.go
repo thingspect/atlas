@@ -24,7 +24,7 @@ func (acc *Accumulator) accumulateMessages() {
 		metric.Incr("received", nil)
 		vOut := &message.ValidatorOut{}
 		err := proto.Unmarshal(msg.Payload(), vOut)
-		if err != nil || vOut.Point == nil || vOut.Device == nil {
+		if err != nil || vOut.GetPoint() == nil || vOut.GetDevice() == nil {
 			msg.Ack()
 
 			if !bytes.Equal([]byte{queue.Prime}, msg.Payload()) {
@@ -38,14 +38,14 @@ func (acc *Accumulator) accumulateMessages() {
 
 		// Set up logging fields.
 		logger := alog.
-			WithField("traceID", vOut.Point.TraceId).
-			WithField("orgID", vOut.Device.OrgId).
-			WithField("uniqID", vOut.Point.UniqId).
-			WithField("devID", vOut.Device.Id)
+			WithField("traceID", vOut.GetPoint().GetTraceId()).
+			WithField("orgID", vOut.GetDevice().GetOrgId()).
+			WithField("uniqID", vOut.GetPoint().GetUniqId()).
+			WithField("devID", vOut.GetDevice().GetId())
 
 		// Create data point.
 		ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
-		err = acc.dpDAO.Create(ctx, vOut.Point, vOut.Device.OrgId)
+		err = acc.dpDAO.Create(ctx, vOut.GetPoint(), vOut.GetDevice().GetOrgId())
 		cancel()
 		if errors.Is(err, dao.ErrAlreadyExists) {
 			msg.Ack()

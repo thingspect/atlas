@@ -28,14 +28,14 @@ func TestCreate(t *testing.T) {
 	require.NoError(t, err)
 
 	createRule, err := globalRuleDAO.Create(ctx, random.Rule("dao-alarm",
-		createOrg.Id))
+		createOrg.GetId()))
 	t.Logf("createRule, err: %+v, %v", createRule, err)
 	require.NoError(t, err)
 
 	t.Run("Create valid alarm", func(t *testing.T) {
 		t.Parallel()
 
-		alarm := random.Alarm("dao-alarm", createOrg.Id, createRule.Id)
+		alarm := random.Alarm("dao-alarm", createOrg.GetId(), createRule.GetId())
 		createAlarm, _ := proto.Clone(alarm).(*api.Alarm)
 
 		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
@@ -44,17 +44,17 @@ func TestCreate(t *testing.T) {
 		createAlarm, err := globalAlarmDAO.Create(ctx, createAlarm)
 		t.Logf("alarm, createAlarm, err: %+v, %+v, %v", alarm, createAlarm, err)
 		require.NoError(t, err)
-		require.NotEqual(t, alarm.Id, createAlarm.Id)
-		require.WithinDuration(t, time.Now(), createAlarm.CreatedAt.AsTime(),
+		require.NotEqual(t, alarm.GetId(), createAlarm.GetId())
+		require.WithinDuration(t, time.Now(), createAlarm.GetCreatedAt().AsTime(),
 			2*time.Second)
-		require.WithinDuration(t, time.Now(), createAlarm.UpdatedAt.AsTime(),
+		require.WithinDuration(t, time.Now(), createAlarm.GetUpdatedAt().AsTime(),
 			2*time.Second)
 	})
 
 	t.Run("Create invalid alarm", func(t *testing.T) {
 		t.Parallel()
 
-		alarm := random.Alarm("dao-alarm", createOrg.Id, createRule.Id)
+		alarm := random.Alarm("dao-alarm", createOrg.GetId(), createRule.GetId())
 		alarm.Name = "dao-alarm-" + random.String(80)
 
 		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
@@ -73,7 +73,7 @@ func TestCreate(t *testing.T) {
 		defer cancel()
 
 		createAlarm, err := globalAlarmDAO.Create(ctx, random.Alarm("dao-alarm",
-			createOrg.Id, uuid.NewString()))
+			createOrg.GetId(), uuid.NewString()))
 		t.Logf("createAlarm, err: %+v, %v", createAlarm, err)
 		require.Nil(t, createAlarm)
 		require.ErrorIs(t, err, dao.ErrInvalidFormat)
@@ -91,12 +91,12 @@ func TestRead(t *testing.T) {
 	require.NoError(t, err)
 
 	createRule, err := globalRuleDAO.Create(ctx, random.Rule("dao-alarm",
-		createOrg.Id))
+		createOrg.GetId()))
 	t.Logf("createRule, err: %+v, %v", createRule, err)
 	require.NoError(t, err)
 
 	createAlarm, err := globalAlarmDAO.Create(ctx, random.Alarm("dao-alarm",
-		createOrg.Id, createRule.Id))
+		createOrg.GetId(), createRule.GetId()))
 	t.Logf("createAlarm, err: %+v, %v", createAlarm, err)
 	require.NoError(t, err)
 
@@ -106,8 +106,8 @@ func TestRead(t *testing.T) {
 		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
 		defer cancel()
 
-		readAlarm, err := globalAlarmDAO.Read(ctx, createAlarm.Id,
-			createAlarm.OrgId, createRule.Id)
+		readAlarm, err := globalAlarmDAO.Read(ctx, createAlarm.GetId(),
+			createAlarm.GetOrgId(), createRule.GetId())
 		t.Logf("readAlarm, err: %+v, %v", readAlarm, err)
 		require.NoError(t, err)
 		require.Equal(t, createAlarm, readAlarm)
@@ -120,7 +120,7 @@ func TestRead(t *testing.T) {
 		defer cancel()
 
 		readAlarm, err := globalAlarmDAO.Read(ctx, uuid.NewString(),
-			createAlarm.OrgId, createRule.Id)
+			createAlarm.GetOrgId(), createRule.GetId())
 		t.Logf("readAlarm, err: %+v, %v", readAlarm, err)
 		require.Nil(t, readAlarm)
 		require.Equal(t, dao.ErrNotFound, err)
@@ -132,8 +132,8 @@ func TestRead(t *testing.T) {
 		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
 		defer cancel()
 
-		readAlarm, err := globalAlarmDAO.Read(ctx, createAlarm.Id,
-			createAlarm.OrgId, uuid.NewString())
+		readAlarm, err := globalAlarmDAO.Read(ctx, createAlarm.GetId(),
+			createAlarm.GetOrgId(), uuid.NewString())
 		t.Logf("readAlarm, err: %+v, %v", readAlarm, err)
 		require.Nil(t, readAlarm)
 		require.Equal(t, dao.ErrNotFound, err)
@@ -145,8 +145,8 @@ func TestRead(t *testing.T) {
 		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
 		defer cancel()
 
-		readAlarm, err := globalAlarmDAO.Read(ctx, createAlarm.Id,
-			uuid.NewString(), createRule.Id)
+		readAlarm, err := globalAlarmDAO.Read(ctx, createAlarm.GetId(),
+			uuid.NewString(), createRule.GetId())
 		t.Logf("readAlarm, err: %+v, %v", readAlarm, err)
 		require.Nil(t, readAlarm)
 		require.Equal(t, dao.ErrNotFound, err)
@@ -159,7 +159,7 @@ func TestRead(t *testing.T) {
 		defer cancel()
 
 		readAlarm, err := globalAlarmDAO.Read(ctx, random.String(10),
-			createAlarm.OrgId, createRule.Id)
+			createAlarm.GetOrgId(), createRule.GetId())
 		t.Logf("readAlarm, err: %+v, %v", readAlarm, err)
 		require.Nil(t, readAlarm)
 		require.ErrorIs(t, err, dao.ErrInvalidFormat)
@@ -177,7 +177,7 @@ func TestUpdate(t *testing.T) {
 	require.NoError(t, err)
 
 	createRule, err := globalRuleDAO.Create(ctx, random.Rule("dao-alarm",
-		createOrg.Id))
+		createOrg.GetId()))
 	t.Logf("createRule, err: %+v, %v", createRule, err)
 	require.NoError(t, err)
 
@@ -188,7 +188,7 @@ func TestUpdate(t *testing.T) {
 		defer cancel()
 
 		createAlarm, err := globalAlarmDAO.Create(ctx, random.Alarm("dao-alarm",
-			createOrg.Id, createRule.Id))
+			createOrg.GetId(), createRule.GetId()))
 		t.Logf("createAlarm, err: %+v, %v", createAlarm, err)
 		require.NoError(t, err)
 
@@ -203,17 +203,17 @@ func TestUpdate(t *testing.T) {
 		t.Logf("createAlarm, updateAlarm, err: %+v, %+v, %v", createAlarm,
 			updateAlarm, err)
 		require.NoError(t, err)
-		require.Equal(t, createAlarm.Name, updateAlarm.Name)
-		require.Equal(t, createAlarm.Status, updateAlarm.Status)
-		require.Equal(t, createAlarm.Type, updateAlarm.Type)
-		require.Equal(t, createAlarm.UserTags, updateAlarm.UserTags)
-		require.True(t, updateAlarm.UpdatedAt.AsTime().After(
-			updateAlarm.CreatedAt.AsTime()))
-		require.WithinDuration(t, createAlarm.CreatedAt.AsTime(),
-			updateAlarm.UpdatedAt.AsTime(), 2*time.Second)
+		require.Equal(t, createAlarm.GetName(), updateAlarm.GetName())
+		require.Equal(t, createAlarm.GetStatus(), updateAlarm.GetStatus())
+		require.Equal(t, createAlarm.GetType(), updateAlarm.GetType())
+		require.Equal(t, createAlarm.GetUserTags(), updateAlarm.GetUserTags())
+		require.True(t, updateAlarm.GetUpdatedAt().AsTime().After(
+			updateAlarm.GetCreatedAt().AsTime()))
+		require.WithinDuration(t, createAlarm.GetCreatedAt().AsTime(),
+			updateAlarm.GetUpdatedAt().AsTime(), 2*time.Second)
 
-		readAlarm, err := globalAlarmDAO.Read(ctx, createAlarm.Id,
-			createAlarm.OrgId, createRule.Id)
+		readAlarm, err := globalAlarmDAO.Read(ctx, createAlarm.GetId(),
+			createAlarm.GetOrgId(), createRule.GetId())
 		t.Logf("readAlarm, err: %+v, %v", readAlarm, err)
 		require.NoError(t, err)
 		require.Equal(t, updateAlarm, readAlarm)
@@ -226,7 +226,7 @@ func TestUpdate(t *testing.T) {
 		defer cancel()
 
 		updateAlarm, err := globalAlarmDAO.Update(ctx, random.Alarm("dao-alarm",
-			createOrg.Id, createRule.Id))
+			createOrg.GetId(), createRule.GetId()))
 		t.Logf("updateAlarm, err: %+v, %v", updateAlarm, err)
 		require.Nil(t, updateAlarm)
 		require.Equal(t, dao.ErrNotFound, err)
@@ -239,7 +239,7 @@ func TestUpdate(t *testing.T) {
 		defer cancel()
 
 		createAlarm, err := globalAlarmDAO.Create(ctx, random.Alarm("dao-alarm",
-			createOrg.Id, createRule.Id))
+			createOrg.GetId(), createRule.GetId()))
 		t.Logf("createAlarm, err: %+v, %v", createAlarm, err)
 		require.NoError(t, err)
 
@@ -260,7 +260,7 @@ func TestUpdate(t *testing.T) {
 		defer cancel()
 
 		createAlarm, err := globalAlarmDAO.Create(ctx, random.Alarm("dao-alarm",
-			createOrg.Id, createRule.Id))
+			createOrg.GetId(), createRule.GetId()))
 		t.Logf("createAlarm, err: %+v, %v", createAlarm, err)
 		require.NoError(t, err)
 
@@ -282,7 +282,7 @@ func TestUpdate(t *testing.T) {
 		defer cancel()
 
 		createAlarm, err := globalAlarmDAO.Create(ctx, random.Alarm("dao-alarm",
-			createOrg.Id, createRule.Id))
+			createOrg.GetId(), createRule.GetId()))
 		t.Logf("createAlarm, err: %+v, %v", createAlarm, err)
 		require.NoError(t, err)
 
@@ -308,7 +308,7 @@ func TestDelete(t *testing.T) {
 	require.NoError(t, err)
 
 	createRule, err := globalRuleDAO.Create(ctx, random.Rule("dao-alarm",
-		createOrg.Id))
+		createOrg.GetId()))
 	t.Logf("createRule, err: %+v, %v", createRule, err)
 	require.NoError(t, err)
 
@@ -319,12 +319,12 @@ func TestDelete(t *testing.T) {
 		defer cancel()
 
 		createAlarm, err := globalAlarmDAO.Create(ctx, random.Alarm("dao-alarm",
-			createOrg.Id, createRule.Id))
+			createOrg.GetId(), createRule.GetId()))
 		t.Logf("createAlarm, err: %+v, %v", createAlarm, err)
 		require.NoError(t, err)
 
-		err = globalAlarmDAO.Delete(ctx, createAlarm.Id, createOrg.Id,
-			createRule.Id)
+		err = globalAlarmDAO.Delete(ctx, createAlarm.GetId(), createOrg.GetId(),
+			createRule.GetId())
 		t.Logf("err: %v", err)
 		require.NoError(t, err)
 
@@ -335,8 +335,8 @@ func TestDelete(t *testing.T) {
 				testTimeout)
 			defer cancel()
 
-			readAlarm, err := globalAlarmDAO.Read(ctx, createAlarm.Id,
-				createOrg.Id, createRule.Id)
+			readAlarm, err := globalAlarmDAO.Read(ctx, createAlarm.GetId(),
+				createOrg.GetId(), createRule.GetId())
 			t.Logf("readAlarm, err: %+v, %v", readAlarm, err)
 			require.Nil(t, readAlarm)
 			require.Equal(t, dao.ErrNotFound, err)
@@ -349,8 +349,8 @@ func TestDelete(t *testing.T) {
 		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
 		defer cancel()
 
-		err := globalAlarmDAO.Delete(ctx, uuid.NewString(), createOrg.Id,
-			createRule.Id)
+		err := globalAlarmDAO.Delete(ctx, uuid.NewString(), createOrg.GetId(),
+			createRule.GetId())
 		t.Logf("err: %v", err)
 		require.Equal(t, dao.ErrNotFound, err)
 	})
@@ -362,11 +362,11 @@ func TestDelete(t *testing.T) {
 		defer cancel()
 
 		createAlarm, err := globalAlarmDAO.Create(ctx, random.Alarm("dao-alarm",
-			createOrg.Id, createRule.Id))
+			createOrg.GetId(), createRule.GetId()))
 		t.Logf("createAlarm, err: %+v, %v", createAlarm, err)
 		require.NoError(t, err)
 
-		err = globalAlarmDAO.Delete(ctx, createAlarm.Id, createOrg.Id,
+		err = globalAlarmDAO.Delete(ctx, createAlarm.GetId(), createOrg.GetId(),
 			uuid.NewString())
 		t.Logf("err: %v", err)
 		require.Equal(t, dao.ErrNotFound, err)
@@ -379,12 +379,12 @@ func TestDelete(t *testing.T) {
 		defer cancel()
 
 		createAlarm, err := globalAlarmDAO.Create(ctx, random.Alarm("dao-alarm",
-			createOrg.Id, createRule.Id))
+			createOrg.GetId(), createRule.GetId()))
 		t.Logf("createAlarm, err: %+v, %v", createAlarm, err)
 		require.NoError(t, err)
 
-		err = globalAlarmDAO.Delete(ctx, createAlarm.Id, uuid.NewString(),
-			createRule.Id)
+		err = globalAlarmDAO.Delete(ctx, createAlarm.GetId(), uuid.NewString(),
+			createRule.GetId())
 		t.Logf("err: %v", err)
 		require.Equal(t, dao.ErrNotFound, err)
 	})
@@ -401,7 +401,7 @@ func TestList(t *testing.T) {
 	require.NoError(t, err)
 
 	createRule, err := globalRuleDAO.Create(ctx, random.Rule("dao-alarm",
-		createOrg.Id))
+		createOrg.GetId()))
 	t.Logf("createRule, err: %+v, %v", createRule, err)
 	require.NoError(t, err)
 
@@ -411,14 +411,14 @@ func TestList(t *testing.T) {
 	alarmTSes := []time.Time{}
 	for i := 0; i < 3; i++ {
 		createAlarm, err := globalAlarmDAO.Create(ctx, random.Alarm("dao-alarm",
-			createOrg.Id, createRule.Id))
+			createOrg.GetId(), createRule.GetId()))
 		t.Logf("createAlarm, err: %+v, %v", createAlarm, err)
 		require.NoError(t, err)
 
-		alarmIDs = append(alarmIDs, createAlarm.Id)
-		alarmNames = append(alarmNames, createAlarm.Name)
-		alarmTypes = append(alarmTypes, createAlarm.Type)
-		alarmTSes = append(alarmTSes, createAlarm.CreatedAt.AsTime())
+		alarmIDs = append(alarmIDs, createAlarm.GetId())
+		alarmNames = append(alarmNames, createAlarm.GetName())
+		alarmTypes = append(alarmTypes, createAlarm.GetType())
+		alarmTSes = append(alarmTSes, createAlarm.GetCreatedAt().AsTime())
 	}
 
 	t.Run("List alarms by valid org ID", func(t *testing.T) {
@@ -427,7 +427,7 @@ func TestList(t *testing.T) {
 		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
 		defer cancel()
 
-		listAlarms, listCount, err := globalAlarmDAO.List(ctx, createOrg.Id,
+		listAlarms, listCount, err := globalAlarmDAO.List(ctx, createOrg.GetId(),
 			time.Time{}, "", 0, "")
 		t.Logf("listAlarms, listCount, err: %+v, %v, %v", listAlarms, listCount,
 			err)
@@ -437,9 +437,9 @@ func TestList(t *testing.T) {
 
 		var found bool
 		for _, alarm := range listAlarms {
-			if alarm.Id == alarmIDs[len(alarmIDs)-1] &&
-				alarm.Name == alarmNames[len(alarmNames)-1] &&
-				alarm.Type == alarmTypes[len(alarmTypes)-1] {
+			if alarm.GetId() == alarmIDs[len(alarmIDs)-1] &&
+				alarm.GetName() == alarmNames[len(alarmNames)-1] &&
+				alarm.GetType() == alarmTypes[len(alarmTypes)-1] {
 				found = true
 			}
 		}
@@ -452,7 +452,7 @@ func TestList(t *testing.T) {
 		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
 		defer cancel()
 
-		listAlarms, listCount, err := globalAlarmDAO.List(ctx, createOrg.Id,
+		listAlarms, listCount, err := globalAlarmDAO.List(ctx, createOrg.GetId(),
 			alarmTSes[0], alarmIDs[0], 5, "")
 		t.Logf("listAlarms, listCount, err: %+v, %v, %v", listAlarms, listCount,
 			err)
@@ -462,9 +462,9 @@ func TestList(t *testing.T) {
 
 		var found bool
 		for _, alarm := range listAlarms {
-			if alarm.Id == alarmIDs[len(alarmIDs)-1] &&
-				alarm.Name == alarmNames[len(alarmNames)-1] &&
-				alarm.Type == alarmTypes[len(alarmTypes)-1] {
+			if alarm.GetId() == alarmIDs[len(alarmIDs)-1] &&
+				alarm.GetName() == alarmNames[len(alarmNames)-1] &&
+				alarm.GetType() == alarmTypes[len(alarmTypes)-1] {
 				found = true
 			}
 		}
@@ -477,7 +477,7 @@ func TestList(t *testing.T) {
 		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
 		defer cancel()
 
-		listAlarms, listCount, err := globalAlarmDAO.List(ctx, createOrg.Id,
+		listAlarms, listCount, err := globalAlarmDAO.List(ctx, createOrg.GetId(),
 			time.Time{}, "", 1, "")
 		t.Logf("listAlarms, listCount, err: %+v, %v, %v", listAlarms, listCount,
 			err)
@@ -492,8 +492,8 @@ func TestList(t *testing.T) {
 		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
 		defer cancel()
 
-		listAlarms, listCount, err := globalAlarmDAO.List(ctx, createOrg.Id,
-			time.Time{}, "", 0, createRule.Id)
+		listAlarms, listCount, err := globalAlarmDAO.List(ctx, createOrg.GetId(),
+			time.Time{}, "", 0, createRule.GetId())
 		t.Logf("listAlarms, listCount, err: %+v, %v, %v", listAlarms, listCount,
 			err)
 		require.NoError(t, err)
@@ -502,9 +502,9 @@ func TestList(t *testing.T) {
 
 		var found bool
 		for _, alarm := range listAlarms {
-			if alarm.Id == alarmIDs[len(alarmIDs)-1] &&
-				alarm.Name == alarmNames[len(alarmNames)-1] &&
-				alarm.Type == alarmTypes[len(alarmTypes)-1] {
+			if alarm.GetId() == alarmIDs[len(alarmIDs)-1] &&
+				alarm.GetName() == alarmNames[len(alarmNames)-1] &&
+				alarm.GetType() == alarmTypes[len(alarmTypes)-1] {
 				found = true
 			}
 		}
@@ -517,8 +517,8 @@ func TestList(t *testing.T) {
 		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
 		defer cancel()
 
-		listAlarms, listCount, err := globalAlarmDAO.List(ctx, createOrg.Id,
-			alarmTSes[0], alarmIDs[0], 5, createRule.Id)
+		listAlarms, listCount, err := globalAlarmDAO.List(ctx, createOrg.GetId(),
+			alarmTSes[0], alarmIDs[0], 5, createRule.GetId())
 		t.Logf("listAlarms, listCount, err: %+v, %v, %v", listAlarms, listCount,
 			err)
 		require.NoError(t, err)
@@ -527,9 +527,9 @@ func TestList(t *testing.T) {
 
 		var found bool
 		for _, alarm := range listAlarms {
-			if alarm.Id == alarmIDs[len(alarmIDs)-1] &&
-				alarm.Name == alarmNames[len(alarmNames)-1] &&
-				alarm.Type == alarmTypes[len(alarmTypes)-1] {
+			if alarm.GetId() == alarmIDs[len(alarmIDs)-1] &&
+				alarm.GetName() == alarmNames[len(alarmNames)-1] &&
+				alarm.GetType() == alarmTypes[len(alarmTypes)-1] {
 				found = true
 			}
 		}

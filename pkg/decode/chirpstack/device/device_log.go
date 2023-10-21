@@ -23,14 +23,14 @@ func deviceLog(body []byte) ([]*decode.Point, error) {
 
 	// Parse ErrorEvent.
 	msgs = append(msgs, &decode.Point{
-		Attr: "log_level", Value: logMsg.Level.String(),
+		Attr: "log_level", Value: logMsg.GetLevel().String(),
 	})
 	msgs = append(msgs, &decode.Point{
-		Attr: "log_code", Value: logMsg.Code.String(),
+		Attr: "log_code", Value: logMsg.GetCode().String(),
 	})
-	if logMsg.Description != "" {
+	if logMsg.GetDescription() != "" {
 		msgs = append(msgs, &decode.Point{
-			Attr: "log_desc", Value: logMsg.Description,
+			Attr: "log_desc", Value: logMsg.GetDescription(),
 		})
 	}
 

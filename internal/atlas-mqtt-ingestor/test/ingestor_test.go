@@ -138,12 +138,12 @@ func TestDecodeMessages(t *testing.T) {
 					t.Logf("vIn: %+v", vIn)
 
 					// Normalize generated trace ID.
-					res.Point.TraceId = vIn.Point.TraceId
+					res.Point.TraceId = vIn.GetPoint().GetTraceId()
 					// Normalize timestamp.
-					if lTest.inpPoints[i].Ts == nil {
+					if lTest.inpPoints[i].GetTs() == nil {
 						assert.WithinDuration(t, time.Now(),
-							vIn.Point.Ts.AsTime(), testTimeout)
-						res.Point.Ts = vIn.Point.Ts
+							vIn.GetPoint().GetTs().AsTime(), testTimeout)
+						res.Point.Ts = vIn.GetPoint().GetTs()
 					}
 
 					// Testify does not currently support protobuf equality:

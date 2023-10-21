@@ -59,24 +59,24 @@ func (s *Session) Login(ctx context.Context, req *api.LoginRequest) (
 ) {
 	logger := alog.FromContext(ctx)
 
-	user, hash, err := s.userDAO.ReadByEmail(ctx, req.Email, req.OrgName)
+	user, hash, err := s.userDAO.ReadByEmail(ctx, req.GetEmail(), req.GetOrgName())
 	// Hash the provided password if an error is returned to prevent account
 	// enumeration attacks.
 	if err != nil {
-		_, hashErr := crypto.HashPass(req.Password)
+		_, hashErr := crypto.HashPass(req.GetPassword())
 		logger.Debugf("Login s.userDAO.ReadByEmail Email, OrgName, err, "+
-			"hashErr: %v, %v, %v, %v", req.Email, req.OrgName, err, hashErr)
+			"hashErr: %v, %v, %v, %v", req.GetEmail(), req.GetOrgName(), err, hashErr)
 
 		return nil, status.Error(codes.Unauthenticated, "unauthorized")
 	}
 
-	logger.Logger = logger.WithField("userID", user.Id).WithField("orgID",
-		user.OrgId)
+	logger.Logger = logger.WithField("userID", user.GetId()).WithField("orgID",
+		user.GetOrgId())
 
-	if err := crypto.CompareHashPass(hash, req.Password); err != nil ||
-		user.Status != api.Status_ACTIVE || user.Role < api.Role_VIEWER {
+	if err := crypto.CompareHashPass(hash, req.GetPassword()); err != nil ||
+		user.GetStatus() != api.Status_ACTIVE || user.GetRole() < api.Role_VIEWER {
 		logger.Debugf("Login crypto.CompareHashPass err, user.Status: %v, %s",
-			err, user.Status)
+			err, user.GetStatus())
 
 		return nil, status.Error(codes.Unauthenticated, "unauthorized")
 	}
@@ -103,20 +103,20 @@ func (s *Session) CreateKey(ctx context.Context, req *api.CreateKeyRequest) (
 
 	// Only system admins can create keys with system admin role.
 	if sess.Role < api.Role_SYS_ADMIN &&
-		req.Key.Role == api.Role_SYS_ADMIN {
+		req.GetKey().GetRole() == api.Role_SYS_ADMIN {
 		return nil, status.Error(codes.PermissionDenied,
 			"permission denied, role modification not allowed")
 	}
 
 	req.Key.OrgId = sess.OrgID
 
-	key, err := s.keyDAO.Create(ctx, req.Key)
+	key, err := s.keyDAO.Create(ctx, req.GetKey())
 	if err != nil {
 		return nil, errToStatus(err)
 	}
 
-	token, err := session.GenerateKeyToken(s.pwtKey, key.Id, key.OrgId,
-		key.Role)
+	token, err := session.GenerateKeyToken(s.pwtKey, key.GetId(), key.GetOrgId(),
+		key.GetRole())
 	if err != nil {
 		logger.Errorf("CreateKey session.GenerateKeyToken: %v", err)
 
@@ -142,13 +142,13 @@ func (s *Session) DeleteKey(ctx context.Context, req *api.DeleteKeyRequest) (
 
 	// Disable API key before removing record. If a faulty key ID is given,
 	// it will be confined to this org.
-	if err := s.cache.Set(ctx, key.Disabled(sess.OrgID, req.Id),
+	if err := s.cache.Set(ctx, key.Disabled(sess.OrgID, req.GetId()),
 		""); err != nil {
 		return nil, errToStatus(err)
 	}
 
 	// Delete key record.
-	if err := s.keyDAO.Delete(ctx, req.Id, sess.OrgID); err != nil {
+	if err := s.keyDAO.Delete(ctx, req.GetId(), sess.OrgID); err != nil {
 		return nil, errToStatus(err)
 	}
 
@@ -170,18 +170,18 @@ func (s *Session) ListKeys(ctx context.Context, req *api.ListKeysRequest) (
 		return nil, errPerm(api.Role_ADMIN)
 	}
 
-	if req.PageSize == 0 {
+	if req.GetPageSize() == 0 {
 		req.PageSize = defaultPageSize
 	}
 
-	lBoundTS, prevID, err := session.ParsePageToken(req.PageToken)
+	lBoundTS, prevID, err := session.ParsePageToken(req.GetPageToken())
 	if err != nil {
 		return nil, status.Error(codes.InvalidArgument, "invalid page token")
 	}
 
 	// Retrieve PageSize+1 entries to find last page.
 	keys, count, err := s.keyDAO.List(ctx, sess.OrgID, lBoundTS, prevID,
-		req.PageSize+1)
+		req.GetPageSize()+1)
 	if err != nil {
 		return nil, errToStatus(err)
 	}
@@ -189,12 +189,12 @@ func (s *Session) ListKeys(ctx context.Context, req *api.ListKeysRequest) (
 	resp := &api.ListKeysResponse{Keys: keys, TotalSize: count}
 
 	// Populate next page token.
-	if len(keys) == int(req.PageSize+1) {
+	if len(keys) == int(req.GetPageSize()+1) {
 		resp.Keys = keys[:len(keys)-1]
 
 		if resp.NextPageToken, err = session.GeneratePageToken(
-			keys[len(keys)-2].CreatedAt.AsTime(),
-			keys[len(keys)-2].Id); err != nil {
+			keys[len(keys)-2].GetCreatedAt().AsTime(),
+			keys[len(keys)-2].GetId()); err != nil {
 			// GeneratePageToken should not error based on a DB-derived UUID.
 			// Log the error and include the usable empty token.
 			logger := alog.FromContext(ctx)

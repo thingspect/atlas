@@ -24,8 +24,8 @@ func (d *DAO) Create(ctx context.Context, rule *api.Rule) (*api.Rule, error) {
 	rule.CreatedAt = timestamppb.New(now)
 	rule.UpdatedAt = timestamppb.New(now)
 
-	if err := d.pg.QueryRowContext(ctx, createRule, rule.OrgId, rule.Name,
-		rule.Status.String(), rule.DeviceTag, rule.Attr, rule.Expr, now).Scan(
+	if err := d.pg.QueryRowContext(ctx, createRule, rule.GetOrgId(), rule.GetName(),
+		rule.GetStatus().String(), rule.GetDeviceTag(), rule.GetAttr(), rule.GetExpr(), now).Scan(
 		&rule.Id); err != nil {
 		return nil, dao.DBToSentinel(err)
 	}
@@ -75,9 +75,9 @@ func (d *DAO) Update(ctx context.Context, rule *api.Rule) (*api.Rule, error) {
 	updatedAt := time.Now().UTC().Truncate(time.Microsecond)
 	rule.UpdatedAt = timestamppb.New(updatedAt)
 
-	if err := d.pg.QueryRowContext(ctx, updateRule, rule.Name,
-		rule.Status.String(), rule.DeviceTag, rule.Attr, rule.Expr, updatedAt,
-		rule.Id, rule.OrgId).Scan(&createdAt); err != nil {
+	if err := d.pg.QueryRowContext(ctx, updateRule, rule.GetName(),
+		rule.GetStatus().String(), rule.GetDeviceTag(), rule.GetAttr(), rule.GetExpr(), updatedAt,
+		rule.GetId(), rule.GetOrgId()).Scan(&createdAt); err != nil {
 		return nil, dao.DBToSentinel(err)
 	}
 

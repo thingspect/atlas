@@ -33,28 +33,28 @@ func TestEventMessages(t *testing.T) {
 	require.NoError(t, err)
 
 	singleDev, err := globalDevDAO.Create(ctx, random.Device("ev",
-		createOrg.Id))
+		createOrg.GetId()))
 	t.Logf("singleDev, err: %+v, %v", singleDev, err)
 	require.NoError(t, err)
 
-	sRule := random.Rule("ev", createOrg.Id)
+	sRule := random.Rule("ev", createOrg.GetId())
 	sRule.Status = api.Status_ACTIVE
-	sRule.DeviceTag = singleDev.Tags[0]
+	sRule.DeviceTag = singleDev.GetTags()[0]
 	sRule.Attr = "ev-motion"
 	sRule.Expr = `true`
 	singleRule, err := globalRuleDAO.Create(ctx, sRule)
 	t.Logf("singleRule, err: %+v, %v", singleRule, err)
 	require.NoError(t, err)
 
-	dDev := random.Device("ev", createOrg.Id)
+	dDev := random.Device("ev", createOrg.GetId())
 	dDev.Tags = random.Tags("ev", 2)
 	doubleDev, err := globalDevDAO.Create(ctx, dDev)
 	t.Logf("doubleDev, err: %+v, %v", doubleDev, err)
 	require.NoError(t, err)
 
-	dRule1 := random.Rule("ev", createOrg.Id)
+	dRule1 := random.Rule("ev", createOrg.GetId())
 	dRule1.Status = api.Status_ACTIVE
-	dRule1.DeviceTag = doubleDev.Tags[0]
+	dRule1.DeviceTag = doubleDev.GetTags()[0]
 	dRule1.Attr = "ev-temp"
 	dRule1.Expr = `true`
 	doubleRule1, err := globalRuleDAO.Create(ctx, dRule1)
@@ -62,7 +62,7 @@ func TestEventMessages(t *testing.T) {
 	require.NoError(t, err)
 
 	dRule2, _ := proto.Clone(dRule1).(*api.Rule)
-	dRule2.DeviceTag = doubleDev.Tags[1]
+	dRule2.DeviceTag = doubleDev.GetTags()[1]
 	doubleRule2, err := globalRuleDAO.Create(ctx, dRule2)
 	t.Logf("doubleRule2, err: %+v, %v", doubleRule2, err)
 	require.NoError(t, err)
@@ -142,8 +142,8 @@ func TestEventMessages(t *testing.T) {
 
 				// Verify events by rule ID.
 				event := &api.Event{
-					OrgId: createOrg.Id, RuleId: res.Rule.Id,
-					UniqId: lTest.inp.Device.UniqId, CreatedAt: timestamppb.New(
+					OrgId: createOrg.GetId(), RuleId: res.GetRule().GetId(),
+					UniqId: lTest.inp.GetDevice().GetUniqId(), CreatedAt: timestamppb.New(
 						now.AsTime().Truncate(time.Millisecond)),
 					TraceId: traceID,
 				}
@@ -152,8 +152,8 @@ func TestEventMessages(t *testing.T) {
 					testTimeout)
 				defer cancel()
 
-				listEvents, err := globalEvDAO.List(ctx, createOrg.Id,
-					lTest.inp.Device.UniqId, "", res.Rule.Id, now.AsTime(),
+				listEvents, err := globalEvDAO.List(ctx, createOrg.GetId(),
+					lTest.inp.GetDevice().GetUniqId(), "", res.GetRule().GetId(), now.AsTime(),
 					now.AsTime().Add(-time.Millisecond))
 				t.Logf("listEvents, err: %+v, %v", listEvents, err)
 				assert.NoError(t, err)
@@ -189,13 +189,13 @@ func TestEventMessagesError(t *testing.T) {
 	t.Logf("createOrg, err: %+v, %v", createOrg, err)
 	require.NoError(t, err)
 
-	createDev, err := globalDevDAO.Create(ctx, random.Device("ev", createOrg.Id))
+	createDev, err := globalDevDAO.Create(ctx, random.Device("ev", createOrg.GetId()))
 	t.Logf("createDev, err: %+v, %v", createDev, err)
 	require.NoError(t, err)
 
-	rule := random.Rule("ev", createOrg.Id)
+	rule := random.Rule("ev", createOrg.GetId())
 	rule.Status = api.Status_ACTIVE
-	rule.DeviceTag = createDev.Tags[0]
+	rule.DeviceTag = createDev.GetTags()[0]
 	rule.Attr = "ev-motion"
 	rule.Expr = `1 + "aaa"`
 	createRule, err := globalRuleDAO.Create(ctx, rule)
@@ -209,12 +209,12 @@ func TestEventMessagesError(t *testing.T) {
 		{nil},
 		// Missing data point.
 		{
-			&message.ValidatorOut{Device: &api.Device{Id: createDev.Id}},
+			&message.ValidatorOut{Device: &api.Device{Id: createDev.GetId()}},
 		},
 		// Missing device.
 		{
 			&message.ValidatorOut{
-				Point: &common.DataPoint{UniqId: createDev.UniqId},
+				Point: &common.DataPoint{UniqId: createDev.GetUniqId()},
 			},
 		},
 		// Eval error.

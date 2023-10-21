@@ -25,9 +25,9 @@ func (d *DAO) Create(ctx context.Context, user *api.User) (*api.User, error) {
 	user.CreatedAt = timestamppb.New(now)
 	user.UpdatedAt = timestamppb.New(now)
 
-	if err := d.pg.QueryRowContext(ctx, createUser, user.OrgId, user.Name,
-		user.Email, user.Phone, user.Role.String(), user.Status.String(),
-		user.Tags, user.AppKey, now).Scan(&user.Id); err != nil {
+	if err := d.pg.QueryRowContext(ctx, createUser, user.GetOrgId(), user.GetName(),
+		user.GetEmail(), user.GetPhone(), user.GetRole().String(), user.GetStatus().String(),
+		user.GetTags(), user.GetAppKey(), now).Scan(&user.Id); err != nil {
 		return nil, dao.DBToSentinel(err)
 	}
 
@@ -111,10 +111,10 @@ func (d *DAO) Update(ctx context.Context, user *api.User) (*api.User, error) {
 	updatedAt := time.Now().UTC().Truncate(time.Microsecond)
 	user.UpdatedAt = timestamppb.New(updatedAt)
 
-	if err := d.pg.QueryRowContext(ctx, updateUser, user.Name, user.Email,
-		user.Phone, user.Role.String(), user.Status.String(), user.Tags,
-		user.AppKey, updatedAt, user.Id,
-		user.OrgId).Scan(&createdAt); err != nil {
+	if err := d.pg.QueryRowContext(ctx, updateUser, user.GetName(), user.GetEmail(),
+		user.GetPhone(), user.GetRole().String(), user.GetStatus().String(), user.GetTags(),
+		user.GetAppKey(), updatedAt, user.GetId(),
+		user.GetOrgId()).Scan(&createdAt); err != nil {
 		return nil, dao.DBToSentinel(err)
 	}
 

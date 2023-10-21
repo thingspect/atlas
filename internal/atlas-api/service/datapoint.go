@@ -67,7 +67,7 @@ func (d *DataPoint) PublishDataPoints(
 	logger.Logger = logger.WithField("paylType", "api")
 
 	// Build and publish ValidatorIn messages.
-	for _, point := range req.Points {
+	for _, point := range req.GetPoints() {
 		vIn := &message.ValidatorIn{
 			Point:     point,
 			OrgId:     sess.OrgID,
@@ -76,7 +76,7 @@ func (d *DataPoint) PublishDataPoints(
 		vIn.Point.TraceId = sess.TraceID.String()
 
 		// Default to current timestamp if not provided.
-		if vIn.Point.Ts == nil {
+		if vIn.GetPoint().GetTs() == nil {
 			vIn.Point.Ts = timestamppb.Now()
 		}
 
@@ -118,7 +118,7 @@ func (d *DataPoint) ListDataPoints(
 	var uniqID string
 	var devID string
 
-	switch v := req.IdOneof.(type) {
+	switch v := req.GetIdOneof().(type) {
 	case *api.ListDataPointsRequest_UniqId:
 		uniqID = v.UniqId
 	case *api.ListDataPointsRequest_DeviceId:
@@ -126,13 +126,13 @@ func (d *DataPoint) ListDataPoints(
 	}
 
 	end := time.Now().UTC()
-	if req.EndTime != nil {
-		end = req.EndTime.AsTime()
+	if req.GetEndTime() != nil {
+		end = req.GetEndTime().AsTime()
 	}
 
 	start := end.Add(-24 * time.Hour)
-	if req.StartTime != nil && req.StartTime.AsTime().Before(end) {
-		start = req.StartTime.AsTime()
+	if req.GetStartTime() != nil && req.GetStartTime().AsTime().Before(end) {
+		start = req.GetStartTime().AsTime()
 	}
 
 	if end.Sub(start) > 90*24*time.Hour {
@@ -140,7 +140,7 @@ func (d *DataPoint) ListDataPoints(
 			"maximum time range exceeded")
 	}
 
-	points, err := d.dpDAO.List(ctx, sess.OrgID, uniqID, devID, req.Attr, end,
+	points, err := d.dpDAO.List(ctx, sess.OrgID, uniqID, devID, req.GetAttr(), end,
 		start)
 	if err != nil {
 		return nil, errToStatus(err)
@@ -162,7 +162,7 @@ func (d *DataPoint) LatestDataPoints(
 	var uniqID string
 	var devID string
 
-	switch v := req.IdOneof.(type) {
+	switch v := req.GetIdOneof().(type) {
 	case *api.LatestDataPointsRequest_UniqId:
 		uniqID = v.UniqId
 	case *api.LatestDataPointsRequest_DeviceId:
@@ -172,8 +172,8 @@ func (d *DataPoint) LatestDataPoints(
 	now := time.Now().UTC()
 
 	start := now.Add(30 * -24 * time.Hour)
-	if req.StartTime != nil && req.StartTime.AsTime().Before(now) {
-		start = req.StartTime.AsTime()
+	if req.GetStartTime() != nil && req.GetStartTime().AsTime().Before(now) {
+		start = req.GetStartTime().AsTime()
 	}
 
 	if now.Sub(start) > 90*24*time.Hour {

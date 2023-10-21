@@ -22,22 +22,22 @@ func deviceStatus(body []byte) ([]*decode.Point, error) {
 		protojson.MarshalOptions{}.Format(statusMsg), " ", "")}}
 
 	// Parse StatusEvent.
-	if statusMsg.Margin != 0 {
+	if statusMsg.GetMargin() != 0 {
 		msgs = append(msgs, &decode.Point{
-			Attr: "lora_snr_margin", Value: statusMsg.Margin,
+			Attr: "lora_snr_margin", Value: statusMsg.GetMargin(),
 		})
 	}
 	msgs = append(msgs, &decode.Point{
-		Attr: "ext_power", Value: statusMsg.ExternalPowerSource,
+		Attr: "ext_power", Value: statusMsg.GetExternalPowerSource(),
 	})
-	if statusMsg.BatteryLevelUnavailable {
+	if statusMsg.GetBatteryLevelUnavailable() {
 		msgs = append(msgs, &decode.Point{
-			Attr: "battery_unavail", Value: statusMsg.BatteryLevelUnavailable,
+			Attr: "battery_unavail", Value: statusMsg.GetBatteryLevelUnavailable(),
 		})
 	}
-	if statusMsg.BatteryLevel != 0 {
+	if statusMsg.GetBatteryLevel() != 0 {
 		msgs = append(msgs, &decode.Point{
-			Attr: "battery_pct", Value: float64(statusMsg.BatteryLevel),
+			Attr: "battery_pct", Value: float64(statusMsg.GetBatteryLevel()),
 		})
 	}
 

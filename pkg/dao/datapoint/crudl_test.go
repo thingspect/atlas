@@ -86,7 +86,7 @@ func TestCreate(t *testing.T) {
 					testTimeout)
 				defer cancel()
 
-				err := globalDPDAO.Create(ctx, lTest.inp, createOrg.Id)
+				err := globalDPDAO.Create(ctx, lTest.inp, createOrg.GetId())
 				t.Logf("err: %v", err)
 				require.NoError(t, err)
 			})
@@ -152,11 +152,11 @@ func TestCreate(t *testing.T) {
 			Ts:       timestamppb.Now(), TraceId: uuid.NewString(),
 		}
 
-		err = globalDPDAO.Create(ctx, point, createOrg.Id)
+		err = globalDPDAO.Create(ctx, point, createOrg.GetId())
 		t.Logf("err: %#v", err)
 		require.NoError(t, err)
 
-		err = globalDPDAO.Create(ctx, point, createOrg.Id)
+		err = globalDPDAO.Create(ctx, point, createOrg.GetId())
 		t.Logf("err: %#v", err)
 		require.Equal(t, dao.ErrAlreadyExists, err)
 	})
@@ -176,40 +176,40 @@ func TestList(t *testing.T) {
 		require.NoError(t, err)
 
 		createDev, err := globalDevDAO.Create(ctx, random.Device("dao-point",
-			createOrg.Id))
+			createOrg.GetId()))
 		t.Logf("createDev, err: %+v, %v", createDev, err)
 		require.NoError(t, err)
 
 		points := []*common.DataPoint{
 			{
-				UniqId: createDev.UniqId, Attr: "count",
+				UniqId: createDev.GetUniqId(), Attr: "count",
 				ValOneof: &common.DataPoint_IntVal{IntVal: 123},
 				TraceId:  uuid.NewString(),
 			},
 			{
-				UniqId: createDev.UniqId, Attr: "temp_c",
+				UniqId: createDev.GetUniqId(), Attr: "temp_c",
 				ValOneof: &common.DataPoint_Fl64Val{Fl64Val: 9.3},
 				TraceId:  uuid.NewString(),
 			},
 			{
-				UniqId: createDev.UniqId, Attr: "power",
+				UniqId: createDev.GetUniqId(), Attr: "power",
 				ValOneof: &common.DataPoint_StrVal{StrVal: "line"},
 				TraceId:  uuid.NewString(),
 			},
 			{
-				UniqId: createDev.UniqId, Attr: "leak",
+				UniqId: createDev.GetUniqId(), Attr: "leak",
 				ValOneof: &common.DataPoint_BoolVal{BoolVal: []bool{
 					true, false,
 				}[random.Intn(2)]}, TraceId: uuid.NewString(),
 			},
 			{
-				UniqId: createDev.UniqId, Attr: "raw",
+				UniqId: createDev.GetUniqId(), Attr: "raw",
 				ValOneof: &common.DataPoint_BytesVal{
 					BytesVal: random.Bytes(10),
 				}, TraceId: uuid.NewString(),
 			},
 			{
-				UniqId: createDev.UniqId, Attr: "count",
+				UniqId: createDev.GetUniqId(), Attr: "count",
 				ValOneof: &common.DataPoint_IntVal{IntVal: 321},
 				TraceId:  uuid.NewString(),
 			},
@@ -224,7 +224,7 @@ func TestList(t *testing.T) {
 			point.Ts = timestamppb.New(time.Now().UTC().Truncate(
 				time.Millisecond))
 
-			err := globalDPDAO.Create(ctx, point, createOrg.Id)
+			err := globalDPDAO.Create(ctx, point, createOrg.GetId())
 			t.Logf("err: %v", err)
 			require.NoError(t, err)
 			time.Sleep(time.Millisecond)
@@ -232,16 +232,16 @@ func TestList(t *testing.T) {
 
 		// Flip points to descending timestamp order.
 		sort.Slice(points, func(i, j int) bool {
-			return points[i].Ts.AsTime().After(points[j].Ts.AsTime())
+			return points[i].GetTs().AsTime().After(points[j].GetTs().AsTime())
 		})
 
 		ctx, cancel = context.WithTimeout(context.Background(), testTimeout)
 		defer cancel()
 
 		// Verify results by UniqID.
-		listPointsUniqID, err := globalDPDAO.List(ctx, createOrg.Id,
-			createDev.UniqId, "", "", points[0].Ts.AsTime(),
-			points[len(points)-1].Ts.AsTime().Add(-time.Millisecond))
+		listPointsUniqID, err := globalDPDAO.List(ctx, createOrg.GetId(),
+			createDev.GetUniqId(), "", "", points[0].GetTs().AsTime(),
+			points[len(points)-1].GetTs().AsTime().Add(-time.Millisecond))
 		t.Logf("listPointsUniqID, err: %+v, %v", listPointsUniqID, err)
 		require.NoError(t, err)
 		require.Len(t, listPointsUniqID, len(points))
@@ -256,9 +256,9 @@ func TestList(t *testing.T) {
 		}
 
 		// Verify results by dev ID without oldest point.
-		listPointsDevID, err := globalDPDAO.List(ctx, createOrg.Id, "",
-			createDev.Id, "", points[0].Ts.AsTime(),
-			points[len(points)-1].Ts.AsTime())
+		listPointsDevID, err := globalDPDAO.List(ctx, createOrg.GetId(), "",
+			createDev.GetId(), "", points[0].GetTs().AsTime(),
+			points[len(points)-1].GetTs().AsTime())
 		t.Logf("listPointsDevID, err: %+v, %v", listPointsDevID, err)
 		require.NoError(t, err)
 		require.Len(t, listPointsDevID, len(points)-1)
@@ -273,9 +273,9 @@ func TestList(t *testing.T) {
 		}
 
 		// Verify results by UniqID and attribute.
-		listPointsUniqID, err = globalDPDAO.List(ctx, createOrg.Id,
-			createDev.UniqId, "", "count", points[0].Ts.AsTime(),
-			points[len(points)-1].Ts.AsTime().Add(-time.Millisecond))
+		listPointsUniqID, err = globalDPDAO.List(ctx, createOrg.GetId(),
+			createDev.GetUniqId(), "", "count", points[0].GetTs().AsTime(),
+			points[len(points)-1].GetTs().AsTime().Add(-time.Millisecond))
 		t.Logf("listPointsUniqID, err: %+v, %v", listPointsUniqID, err)
 		require.NoError(t, err)
 		require.Len(t, listPointsUniqID, 2)
@@ -284,7 +284,7 @@ func TestList(t *testing.T) {
 		// https://github.com/stretchr/testify/issues/758
 		mcount := 0
 		for _, point := range points {
-			if point.Attr == "count" {
+			if point.GetAttr() == "count" {
 				if !proto.Equal(point, listPointsUniqID[mcount]) {
 					t.Fatalf("\nExpect: %+v\nActual: %+v", point,
 						listPointsUniqID[mcount])
@@ -310,13 +310,13 @@ func TestList(t *testing.T) {
 			Ts:       timestamppb.Now(), TraceId: uuid.NewString(),
 		}
 
-		err = globalDPDAO.Create(ctx, point, createOrg.Id)
+		err = globalDPDAO.Create(ctx, point, createOrg.GetId())
 		t.Logf("err: %#v", err)
 		require.NoError(t, err)
 
 		listPoints, err := globalDPDAO.List(ctx, uuid.NewString(),
-			point.UniqId, "", "", point.Ts.AsTime(),
-			point.Ts.AsTime().Add(-time.Millisecond))
+			point.GetUniqId(), "", "", point.GetTs().AsTime(),
+			point.GetTs().AsTime().Add(-time.Millisecond))
 		t.Logf("listPoints, err: %+v, %v", listPoints, err)
 		require.NoError(t, err)
 		require.Len(t, listPoints, 0)
@@ -350,7 +350,7 @@ func TestLatest(t *testing.T) {
 		require.NoError(t, err)
 
 		createDev, err := globalDevDAO.Create(ctx, random.Device("dao-point",
-			createOrg.Id))
+			createOrg.GetId()))
 		t.Logf("createDev, err: %+v, %v", createDev, err)
 		require.NoError(t, err)
 
@@ -360,28 +360,28 @@ func TestLatest(t *testing.T) {
 		// The first point intentionally sorts first by attribute.
 		points := []*common.DataPoint{
 			{
-				UniqId: createDev.UniqId, Attr: "count",
+				UniqId: createDev.GetUniqId(), Attr: "count",
 				ValOneof: &common.DataPoint_IntVal{IntVal: 123},
 				TraceId:  uuid.NewString(),
 			},
 			{
-				UniqId: createDev.UniqId, Attr: "temp_c",
+				UniqId: createDev.GetUniqId(), Attr: "temp_c",
 				ValOneof: &common.DataPoint_Fl64Val{Fl64Val: 9.3},
 				TraceId:  uuid.NewString(),
 			},
 			{
-				UniqId: createDev.UniqId, Attr: "power",
+				UniqId: createDev.GetUniqId(), Attr: "power",
 				ValOneof: &common.DataPoint_StrVal{StrVal: "line"},
 				TraceId:  uuid.NewString(),
 			},
 			{
-				UniqId: createDev.UniqId, Attr: "leak",
+				UniqId: createDev.GetUniqId(), Attr: "leak",
 				ValOneof: &common.DataPoint_BoolVal{BoolVal: []bool{
 					true, false,
 				}[random.Intn(2)]}, TraceId: uuid.NewString(),
 			},
 			{
-				UniqId: createDev.UniqId, Attr: "raw",
+				UniqId: createDev.GetUniqId(), Attr: "raw",
 				ValOneof: &common.DataPoint_BytesVal{
 					BytesVal: random.Bytes(10),
 				}, TraceId: uuid.NewString(),
@@ -400,10 +400,10 @@ func TestLatest(t *testing.T) {
 
 				// Track the first point's latest time.
 				if i == 0 {
-					dpStart = point.Ts.AsTime()
+					dpStart = point.GetTs().AsTime()
 				}
 
-				err := globalDPDAO.Create(ctx, point, createOrg.Id)
+				err := globalDPDAO.Create(ctx, point, createOrg.GetId())
 				t.Logf("err: %v", err)
 				require.NoError(t, err)
 				time.Sleep(time.Millisecond)
@@ -411,15 +411,15 @@ func TestLatest(t *testing.T) {
 		}
 
 		sort.Slice(points, func(i, j int) bool {
-			return points[i].Attr < points[j].Attr
+			return points[i].GetAttr() < points[j].GetAttr()
 		})
 
 		ctx, cancel = context.WithTimeout(context.Background(), testTimeout)
 		defer cancel()
 
 		// Verify results by UniqID.
-		latPointsUniqID, err := globalDPDAO.Latest(ctx, createOrg.Id,
-			createDev.UniqId, "", start)
+		latPointsUniqID, err := globalDPDAO.Latest(ctx, createOrg.GetId(),
+			createDev.GetUniqId(), "", start)
 		t.Logf("latPointsUniqID, err: %+v, %v", latPointsUniqID, err)
 		require.NoError(t, err)
 		require.Len(t, latPointsUniqID, len(points))
@@ -434,8 +434,8 @@ func TestLatest(t *testing.T) {
 		}
 
 		// Verify results by dev ID without oldest point's attribute.
-		latPointsDevID, err := globalDPDAO.Latest(ctx, createOrg.Id, "",
-			createDev.Id, dpStart)
+		latPointsDevID, err := globalDPDAO.Latest(ctx, createOrg.GetId(), "",
+			createDev.GetId(), dpStart)
 		t.Logf("latPointsDevID, err: %+v, %v", latPointsDevID, err)
 		require.NoError(t, err)
 		require.Len(t, latPointsDevID, len(points)-1)
@@ -465,12 +465,12 @@ func TestLatest(t *testing.T) {
 			Ts:       timestamppb.Now(), TraceId: uuid.NewString(),
 		}
 
-		err = globalDPDAO.Create(ctx, point, createOrg.Id)
+		err = globalDPDAO.Create(ctx, point, createOrg.GetId())
 		t.Logf("err: %#v", err)
 		require.NoError(t, err)
 
 		latPoints, err := globalDPDAO.Latest(ctx, uuid.NewString(),
-			point.UniqId, "", time.Now().UTC().Add(-15*time.Minute))
+			point.GetUniqId(), "", time.Now().UTC().Add(-15*time.Minute))
 		t.Logf("latPoints, err: %+v, %v", latPoints, err)
 		require.NoError(t, err)
 		require.Len(t, latPoints, 0)

@@ -53,7 +53,7 @@ func (o *Org) CreateOrg(ctx context.Context, req *api.CreateOrgRequest) (
 		return nil, errPerm(api.Role_SYS_ADMIN)
 	}
 
-	org, err := o.orgDAO.Create(ctx, req.Org)
+	org, err := o.orgDAO.Create(ctx, req.GetOrg())
 	if err != nil {
 		return nil, errToStatus(err)
 	}
@@ -72,11 +72,11 @@ func (o *Org) GetOrg(ctx context.Context, req *api.GetOrgRequest) (
 	*api.Org, error,
 ) {
 	sess, ok := session.FromContext(ctx)
-	if !ok || (sess.Role < api.Role_SYS_ADMIN && req.Id != sess.OrgID) {
+	if !ok || (sess.Role < api.Role_SYS_ADMIN && req.GetId() != sess.OrgID) {
 		return nil, errPerm(api.Role_SYS_ADMIN)
 	}
 
-	org, err := o.orgDAO.Read(ctx, req.Id)
+	org, err := o.orgDAO.Read(ctx, req.GetId())
 	if err != nil {
 		return nil, errToStatus(err)
 	}
@@ -94,33 +94,33 @@ func (o *Org) UpdateOrg(ctx context.Context, req *api.UpdateOrgRequest) (
 		return nil, errPerm(api.Role_SYS_ADMIN)
 	}
 
-	if req.Org == nil {
+	if req.GetOrg() == nil {
 		return nil, status.Error(codes.InvalidArgument,
 			req.Validate().Error())
 	}
 
 	// Admins can only update their own org, system admins can update any org.
-	if (sess.Role < api.Role_SYS_ADMIN && req.Org.Id != sess.OrgID) ||
-		(sess.Role < api.Role_ADMIN && req.Org.Id == sess.OrgID) {
+	if (sess.Role < api.Role_SYS_ADMIN && req.GetOrg().GetId() != sess.OrgID) ||
+		(sess.Role < api.Role_ADMIN && req.GetOrg().GetId() == sess.OrgID) {
 		return nil, errPerm(api.Role_SYS_ADMIN)
 	}
 
 	// Perform partial update if directed.
-	if req.UpdateMask != nil && len(req.UpdateMask.Paths) > 0 {
+	if len(req.GetUpdateMask().GetPaths()) > 0 {
 		// Normalize and validate field mask.
-		req.UpdateMask.Normalize()
-		if !req.UpdateMask.IsValid(req.Org) {
+		req.GetUpdateMask().Normalize()
+		if !req.GetUpdateMask().IsValid(req.GetOrg()) {
 			return nil, status.Error(codes.InvalidArgument,
 				"invalid field mask")
 		}
 
-		org, err := o.orgDAO.Read(ctx, req.Org.Id)
+		org, err := o.orgDAO.Read(ctx, req.GetOrg().GetId())
 		if err != nil {
 			return nil, errToStatus(err)
 		}
 
-		fmutils.Filter(req.Org, req.UpdateMask.Paths)
-		proto.Merge(org, req.Org)
+		fmutils.Filter(req.GetOrg(), req.GetUpdateMask().GetPaths())
+		proto.Merge(org, req.GetOrg())
 		req.Org = org
 	}
 
@@ -129,7 +129,7 @@ func (o *Org) UpdateOrg(ctx context.Context, req *api.UpdateOrgRequest) (
 		return nil, status.Error(codes.InvalidArgument, err.Error())
 	}
 
-	org, err := o.orgDAO.Update(ctx, req.Org)
+	org, err := o.orgDAO.Update(ctx, req.GetOrg())
 	if err != nil {
 		return nil, errToStatus(err)
 	}
@@ -146,7 +146,7 @@ func (o *Org) DeleteOrg(ctx context.Context, req *api.DeleteOrgRequest) (
 		return nil, errPerm(api.Role_SYS_ADMIN)
 	}
 
-	if err := o.orgDAO.Delete(ctx, req.Id); err != nil {
+	if err := o.orgDAO.Delete(ctx, req.GetId()); err != nil {
 		return nil, errToStatus(err)
 	}
 
@@ -181,17 +181,17 @@ func (o *Org) ListOrgs(ctx context.Context, req *api.ListOrgsRequest) (
 		}, nil
 	}
 
-	if req.PageSize == 0 {
+	if req.GetPageSize() == 0 {
 		req.PageSize = defaultPageSize
 	}
 
-	lBoundTS, prevID, err := session.ParsePageToken(req.PageToken)
+	lBoundTS, prevID, err := session.ParsePageToken(req.GetPageToken())
 	if err != nil {
 		return nil, status.Error(codes.InvalidArgument, "invalid page token")
 	}
 
 	// Retrieve PageSize+1 entries to find last page.
-	orgs, count, err := o.orgDAO.List(ctx, lBoundTS, prevID, req.PageSize+1)
+	orgs, count, err := o.orgDAO.List(ctx, lBoundTS, prevID, req.GetPageSize()+1)
 	if err != nil {
 		return nil, errToStatus(err)
 	}
@@ -199,12 +199,12 @@ func (o *Org) ListOrgs(ctx context.Context, req *api.ListOrgsRequest) (
 	resp := &api.ListOrgsResponse{Orgs: orgs, TotalSize: count}
 
 	// Populate next page token.
-	if len(orgs) == int(req.PageSize+1) {
+	if len(orgs) == int(req.GetPageSize()+1) {
 		resp.Orgs = orgs[:len(orgs)-1]
 
 		if resp.NextPageToken, err = session.GeneratePageToken(
-			orgs[len(orgs)-2].CreatedAt.AsTime(),
-			orgs[len(orgs)-2].Id); err != nil {
+			orgs[len(orgs)-2].GetCreatedAt().AsTime(),
+			orgs[len(orgs)-2].GetId()); err != nil {
 			// GeneratePageToken should not error based on a DB-derived UUID.
 			// Log the error and include the usable empty token.
 			logger := alog.FromContext(ctx)

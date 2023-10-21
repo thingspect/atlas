@@ -134,7 +134,7 @@ func TestDecodeMessages(t *testing.T) {
 			vInPubTopic := "topic-" + random.String(10)
 
 			devicer := NewMockdevicer(gomock.NewController(t))
-			devicer.EXPECT().ReadByUniqID(gomock.Any(), lTest.inpDIn.UniqId).
+			devicer.EXPECT().ReadByUniqID(gomock.Any(), lTest.inpDIn.GetUniqId()).
 				Return(dev, nil).Times(1)
 
 			dec := Decoder{

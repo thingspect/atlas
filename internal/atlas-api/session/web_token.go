@@ -28,12 +28,12 @@ func GenerateWebToken(pwtKey []byte, user *api.User) (
 	string, *timestamppb.Timestamp, error,
 ) {
 	// Convert user.Id and user.OrgId to bytes.
-	userUUID, err := uuid.Parse(user.Id)
+	userUUID, err := uuid.Parse(user.GetId())
 	if err != nil {
 		return "", nil, err
 	}
 
-	orgUUID, err := uuid.Parse(user.OrgId)
+	orgUUID, err := uuid.Parse(user.GetOrgId())
 	if err != nil {
 		return "", nil, err
 	}
@@ -47,7 +47,7 @@ func GenerateWebToken(pwtKey []byte, user *api.User) (
 	pwt := &token.Web{
 		IdOneof:   &token.Web_UserId{UserId: userUUID[:]},
 		OrgId:     orgUUID[:],
-		Role:      user.Role,
+		Role:      user.GetRole(),
 		ExpiresAt: exp,
 	}
 
@@ -122,19 +122,19 @@ func ValidateWebToken(pwtKey []byte, ciphertoken string) (*Session, error) {
 	}
 
 	// Validate expiration, if present.
-	if pwt.ExpiresAt != nil && pwt.ExpiresAt.AsTime().Before(time.Now()) {
+	if pwt.GetExpiresAt() != nil && pwt.GetExpiresAt().AsTime().Before(time.Now()) {
 		return nil, errWebTokenExp
 	}
 
 	// Build Session with new TraceID. UUIDs have been authenticated and are
 	// safe to copy.
 	sess := &Session{
-		Role:    pwt.Role,
+		Role:    pwt.GetRole(),
 		TraceID: uuid.New(),
 	}
 
 	var idUUID uuid.UUID
-	switch id := pwt.IdOneof.(type) {
+	switch id := pwt.GetIdOneof().(type) {
 	case *token.Web_UserId:
 		_ = copy(idUUID[:], id.UserId)
 		sess.UserID = idUUID.String()
@@ -144,7 +144,7 @@ func ValidateWebToken(pwtKey []byte, ciphertoken string) (*Session, error) {
 	}
 
 	var orgUUID uuid.UUID
-	_ = copy(orgUUID[:], pwt.OrgId)
+	_ = copy(orgUUID[:], pwt.GetOrgId())
 	sess.OrgID = orgUUID.String()
 
 	return sess, nil
