@@ -36,7 +36,7 @@ func TestListEvents(t *testing.T) {
 
 		for i := 0; i < 5; i++ {
 			event := random.Event("api-event", globalAdminOrgID)
-			event.UniqId = createDev.UniqId
+			event.UniqId = createDev.GetUniqId()
 			events = append(events, event)
 
 			ctx, cancel := context.WithTimeout(context.Background(),
@@ -51,8 +51,8 @@ func TestListEvents(t *testing.T) {
 
 		// Flip events to descending timestamp order.
 		sort.Slice(events, func(i, j int) bool {
-			return events[i].CreatedAt.AsTime().After(
-				events[j].CreatedAt.AsTime())
+			return events[i].GetCreatedAt().AsTime().After(
+				events[j].GetCreatedAt().AsTime())
 		})
 
 		ctx, cancel = context.WithTimeout(context.Background(), testTimeout)
@@ -61,14 +61,14 @@ func TestListEvents(t *testing.T) {
 		// Verify results by UniqID.
 		evCli := api.NewEventServiceClient(globalAdminGRPCConn)
 		listEventsUniqID, err := evCli.ListEvents(ctx, &api.ListEventsRequest{
-			IdOneof: &api.ListEventsRequest_UniqId{UniqId: createDev.UniqId},
-			EndTime: events[0].CreatedAt, StartTime: timestamppb.New(
-				events[len(events)-1].CreatedAt.AsTime().Add(
+			IdOneof: &api.ListEventsRequest_UniqId{UniqId: createDev.GetUniqId()},
+			EndTime: events[0].GetCreatedAt(), StartTime: timestamppb.New(
+				events[len(events)-1].GetCreatedAt().AsTime().Add(
 					-time.Millisecond)),
 		})
 		t.Logf("listEventsUniqID, err: %+v, %v", listEventsUniqID, err)
 		require.NoError(t, err)
-		require.Len(t, listEventsUniqID.Events, len(events))
+		require.Len(t, listEventsUniqID.GetEvents(), len(events))
 
 		// Testify does not currently support protobuf equality:
 		// https://github.com/stretchr/testify/issues/758
@@ -80,12 +80,12 @@ func TestListEvents(t *testing.T) {
 
 		// Verify results by dev ID without oldest event.
 		listEventsDevID, err := evCli.ListEvents(ctx, &api.ListEventsRequest{
-			IdOneof:   &api.ListEventsRequest_DeviceId{DeviceId: createDev.Id},
-			StartTime: events[len(events)-1].CreatedAt,
+			IdOneof:   &api.ListEventsRequest_DeviceId{DeviceId: createDev.GetId()},
+			StartTime: events[len(events)-1].GetCreatedAt(),
 		})
 		t.Logf("listEventsDevID, err: %+v, %v", listEventsDevID, err)
 		require.NoError(t, err)
-		require.Len(t, listEventsDevID.Events, len(events)-1)
+		require.Len(t, listEventsDevID.GetEvents(), len(events)-1)
 
 		// Testify does not currently support protobuf equality:
 		// https://github.com/stretchr/testify/issues/758
@@ -98,14 +98,14 @@ func TestListEvents(t *testing.T) {
 
 		// Verify results by UniqID and rule ID.
 		listEventsUniqID, err = evCli.ListEvents(ctx, &api.ListEventsRequest{
-			IdOneof: &api.ListEventsRequest_UniqId{UniqId: createDev.UniqId},
-			RuleId:  events[len(events)-1].RuleId, EndTime: events[0].CreatedAt,
-			StartTime: timestamppb.New(events[len(events)-1].CreatedAt.AsTime().
+			IdOneof: &api.ListEventsRequest_UniqId{UniqId: createDev.GetUniqId()},
+			RuleId:  events[len(events)-1].GetRuleId(), EndTime: events[0].GetCreatedAt(),
+			StartTime: timestamppb.New(events[len(events)-1].GetCreatedAt().AsTime().
 				Add(-time.Millisecond)),
 		})
 		t.Logf("listEventsUniqID, err: %+v, %v", listEventsUniqID, err)
 		require.NoError(t, err)
-		require.Len(t, listEventsUniqID.Events, 1)
+		require.Len(t, listEventsUniqID.GetEvents(), 1)
 
 		// Testify does not currently support protobuf equality:
 		// https://github.com/stretchr/testify/issues/758
@@ -128,7 +128,7 @@ func TestListEvents(t *testing.T) {
 		t.Logf("createOrg, err: %+v, %v", createOrg, err)
 		require.NoError(t, err)
 
-		event := random.Event("api-event", createOrg.Id)
+		event := random.Event("api-event", createOrg.GetId())
 
 		err = globalEvDAO.Create(ctx, event)
 		t.Logf("err: %#v", err)
@@ -136,11 +136,11 @@ func TestListEvents(t *testing.T) {
 
 		evCli := api.NewEventServiceClient(globalAdminGRPCConn)
 		listEvents, err := evCli.ListEvents(ctx, &api.ListEventsRequest{
-			IdOneof: &api.ListEventsRequest_UniqId{UniqId: event.UniqId},
+			IdOneof: &api.ListEventsRequest_UniqId{UniqId: event.GetUniqId()},
 		})
 		t.Logf("listEvents, err: %+v, %v", listEvents, err)
 		require.NoError(t, err)
-		require.Len(t, listEvents.Events, 0)
+		require.Len(t, listEvents.GetEvents(), 0)
 	})
 
 	t.Run("List events by invalid time range", func(t *testing.T) {
@@ -206,8 +206,8 @@ func TestLatestEvents(t *testing.T) {
 
 		// Flip events to descending timestamp order.
 		sort.Slice(events, func(i, j int) bool {
-			return events[i].CreatedAt.AsTime().After(
-				events[j].CreatedAt.AsTime())
+			return events[i].GetCreatedAt().AsTime().After(
+				events[j].GetCreatedAt().AsTime())
 		})
 
 		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
@@ -218,12 +218,12 @@ func TestLatestEvents(t *testing.T) {
 		latEvents, err := evCli.LatestEvents(ctx, &api.LatestEventsRequest{})
 		t.Logf("latEvents, err: %+v, %v", latEvents, err)
 		require.NoError(t, err)
-		require.GreaterOrEqual(t, len(latEvents.Events), 5)
+		require.GreaterOrEqual(t, len(latEvents.GetEvents()), 5)
 
 		var found bool
-		for _, event := range latEvents.Events {
-			if event.RuleId == events[len(events)-1].RuleId &&
-				event.UniqId == events[len(events)-1].UniqId {
+		for _, event := range latEvents.GetEvents() {
+			if event.GetRuleId() == events[len(events)-1].GetRuleId() &&
+				event.GetUniqId() == events[len(events)-1].GetUniqId() {
 				found = true
 			}
 		}
@@ -231,10 +231,10 @@ func TestLatestEvents(t *testing.T) {
 
 		// Verify results by rule ID.
 		latEventsRuleID, err := evCli.LatestEvents(ctx,
-			&api.LatestEventsRequest{RuleId: events[len(events)-1].RuleId})
+			&api.LatestEventsRequest{RuleId: events[len(events)-1].GetRuleId()})
 		t.Logf("latEventsDevID, err: %+v, %v", latEventsRuleID, err)
 		require.NoError(t, err)
-		require.Len(t, latEventsRuleID.Events, 1)
+		require.Len(t, latEventsRuleID.GetEvents(), 1)
 
 		// Testify does not currently support protobuf equality:
 		// https://github.com/stretchr/testify/issues/758
@@ -257,7 +257,7 @@ func TestLatestEvents(t *testing.T) {
 		t.Logf("createOrg, err: %+v, %v", createOrg, err)
 		require.NoError(t, err)
 
-		event := random.Event("api-event", createOrg.Id)
+		event := random.Event("api-event", createOrg.GetId())
 
 		err = globalEvDAO.Create(ctx, event)
 		t.Logf("err: %#v", err)
@@ -267,7 +267,7 @@ func TestLatestEvents(t *testing.T) {
 		latEvents, err := evCli.LatestEvents(ctx, &api.LatestEventsRequest{})
 		t.Logf("latEvents, err: %+v, %v", latEvents, err)
 		require.NoError(t, err)
-		require.Len(t, latEvents.Events, 0)
+		require.Len(t, latEvents.GetEvents(), 0)
 	})
 
 	t.Run("Latest events by invalid rule ID", func(t *testing.T) {

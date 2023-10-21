@@ -104,14 +104,14 @@ func TestEventMessages(t *testing.T) {
 			eOutPubTopic := "topic-" + random.String(10)
 
 			ruler := NewMockruler(gomock.NewController(t))
-			ruler.EXPECT().ListByTags(gomock.Any(), lTest.inpVOut.Device.OrgId,
-				lTest.inpVOut.Point.Attr, lTest.inpVOut.Device.Tags).
+			ruler.EXPECT().ListByTags(gomock.Any(), lTest.inpVOut.GetDevice().GetOrgId(),
+				lTest.inpVOut.GetPoint().GetAttr(), lTest.inpVOut.GetDevice().GetTags()).
 				Return(lTest.inpRules, nil).Times(1)
 
 			// Reuse ruleID for less branching in the mocking paths.
 			event := &api.Event{
-				OrgId:  lTest.inpVOut.Device.OrgId,
-				RuleId: ruleID, UniqId: dev.UniqId, CreatedAt: now,
+				OrgId:  lTest.inpVOut.GetDevice().GetOrgId(),
+				RuleId: ruleID, UniqId: dev.GetUniqId(), CreatedAt: now,
 				TraceId: traceID,
 			}
 			eventer := NewMockeventer(gomock.NewController(t))

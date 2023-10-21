@@ -162,12 +162,12 @@ func TestDecodeMessages(t *testing.T) {
 					t.Logf("vIn: %+v", vIn)
 
 					// Normalize generated trace ID.
-					res.Point.TraceId = vIn.Point.TraceId
+					res.Point.TraceId = vIn.GetPoint().GetTraceId()
 					// Normalize timestamp.
-					if lTest.inpPoints[i].Ts == nil {
+					if lTest.inpPoints[i].GetTs() == nil {
 						require.WithinDuration(t, time.Now(),
-							vIn.Point.Ts.AsTime(), 2*time.Second)
-						res.Point.Ts = vIn.Point.Ts
+							vIn.GetPoint().GetTs().AsTime(), 2*time.Second)
+						res.Point.Ts = vIn.GetPoint().GetTs()
 					}
 
 					// Testify does not currently support protobuf equality:
@@ -302,7 +302,7 @@ func TestDataPointToVIn(t *testing.T) {
 			t.Parallel()
 
 			// Save original TS before lTest.inpPoint is modified in-place.
-			origTS := lTest.inpPoint.Ts
+			origTS := lTest.inpPoint.GetTs()
 
 			res := dataPointToVIn(traceID, lTest.inpPaylToken,
 				lTest.inpTopicParts, lTest.inpPoint)
@@ -310,9 +310,9 @@ func TestDataPointToVIn(t *testing.T) {
 
 			// Normalize timestamp.
 			if origTS == nil {
-				require.WithinDuration(t, time.Now(), res.Point.Ts.AsTime(),
+				require.WithinDuration(t, time.Now(), res.GetPoint().GetTs().AsTime(),
 					2*time.Second)
-				lTest.res.Point.Ts = res.Point.Ts
+				lTest.res.Point.Ts = res.GetPoint().GetTs()
 			}
 
 			// Testify does not currently support protobuf equality:

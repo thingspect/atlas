@@ -27,37 +27,37 @@ func TestLogin(t *testing.T) {
 	t.Logf("createOrg, err: %+v, %v", createOrg, err)
 	require.NoError(t, err)
 
-	user := random.User("api-session", createOrg.Id)
+	user := random.User("api-session", createOrg.GetId())
 	user.Role = api.Role_ADMIN
 	user.Status = api.Status_ACTIVE
 	createUser, err := globalUserDAO.Create(ctx, user)
 	t.Logf("createUser, err: %+v, %v", createUser, err)
 	require.NoError(t, err)
 
-	err = globalUserDAO.UpdatePassword(ctx, createUser.Id, createOrg.Id,
+	err = globalUserDAO.UpdatePassword(ctx, createUser.GetId(), createOrg.GetId(),
 		globalHash)
 	t.Logf("err: %v", err)
 	require.NoError(t, err)
 
-	disUser := random.User("api-session", createOrg.Id)
+	disUser := random.User("api-session", createOrg.GetId())
 	disUser.Status = api.Status_DISABLED
 	createDisUser, err := globalUserDAO.Create(ctx, disUser)
 	t.Logf("createDisUser, err: %+v, %v", createDisUser, err)
 	require.NoError(t, err)
 
-	err = globalUserDAO.UpdatePassword(ctx, createDisUser.Id, createOrg.Id,
+	err = globalUserDAO.UpdatePassword(ctx, createDisUser.GetId(), createOrg.GetId(),
 		globalHash)
 	t.Logf("err: %v", err)
 	require.NoError(t, err)
 
-	contUser := random.User("api-session", createOrg.Id)
+	contUser := random.User("api-session", createOrg.GetId())
 	contUser.Role = api.Role_CONTACT
 	contUser.Status = api.Status_ACTIVE
 	createContUser, err := globalUserDAO.Create(ctx, contUser)
 	t.Logf("createContUser, err: %+v, %v", createContUser, err)
 	require.NoError(t, err)
 
-	err = globalUserDAO.UpdatePassword(ctx, createContUser.Id, createOrg.Id,
+	err = globalUserDAO.UpdatePassword(ctx, createContUser.GetId(), createOrg.GetId(),
 		globalHash)
 	t.Logf("err: %v", err)
 	require.NoError(t, err)
@@ -70,14 +70,14 @@ func TestLogin(t *testing.T) {
 
 		sessCli := api.NewSessionServiceClient(globalNoAuthGRPCConn)
 		login, err := sessCli.Login(ctx, &api.LoginRequest{
-			Email: createUser.Email, OrgName: createOrg.Name,
+			Email: createUser.GetEmail(), OrgName: createOrg.GetName(),
 			Password: globalPass,
 		})
 		t.Logf("loginResp, err: %+v, %v", login, err)
 		require.NoError(t, err)
-		require.Greater(t, len(login.Token), 90)
+		require.Greater(t, len(login.GetToken()), 90)
 		require.WithinDuration(t, time.Now().Add(
-			session.WebTokenExp*time.Second), login.ExpiresAt.AsTime(),
+			session.WebTokenExp*time.Second), login.GetExpiresAt().AsTime(),
 			2*time.Second)
 	})
 
@@ -106,7 +106,7 @@ func TestLogin(t *testing.T) {
 
 		sessCli := api.NewSessionServiceClient(globalNoAuthGRPCConn)
 		login, err := sessCli.Login(ctx, &api.LoginRequest{
-			Email: createUser.Email, OrgName: createOrg.Name,
+			Email: createUser.GetEmail(), OrgName: createOrg.GetName(),
 			Password: random.String(10),
 		})
 		t.Logf("loginResp, err: %+v, %v", login, err)
@@ -123,7 +123,7 @@ func TestLogin(t *testing.T) {
 
 		sessCli := api.NewSessionServiceClient(globalNoAuthGRPCConn)
 		login, err := sessCli.Login(ctx, &api.LoginRequest{
-			Email: createDisUser.Email, OrgName: createOrg.Name,
+			Email: createDisUser.GetEmail(), OrgName: createOrg.GetName(),
 			Password: globalPass,
 		})
 		t.Logf("loginResp, err: %+v, %v", login, err)
@@ -140,7 +140,7 @@ func TestLogin(t *testing.T) {
 
 		sessCli := api.NewSessionServiceClient(globalNoAuthGRPCConn)
 		login, err := sessCli.Login(ctx, &api.LoginRequest{
-			Email: createContUser.Email, OrgName: createOrg.Name,
+			Email: createContUser.GetEmail(), OrgName: createOrg.GetName(),
 			Password: globalPass,
 		})
 		t.Logf("loginResp, err: %+v, %v", login, err)
@@ -167,10 +167,10 @@ func TestCreateKey(t *testing.T) {
 			&api.CreateKeyRequest{Key: key})
 		t.Logf("createKey, err: %+v, %v", createKey, err)
 		require.NoError(t, err)
-		require.NotEqual(t, key.Id, createKey.Key.Id)
-		require.WithinDuration(t, time.Now(), createKey.Key.CreatedAt.AsTime(),
+		require.NotEqual(t, key.GetId(), createKey.GetKey().GetId())
+		require.WithinDuration(t, time.Now(), createKey.GetKey().GetCreatedAt().AsTime(),
 			2*time.Second)
-		require.NotEmpty(t, createKey.Token)
+		require.NotEmpty(t, createKey.GetToken())
 	})
 
 	t.Run("Create valid key with insufficient role", func(t *testing.T) {
@@ -246,7 +246,7 @@ func TestDeleteKey(t *testing.T) {
 		require.NoError(t, err)
 
 		_, err = sessCli.DeleteKey(ctx,
-			&api.DeleteKeyRequest{Id: createKey.Key.Id})
+			&api.DeleteKeyRequest{Id: createKey.GetKey().GetId()})
 		t.Logf("err: %v", err)
 		require.NoError(t, err)
 
@@ -259,7 +259,7 @@ func TestDeleteKey(t *testing.T) {
 
 			sessCli := api.NewSessionServiceClient(globalAdminKeyGRPCConn)
 			_, err := sessCli.DeleteKey(ctx,
-				&api.DeleteKeyRequest{Id: createKey.Key.Id})
+				&api.DeleteKeyRequest{Id: createKey.GetKey().GetId()})
 			t.Logf("err: %v", err)
 			require.EqualError(t, err, "rpc error: code = NotFound desc = "+
 				"object not found")
@@ -285,19 +285,19 @@ func TestDeleteKey(t *testing.T) {
 			grpc.WithBlock(),
 			grpc.FailOnNonTempDialError(true),
 			grpc.WithTransportCredentials(insecure.NewCredentials()),
-			grpc.WithPerRPCCredentials(&credential{token: createKey.Token}),
+			grpc.WithPerRPCCredentials(&credential{token: createKey.GetToken()}),
 		}
 		keyConn, err := grpc.Dial(iapi.GRPCHost+iapi.GRPCPort, opts...)
 		require.NoError(t, err)
 
 		sessCli = api.NewSessionServiceClient(keyConn)
 		_, err = sessCli.DeleteKey(ctx,
-			&api.DeleteKeyRequest{Id: createKey.Key.Id})
+			&api.DeleteKeyRequest{Id: createKey.GetKey().GetId()})
 		t.Logf("err: %v", err)
 		require.NoError(t, err)
 
 		_, err = sessCli.DeleteKey(ctx,
-			&api.DeleteKeyRequest{Id: createKey.Key.Id})
+			&api.DeleteKeyRequest{Id: createKey.GetKey().GetId()})
 		t.Logf("err: %v", err)
 		require.EqualError(t, err, "rpc error: code = Unauthenticated desc = "+
 			"unauthorized")
@@ -348,7 +348,7 @@ func TestDeleteKey(t *testing.T) {
 
 		secCli := api.NewSessionServiceClient(secondaryAdminGRPCConn)
 		_, err = secCli.DeleteKey(ctx,
-			&api.DeleteKeyRequest{Id: createKey.Key.Id})
+			&api.DeleteKeyRequest{Id: createKey.GetKey().GetId()})
 		t.Logf("err: %v", err)
 		require.EqualError(t, err, "rpc error: code = NotFound desc = object "+
 			"not found")
@@ -374,9 +374,9 @@ func TestListKeys(t *testing.T) {
 		t.Logf("createKey, err: %+v, %v", createKey, err)
 		require.NoError(t, err)
 
-		keyIDs = append(keyIDs, createKey.Key.Id)
-		keyNames = append(keyNames, createKey.Key.Name)
-		keyRoles = append(keyRoles, createKey.Key.Role)
+		keyIDs = append(keyIDs, createKey.GetKey().GetId())
+		keyNames = append(keyNames, createKey.GetKey().GetName())
+		keyRoles = append(keyRoles, createKey.GetKey().GetRole())
 	}
 
 	t.Run("List keys by valid org ID", func(t *testing.T) {
@@ -389,14 +389,14 @@ func TestListKeys(t *testing.T) {
 		listKeys, err := sessCli.ListKeys(ctx, &api.ListKeysRequest{})
 		t.Logf("listKeys, err: %+v, %v", listKeys, err)
 		require.NoError(t, err)
-		require.GreaterOrEqual(t, len(listKeys.Keys), 3)
-		require.GreaterOrEqual(t, listKeys.TotalSize, int32(3))
+		require.GreaterOrEqual(t, len(listKeys.GetKeys()), 3)
+		require.GreaterOrEqual(t, listKeys.GetTotalSize(), int32(3))
 
 		var found bool
-		for _, key := range listKeys.Keys {
-			if key.Id == keyIDs[len(keyIDs)-1] &&
-				key.Name == keyNames[len(keyNames)-1] &&
-				key.Role == keyRoles[len(keyRoles)-1] {
+		for _, key := range listKeys.GetKeys() {
+			if key.GetId() == keyIDs[len(keyIDs)-1] &&
+				key.GetName() == keyNames[len(keyNames)-1] &&
+				key.GetRole() == keyRoles[len(keyRoles)-1] {
 				found = true
 			}
 		}
@@ -414,17 +414,17 @@ func TestListKeys(t *testing.T) {
 			&api.ListKeysRequest{PageSize: 2})
 		t.Logf("listKeys, err: %+v, %v", listKeys, err)
 		require.NoError(t, err)
-		require.Len(t, listKeys.Keys, 2)
-		require.NotEmpty(t, listKeys.NextPageToken)
-		require.GreaterOrEqual(t, listKeys.TotalSize, int32(3))
+		require.Len(t, listKeys.GetKeys(), 2)
+		require.NotEmpty(t, listKeys.GetNextPageToken())
+		require.GreaterOrEqual(t, listKeys.GetTotalSize(), int32(3))
 
 		nextKeys, err := sessCli.ListKeys(ctx, &api.ListKeysRequest{
-			PageSize: 2, PageToken: listKeys.NextPageToken,
+			PageSize: 2, PageToken: listKeys.GetNextPageToken(),
 		})
 		t.Logf("nextKeys, err: %+v, %v", nextKeys, err)
 		require.NoError(t, err)
-		require.GreaterOrEqual(t, len(nextKeys.Keys), 1)
-		require.GreaterOrEqual(t, nextKeys.TotalSize, int32(3))
+		require.GreaterOrEqual(t, len(nextKeys.GetKeys()), 1)
+		require.GreaterOrEqual(t, nextKeys.GetTotalSize(), int32(3))
 	})
 
 	t.Run("List keys with insufficient role", func(t *testing.T) {
@@ -451,8 +451,8 @@ func TestListKeys(t *testing.T) {
 		listKeys, err := secCli.ListKeys(ctx, &api.ListKeysRequest{})
 		t.Logf("listKeys, err: %+v, %v", listKeys, err)
 		require.NoError(t, err)
-		require.Len(t, listKeys.Keys, 1)
-		require.Equal(t, int32(1), listKeys.TotalSize)
+		require.Len(t, listKeys.GetKeys(), 1)
+		require.Equal(t, int32(1), listKeys.GetTotalSize())
 	})
 
 	t.Run("List keys by invalid page token", func(t *testing.T) {

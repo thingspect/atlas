@@ -39,7 +39,7 @@ func TestCreateRule(t *testing.T) {
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
 			context.Background(), &session.Session{
-				OrgID: rule.OrgId, Role: api.Role_ADMIN,
+				OrgID: rule.GetOrgId(), Role: api.Role_ADMIN,
 			}), testTimeout)
 		defer cancel()
 
@@ -98,7 +98,7 @@ func TestCreateRule(t *testing.T) {
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
 			context.Background(), &session.Session{
-				OrgID: rule.OrgId, Role: api.Role_ADMIN,
+				OrgID: rule.GetOrgId(), Role: api.Role_ADMIN,
 			}), testTimeout)
 		defer cancel()
 
@@ -123,17 +123,17 @@ func TestGetRule(t *testing.T) {
 		retRule, _ := proto.Clone(rule).(*api.Rule)
 
 		ruler := NewMockRuler(gomock.NewController(t))
-		ruler.EXPECT().Read(gomock.Any(), rule.Id, rule.OrgId).Return(retRule,
+		ruler.EXPECT().Read(gomock.Any(), rule.GetId(), rule.GetOrgId()).Return(retRule,
 			nil).Times(1)
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
 			context.Background(), &session.Session{
-				OrgID: rule.OrgId, Role: api.Role_ADMIN,
+				OrgID: rule.GetOrgId(), Role: api.Role_ADMIN,
 			}), testTimeout)
 		defer cancel()
 
 		raSvc := NewRuleAlarm(ruler, nil)
-		getRule, err := raSvc.GetRule(ctx, &api.GetRuleRequest{Id: rule.Id})
+		getRule, err := raSvc.GetRule(ctx, &api.GetRuleRequest{Id: rule.GetId()})
 		t.Logf("rule, getRule, err: %+v, %+v, %v", rule, getRule, err)
 		require.NoError(t, err)
 
@@ -210,7 +210,7 @@ func TestUpdateRule(t *testing.T) {
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
 			context.Background(), &session.Session{
-				OrgID: rule.OrgId, Role: api.Role_ADMIN,
+				OrgID: rule.GetOrgId(), Role: api.Role_ADMIN,
 			}), testTimeout)
 		defer cancel()
 
@@ -234,24 +234,24 @@ func TestUpdateRule(t *testing.T) {
 		rule := random.Rule("api-rule", uuid.NewString())
 		retRule, _ := proto.Clone(rule).(*api.Rule)
 		part := &api.Rule{
-			Id: rule.Id, Status: api.Status_ACTIVE, Expr: `true`,
+			Id: rule.GetId(), Status: api.Status_ACTIVE, Expr: `true`,
 		}
 		merged := &api.Rule{
-			Id: rule.Id, OrgId: rule.OrgId, Name: rule.Name,
-			Status: part.Status, DeviceTag: rule.DeviceTag, Attr: rule.Attr,
-			Expr: part.Expr,
+			Id: rule.GetId(), OrgId: rule.GetOrgId(), Name: rule.GetName(),
+			Status: part.GetStatus(), DeviceTag: rule.GetDeviceTag(), Attr: rule.GetAttr(),
+			Expr: part.GetExpr(),
 		}
 		retMerged, _ := proto.Clone(merged).(*api.Rule)
 
 		ruler := NewMockRuler(gomock.NewController(t))
-		ruler.EXPECT().Read(gomock.Any(), rule.Id, rule.OrgId).Return(retRule,
+		ruler.EXPECT().Read(gomock.Any(), rule.GetId(), rule.GetOrgId()).Return(retRule,
 			nil).Times(1)
 		ruler.EXPECT().Update(gomock.Any(), matcher.NewProtoMatcher(merged)).
 			Return(retMerged, nil).Times(1)
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
 			context.Background(), &session.Session{
-				OrgID: rule.OrgId, Role: api.Role_ADMIN,
+				OrgID: rule.GetOrgId(), Role: api.Role_ADMIN,
 			}), testTimeout)
 		defer cancel()
 
@@ -349,7 +349,7 @@ func TestUpdateRule(t *testing.T) {
 		part := &api.Rule{Id: uuid.NewString(), Status: api.Status_ACTIVE}
 
 		ruler := NewMockRuler(gomock.NewController(t))
-		ruler.EXPECT().Read(gomock.Any(), part.Id, orgID).
+		ruler.EXPECT().Read(gomock.Any(), part.GetId(), orgID).
 			Return(nil, dao.ErrNotFound).Times(1)
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
@@ -377,7 +377,7 @@ func TestUpdateRule(t *testing.T) {
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
 			context.Background(), &session.Session{
-				OrgID: rule.OrgId, Role: api.Role_ADMIN,
+				OrgID: rule.GetOrgId(), Role: api.Role_ADMIN,
 			}), testTimeout)
 		defer cancel()
 
@@ -404,7 +404,7 @@ func TestUpdateRule(t *testing.T) {
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
 			context.Background(), &session.Session{
-				OrgID: rule.OrgId, Role: api.Role_ADMIN,
+				OrgID: rule.GetOrgId(), Role: api.Role_ADMIN,
 			}), testTimeout)
 		defer cancel()
 
@@ -520,7 +520,7 @@ func TestListRules(t *testing.T) {
 		listRules, err := raSvc.ListRules(ctx, &api.ListRulesRequest{})
 		t.Logf("listRules, err: %+v, %v", listRules, err)
 		require.NoError(t, err)
-		require.Equal(t, int32(3), listRules.TotalSize)
+		require.Equal(t, int32(3), listRules.GetTotalSize())
 
 		// Testify does not currently support protobuf equality:
 		// https://github.com/stretchr/testify/issues/758
@@ -542,8 +542,8 @@ func TestListRules(t *testing.T) {
 			random.Rule("api-rule", uuid.NewString()),
 		}
 
-		next, err := session.GeneratePageToken(rules[1].CreatedAt.AsTime(),
-			rules[1].Id)
+		next, err := session.GeneratePageToken(rules[1].GetCreatedAt().AsTime(),
+			rules[1].GetId())
 		require.NoError(t, err)
 
 		ruler := NewMockRuler(gomock.NewController(t))
@@ -562,7 +562,7 @@ func TestListRules(t *testing.T) {
 		})
 		t.Logf("listRules, err: %+v, %v", listRules, err)
 		require.NoError(t, err)
-		require.Equal(t, int32(3), listRules.TotalSize)
+		require.Equal(t, int32(3), listRules.GetTotalSize())
 
 		// Testify does not currently support protobuf equality:
 		// https://github.com/stretchr/testify/issues/758
@@ -672,7 +672,7 @@ func TestListRules(t *testing.T) {
 		})
 		t.Logf("listRules, err: %+v, %v", listRules, err)
 		require.NoError(t, err)
-		require.Equal(t, int32(3), listRules.TotalSize)
+		require.Equal(t, int32(3), listRules.GetTotalSize())
 
 		// Testify does not currently support protobuf equality:
 		// https://github.com/stretchr/testify/issues/758
@@ -764,12 +764,12 @@ func TestTestRule(t *testing.T) {
 				raSvc := NewRuleAlarm(nil, nil)
 				testRes, err := raSvc.TestRule(ctx, &api.TestRuleRequest{
 					Point: lTest.inpPoint, Rule: &api.Rule{
-						Attr: lTest.inpPoint.Attr, Expr: lTest.inpRuleExpr,
+						Attr: lTest.inpPoint.GetAttr(), Expr: lTest.inpRuleExpr,
 					},
 				})
 				t.Logf("testRes, err: %+v, %v", testRes, err)
 				if lTest.err == "" {
-					require.Equal(t, lTest.res, testRes.Result)
+					require.Equal(t, lTest.res, testRes.GetResult())
 					require.NoError(t, err)
 				} else {
 					require.Nil(t, testRes)
@@ -817,7 +817,7 @@ func TestTestRule(t *testing.T) {
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
 			context.Background(), &session.Session{
-				OrgID: rule.OrgId, Role: api.Role_ADMIN,
+				OrgID: rule.GetOrgId(), Role: api.Role_ADMIN,
 			}), testTimeout)
 		defer cancel()
 

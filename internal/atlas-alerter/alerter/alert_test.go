@@ -31,19 +31,19 @@ func TestAlertMessages(t *testing.T) {
 
 	org := random.Org("ale")
 
-	appAlarm := random.Alarm("ale", org.Id, uuid.NewString())
+	appAlarm := random.Alarm("ale", org.GetId(), uuid.NewString())
 	appAlarm.Status = api.Status_ACTIVE
 	appAlarm.Type = api.AlarmType_APP
 
-	smsAlarm := random.Alarm("ale", org.Id, uuid.NewString())
+	smsAlarm := random.Alarm("ale", org.GetId(), uuid.NewString())
 	smsAlarm.Status = api.Status_ACTIVE
 	smsAlarm.Type = api.AlarmType_SMS
 
-	emailAlarm := random.Alarm("ale", org.Id, uuid.NewString())
+	emailAlarm := random.Alarm("ale", org.GetId(), uuid.NewString())
 	emailAlarm.Status = api.Status_ACTIVE
 	emailAlarm.Type = api.AlarmType_EMAIL
 
-	disAlarm := random.Alarm("ale", org.Id, uuid.NewString())
+	disAlarm := random.Alarm("ale", org.GetId(), uuid.NewString())
 	disAlarm.Status = api.Status_DISABLED
 
 	tests := []struct {
@@ -60,57 +60,57 @@ func TestAlertMessages(t *testing.T) {
 		{
 			&message.EventerOut{
 				Point:  &common.DataPoint{},
-				Device: random.Device("ale", org.Id), Rule: random.Rule("ale",
-					org.Id),
+				Device: random.Device("ale", org.GetId()), Rule: random.Rule("ale",
+					org.GetId()),
 			},
 			[]*api.Alarm{appAlarm},
-			[]*api.User{random.User("ale", org.Id)},
+			[]*api.User{random.User("ale", org.GetId())},
 			1, 1, 0, 0, 1, false,
 		},
 		{
 			&message.EventerOut{
 				Point:  &common.DataPoint{},
-				Device: random.Device("ale", org.Id), Rule: random.Rule("ale",
-					org.Id),
+				Device: random.Device("ale", org.GetId()), Rule: random.Rule("ale",
+					org.GetId()),
 			},
 			[]*api.Alarm{smsAlarm},
-			[]*api.User{random.User("ale", org.Id)},
+			[]*api.User{random.User("ale", org.GetId())},
 			1, 0, 1, 0, 1, false,
 		},
 		{
 			&message.EventerOut{
 				Point:  &common.DataPoint{},
-				Device: random.Device("ale", org.Id), Rule: random.Rule("ale",
-					org.Id),
+				Device: random.Device("ale", org.GetId()), Rule: random.Rule("ale",
+					org.GetId()),
 			}, []*api.Alarm{emailAlarm}, []*api.User{
-				random.User("ale", org.Id),
+				random.User("ale", org.GetId()),
 			}, 1, 0, 0, 1, 1, false,
 		},
 		{
 			&message.EventerOut{
 				Point:  &common.DataPoint{},
-				Device: random.Device("ale", org.Id), Rule: random.Rule("ale",
-					org.Id),
+				Device: random.Device("ale", org.GetId()), Rule: random.Rule("ale",
+					org.GetId()),
 			},
 			[]*api.Alarm{disAlarm},
-			[]*api.User{random.User("ale", org.Id)},
+			[]*api.User{random.User("ale", org.GetId())},
 			0, 0, 0, 0, 0, false,
 		},
 		{
 			&message.EventerOut{
 				Point:  &common.DataPoint{},
-				Device: random.Device("ale", org.Id), Rule: random.Rule("ale",
-					org.Id),
+				Device: random.Device("ale", org.GetId()), Rule: random.Rule("ale",
+					org.GetId()),
 			}, []*api.Alarm{appAlarm}, []*api.User{}, 1, 0, 0, 0, 0, false,
 		},
 		{
 			&message.EventerOut{
 				Point:  &common.DataPoint{},
-				Device: random.Device("ale", org.Id), Rule: random.Rule("ale",
-					org.Id),
+				Device: random.Device("ale", org.GetId()), Rule: random.Rule("ale",
+					org.GetId()),
 			},
 			[]*api.Alarm{appAlarm},
-			[]*api.User{random.User("ale", org.Id)},
+			[]*api.User{random.User("ale", org.GetId())},
 			1, 0, 0, 0, 0, true,
 		},
 	}
@@ -130,28 +130,28 @@ func TestAlertMessages(t *testing.T) {
 
 			ctrl := gomock.NewController(t)
 			orger := NewMockorger(ctrl)
-			orger.EXPECT().Read(gomock.Any(), lTest.inpEOut.Device.OrgId).
+			orger.EXPECT().Read(gomock.Any(), lTest.inpEOut.GetDevice().GetOrgId()).
 				Return(org, nil).Times(1)
 
 			alarmer := NewMockalarmer(ctrl)
-			alarmer.EXPECT().List(gomock.Any(), lTest.inpEOut.Device.OrgId,
-				time.Time{}, "", int32(0), lTest.inpEOut.Rule.Id).Return(
+			alarmer.EXPECT().List(gomock.Any(), lTest.inpEOut.GetDevice().GetOrgId(),
+				time.Time{}, "", int32(0), lTest.inpEOut.GetRule().GetId()).Return(
 				lTest.inpAlarms, int32(0), nil).Times(1)
 
 			userer := NewMockuserer(ctrl)
-			userer.EXPECT().ListByTags(gomock.Any(), lTest.inpEOut.Device.OrgId,
-				lTest.inpAlarms[0].UserTags).Return(lTest.inpUsers, nil).
+			userer.EXPECT().ListByTags(gomock.Any(), lTest.inpEOut.GetDevice().GetOrgId(),
+				lTest.inpAlarms[0].GetUserTags()).Return(lTest.inpUsers, nil).
 				Times(lTest.inpUserTimes)
 
 			var alert *api.Alert
 			if lTest.inpAlertTimes > 0 {
 				alert = &api.Alert{
-					OrgId:   lTest.inpEOut.Device.OrgId,
-					UniqId:  lTest.inpEOut.Device.UniqId,
-					AlarmId: lTest.inpAlarms[0].Id,
-					UserId:  lTest.inpUsers[0].Id,
+					OrgId:   lTest.inpEOut.GetDevice().GetOrgId(),
+					UniqId:  lTest.inpEOut.GetDevice().GetUniqId(),
+					AlarmId: lTest.inpAlarms[0].GetId(),
+					UserId:  lTest.inpUsers[0].GetId(),
 					Status:  api.AlertStatus_SENT,
-					TraceId: lTest.inpEOut.Point.TraceId,
+					TraceId: lTest.inpEOut.GetPoint().GetTraceId(),
 				}
 			}
 
@@ -160,7 +160,7 @@ func TestAlertMessages(t *testing.T) {
 				gomock.Any()).Return(nil).Times(lTest.inpAppTimes)
 			notifier.EXPECT().SMS(gomock.Any(), gomock.Any(), gomock.Any(),
 				gomock.Any()).Return(nil).Times(lTest.inpSMSTimes)
-			notifier.EXPECT().Email(gomock.Any(), org.DisplayName, org.Email,
+			notifier.EXPECT().Email(gomock.Any(), org.GetDisplayName(), org.GetEmail(),
 				gomock.Any(), gomock.Any(), gomock.Any()).Return(nil).
 				Times(lTest.inpEmailTimes)
 
@@ -180,9 +180,9 @@ func TestAlertMessages(t *testing.T) {
 					5*time.Second)
 				defer cancel()
 
-				key := repeatKey(lTest.inpEOut.Device.OrgId,
-					lTest.inpEOut.Device.Id, lTest.inpAlarms[0].Id,
-					lTest.inpUsers[0].Id)
+				key := repeatKey(lTest.inpEOut.GetDevice().GetOrgId(),
+					lTest.inpEOut.GetDevice().GetId(), lTest.inpAlarms[0].GetId(),
+					lTest.inpUsers[0].GetId())
 				ok, err := cache.SetIfNotExistTTL(ctx, key, 1, time.Minute)
 				require.True(t, ok)
 				require.NoError(t, err)

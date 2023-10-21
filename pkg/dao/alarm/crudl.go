@@ -27,9 +27,9 @@ func (d *DAO) Create(ctx context.Context, alarm *api.Alarm) (
 	alarm.CreatedAt = timestamppb.New(now)
 	alarm.UpdatedAt = timestamppb.New(now)
 
-	if err := d.pg.QueryRowContext(ctx, createAlarm, alarm.OrgId, alarm.RuleId,
-		alarm.Name, alarm.Status.String(), alarm.Type.String(), alarm.UserTags,
-		alarm.SubjectTemplate, alarm.BodyTemplate, alarm.RepeatInterval,
+	if err := d.pg.QueryRowContext(ctx, createAlarm, alarm.GetOrgId(), alarm.GetRuleId(),
+		alarm.GetName(), alarm.GetStatus().String(), alarm.GetType().String(), alarm.GetUserTags(),
+		alarm.GetSubjectTemplate(), alarm.GetBodyTemplate(), alarm.GetRepeatInterval(),
 		now).Scan(&alarm.Id); err != nil {
 		return nil, dao.DBToSentinel(err)
 	}
@@ -85,11 +85,11 @@ func (d *DAO) Update(ctx context.Context, alarm *api.Alarm) (
 	updatedAt := time.Now().UTC().Truncate(time.Microsecond)
 	alarm.UpdatedAt = timestamppb.New(updatedAt)
 
-	if err := d.pg.QueryRowContext(ctx, updateAlarm, alarm.Name,
-		alarm.Status.String(), alarm.Type.String(), alarm.UserTags,
-		alarm.SubjectTemplate, alarm.BodyTemplate, alarm.RepeatInterval,
-		updatedAt, alarm.Id, alarm.OrgId,
-		alarm.RuleId).Scan(&createdAt); err != nil {
+	if err := d.pg.QueryRowContext(ctx, updateAlarm, alarm.GetName(),
+		alarm.GetStatus().String(), alarm.GetType().String(), alarm.GetUserTags(),
+		alarm.GetSubjectTemplate(), alarm.GetBodyTemplate(), alarm.GetRepeatInterval(),
+		updatedAt, alarm.GetId(), alarm.GetOrgId(),
+		alarm.GetRuleId()).Scan(&createdAt); err != nil {
 		return nil, dao.DBToSentinel(err)
 	}
 

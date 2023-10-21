@@ -26,7 +26,7 @@ func deviceAck(body []byte) ([]*decode.Point, error) {
 		protojson.MarshalOptions{}.Format(ackMsg), " ", "")}}
 
 	// Parse AckEvent. A false ack means it timed out.
-	if ackMsg.Acknowledged {
+	if ackMsg.GetAcknowledged() {
 		msgs = append(msgs, &decode.Point{Attr: "ack", Value: ackOK})
 	} else {
 		msgs = append(msgs, &decode.Point{Attr: "ack", Value: ackTimeout})

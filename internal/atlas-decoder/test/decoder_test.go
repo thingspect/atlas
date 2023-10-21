@@ -32,14 +32,14 @@ func TestDecodeMessages(t *testing.T) {
 	t.Logf("createOrg, err: %+v, %v", createOrg, err)
 	require.NoError(t, err)
 
-	doorDev := random.Device("dec", createOrg.Id)
+	doorDev := random.Device("dec", createOrg.GetId())
 	doorDev.Status = api.Status_ACTIVE
 	doorDev.Decoder = api.Decoder_RADIO_BRIDGE_DOOR_V2
 	createDoorDev, err := globalDevDAO.Create(ctx, doorDev)
 	t.Logf("createDoorDev, err: %+v, %v", createDoorDev, err)
 	require.NoError(t, err)
 
-	co2Dev := random.Device("dec", createOrg.Id)
+	co2Dev := random.Device("dec", createOrg.GetId())
 	co2Dev.Status = api.Status_ACTIVE
 	co2Dev.Decoder = api.Decoder_GLOBALSAT_CO2
 	createCO2Dev, err := globalDevDAO.Create(ctx, co2Dev)
@@ -52,18 +52,18 @@ func TestDecodeMessages(t *testing.T) {
 	}{
 		{
 			&message.DecoderIn{
-				UniqId: doorDev.UniqId, Data: []byte{0x19, 0x03, 0x01}, Ts: now,
+				UniqId: doorDev.GetUniqId(), Data: []byte{0x19, 0x03, 0x01}, Ts: now,
 				TraceId: traceID[:],
 			}, []*message.ValidatorIn{
 				{
 					Point: &common.DataPoint{
-						UniqId: doorDev.UniqId, Attr: "count",
+						UniqId: doorDev.GetUniqId(), Attr: "count",
 						ValOneof: &common.DataPoint_IntVal{IntVal: 9}, Ts: now,
 						TraceId: traceID.String(),
 					}, SkipToken: true,
 				}, {
 					Point: &common.DataPoint{
-						UniqId: doorDev.UniqId, Attr: "open",
+						UniqId: doorDev.GetUniqId(), Attr: "open",
 						ValOneof: &common.DataPoint_BoolVal{BoolVal: true},
 						Ts:       now, TraceId: traceID.String(),
 					}, SkipToken: true,
@@ -72,18 +72,18 @@ func TestDecodeMessages(t *testing.T) {
 		},
 		{
 			&message.DecoderIn{
-				UniqId: doorDev.UniqId, Data: []byte{0x1a, 0x03, 0x00}, Ts: now,
+				UniqId: doorDev.GetUniqId(), Data: []byte{0x1a, 0x03, 0x00}, Ts: now,
 				TraceId: traceID[:],
 			}, []*message.ValidatorIn{
 				{
 					Point: &common.DataPoint{
-						UniqId: doorDev.UniqId, Attr: "count",
+						UniqId: doorDev.GetUniqId(), Attr: "count",
 						ValOneof: &common.DataPoint_IntVal{IntVal: 10}, Ts: now,
 						TraceId: traceID.String(),
 					}, SkipToken: true,
 				}, {
 					Point: &common.DataPoint{
-						UniqId: doorDev.UniqId, Attr: "open",
+						UniqId: doorDev.GetUniqId(), Attr: "open",
 						ValOneof: &common.DataPoint_BoolVal{BoolVal: false},
 						Ts:       now, TraceId: traceID.String(),
 					}, SkipToken: true,
@@ -92,34 +92,34 @@ func TestDecodeMessages(t *testing.T) {
 		},
 		{
 			&message.DecoderIn{
-				UniqId: co2Dev.UniqId, Data: []byte{
+				UniqId: co2Dev.GetUniqId(), Data: []byte{
 					0x01, 0x09, 0x61, 0x13, 0x95, 0x02, 0x92,
 				}, Ts: now, TraceId: traceID[:],
 			}, []*message.ValidatorIn{
 				{
 					Point: &common.DataPoint{
-						UniqId: co2Dev.UniqId, Attr: "temp_c",
+						UniqId: co2Dev.GetUniqId(), Attr: "temp_c",
 						ValOneof: &common.DataPoint_Fl64Val{Fl64Val: 24},
 						Ts:       now, TraceId: traceID.String(),
 					}, SkipToken: true,
 				},
 				{
 					Point: &common.DataPoint{
-						UniqId: co2Dev.UniqId, Attr: "temp_f",
+						UniqId: co2Dev.GetUniqId(), Attr: "temp_f",
 						ValOneof: &common.DataPoint_Fl64Val{Fl64Val: 75.2},
 						Ts:       now, TraceId: traceID.String(),
 					}, SkipToken: true,
 				},
 				{
 					Point: &common.DataPoint{
-						UniqId: co2Dev.UniqId, Attr: "humidity_pct",
+						UniqId: co2Dev.GetUniqId(), Attr: "humidity_pct",
 						ValOneof: &common.DataPoint_Fl64Val{Fl64Val: 50.13},
 						Ts:       now, TraceId: traceID.String(),
 					}, SkipToken: true,
 				},
 				{
 					Point: &common.DataPoint{
-						UniqId: co2Dev.UniqId, Attr: "co2_ppm",
+						UniqId: co2Dev.GetUniqId(), Attr: "co2_ppm",
 						ValOneof: &common.DataPoint_IntVal{IntVal: 658},
 						Ts:       now, TraceId: traceID.String(),
 					}, SkipToken: true,
@@ -176,14 +176,14 @@ func TestDecodeMessagesError(t *testing.T) {
 	t.Logf("createOrg, err: %+v, %v", createOrg, err)
 	require.NoError(t, err)
 
-	dev := random.Device("dec", createOrg.Id)
+	dev := random.Device("dec", createOrg.GetId())
 	dev.Status = api.Status_ACTIVE
 	dev.Decoder = api.Decoder_RAW
 	createDev, err := globalDevDAO.Create(ctx, dev)
 	t.Logf("createDev, err: %+v, %v", createDev, err)
 	require.NoError(t, err)
 
-	invDev := random.Device("dec", createOrg.Id)
+	invDev := random.Device("dec", createOrg.GetId())
 	invDev.Status = api.Status_ACTIVE
 	invDev.Decoder = api.Decoder(999)
 	createInvDev, err := globalDevDAO.Create(ctx, invDev)
@@ -196,7 +196,7 @@ func TestDecodeMessagesError(t *testing.T) {
 		// Empty data.
 		{
 			&message.DecoderIn{
-				UniqId: createDev.UniqId, Ts: now, TraceId: traceID[:],
+				UniqId: createDev.GetUniqId(), Ts: now, TraceId: traceID[:],
 			},
 		},
 		// Bad payload.
@@ -210,7 +210,7 @@ func TestDecodeMessagesError(t *testing.T) {
 		// Decode error, defaults to Decoder zero value when not in registry.
 		{
 			&message.DecoderIn{
-				UniqId: createInvDev.UniqId, Ts: now, TraceId: traceID[:],
+				UniqId: createInvDev.GetUniqId(), Ts: now, TraceId: traceID[:],
 			},
 		},
 	}

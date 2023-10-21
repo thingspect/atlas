@@ -41,16 +41,16 @@ func (dec *Decoder) decodeMessages() {
 
 		// Trace IDs have been authenticated and are safe to copy.
 		var traceID uuid.UUID
-		copy(traceID[:], dIn.TraceId)
+		copy(traceID[:], dIn.GetTraceId())
 
 		// Set up logging fields.
 		logger := alog.
 			WithField("traceID", traceID.String()).
-			WithField("uniqID", dIn.UniqId)
+			WithField("uniqID", dIn.GetUniqId())
 
 		// Retrieve device.
 		ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
-		dev, err := dec.devDAO.ReadByUniqID(ctx, dIn.UniqId)
+		dev, err := dec.devDAO.ReadByUniqID(ctx, dIn.GetUniqId())
 		cancel()
 		if errors.Is(err, dao.ErrNotFound) {
 			msg.Ack()
@@ -66,12 +66,12 @@ func (dec *Decoder) decodeMessages() {
 
 			continue
 		}
-		logger = logger.WithField("orgID", dev.OrgId)
-		logger = logger.WithField("devID", dev.Id)
+		logger = logger.WithField("orgID", dev.GetOrgId())
+		logger = logger.WithField("devID", dev.GetId())
 
 		// Decode data payload. Continue execution in the presence of errors, as
 		// valid points may be returned.
-		points, err := dec.reg.Decode(dev.Decoder, dIn.Data)
+		points, err := dec.reg.Decode(dev.GetDecoder(), dIn.GetData())
 		if err != nil {
 			metric.Incr("error", map[string]string{"func": "decode"})
 			logger.Errorf("decodeMessages dec.registry.Decode: %v", err)
@@ -82,8 +82,8 @@ func (dec *Decoder) decodeMessages() {
 		// Build and publish ValidatorIn messages.
 		var successCount int
 		for _, point := range points {
-			vIn := registry.PointToVIn(traceID.String(), dIn.UniqId, point,
-				dIn.Ts)
+			vIn := registry.PointToVIn(traceID.String(), dIn.GetUniqId(), point,
+				dIn.GetTs())
 
 			bVIn, err := proto.Marshal(vIn)
 			if err != nil {

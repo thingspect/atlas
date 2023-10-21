@@ -33,12 +33,12 @@ func TestCreateDevice(t *testing.T) {
 			&api.CreateDeviceRequest{Device: dev})
 		t.Logf("createDev, err: %+v, %v", createDev, err)
 		require.NoError(t, err)
-		require.NotEqual(t, dev.Id, createDev.Id)
-		require.Equal(t, dev.UniqId, createDev.UniqId)
-		require.NotEqual(t, dev.Token, createDev.Token)
-		require.WithinDuration(t, time.Now(), createDev.CreatedAt.AsTime(),
+		require.NotEqual(t, dev.GetId(), createDev.GetId())
+		require.Equal(t, dev.GetUniqId(), createDev.GetUniqId())
+		require.NotEqual(t, dev.GetToken(), createDev.GetToken())
+		require.WithinDuration(t, time.Now(), createDev.GetCreatedAt().AsTime(),
 			2*time.Second)
-		require.WithinDuration(t, time.Now(), createDev.UpdatedAt.AsTime(),
+		require.WithinDuration(t, time.Now(), createDev.GetUpdatedAt().AsTime(),
 			2*time.Second)
 	})
 
@@ -46,7 +46,7 @@ func TestCreateDevice(t *testing.T) {
 		t.Parallel()
 
 		dev := random.Device("api-device", uuid.NewString())
-		dev.UniqId = strings.ToUpper(dev.UniqId)
+		dev.UniqId = strings.ToUpper(dev.GetUniqId())
 
 		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
 		defer cancel()
@@ -56,12 +56,12 @@ func TestCreateDevice(t *testing.T) {
 			&api.CreateDeviceRequest{Device: dev})
 		t.Logf("createDev, err: %+v, %v", createDev, err)
 		require.NoError(t, err)
-		require.NotEqual(t, dev.Id, createDev.Id)
-		require.Equal(t, strings.ToLower(dev.UniqId), createDev.UniqId)
-		require.NotEqual(t, dev.Token, createDev.Token)
-		require.WithinDuration(t, time.Now(), createDev.CreatedAt.AsTime(),
+		require.NotEqual(t, dev.GetId(), createDev.GetId())
+		require.Equal(t, strings.ToLower(dev.GetUniqId()), createDev.GetUniqId())
+		require.NotEqual(t, dev.GetToken(), createDev.GetToken())
+		require.WithinDuration(t, time.Now(), createDev.GetCreatedAt().AsTime(),
 			2*time.Second)
-		require.WithinDuration(t, time.Now(), createDev.UpdatedAt.AsTime(),
+		require.WithinDuration(t, time.Now(), createDev.GetUpdatedAt().AsTime(),
 			2*time.Second)
 	})
 
@@ -120,7 +120,7 @@ func TestCreateDeviceLoRaWAN(t *testing.T) {
 
 		_, err = devCli.CreateDeviceLoRaWAN(ctx,
 			&api.CreateDeviceLoRaWANRequest{
-				Id:        createDev.Id,
+				Id:        createDev.GetId(),
 				TypeOneof: &api.CreateDeviceLoRaWANRequest_GatewayLorawanType{},
 			})
 		t.Logf("err: %v", err)
@@ -142,7 +142,7 @@ func TestCreateDeviceLoRaWAN(t *testing.T) {
 
 		_, err = devCli.CreateDeviceLoRaWAN(ctx,
 			&api.CreateDeviceLoRaWANRequest{
-				Id: createDev.Id,
+				Id: createDev.GetId(),
 				TypeOneof: &api.CreateDeviceLoRaWANRequest_DeviceLorawanType{
 					DeviceLorawanType: &api.CreateDeviceLoRaWANRequest_DeviceLoRaWANType{
 						AppKey: random.String(32),
@@ -203,7 +203,7 @@ func TestCreateDeviceLoRaWAN(t *testing.T) {
 		secCli := api.NewDeviceServiceClient(secondaryAdminGRPCConn)
 		_, err = secCli.CreateDeviceLoRaWAN(ctx,
 			&api.CreateDeviceLoRaWANRequest{
-				Id:        createDev.Id,
+				Id:        createDev.GetId(),
 				TypeOneof: &api.CreateDeviceLoRaWANRequest_GatewayLorawanType{},
 			})
 		t.Logf("err: %v", err)
@@ -233,7 +233,7 @@ func TestGetDevice(t *testing.T) {
 
 		devCli := api.NewDeviceServiceClient(globalAdminGRPCConn)
 		getDev, err := devCli.GetDevice(ctx,
-			&api.GetDeviceRequest{Id: createDev.Id})
+			&api.GetDeviceRequest{Id: createDev.GetId()})
 		t.Logf("getDev, err: %+v, %v", getDev, err)
 		require.NoError(t, err)
 
@@ -267,7 +267,7 @@ func TestGetDevice(t *testing.T) {
 
 		secCli := api.NewDeviceServiceClient(secondaryAdminGRPCConn)
 		getDev, err := secCli.GetDevice(ctx,
-			&api.GetDeviceRequest{Id: createDev.Id})
+			&api.GetDeviceRequest{Id: createDev.GetId()})
 		t.Logf("getDev, err: %+v, %v", getDev, err)
 		require.Nil(t, getDev)
 		require.EqualError(t, err, "rpc error: code = NotFound desc = object "+
@@ -302,18 +302,18 @@ func TestUpdateDevice(t *testing.T) {
 			&api.UpdateDeviceRequest{Device: createDev})
 		t.Logf("updateDev, err: %+v, %v", updateDev, err)
 		require.NoError(t, err)
-		require.Equal(t, createDev.UniqId, updateDev.UniqId)
-		require.Equal(t, createDev.Name, updateDev.Name)
-		require.Equal(t, createDev.Status, updateDev.Status)
-		require.Equal(t, createDev.Decoder, updateDev.Decoder)
-		require.Equal(t, createDev.Tags, updateDev.Tags)
-		require.True(t, updateDev.UpdatedAt.AsTime().After(
-			updateDev.CreatedAt.AsTime()))
-		require.WithinDuration(t, createDev.CreatedAt.AsTime(),
-			updateDev.UpdatedAt.AsTime(), 2*time.Second)
+		require.Equal(t, createDev.GetUniqId(), updateDev.GetUniqId())
+		require.Equal(t, createDev.GetName(), updateDev.GetName())
+		require.Equal(t, createDev.GetStatus(), updateDev.GetStatus())
+		require.Equal(t, createDev.GetDecoder(), updateDev.GetDecoder())
+		require.Equal(t, createDev.GetTags(), updateDev.GetTags())
+		require.True(t, updateDev.GetUpdatedAt().AsTime().After(
+			updateDev.GetCreatedAt().AsTime()))
+		require.WithinDuration(t, createDev.GetCreatedAt().AsTime(),
+			updateDev.GetUpdatedAt().AsTime(), 2*time.Second)
 
 		getDev, err := devCli.GetDevice(ctx,
-			&api.GetDeviceRequest{Id: createDev.Id})
+			&api.GetDeviceRequest{Id: createDev.GetId()})
 		t.Logf("getDev, err: %+v, %v", getDev, err)
 		require.NoError(t, err)
 
@@ -339,7 +339,7 @@ func TestUpdateDevice(t *testing.T) {
 
 		// Update device fields.
 		part := &api.Device{
-			Id: createDev.Id, UniqId: "api-device-" + random.String(16),
+			Id: createDev.GetId(), UniqId: "api-device-" + random.String(16),
 			Name:   "api-device-" + random.String(10),
 			Status: api.Status_DISABLED, Decoder: api.Decoder_GATEWAY,
 			Tags: random.Tags("api-device", 2),
@@ -352,18 +352,18 @@ func TestUpdateDevice(t *testing.T) {
 		})
 		t.Logf("updateDev, err: %+v, %v", updateDev, err)
 		require.NoError(t, err)
-		require.Equal(t, part.UniqId, updateDev.UniqId)
-		require.Equal(t, part.Name, updateDev.Name)
-		require.Equal(t, part.Status, updateDev.Status)
-		require.Equal(t, part.Decoder, updateDev.Decoder)
-		require.Equal(t, part.Tags, updateDev.Tags)
-		require.True(t, updateDev.UpdatedAt.AsTime().After(
-			updateDev.CreatedAt.AsTime()))
-		require.WithinDuration(t, createDev.CreatedAt.AsTime(),
-			updateDev.UpdatedAt.AsTime(), 2*time.Second)
+		require.Equal(t, part.GetUniqId(), updateDev.GetUniqId())
+		require.Equal(t, part.GetName(), updateDev.GetName())
+		require.Equal(t, part.GetStatus(), updateDev.GetStatus())
+		require.Equal(t, part.GetDecoder(), updateDev.GetDecoder())
+		require.Equal(t, part.GetTags(), updateDev.GetTags())
+		require.True(t, updateDev.GetUpdatedAt().AsTime().After(
+			updateDev.GetCreatedAt().AsTime()))
+		require.WithinDuration(t, createDev.GetCreatedAt().AsTime(),
+			updateDev.GetUpdatedAt().AsTime(), 2*time.Second)
 
 		getDev, err := devCli.GetDevice(ctx,
-			&api.GetDeviceRequest{Id: createDev.Id})
+			&api.GetDeviceRequest{Id: createDev.GetId()})
 		t.Logf("getDev, err: %+v, %v", getDev, err)
 		require.NoError(t, err)
 
@@ -552,14 +552,14 @@ func TestDeleteDeviceLoRaWAN(t *testing.T) {
 
 		_, err = devCli.CreateDeviceLoRaWAN(ctx,
 			&api.CreateDeviceLoRaWANRequest{
-				Id:        createDev.Id,
+				Id:        createDev.GetId(),
 				TypeOneof: &api.CreateDeviceLoRaWANRequest_GatewayLorawanType{},
 			})
 		t.Logf("err: %v", err)
 		require.NoError(t, err)
 
 		_, err = devCli.DeleteDeviceLoRaWAN(ctx,
-			&api.DeleteDeviceLoRaWANRequest{Id: createDev.Id})
+			&api.DeleteDeviceLoRaWANRequest{Id: createDev.GetId()})
 		t.Logf("err: %v", err)
 		require.NoError(t, err)
 	})
@@ -578,7 +578,7 @@ func TestDeleteDeviceLoRaWAN(t *testing.T) {
 		require.NoError(t, err)
 
 		_, err = devCli.DeleteDeviceLoRaWAN(ctx,
-			&api.DeleteDeviceLoRaWANRequest{Id: createDev.Id})
+			&api.DeleteDeviceLoRaWANRequest{Id: createDev.GetId()})
 		t.Logf("err: %v", err)
 		require.NoError(t, err)
 	})
@@ -626,7 +626,7 @@ func TestDeleteDeviceLoRaWAN(t *testing.T) {
 
 		secCli := api.NewDeviceServiceClient(secondaryAdminGRPCConn)
 		_, err = secCli.DeleteDeviceLoRaWAN(ctx,
-			&api.DeleteDeviceLoRaWANRequest{Id: createDev.Id})
+			&api.DeleteDeviceLoRaWANRequest{Id: createDev.GetId()})
 		t.Logf("err: %v", err)
 		require.EqualError(t, err, "rpc error: code = NotFound desc = object "+
 			"not found")
@@ -650,7 +650,7 @@ func TestDeleteDevice(t *testing.T) {
 		require.NoError(t, err)
 
 		_, err = devCli.DeleteDevice(ctx,
-			&api.DeleteDeviceRequest{Id: createDev.Id})
+			&api.DeleteDeviceRequest{Id: createDev.GetId()})
 		t.Logf("err: %v", err)
 		require.NoError(t, err)
 
@@ -663,7 +663,7 @@ func TestDeleteDevice(t *testing.T) {
 
 			devCli := api.NewDeviceServiceClient(globalAdminKeyGRPCConn)
 			getDev, err := devCli.GetDevice(ctx,
-				&api.GetDeviceRequest{Id: createDev.Id})
+				&api.GetDeviceRequest{Id: createDev.GetId()})
 			t.Logf("getDev, err: %+v, %v", getDev, err)
 			require.Nil(t, getDev)
 			require.EqualError(t, err, "rpc error: code = NotFound desc = "+
@@ -714,7 +714,7 @@ func TestDeleteDevice(t *testing.T) {
 
 		secCli := api.NewDeviceServiceClient(secondaryAdminGRPCConn)
 		_, err = secCli.DeleteDevice(ctx,
-			&api.DeleteDeviceRequest{Id: createDev.Id})
+			&api.DeleteDeviceRequest{Id: createDev.GetId()})
 		t.Logf("err: %v", err)
 		require.EqualError(t, err, "rpc error: code = NotFound desc = object "+
 			"not found")
@@ -740,11 +740,11 @@ func TestListDevices(t *testing.T) {
 		t.Logf("createDev, err: %+v, %v", createDev, err)
 		require.NoError(t, err)
 
-		devIDs = append(devIDs, createDev.Id)
-		devNames = append(devNames, createDev.Name)
-		devStatuses = append(devStatuses, createDev.Status)
-		devDecoders = append(devDecoders, createDev.Decoder)
-		devTags = append(devTags, createDev.Tags)
+		devIDs = append(devIDs, createDev.GetId())
+		devNames = append(devNames, createDev.GetName())
+		devStatuses = append(devStatuses, createDev.GetStatus())
+		devDecoders = append(devDecoders, createDev.GetDecoder())
+		devTags = append(devTags, createDev.GetTags())
 	}
 
 	t.Run("List devices by valid org ID", func(t *testing.T) {
@@ -757,16 +757,16 @@ func TestListDevices(t *testing.T) {
 		listDevs, err := devCli.ListDevices(ctx, &api.ListDevicesRequest{})
 		t.Logf("listDevs, err: %+v, %v", listDevs, err)
 		require.NoError(t, err)
-		require.GreaterOrEqual(t, len(listDevs.Devices), 3)
-		require.GreaterOrEqual(t, listDevs.TotalSize, int32(3))
+		require.GreaterOrEqual(t, len(listDevs.GetDevices()), 3)
+		require.GreaterOrEqual(t, listDevs.GetTotalSize(), int32(3))
 
 		var found bool
-		for _, dev := range listDevs.Devices {
-			if dev.Id == devIDs[len(devIDs)-1] &&
-				dev.Name == devNames[len(devNames)-1] &&
-				dev.Status == devStatuses[len(devStatuses)-1] &&
-				dev.Decoder == devDecoders[len(devDecoders)-1] &&
-				reflect.DeepEqual(dev.Tags, devTags[len(devTags)-1]) {
+		for _, dev := range listDevs.GetDevices() {
+			if dev.GetId() == devIDs[len(devIDs)-1] &&
+				dev.GetName() == devNames[len(devNames)-1] &&
+				dev.GetStatus() == devStatuses[len(devStatuses)-1] &&
+				dev.GetDecoder() == devDecoders[len(devDecoders)-1] &&
+				reflect.DeepEqual(dev.GetTags(), devTags[len(devTags)-1]) {
 				found = true
 			}
 		}
@@ -784,17 +784,17 @@ func TestListDevices(t *testing.T) {
 			&api.ListDevicesRequest{PageSize: 2})
 		t.Logf("listDevs, err: %+v, %v", listDevs, err)
 		require.NoError(t, err)
-		require.Len(t, listDevs.Devices, 2)
-		require.NotEmpty(t, listDevs.NextPageToken)
-		require.GreaterOrEqual(t, listDevs.TotalSize, int32(3))
+		require.Len(t, listDevs.GetDevices(), 2)
+		require.NotEmpty(t, listDevs.GetNextPageToken())
+		require.GreaterOrEqual(t, listDevs.GetTotalSize(), int32(3))
 
 		nextDevs, err := devCli.ListDevices(ctx, &api.ListDevicesRequest{
-			PageSize: 2, PageToken: listDevs.NextPageToken,
+			PageSize: 2, PageToken: listDevs.GetNextPageToken(),
 		})
 		t.Logf("nextDevs, err: %+v, %v", nextDevs, err)
 		require.NoError(t, err)
-		require.GreaterOrEqual(t, len(nextDevs.Devices), 1)
-		require.GreaterOrEqual(t, nextDevs.TotalSize, int32(3))
+		require.GreaterOrEqual(t, len(nextDevs.GetDevices()), 1)
+		require.GreaterOrEqual(t, nextDevs.GetTotalSize(), int32(3))
 	})
 
 	t.Run("List devices with tag filter", func(t *testing.T) {
@@ -808,16 +808,16 @@ func TestListDevices(t *testing.T) {
 			&api.ListDevicesRequest{Tag: devTags[2][0]})
 		t.Logf("listDevs, err: %+v, %v", listDevs, err)
 		require.NoError(t, err)
-		require.Len(t, listDevs.Devices, 1)
-		require.Equal(t, int32(1), listDevs.TotalSize)
+		require.Len(t, listDevs.GetDevices(), 1)
+		require.Equal(t, int32(1), listDevs.GetTotalSize())
 
-		require.Equal(t, devIDs[len(devIDs)-1], listDevs.Devices[0].Id)
-		require.Equal(t, devNames[len(devNames)-1], listDevs.Devices[0].Name)
+		require.Equal(t, devIDs[len(devIDs)-1], listDevs.GetDevices()[0].GetId())
+		require.Equal(t, devNames[len(devNames)-1], listDevs.GetDevices()[0].GetName())
 		require.Equal(t, devStatuses[len(devStatuses)-1],
-			listDevs.Devices[0].Status)
+			listDevs.GetDevices()[0].GetStatus())
 		require.Equal(t, devDecoders[len(devDecoders)-1],
-			listDevs.Devices[0].Decoder)
-		require.Equal(t, devTags[len(devTags)-1], listDevs.Devices[0].Tags)
+			listDevs.GetDevices()[0].GetDecoder())
+		require.Equal(t, devTags[len(devTags)-1], listDevs.GetDevices()[0].GetTags())
 	})
 
 	t.Run("Lists are isolated by org ID", func(t *testing.T) {
@@ -830,8 +830,8 @@ func TestListDevices(t *testing.T) {
 		listDevs, err := secCli.ListDevices(ctx, &api.ListDevicesRequest{})
 		t.Logf("listDevs, err: %+v, %v", listDevs, err)
 		require.NoError(t, err)
-		require.Len(t, listDevs.Devices, 0)
-		require.Equal(t, int32(0), listDevs.TotalSize)
+		require.Len(t, listDevs.GetDevices(), 0)
+		require.Equal(t, int32(0), listDevs.GetTotalSize())
 	})
 
 	t.Run("List devices by invalid page token", func(t *testing.T) {

@@ -32,7 +32,7 @@ func TestCreate(t *testing.T) {
 		t.Logf("createOrg, err: %+v, %v", createOrg, err)
 		require.NoError(t, err)
 
-		err = globalEvDAO.Create(ctx, random.Event("dao-event", createOrg.Id))
+		err = globalEvDAO.Create(ctx, random.Event("dao-event", createOrg.GetId()))
 		t.Logf("err: %v", err)
 		require.NoError(t, err)
 	})
@@ -47,10 +47,10 @@ func TestCreate(t *testing.T) {
 		t.Logf("createOrg, err: %+v, %v", createOrg, err)
 		require.NoError(t, err)
 
-		badUniqID := random.Event("dao-event", createOrg.Id)
+		badUniqID := random.Event("dao-event", createOrg.GetId())
 		badUniqID.UniqId = "dao-event-" + random.String(40)
 
-		badTraceID := random.Event("dao-event", createOrg.Id)
+		badTraceID := random.Event("dao-event", createOrg.GetId())
 		badTraceID.TraceId = random.String(10)
 
 		tests := []struct {
@@ -88,7 +88,7 @@ func TestCreate(t *testing.T) {
 		t.Logf("createOrg, err: %+v, %v", createOrg, err)
 		require.NoError(t, err)
 
-		event := random.Event("dao-event", createOrg.Id)
+		event := random.Event("dao-event", createOrg.GetId())
 
 		err = globalEvDAO.Create(ctx, event)
 		t.Logf("err: %#v", err)
@@ -114,15 +114,15 @@ func TestList(t *testing.T) {
 		require.NoError(t, err)
 
 		createDev, err := globalDevDAO.Create(ctx, random.Device("dao-event",
-			createOrg.Id))
+			createOrg.GetId()))
 		t.Logf("createDev, err: %+v, %v", createDev, err)
 		require.NoError(t, err)
 
 		events := []*api.Event{}
 
 		for i := 0; i < 5; i++ {
-			event := random.Event("dao-event", createOrg.Id)
-			event.UniqId = createDev.UniqId
+			event := random.Event("dao-event", createOrg.GetId())
+			event.UniqId = createDev.GetUniqId()
 			events = append(events, event)
 
 			ctx, cancel := context.WithTimeout(context.Background(),
@@ -137,17 +137,17 @@ func TestList(t *testing.T) {
 
 		// Flip events to descending timestamp order.
 		sort.Slice(events, func(i, j int) bool {
-			return events[i].CreatedAt.AsTime().After(
-				events[j].CreatedAt.AsTime())
+			return events[i].GetCreatedAt().AsTime().After(
+				events[j].GetCreatedAt().AsTime())
 		})
 
 		ctx, cancel = context.WithTimeout(context.Background(), testTimeout)
 		defer cancel()
 
 		// Verify results by UniqID.
-		listEventsUniqID, err := globalEvDAO.List(ctx, createOrg.Id,
-			createDev.UniqId, "", "", events[0].CreatedAt.AsTime(),
-			events[len(events)-1].CreatedAt.AsTime().Add(-time.Millisecond))
+		listEventsUniqID, err := globalEvDAO.List(ctx, createOrg.GetId(),
+			createDev.GetUniqId(), "", "", events[0].GetCreatedAt().AsTime(),
+			events[len(events)-1].GetCreatedAt().AsTime().Add(-time.Millisecond))
 		t.Logf("listEventsUniqID, err: %+v, %v", listEventsUniqID, err)
 		require.NoError(t, err)
 		require.Len(t, listEventsUniqID, len(events))
@@ -162,9 +162,9 @@ func TestList(t *testing.T) {
 		}
 
 		// Verify results by dev ID without oldest event.
-		listEventsDevID, err := globalEvDAO.List(ctx, createOrg.Id, "",
-			createDev.Id, "", events[0].CreatedAt.AsTime(),
-			events[len(events)-1].CreatedAt.AsTime())
+		listEventsDevID, err := globalEvDAO.List(ctx, createOrg.GetId(), "",
+			createDev.GetId(), "", events[0].GetCreatedAt().AsTime(),
+			events[len(events)-1].GetCreatedAt().AsTime())
 		t.Logf("listEventsDevID, err: %+v, %v", listEventsDevID, err)
 		require.NoError(t, err)
 		require.Len(t, listEventsDevID, len(events)-1)
@@ -179,10 +179,10 @@ func TestList(t *testing.T) {
 		}
 
 		// Verify results by UniqID and rule ID.
-		listEventsUniqID, err = globalEvDAO.List(ctx, createOrg.Id,
-			createDev.UniqId, "", events[len(events)-1].RuleId,
-			events[0].CreatedAt.AsTime(),
-			events[len(events)-1].CreatedAt.AsTime().Add(-time.Millisecond))
+		listEventsUniqID, err = globalEvDAO.List(ctx, createOrg.GetId(),
+			createDev.GetUniqId(), "", events[len(events)-1].GetRuleId(),
+			events[0].GetCreatedAt().AsTime(),
+			events[len(events)-1].GetCreatedAt().AsTime().Add(-time.Millisecond))
 		t.Logf("listEventsUniqID, err: %+v, %v", listEventsUniqID, err)
 		require.NoError(t, err)
 		require.Len(t, listEventsUniqID, 1)
@@ -205,15 +205,15 @@ func TestList(t *testing.T) {
 		t.Logf("createOrg, err: %+v, %v", createOrg, err)
 		require.NoError(t, err)
 
-		event := random.Event("dao-event", createOrg.Id)
+		event := random.Event("dao-event", createOrg.GetId())
 
 		err = globalEvDAO.Create(ctx, event)
 		t.Logf("err: %#v", err)
 		require.NoError(t, err)
 
 		listEvents, err := globalEvDAO.List(ctx, uuid.NewString(),
-			event.UniqId, "", "", event.CreatedAt.AsTime(),
-			event.CreatedAt.AsTime().Add(-time.Millisecond))
+			event.GetUniqId(), "", "", event.GetCreatedAt().AsTime(),
+			event.GetCreatedAt().AsTime().Add(-time.Millisecond))
 		t.Logf("listEvents, err: %+v, %v", listEvents, err)
 		require.NoError(t, err)
 		require.Len(t, listEvents, 0)
@@ -249,7 +249,7 @@ func TestLatest(t *testing.T) {
 		events := []*api.Event{}
 
 		for i := 0; i < 5; i++ {
-			event := random.Event("dao-event", createOrg.Id)
+			event := random.Event("dao-event", createOrg.GetId())
 			events = append(events, event)
 
 			ctx, cancel := context.WithTimeout(context.Background(),
@@ -264,15 +264,15 @@ func TestLatest(t *testing.T) {
 
 		// Flip events to descending timestamp order.
 		sort.Slice(events, func(i, j int) bool {
-			return events[i].CreatedAt.AsTime().After(
-				events[j].CreatedAt.AsTime())
+			return events[i].GetCreatedAt().AsTime().After(
+				events[j].GetCreatedAt().AsTime())
 		})
 
 		ctx, cancel = context.WithTimeout(context.Background(), testTimeout)
 		defer cancel()
 
 		// Verify results.
-		latEvents, err := globalEvDAO.Latest(ctx, createOrg.Id, "")
+		latEvents, err := globalEvDAO.Latest(ctx, createOrg.GetId(), "")
 		t.Logf("latEvents, err: %+v, %v", latEvents, err)
 		require.NoError(t, err)
 		require.Len(t, latEvents, len(events))
@@ -287,8 +287,8 @@ func TestLatest(t *testing.T) {
 		}
 
 		// Verify results by rule ID.
-		latEventsRuleID, err := globalEvDAO.Latest(ctx, createOrg.Id,
-			events[len(events)-1].RuleId)
+		latEventsRuleID, err := globalEvDAO.Latest(ctx, createOrg.GetId(),
+			events[len(events)-1].GetRuleId())
 		t.Logf("latEventsRuleID, err: %+v, %v", latEventsRuleID, err)
 		require.NoError(t, err)
 		require.Len(t, latEventsRuleID, 1)
@@ -311,7 +311,7 @@ func TestLatest(t *testing.T) {
 		t.Logf("createOrg, err: %+v, %v", createOrg, err)
 		require.NoError(t, err)
 
-		event := random.Event("dao-event", createOrg.Id)
+		event := random.Event("dao-event", createOrg.GetId())
 
 		err = globalEvDAO.Create(ctx, event)
 		t.Logf("err: %#v", err)

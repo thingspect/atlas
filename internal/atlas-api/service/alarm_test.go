@@ -38,7 +38,7 @@ func TestCreateAlarm(t *testing.T) {
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
 			context.Background(), &session.Session{
-				OrgID: alarm.OrgId, Role: api.Role_ADMIN,
+				OrgID: alarm.GetOrgId(), Role: api.Role_ADMIN,
 			}), testTimeout)
 		defer cancel()
 
@@ -97,7 +97,7 @@ func TestCreateAlarm(t *testing.T) {
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
 			context.Background(), &session.Session{
-				OrgID: alarm.OrgId, Role: api.Role_ADMIN,
+				OrgID: alarm.GetOrgId(), Role: api.Role_ADMIN,
 			}), testTimeout)
 		defer cancel()
 
@@ -122,18 +122,18 @@ func TestGetAlarm(t *testing.T) {
 		retAlarm, _ := proto.Clone(alarm).(*api.Alarm)
 
 		alarmer := NewMockAlarmer(gomock.NewController(t))
-		alarmer.EXPECT().Read(gomock.Any(), alarm.Id, alarm.OrgId,
-			alarm.RuleId).Return(retAlarm, nil).Times(1)
+		alarmer.EXPECT().Read(gomock.Any(), alarm.GetId(), alarm.GetOrgId(),
+			alarm.GetRuleId()).Return(retAlarm, nil).Times(1)
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
 			context.Background(), &session.Session{
-				OrgID: alarm.OrgId, Role: api.Role_ADMIN,
+				OrgID: alarm.GetOrgId(), Role: api.Role_ADMIN,
 			}), testTimeout)
 		defer cancel()
 
 		raSvc := NewRuleAlarm(nil, alarmer)
 		getAlarm, err := raSvc.GetAlarm(ctx, &api.GetAlarmRequest{
-			Id: alarm.Id, RuleId: alarm.RuleId,
+			Id: alarm.GetId(), RuleId: alarm.GetRuleId(),
 		})
 		t.Logf("rule, getAlarm, err: %+v, %+v, %v", alarm, getAlarm, err)
 		require.NoError(t, err)
@@ -212,7 +212,7 @@ func TestUpdateAlarm(t *testing.T) {
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
 			context.Background(), &session.Session{
-				OrgID: alarm.OrgId, Role: api.Role_ADMIN,
+				OrgID: alarm.GetOrgId(), Role: api.Role_ADMIN,
 			}), testTimeout)
 		defer cancel()
 
@@ -236,27 +236,27 @@ func TestUpdateAlarm(t *testing.T) {
 		alarm := random.Alarm("api-alarm", uuid.NewString(), uuid.NewString())
 		retAlarm, _ := proto.Clone(alarm).(*api.Alarm)
 		part := &api.Alarm{
-			Id: alarm.Id, RuleId: alarm.RuleId, Status: api.Status_ACTIVE,
+			Id: alarm.GetId(), RuleId: alarm.GetRuleId(), Status: api.Status_ACTIVE,
 			SubjectTemplate: `test`, UserTags: random.Tags("api-alarm", 2),
 		}
 		merged := &api.Alarm{
-			Id: alarm.Id, OrgId: alarm.OrgId, RuleId: alarm.RuleId,
-			Name: alarm.Name, Status: part.Status, Type: alarm.Type,
-			UserTags: part.UserTags, SubjectTemplate: part.SubjectTemplate,
-			BodyTemplate:   alarm.BodyTemplate,
-			RepeatInterval: alarm.RepeatInterval,
+			Id: alarm.GetId(), OrgId: alarm.GetOrgId(), RuleId: alarm.GetRuleId(),
+			Name: alarm.GetName(), Status: part.GetStatus(), Type: alarm.GetType(),
+			UserTags: part.GetUserTags(), SubjectTemplate: part.GetSubjectTemplate(),
+			BodyTemplate:   alarm.GetBodyTemplate(),
+			RepeatInterval: alarm.GetRepeatInterval(),
 		}
 		retMerged, _ := proto.Clone(merged).(*api.Alarm)
 
 		alarmer := NewMockAlarmer(gomock.NewController(t))
-		alarmer.EXPECT().Read(gomock.Any(), alarm.Id, alarm.OrgId,
-			alarm.RuleId).Return(retAlarm, nil).Times(1)
+		alarmer.EXPECT().Read(gomock.Any(), alarm.GetId(), alarm.GetOrgId(),
+			alarm.GetRuleId()).Return(retAlarm, nil).Times(1)
 		alarmer.EXPECT().Update(gomock.Any(), matcher.NewProtoMatcher(merged)).
 			Return(retMerged, nil).Times(1)
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
 			context.Background(), &session.Session{
-				OrgID: alarm.OrgId, Role: api.Role_ADMIN,
+				OrgID: alarm.GetOrgId(), Role: api.Role_ADMIN,
 			}), testTimeout)
 		defer cancel()
 
@@ -358,7 +358,7 @@ func TestUpdateAlarm(t *testing.T) {
 		}
 
 		alarmer := NewMockAlarmer(gomock.NewController(t))
-		alarmer.EXPECT().Read(gomock.Any(), part.Id, orgID, part.RuleId).
+		alarmer.EXPECT().Read(gomock.Any(), part.GetId(), orgID, part.GetRuleId()).
 			Return(nil, dao.ErrNotFound).Times(1)
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
@@ -386,7 +386,7 @@ func TestUpdateAlarm(t *testing.T) {
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
 			context.Background(), &session.Session{
-				OrgID: alarm.OrgId, Role: api.Role_ADMIN,
+				OrgID: alarm.GetOrgId(), Role: api.Role_ADMIN,
 			}), testTimeout)
 		defer cancel()
 
@@ -413,7 +413,7 @@ func TestUpdateAlarm(t *testing.T) {
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
 			context.Background(), &session.Session{
-				OrgID: alarm.OrgId, Role: api.Role_ADMIN,
+				OrgID: alarm.GetOrgId(), Role: api.Role_ADMIN,
 			}), testTimeout)
 		defer cancel()
 
@@ -529,7 +529,7 @@ func TestListAlarms(t *testing.T) {
 		listAlarms, err := raSvc.ListAlarms(ctx, &api.ListAlarmsRequest{})
 		t.Logf("listAlarms, err: %+v, %v", listAlarms, err)
 		require.NoError(t, err)
-		require.Equal(t, int32(3), listAlarms.TotalSize)
+		require.Equal(t, int32(3), listAlarms.GetTotalSize())
 
 		// Testify does not currently support protobuf equality:
 		// https://github.com/stretchr/testify/issues/758
@@ -552,8 +552,8 @@ func TestListAlarms(t *testing.T) {
 			random.Alarm("api-alarm", uuid.NewString(), uuid.NewString()),
 		}
 
-		next, err := session.GeneratePageToken(alarms[1].CreatedAt.AsTime(),
-			alarms[1].Id)
+		next, err := session.GeneratePageToken(alarms[1].GetCreatedAt().AsTime(),
+			alarms[1].GetId())
 		require.NoError(t, err)
 
 		alarmer := NewMockAlarmer(gomock.NewController(t))
@@ -572,7 +572,7 @@ func TestListAlarms(t *testing.T) {
 		})
 		t.Logf("listAlarms, err: %+v, %v", listAlarms, err)
 		require.NoError(t, err)
-		require.Equal(t, int32(3), listAlarms.TotalSize)
+		require.Equal(t, int32(3), listAlarms.GetTotalSize())
 
 		// Testify does not currently support protobuf equality:
 		// https://github.com/stretchr/testify/issues/758
@@ -683,7 +683,7 @@ func TestListAlarms(t *testing.T) {
 		})
 		t.Logf("listAlarms, err: %+v, %v", listAlarms, err)
 		require.NoError(t, err)
-		require.Equal(t, int32(3), listAlarms.TotalSize)
+		require.Equal(t, int32(3), listAlarms.GetTotalSize())
 
 		// Testify does not currently support protobuf equality:
 		// https://github.com/stretchr/testify/issues/758
@@ -781,7 +781,7 @@ func TestTestAlarm(t *testing.T) {
 				})
 				t.Logf("testRes, err: %+v, %v", testRes, err)
 				if lTest.err == "" {
-					require.Equal(t, lTest.res+" - "+lTest.res, testRes.Result)
+					require.Equal(t, lTest.res+" - "+lTest.res, testRes.GetResult())
 					require.NoError(t, err)
 				} else {
 					require.Nil(t, testRes)

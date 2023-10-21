@@ -30,7 +30,7 @@ func TestCreate(t *testing.T) {
 	t.Run("Create valid key", func(t *testing.T) {
 		t.Parallel()
 
-		key := random.Key("dao-key", createOrg.Id)
+		key := random.Key("dao-key", createOrg.GetId())
 		createKey, _ := proto.Clone(key).(*api.Key)
 
 		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
@@ -39,15 +39,15 @@ func TestCreate(t *testing.T) {
 		createKey, err := globalKeyDAO.Create(ctx, createKey)
 		t.Logf("key, createKey, err: %+v, %+v, %v", key, createKey, err)
 		require.NoError(t, err)
-		require.NotEqual(t, key.Id, createKey.Id)
-		require.WithinDuration(t, time.Now(), createKey.CreatedAt.AsTime(),
+		require.NotEqual(t, key.GetId(), createKey.GetId())
+		require.WithinDuration(t, time.Now(), createKey.GetCreatedAt().AsTime(),
 			2*time.Second)
 	})
 
 	t.Run("Create invalid key", func(t *testing.T) {
 		t.Parallel()
 
-		key := random.Key("dao-key", createOrg.Id)
+		key := random.Key("dao-key", createOrg.GetId())
 		key.Name = "dao-key-" + random.String(80)
 
 		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
@@ -71,7 +71,7 @@ func TestRead(t *testing.T) {
 	require.NoError(t, err)
 
 	createKey, err := globalKeyDAO.Create(ctx, random.Key("dao-key",
-		createOrg.Id))
+		createOrg.GetId()))
 	t.Logf("createKey, err: %+v, %v", createKey, err)
 	require.NoError(t, err)
 
@@ -81,7 +81,7 @@ func TestRead(t *testing.T) {
 		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
 		defer cancel()
 
-		readKey, err := globalKeyDAO.read(ctx, createKey.Id, createKey.OrgId)
+		readKey, err := globalKeyDAO.read(ctx, createKey.GetId(), createKey.GetOrgId())
 		t.Logf("readKey, err: %+v, %v", readKey, err)
 		require.NoError(t, err)
 		require.Equal(t, createKey, readKey)
@@ -106,7 +106,7 @@ func TestRead(t *testing.T) {
 		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
 		defer cancel()
 
-		readKey, err := globalKeyDAO.read(ctx, createKey.Id,
+		readKey, err := globalKeyDAO.read(ctx, createKey.GetId(),
 			uuid.NewString())
 		t.Logf("readKey, err: %+v, %v", readKey, err)
 		require.Nil(t, readKey)
@@ -120,7 +120,7 @@ func TestRead(t *testing.T) {
 		defer cancel()
 
 		readKey, err := globalKeyDAO.read(ctx, random.String(10),
-			createKey.OrgId)
+			createKey.GetOrgId())
 		t.Logf("readKey, err: %+v, %v", readKey, err)
 		require.Nil(t, readKey)
 		require.ErrorIs(t, err, dao.ErrInvalidFormat)
@@ -144,11 +144,11 @@ func TestDelete(t *testing.T) {
 		defer cancel()
 
 		createKey, err := globalKeyDAO.Create(ctx, random.Key("dao-key",
-			createOrg.Id))
+			createOrg.GetId()))
 		t.Logf("createKey, err: %+v, %v", createKey, err)
 		require.NoError(t, err)
 
-		err = globalKeyDAO.Delete(ctx, createKey.Id, createOrg.Id)
+		err = globalKeyDAO.Delete(ctx, createKey.GetId(), createOrg.GetId())
 		t.Logf("err: %v", err)
 		require.NoError(t, err)
 
@@ -159,8 +159,8 @@ func TestDelete(t *testing.T) {
 				testTimeout)
 			defer cancel()
 
-			readKey, err := globalKeyDAO.read(ctx, createKey.Id,
-				createOrg.Id)
+			readKey, err := globalKeyDAO.read(ctx, createKey.GetId(),
+				createOrg.GetId())
 			t.Logf("readKey, err: %+v, %v", readKey, err)
 			require.Nil(t, readKey)
 			require.Equal(t, dao.ErrNotFound, err)
@@ -173,7 +173,7 @@ func TestDelete(t *testing.T) {
 		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
 		defer cancel()
 
-		err := globalKeyDAO.Delete(ctx, uuid.NewString(), createOrg.Id)
+		err := globalKeyDAO.Delete(ctx, uuid.NewString(), createOrg.GetId())
 		t.Logf("err: %v", err)
 		require.Equal(t, dao.ErrNotFound, err)
 	})
@@ -185,11 +185,11 @@ func TestDelete(t *testing.T) {
 		defer cancel()
 
 		createKey, err := globalKeyDAO.Create(ctx, random.Key("dao-key",
-			createOrg.Id))
+			createOrg.GetId()))
 		t.Logf("createKey, err: %+v, %v", createKey, err)
 		require.NoError(t, err)
 
-		err = globalKeyDAO.Delete(ctx, createKey.Id, uuid.NewString())
+		err = globalKeyDAO.Delete(ctx, createKey.GetId(), uuid.NewString())
 		t.Logf("err: %v", err)
 		require.Equal(t, dao.ErrNotFound, err)
 	})
@@ -211,14 +211,14 @@ func TestList(t *testing.T) {
 	keyTSes := []time.Time{}
 	for i := 0; i < 3; i++ {
 		createKey, err := globalKeyDAO.Create(ctx, random.Key("dao-key",
-			createOrg.Id))
+			createOrg.GetId()))
 		t.Logf("createKey, err: %+v, %v", createKey, err)
 		require.NoError(t, err)
 
-		keyIDs = append(keyIDs, createKey.Id)
-		keyNames = append(keyNames, createKey.Name)
-		keyRoles = append(keyRoles, createKey.Role)
-		keyTSes = append(keyTSes, createKey.CreatedAt.AsTime())
+		keyIDs = append(keyIDs, createKey.GetId())
+		keyNames = append(keyNames, createKey.GetName())
+		keyRoles = append(keyRoles, createKey.GetRole())
+		keyTSes = append(keyTSes, createKey.GetCreatedAt().AsTime())
 	}
 
 	t.Run("List keys by valid org ID", func(t *testing.T) {
@@ -227,7 +227,7 @@ func TestList(t *testing.T) {
 		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
 		defer cancel()
 
-		listKeys, listCount, err := globalKeyDAO.List(ctx, createOrg.Id,
+		listKeys, listCount, err := globalKeyDAO.List(ctx, createOrg.GetId(),
 			time.Time{}, "", 0)
 		t.Logf("listKeys, listCount, err: %+v, %v, %v", listKeys, listCount,
 			err)
@@ -237,9 +237,9 @@ func TestList(t *testing.T) {
 
 		var found bool
 		for _, key := range listKeys {
-			if key.Id == keyIDs[len(keyIDs)-1] &&
-				key.Name == keyNames[len(keyNames)-1] &&
-				key.Role == keyRoles[len(keyRoles)-1] {
+			if key.GetId() == keyIDs[len(keyIDs)-1] &&
+				key.GetName() == keyNames[len(keyNames)-1] &&
+				key.GetRole() == keyRoles[len(keyRoles)-1] {
 				found = true
 			}
 		}
@@ -252,7 +252,7 @@ func TestList(t *testing.T) {
 		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
 		defer cancel()
 
-		listKeys, listCount, err := globalKeyDAO.List(ctx, createOrg.Id,
+		listKeys, listCount, err := globalKeyDAO.List(ctx, createOrg.GetId(),
 			keyTSes[0], keyIDs[0], 5)
 		t.Logf("listKeys, listCount, err: %+v, %v, %v", listKeys, listCount,
 			err)
@@ -262,9 +262,9 @@ func TestList(t *testing.T) {
 
 		var found bool
 		for _, key := range listKeys {
-			if key.Id == keyIDs[len(keyIDs)-1] &&
-				key.Name == keyNames[len(keyNames)-1] &&
-				key.Role == keyRoles[len(keyRoles)-1] {
+			if key.GetId() == keyIDs[len(keyIDs)-1] &&
+				key.GetName() == keyNames[len(keyNames)-1] &&
+				key.GetRole() == keyRoles[len(keyRoles)-1] {
 				found = true
 			}
 		}
@@ -277,7 +277,7 @@ func TestList(t *testing.T) {
 		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
 		defer cancel()
 
-		listKeys, listCount, err := globalKeyDAO.List(ctx, createOrg.Id,
+		listKeys, listCount, err := globalKeyDAO.List(ctx, createOrg.GetId(),
 			time.Time{}, "", 1)
 		t.Logf("listKeys, listCount, err: %+v, %v, %v", listKeys, listCount,
 			err)

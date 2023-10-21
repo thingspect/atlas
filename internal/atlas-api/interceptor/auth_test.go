@@ -36,8 +36,8 @@ func TestAuth(t *testing.T) {
 	require.NoError(t, err)
 
 	user := random.User("auth", uuid.NewString())
-	keyToken, err := session.GenerateKeyToken(key, uuid.NewString(), user.OrgId,
-		user.Role)
+	keyToken, err := session.GenerateKeyToken(key, uuid.NewString(), user.GetOrgId(),
+		user.GetRole())
 	t.Logf("keyToken, err: %v, %v", keyToken, err)
 	require.NoError(t, err)
 

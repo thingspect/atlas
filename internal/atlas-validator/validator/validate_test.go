@@ -41,57 +41,57 @@ func TestValidateMessages(t *testing.T) {
 		{
 			&message.ValidatorIn{
 				Point: &common.DataPoint{
-					UniqId: dev.UniqId, Attr: "count",
+					UniqId: dev.GetUniqId(), Attr: "count",
 					ValOneof: &common.DataPoint_IntVal{IntVal: 123}, Ts: now,
-					Token: dev.Token, TraceId: traceID,
-				}, OrgId: dev.OrgId,
+					Token: dev.GetToken(), TraceId: traceID,
+				}, OrgId: dev.GetOrgId(),
 			}, &message.ValidatorOut{
 				Point: &common.DataPoint{
-					UniqId: dev.UniqId, Attr: "count",
+					UniqId: dev.GetUniqId(), Attr: "count",
 					ValOneof: &common.DataPoint_IntVal{IntVal: 123}, Ts: now,
-					Token: dev.Token, TraceId: traceID,
+					Token: dev.GetToken(), TraceId: traceID,
 				}, Device: dev,
 			},
 		},
 		{
 			&message.ValidatorIn{
 				Point: &common.DataPoint{
-					UniqId: dev.UniqId, Attr: "temp_c",
+					UniqId: dev.GetUniqId(), Attr: "temp_c",
 					ValOneof: &common.DataPoint_Fl64Val{Fl64Val: 9.3}, Ts: now,
-					Token: dev.Token, TraceId: traceID,
-				}, OrgId: dev.OrgId,
+					Token: dev.GetToken(), TraceId: traceID,
+				}, OrgId: dev.GetOrgId(),
 			}, &message.ValidatorOut{
 				Point: &common.DataPoint{
-					UniqId: dev.UniqId, Attr: "temp_c",
+					UniqId: dev.GetUniqId(), Attr: "temp_c",
 					ValOneof: &common.DataPoint_Fl64Val{Fl64Val: 9.3}, Ts: now,
-					Token: dev.Token, TraceId: traceID,
+					Token: dev.GetToken(), TraceId: traceID,
 				}, Device: dev,
 			},
 		},
 		{
 			&message.ValidatorIn{
 				Point: &common.DataPoint{
-					UniqId: dev.UniqId, Attr: "power",
+					UniqId: dev.GetUniqId(), Attr: "power",
 					ValOneof: &common.DataPoint_StrVal{StrVal: "line"}, Ts: now,
-					Token: dev.Token, TraceId: traceID,
-				}, OrgId: dev.OrgId,
+					Token: dev.GetToken(), TraceId: traceID,
+				}, OrgId: dev.GetOrgId(),
 			}, &message.ValidatorOut{
 				Point: &common.DataPoint{
-					UniqId: dev.UniqId, Attr: "power",
+					UniqId: dev.GetUniqId(), Attr: "power",
 					ValOneof: &common.DataPoint_StrVal{StrVal: "line"}, Ts: now,
-					Token: dev.Token, TraceId: traceID,
+					Token: dev.GetToken(), TraceId: traceID,
 				}, Device: dev,
 			},
 		},
 		{
 			&message.ValidatorIn{
 				Point: &common.DataPoint{
-					UniqId: dev.UniqId, Attr: "leak", ValOneof: boolVal,
+					UniqId: dev.GetUniqId(), Attr: "leak", ValOneof: boolVal,
 					Ts: now, TraceId: traceID,
-				}, OrgId: dev.OrgId, SkipToken: true,
+				}, OrgId: dev.GetOrgId(), SkipToken: true,
 			}, &message.ValidatorOut{
 				Point: &common.DataPoint{
-					UniqId: dev.UniqId, Attr: "leak", ValOneof: boolVal,
+					UniqId: dev.GetUniqId(), Attr: "leak", ValOneof: boolVal,
 					Ts: now, TraceId: traceID,
 				}, Device: dev,
 			},
@@ -99,12 +99,12 @@ func TestValidateMessages(t *testing.T) {
 		{
 			&message.ValidatorIn{
 				Point: &common.DataPoint{
-					UniqId: dev.UniqId, Attr: "leak", ValOneof: boolVal,
+					UniqId: dev.GetUniqId(), Attr: "leak", ValOneof: boolVal,
 					Ts: now, TraceId: traceID,
 				}, SkipToken: true,
 			}, &message.ValidatorOut{
 				Point: &common.DataPoint{
-					UniqId: dev.UniqId, Attr: "leak", ValOneof: boolVal,
+					UniqId: dev.GetUniqId(), Attr: "leak", ValOneof: boolVal,
 					Ts: now, TraceId: traceID,
 				}, Device: dev,
 			},
@@ -127,7 +127,7 @@ func TestValidateMessages(t *testing.T) {
 			vOutPubTopic := "topic-" + random.String(10)
 
 			devicer := NewMockdevicer(gomock.NewController(t))
-			devicer.EXPECT().ReadByUniqID(gomock.Any(), lTest.inp.Point.UniqId).
+			devicer.EXPECT().ReadByUniqID(gomock.Any(), lTest.inp.GetPoint().GetUniqId()).
 				Return(dev, nil).Times(1)
 
 			val := Validator{

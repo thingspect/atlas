@@ -17,13 +17,13 @@ const ErrNotBool consterr.Error = "not a boolean expression"
 func Eval(point *common.DataPoint, ruleExpr string) (bool, error) {
 	env := map[string]interface{}{
 		"point":   point,
-		"pointTS": point.Ts.Seconds,
+		"pointTS": point.GetTs().GetSeconds(),
 		"currTS":  time.Now().Unix(),
 	}
 
 	// Populate point value for convenience. []byte is not supported. If point
 	// doesn't validate, pointVal remains unset.
-	switch v := point.ValOneof.(type) {
+	switch v := point.GetValOneof().(type) {
 	case *common.DataPoint_IntVal:
 		env["pointVal"] = v.IntVal
 	case *common.DataPoint_Fl64Val:

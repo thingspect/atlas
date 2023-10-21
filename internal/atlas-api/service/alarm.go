@@ -42,7 +42,7 @@ func (ra *RuleAlarm) CreateAlarm(
 
 	req.Alarm.OrgId = sess.OrgID
 
-	alarm, err := ra.alarmDAO.Create(ctx, req.Alarm)
+	alarm, err := ra.alarmDAO.Create(ctx, req.GetAlarm())
 	if err != nil {
 		return nil, errToStatus(err)
 	}
@@ -65,7 +65,7 @@ func (ra *RuleAlarm) GetAlarm(ctx context.Context, req *api.GetAlarmRequest) (
 		return nil, errPerm(api.Role_VIEWER)
 	}
 
-	alarm, err := ra.alarmDAO.Read(ctx, req.Id, sess.OrgID, req.RuleId)
+	alarm, err := ra.alarmDAO.Read(ctx, req.GetId(), sess.OrgID, req.GetRuleId())
 	if err != nil {
 		return nil, errToStatus(err)
 	}
@@ -83,32 +83,32 @@ func (ra *RuleAlarm) UpdateAlarm(
 		return nil, errPerm(api.Role_BUILDER)
 	}
 
-	if req.Alarm == nil {
+	if req.GetAlarm() == nil {
 		return nil, status.Error(codes.InvalidArgument,
 			req.Validate().Error())
 	}
 	req.Alarm.OrgId = sess.OrgID
 
 	// Perform partial update if directed.
-	if req.UpdateMask != nil && len(req.UpdateMask.Paths) > 0 {
+	if len(req.GetUpdateMask().GetPaths()) > 0 {
 		// Normalize and validate field mask.
-		req.UpdateMask.Normalize()
-		if !req.UpdateMask.IsValid(req.Alarm) {
+		req.GetUpdateMask().Normalize()
+		if !req.GetUpdateMask().IsValid(req.GetAlarm()) {
 			return nil, status.Error(codes.InvalidArgument,
 				"invalid field mask")
 		}
 
-		alarm, err := ra.alarmDAO.Read(ctx, req.Alarm.Id, sess.OrgID,
-			req.Alarm.RuleId)
+		alarm, err := ra.alarmDAO.Read(ctx, req.GetAlarm().GetId(), sess.OrgID,
+			req.GetAlarm().GetRuleId())
 		if err != nil {
 			return nil, errToStatus(err)
 		}
 
-		fmutils.Filter(req.Alarm, req.UpdateMask.Paths)
-		if req.Alarm.UserTags != nil {
+		fmutils.Filter(req.GetAlarm(), req.GetUpdateMask().GetPaths())
+		if req.GetAlarm().GetUserTags() != nil {
 			alarm.UserTags = nil
 		}
-		proto.Merge(alarm, req.Alarm)
+		proto.Merge(alarm, req.GetAlarm())
 		req.Alarm = alarm
 	}
 
@@ -117,7 +117,7 @@ func (ra *RuleAlarm) UpdateAlarm(
 		return nil, status.Error(codes.InvalidArgument, err.Error())
 	}
 
-	alarm, err := ra.alarmDAO.Update(ctx, req.Alarm)
+	alarm, err := ra.alarmDAO.Update(ctx, req.GetAlarm())
 	if err != nil {
 		return nil, errToStatus(err)
 	}
@@ -134,8 +134,8 @@ func (ra *RuleAlarm) DeleteAlarm(
 		return nil, errPerm(api.Role_BUILDER)
 	}
 
-	if err := ra.alarmDAO.Delete(ctx, req.Id, sess.OrgID,
-		req.RuleId); err != nil {
+	if err := ra.alarmDAO.Delete(ctx, req.GetId(), sess.OrgID,
+		req.GetRuleId()); err != nil {
 		return nil, errToStatus(err)
 	}
 
@@ -157,18 +157,18 @@ func (ra *RuleAlarm) ListAlarms(
 		return nil, errPerm(api.Role_VIEWER)
 	}
 
-	if req.PageSize == 0 {
+	if req.GetPageSize() == 0 {
 		req.PageSize = defaultPageSize
 	}
 
-	lBoundTS, prevID, err := session.ParsePageToken(req.PageToken)
+	lBoundTS, prevID, err := session.ParsePageToken(req.GetPageToken())
 	if err != nil {
 		return nil, status.Error(codes.InvalidArgument, "invalid page token")
 	}
 
 	// Retrieve PageSize+1 entries to find last page.
 	alarms, count, err := ra.alarmDAO.List(ctx, sess.OrgID, lBoundTS, prevID,
-		req.PageSize+1, req.RuleId)
+		req.GetPageSize()+1, req.GetRuleId())
 	if err != nil {
 		return nil, errToStatus(err)
 	}
@@ -176,12 +176,12 @@ func (ra *RuleAlarm) ListAlarms(
 	resp := &api.ListAlarmsResponse{Alarms: alarms, TotalSize: count}
 
 	// Populate next page token.
-	if len(alarms) == int(req.PageSize+1) {
+	if len(alarms) == int(req.GetPageSize()+1) {
 		resp.Alarms = alarms[:len(alarms)-1]
 
 		if resp.NextPageToken, err = session.GeneratePageToken(
-			alarms[len(alarms)-2].CreatedAt.AsTime(),
-			alarms[len(alarms)-2].Id); err != nil {
+			alarms[len(alarms)-2].GetCreatedAt().AsTime(),
+			alarms[len(alarms)-2].GetId()); err != nil {
 			// GeneratePageToken should not error based on a DB-derived UUID.
 			// Log the error and include the usable empty token.
 			logger := alog.FromContext(ctx)
@@ -202,16 +202,16 @@ func (ra *RuleAlarm) TestAlarm(ctx context.Context, req *api.TestAlarmRequest) (
 		return nil, errPerm(api.Role_BUILDER)
 	}
 
-	subj, err := template.Generate(req.Point, req.Rule, req.Device,
-		req.Alarm.SubjectTemplate)
+	subj, err := template.Generate(req.GetPoint(), req.GetRule(), req.GetDevice(),
+		req.GetAlarm().GetSubjectTemplate())
 	if err != nil {
 		// Template does not provide sentinel errors, always consider errors to
 		// be invalid input.
 		return nil, status.Error(codes.InvalidArgument, err.Error())
 	}
 
-	body, err := template.Generate(req.Point, req.Rule, req.Device,
-		req.Alarm.BodyTemplate)
+	body, err := template.Generate(req.GetPoint(), req.GetRule(), req.GetDevice(),
+		req.GetAlarm().GetBodyTemplate())
 	if err != nil {
 		return nil, status.Error(codes.InvalidArgument, err.Error())
 	}

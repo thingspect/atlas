@@ -33,18 +33,18 @@ func TestListAlerts(t *testing.T) {
 		start := time.Now().UTC().Add(-15 * time.Minute)
 
 		alerter := NewMockAlerter(gomock.NewController(t))
-		alerter.EXPECT().List(gomock.Any(), alert.OrgId, alert.UniqId, "", "",
+		alerter.EXPECT().List(gomock.Any(), alert.GetOrgId(), alert.GetUniqId(), "", "",
 			"", end, start).Return([]*api.Alert{retAlert}, nil).Times(1)
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
 			context.Background(), &session.Session{
-				OrgID: alert.OrgId, Role: api.Role_ADMIN,
+				OrgID: alert.GetOrgId(), Role: api.Role_ADMIN,
 			}), testTimeout)
 		defer cancel()
 
 		aleSvc := NewAlert(alerter)
 		listAlerts, err := aleSvc.ListAlerts(ctx, &api.ListAlertsRequest{
-			IdOneof: &api.ListAlertsRequest_UniqId{UniqId: alert.UniqId},
+			IdOneof: &api.ListAlertsRequest_UniqId{UniqId: alert.GetUniqId()},
 			EndTime: timestamppb.New(end), StartTime: timestamppb.New(start),
 		})
 		t.Logf("alert, listAlerts, err: %+v, %+v, %v", alert, listAlerts, err)
@@ -69,14 +69,14 @@ func TestListAlerts(t *testing.T) {
 		alarmID := uuid.NewString()
 
 		alerter := NewMockAlerter(gomock.NewController(t))
-		alerter.EXPECT().List(gomock.Any(), alert.OrgId, "", devID,
+		alerter.EXPECT().List(gomock.Any(), alert.GetOrgId(), "", devID,
 			alarmID, "", matcher.NewRecentMatcher(2*time.Second),
 			matcher.NewRecentMatcher(24*time.Hour+2*time.Second)).
 			Return([]*api.Alert{retAlert}, nil).Times(1)
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
 			context.Background(), &session.Session{
-				OrgID: alert.OrgId, Role: api.Role_ADMIN,
+				OrgID: alert.GetOrgId(), Role: api.Role_ADMIN,
 			}), testTimeout)
 		defer cancel()
 
@@ -106,14 +106,14 @@ func TestListAlerts(t *testing.T) {
 		userID := uuid.NewString()
 
 		alerter := NewMockAlerter(gomock.NewController(t))
-		alerter.EXPECT().List(gomock.Any(), alert.OrgId, "", "",
+		alerter.EXPECT().List(gomock.Any(), alert.GetOrgId(), "", "",
 			"", userID, matcher.NewRecentMatcher(2*time.Second),
 			matcher.NewRecentMatcher(24*time.Hour+2*time.Second)).
 			Return([]*api.Alert{retAlert}, nil).Times(1)
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
 			context.Background(), &session.Session{
-				OrgID: alert.OrgId, Role: api.Role_ADMIN,
+				OrgID: alert.GetOrgId(), Role: api.Role_ADMIN,
 			}), testTimeout)
 		defer cancel()
 

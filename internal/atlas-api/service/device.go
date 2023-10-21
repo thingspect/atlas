@@ -58,7 +58,7 @@ func (d *Device) CreateDevice(
 
 	req.Device.OrgId = sess.OrgID
 
-	dev, err := d.devDAO.Create(ctx, req.Device)
+	dev, err := d.devDAO.Create(ctx, req.GetDevice())
 	if err != nil {
 		return nil, errToStatus(err)
 	}
@@ -82,16 +82,16 @@ func (d *Device) CreateDeviceLoRaWAN(
 		return nil, errPerm(api.Role_BUILDER)
 	}
 
-	dev, err := d.devDAO.Read(ctx, req.Id, sess.OrgID)
+	dev, err := d.devDAO.Read(ctx, req.GetId(), sess.OrgID)
 	if err != nil {
 		return nil, errToStatus(err)
 	}
 
-	switch v := req.TypeOneof.(type) {
+	switch v := req.GetTypeOneof().(type) {
 	case *api.CreateDeviceLoRaWANRequest_GatewayLorawanType:
-		err = d.lora.CreateGateway(ctx, dev.UniqId)
+		err = d.lora.CreateGateway(ctx, dev.GetUniqId())
 	case *api.CreateDeviceLoRaWANRequest_DeviceLorawanType:
-		err = d.lora.CreateDevice(ctx, dev.UniqId, v.DeviceLorawanType.AppKey)
+		err = d.lora.CreateDevice(ctx, dev.GetUniqId(), v.DeviceLorawanType.GetAppKey())
 	}
 	if err != nil {
 		logger.Errorf("CreateDeviceLoRaWAN d.lora.CreateX: %v", err)
@@ -116,7 +116,7 @@ func (d *Device) GetDevice(ctx context.Context, req *api.GetDeviceRequest) (
 		return nil, errPerm(api.Role_VIEWER)
 	}
 
-	dev, err := d.devDAO.Read(ctx, req.Id, sess.OrgID)
+	dev, err := d.devDAO.Read(ctx, req.GetId(), sess.OrgID)
 	if err != nil {
 		return nil, errToStatus(err)
 	}
@@ -134,31 +134,31 @@ func (d *Device) UpdateDevice(
 		return nil, errPerm(api.Role_BUILDER)
 	}
 
-	if req.Device == nil {
+	if req.GetDevice() == nil {
 		return nil, status.Error(codes.InvalidArgument,
 			req.Validate().Error())
 	}
 	req.Device.OrgId = sess.OrgID
 
 	// Perform partial update if directed.
-	if req.UpdateMask != nil && len(req.UpdateMask.Paths) > 0 {
+	if len(req.GetUpdateMask().GetPaths()) > 0 {
 		// Normalize and validate field mask.
-		req.UpdateMask.Normalize()
-		if !req.UpdateMask.IsValid(req.Device) {
+		req.GetUpdateMask().Normalize()
+		if !req.GetUpdateMask().IsValid(req.GetDevice()) {
 			return nil, status.Error(codes.InvalidArgument,
 				"invalid field mask")
 		}
 
-		dev, err := d.devDAO.Read(ctx, req.Device.Id, sess.OrgID)
+		dev, err := d.devDAO.Read(ctx, req.GetDevice().GetId(), sess.OrgID)
 		if err != nil {
 			return nil, errToStatus(err)
 		}
 
-		fmutils.Filter(req.Device, req.UpdateMask.Paths)
-		if req.Device.Tags != nil {
+		fmutils.Filter(req.GetDevice(), req.GetUpdateMask().GetPaths())
+		if req.GetDevice().GetTags() != nil {
 			dev.Tags = nil
 		}
-		proto.Merge(dev, req.Device)
+		proto.Merge(dev, req.GetDevice())
 		req.Device = dev
 	}
 
@@ -167,7 +167,7 @@ func (d *Device) UpdateDevice(
 		return nil, status.Error(codes.InvalidArgument, err.Error())
 	}
 
-	dev, err := d.devDAO.Update(ctx, req.Device)
+	dev, err := d.devDAO.Update(ctx, req.GetDevice())
 	if err != nil {
 		return nil, errToStatus(err)
 	}
@@ -185,14 +185,14 @@ func (d *Device) DeleteDeviceLoRaWAN(
 		return nil, errPerm(api.Role_BUILDER)
 	}
 
-	dev, err := d.devDAO.Read(ctx, req.Id, sess.OrgID)
+	dev, err := d.devDAO.Read(ctx, req.GetId(), sess.OrgID)
 	if err != nil {
 		return nil, errToStatus(err)
 	}
 
 	// Delete any gateways and devices present. 'Unauthenticated' is currently
 	// returned for gateways and devices that do not exist.
-	err = d.lora.DeleteGateway(ctx, dev.UniqId)
+	err = d.lora.DeleteGateway(ctx, dev.GetUniqId())
 	if code := status.Code(err); code != codes.OK &&
 		code != codes.Unauthenticated {
 		logger.Errorf("DeleteDeviceLoRaWAN d.lora.DeleteGateway: %v", err)
@@ -200,7 +200,7 @@ func (d *Device) DeleteDeviceLoRaWAN(
 		return nil, errToStatus(err)
 	}
 
-	err = d.lora.DeleteDevice(ctx, dev.UniqId)
+	err = d.lora.DeleteDevice(ctx, dev.GetUniqId())
 	if code := status.Code(err); code != codes.OK &&
 		code != codes.Unauthenticated {
 		logger.Errorf("DeleteDeviceLoRaWAN d.lora.DeleteDevice: %v", err)
@@ -225,7 +225,7 @@ func (d *Device) DeleteDevice(
 		return nil, errPerm(api.Role_BUILDER)
 	}
 
-	if err := d.devDAO.Delete(ctx, req.Id, sess.OrgID); err != nil {
+	if err := d.devDAO.Delete(ctx, req.GetId(), sess.OrgID); err != nil {
 		return nil, errToStatus(err)
 	}
 
@@ -247,18 +247,18 @@ func (d *Device) ListDevices(
 		return nil, errPerm(api.Role_VIEWER)
 	}
 
-	if req.PageSize == 0 {
+	if req.GetPageSize() == 0 {
 		req.PageSize = defaultPageSize
 	}
 
-	lBoundTS, prevID, err := session.ParsePageToken(req.PageToken)
+	lBoundTS, prevID, err := session.ParsePageToken(req.GetPageToken())
 	if err != nil {
 		return nil, status.Error(codes.InvalidArgument, "invalid page token")
 	}
 
 	// Retrieve PageSize+1 entries to find last page.
 	devs, count, err := d.devDAO.List(ctx, sess.OrgID, lBoundTS, prevID,
-		req.PageSize+1, req.Tag)
+		req.GetPageSize()+1, req.GetTag())
 	if err != nil {
 		return nil, errToStatus(err)
 	}
@@ -266,12 +266,12 @@ func (d *Device) ListDevices(
 	resp := &api.ListDevicesResponse{Devices: devs, TotalSize: count}
 
 	// Populate next page token.
-	if len(devs) == int(req.PageSize+1) {
+	if len(devs) == int(req.GetPageSize()+1) {
 		resp.Devices = devs[:len(devs)-1]
 
 		if resp.NextPageToken, err = session.GeneratePageToken(
-			devs[len(devs)-2].CreatedAt.AsTime(),
-			devs[len(devs)-2].Id); err != nil {
+			devs[len(devs)-2].GetCreatedAt().AsTime(),
+			devs[len(devs)-2].GetId()); err != nil {
 			// GeneratePageToken should not error based on a DB-derived UUID.
 			// Log the error and include the usable empty token.
 			logger := alog.FromContext(ctx)

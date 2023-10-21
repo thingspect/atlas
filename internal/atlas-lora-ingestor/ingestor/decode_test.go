@@ -181,11 +181,11 @@ func TestDecodeGateways(t *testing.T) {
 					t.Logf("vIn: %+v", vIn)
 
 					// Normalize generated trace ID.
-					res.Point.TraceId = vIn.Point.TraceId
+					res.Point.TraceId = vIn.GetPoint().GetTraceId()
 					// Normalize timestamp.
-					require.WithinDuration(t, time.Now(), vIn.Point.Ts.AsTime(),
+					require.WithinDuration(t, time.Now(), vIn.GetPoint().GetTs().AsTime(),
 						2*time.Second)
-					res.Point.Ts = vIn.Point.Ts
+					res.Point.Ts = vIn.GetPoint().GetTs()
 
 					// Testify does not currently support protobuf equality:
 					// https://github.com/stretchr/testify/issues/758
@@ -467,11 +467,11 @@ func TestDecodeDevices(t *testing.T) {
 					t.Logf("vIn: %+v", vIn)
 
 					// Normalize generated trace ID.
-					res.Point.TraceId = vIn.Point.TraceId
+					res.Point.TraceId = vIn.GetPoint().GetTraceId()
 					// Normalize timestamp.
-					require.WithinDuration(t, time.Now(), vIn.Point.Ts.AsTime(),
+					require.WithinDuration(t, time.Now(), vIn.GetPoint().GetTs().AsTime(),
 						2*time.Second)
-					res.Point.Ts = vIn.Point.Ts
+					res.Point.Ts = vIn.GetPoint().GetTs()
 
 					// Testify does not currently support protobuf equality:
 					// https://github.com/stretchr/testify/issues/758

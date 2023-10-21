@@ -68,35 +68,35 @@ func (u *User) CreateUser(ctx context.Context, req *api.CreateUserRequest) (
 
 	// Only system admins can elevate to system admin.
 	if sess.Role < api.Role_SYS_ADMIN &&
-		req.User.Role == api.Role_SYS_ADMIN {
+		req.GetUser().GetRole() == api.Role_SYS_ADMIN {
 		return nil, status.Error(codes.PermissionDenied,
 			"permission denied, role modification not allowed")
 	}
 
 	// Validate phone number.
-	if req.User.Phone != "" {
-		if !rePhone.MatchString(req.User.Phone) {
+	if req.GetUser().GetPhone() != "" {
+		if !rePhone.MatchString(req.GetUser().GetPhone()) {
 			return nil, status.Error(codes.InvalidArgument,
 				"invalid E.164 phone number")
 		}
 
-		if err := u.notify.ValidateSMS(ctx, req.User.Phone); err != nil {
+		if err := u.notify.ValidateSMS(ctx, req.GetUser().GetPhone()); err != nil {
 			return nil, errToStatus(err)
 		}
 	}
 
 	// Validate mobile application user key.
-	if req.User.AppKey != "" {
-		if err := u.notify.ValidateApp(req.User.AppKey); err != nil {
+	if req.GetUser().GetAppKey() != "" {
+		if err := u.notify.ValidateApp(req.GetUser().GetAppKey()); err != nil {
 			return nil, errToStatus(err)
 		}
 	}
 
 	req.User.OrgId = sess.OrgID
-	req.User.Tags = append(req.User.Tags,
-		strings.ToLower(req.User.Role.String()))
+	req.User.Tags = append(req.GetUser().GetTags(),
+		strings.ToLower(req.GetUser().GetRole().String()))
 
-	user, err := u.userDAO.Create(ctx, req.User)
+	user, err := u.userDAO.Create(ctx, req.GetUser())
 	if err != nil {
 		return nil, errToStatus(err)
 	}
@@ -115,11 +115,11 @@ func (u *User) GetUser(ctx context.Context, req *api.GetUserRequest) (
 	*api.User, error,
 ) {
 	sess, ok := session.FromContext(ctx)
-	if !ok || (sess.Role < api.Role_ADMIN && req.Id != sess.UserID) {
+	if !ok || (sess.Role < api.Role_ADMIN && req.GetId() != sess.UserID) {
 		return nil, errPerm(api.Role_ADMIN)
 	}
 
-	user, err := u.userDAO.Read(ctx, req.Id, sess.OrgID)
+	user, err := u.userDAO.Read(ctx, req.GetId(), sess.OrgID)
 	if err != nil {
 		return nil, errToStatus(err)
 	}
@@ -137,64 +137,64 @@ func (u *User) UpdateUser(ctx context.Context, req *api.UpdateUserRequest) (
 		return nil, errPerm(api.Role_ADMIN)
 	}
 
-	if req.User == nil {
+	if req.GetUser() == nil {
 		return nil, status.Error(codes.InvalidArgument,
 			req.Validate().Error())
 	}
 	req.User.OrgId = sess.OrgID
 
 	// Non-admins can only update their own user.
-	if sess.Role < api.Role_ADMIN && req.User.Id != sess.UserID {
+	if sess.Role < api.Role_ADMIN && req.GetUser().GetId() != sess.UserID {
 		return nil, errPerm(api.Role_ADMIN)
 	}
 
 	// Only admins can update roles, and only system admins can elevate to
 	// system admin.
-	if (sess.Role < api.Role_ADMIN && req.User.Role != sess.Role) ||
+	if (sess.Role < api.Role_ADMIN && req.GetUser().GetRole() != sess.Role) ||
 		(sess.Role < api.Role_SYS_ADMIN &&
-			req.User.Role == api.Role_SYS_ADMIN) {
+			req.GetUser().GetRole() == api.Role_SYS_ADMIN) {
 		return nil, status.Error(codes.PermissionDenied,
 			"permission denied, role modification not allowed")
 	}
 
 	// Validate phone number.
-	if req.User.Phone != "" {
-		if !rePhone.MatchString(req.User.Phone) {
+	if req.GetUser().GetPhone() != "" {
+		if !rePhone.MatchString(req.GetUser().GetPhone()) {
 			return nil, status.Error(codes.InvalidArgument,
 				"invalid E.164 phone number")
 		}
 
-		if err := u.notify.ValidateSMS(ctx, req.User.Phone); err != nil {
+		if err := u.notify.ValidateSMS(ctx, req.GetUser().GetPhone()); err != nil {
 			return nil, errToStatus(err)
 		}
 	}
 
 	// Validate mobile application user key.
-	if req.User.AppKey != "" {
-		if err := u.notify.ValidateApp(req.User.AppKey); err != nil {
+	if req.GetUser().GetAppKey() != "" {
+		if err := u.notify.ValidateApp(req.GetUser().GetAppKey()); err != nil {
 			return nil, errToStatus(err)
 		}
 	}
 
 	// Perform partial update if directed.
-	if req.UpdateMask != nil && len(req.UpdateMask.Paths) > 0 {
+	if len(req.GetUpdateMask().GetPaths()) > 0 {
 		// Normalize and validate field mask.
-		req.UpdateMask.Normalize()
-		if !req.UpdateMask.IsValid(req.User) {
+		req.GetUpdateMask().Normalize()
+		if !req.GetUpdateMask().IsValid(req.GetUser()) {
 			return nil, status.Error(codes.InvalidArgument,
 				"invalid field mask")
 		}
 
-		user, err := u.userDAO.Read(ctx, req.User.Id, sess.OrgID)
+		user, err := u.userDAO.Read(ctx, req.GetUser().GetId(), sess.OrgID)
 		if err != nil {
 			return nil, errToStatus(err)
 		}
 
-		fmutils.Filter(req.User, req.UpdateMask.Paths)
-		if req.User.Tags != nil {
+		fmutils.Filter(req.GetUser(), req.GetUpdateMask().GetPaths())
+		if req.GetUser().GetTags() != nil {
 			user.Tags = nil
 		}
-		proto.Merge(user, req.User)
+		proto.Merge(user, req.GetUser())
 		req.User = user
 	}
 
@@ -203,7 +203,7 @@ func (u *User) UpdateUser(ctx context.Context, req *api.UpdateUserRequest) (
 		return nil, status.Error(codes.InvalidArgument, err.Error())
 	}
 
-	user, err := u.userDAO.Update(ctx, req.User)
+	user, err := u.userDAO.Update(ctx, req.GetUser())
 	if err != nil {
 		return nil, errToStatus(err)
 	}
@@ -216,15 +216,15 @@ func (u *User) UpdateUserPassword(
 	ctx context.Context, req *api.UpdateUserPasswordRequest,
 ) (*emptypb.Empty, error) {
 	sess, ok := session.FromContext(ctx)
-	if !ok || (sess.Role < api.Role_ADMIN && req.Id != sess.UserID) {
+	if !ok || (sess.Role < api.Role_ADMIN && req.GetId() != sess.UserID) {
 		return nil, errPerm(api.Role_ADMIN)
 	}
 
-	if err := crypto.CheckPass(req.Password); err != nil {
+	if err := crypto.CheckPass(req.GetPassword()); err != nil {
 		return nil, errToStatus(err)
 	}
 
-	hash, err := crypto.HashPass(req.Password)
+	hash, err := crypto.HashPass(req.GetPassword())
 	if err != nil {
 		logger := alog.FromContext(ctx)
 		logger.Errorf("UpdateUserPassword crypto.HashPass: %v", err)
@@ -232,7 +232,7 @@ func (u *User) UpdateUserPassword(
 		return nil, errToStatus(crypto.ErrWeakPass)
 	}
 
-	if err := u.userDAO.UpdatePassword(ctx, req.Id, sess.OrgID,
+	if err := u.userDAO.UpdatePassword(ctx, req.GetId(), sess.OrgID,
 		hash); err != nil {
 		return nil, errToStatus(err)
 	}
@@ -249,7 +249,7 @@ func (u *User) DeleteUser(ctx context.Context, req *api.DeleteUserRequest) (
 		return nil, errPerm(api.Role_ADMIN)
 	}
 
-	if err := u.userDAO.Delete(ctx, req.Id, sess.OrgID); err != nil {
+	if err := u.userDAO.Delete(ctx, req.GetId(), sess.OrgID); err != nil {
 		return nil, errToStatus(err)
 	}
 
@@ -289,18 +289,18 @@ func (u *User) ListUsers(ctx context.Context, req *api.ListUsersRequest) (
 		}, nil
 	}
 
-	if req.PageSize == 0 {
+	if req.GetPageSize() == 0 {
 		req.PageSize = defaultPageSize
 	}
 
-	lBoundTS, prevID, err := session.ParsePageToken(req.PageToken)
+	lBoundTS, prevID, err := session.ParsePageToken(req.GetPageToken())
 	if err != nil {
 		return nil, status.Error(codes.InvalidArgument, "invalid page token")
 	}
 
 	// Retrieve PageSize+1 entries to find last page.
 	users, count, err := u.userDAO.List(ctx, sess.OrgID, lBoundTS, prevID,
-		req.PageSize+1, req.Tag)
+		req.GetPageSize()+1, req.GetTag())
 	if err != nil {
 		return nil, errToStatus(err)
 	}
@@ -308,12 +308,12 @@ func (u *User) ListUsers(ctx context.Context, req *api.ListUsersRequest) (
 	resp := &api.ListUsersResponse{Users: users, TotalSize: count}
 
 	// Populate next page token.
-	if len(users) == int(req.PageSize+1) {
+	if len(users) == int(req.GetPageSize()+1) {
 		resp.Users = users[:len(users)-1]
 
 		if resp.NextPageToken, err = session.GeneratePageToken(
-			users[len(users)-2].CreatedAt.AsTime(),
-			users[len(users)-2].Id); err != nil {
+			users[len(users)-2].GetCreatedAt().AsTime(),
+			users[len(users)-2].GetId()); err != nil {
 			// GeneratePageToken should not error based on a DB-derived UUID.
 			// Log the error and include the usable empty token.
 			logger := alog.FromContext(ctx)

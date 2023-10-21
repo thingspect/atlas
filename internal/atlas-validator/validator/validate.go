@@ -26,7 +26,7 @@ func (val *Validator) validateMessages() {
 		metric.Incr("received", nil)
 		vIn := &message.ValidatorIn{}
 		err := proto.Unmarshal(msg.Payload(), vIn)
-		if err != nil || vIn.Point == nil {
+		if err != nil || vIn.GetPoint() == nil {
 			msg.Ack()
 
 			if !bytes.Equal([]byte{queue.Prime}, msg.Payload()) {
@@ -40,13 +40,13 @@ func (val *Validator) validateMessages() {
 
 		// Set up logging fields.
 		logger := alog.
-			WithField("traceID", vIn.Point.TraceId).
-			WithField("orgID", vIn.OrgId).
-			WithField("uniqID", vIn.Point.UniqId)
+			WithField("traceID", vIn.GetPoint().GetTraceId()).
+			WithField("orgID", vIn.GetOrgId()).
+			WithField("uniqID", vIn.GetPoint().GetUniqId())
 
 		// Retrieve device.
 		ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
-		dev, err := val.devDAO.ReadByUniqID(ctx, vIn.Point.UniqId)
+		dev, err := val.devDAO.ReadByUniqID(ctx, vIn.GetPoint().GetUniqId())
 		cancel()
 		if errors.Is(err, dao.ErrNotFound) {
 			msg.Ack()
@@ -62,30 +62,30 @@ func (val *Validator) validateMessages() {
 
 			continue
 		}
-		logger = logger.WithField("devID", dev.Id)
+		logger = logger.WithField("devID", dev.GetId())
 
 		// Perform validation.
-		switch err := vIn.Point.Validate(); {
+		switch err := vIn.GetPoint().Validate(); {
 		case err != nil:
 			msg.Ack()
 			metric.Incr("invalid", map[string]string{"func": "validate"})
 			logger.Debugf("validateMessages vIn.Point.Validate: %v", err)
 
 			continue
-		case !vIn.SkipToken && vIn.OrgId != dev.OrgId:
+		case !vIn.GetSkipToken() && vIn.GetOrgId() != dev.GetOrgId():
 			msg.Ack()
 			metric.Incr("invalid", map[string]string{"func": "orgid"})
 			logger.Errorf("validateMessages incorrect org ID, expected: %v, "+
-				"actual: %v", dev.OrgId, vIn.OrgId)
+				"actual: %v", dev.GetOrgId(), vIn.GetOrgId())
 
 			continue
-		case dev.Status != api.Status_ACTIVE:
+		case dev.GetStatus() != api.Status_ACTIVE:
 			msg.Ack()
 			metric.Incr("invalid", map[string]string{"func": "disabled"})
 			logger.Debugf("validateMessages device disabled: %+v", vIn)
 
 			continue
-		case !vIn.SkipToken && vIn.Point.Token != dev.Token:
+		case !vIn.GetSkipToken() && vIn.GetPoint().GetToken() != dev.GetToken():
 			msg.Ack()
 			metric.Incr("invalid", map[string]string{"func": "token"})
 			logger.Debugf("validateMessages invalid token: %+v", vIn)
@@ -96,7 +96,7 @@ func (val *Validator) validateMessages() {
 
 		// Build and publish ValidatorOut message.
 		vOut := &message.ValidatorOut{
-			Point:  vIn.Point,
+			Point:  vIn.GetPoint(),
 			Device: dev,
 		}
 

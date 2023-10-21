@@ -59,7 +59,7 @@ func (ra *RuleAlarm) CreateRule(
 
 	req.Rule.OrgId = sess.OrgID
 
-	rule, err := ra.ruleDAO.Create(ctx, req.Rule)
+	rule, err := ra.ruleDAO.Create(ctx, req.GetRule())
 	if err != nil {
 		return nil, errToStatus(err)
 	}
@@ -82,7 +82,7 @@ func (ra *RuleAlarm) GetRule(ctx context.Context, req *api.GetRuleRequest) (
 		return nil, errPerm(api.Role_VIEWER)
 	}
 
-	rule, err := ra.ruleDAO.Read(ctx, req.Id, sess.OrgID)
+	rule, err := ra.ruleDAO.Read(ctx, req.GetId(), sess.OrgID)
 	if err != nil {
 		return nil, errToStatus(err)
 	}
@@ -100,28 +100,28 @@ func (ra *RuleAlarm) UpdateRule(
 		return nil, errPerm(api.Role_BUILDER)
 	}
 
-	if req.Rule == nil {
+	if req.GetRule() == nil {
 		return nil, status.Error(codes.InvalidArgument,
 			req.Validate().Error())
 	}
 	req.Rule.OrgId = sess.OrgID
 
 	// Perform partial update if directed.
-	if req.UpdateMask != nil && len(req.UpdateMask.Paths) > 0 {
+	if len(req.GetUpdateMask().GetPaths()) > 0 {
 		// Normalize and validate field mask.
-		req.UpdateMask.Normalize()
-		if !req.UpdateMask.IsValid(req.Rule) {
+		req.GetUpdateMask().Normalize()
+		if !req.GetUpdateMask().IsValid(req.GetRule()) {
 			return nil, status.Error(codes.InvalidArgument,
 				"invalid field mask")
 		}
 
-		rule, err := ra.ruleDAO.Read(ctx, req.Rule.Id, sess.OrgID)
+		rule, err := ra.ruleDAO.Read(ctx, req.GetRule().GetId(), sess.OrgID)
 		if err != nil {
 			return nil, errToStatus(err)
 		}
 
-		fmutils.Filter(req.Rule, req.UpdateMask.Paths)
-		proto.Merge(rule, req.Rule)
+		fmutils.Filter(req.GetRule(), req.GetUpdateMask().GetPaths())
+		proto.Merge(rule, req.GetRule())
 		req.Rule = rule
 	}
 
@@ -130,7 +130,7 @@ func (ra *RuleAlarm) UpdateRule(
 		return nil, status.Error(codes.InvalidArgument, err.Error())
 	}
 
-	rule, err := ra.ruleDAO.Update(ctx, req.Rule)
+	rule, err := ra.ruleDAO.Update(ctx, req.GetRule())
 	if err != nil {
 		return nil, errToStatus(err)
 	}
@@ -147,7 +147,7 @@ func (ra *RuleAlarm) DeleteRule(
 		return nil, errPerm(api.Role_BUILDER)
 	}
 
-	if err := ra.ruleDAO.Delete(ctx, req.Id, sess.OrgID); err != nil {
+	if err := ra.ruleDAO.Delete(ctx, req.GetId(), sess.OrgID); err != nil {
 		return nil, errToStatus(err)
 	}
 
@@ -169,18 +169,18 @@ func (ra *RuleAlarm) ListRules(ctx context.Context, req *api.ListRulesRequest) (
 		return nil, errPerm(api.Role_VIEWER)
 	}
 
-	if req.PageSize == 0 {
+	if req.GetPageSize() == 0 {
 		req.PageSize = defaultPageSize
 	}
 
-	lBoundTS, prevID, err := session.ParsePageToken(req.PageToken)
+	lBoundTS, prevID, err := session.ParsePageToken(req.GetPageToken())
 	if err != nil {
 		return nil, status.Error(codes.InvalidArgument, "invalid page token")
 	}
 
 	// Retrieve PageSize+1 entries to find last page.
 	rules, count, err := ra.ruleDAO.List(ctx, sess.OrgID, lBoundTS, prevID,
-		req.PageSize+1)
+		req.GetPageSize()+1)
 	if err != nil {
 		return nil, errToStatus(err)
 	}
@@ -188,12 +188,12 @@ func (ra *RuleAlarm) ListRules(ctx context.Context, req *api.ListRulesRequest) (
 	resp := &api.ListRulesResponse{Rules: rules, TotalSize: count}
 
 	// Populate next page token.
-	if len(rules) == int(req.PageSize+1) {
+	if len(rules) == int(req.GetPageSize()+1) {
 		resp.Rules = rules[:len(rules)-1]
 
 		if resp.NextPageToken, err = session.GeneratePageToken(
-			rules[len(rules)-2].CreatedAt.AsTime(),
-			rules[len(rules)-2].Id); err != nil {
+			rules[len(rules)-2].GetCreatedAt().AsTime(),
+			rules[len(rules)-2].GetId()); err != nil {
 			// GeneratePageToken should not error based on a DB-derived UUID.
 			// Log the error and include the usable empty token.
 			logger := alog.FromContext(ctx)
@@ -214,17 +214,17 @@ func (ra *RuleAlarm) TestRule(ctx context.Context, req *api.TestRuleRequest) (
 		return nil, errPerm(api.Role_BUILDER)
 	}
 
-	if req.Point.Attr != req.Rule.Attr {
+	if req.GetPoint().GetAttr() != req.GetRule().GetAttr() {
 		return nil, status.Error(codes.InvalidArgument,
 			"data point and rule attribute mismatch")
 	}
 
 	// Default to current timestamp if not provided.
-	if req.Point.Ts == nil {
+	if req.GetPoint().GetTs() == nil {
 		req.Point.Ts = timestamppb.Now()
 	}
 
-	res, err := rule.Eval(req.Point, req.Rule.Expr)
+	res, err := rule.Eval(req.GetPoint(), req.GetRule().GetExpr())
 	if err != nil {
 		// Expr does not provide sentinel errors, always consider errors to be
 		// invalid input.

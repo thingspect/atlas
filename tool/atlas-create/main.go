@@ -128,7 +128,7 @@ func main() {
 		cancel()
 		checkErr(err)
 
-		orgID = createOrg.Id
+		orgID = createOrg.GetId()
 		fmt.Fprintf(os.Stdout, "Org: %+v\n", createOrg)
 
 		fallthrough
@@ -152,7 +152,7 @@ func main() {
 		createUser, err := userDAO.Create(ctx, u)
 		checkErr(err)
 
-		checkErr(userDAO.UpdatePassword(ctx, createUser.Id, orgID, hash))
+		checkErr(userDAO.UpdatePassword(ctx, createUser.GetId(), orgID, hash))
 		fmt.Fprintf(os.Stdout, "User: %+v\n", createUser)
 	}
 }

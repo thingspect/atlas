@@ -45,7 +45,7 @@ func (a *Alert) ListAlerts(ctx context.Context, req *api.ListAlertsRequest) (
 	var uniqID string
 	var devID string
 
-	switch v := req.IdOneof.(type) {
+	switch v := req.GetIdOneof().(type) {
 	case *api.ListAlertsRequest_UniqId:
 		uniqID = v.UniqId
 	case *api.ListAlertsRequest_DeviceId:
@@ -53,13 +53,13 @@ func (a *Alert) ListAlerts(ctx context.Context, req *api.ListAlertsRequest) (
 	}
 
 	end := time.Now().UTC()
-	if req.EndTime != nil {
-		end = req.EndTime.AsTime()
+	if req.GetEndTime() != nil {
+		end = req.GetEndTime().AsTime()
 	}
 
 	start := end.Add(-24 * time.Hour)
-	if req.StartTime != nil && req.StartTime.AsTime().Before(end) {
-		start = req.StartTime.AsTime()
+	if req.GetStartTime() != nil && req.GetStartTime().AsTime().Before(end) {
+		start = req.GetStartTime().AsTime()
 	}
 
 	if end.Sub(start) > 90*24*time.Hour {
@@ -67,8 +67,8 @@ func (a *Alert) ListAlerts(ctx context.Context, req *api.ListAlertsRequest) (
 			"maximum time range exceeded")
 	}
 
-	alerts, err := a.aleDAO.List(ctx, sess.OrgID, uniqID, devID, req.AlarmId,
-		req.UserId, end, start)
+	alerts, err := a.aleDAO.List(ctx, sess.OrgID, uniqID, devID, req.GetAlarmId(),
+		req.GetUserId(), end, start)
 	if err != nil {
 		return nil, errToStatus(err)
 	}

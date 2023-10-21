@@ -36,7 +36,7 @@ func TestListAlerts(t *testing.T) {
 
 		for i := 0; i < 5; i++ {
 			alert := random.Alert("dao-alert", globalAdminOrgID)
-			alert.UniqId = createDev.UniqId
+			alert.UniqId = createDev.GetUniqId()
 			alerts = append(alerts, alert)
 
 			ctx, cancel := context.WithTimeout(context.Background(),
@@ -51,8 +51,8 @@ func TestListAlerts(t *testing.T) {
 
 		// Flip alerts to descending timestamp order.
 		sort.Slice(alerts, func(i, j int) bool {
-			return alerts[i].CreatedAt.AsTime().After(
-				alerts[j].CreatedAt.AsTime())
+			return alerts[i].GetCreatedAt().AsTime().After(
+				alerts[j].GetCreatedAt().AsTime())
 		})
 
 		ctx, cancel = context.WithTimeout(context.Background(), testTimeout)
@@ -61,14 +61,14 @@ func TestListAlerts(t *testing.T) {
 		// Verify results by UniqID.
 		aleCli := api.NewAlertServiceClient(globalAdminGRPCConn)
 		listAlertsUniqID, err := aleCli.ListAlerts(ctx, &api.ListAlertsRequest{
-			IdOneof: &api.ListAlertsRequest_UniqId{UniqId: createDev.UniqId},
-			EndTime: alerts[0].CreatedAt, StartTime: timestamppb.New(
-				alerts[len(alerts)-1].CreatedAt.AsTime().Add(
+			IdOneof: &api.ListAlertsRequest_UniqId{UniqId: createDev.GetUniqId()},
+			EndTime: alerts[0].GetCreatedAt(), StartTime: timestamppb.New(
+				alerts[len(alerts)-1].GetCreatedAt().AsTime().Add(
 					-time.Millisecond)),
 		})
 		t.Logf("listAlertsUniqID, err: %+v, %v", listAlertsUniqID, err)
 		require.NoError(t, err)
-		require.Len(t, listAlertsUniqID.Alerts, len(alerts))
+		require.Len(t, listAlertsUniqID.GetAlerts(), len(alerts))
 
 		// Testify does not currently support protobuf equality:
 		// https://github.com/stretchr/testify/issues/758
@@ -80,12 +80,12 @@ func TestListAlerts(t *testing.T) {
 
 		// Verify results by dev ID without oldest alert.
 		listAlertsDevID, err := aleCli.ListAlerts(ctx, &api.ListAlertsRequest{
-			IdOneof:   &api.ListAlertsRequest_DeviceId{DeviceId: createDev.Id},
-			StartTime: alerts[len(alerts)-1].CreatedAt,
+			IdOneof:   &api.ListAlertsRequest_DeviceId{DeviceId: createDev.GetId()},
+			StartTime: alerts[len(alerts)-1].GetCreatedAt(),
 		})
 		t.Logf("listAlertsDevID, err: %+v, %v", listAlertsDevID, err)
 		require.NoError(t, err)
-		require.Len(t, listAlertsDevID.Alerts, len(alerts)-1)
+		require.Len(t, listAlertsDevID.GetAlerts(), len(alerts)-1)
 
 		// Testify does not currently support protobuf equality:
 		// https://github.com/stretchr/testify/issues/758
@@ -98,14 +98,14 @@ func TestListAlerts(t *testing.T) {
 
 		// Verify results by alarm ID and user ID.
 		listAlertsUniqID, err = aleCli.ListAlerts(ctx, &api.ListAlertsRequest{
-			AlarmId: alerts[len(alerts)-1].AlarmId,
-			UserId:  alerts[len(alerts)-1].UserId, EndTime: alerts[0].CreatedAt,
-			StartTime: timestamppb.New(alerts[len(alerts)-1].CreatedAt.AsTime().
+			AlarmId: alerts[len(alerts)-1].GetAlarmId(),
+			UserId:  alerts[len(alerts)-1].GetUserId(), EndTime: alerts[0].GetCreatedAt(),
+			StartTime: timestamppb.New(alerts[len(alerts)-1].GetCreatedAt().AsTime().
 				Add(-time.Millisecond)),
 		})
 		t.Logf("listAlertsUniqID, err: %+v, %v", listAlertsUniqID, err)
 		require.NoError(t, err)
-		require.Len(t, listAlertsUniqID.Alerts, 1)
+		require.Len(t, listAlertsUniqID.GetAlerts(), 1)
 
 		// Testify does not currently support protobuf equality:
 		// https://github.com/stretchr/testify/issues/758
@@ -128,7 +128,7 @@ func TestListAlerts(t *testing.T) {
 		t.Logf("createOrg, err: %+v, %v", createOrg, err)
 		require.NoError(t, err)
 
-		alert := random.Alert("dao-alert", createOrg.Id)
+		alert := random.Alert("dao-alert", createOrg.GetId())
 
 		err = globalAleDAO.Create(ctx, alert)
 		t.Logf("err: %#v", err)
@@ -136,11 +136,11 @@ func TestListAlerts(t *testing.T) {
 
 		aleCli := api.NewAlertServiceClient(globalAdminGRPCConn)
 		listAlerts, err := aleCli.ListAlerts(ctx, &api.ListAlertsRequest{
-			IdOneof: &api.ListAlertsRequest_UniqId{UniqId: alert.UniqId},
+			IdOneof: &api.ListAlertsRequest_UniqId{UniqId: alert.GetUniqId()},
 		})
 		t.Logf("listAlerts, err: %+v, %v", listAlerts, err)
 		require.NoError(t, err)
-		require.Len(t, listAlerts.Alerts, 0)
+		require.Len(t, listAlerts.GetAlerts(), 0)
 	})
 
 	t.Run("List alerts by invalid time range", func(t *testing.T) {

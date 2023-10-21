@@ -33,18 +33,18 @@ func TestListEvents(t *testing.T) {
 		start := time.Now().UTC().Add(-15 * time.Minute)
 
 		eventer := NewMockEventer(gomock.NewController(t))
-		eventer.EXPECT().List(gomock.Any(), event.OrgId, event.UniqId, "", "",
+		eventer.EXPECT().List(gomock.Any(), event.GetOrgId(), event.GetUniqId(), "", "",
 			end, start).Return([]*api.Event{retEvent}, nil).Times(1)
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
 			context.Background(), &session.Session{
-				OrgID: event.OrgId, Role: api.Role_ADMIN,
+				OrgID: event.GetOrgId(), Role: api.Role_ADMIN,
 			}), testTimeout)
 		defer cancel()
 
 		evSvc := NewEvent(eventer)
 		listEvents, err := evSvc.ListEvents(ctx, &api.ListEventsRequest{
-			IdOneof: &api.ListEventsRequest_UniqId{UniqId: event.UniqId},
+			IdOneof: &api.ListEventsRequest_UniqId{UniqId: event.GetUniqId()},
 			EndTime: timestamppb.New(end), StartTime: timestamppb.New(start),
 		})
 		t.Logf("event, listEvents, err: %+v, %+v, %v", event, listEvents, err)
@@ -68,21 +68,21 @@ func TestListEvents(t *testing.T) {
 		devID := uuid.NewString()
 
 		eventer := NewMockEventer(gomock.NewController(t))
-		eventer.EXPECT().List(gomock.Any(), event.OrgId, "", devID,
-			event.RuleId, matcher.NewRecentMatcher(2*time.Second),
+		eventer.EXPECT().List(gomock.Any(), event.GetOrgId(), "", devID,
+			event.GetRuleId(), matcher.NewRecentMatcher(2*time.Second),
 			matcher.NewRecentMatcher(24*time.Hour+2*time.Second)).
 			Return([]*api.Event{retEvent}, nil).Times(1)
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
 			context.Background(), &session.Session{
-				OrgID: event.OrgId, Role: api.Role_ADMIN,
+				OrgID: event.GetOrgId(), Role: api.Role_ADMIN,
 			}), testTimeout)
 		defer cancel()
 
 		evSvc := NewEvent(eventer)
 		listEvents, err := evSvc.ListEvents(ctx, &api.ListEventsRequest{
 			IdOneof: &api.ListEventsRequest_DeviceId{DeviceId: devID},
-			RuleId:  event.RuleId,
+			RuleId:  event.GetRuleId(),
 		})
 		t.Logf("event, listEvents, err: %+v, %+v, %v", event, listEvents, err)
 		require.NoError(t, err)
@@ -181,7 +181,7 @@ func TestLatestEvents(t *testing.T) {
 		orgID := uuid.NewString()
 
 		eventer := NewMockEventer(gomock.NewController(t))
-		eventer.EXPECT().Latest(gomock.Any(), orgID, event.RuleId).
+		eventer.EXPECT().Latest(gomock.Any(), orgID, event.GetRuleId()).
 			Return([]*api.Event{retEvent}, nil).Times(1)
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
@@ -192,7 +192,7 @@ func TestLatestEvents(t *testing.T) {
 
 		evSvc := NewEvent(eventer)
 		latEvents, err := evSvc.LatestEvents(ctx, &api.LatestEventsRequest{
-			RuleId: event.RuleId,
+			RuleId: event.GetRuleId(),
 		})
 		t.Logf("event, latEvents, err: %+v, %+v, %v", event, latEvents, err)
 		require.NoError(t, err)

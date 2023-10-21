@@ -33,11 +33,11 @@ func TestCreate(t *testing.T) {
 		createOrg, err := globalOrgDAO.Create(ctx, createOrg)
 		t.Logf("org, createOrg, err: %+v, %+v, %v", org, createOrg, err)
 		require.NoError(t, err)
-		require.NotEqual(t, org.Id, createOrg.Id)
-		require.Equal(t, org.Name, createOrg.Name)
-		require.WithinDuration(t, time.Now(), createOrg.CreatedAt.AsTime(),
+		require.NotEqual(t, org.GetId(), createOrg.GetId())
+		require.Equal(t, org.GetName(), createOrg.GetName())
+		require.WithinDuration(t, time.Now(), createOrg.GetCreatedAt().AsTime(),
 			2*time.Second)
-		require.WithinDuration(t, time.Now(), createOrg.UpdatedAt.AsTime(),
+		require.WithinDuration(t, time.Now(), createOrg.GetUpdatedAt().AsTime(),
 			2*time.Second)
 	})
 
@@ -45,7 +45,7 @@ func TestCreate(t *testing.T) {
 		t.Parallel()
 
 		org := random.Org("dao-org")
-		org.Name = strings.ToUpper(org.Name)
+		org.Name = strings.ToUpper(org.GetName())
 		createOrg, _ := proto.Clone(org).(*api.Org)
 
 		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
@@ -54,11 +54,11 @@ func TestCreate(t *testing.T) {
 		createOrg, err := globalOrgDAO.Create(ctx, createOrg)
 		t.Logf("org, createOrg, err: %+v, %+v, %v", org, createOrg, err)
 		require.NoError(t, err)
-		require.NotEqual(t, org.Id, createOrg.Id)
-		require.Equal(t, strings.ToLower(org.Name), createOrg.Name)
-		require.WithinDuration(t, time.Now(), createOrg.CreatedAt.AsTime(),
+		require.NotEqual(t, org.GetId(), createOrg.GetId())
+		require.Equal(t, strings.ToLower(org.GetName()), createOrg.GetName())
+		require.WithinDuration(t, time.Now(), createOrg.GetCreatedAt().AsTime(),
 			2*time.Second)
-		require.WithinDuration(t, time.Now(), createOrg.UpdatedAt.AsTime(),
+		require.WithinDuration(t, time.Now(), createOrg.GetUpdatedAt().AsTime(),
 			2*time.Second)
 	})
 
@@ -94,7 +94,7 @@ func TestRead(t *testing.T) {
 		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
 		defer cancel()
 
-		readOrg, err := globalOrgDAO.Read(ctx, createOrg.Id)
+		readOrg, err := globalOrgDAO.Read(ctx, createOrg.GetId())
 		t.Logf("readOrg, err: %+v, %v", readOrg, err)
 		require.NoError(t, err)
 		require.Equal(t, createOrg, readOrg)
@@ -148,15 +148,15 @@ func TestUpdate(t *testing.T) {
 		t.Logf("createOrg, updateOrg, err: %+v, %+v, %v", createOrg, updateOrg,
 			err)
 		require.NoError(t, err)
-		require.Equal(t, createOrg.Name, updateOrg.Name)
-		require.Equal(t, createOrg.DisplayName, updateOrg.DisplayName)
-		require.Equal(t, createOrg.Email, updateOrg.Email)
-		require.True(t, updateOrg.UpdatedAt.AsTime().After(
-			updateOrg.CreatedAt.AsTime()))
-		require.WithinDuration(t, createOrg.CreatedAt.AsTime(),
-			updateOrg.UpdatedAt.AsTime(), 2*time.Second)
+		require.Equal(t, createOrg.GetName(), updateOrg.GetName())
+		require.Equal(t, createOrg.GetDisplayName(), updateOrg.GetDisplayName())
+		require.Equal(t, createOrg.GetEmail(), updateOrg.GetEmail())
+		require.True(t, updateOrg.GetUpdatedAt().AsTime().After(
+			updateOrg.GetCreatedAt().AsTime()))
+		require.WithinDuration(t, createOrg.GetCreatedAt().AsTime(),
+			updateOrg.GetUpdatedAt().AsTime(), 2*time.Second)
 
-		readOrg, err := globalOrgDAO.Read(ctx, createOrg.Id)
+		readOrg, err := globalOrgDAO.Read(ctx, createOrg.GetId())
 		t.Logf("readOrg, err: %+v, %v", readOrg, err)
 		require.NoError(t, err)
 		require.Equal(t, updateOrg, readOrg)
@@ -209,7 +209,7 @@ func TestDelete(t *testing.T) {
 		t.Logf("createOrg, err: %+v, %v", createOrg, err)
 		require.NoError(t, err)
 
-		err = globalOrgDAO.Delete(ctx, createOrg.Id)
+		err = globalOrgDAO.Delete(ctx, createOrg.GetId())
 		t.Logf("err: %v", err)
 		require.NoError(t, err)
 
@@ -220,7 +220,7 @@ func TestDelete(t *testing.T) {
 				testTimeout)
 			defer cancel()
 
-			readOrg, err := globalOrgDAO.Read(ctx, createOrg.Id)
+			readOrg, err := globalOrgDAO.Read(ctx, createOrg.GetId())
 			t.Logf("readOrg, err: %+v, %v", readOrg, err)
 			require.Nil(t, readOrg)
 			require.Equal(t, dao.ErrNotFound, err)
@@ -254,10 +254,10 @@ func TestList(t *testing.T) {
 		t.Logf("createOrg, err: %+v, %v", createOrg, err)
 		require.NoError(t, err)
 
-		orgIDs = append(orgIDs, createOrg.Id)
-		orgNames = append(orgNames, createOrg.Name)
-		orgEmails = append(orgEmails, createOrg.Email)
-		orgTSes = append(orgTSes, createOrg.CreatedAt.AsTime())
+		orgIDs = append(orgIDs, createOrg.GetId())
+		orgNames = append(orgNames, createOrg.GetName())
+		orgEmails = append(orgEmails, createOrg.GetEmail())
+		orgTSes = append(orgTSes, createOrg.GetCreatedAt().AsTime())
 	}
 
 	t.Run("List orgs", func(t *testing.T) {
@@ -275,9 +275,9 @@ func TestList(t *testing.T) {
 
 		var found bool
 		for _, org := range listOrgs {
-			if org.Id == orgIDs[len(orgIDs)-1] &&
-				org.Name == orgNames[len(orgNames)-1] &&
-				org.Email == orgEmails[len(orgEmails)-1] {
+			if org.GetId() == orgIDs[len(orgIDs)-1] &&
+				org.GetName() == orgNames[len(orgNames)-1] &&
+				org.GetEmail() == orgEmails[len(orgEmails)-1] {
 				found = true
 			}
 		}

@@ -24,9 +24,9 @@ func (d *DAO) Create(ctx context.Context, alert *api.Alert) error {
 	now := time.Now().UTC().Truncate(time.Microsecond)
 	alert.CreatedAt = timestamppb.New(now)
 
-	_, err := d.pg.ExecContext(ctx, createAlert, alert.OrgId, strings.ToLower(
-		alert.UniqId), alert.AlarmId, alert.UserId, alert.Status.String(),
-		alert.Error, now, alert.TraceId)
+	_, err := d.pg.ExecContext(ctx, createAlert, alert.GetOrgId(), strings.ToLower(
+		alert.GetUniqId()), alert.GetAlarmId(), alert.GetUserId(), alert.GetStatus().String(),
+		alert.GetError(), now, alert.GetTraceId())
 
 	return dao.DBToSentinel(err)
 }

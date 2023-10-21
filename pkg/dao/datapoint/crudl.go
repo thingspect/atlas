@@ -23,7 +23,7 @@ func (d *DAO) Create(
 	ctx context.Context, point *common.DataPoint, orgID string,
 ) error {
 	// Truncate timestamp to milliseconds for deduplication.
-	createdAt := point.Ts.AsTime().Truncate(time.Millisecond)
+	createdAt := point.GetTs().AsTime().Truncate(time.Millisecond)
 
 	var intVal *int32
 	var fl64Val *float64
@@ -32,7 +32,7 @@ func (d *DAO) Create(
 	var bytesVal []byte
 
 	// If point doesn't validate, all values remain nil and query will error.
-	switch v := point.ValOneof.(type) {
+	switch v := point.GetValOneof().(type) {
 	case *common.DataPoint_IntVal:
 		intVal = &v.IntVal
 	case *common.DataPoint_Fl64Val:
@@ -46,8 +46,8 @@ func (d *DAO) Create(
 	}
 
 	_, err := d.pg.ExecContext(ctx, createDataPoint, orgID,
-		strings.ToLower(point.UniqId), point.Attr, intVal, fl64Val, strVal,
-		boolVal, bytesVal, createdAt, point.TraceId)
+		strings.ToLower(point.GetUniqId()), point.GetAttr(), intVal, fl64Val, strVal,
+		boolVal, bytesVal, createdAt, point.GetTraceId())
 
 	return dao.DBToSentinel(err)
 }

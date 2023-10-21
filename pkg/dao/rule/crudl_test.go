@@ -30,7 +30,7 @@ func TestCreate(t *testing.T) {
 	t.Run("Create valid rule", func(t *testing.T) {
 		t.Parallel()
 
-		rule := random.Rule("dao-rule", createOrg.Id)
+		rule := random.Rule("dao-rule", createOrg.GetId())
 		createRule, _ := proto.Clone(rule).(*api.Rule)
 
 		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
@@ -39,17 +39,17 @@ func TestCreate(t *testing.T) {
 		createRule, err := globalRuleDAO.Create(ctx, createRule)
 		t.Logf("rule, createRule, err: %+v, %+v, %v", rule, createRule, err)
 		require.NoError(t, err)
-		require.NotEqual(t, rule.Id, createRule.Id)
-		require.WithinDuration(t, time.Now(), createRule.CreatedAt.AsTime(),
+		require.NotEqual(t, rule.GetId(), createRule.GetId())
+		require.WithinDuration(t, time.Now(), createRule.GetCreatedAt().AsTime(),
 			2*time.Second)
-		require.WithinDuration(t, time.Now(), createRule.UpdatedAt.AsTime(),
+		require.WithinDuration(t, time.Now(), createRule.GetUpdatedAt().AsTime(),
 			2*time.Second)
 	})
 
 	t.Run("Create invalid rule", func(t *testing.T) {
 		t.Parallel()
 
-		rule := random.Rule("dao-rule", createOrg.Id)
+		rule := random.Rule("dao-rule", createOrg.GetId())
 		rule.Attr = "dao-rule-" + random.String(40)
 
 		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
@@ -73,7 +73,7 @@ func TestRead(t *testing.T) {
 	require.NoError(t, err)
 
 	createRule, err := globalRuleDAO.Create(ctx, random.Rule("dao-rule",
-		createOrg.Id))
+		createOrg.GetId()))
 	t.Logf("createRule, err: %+v, %v", createRule, err)
 	require.NoError(t, err)
 
@@ -83,8 +83,8 @@ func TestRead(t *testing.T) {
 		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
 		defer cancel()
 
-		readRule, err := globalRuleDAO.Read(ctx, createRule.Id,
-			createRule.OrgId)
+		readRule, err := globalRuleDAO.Read(ctx, createRule.GetId(),
+			createRule.GetOrgId())
 		t.Logf("readRule, err: %+v, %v", readRule, err)
 		require.NoError(t, err)
 		require.Equal(t, createRule, readRule)
@@ -109,7 +109,7 @@ func TestRead(t *testing.T) {
 		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
 		defer cancel()
 
-		readRule, err := globalRuleDAO.Read(ctx, createRule.Id,
+		readRule, err := globalRuleDAO.Read(ctx, createRule.GetId(),
 			uuid.NewString())
 		t.Logf("readRule, err: %+v, %v", readRule, err)
 		require.Nil(t, readRule)
@@ -123,7 +123,7 @@ func TestRead(t *testing.T) {
 		defer cancel()
 
 		readRule, err := globalRuleDAO.Read(ctx, random.String(10),
-			createRule.OrgId)
+			createRule.GetOrgId())
 		t.Logf("readRule, err: %+v, %v", readRule, err)
 		require.Nil(t, readRule)
 		require.ErrorIs(t, err, dao.ErrInvalidFormat)
@@ -147,7 +147,7 @@ func TestUpdate(t *testing.T) {
 		defer cancel()
 
 		createRule, err := globalRuleDAO.Create(ctx, random.Rule("dao-rule",
-			createOrg.Id))
+			createOrg.GetId()))
 		t.Logf("createRule, err: %+v, %v", createRule, err)
 		require.NoError(t, err)
 
@@ -160,15 +160,15 @@ func TestUpdate(t *testing.T) {
 		t.Logf("createRule, updateRule, err: %+v, %+v, %v", createRule,
 			updateRule, err)
 		require.NoError(t, err)
-		require.Equal(t, createRule.Name, updateRule.Name)
-		require.Equal(t, createRule.Status, updateRule.Status)
-		require.True(t, updateRule.UpdatedAt.AsTime().After(
-			updateRule.CreatedAt.AsTime()))
-		require.WithinDuration(t, createRule.CreatedAt.AsTime(),
-			updateRule.UpdatedAt.AsTime(), 2*time.Second)
+		require.Equal(t, createRule.GetName(), updateRule.GetName())
+		require.Equal(t, createRule.GetStatus(), updateRule.GetStatus())
+		require.True(t, updateRule.GetUpdatedAt().AsTime().After(
+			updateRule.GetCreatedAt().AsTime()))
+		require.WithinDuration(t, createRule.GetCreatedAt().AsTime(),
+			updateRule.GetUpdatedAt().AsTime(), 2*time.Second)
 
-		readRule, err := globalRuleDAO.Read(ctx, createRule.Id,
-			createRule.OrgId)
+		readRule, err := globalRuleDAO.Read(ctx, createRule.GetId(),
+			createRule.GetOrgId())
 		t.Logf("readRule, err: %+v, %v", readRule, err)
 		require.NoError(t, err)
 		require.Equal(t, updateRule, readRule)
@@ -181,7 +181,7 @@ func TestUpdate(t *testing.T) {
 		defer cancel()
 
 		updateRule, err := globalRuleDAO.Update(ctx, random.Rule("dao-rule",
-			createOrg.Id))
+			createOrg.GetId()))
 		t.Logf("updateRule, err: %+v, %v", updateRule, err)
 		require.Nil(t, updateRule)
 		require.Equal(t, dao.ErrNotFound, err)
@@ -194,7 +194,7 @@ func TestUpdate(t *testing.T) {
 		defer cancel()
 
 		createRule, err := globalRuleDAO.Create(ctx, random.Rule("dao-rule",
-			createOrg.Id))
+			createOrg.GetId()))
 		t.Logf("createRule, err: %+v, %v", createRule, err)
 		require.NoError(t, err)
 
@@ -216,7 +216,7 @@ func TestUpdate(t *testing.T) {
 		defer cancel()
 
 		createRule, err := globalRuleDAO.Create(ctx, random.Rule("dao-rule",
-			createOrg.Id))
+			createOrg.GetId()))
 		t.Logf("createRule, err: %+v, %v", createRule, err)
 		require.NoError(t, err)
 
@@ -248,11 +248,11 @@ func TestDelete(t *testing.T) {
 		defer cancel()
 
 		createRule, err := globalRuleDAO.Create(ctx, random.Rule("dao-rule",
-			createOrg.Id))
+			createOrg.GetId()))
 		t.Logf("createRule, err: %+v, %v", createRule, err)
 		require.NoError(t, err)
 
-		err = globalRuleDAO.Delete(ctx, createRule.Id, createOrg.Id)
+		err = globalRuleDAO.Delete(ctx, createRule.GetId(), createOrg.GetId())
 		t.Logf("err: %v", err)
 		require.NoError(t, err)
 
@@ -263,8 +263,8 @@ func TestDelete(t *testing.T) {
 				testTimeout)
 			defer cancel()
 
-			readRule, err := globalRuleDAO.Read(ctx, createRule.Id,
-				createOrg.Id)
+			readRule, err := globalRuleDAO.Read(ctx, createRule.GetId(),
+				createOrg.GetId())
 			t.Logf("readRule, err: %+v, %v", readRule, err)
 			require.Nil(t, readRule)
 			require.Equal(t, dao.ErrNotFound, err)
@@ -277,7 +277,7 @@ func TestDelete(t *testing.T) {
 		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
 		defer cancel()
 
-		err := globalRuleDAO.Delete(ctx, uuid.NewString(), createOrg.Id)
+		err := globalRuleDAO.Delete(ctx, uuid.NewString(), createOrg.GetId())
 		t.Logf("err: %v", err)
 		require.Equal(t, dao.ErrNotFound, err)
 	})
@@ -289,11 +289,11 @@ func TestDelete(t *testing.T) {
 		defer cancel()
 
 		createRule, err := globalRuleDAO.Create(ctx, random.Rule("dao-rule",
-			createOrg.Id))
+			createOrg.GetId()))
 		t.Logf("createRule, err: %+v, %v", createRule, err)
 		require.NoError(t, err)
 
-		err = globalRuleDAO.Delete(ctx, createRule.Id, uuid.NewString())
+		err = globalRuleDAO.Delete(ctx, createRule.GetId(), uuid.NewString())
 		t.Logf("err: %v", err)
 		require.Equal(t, dao.ErrNotFound, err)
 	})
@@ -315,14 +315,14 @@ func TestList(t *testing.T) {
 	ruleTSes := []time.Time{}
 	for i := 0; i < 3; i++ {
 		createRule, err := globalRuleDAO.Create(ctx, random.Rule("dao-rule",
-			createOrg.Id))
+			createOrg.GetId()))
 		t.Logf("createRule, err: %+v, %v", createRule, err)
 		require.NoError(t, err)
 
-		ruleIDs = append(ruleIDs, createRule.Id)
-		ruleNames = append(ruleNames, createRule.Name)
-		ruleStatuses = append(ruleStatuses, createRule.Status)
-		ruleTSes = append(ruleTSes, createRule.CreatedAt.AsTime())
+		ruleIDs = append(ruleIDs, createRule.GetId())
+		ruleNames = append(ruleNames, createRule.GetName())
+		ruleStatuses = append(ruleStatuses, createRule.GetStatus())
+		ruleTSes = append(ruleTSes, createRule.GetCreatedAt().AsTime())
 	}
 
 	t.Run("List rules by valid org ID", func(t *testing.T) {
@@ -331,7 +331,7 @@ func TestList(t *testing.T) {
 		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
 		defer cancel()
 
-		listRules, listCount, err := globalRuleDAO.List(ctx, createOrg.Id,
+		listRules, listCount, err := globalRuleDAO.List(ctx, createOrg.GetId(),
 			time.Time{}, "", 0)
 		t.Logf("listRules, listCount, err: %+v, %v, %v", listRules, listCount,
 			err)
@@ -341,9 +341,9 @@ func TestList(t *testing.T) {
 
 		var found bool
 		for _, rule := range listRules {
-			if rule.Id == ruleIDs[len(ruleIDs)-1] &&
-				rule.Name == ruleNames[len(ruleNames)-1] &&
-				rule.Status == ruleStatuses[len(ruleStatuses)-1] {
+			if rule.GetId() == ruleIDs[len(ruleIDs)-1] &&
+				rule.GetName() == ruleNames[len(ruleNames)-1] &&
+				rule.GetStatus() == ruleStatuses[len(ruleStatuses)-1] {
 				found = true
 			}
 		}
@@ -356,7 +356,7 @@ func TestList(t *testing.T) {
 		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
 		defer cancel()
 
-		listRules, listCount, err := globalRuleDAO.List(ctx, createOrg.Id,
+		listRules, listCount, err := globalRuleDAO.List(ctx, createOrg.GetId(),
 			ruleTSes[0], ruleIDs[0], 5)
 		t.Logf("listRules, listCount, err: %+v, %v, %v", listRules, listCount,
 			err)
@@ -366,9 +366,9 @@ func TestList(t *testing.T) {
 
 		var found bool
 		for _, rule := range listRules {
-			if rule.Id == ruleIDs[len(ruleIDs)-1] &&
-				rule.Name == ruleNames[len(ruleNames)-1] &&
-				rule.Status == ruleStatuses[len(ruleStatuses)-1] {
+			if rule.GetId() == ruleIDs[len(ruleIDs)-1] &&
+				rule.GetName() == ruleNames[len(ruleNames)-1] &&
+				rule.GetStatus() == ruleStatuses[len(ruleStatuses)-1] {
 				found = true
 			}
 		}
@@ -381,7 +381,7 @@ func TestList(t *testing.T) {
 		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
 		defer cancel()
 
-		listRules, listCount, err := globalRuleDAO.List(ctx, createOrg.Id,
+		listRules, listCount, err := globalRuleDAO.List(ctx, createOrg.GetId(),
 			time.Time{}, "", 1)
 		t.Logf("listRules, listCount, err: %+v, %v, %v", listRules, listCount,
 			err)
@@ -435,15 +435,15 @@ func TestListByTags(t *testing.T) {
 	ruleDeviceTags := []string{}
 	ruleAttrs := []string{}
 	for i := 0; i < 3; i++ {
-		rule := random.Rule("dao-rule", createOrg.Id)
+		rule := random.Rule("dao-rule", createOrg.GetId())
 		rule.Status = api.Status_ACTIVE
 		createRule, err := globalRuleDAO.Create(ctx, rule)
 		t.Logf("createRule, err: %+v, %v", createRule, err)
 		require.NoError(t, err)
 
-		ruleIDs = append(ruleIDs, createRule.Id)
-		ruleDeviceTags = append(ruleDeviceTags, createRule.DeviceTag)
-		ruleAttrs = append(ruleAttrs, createRule.Attr)
+		ruleIDs = append(ruleIDs, createRule.GetId())
+		ruleDeviceTags = append(ruleDeviceTags, createRule.GetDeviceTag())
+		ruleAttrs = append(ruleAttrs, createRule.GetAttr())
 	}
 
 	t.Run("List rules by valid org ID and unique attr", func(t *testing.T) {
@@ -452,21 +452,21 @@ func TestListByTags(t *testing.T) {
 		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
 		defer cancel()
 
-		listRules, err := globalRuleDAO.ListByTags(ctx, createOrg.Id,
+		listRules, err := globalRuleDAO.ListByTags(ctx, createOrg.GetId(),
 			ruleAttrs[len(ruleAttrs)-1], ruleDeviceTags)
 		t.Logf("listRules, err: %+v, %v", listRules, err)
 		require.NoError(t, err)
 		require.Len(t, listRules, 1)
-		require.Equal(t, listRules[0].Id, ruleIDs[len(ruleIDs)-1])
-		require.Equal(t, listRules[0].DeviceTag,
+		require.Equal(t, listRules[0].GetId(), ruleIDs[len(ruleIDs)-1])
+		require.Equal(t, listRules[0].GetDeviceTag(),
 			ruleDeviceTags[len(ruleDeviceTags)-1])
-		require.Equal(t, listRules[0].Attr, ruleAttrs[len(ruleAttrs)-1])
+		require.Equal(t, listRules[0].GetAttr(), ruleAttrs[len(ruleAttrs)-1])
 	})
 
 	t.Run("List rules by valid org ID and api attr", func(t *testing.T) {
 		t.Parallel()
 
-		rule := random.Rule("dao-rule", createOrg.Id)
+		rule := random.Rule("dao-rule", createOrg.GetId())
 		rule.Status = api.Status_ACTIVE
 		rule.Attr = ruleAttrs[0]
 
@@ -478,16 +478,16 @@ func TestListByTags(t *testing.T) {
 		require.NoError(t, err)
 
 		lRuleDeviceTags := ruleDeviceTags
-		lRuleDeviceTags = append(lRuleDeviceTags, createRule.DeviceTag)
+		lRuleDeviceTags = append(lRuleDeviceTags, createRule.GetDeviceTag())
 
-		listRules, err := globalRuleDAO.ListByTags(ctx, createOrg.Id,
+		listRules, err := globalRuleDAO.ListByTags(ctx, createOrg.GetId(),
 			ruleAttrs[0], lRuleDeviceTags)
 		t.Logf("listRules, err: %+v, %v", listRules, err)
 		require.NoError(t, err)
 		require.Len(t, listRules, 2)
 		for _, rule := range listRules {
-			require.Contains(t, lRuleDeviceTags, rule.DeviceTag)
-			require.Equal(t, ruleAttrs[0], rule.Attr)
+			require.Contains(t, lRuleDeviceTags, rule.GetDeviceTag())
+			require.Equal(t, ruleAttrs[0], rule.GetAttr())
 		}
 	})
 

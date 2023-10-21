@@ -29,7 +29,7 @@ func (ev *Eventer) eventMessages() {
 		metric.Incr("received", nil)
 		vOut := &message.ValidatorOut{}
 		err := proto.Unmarshal(msg.Payload(), vOut)
-		if err != nil || vOut.Point == nil || vOut.Device == nil {
+		if err != nil || vOut.GetPoint() == nil || vOut.GetDevice() == nil {
 			msg.Ack()
 
 			if !bytes.Equal([]byte{queue.Prime}, msg.Payload()) {
@@ -43,16 +43,16 @@ func (ev *Eventer) eventMessages() {
 
 		// Set up logging fields.
 		logger := alog.
-			WithField("traceID", vOut.Point.TraceId).
-			WithField("orgID", vOut.Device.OrgId).
-			WithField("uniqID", vOut.Point.UniqId).
-			WithField("devID", vOut.Device.Id)
+			WithField("traceID", vOut.GetPoint().GetTraceId()).
+			WithField("orgID", vOut.GetDevice().GetOrgId()).
+			WithField("uniqID", vOut.GetPoint().GetUniqId()).
+			WithField("devID", vOut.GetDevice().GetId())
 
 		// Retrieve rules. Only active rules with matching tags and attributes
 		// will be returned.
 		dCtx, cancel := context.WithTimeout(ctx, 5*time.Second)
-		rules, err := ev.ruleDAO.ListByTags(dCtx, vOut.Device.OrgId,
-			vOut.Point.Attr, vOut.Device.Tags)
+		rules, err := ev.ruleDAO.ListByTags(dCtx, vOut.GetDevice().GetOrgId(),
+			vOut.GetPoint().GetAttr(), vOut.GetDevice().GetTags())
 		cancel()
 		if err != nil {
 			msg.Requeue()
@@ -86,7 +86,7 @@ func (ev *Eventer) evalRules(
 ) {
 	logger := alog.FromContext(ctx)
 
-	res, err := rule.Eval(vOut.Point, r.Expr)
+	res, err := rule.Eval(vOut.GetPoint(), r.GetExpr())
 	if err != nil {
 		metric.Incr("error", map[string]string{"func": "eval"})
 		logger.Errorf("eventMessages rule.Eval: %v", err)
@@ -99,11 +99,11 @@ func (ev *Eventer) evalRules(
 
 	if res {
 		event := &api.Event{
-			OrgId:     vOut.Device.OrgId,
-			UniqId:    vOut.Device.UniqId,
-			RuleId:    r.Id,
-			CreatedAt: vOut.Point.Ts,
-			TraceId:   vOut.Point.TraceId,
+			OrgId:     vOut.GetDevice().GetOrgId(),
+			UniqId:    vOut.GetDevice().GetUniqId(),
+			RuleId:    r.GetId(),
+			CreatedAt: vOut.GetPoint().GetTs(),
+			TraceId:   vOut.GetPoint().GetTraceId(),
 		}
 
 		dCtx, cancel := context.WithTimeout(ctx, 5*time.Second)
@@ -126,8 +126,8 @@ func (ev *Eventer) evalRules(
 		}
 
 		eOut := &message.EventerOut{
-			Point:  vOut.Point,
-			Device: vOut.Device,
+			Point:  vOut.GetPoint(),
+			Device: vOut.GetDevice(),
 			Rule:   r,
 		}
 		bEOut, err := proto.Marshal(eOut)

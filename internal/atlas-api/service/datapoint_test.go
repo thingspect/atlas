@@ -66,7 +66,7 @@ func TestPublishDataPoints(t *testing.T) {
 			t.Logf("vIn: %+v", vIn)
 
 			// Normalize generated trace ID.
-			point.TraceId = vIn.Point.TraceId
+			point.TraceId = vIn.GetPoint().GetTraceId()
 
 			// Testify does not currently support protobuf equality:
 			// https://github.com/stretchr/testify/issues/758
@@ -120,11 +120,11 @@ func TestPublishDataPoints(t *testing.T) {
 			t.Logf("vIn: %+v", vIn)
 
 			// Normalize generated trace ID.
-			point.TraceId = vIn.Point.TraceId
+			point.TraceId = vIn.GetPoint().GetTraceId()
 			// Normalize timestamp.
-			require.WithinDuration(t, time.Now(), vIn.Point.Ts.AsTime(),
+			require.WithinDuration(t, time.Now(), vIn.GetPoint().GetTs().AsTime(),
 				2*time.Second)
-			point.Ts = vIn.Point.Ts
+			point.Ts = vIn.GetPoint().GetTs()
 
 			// Testify does not currently support protobuf equality:
 			// https://github.com/stretchr/testify/issues/758
@@ -214,7 +214,7 @@ func TestListDataPoints(t *testing.T) {
 		start := time.Now().UTC().Add(-15 * time.Minute)
 
 		datapointer := NewMockDataPointer(gomock.NewController(t))
-		datapointer.EXPECT().List(gomock.Any(), orgID, point.UniqId, "", "",
+		datapointer.EXPECT().List(gomock.Any(), orgID, point.GetUniqId(), "", "",
 			end, start).Return([]*common.DataPoint{retPoint}, nil).Times(1)
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
@@ -225,7 +225,7 @@ func TestListDataPoints(t *testing.T) {
 
 		dpSvc := NewDataPoint(nil, "", datapointer)
 		listPoints, err := dpSvc.ListDataPoints(ctx, &api.ListDataPointsRequest{
-			IdOneof: &api.ListDataPointsRequest_UniqId{UniqId: point.UniqId},
+			IdOneof: &api.ListDataPointsRequest_UniqId{UniqId: point.GetUniqId()},
 			EndTime: timestamppb.New(end), StartTime: timestamppb.New(start),
 		})
 		t.Logf("point, listPoints, err: %+v, %+v, %v", point, listPoints, err)
@@ -255,7 +255,7 @@ func TestListDataPoints(t *testing.T) {
 		devID := uuid.NewString()
 
 		datapointer := NewMockDataPointer(gomock.NewController(t))
-		datapointer.EXPECT().List(gomock.Any(), orgID, "", devID, point.Attr,
+		datapointer.EXPECT().List(gomock.Any(), orgID, "", devID, point.GetAttr(),
 			matcher.NewRecentMatcher(2*time.Second),
 			matcher.NewRecentMatcher(24*time.Hour+2*time.Second)).
 			Return([]*common.DataPoint{retPoint}, nil).Times(1)
@@ -269,7 +269,7 @@ func TestListDataPoints(t *testing.T) {
 		dpSvc := NewDataPoint(nil, "", datapointer)
 		listPoints, err := dpSvc.ListDataPoints(ctx, &api.ListDataPointsRequest{
 			IdOneof: &api.ListDataPointsRequest_DeviceId{DeviceId: devID},
-			Attr:    point.Attr,
+			Attr:    point.GetAttr(),
 		})
 		t.Logf("point, listPoints, err: %+v, %+v, %v", point, listPoints, err)
 		require.NoError(t, err)
@@ -378,7 +378,7 @@ func TestLatestDataPoints(t *testing.T) {
 		orgID := uuid.NewString()
 
 		datapointer := NewMockDataPointer(gomock.NewController(t))
-		datapointer.EXPECT().Latest(gomock.Any(), orgID, point.UniqId, "",
+		datapointer.EXPECT().Latest(gomock.Any(), orgID, point.GetUniqId(), "",
 			matcher.NewRecentMatcher(30*24*time.Hour+2*time.Second)).
 			Return([]*common.DataPoint{retPoint}, nil).Times(1)
 
@@ -392,7 +392,7 @@ func TestLatestDataPoints(t *testing.T) {
 		latPoints, err := dpSvc.LatestDataPoints(ctx,
 			&api.LatestDataPointsRequest{
 				IdOneof: &api.LatestDataPointsRequest_UniqId{
-					UniqId: point.UniqId,
+					UniqId: point.GetUniqId(),
 				},
 			})
 		t.Logf("point, latPoints, err: %+v, %+v, %v", point, latPoints, err)

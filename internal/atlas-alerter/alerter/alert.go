@@ -30,8 +30,8 @@ func (ale *Alerter) alertMessages() {
 		metric.Incr("received", nil)
 		eOut := &message.EventerOut{}
 		err := proto.Unmarshal(msg.Payload(), eOut)
-		if err != nil || eOut.Point == nil || eOut.Device == nil ||
-			eOut.Rule == nil {
+		if err != nil || eOut.GetPoint() == nil || eOut.GetDevice() == nil ||
+			eOut.GetRule() == nil {
 			msg.Ack()
 
 			if !bytes.Equal([]byte{queue.Prime}, msg.Payload()) {
@@ -45,14 +45,14 @@ func (ale *Alerter) alertMessages() {
 
 		// Set up logging fields.
 		logger := alog.
-			WithField("traceID", eOut.Point.TraceId).
-			WithField("orgID", eOut.Device.OrgId).
-			WithField("uniqID", eOut.Point.UniqId).
-			WithField("devID", eOut.Device.Id)
+			WithField("traceID", eOut.GetPoint().GetTraceId()).
+			WithField("orgID", eOut.GetDevice().GetOrgId()).
+			WithField("uniqID", eOut.GetPoint().GetUniqId()).
+			WithField("devID", eOut.GetDevice().GetId())
 
 		// Retrieve org.
 		dCtx, cancel := context.WithTimeout(ctx, 5*time.Second)
-		org, err := ale.orgDAO.Read(dCtx, eOut.Device.OrgId)
+		org, err := ale.orgDAO.Read(dCtx, eOut.GetDevice().GetOrgId())
 		cancel()
 		if err != nil {
 			msg.Requeue()
@@ -65,8 +65,8 @@ func (ale *Alerter) alertMessages() {
 
 		// Retrieve alarms by rule ID. Alarms may be disabled.
 		dCtx, cancel = context.WithTimeout(ctx, 5*time.Second)
-		alarms, _, err := ale.alarmDAO.List(dCtx, eOut.Device.OrgId,
-			time.Time{}, "", 0, eOut.Rule.Id)
+		alarms, _, err := ale.alarmDAO.List(dCtx, eOut.GetDevice().GetOrgId(),
+			time.Time{}, "", 0, eOut.GetRule().GetId())
 		cancel()
 		if err != nil {
 			msg.Requeue()
@@ -102,13 +102,13 @@ func (ale *Alerter) evalAlarms(
 	logger := alog.FromContext(ctx)
 
 	// Validate alarm.
-	if a.Status != api.Status_ACTIVE {
+	if a.GetStatus() != api.Status_ACTIVE {
 		return
 	}
 
 	// Retrieve users. Only active users with matching tags will be returned.
 	dCtx, cancel := context.WithTimeout(ctx, 5*time.Second)
-	users, err := ale.userDAO.ListByTags(dCtx, eOut.Device.OrgId, a.UserTags)
+	users, err := ale.userDAO.ListByTags(dCtx, eOut.GetDevice().GetOrgId(), a.GetUserTags())
 	cancel()
 	if err != nil {
 		metric.Incr("error", map[string]string{"func": "listbytags"})
@@ -121,8 +121,8 @@ func (ale *Alerter) evalAlarms(
 	}
 
 	// Generate alert subject and body.
-	subj, err := template.Generate(eOut.Point, eOut.Rule, eOut.Device,
-		a.SubjectTemplate)
+	subj, err := template.Generate(eOut.GetPoint(), eOut.GetRule(), eOut.GetDevice(),
+		a.GetSubjectTemplate())
 	if err != nil {
 		metric.Incr("error", map[string]string{"func": "gensubject"})
 		logger.Errorf("alertMessages subject template.Generate: %v", err)
@@ -130,8 +130,8 @@ func (ale *Alerter) evalAlarms(
 		return
 	}
 
-	body, err := template.Generate(eOut.Point, eOut.Rule, eOut.Device,
-		a.BodyTemplate)
+	body, err := template.Generate(eOut.GetPoint(), eOut.GetRule(), eOut.GetDevice(),
+		a.GetBodyTemplate())
 	if err != nil {
 		metric.Incr("error", map[string]string{"func": "genbody"})
 		logger.Errorf("alertMessages body template.Generate: %v", err)
@@ -142,10 +142,10 @@ func (ale *Alerter) evalAlarms(
 	// Process alerts.
 	for _, user := range users {
 		// Check cache for existing repeat interval.
-		key := repeatKey(eOut.Device.OrgId, eOut.Device.Id, a.Id, user.Id)
+		key := repeatKey(eOut.GetDevice().GetOrgId(), eOut.GetDevice().GetId(), a.GetId(), user.GetId())
 		cCtx, cancel := context.WithTimeout(ctx, 5*time.Second)
 		ok, err := ale.cache.SetIfNotExistTTL(cCtx, key, 1,
-			time.Duration(a.RepeatInterval)*time.Minute)
+			time.Duration(a.GetRepeatInterval())*time.Minute)
 		cancel()
 		if err != nil {
 			metric.Incr("error", map[string]string{"func": "setifnotexist"})
@@ -161,13 +161,13 @@ func (ale *Alerter) evalAlarms(
 
 		// Send alert.
 		nCtx, cancel := context.WithTimeout(ctx, time.Minute)
-		switch a.Type {
+		switch a.GetType() {
 		case api.AlarmType_APP:
-			err = ale.notify.App(nCtx, user.AppKey, subj, body)
+			err = ale.notify.App(nCtx, user.GetAppKey(), subj, body)
 		case api.AlarmType_SMS:
-			err = ale.notify.SMS(nCtx, user.Phone, subj, body)
+			err = ale.notify.SMS(nCtx, user.GetPhone(), subj, body)
 		case api.AlarmType_EMAIL:
-			err = ale.notify.Email(nCtx, org.DisplayName, org.Email, user.Email,
+			err = ale.notify.Email(nCtx, org.GetDisplayName(), org.GetEmail(), user.GetEmail(),
 				subj, body)
 		case api.AlarmType_ALARM_TYPE_UNSPECIFIED:
 			fallthrough
@@ -177,11 +177,11 @@ func (ale *Alerter) evalAlarms(
 		cancel()
 
 		alert := &api.Alert{
-			OrgId:   eOut.Device.OrgId,
-			UniqId:  eOut.Device.UniqId,
-			AlarmId: a.Id,
-			UserId:  user.Id,
-			TraceId: eOut.Point.TraceId,
+			OrgId:   eOut.GetDevice().GetOrgId(),
+			UniqId:  eOut.GetDevice().GetUniqId(),
+			AlarmId: a.GetId(),
+			UserId:  user.GetId(),
+			TraceId: eOut.GetPoint().GetTraceId(),
 		}
 
 		if err != nil {
@@ -193,7 +193,7 @@ func (ale *Alerter) evalAlarms(
 		} else {
 			alert.Status = api.AlertStatus_SENT
 			metric.Incr("sent", map[string]string{
-				"type": a.Type.String(),
+				"type": a.GetType().String(),
 			})
 			logger.Debugf("alertMessages sent user, msg: %+v, %v", user,
 				subj+" - "+body)

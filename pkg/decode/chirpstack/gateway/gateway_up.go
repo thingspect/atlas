@@ -23,25 +23,25 @@ func gatewayUp(body []byte) ([]*decode.Point, error) {
 		protojson.MarshalOptions{}.Format(upMsg), " ", "")}}
 
 	// Parse UplinkTXInfo.
-	if upMsg.TxInfo != nil {
-		if upMsg.TxInfo.Frequency != 0 {
+	if upMsg.GetTxInfo() != nil {
+		if upMsg.GetTxInfo().GetFrequency() != 0 {
 			msgs = append(msgs, &decode.Point{
-				Attr: "frequency", Value: int32(upMsg.TxInfo.Frequency),
+				Attr: "frequency", Value: int32(upMsg.GetTxInfo().GetFrequency()),
 			})
 		}
 
-		if upMsg.TxInfo.Modulation != nil {
-			mod := upMsg.TxInfo.Modulation.GetLora()
-			if mod != nil && mod.SpreadingFactor != 0 {
+		if upMsg.GetTxInfo().GetModulation() != nil {
+			mod := upMsg.GetTxInfo().GetModulation().GetLora()
+			if mod.GetSpreadingFactor() != 0 {
 				msgs = append(msgs, &decode.Point{
-					Attr: "sf", Value: int32(mod.SpreadingFactor),
+					Attr: "sf", Value: int32(mod.GetSpreadingFactor()),
 				})
 			}
 		}
 	}
 
 	// Parse UplinkRXInfo.
-	msgs = append(msgs, chirpstack.ParseRXInfo(upMsg.RxInfo)...)
+	msgs = append(msgs, chirpstack.ParseRXInfo(upMsg.GetRxInfo())...)
 
 	return msgs, nil
 }

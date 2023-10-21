@@ -19,22 +19,22 @@ func ParseRXInfo(rxInfo *gw.UplinkRxInfo) []*decode.Point {
 	}
 
 	// Preallocate at least as large of a slice as exists in rxInfo.Metadata.
-	msgs := make([]*decode.Point, 0, len(rxInfo.Metadata))
+	msgs := make([]*decode.Point, 0, len(rxInfo.GetMetadata()))
 
-	if rxInfo.Rssi != 0 {
+	if rxInfo.GetRssi() != 0 {
 		msgs = append(msgs, &decode.Point{
-			Attr: "lora_rssi", Value: rxInfo.Rssi,
+			Attr: "lora_rssi", Value: rxInfo.GetRssi(),
 		})
 	}
-	if rxInfo.Snr != 0 {
+	if rxInfo.GetSnr() != 0 {
 		msgs = append(msgs, &decode.Point{
-			Attr: "lora_snr", Value: float64(rxInfo.Snr),
+			Attr: "lora_snr", Value: float64(rxInfo.GetSnr()),
 		})
 	}
 	msgs = append(msgs, &decode.Point{
-		Attr: "channel", Value: int32(rxInfo.Channel),
+		Attr: "channel", Value: int32(rxInfo.GetChannel()),
 	})
-	for k, v := range rxInfo.Metadata {
+	for k, v := range rxInfo.GetMetadata() {
 		msgs = append(msgs, &decode.Point{Attr: k, Value: v})
 	}
 
@@ -55,25 +55,25 @@ func ParseRXInfos(rxInfos []*gw.UplinkRxInfo) (
 
 	// Sort rxInfos by strongest RSSI.
 	sort.Slice(rxInfos, func(i, j int) bool {
-		return rxInfos[i].Rssi > rxInfos[j].Rssi
+		return rxInfos[i].GetRssi() > rxInfos[j].GetRssi()
 	})
 
-	if rxInfos[0].GatewayId != "" {
+	if rxInfos[0].GetGatewayId() != "" {
 		msgs = append(msgs, &decode.Point{
-			Attr: "gateway_id", Value: rxInfos[0].GatewayId,
+			Attr: "gateway_id", Value: rxInfos[0].GetGatewayId(),
 		})
 	}
 
 	// Populate time channel if it is provided by the gateway. Use it as msgTime
 	// if it is accurate.
-	if rxInfos[0].Time != nil {
+	if rxInfos[0].GetTime() != nil {
 		msgs = append(msgs, &decode.Point{
-			Attr: "time", Value: strconv.FormatInt(rxInfos[0].Time.Seconds, 10),
+			Attr: "time", Value: strconv.FormatInt(rxInfos[0].GetTime().GetSeconds(), 10),
 		})
 
-		ts := rxInfos[0].Time.AsTime()
+		ts := rxInfos[0].GetTime().AsTime()
 		if ts.Before(msgTime.AsTime()) && time.Since(ts) < decode.ValidWindow {
-			msgTime = rxInfos[0].Time
+			msgTime = rxInfos[0].GetTime()
 		}
 	}
 

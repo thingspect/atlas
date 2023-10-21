@@ -49,7 +49,7 @@ func TestPublishDataPoints(t *testing.T) {
 			t.Logf("vIn: %+v", vIn)
 
 			// Normalize generated trace ID.
-			point.TraceId = vIn.Point.TraceId
+			point.TraceId = vIn.GetPoint().GetTraceId()
 
 			// Testify does not currently support protobuf equality:
 			// https://github.com/stretchr/testify/issues/758
@@ -92,11 +92,11 @@ func TestPublishDataPoints(t *testing.T) {
 			t.Logf("vIn: %+v", vIn)
 
 			// Normalize generated trace ID.
-			point.TraceId = vIn.Point.TraceId
+			point.TraceId = vIn.GetPoint().GetTraceId()
 			// Normalize timestamp.
-			require.WithinDuration(t, time.Now(), vIn.Point.Ts.AsTime(),
+			require.WithinDuration(t, time.Now(), vIn.GetPoint().GetTs().AsTime(),
 				5*time.Second)
-			point.Ts = vIn.Point.Ts
+			point.Ts = vIn.GetPoint().GetTs()
 
 			// Testify does not currently support protobuf equality:
 			// https://github.com/stretchr/testify/issues/758
@@ -171,34 +171,34 @@ func TestListDataPoints(t *testing.T) {
 
 		points := []*common.DataPoint{
 			{
-				UniqId: createDev.UniqId, Attr: "count",
+				UniqId: createDev.GetUniqId(), Attr: "count",
 				ValOneof: &common.DataPoint_IntVal{IntVal: 123},
 				TraceId:  uuid.NewString(),
 			},
 			{
-				UniqId: createDev.UniqId, Attr: "temp_c",
+				UniqId: createDev.GetUniqId(), Attr: "temp_c",
 				ValOneof: &common.DataPoint_Fl64Val{Fl64Val: 9.3},
 				TraceId:  uuid.NewString(),
 			},
 			{
-				UniqId: createDev.UniqId, Attr: "power",
+				UniqId: createDev.GetUniqId(), Attr: "power",
 				ValOneof: &common.DataPoint_StrVal{StrVal: "line"},
 				TraceId:  uuid.NewString(),
 			},
 			{
-				UniqId: createDev.UniqId, Attr: "leak",
+				UniqId: createDev.GetUniqId(), Attr: "leak",
 				ValOneof: &common.DataPoint_BoolVal{BoolVal: []bool{
 					true, false,
 				}[random.Intn(2)]}, TraceId: uuid.NewString(),
 			},
 			{
-				UniqId: createDev.UniqId, Attr: "raw",
+				UniqId: createDev.GetUniqId(), Attr: "raw",
 				ValOneof: &common.DataPoint_BytesVal{
 					BytesVal: random.Bytes(10),
 				}, TraceId: uuid.NewString(),
 			},
 			{
-				UniqId: createDev.UniqId, Attr: "count",
+				UniqId: createDev.GetUniqId(), Attr: "count",
 				ValOneof: &common.DataPoint_IntVal{IntVal: 321},
 				TraceId:  uuid.NewString(),
 			},
@@ -221,7 +221,7 @@ func TestListDataPoints(t *testing.T) {
 
 		// Flip points to descending timestamp order.
 		sort.Slice(points, func(i, j int) bool {
-			return points[i].Ts.AsTime().After(points[j].Ts.AsTime())
+			return points[i].GetTs().AsTime().After(points[j].GetTs().AsTime())
 		})
 
 		ctx, cancel = context.WithTimeout(context.Background(), testTimeout)
@@ -232,14 +232,14 @@ func TestListDataPoints(t *testing.T) {
 		listPointsUniqID, err := dpCli.ListDataPoints(ctx,
 			&api.ListDataPointsRequest{
 				IdOneof: &api.ListDataPointsRequest_UniqId{
-					UniqId: createDev.UniqId,
-				}, EndTime: points[0].Ts,
-				StartTime: timestamppb.New(points[len(points)-1].Ts.AsTime().
+					UniqId: createDev.GetUniqId(),
+				}, EndTime: points[0].GetTs(),
+				StartTime: timestamppb.New(points[len(points)-1].GetTs().AsTime().
 					Add(-time.Millisecond)),
 			})
 		t.Logf("listPointsUniqID, err: %+v, %v", listPointsUniqID, err)
 		require.NoError(t, err)
-		require.Len(t, listPointsUniqID.Points, len(points))
+		require.Len(t, listPointsUniqID.GetPoints(), len(points))
 
 		// Testify does not currently support protobuf equality:
 		// https://github.com/stretchr/testify/issues/758
@@ -253,12 +253,12 @@ func TestListDataPoints(t *testing.T) {
 		listPointsDevID, err := dpCli.ListDataPoints(ctx,
 			&api.ListDataPointsRequest{
 				IdOneof: &api.ListDataPointsRequest_DeviceId{
-					DeviceId: createDev.Id,
-				}, StartTime: points[len(points)-1].Ts,
+					DeviceId: createDev.GetId(),
+				}, StartTime: points[len(points)-1].GetTs(),
 			})
 		t.Logf("listPointsDevID, err: %+v, %v", listPointsDevID, err)
 		require.NoError(t, err)
-		require.Len(t, listPointsDevID.Points, len(points)-1)
+		require.Len(t, listPointsDevID.GetPoints(), len(points)-1)
 
 		// Testify does not currently support protobuf equality:
 		// https://github.com/stretchr/testify/issues/758
@@ -274,23 +274,23 @@ func TestListDataPoints(t *testing.T) {
 		listPointsUniqID, err = dpCli.ListDataPoints(ctx,
 			&api.ListDataPointsRequest{
 				IdOneof: &api.ListDataPointsRequest_UniqId{
-					UniqId: createDev.UniqId,
+					UniqId: createDev.GetUniqId(),
 				}, Attr: "count",
-				StartTime: timestamppb.New(points[len(points)-1].Ts.AsTime().
+				StartTime: timestamppb.New(points[len(points)-1].GetTs().AsTime().
 					Add(-time.Millisecond)),
 			})
 		t.Logf("listPointsUniqID, err: %+v, %v", listPointsUniqID, err)
 		require.NoError(t, err)
-		require.Len(t, listPointsUniqID.Points, 2)
+		require.Len(t, listPointsUniqID.GetPoints(), 2)
 
 		// Testify does not currently support protobuf equality:
 		// https://github.com/stretchr/testify/issues/758
 		mcount := 0
 		for _, point := range points {
-			if point.Attr == "count" {
-				if !proto.Equal(point, listPointsUniqID.Points[mcount]) {
+			if point.GetAttr() == "count" {
+				if !proto.Equal(point, listPointsUniqID.GetPoints()[mcount]) {
 					t.Fatalf("\nExpect: %+v\nActual: %+v", point,
-						listPointsUniqID.Points[mcount])
+						listPointsUniqID.GetPoints()[mcount])
 				}
 				mcount++
 			}
@@ -313,17 +313,17 @@ func TestListDataPoints(t *testing.T) {
 		t.Logf("createOrg, err: %+v, %v", createOrg, err)
 		require.NoError(t, err)
 
-		err = globalDPDAO.Create(ctx, point, createOrg.Id)
+		err = globalDPDAO.Create(ctx, point, createOrg.GetId())
 		t.Logf("err: %#v", err)
 		require.NoError(t, err)
 
 		dpCli := api.NewDataPointServiceClient(globalAdminGRPCConn)
 		listPoints, err := dpCli.ListDataPoints(ctx, &api.ListDataPointsRequest{
-			IdOneof: &api.ListDataPointsRequest_UniqId{UniqId: point.UniqId},
+			IdOneof: &api.ListDataPointsRequest_UniqId{UniqId: point.GetUniqId()},
 		})
 		t.Logf("listPoints, err: %+v, %v", listPoints, err)
 		require.NoError(t, err)
-		require.Len(t, listPoints.Points, 0)
+		require.Len(t, listPoints.GetPoints(), 0)
 	})
 
 	t.Run("List data points by invalid time range", func(t *testing.T) {
@@ -386,28 +386,28 @@ func TestLatestDataPoints(t *testing.T) {
 		// The first point intentionally sorts first by attribute.
 		points := []*common.DataPoint{
 			{
-				UniqId: createDev.UniqId, Attr: "count",
+				UniqId: createDev.GetUniqId(), Attr: "count",
 				ValOneof: &common.DataPoint_IntVal{IntVal: 123},
 				TraceId:  uuid.NewString(),
 			},
 			{
-				UniqId: createDev.UniqId, Attr: "temp_c",
+				UniqId: createDev.GetUniqId(), Attr: "temp_c",
 				ValOneof: &common.DataPoint_Fl64Val{Fl64Val: 9.3},
 				TraceId:  uuid.NewString(),
 			},
 			{
-				UniqId: createDev.UniqId, Attr: "power",
+				UniqId: createDev.GetUniqId(), Attr: "power",
 				ValOneof: &common.DataPoint_StrVal{StrVal: "line"},
 				TraceId:  uuid.NewString(),
 			},
 			{
-				UniqId: createDev.UniqId, Attr: "leak",
+				UniqId: createDev.GetUniqId(), Attr: "leak",
 				ValOneof: &common.DataPoint_BoolVal{BoolVal: []bool{
 					true, false,
 				}[random.Intn(2)]}, TraceId: uuid.NewString(),
 			},
 			{
-				UniqId: createDev.UniqId, Attr: "raw",
+				UniqId: createDev.GetUniqId(), Attr: "raw",
 				ValOneof: &common.DataPoint_BytesVal{
 					BytesVal: random.Bytes(10),
 				}, TraceId: uuid.NewString(),
@@ -437,7 +437,7 @@ func TestLatestDataPoints(t *testing.T) {
 		}
 
 		sort.Slice(points, func(i, j int) bool {
-			return points[i].Attr < points[j].Attr
+			return points[i].GetAttr() < points[j].GetAttr()
 		})
 
 		ctx, cancel = context.WithTimeout(context.Background(), testTimeout)
@@ -448,12 +448,12 @@ func TestLatestDataPoints(t *testing.T) {
 		latPointsUniqID, err := dpCli.LatestDataPoints(ctx,
 			&api.LatestDataPointsRequest{
 				IdOneof: &api.LatestDataPointsRequest_UniqId{
-					UniqId: createDev.UniqId,
+					UniqId: createDev.GetUniqId(),
 				},
 			})
 		t.Logf("latPointsUniqID, err: %+v, %v", latPointsUniqID, err)
 		require.NoError(t, err)
-		require.Len(t, latPointsUniqID.Points, len(points))
+		require.Len(t, latPointsUniqID.GetPoints(), len(points))
 
 		// Testify does not currently support protobuf equality:
 		// https://github.com/stretchr/testify/issues/758
@@ -467,12 +467,12 @@ func TestLatestDataPoints(t *testing.T) {
 		latPointsDevID, err := dpCli.LatestDataPoints(ctx,
 			&api.LatestDataPointsRequest{
 				IdOneof: &api.LatestDataPointsRequest_DeviceId{
-					DeviceId: createDev.Id,
+					DeviceId: createDev.GetId(),
 				}, StartTime: dpStart,
 			})
 		t.Logf("latPointsDevID, err: %+v, %v", latPointsDevID, err)
 		require.NoError(t, err)
-		require.Len(t, latPointsDevID.Points, len(points)-1)
+		require.Len(t, latPointsDevID.GetPoints(), len(points)-1)
 
 		// Testify does not currently support protobuf equality:
 		// https://github.com/stretchr/testify/issues/758
@@ -499,7 +499,7 @@ func TestLatestDataPoints(t *testing.T) {
 		t.Logf("createOrg, err: %+v, %v", createOrg, err)
 		require.NoError(t, err)
 
-		err = globalDPDAO.Create(ctx, point, createOrg.Id)
+		err = globalDPDAO.Create(ctx, point, createOrg.GetId())
 		t.Logf("err: %#v", err)
 		require.NoError(t, err)
 
@@ -507,12 +507,12 @@ func TestLatestDataPoints(t *testing.T) {
 		latPoints, err := dpCli.LatestDataPoints(ctx,
 			&api.LatestDataPointsRequest{
 				IdOneof: &api.LatestDataPointsRequest_UniqId{
-					UniqId: point.UniqId,
+					UniqId: point.GetUniqId(),
 				},
 			})
 		t.Logf("latPoints, err: %+v, %v", latPoints, err)
 		require.NoError(t, err)
-		require.Len(t, latPoints.Points, 0)
+		require.Len(t, latPoints.GetPoints(), 0)
 	})
 
 	t.Run("Latest data points by invalid time range", func(t *testing.T) {

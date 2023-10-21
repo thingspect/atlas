@@ -188,10 +188,10 @@ func TestValidateWebToken(t *testing.T) {
 			}
 			t.Logf("resVal, err: %+v, %v", resVal, err)
 			if resVal != nil {
-				require.Equal(t, user.Id, resVal.UserID)
+				require.Equal(t, user.GetId(), resVal.UserID)
 				require.Empty(t, resVal.KeyID)
-				require.Equal(t, user.OrgId, resVal.OrgID)
-				require.Equal(t, user.Role, resVal.Role)
+				require.Equal(t, user.GetOrgId(), resVal.OrgID)
+				require.Equal(t, user.GetRole(), resVal.Role)
 				require.NotEmpty(t, resVal.TraceID)
 			}
 			if lTest.err == "" {
@@ -242,8 +242,8 @@ func TestValidateKeyToken(t *testing.T) {
 			keyID := uuid.NewString()
 			user := random.User("keytoken", uuid.NewString())
 
-			resGen, err := GenerateKeyToken(lTest.inpKey, keyID, user.OrgId,
-				user.Role)
+			resGen, err := GenerateKeyToken(lTest.inpKey, keyID, user.GetOrgId(),
+				user.GetRole())
 			t.Logf("resGen, err: %v, %v", resGen, err)
 			require.NoError(t, err)
 
@@ -258,8 +258,8 @@ func TestValidateKeyToken(t *testing.T) {
 			if resVal != nil {
 				require.Empty(t, resVal.UserID)
 				require.Equal(t, keyID, resVal.KeyID)
-				require.Equal(t, user.OrgId, resVal.OrgID)
-				require.Equal(t, user.Role, resVal.Role)
+				require.Equal(t, user.GetOrgId(), resVal.OrgID)
+				require.Equal(t, user.GetRole(), resVal.Role)
 				require.NotEmpty(t, resVal.TraceID)
 			}
 			if lTest.err == "" {

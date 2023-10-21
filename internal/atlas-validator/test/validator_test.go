@@ -34,7 +34,7 @@ func TestValidateMessages(t *testing.T) {
 	t.Logf("createOrg, err: %+v, %v", createOrg, err)
 	require.NoError(t, err)
 
-	dev := random.Device("val", createOrg.Id)
+	dev := random.Device("val", createOrg.GetId())
 	dev.Status = api.Status_ACTIVE
 	createDev, err := globalDevDAO.Create(ctx, dev)
 	t.Logf("createDev, err: %+v, %v", createDev, err)
@@ -47,57 +47,57 @@ func TestValidateMessages(t *testing.T) {
 		{
 			&message.ValidatorIn{
 				Point: &common.DataPoint{
-					UniqId: createDev.UniqId, Attr: "val-motion",
+					UniqId: createDev.GetUniqId(), Attr: "val-motion",
 					ValOneof: &common.DataPoint_IntVal{IntVal: 123}, Ts: now,
-					Token: createDev.Token, TraceId: traceID,
-				}, OrgId: createOrg.Id,
+					Token: createDev.GetToken(), TraceId: traceID,
+				}, OrgId: createOrg.GetId(),
 			}, &message.ValidatorOut{
 				Point: &common.DataPoint{
-					UniqId: createDev.UniqId, Attr: "val-motion",
+					UniqId: createDev.GetUniqId(), Attr: "val-motion",
 					ValOneof: &common.DataPoint_IntVal{IntVal: 123}, Ts: now,
-					Token: createDev.Token, TraceId: traceID,
+					Token: createDev.GetToken(), TraceId: traceID,
 				}, Device: dev,
 			},
 		},
 		{
 			&message.ValidatorIn{
 				Point: &common.DataPoint{
-					UniqId: createDev.UniqId, Attr: "val-temp",
+					UniqId: createDev.GetUniqId(), Attr: "val-temp",
 					ValOneof: &common.DataPoint_Fl64Val{Fl64Val: 9.3}, Ts: now,
-					Token: createDev.Token, TraceId: traceID,
-				}, OrgId: createOrg.Id,
+					Token: createDev.GetToken(), TraceId: traceID,
+				}, OrgId: createOrg.GetId(),
 			}, &message.ValidatorOut{
 				Point: &common.DataPoint{
-					UniqId: createDev.UniqId, Attr: "val-temp",
+					UniqId: createDev.GetUniqId(), Attr: "val-temp",
 					ValOneof: &common.DataPoint_Fl64Val{Fl64Val: 9.3}, Ts: now,
-					Token: createDev.Token, TraceId: traceID,
+					Token: createDev.GetToken(), TraceId: traceID,
 				}, Device: dev,
 			},
 		},
 		{
 			&message.ValidatorIn{
 				Point: &common.DataPoint{
-					UniqId: createDev.UniqId, Attr: "val-power",
+					UniqId: createDev.GetUniqId(), Attr: "val-power",
 					ValOneof: &common.DataPoint_StrVal{StrVal: "line"}, Ts: now,
-					Token: createDev.Token, TraceId: traceID,
-				}, OrgId: createOrg.Id,
+					Token: createDev.GetToken(), TraceId: traceID,
+				}, OrgId: createOrg.GetId(),
 			}, &message.ValidatorOut{
 				Point: &common.DataPoint{
-					UniqId: createDev.UniqId, Attr: "val-power",
+					UniqId: createDev.GetUniqId(), Attr: "val-power",
 					ValOneof: &common.DataPoint_StrVal{StrVal: "line"}, Ts: now,
-					Token: createDev.Token, TraceId: traceID,
+					Token: createDev.GetToken(), TraceId: traceID,
 				}, Device: dev,
 			},
 		},
 		{
 			&message.ValidatorIn{
 				Point: &common.DataPoint{
-					UniqId: createDev.UniqId, Attr: "val-leak",
+					UniqId: createDev.GetUniqId(), Attr: "val-leak",
 					ValOneof: boolVal, Ts: now, TraceId: traceID,
-				}, OrgId: createOrg.Id, SkipToken: true,
+				}, OrgId: createOrg.GetId(), SkipToken: true,
 			}, &message.ValidatorOut{
 				Point: &common.DataPoint{
-					UniqId: createDev.UniqId, Attr: "val-leak",
+					UniqId: createDev.GetUniqId(), Attr: "val-leak",
 					ValOneof: boolVal, Ts: now, TraceId: traceID,
 				}, Device: dev,
 			},
@@ -105,12 +105,12 @@ func TestValidateMessages(t *testing.T) {
 		{
 			&message.ValidatorIn{
 				Point: &common.DataPoint{
-					UniqId: createDev.UniqId, Attr: "val-leak",
+					UniqId: createDev.GetUniqId(), Attr: "val-leak",
 					ValOneof: boolVal, Ts: now, TraceId: traceID,
 				}, SkipToken: true,
 			}, &message.ValidatorOut{
 				Point: &common.DataPoint{
-					UniqId: createDev.UniqId, Attr: "val-leak",
+					UniqId: createDev.GetUniqId(), Attr: "val-leak",
 					ValOneof: boolVal, Ts: now, TraceId: traceID,
 				}, Device: dev,
 			},
@@ -158,13 +158,13 @@ func TestValidateMessagesError(t *testing.T) {
 	t.Logf("createOrg, err: %+v, %v", createOrg, err)
 	require.NoError(t, err)
 
-	dev := random.Device("val", createOrg.Id)
+	dev := random.Device("val", createOrg.GetId())
 	dev.Status = api.Status_ACTIVE
 	createDev, err := globalDevDAO.Create(ctx, dev)
 	t.Logf("createDev, err: %+v, %v", createDev, err)
 	require.NoError(t, err)
 
-	disDev := random.Device("val", createOrg.Id)
+	disDev := random.Device("val", createOrg.GetId())
 	disDev.Status = api.Status_DISABLED
 	createDisDev, err := globalDevDAO.Create(ctx, disDev)
 	t.Logf("createDisDev, err: %+v, %v", createDisDev, err)
@@ -185,7 +185,7 @@ func TestValidateMessagesError(t *testing.T) {
 		{
 			&message.ValidatorIn{
 				Point: &common.DataPoint{
-					UniqId: createDev.UniqId, Attr: random.String(10),
+					UniqId: createDev.GetUniqId(), Attr: random.String(10),
 				},
 			},
 		},
@@ -193,7 +193,7 @@ func TestValidateMessagesError(t *testing.T) {
 		{
 			&message.ValidatorIn{
 				Point: &common.DataPoint{
-					UniqId: createDev.UniqId, Attr: random.String(10),
+					UniqId: createDev.GetUniqId(), Attr: random.String(10),
 					ValOneof: &common.DataPoint_IntVal{},
 				}, OrgId: "val-aaa",
 			},
@@ -202,18 +202,18 @@ func TestValidateMessagesError(t *testing.T) {
 		{
 			&message.ValidatorIn{
 				Point: &common.DataPoint{
-					UniqId: createDisDev.UniqId, Attr: random.String(10),
+					UniqId: createDisDev.GetUniqId(), Attr: random.String(10),
 					ValOneof: &common.DataPoint_IntVal{},
-				}, OrgId: createOrg.Id, SkipToken: true,
+				}, OrgId: createOrg.GetId(), SkipToken: true,
 			},
 		},
 		// Invalid token.
 		{
 			&message.ValidatorIn{
 				Point: &common.DataPoint{
-					UniqId: createDev.UniqId, Attr: random.String(10),
+					UniqId: createDev.GetUniqId(), Attr: random.String(10),
 					ValOneof: &common.DataPoint_IntVal{}, Token: "val-aaa",
-				}, OrgId: createOrg.Id,
+				}, OrgId: createOrg.GetId(),
 			},
 		},
 	}
