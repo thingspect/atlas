@@ -423,7 +423,7 @@ func TestListKeys(t *testing.T) {
 		})
 		t.Logf("nextKeys, err: %+v, %v", nextKeys, err)
 		require.NoError(t, err)
-		require.GreaterOrEqual(t, len(nextKeys.GetKeys()), 1)
+		require.NotEmpty(t, nextKeys.GetKeys())
 		require.GreaterOrEqual(t, nextKeys.GetTotalSize(), int32(3))
 	})
 

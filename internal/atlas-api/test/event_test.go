@@ -140,7 +140,7 @@ func TestListEvents(t *testing.T) {
 		})
 		t.Logf("listEvents, err: %+v, %v", listEvents, err)
 		require.NoError(t, err)
-		require.Len(t, listEvents.GetEvents(), 0)
+		require.Empty(t, listEvents.GetEvents())
 	})
 
 	t.Run("List events by invalid time range", func(t *testing.T) {
@@ -267,7 +267,7 @@ func TestLatestEvents(t *testing.T) {
 		latEvents, err := evCli.LatestEvents(ctx, &api.LatestEventsRequest{})
 		t.Logf("latEvents, err: %+v, %v", latEvents, err)
 		require.NoError(t, err)
-		require.Len(t, latEvents.GetEvents(), 0)
+		require.Empty(t, latEvents.GetEvents())
 	})
 
 	t.Run("Latest events by invalid rule ID", func(t *testing.T) {

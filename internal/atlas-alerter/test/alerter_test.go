@@ -348,7 +348,7 @@ func TestAlertMessagesError(t *testing.T) {
 					t.Fatalf("\nExpect: %+v\nActual: %+v", alert, listAlerts[0])
 				}
 			} else {
-				require.Len(t, listAlerts, 0)
+				require.Empty(t, listAlerts)
 			}
 		})
 	}

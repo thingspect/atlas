@@ -195,7 +195,7 @@ func TestList(t *testing.T) {
 			alert.GetCreatedAt().AsTime().Add(-time.Millisecond))
 		t.Logf("listAlerts, err: %+v, %v", listAlerts, err)
 		require.NoError(t, err)
-		require.Len(t, listAlerts, 0)
+		require.Empty(t, listAlerts)
 	})
 
 	t.Run("List alerts by invalid org ID", func(t *testing.T) {

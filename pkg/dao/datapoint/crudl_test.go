@@ -319,7 +319,7 @@ func TestList(t *testing.T) {
 			point.GetTs().AsTime().Add(-time.Millisecond))
 		t.Logf("listPoints, err: %+v, %v", listPoints, err)
 		require.NoError(t, err)
-		require.Len(t, listPoints, 0)
+		require.Empty(t, listPoints)
 	})
 
 	t.Run("List data points by invalid org ID", func(t *testing.T) {
@@ -473,7 +473,7 @@ func TestLatest(t *testing.T) {
 			point.GetUniqId(), "", time.Now().UTC().Add(-15*time.Minute))
 		t.Logf("latPoints, err: %+v, %v", latPoints, err)
 		require.NoError(t, err)
-		require.Len(t, latPoints, 0)
+		require.Empty(t, latPoints)
 	})
 
 	t.Run("Latest data points by invalid dev ID", func(t *testing.T) {

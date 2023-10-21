@@ -205,5 +205,5 @@ func TestAccumulateMessagesError(t *testing.T) {
 		invalidVOut.GetPoint().GetTs().AsTime().Add(-time.Millisecond))
 	t.Logf("listPoints, err: %+v, %v", listPoints, err)
 	require.NoError(t, err)
-	require.Len(t, listPoints, 0)
+	require.Empty(t, listPoints)
 }

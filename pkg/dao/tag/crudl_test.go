@@ -110,7 +110,7 @@ func TestList(t *testing.T) {
 		listTags, err := globalTagDAO.List(ctx, uuid.NewString())
 		t.Logf("listTags, err: %+v, %v", listTags, err)
 		require.NoError(t, err)
-		require.Len(t, listTags, 0)
+		require.Empty(t, listTags)
 	})
 
 	t.Run("List tags by invalid org ID", func(t *testing.T) {

@@ -602,7 +602,7 @@ func TestList(t *testing.T) {
 		t.Logf("listUsers, listCount, err: %+v, %v, %v", listUsers, listCount,
 			err)
 		require.NoError(t, err)
-		require.Len(t, listUsers, 0)
+		require.Empty(t, listUsers)
 		require.Equal(t, int32(0), listCount)
 	})
 
@@ -697,7 +697,7 @@ func TestListByTags(t *testing.T) {
 			userTags[len(userTags)-1])
 		t.Logf("listUsers, err: %+v, %v", listUsers, err)
 		require.NoError(t, err)
-		require.Len(t, listUsers, 0)
+		require.Empty(t, listUsers)
 	})
 
 	t.Run("List users by invalid org ID", func(t *testing.T) {

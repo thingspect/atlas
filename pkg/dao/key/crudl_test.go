@@ -297,7 +297,7 @@ func TestList(t *testing.T) {
 		t.Logf("listKeys, listCount, err: %+v, %v, %v", listKeys, listCount,
 			err)
 		require.NoError(t, err)
-		require.Len(t, listKeys, 0)
+		require.Empty(t, listKeys)
 		require.Equal(t, int32(0), listCount)
 	})
 

@@ -793,7 +793,7 @@ func TestListDevices(t *testing.T) {
 		})
 		t.Logf("nextDevs, err: %+v, %v", nextDevs, err)
 		require.NoError(t, err)
-		require.GreaterOrEqual(t, len(nextDevs.GetDevices()), 1)
+		require.NotEmpty(t, nextDevs.GetDevices())
 		require.GreaterOrEqual(t, nextDevs.GetTotalSize(), int32(3))
 	})
 
@@ -830,7 +830,7 @@ func TestListDevices(t *testing.T) {
 		listDevs, err := secCli.ListDevices(ctx, &api.ListDevicesRequest{})
 		t.Logf("listDevs, err: %+v, %v", listDevs, err)
 		require.NoError(t, err)
-		require.Len(t, listDevs.GetDevices(), 0)
+		require.Empty(t, listDevs.GetDevices())
 		require.Equal(t, int32(0), listDevs.GetTotalSize())
 	})
 

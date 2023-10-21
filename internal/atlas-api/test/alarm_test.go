@@ -732,7 +732,7 @@ func TestListAlarms(t *testing.T) {
 		})
 		t.Logf("nextAlarms, err: %+v, %v", nextAlarms, err)
 		require.NoError(t, err)
-		require.GreaterOrEqual(t, len(nextAlarms.GetAlarms()), 1)
+		require.NotEmpty(t, nextAlarms.GetAlarms())
 		require.GreaterOrEqual(t, nextAlarms.GetTotalSize(), int32(3))
 	})
 
@@ -771,7 +771,7 @@ func TestListAlarms(t *testing.T) {
 		listAlarms, err := secCli.ListAlarms(ctx, &api.ListAlarmsRequest{})
 		t.Logf("listAlarms, err: %+v, %v", listAlarms, err)
 		require.NoError(t, err)
-		require.Len(t, listAlarms.GetAlarms(), 0)
+		require.Empty(t, listAlarms.GetAlarms())
 		require.Equal(t, int32(0), listAlarms.GetTotalSize())
 	})
 
