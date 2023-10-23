@@ -4,6 +4,7 @@ package globalsat
 
 import (
 	"fmt"
+	"math"
 	"testing"
 
 	"github.com/stretchr/testify/require"
@@ -11,6 +12,8 @@ import (
 
 func TestCToF(t *testing.T) {
 	t.Parallel()
+
+	epsilon := math.Nextafter(1, 2) - 1
 
 	tests := []struct {
 		inp float64
@@ -29,7 +32,7 @@ func TestCToF(t *testing.T) {
 
 			res := cToF(lTest.inp)
 			t.Logf("res: %v", res)
-			require.Equal(t, lTest.res, res)
+			require.InDelta(t, lTest.res, res, epsilon)
 		})
 	}
 }

@@ -28,7 +28,7 @@ func TestOrg(t *testing.T) {
 
 			require.Equal(t, errStr, err.Error())
 			// Errors should compare exactly without reflection.
-			require.True(t, err == Error(errStr))
+			require.True(t, err == Error(errStr)) //nolint:testifylint // above
 
 			wrapErr := fmt.Errorf("%w: %s", err, random.String(10))
 			t.Logf("wrapErr: %v", wrapErr)
