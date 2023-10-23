@@ -52,8 +52,8 @@ func TestDecodeMessages(t *testing.T) {
 	}{
 		{
 			&message.DecoderIn{
-				UniqId: doorDev.GetUniqId(), Data: []byte{0x19, 0x03, 0x01}, Ts: now,
-				TraceId: traceID[:],
+				UniqId: doorDev.GetUniqId(), Data: []byte{0x19, 0x03, 0x01},
+				Ts: now, TraceId: traceID[:],
 			}, []*message.ValidatorIn{
 				{
 					Point: &common.DataPoint{
@@ -72,8 +72,8 @@ func TestDecodeMessages(t *testing.T) {
 		},
 		{
 			&message.DecoderIn{
-				UniqId: doorDev.GetUniqId(), Data: []byte{0x1a, 0x03, 0x00}, Ts: now,
-				TraceId: traceID[:],
+				UniqId: doorDev.GetUniqId(), Data: []byte{0x1a, 0x03, 0x00},
+				Ts: now, TraceId: traceID[:],
 			}, []*message.ValidatorIn{
 				{
 					Point: &common.DataPoint{
@@ -142,6 +142,7 @@ func TestDecodeMessages(t *testing.T) {
 			// messages orphaned in the queue.
 			for _, res := range lTest.res {
 				select {
+				//nolint:testifylint // above
 				case msg := <-globalVInSub.C():
 					msg.Ack()
 					t.Logf("msg.Topic, msg.Payload: %v, %s", msg.Topic(),

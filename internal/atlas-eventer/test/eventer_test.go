@@ -118,6 +118,7 @@ func TestEventMessages(t *testing.T) {
 
 			// Don't stop the flow of execution (assert) to avoid leaving
 			// messages orphaned in the queue.
+			//nolint:testifylint
 			for _, res := range lTest.res {
 				t.Logf("DEBUG res: %+v", res)
 				select {
@@ -143,8 +144,9 @@ func TestEventMessages(t *testing.T) {
 				// Verify events by rule ID.
 				event := &api.Event{
 					OrgId: createOrg.GetId(), RuleId: res.GetRule().GetId(),
-					UniqId: lTest.inp.GetDevice().GetUniqId(), CreatedAt: timestamppb.New(
-						now.AsTime().Truncate(time.Millisecond)),
+					UniqId: lTest.inp.GetDevice().GetUniqId(),
+					CreatedAt: timestamppb.New(now.AsTime().Truncate(
+						time.Millisecond)),
 					TraceId: traceID,
 				}
 
@@ -153,8 +155,9 @@ func TestEventMessages(t *testing.T) {
 				defer cancel()
 
 				listEvents, err := globalEvDAO.List(ctx, createOrg.GetId(),
-					lTest.inp.GetDevice().GetUniqId(), "", res.GetRule().GetId(), now.AsTime(),
-					now.AsTime().Add(-time.Millisecond))
+					lTest.inp.GetDevice().GetUniqId(), "",
+					res.GetRule().GetId(), now.AsTime(), now.AsTime().Add(
+						-time.Millisecond))
 				t.Logf("listEvents, err: %+v, %v", listEvents, err)
 				assert.NoError(t, err)
 				assert.Len(t, listEvents, 1)
@@ -189,7 +192,8 @@ func TestEventMessagesError(t *testing.T) {
 	t.Logf("createOrg, err: %+v, %v", createOrg, err)
 	require.NoError(t, err)
 
-	createDev, err := globalDevDAO.Create(ctx, random.Device("ev", createOrg.GetId()))
+	createDev, err := globalDevDAO.Create(ctx, random.Device("ev",
+		createOrg.GetId()))
 	t.Logf("createDev, err: %+v, %v", createDev, err)
 	require.NoError(t, err)
 

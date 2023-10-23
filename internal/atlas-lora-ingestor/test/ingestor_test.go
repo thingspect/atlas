@@ -152,6 +152,7 @@ func TestDecodeGateways(t *testing.T) {
 			// messages orphaned in the queue.
 			for _, res := range lTest.res {
 				select {
+				//nolint:testifylint // above
 				case msg := <-globalVInGWSub.C():
 					msg.Ack()
 					t.Logf("GW msg.Topic, msg.Payload: %v, %s", msg.Topic(),
@@ -165,8 +166,8 @@ func TestDecodeGateways(t *testing.T) {
 					// Normalize generated trace ID.
 					res.Point.TraceId = vIn.GetPoint().GetTraceId()
 					// Normalize timestamp.
-					assert.WithinDuration(t, time.Now(), vIn.GetPoint().GetTs().AsTime(),
-						testTimeout)
+					assert.WithinDuration(t, time.Now(), vIn.GetPoint().GetTs().
+						AsTime(), testTimeout)
 					res.Point.Ts = vIn.GetPoint().GetTs()
 
 					// Testify does not currently support protobuf equality:
@@ -369,6 +370,7 @@ func TestDecodeDevices(t *testing.T) {
 			// messages orphaned in the queue.
 			for _, res := range lTest.resVIn {
 				select {
+				//nolint:testifylint // above
 				case msg := <-globalVInDevSub.C():
 					msg.Ack()
 					t.Logf("Dev msg.Topic, msg.Payload: %v, %s", msg.Topic(),
@@ -382,8 +384,8 @@ func TestDecodeDevices(t *testing.T) {
 					// Normalize generated trace ID.
 					res.Point.TraceId = vIn.GetPoint().GetTraceId()
 					// Normalize timestamp.
-					assert.WithinDuration(t, time.Now(), vIn.GetPoint().GetTs().AsTime(),
-						testTimeout)
+					assert.WithinDuration(t, time.Now(), vIn.GetPoint().GetTs().
+						AsTime(), testTimeout)
 					res.Point.Ts = vIn.GetPoint().GetTs()
 
 					// Testify does not currently support protobuf equality:
