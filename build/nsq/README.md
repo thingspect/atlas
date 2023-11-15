@@ -22,7 +22,7 @@ docker logout ghcr.io
 ## Usage
 
 ```
-docker run -it --env LOG_LEVEL=info ghcr.io/thingspect/nsqlookupd:v1.2.1
+docker run -it ghcr.io/thingspect/nsqlookupd:v1.2.1
 
-docker run -it --env LOOKUP_ADDR=nsqlookupd:4160 --env LOG_LEVEL=info ghcr.io/thingspect/nsqd:v1.2.1
+docker run -it --env LOOKUP_ADDR=nsqlookupd:4160 ghcr.io/thingspect/nsqd:v1.2.1
 ```

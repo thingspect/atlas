@@ -3,6 +3,7 @@ version: "3"
 services:
   postgres:
     image: postgres:16-alpine
+    shm_size: 128mb
     # command: postgres -c log_statement=all
     ports:
       - "127.0.0.1:5439:5432"
@@ -14,12 +15,11 @@ services:
 
   nsqlookupd:
     image: nsqio/nsq:v1.2.1
-    command: /nsqlookupd --log-level=warn
+    command: /nsqlookupd
 
   nsqd:
     image: nsqio/nsq:v1.2.1
-    command: /nsqd --lookupd-tcp-address=nsqlookupd:4160 --broadcast-address=nsqd --log-level=warn
-    restart: on-failure
+    command: /nsqd --lookupd-tcp-address=nsqlookupd:4160 --broadcast-address=nsqd
     depends_on:
       - nsqlookupd
     volumes:
@@ -27,8 +27,7 @@ services:
 
   nsqadmin:
     image: nsqio/nsq:v1.2.1
-    command: /nsqadmin --lookupd-http-address=nsqlookupd:4161 --log-level=warn
-    restart: on-failure
+    command: /nsqadmin --lookupd-http-address=nsqlookupd:4161
     depends_on:
       - nsqlookupd
     ports:
@@ -51,7 +50,6 @@ services:
   chirpstack:
     image: chirpstack/chirpstack:4
     command: -c /etc/chirpstack
-    restart: on-failure
     depends_on:
       - postgres
       - mqtt
