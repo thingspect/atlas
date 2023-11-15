@@ -11,20 +11,18 @@ services:
 
   nsqlookupd:
     image: nsqio/nsq:v1.2.1
-    command: /nsqlookupd --log-level=warn
+    command: /nsqlookupd
     ports:
       - "127.0.0.1:4161:4161"
 
   nsqd_nsqadmin:
     image: nsqio/nsq:v1.2.1
-    # Run nsqd and nsqadmin in the same container to support a broadcast address
-    # outside of Docker
+    # Run nsqd and nsqadmin in the same container to support nsqd-nsqadmin
+    # connectivity and clients outside of Docker without DNS manipulation
     command: >
-      sh -c '/nsqadmin --lookupd-http-address=nsqlookupd:4161 --log-level=warn &
-      /nsqd --lookupd-tcp-address=nsqlookupd:4160 --broadcast-address=127.0.0.1
-      --log-level=warn'
-    restart: on-failure
-    stop_grace_period: 1s
+      sh -c '/nsqd --lookupd-tcp-address=nsqlookupd:4160
+      --broadcast-address=127.0.0.1 &
+      /nsqadmin --lookupd-http-address=nsqlookupd:4161'
     depends_on:
       - nsqlookupd
     ports:
