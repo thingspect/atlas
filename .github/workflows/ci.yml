@@ -15,8 +15,6 @@ jobs:
         TEST_NSQ_PUB_ADDR: nsqd:4150
         TEST_NSQ_LOOKUP_ADDRS: nsqlookupd:4161
         TEST_MQTT_ADDR: tcp://mqtt:1883
-    env:
-      SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
     services:
       postgres:
         image: postgres:16-alpine
@@ -54,7 +52,7 @@ jobs:
           go env
       - name: Clone
         id: Clone
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       - name: Restart_MQTT
         id: Restart_MQTT
         # Restart MQTT after volumes have been checked out
@@ -78,9 +76,3 @@ jobs:
           docker buildx build -f build/Dockerfile -t ghcr.io/thingspect/atlas:${TAG} --push .
           docker buildx rm
           docker logout ghcr.io
-      - name: Notify
-        uses: act10ns/slack@v2
-        with:
-          status: ${{ job.status }}
-          steps: ${{ toJson(steps) }}
-        if: always()
