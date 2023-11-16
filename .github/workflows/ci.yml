@@ -42,29 +42,23 @@ jobs:
         image: redis:7-alpine
     steps:
       - name: Deps
-        # Names are duplicated as IDs for use by Notify
-        id: Deps
-        # Add packages needed to support builds and tests
+        # Add packages needed to support checkout, builds, and tests
         run: |
           apk update && apk upgrade
           apk add --no-cache make git
           go version
           go env
       - name: Clone
-        id: Clone
         uses: actions/checkout@v4
       - name: Restart_MQTT
-        id: Restart_MQTT
         # Restart MQTT after volumes have been checked out
         uses: docker://docker
         with:
           args: docker restart mqtt
       - name: Build_and_Test
-        id: Build_and_Test
         run: make test
       - name: Push
-        id: Push
-        # GitHub Actions does not currently support Docker within a container
+        # Run Dockerfile build and condense four actions into one step
         run: |
           apk add --no-cache docker docker-cli-buildx
           docker version
