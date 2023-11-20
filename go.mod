@@ -4,7 +4,7 @@ go 1.21.3
 
 require (
 	github.com/NYTimes/gziphandler v1.1.1
-	github.com/antonmedv/expr v1.15.3
+	github.com/antonmedv/expr v1.15.4
 	github.com/chirpstack/chirpstack/api/go/v4 v4.5.1
 	github.com/eclipse/paho.mqtt.golang v1.4.3
 	github.com/google/uuid v1.4.0

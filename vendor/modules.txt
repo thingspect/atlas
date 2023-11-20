@@ -1,7 +1,7 @@
 # github.com/NYTimes/gziphandler v1.1.1
 ## explicit; go 1.11
 github.com/NYTimes/gziphandler
-# github.com/antonmedv/expr v1.15.3
+# github.com/antonmedv/expr v1.15.4
 ## explicit; go 1.18
 github.com/antonmedv/expr
 github.com/antonmedv/expr/ast

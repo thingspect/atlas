@@ -42,10 +42,10 @@ jobs:
         image: redis:7-alpine
     steps:
       - name: Deps
-        # Add packages needed to support checkout, builds, and tests
+        # Add packages needed to support checkout, cache, builds, and tests
         run: |
           apk update && apk upgrade
-          apk add --no-cache make git
+          apk add --no-cache git tar make
           go version
           go env
       - name: Clone
@@ -55,6 +55,13 @@ jobs:
         uses: docker://docker
         with:
           args: docker restart mqtt
+      - name: Cache
+        uses: actions/cache@v3
+        with:
+          # Cache modules only, not build
+          path: /go/pkg/mod
+          key: ${{ runner.os }}-go-${{ hashFiles('Makefile') }}
+          restore-keys: ${{ runner.os }}-go-
       - name: Build_and_Test
         run: make test
       - name: Push
