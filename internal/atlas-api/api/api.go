@@ -69,7 +69,12 @@ func New(cfg *config.Config) (*API, error) {
 	}
 
 	// Set up database connection.
-	pg, err := dao.NewPgDB(cfg.PgURI)
+	pgRW, err := dao.NewPgDB(cfg.PgRwURI)
+	if err != nil {
+		return nil, err
+	}
+
+	pgRO, err := dao.NewPgDB(cfg.PgRoURI)
 	if err != nil {
 		return nil, err
 	}
@@ -127,19 +132,20 @@ func New(cfg *config.Config) (*API, error) {
 		interceptor.Auth(skipAuth, cfg.PWTKey, redis),
 		interceptor.Validate(skipValidate),
 	))
-	api.RegisterAlertServiceServer(srv, service.NewAlert(alert.NewDAO(pg)))
+	api.RegisterAlertServiceServer(srv, service.NewAlert(alert.NewDAO(pgRW,
+		pgRO)))
 	api.RegisterDataPointServiceServer(srv, service.NewDataPoint(nsq,
-		cfg.NSQPubTopic, datapoint.NewDAO(pg)))
-	api.RegisterDeviceServiceServer(srv,
-		service.NewDevice(device.NewDAO(pg, redis, deviceExp), cs))
-	api.RegisterEventServiceServer(srv, service.NewEvent(event.NewDAO(pg)))
-	api.RegisterOrgServiceServer(srv, service.NewOrg(org.NewDAO(pg)))
+		cfg.NSQPubTopic, datapoint.NewDAO(pgRW)))
+	api.RegisterDeviceServiceServer(srv, service.NewDevice(device.NewDAO(pgRW,
+		redis, deviceExp), cs))
+	api.RegisterEventServiceServer(srv, service.NewEvent(event.NewDAO(pgRW)))
+	api.RegisterOrgServiceServer(srv, service.NewOrg(org.NewDAO(pgRW)))
 	api.RegisterRuleAlarmServiceServer(srv,
-		service.NewRuleAlarm(rule.NewDAO(pg), alarm.NewDAO(pg)))
-	api.RegisterSessionServiceServer(srv, service.NewSession(user.NewDAO(pg),
-		key.NewDAO(pg), redis, cfg.PWTKey))
-	api.RegisterTagServiceServer(srv, service.NewTag(tag.NewDAO(pg)))
-	api.RegisterUserServiceServer(srv, service.NewUser(user.NewDAO(pg), n))
+		service.NewRuleAlarm(rule.NewDAO(pgRW), alarm.NewDAO(pgRW)))
+	api.RegisterSessionServiceServer(srv, service.NewSession(user.NewDAO(pgRW),
+		key.NewDAO(pgRW), redis, cfg.PWTKey))
+	api.RegisterTagServiceServer(srv, service.NewTag(tag.NewDAO(pgRW)))
+	api.RegisterUserServiceServer(srv, service.NewUser(user.NewDAO(pgRW), n))
 
 	// Register gRPC-Gateway handlers.
 	ctx, cancel := context.WithCancel(context.Background())

@@ -35,7 +35,8 @@ func TestMain(m *testing.M) {
 	// Set up Config.
 	testConfig := testconfig.New()
 	cfg := config.New()
-	cfg.PgURI = testConfig.PgURI
+	cfg.PgRwURI = testConfig.PgURI
+	cfg.PgRoURI = testConfig.PgURI
 	cfg.RedisHost = testConfig.RedisHost
 
 	cfg.NSQPubAddr = testConfig.NSQPubAddr
@@ -66,7 +67,7 @@ func TestMain(m *testing.M) {
 	}()
 
 	// Set up database connection.
-	pg, err := dao.NewPgDB(cfg.PgURI)
+	pg, err := dao.NewPgDB(cfg.PgRwURI)
 	if err != nil {
 		log.Fatalf("TestMain dao.NewPgDB: %v", err)
 	}
@@ -74,7 +75,7 @@ func TestMain(m *testing.M) {
 	globalRuleDAO = rule.NewDAO(pg)
 	globalUserDAO = user.NewDAO(pg)
 	globalAlarmDAO = alarm.NewDAO(pg)
-	globalAleDAO = alert.NewDAO(pg)
+	globalAleDAO = alert.NewDAO(pg, pg)
 
 	os.Exit(m.Run())
 }

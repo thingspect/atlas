@@ -24,9 +24,10 @@ func (d *DAO) Create(ctx context.Context, alert *api.Alert) error {
 	now := time.Now().UTC().Truncate(time.Microsecond)
 	alert.CreatedAt = timestamppb.New(now)
 
-	_, err := d.pg.ExecContext(ctx, createAlert, alert.GetOrgId(), strings.ToLower(
-		alert.GetUniqId()), alert.GetAlarmId(), alert.GetUserId(), alert.GetStatus().String(),
-		alert.GetError(), now, alert.GetTraceId())
+	_, err := d.rw.ExecContext(ctx, createAlert, alert.GetOrgId(),
+		strings.ToLower(alert.GetUniqId()), alert.GetAlarmId(),
+		alert.GetUserId(), alert.GetStatus().String(), alert.GetError(), now,
+		alert.GetTraceId())
 
 	return dao.DBToSentinel(err)
 }
@@ -111,7 +112,7 @@ func (d *DAO) List(
 	query += listAlertsOrder
 
 	// Run list query.
-	rows, err := d.pg.QueryContext(ctx, query, args...)
+	rows, err := d.ro.QueryContext(ctx, query, args...)
 	if err != nil {
 		return nil, dao.DBToSentinel(err)
 	}

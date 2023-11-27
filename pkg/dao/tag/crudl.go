@@ -20,7 +20,7 @@ ORDER BY tag
 
 // List retrieves all device and user tags by org ID.
 func (d *DAO) List(ctx context.Context, orgID string) ([]string, error) {
-	rows, err := d.pg.QueryContext(ctx, listTags, orgID)
+	rows, err := d.ro.QueryContext(ctx, listTags, orgID)
 	if err != nil {
 		return nil, dao.DBToSentinel(err)
 	}

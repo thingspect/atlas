@@ -65,7 +65,8 @@ func TestMain(m *testing.M) {
 	// Set up Config.
 	testConfig := testconfig.New()
 	cfg := config.New()
-	cfg.PgURI = testConfig.PgURI
+	cfg.PgRwURI = testConfig.PgURI
+	cfg.PgRoURI = testConfig.PgURI
 	cfg.RedisHost = testConfig.RedisHost
 
 	cfg.NSQPubAddr = testConfig.NSQPubAddr
@@ -88,7 +89,7 @@ func TestMain(m *testing.M) {
 	}()
 
 	// Set up database connection.
-	pg, err := dao.NewPgDB(cfg.PgURI)
+	pg, err := dao.NewPgDB(cfg.PgRwURI)
 	if err != nil {
 		log.Fatalf("TestMain dao.NewPgDB: %v", err)
 	}
@@ -96,7 +97,7 @@ func TestMain(m *testing.M) {
 	globalUserDAO = user.NewDAO(pg)
 	globalDPDAO = datapoint.NewDAO(pg)
 	globalEvDAO = event.NewDAO(pg)
-	globalAleDAO = alert.NewDAO(pg)
+	globalAleDAO = alert.NewDAO(pg, pg)
 
 	globalPass = random.String(10)
 	globalHash, err = crypto.HashPass(globalPass)
