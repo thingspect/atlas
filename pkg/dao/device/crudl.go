@@ -31,9 +31,10 @@ func (d *DAO) Create(ctx context.Context, dev *api.Device) (
 	dev.CreatedAt = timestamppb.New(now)
 	dev.UpdatedAt = timestamppb.New(now)
 
-	if err := d.pg.QueryRowContext(ctx, createDevice, dev.GetOrgId(), dev.GetUniqId(),
-		dev.GetName(), dev.GetStatus().String(), dev.GetDecoder().String(), dev.GetTags(),
-		now).Scan(&dev.Id, &dev.Token); err != nil {
+	if err := d.rw.QueryRowContext(ctx, createDevice, dev.GetOrgId(),
+		dev.GetUniqId(), dev.GetName(), dev.GetStatus().String(),
+		dev.GetDecoder().String(), dev.GetTags(), now).Scan(&dev.Id,
+		&dev.Token); err != nil {
 		return nil, dao.DBToSentinel(err)
 	}
 
@@ -71,7 +72,7 @@ func (d *DAO) Read(ctx context.Context, devID, orgID string) (
 	var status, decoder string
 	var createdAt, updatedAt time.Time
 
-	if err := d.pg.QueryRowContext(ctx, readDevice, devID, orgID).Scan(&dev.Id,
+	if err := d.ro.QueryRowContext(ctx, readDevice, devID, orgID).Scan(&dev.Id,
 		&dev.OrgId, &dev.UniqId, &dev.Name, &status, &dev.Token, &decoder,
 		pgtype.NewMap().SQLScanner(&dev.Tags), &createdAt,
 		&updatedAt); err != nil {
@@ -135,7 +136,7 @@ func (d *DAO) ReadByUniqID(ctx context.Context, uniqID string) (
 	var status, decoder string
 	var createdAt, updatedAt time.Time
 
-	if err := d.pg.QueryRowContext(ctx, readDeviceByUniqID, uniqID).Scan(
+	if err := d.ro.QueryRowContext(ctx, readDeviceByUniqID, uniqID).Scan(
 		&dev.Id, &dev.OrgId, &dev.UniqId, &dev.Name, &status, &dev.Token,
 		&decoder, pgtype.NewMap().SQLScanner(&dev.Tags), &createdAt,
 		&updatedAt); err != nil {
@@ -186,9 +187,10 @@ func (d *DAO) Update(ctx context.Context, dev *api.Device) (
 	updatedAt := time.Now().UTC().Truncate(time.Microsecond)
 	dev.UpdatedAt = timestamppb.New(updatedAt)
 
-	if err := d.pg.QueryRowContext(ctx, updateDevice, dev.GetUniqId(), dev.GetName(),
-		dev.GetStatus().String(), dev.GetToken(), dev.GetDecoder().String(), dev.GetTags(),
-		updatedAt, dev.GetId(), dev.GetOrgId()).Scan(&createdAt); err != nil {
+	if err := d.rw.QueryRowContext(ctx, updateDevice, dev.GetUniqId(),
+		dev.GetName(), dev.GetStatus().String(), dev.GetToken(),
+		dev.GetDecoder().String(), dev.GetTags(), updatedAt, dev.GetId(),
+		dev.GetOrgId()).Scan(&createdAt); err != nil {
 		return nil, dao.DBToSentinel(err)
 	}
 
@@ -196,12 +198,14 @@ func (d *DAO) Update(ctx context.Context, dev *api.Device) (
 
 	// Invalidate cache on update.
 	if d.cache != nil {
-		if err := d.cache.Del(ctx, devKey(dev.GetOrgId(), dev.GetId())); err != nil {
+		if err := d.cache.Del(ctx, devKey(dev.GetOrgId(),
+			dev.GetId())); err != nil {
 			logger := alog.FromContext(ctx)
 			logger.Errorf("Update devKey d.cache.Del: %v", err)
 		}
 
-		if err := d.cache.Del(ctx, devKeyByUniqID(dev.GetUniqId())); err != nil {
+		if err := d.cache.Del(ctx,
+			devKeyByUniqID(dev.GetUniqId())); err != nil {
 			logger := alog.FromContext(ctx)
 			logger.Errorf("Update devKeyByUniqID d.cache.Del: %v", err)
 		}
@@ -224,7 +228,7 @@ func (d *DAO) Delete(ctx context.Context, devID, orgID string) error {
 		return err
 	}
 
-	_, err = d.pg.ExecContext(ctx, deleteDevice, devID, orgID)
+	_, err = d.rw.ExecContext(ctx, deleteDevice, devID, orgID)
 
 	// Invalidate cache on delete.
 	if d.cache != nil {
@@ -233,7 +237,8 @@ func (d *DAO) Delete(ctx context.Context, devID, orgID string) error {
 			logger.Errorf("Delete devKey d.cache.Del: %v", err)
 		}
 
-		if err := d.cache.Del(ctx, devKeyByUniqID(dev.GetUniqId())); err != nil {
+		if err := d.cache.Del(ctx,
+			devKeyByUniqID(dev.GetUniqId())); err != nil {
 			logger := alog.FromContext(ctx)
 			logger.Errorf("Delete devKeyByUniqID d.cache.Del: %v", err)
 		}
@@ -294,7 +299,7 @@ func (d *DAO) List(
 
 	// Run count query.
 	var count int32
-	if err := d.pg.QueryRowContext(ctx, cQuery, cArgs...).Scan(
+	if err := d.ro.QueryRowContext(ctx, cQuery, cArgs...).Scan(
 		&count); err != nil {
 		return nil, 0, dao.DBToSentinel(err)
 	}
@@ -323,7 +328,7 @@ func (d *DAO) List(
 	}
 
 	// Run list query.
-	rows, err := d.pg.QueryContext(ctx, lQuery, lArgs...)
+	rows, err := d.ro.QueryContext(ctx, lQuery, lArgs...)
 	if err != nil {
 		return nil, 0, dao.DBToSentinel(err)
 	}

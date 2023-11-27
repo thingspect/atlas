@@ -42,7 +42,12 @@ type Validator struct {
 // New builds a new Validator and returns a reference to it and an error value.
 func New(cfg *config.Config) (*Validator, error) {
 	// Set up database connection.
-	pg, err := dao.NewPgDB(cfg.PgURI)
+	pgRW, err := dao.NewPgDB(cfg.PgRwURI)
+	if err != nil {
+		return nil, err
+	}
+
+	pgRO, err := dao.NewPgDB(cfg.PgRoURI)
 	if err != nil {
 		return nil, err
 	}
@@ -72,7 +77,7 @@ func New(cfg *config.Config) (*Validator, error) {
 	}
 
 	return &Validator{
-		devDAO: device.NewDAO(pg, redis, deviceExp),
+		devDAO: device.NewDAO(pgRW, pgRO, redis, deviceExp),
 
 		valQueue:     nsq,
 		vInSub:       vInSub,

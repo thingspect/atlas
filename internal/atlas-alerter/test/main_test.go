@@ -74,7 +74,7 @@ func TestMain(m *testing.M) {
 	globalOrgDAO = org.NewDAO(pg)
 	globalRuleDAO = rule.NewDAO(pg)
 	globalUserDAO = user.NewDAO(pg)
-	globalAlarmDAO = alarm.NewDAO(pg)
+	globalAlarmDAO = alarm.NewDAO(pg, pg)
 	globalAleDAO = alert.NewDAO(pg, pg)
 
 	os.Exit(m.Run())

@@ -137,14 +137,14 @@ func New(cfg *config.Config) (*API, error) {
 	api.RegisterDataPointServiceServer(srv, service.NewDataPoint(nsq,
 		cfg.NSQPubTopic, datapoint.NewDAO(pgRW, pgRO)))
 	api.RegisterDeviceServiceServer(srv, service.NewDevice(device.NewDAO(pgRW,
-		redis, deviceExp), cs))
+		pgRO, redis, deviceExp), cs))
 	api.RegisterEventServiceServer(srv, service.NewEvent(event.NewDAO(pgRW,
 		pgRO)))
 	api.RegisterOrgServiceServer(srv, service.NewOrg(org.NewDAO(pgRW)))
 	api.RegisterRuleAlarmServiceServer(srv,
-		service.NewRuleAlarm(rule.NewDAO(pgRW), alarm.NewDAO(pgRW)))
+		service.NewRuleAlarm(rule.NewDAO(pgRW), alarm.NewDAO(pgRW, pgRO)))
 	api.RegisterSessionServiceServer(srv, service.NewSession(user.NewDAO(pgRW),
-		key.NewDAO(pgRW), redis, cfg.PWTKey))
+		key.NewDAO(pgRW, pgRO), redis, cfg.PWTKey))
 	api.RegisterTagServiceServer(srv, service.NewTag(tag.NewDAO(pgRW)))
 	api.RegisterUserServiceServer(srv, service.NewUser(user.NewDAO(pgRW), n))
 

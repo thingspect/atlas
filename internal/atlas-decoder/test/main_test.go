@@ -32,7 +32,8 @@ func TestMain(m *testing.M) {
 	// Set up Config.
 	testConfig := testconfig.New()
 	cfg := config.New()
-	cfg.PgURI = testConfig.PgURI
+	cfg.PgRwURI = testConfig.PgURI
+	cfg.PgRoURI = testConfig.PgURI
 	cfg.RedisHost = testConfig.RedisHost
 
 	cfg.NSQPubAddr = testConfig.NSQPubAddr
@@ -67,12 +68,12 @@ func TestMain(m *testing.M) {
 	}()
 
 	// Set up database connection.
-	pg, err := dao.NewPgDB(cfg.PgURI)
+	pg, err := dao.NewPgDB(cfg.PgRwURI)
 	if err != nil {
 		log.Fatalf("TestMain dao.NewPgDB: %v", err)
 	}
 	globalOrgDAO = org.NewDAO(pg)
-	globalDevDAO = device.NewDAO(pg, nil, 0)
+	globalDevDAO = device.NewDAO(pg, pg, nil, 0)
 
 	// Set up NSQ subscription to verify published messages.
 	globalVInSub, err = globalDecQueue.Subscribe(cfg.NSQPubTopic)

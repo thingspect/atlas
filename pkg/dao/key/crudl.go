@@ -22,8 +22,8 @@ func (d *DAO) Create(ctx context.Context, key *api.Key) (*api.Key, error) {
 	now := time.Now().UTC().Truncate(time.Microsecond)
 	key.CreatedAt = timestamppb.New(now)
 
-	if err := d.pg.QueryRowContext(ctx, createKey, key.GetOrgId(), key.GetName(),
-		key.GetRole().String(), now).Scan(&key.Id); err != nil {
+	if err := d.rw.QueryRowContext(ctx, createKey, key.GetOrgId(),
+		key.GetName(), key.GetRole().String(), now).Scan(&key.Id); err != nil {
 		return nil, dao.DBToSentinel(err)
 	}
 
@@ -42,7 +42,7 @@ func (d *DAO) read(ctx context.Context, keyID, orgID string) (*api.Key, error) {
 	var role string
 	var createdAt time.Time
 
-	if err := d.pg.QueryRowContext(ctx, readKey, keyID, orgID).Scan(&key.Id,
+	if err := d.ro.QueryRowContext(ctx, readKey, keyID, orgID).Scan(&key.Id,
 		&key.OrgId, &key.Name, &role, &createdAt); err != nil {
 		return nil, dao.DBToSentinel(err)
 	}
@@ -66,7 +66,7 @@ func (d *DAO) Delete(ctx context.Context, keyID, orgID string) error {
 		return err
 	}
 
-	_, err := d.pg.ExecContext(ctx, deleteKey, keyID, orgID)
+	_, err := d.rw.ExecContext(ctx, deleteKey, keyID, orgID)
 
 	return dao.DBToSentinel(err)
 }
@@ -105,7 +105,7 @@ func (d *DAO) List(
 ) ([]*api.Key, int32, error) {
 	// Run count query.
 	var count int32
-	if err := d.pg.QueryRowContext(ctx, countKeys, orgID).Scan(
+	if err := d.ro.QueryRowContext(ctx, countKeys, orgID).Scan(
 		&count); err != nil {
 		return nil, 0, dao.DBToSentinel(err)
 	}
@@ -126,7 +126,7 @@ func (d *DAO) List(
 	}
 
 	// Run list query.
-	rows, err := d.pg.QueryContext(ctx, query, args...)
+	rows, err := d.ro.QueryContext(ctx, query, args...)
 	if err != nil {
 		return nil, 0, dao.DBToSentinel(err)
 	}
