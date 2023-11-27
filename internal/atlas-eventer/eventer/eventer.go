@@ -45,7 +45,12 @@ type Eventer struct {
 // New builds a new Eventer and returns a reference to it and an error value.
 func New(cfg *config.Config) (*Eventer, error) {
 	// Set up database connection.
-	pg, err := dao.NewPgDB(cfg.PgURI)
+	pgRW, err := dao.NewPgDB(cfg.PgRwURI)
+	if err != nil {
+		return nil, err
+	}
+
+	pgRO, err := dao.NewPgDB(cfg.PgRoURI)
 	if err != nil {
 		return nil, err
 	}
@@ -69,8 +74,8 @@ func New(cfg *config.Config) (*Eventer, error) {
 	}
 
 	return &Eventer{
-		ruleDAO: rule.NewDAO(pg),
-		evDAO:   event.NewDAO(pg),
+		ruleDAO: rule.NewDAO(pgRW),
+		evDAO:   event.NewDAO(pgRW, pgRO),
 
 		evQueue:      nsq,
 		vOutSub:      vOutSub,

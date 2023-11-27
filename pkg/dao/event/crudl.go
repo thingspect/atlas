@@ -22,8 +22,9 @@ func (d *DAO) Create(ctx context.Context, event *api.Event) error {
 	// Truncate timestamp to milliseconds for deduplication.
 	createdAt := event.GetCreatedAt().AsTime().Truncate(time.Millisecond)
 
-	_, err := d.pg.ExecContext(ctx, createEvent, event.GetOrgId(),
-		strings.ToLower(event.GetUniqId()), event.GetRuleId(), createdAt, event.GetTraceId())
+	_, err := d.rw.ExecContext(ctx, createEvent, event.GetOrgId(),
+		strings.ToLower(event.GetUniqId()), event.GetRuleId(), createdAt,
+		event.GetTraceId())
 
 	return dao.DBToSentinel(err)
 }
@@ -79,7 +80,7 @@ func (d *DAO) List(
 	query += listEventsOrder
 
 	// Run list query.
-	rows, err := d.pg.QueryContext(ctx, query, args...)
+	rows, err := d.ro.QueryContext(ctx, query, args...)
 	if err != nil {
 		return nil, dao.DBToSentinel(err)
 	}
@@ -164,7 +165,7 @@ func (d *DAO) Latest(ctx context.Context, orgID, ruleID string) (
 	query += latestEventsOrder
 
 	// Run latest query.
-	rows, err := d.pg.QueryContext(ctx, query, args...)
+	rows, err := d.ro.QueryContext(ctx, query, args...)
 	if err != nil {
 		return nil, dao.DBToSentinel(err)
 	}

@@ -45,9 +45,9 @@ func (d *DAO) Create(
 		bytesVal = v.BytesVal
 	}
 
-	_, err := d.pg.ExecContext(ctx, createDataPoint, orgID,
-		strings.ToLower(point.GetUniqId()), point.GetAttr(), intVal, fl64Val, strVal,
-		boolVal, bytesVal, createdAt, point.GetTraceId())
+	_, err := d.rw.ExecContext(ctx, createDataPoint, orgID,
+		strings.ToLower(point.GetUniqId()), point.GetAttr(), intVal, fl64Val,
+		strVal, boolVal, bytesVal, createdAt, point.GetTraceId())
 
 	return dao.DBToSentinel(err)
 }
@@ -105,7 +105,7 @@ func (d *DAO) List(
 	query += listDataPointsOrder
 
 	// Run list query.
-	rows, err := d.pg.QueryContext(ctx, query, args...)
+	rows, err := d.ro.QueryContext(ctx, query, args...)
 	if err != nil {
 		return nil, dao.DBToSentinel(err)
 	}
@@ -249,7 +249,7 @@ func (d *DAO) Latest(
 	}
 
 	// Run latest query.
-	rows, err := d.pg.QueryContext(ctx, query, args...)
+	rows, err := d.ro.QueryContext(ctx, query, args...)
 	if err != nil {
 		return nil, dao.DBToSentinel(err)
 	}

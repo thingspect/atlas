@@ -135,10 +135,11 @@ func New(cfg *config.Config) (*API, error) {
 	api.RegisterAlertServiceServer(srv, service.NewAlert(alert.NewDAO(pgRW,
 		pgRO)))
 	api.RegisterDataPointServiceServer(srv, service.NewDataPoint(nsq,
-		cfg.NSQPubTopic, datapoint.NewDAO(pgRW)))
+		cfg.NSQPubTopic, datapoint.NewDAO(pgRW, pgRO)))
 	api.RegisterDeviceServiceServer(srv, service.NewDevice(device.NewDAO(pgRW,
 		redis, deviceExp), cs))
-	api.RegisterEventServiceServer(srv, service.NewEvent(event.NewDAO(pgRW)))
+	api.RegisterEventServiceServer(srv, service.NewEvent(event.NewDAO(pgRW,
+		pgRO)))
 	api.RegisterOrgServiceServer(srv, service.NewOrg(org.NewDAO(pgRW)))
 	api.RegisterRuleAlarmServiceServer(srv,
 		service.NewRuleAlarm(rule.NewDAO(pgRW), alarm.NewDAO(pgRW)))

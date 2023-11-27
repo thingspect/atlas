@@ -95,8 +95,8 @@ func TestMain(m *testing.M) {
 	}
 	globalOrgDAO = org.NewDAO(pg)
 	globalUserDAO = user.NewDAO(pg)
-	globalDPDAO = datapoint.NewDAO(pg)
-	globalEvDAO = event.NewDAO(pg)
+	globalDPDAO = datapoint.NewDAO(pg, pg)
+	globalEvDAO = event.NewDAO(pg, pg)
 	globalAleDAO = alert.NewDAO(pg, pg)
 
 	globalPass = random.String(10)
