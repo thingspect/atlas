@@ -44,7 +44,12 @@ type Decoder struct {
 // New builds a new Decoder and returns a reference to it and an error decue.
 func New(cfg *config.Config) (*Decoder, error) {
 	// Set up database connection.
-	pg, err := dao.NewPgDB(cfg.PgURI)
+	pgRW, err := dao.NewPgDB(cfg.PgRwURI)
+	if err != nil {
+		return nil, err
+	}
+
+	pgRO, err := dao.NewPgDB(cfg.PgRoURI)
 	if err != nil {
 		return nil, err
 	}
@@ -74,7 +79,7 @@ func New(cfg *config.Config) (*Decoder, error) {
 	}
 
 	return &Decoder{
-		devDAO: device.NewDAO(pg, redis, deviceExp),
+		devDAO: device.NewDAO(pgRW, pgRO, redis, deviceExp),
 		reg:    registry.New(),
 
 		decQueue:    nsq,

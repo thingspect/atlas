@@ -30,7 +30,7 @@ func TestMain(m *testing.M) {
 	}
 	globalOrgDAO = org.NewDAO(pg)
 	globalRuleDAO = rule.NewDAO(pg)
-	globalAlarmDAO = NewDAO(pg)
+	globalAlarmDAO = NewDAO(pg, pg)
 
 	os.Exit(m.Run())
 }

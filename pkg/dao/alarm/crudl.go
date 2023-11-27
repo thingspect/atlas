@@ -27,10 +27,11 @@ func (d *DAO) Create(ctx context.Context, alarm *api.Alarm) (
 	alarm.CreatedAt = timestamppb.New(now)
 	alarm.UpdatedAt = timestamppb.New(now)
 
-	if err := d.pg.QueryRowContext(ctx, createAlarm, alarm.GetOrgId(), alarm.GetRuleId(),
-		alarm.GetName(), alarm.GetStatus().String(), alarm.GetType().String(), alarm.GetUserTags(),
-		alarm.GetSubjectTemplate(), alarm.GetBodyTemplate(), alarm.GetRepeatInterval(),
-		now).Scan(&alarm.Id); err != nil {
+	if err := d.rw.QueryRowContext(ctx, createAlarm, alarm.GetOrgId(),
+		alarm.GetRuleId(), alarm.GetName(), alarm.GetStatus().String(),
+		alarm.GetType().String(), alarm.GetUserTags(),
+		alarm.GetSubjectTemplate(), alarm.GetBodyTemplate(),
+		alarm.GetRepeatInterval(), now).Scan(&alarm.Id); err != nil {
 		return nil, dao.DBToSentinel(err)
 	}
 
@@ -52,7 +53,7 @@ func (d *DAO) Read(ctx context.Context, alarmID, orgID, ruleID string) (
 	var status, alarmType string
 	var createdAt, updatedAt time.Time
 
-	if err := d.pg.QueryRowContext(ctx, readAlarm, alarmID, orgID, ruleID).Scan(
+	if err := d.ro.QueryRowContext(ctx, readAlarm, alarmID, orgID, ruleID).Scan(
 		&alarm.Id, &alarm.OrgId, &alarm.RuleId, &alarm.Name, &status,
 		&alarmType, pgtype.NewMap().SQLScanner(&alarm.UserTags),
 		&alarm.SubjectTemplate, &alarm.BodyTemplate, &alarm.RepeatInterval,
@@ -85,10 +86,11 @@ func (d *DAO) Update(ctx context.Context, alarm *api.Alarm) (
 	updatedAt := time.Now().UTC().Truncate(time.Microsecond)
 	alarm.UpdatedAt = timestamppb.New(updatedAt)
 
-	if err := d.pg.QueryRowContext(ctx, updateAlarm, alarm.GetName(),
-		alarm.GetStatus().String(), alarm.GetType().String(), alarm.GetUserTags(),
-		alarm.GetSubjectTemplate(), alarm.GetBodyTemplate(), alarm.GetRepeatInterval(),
-		updatedAt, alarm.GetId(), alarm.GetOrgId(),
+	if err := d.rw.QueryRowContext(ctx, updateAlarm, alarm.GetName(),
+		alarm.GetStatus().String(), alarm.GetType().String(),
+		alarm.GetUserTags(), alarm.GetSubjectTemplate(),
+		alarm.GetBodyTemplate(), alarm.GetRepeatInterval(), updatedAt,
+		alarm.GetId(), alarm.GetOrgId(),
 		alarm.GetRuleId()).Scan(&createdAt); err != nil {
 		return nil, dao.DBToSentinel(err)
 	}
@@ -111,7 +113,7 @@ func (d *DAO) Delete(ctx context.Context, alarmID, orgID, ruleID string) error {
 		return err
 	}
 
-	_, err := d.pg.ExecContext(ctx, deleteAlarm, alarmID, orgID, ruleID)
+	_, err := d.rw.ExecContext(ctx, deleteAlarm, alarmID, orgID, ruleID)
 
 	return dao.DBToSentinel(err)
 }
@@ -168,7 +170,7 @@ func (d *DAO) List(
 
 	// Run count query.
 	var count int32
-	if err := d.pg.QueryRowContext(ctx, cQuery, cArgs...).Scan(
+	if err := d.ro.QueryRowContext(ctx, cQuery, cArgs...).Scan(
 		&count); err != nil {
 		return nil, 0, dao.DBToSentinel(err)
 	}
@@ -197,7 +199,7 @@ func (d *DAO) List(
 	}
 
 	// Run list query.
-	rows, err := d.pg.QueryContext(ctx, lQuery, lArgs...)
+	rows, err := d.ro.QueryContext(ctx, lQuery, lArgs...)
 	if err != nil {
 		return nil, 0, dao.DBToSentinel(err)
 	}
