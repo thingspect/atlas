@@ -80,7 +80,8 @@ services:
     restart: on-failure
     environment:
       - ACCUMULATOR_STATSD_ADDR=dogstatsd:8125
-      - ACCUMULATOR_PG_URI=postgres://postgres:notasecurepassword@postgres/atlas
+      - ACCUMULATOR_PG_RW_URI=postgres://postgres:notasecurepassword@postgres/atlas
+      - ACCUMULATOR_PG_RO_URI=postgres://postgres:notasecurepassword@postgres/atlas
       - ACCUMULATOR_NSQ_PUB_ADDR=nsqd:4150
       - ACCUMULATOR_NSQ_LOOKUP_ADDRS=nsqlookupd:4161
 
@@ -92,7 +93,8 @@ services:
       - atlas-alerter
     environment:
       - EVENTER_STATSD_ADDR=dogstatsd:8125
-      - EVENTER_PG_URI=postgres://postgres:notasecurepassword@postgres/atlas
+      - EVENTER_PG_RW_URI=postgres://postgres:notasecurepassword@postgres/atlas
+      - EVENTER_PG_RO_URI=postgres://postgres:notasecurepassword@postgres/atlas
       - EVENTER_NSQ_PUB_ADDR=nsqd:4150
       - EVENTER_NSQ_LOOKUP_ADDRS=nsqlookupd:4161
 

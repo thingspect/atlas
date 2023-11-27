@@ -30,7 +30,7 @@ func TestMain(m *testing.M) {
 	}
 	globalOrgDAO = org.NewDAO(pg)
 	globalDevDAO = device.NewDAO(pg, nil, 0)
-	globalEvDAO = NewDAO(pg)
+	globalEvDAO = NewDAO(pg, pg)
 
 	os.Exit(m.Run())
 }

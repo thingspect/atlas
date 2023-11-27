@@ -37,7 +37,12 @@ type Accumulator struct {
 // value.
 func New(cfg *config.Config) (*Accumulator, error) {
 	// Set up database connection.
-	pg, err := dao.NewPgDB(cfg.PgURI)
+	pgRW, err := dao.NewPgDB(cfg.PgRwURI)
+	if err != nil {
+		return nil, err
+	}
+
+	pgRO, err := dao.NewPgDB(cfg.PgRoURI)
 	if err != nil {
 		return nil, err
 	}
@@ -61,7 +66,7 @@ func New(cfg *config.Config) (*Accumulator, error) {
 	}
 
 	return &Accumulator{
-		dpDAO: datapoint.NewDAO(pg),
+		dpDAO: datapoint.NewDAO(pgRW, pgRO),
 
 		accQueue: nsq,
 		vOutSub:  vOutSub,

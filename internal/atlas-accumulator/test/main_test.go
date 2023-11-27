@@ -31,7 +31,8 @@ func TestMain(m *testing.M) {
 	// Set up Config.
 	testConfig := testconfig.New()
 	cfg := config.New()
-	cfg.PgURI = testConfig.PgURI
+	cfg.PgRwURI = testConfig.PgURI
+	cfg.PgRoURI = testConfig.PgURI
 
 	cfg.NSQPubAddr = testConfig.NSQPubAddr
 	cfg.NSQLookupAddrs = testConfig.NSQLookupAddrs
@@ -61,13 +62,13 @@ func TestMain(m *testing.M) {
 	}()
 
 	// Set up database connection.
-	pg, err := dao.NewPgDB(cfg.PgURI)
+	pg, err := dao.NewPgDB(cfg.PgRwURI)
 	if err != nil {
 		log.Fatalf("TestMain dao.NewPgDB: %v", err)
 	}
 	globalOrgDAO = org.NewDAO(pg)
 	globalDevDAO = device.NewDAO(pg, nil, 0)
-	globalDPDAO = datapoint.NewDAO(pg)
+	globalDPDAO = datapoint.NewDAO(pg, pg)
 
 	os.Exit(m.Run())
 }
