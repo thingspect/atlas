@@ -9,7 +9,8 @@ services:
       - "50051:50051"
     environment:
       - API_STATSD_ADDR=dogstatsd:8125
-      - API_PG_URI=postgres://postgres:notasecurepassword@postgres/atlas
+      - API_PG_RW_URI=postgres://postgres:notasecurepassword@postgres/atlas
+      - API_PG_RO_URI=postgres://postgres:notasecurepassword@postgres/atlas
       - API_REDIS_HOST=redis
       - API_PWT_KEY=AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=
       - API_NSQ_PUB_ADDR=nsqd:4150
@@ -101,7 +102,8 @@ services:
     restart: on-failure
     environment:
       - ALERTER_STATSD_ADDR=dogstatsd:8125
-      - ALERTER_PG_URI=postgres://postgres:notasecurepassword@postgres/atlas
+      - ALERTER_PG_RW_URI=postgres://postgres:notasecurepassword@postgres/atlas
+      - ALERTER_PG_RO_URI=postgres://postgres:notasecurepassword@postgres/atlas
       - ALERTER_REDIS_HOST=redis
       - ALERTER_NSQ_PUB_ADDR=nsqd:4150
       - ALERTER_NSQ_LOOKUP_ADDRS=nsqlookupd:4161

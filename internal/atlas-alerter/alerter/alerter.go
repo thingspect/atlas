@@ -65,7 +65,12 @@ type Alerter struct {
 // New builds a new Alerter and returns a reference to it and an error value.
 func New(cfg *config.Config) (*Alerter, error) {
 	// Set up database connection.
-	pg, err := dao.NewPgDB(cfg.PgURI)
+	pgRW, err := dao.NewPgDB(cfg.PgRwURI)
+	if err != nil {
+		return nil, err
+	}
+
+	pgRO, err := dao.NewPgDB(cfg.PgRoURI)
 	if err != nil {
 		return nil, err
 	}
@@ -105,10 +110,10 @@ func New(cfg *config.Config) (*Alerter, error) {
 	}
 
 	return &Alerter{
-		orgDAO:   org.NewDAO(pg),
-		alarmDAO: alarm.NewDAO(pg),
-		userDAO:  user.NewDAO(pg),
-		aleDAO:   alert.NewDAO(pg),
+		orgDAO:   org.NewDAO(pgRW),
+		alarmDAO: alarm.NewDAO(pgRW),
+		userDAO:  user.NewDAO(pgRW),
+		aleDAO:   alert.NewDAO(pgRW, pgRO),
 		cache:    redis,
 
 		aleQueue: nsq,
