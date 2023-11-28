@@ -118,7 +118,7 @@ func main() {
 			os.Exit(1)
 		}
 
-		orgDAO := org.NewDAO(pg)
+		orgDAO := org.NewDAO(pg, pg)
 		ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
 		createOrg, err := orgDAO.Create(ctx, &api.Org{
 			Name:        flag.Arg(1),
@@ -148,7 +148,7 @@ func main() {
 			Tags:   []string{strings.ToLower(api.Role_ADMIN.String())},
 		}
 
-		userDAO := user.NewDAO(pg)
+		userDAO := user.NewDAO(pg, pg)
 		createUser, err := userDAO.Create(ctx, u)
 		checkErr(err)
 

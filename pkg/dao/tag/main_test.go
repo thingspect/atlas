@@ -30,9 +30,9 @@ func TestMain(m *testing.M) {
 	if err != nil {
 		log.Fatalf("TestMain dao.NewPgDB: %v", err)
 	}
-	globalOrgDAO = org.NewDAO(pg)
+	globalOrgDAO = org.NewDAO(pg, pg)
 	globalDevDAO = device.NewDAO(pg, pg, nil, 0)
-	globalUserDAO = user.NewDAO(pg)
+	globalUserDAO = user.NewDAO(pg, pg)
 	globalTagDAO = NewDAO(pg)
 
 	os.Exit(m.Run())

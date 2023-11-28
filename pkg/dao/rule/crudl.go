@@ -24,9 +24,9 @@ func (d *DAO) Create(ctx context.Context, rule *api.Rule) (*api.Rule, error) {
 	rule.CreatedAt = timestamppb.New(now)
 	rule.UpdatedAt = timestamppb.New(now)
 
-	if err := d.pg.QueryRowContext(ctx, createRule, rule.GetOrgId(), rule.GetName(),
-		rule.GetStatus().String(), rule.GetDeviceTag(), rule.GetAttr(), rule.GetExpr(), now).Scan(
-		&rule.Id); err != nil {
+	if err := d.rw.QueryRowContext(ctx, createRule, rule.GetOrgId(),
+		rule.GetName(), rule.GetStatus().String(), rule.GetDeviceTag(),
+		rule.GetAttr(), rule.GetExpr(), now).Scan(&rule.Id); err != nil {
 		return nil, dao.DBToSentinel(err)
 	}
 
@@ -47,7 +47,7 @@ func (d *DAO) Read(ctx context.Context, ruleID, orgID string) (
 	var status string
 	var createdAt, updatedAt time.Time
 
-	if err := d.pg.QueryRowContext(ctx, readRule, ruleID, orgID).Scan(&rule.Id,
+	if err := d.ro.QueryRowContext(ctx, readRule, ruleID, orgID).Scan(&rule.Id,
 		&rule.OrgId, &rule.Name, &status, &rule.DeviceTag, &rule.Attr,
 		&rule.Expr, &createdAt, &updatedAt); err != nil {
 		return nil, dao.DBToSentinel(err)
@@ -75,9 +75,10 @@ func (d *DAO) Update(ctx context.Context, rule *api.Rule) (*api.Rule, error) {
 	updatedAt := time.Now().UTC().Truncate(time.Microsecond)
 	rule.UpdatedAt = timestamppb.New(updatedAt)
 
-	if err := d.pg.QueryRowContext(ctx, updateRule, rule.GetName(),
-		rule.GetStatus().String(), rule.GetDeviceTag(), rule.GetAttr(), rule.GetExpr(), updatedAt,
-		rule.GetId(), rule.GetOrgId()).Scan(&createdAt); err != nil {
+	if err := d.rw.QueryRowContext(ctx, updateRule, rule.GetName(),
+		rule.GetStatus().String(), rule.GetDeviceTag(), rule.GetAttr(),
+		rule.GetExpr(), updatedAt, rule.GetId(),
+		rule.GetOrgId()).Scan(&createdAt); err != nil {
 		return nil, dao.DBToSentinel(err)
 	}
 
@@ -99,7 +100,7 @@ func (d *DAO) Delete(ctx context.Context, ruleID, orgID string) error {
 		return err
 	}
 
-	_, err := d.pg.ExecContext(ctx, deleteRule, ruleID, orgID)
+	_, err := d.rw.ExecContext(ctx, deleteRule, ruleID, orgID)
 
 	return dao.DBToSentinel(err)
 }
@@ -138,7 +139,7 @@ func (d *DAO) List(
 ) ([]*api.Rule, int32, error) {
 	// Run count query.
 	var count int32
-	if err := d.pg.QueryRowContext(ctx, countRules, orgID).Scan(
+	if err := d.ro.QueryRowContext(ctx, countRules, orgID).Scan(
 		&count); err != nil {
 		return nil, 0, dao.DBToSentinel(err)
 	}
@@ -159,7 +160,7 @@ func (d *DAO) List(
 	}
 
 	// Run list query.
-	rows, err := d.pg.QueryContext(ctx, query, args...)
+	rows, err := d.ro.QueryContext(ctx, query, args...)
 	if err != nil {
 		return nil, 0, dao.DBToSentinel(err)
 	}
@@ -211,7 +212,7 @@ ORDER BY created_at
 func (d *DAO) ListByTags(
 	ctx context.Context, orgID string, attr string, deviceTags []string,
 ) ([]*api.Rule, error) {
-	rows, err := d.pg.QueryContext(ctx, listByTags, orgID, attr, deviceTags)
+	rows, err := d.ro.QueryContext(ctx, listByTags, orgID, attr, deviceTags)
 	if err != nil {
 		return nil, dao.DBToSentinel(err)
 	}

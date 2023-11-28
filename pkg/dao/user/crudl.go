@@ -25,9 +25,10 @@ func (d *DAO) Create(ctx context.Context, user *api.User) (*api.User, error) {
 	user.CreatedAt = timestamppb.New(now)
 	user.UpdatedAt = timestamppb.New(now)
 
-	if err := d.pg.QueryRowContext(ctx, createUser, user.GetOrgId(), user.GetName(),
-		user.GetEmail(), user.GetPhone(), user.GetRole().String(), user.GetStatus().String(),
-		user.GetTags(), user.GetAppKey(), now).Scan(&user.Id); err != nil {
+	if err := d.rw.QueryRowContext(ctx, createUser, user.GetOrgId(),
+		user.GetName(), user.GetEmail(), user.GetPhone(),
+		user.GetRole().String(), user.GetStatus().String(), user.GetTags(),
+		user.GetAppKey(), now).Scan(&user.Id); err != nil {
 		return nil, dao.DBToSentinel(err)
 	}
 
@@ -49,7 +50,7 @@ func (d *DAO) Read(ctx context.Context, userID, orgID string) (
 	var role, status string
 	var createdAt, updatedAt time.Time
 
-	if err := d.pg.QueryRowContext(ctx, readUser, userID, orgID).Scan(&user.Id,
+	if err := d.ro.QueryRowContext(ctx, readUser, userID, orgID).Scan(&user.Id,
 		&user.OrgId, &user.Name, &user.Email, &user.Phone, &role, &status,
 		pgtype.NewMap().SQLScanner(&user.Tags), &user.AppKey, &createdAt,
 		&updatedAt); err != nil {
@@ -65,8 +66,8 @@ func (d *DAO) Read(ctx context.Context, userID, orgID string) (
 }
 
 const readUserByEmail = `
-SELECT u.id, u.org_id, u.name, u.email, u.phone, u.password_hash, u.role, u.status,
-u.tags, u.app_key, u.created_at, u.updated_at
+SELECT u.id, u.org_id, u.name, u.email, u.phone, u.password_hash, u.role,
+u.status, u.tags, u.app_key, u.created_at, u.updated_at
 FROM users u
 INNER JOIN orgs o ON u.org_id = o.id
 WHERE (u.email, o.name) = ($1, $2)
@@ -81,7 +82,7 @@ func (d *DAO) ReadByEmail(ctx context.Context, email, orgName string) (
 	var role, status string
 	var createdAt, updatedAt time.Time
 
-	if err := d.pg.QueryRowContext(ctx, readUserByEmail, email, orgName).Scan(
+	if err := d.ro.QueryRowContext(ctx, readUserByEmail, email, orgName).Scan(
 		&user.Id, &user.OrgId, &user.Name, &user.Email, &user.Phone, &passHash,
 		&role, &status, pgtype.NewMap().SQLScanner(&user.Tags), &user.AppKey,
 		&createdAt, &updatedAt); err != nil {
@@ -111,10 +112,10 @@ func (d *DAO) Update(ctx context.Context, user *api.User) (*api.User, error) {
 	updatedAt := time.Now().UTC().Truncate(time.Microsecond)
 	user.UpdatedAt = timestamppb.New(updatedAt)
 
-	if err := d.pg.QueryRowContext(ctx, updateUser, user.GetName(), user.GetEmail(),
-		user.GetPhone(), user.GetRole().String(), user.GetStatus().String(), user.GetTags(),
-		user.GetAppKey(), updatedAt, user.GetId(),
-		user.GetOrgId()).Scan(&createdAt); err != nil {
+	if err := d.rw.QueryRowContext(ctx, updateUser, user.GetName(),
+		user.GetEmail(), user.GetPhone(), user.GetRole().String(),
+		user.GetStatus().String(), user.GetTags(), user.GetAppKey(), updatedAt,
+		user.GetId(), user.GetOrgId()).Scan(&createdAt); err != nil {
 		return nil, dao.DBToSentinel(err)
 	}
 
@@ -140,7 +141,7 @@ func (d *DAO) UpdatePassword(
 		return err
 	}
 
-	_, err := d.pg.ExecContext(ctx, updateUserPassword, passHash,
+	_, err := d.rw.ExecContext(ctx, updateUserPassword, passHash,
 		time.Now().UTC().Truncate(time.Microsecond), userID, orgID)
 
 	return dao.DBToSentinel(err)
@@ -159,7 +160,7 @@ func (d *DAO) Delete(ctx context.Context, userID, orgID string) error {
 		return err
 	}
 
-	_, err := d.pg.ExecContext(ctx, deleteUser, userID, orgID)
+	_, err := d.rw.ExecContext(ctx, deleteUser, userID, orgID)
 
 	return dao.DBToSentinel(err)
 }
@@ -216,7 +217,7 @@ func (d *DAO) List(
 
 	// Run count query.
 	var count int32
-	if err := d.pg.QueryRowContext(ctx, cQuery, cArgs...).Scan(
+	if err := d.ro.QueryRowContext(ctx, cQuery, cArgs...).Scan(
 		&count); err != nil {
 		return nil, 0, dao.DBToSentinel(err)
 	}
@@ -245,7 +246,7 @@ func (d *DAO) List(
 	}
 
 	// Run list query.
-	rows, err := d.pg.QueryContext(ctx, lQuery, lArgs...)
+	rows, err := d.ro.QueryContext(ctx, lQuery, lArgs...)
 	if err != nil {
 		return nil, 0, dao.DBToSentinel(err)
 	}
@@ -299,7 +300,7 @@ ORDER BY created_at
 func (d *DAO) ListByTags(ctx context.Context, orgID string, tags []string) (
 	[]*api.User, error,
 ) {
-	rows, err := d.pg.QueryContext(ctx, listByTags, orgID, tags)
+	rows, err := d.ro.QueryContext(ctx, listByTags, orgID, tags)
 	if err != nil {
 		return nil, dao.DBToSentinel(err)
 	}

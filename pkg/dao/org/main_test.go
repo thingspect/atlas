@@ -22,7 +22,7 @@ func TestMain(m *testing.M) {
 	if err != nil {
 		log.Fatalf("TestMain dao.NewPgDB: %v", err)
 	}
-	globalOrgDAO = NewDAO(pg)
+	globalOrgDAO = NewDAO(pg, pg)
 
 	os.Exit(m.Run())
 }

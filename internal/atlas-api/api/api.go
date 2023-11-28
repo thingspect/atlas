@@ -140,13 +140,14 @@ func New(cfg *config.Config) (*API, error) {
 		pgRO, redis, deviceExp), cs))
 	api.RegisterEventServiceServer(srv, service.NewEvent(event.NewDAO(pgRW,
 		pgRO)))
-	api.RegisterOrgServiceServer(srv, service.NewOrg(org.NewDAO(pgRW)))
+	api.RegisterOrgServiceServer(srv, service.NewOrg(org.NewDAO(pgRW, pgRO)))
 	api.RegisterRuleAlarmServiceServer(srv,
-		service.NewRuleAlarm(rule.NewDAO(pgRW), alarm.NewDAO(pgRW, pgRO)))
-	api.RegisterSessionServiceServer(srv, service.NewSession(user.NewDAO(pgRW),
-		key.NewDAO(pgRW, pgRO), redis, cfg.PWTKey))
+		service.NewRuleAlarm(rule.NewDAO(pgRW, pgRO), alarm.NewDAO(pgRW, pgRO)))
+	api.RegisterSessionServiceServer(srv, service.NewSession(user.NewDAO(pgRW,
+		pgRO), key.NewDAO(pgRW, pgRO), redis, cfg.PWTKey))
 	api.RegisterTagServiceServer(srv, service.NewTag(tag.NewDAO(pgRW)))
-	api.RegisterUserServiceServer(srv, service.NewUser(user.NewDAO(pgRW), n))
+	api.RegisterUserServiceServer(srv, service.NewUser(user.NewDAO(pgRW, pgRO),
+		n))
 
 	// Register gRPC-Gateway handlers.
 	ctx, cancel := context.WithCancel(context.Background())

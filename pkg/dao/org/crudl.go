@@ -25,8 +25,8 @@ func (d *DAO) Create(ctx context.Context, org *api.Org) (*api.Org, error) {
 	org.CreatedAt = timestamppb.New(now)
 	org.UpdatedAt = timestamppb.New(now)
 
-	if err := d.pg.QueryRowContext(ctx, createOrg, org.GetName(), org.GetDisplayName(),
-		org.GetEmail(), now).Scan(&org.Id); err != nil {
+	if err := d.rw.QueryRowContext(ctx, createOrg, org.GetName(),
+		org.GetDisplayName(), org.GetEmail(), now).Scan(&org.Id); err != nil {
 		return nil, dao.DBToSentinel(err)
 	}
 
@@ -44,7 +44,7 @@ func (d *DAO) Read(ctx context.Context, orgID string) (*api.Org, error) {
 	org := &api.Org{}
 	var createdAt, updatedAt time.Time
 
-	if err := d.pg.QueryRowContext(ctx, readOrg, orgID).Scan(&org.Id, &org.Name,
+	if err := d.ro.QueryRowContext(ctx, readOrg, orgID).Scan(&org.Id, &org.Name,
 		&org.DisplayName, &org.Email, &createdAt, &updatedAt); err != nil {
 		return nil, dao.DBToSentinel(err)
 	}
@@ -70,8 +70,9 @@ func (d *DAO) Update(ctx context.Context, org *api.Org) (*api.Org, error) {
 	updatedAt := time.Now().UTC().Truncate(time.Microsecond)
 	org.UpdatedAt = timestamppb.New(updatedAt)
 
-	if err := d.pg.QueryRowContext(ctx, updateOrg, org.GetName(), org.GetDisplayName(),
-		org.GetEmail(), updatedAt, org.GetId()).Scan(&createdAt); err != nil {
+	if err := d.rw.QueryRowContext(ctx, updateOrg, org.GetName(),
+		org.GetDisplayName(), org.GetEmail(), updatedAt,
+		org.GetId()).Scan(&createdAt); err != nil {
 		return nil, dao.DBToSentinel(err)
 	}
 
@@ -93,7 +94,7 @@ func (d *DAO) Delete(ctx context.Context, orgID string) error {
 		return err
 	}
 
-	_, err := d.pg.ExecContext(ctx, deleteOrg, orgID)
+	_, err := d.rw.ExecContext(ctx, deleteOrg, orgID)
 
 	return dao.DBToSentinel(err)
 }
@@ -129,7 +130,7 @@ func (d *DAO) List(
 ) ([]*api.Org, int32, error) {
 	// Run count query.
 	var count int32
-	if err := d.pg.QueryRowContext(ctx, countOrgs).Scan(&count); err != nil {
+	if err := d.ro.QueryRowContext(ctx, countOrgs).Scan(&count); err != nil {
 		return nil, 0, dao.DBToSentinel(err)
 	}
 
@@ -149,7 +150,7 @@ func (d *DAO) List(
 	}
 
 	// Run list query.
-	rows, err := d.pg.QueryContext(ctx, query, args...)
+	rows, err := d.ro.QueryContext(ctx, query, args...)
 	if err != nil {
 		return nil, 0, dao.DBToSentinel(err)
 	}

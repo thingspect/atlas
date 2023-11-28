@@ -74,7 +74,7 @@ func New(cfg *config.Config) (*Eventer, error) {
 	}
 
 	return &Eventer{
-		ruleDAO: rule.NewDAO(pgRW),
+		ruleDAO: rule.NewDAO(pgRW, pgRO),
 		evDAO:   event.NewDAO(pgRW, pgRO),
 
 		evQueue:      nsq,

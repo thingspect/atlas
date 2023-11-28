@@ -7,12 +7,14 @@ import (
 
 // DAO contains functions to query and modify users in the database.
 type DAO struct {
-	pg *sql.DB
+	rw *sql.DB
+	ro *sql.DB
 }
 
 // NewDAO instantiates and returns a new DAO.
-func NewDAO(pg *sql.DB) *DAO {
+func NewDAO(rw *sql.DB, ro *sql.DB) *DAO {
 	return &DAO{
-		pg: pg,
+		rw: rw,
+		ro: ro,
 	}
 }
