@@ -71,9 +71,9 @@ func TestMain(m *testing.M) {
 	if err != nil {
 		log.Fatalf("TestMain dao.NewPgDB: %v", err)
 	}
-	globalOrgDAO = org.NewDAO(pg)
-	globalRuleDAO = rule.NewDAO(pg)
-	globalUserDAO = user.NewDAO(pg)
+	globalOrgDAO = org.NewDAO(pg, pg)
+	globalRuleDAO = rule.NewDAO(pg, pg)
+	globalUserDAO = user.NewDAO(pg, pg)
 	globalAlarmDAO = alarm.NewDAO(pg, pg)
 	globalAleDAO = alert.NewDAO(pg, pg)
 

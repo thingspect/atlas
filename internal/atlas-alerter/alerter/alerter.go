@@ -110,9 +110,9 @@ func New(cfg *config.Config) (*Alerter, error) {
 	}
 
 	return &Alerter{
-		orgDAO:   org.NewDAO(pgRW),
+		orgDAO:   org.NewDAO(pgRW, pgRO),
 		alarmDAO: alarm.NewDAO(pgRW, pgRO),
-		userDAO:  user.NewDAO(pgRW),
+		userDAO:  user.NewDAO(pgRW, pgRO),
 		aleDAO:   alert.NewDAO(pgRW, pgRO),
 		cache:    redis,
 
