@@ -39,7 +39,6 @@ services:
       - "1883:1883"
     volumes:
       - ./volume/mosquitto/config:/mosquitto/config
-      - ./volume/mosquitto/data:/mosquitto/data
 
   redis:
     image: redis:7-alpine
