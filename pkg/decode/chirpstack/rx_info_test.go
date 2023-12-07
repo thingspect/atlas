@@ -86,16 +86,17 @@ func TestParseRXInfos(t *testing.T) {
 		},
 		{
 			[]*gw.UplinkRxInfo{
+				{GatewayId: "aaa", GwTime: tsNow, Rssi: -80, Snr: 1},
 				{
-					GatewayId: "aaa", Time: tsNow, Rssi: -80, Snr: 1,
-				},
-				{
-					GatewayId: gatewayID, Time: tsNow, Rssi: -74, Snr: 7,
+					GatewayId: gatewayID, GwTime: tsNow, Rssi: -74, Snr: 7,
 					Metadata: map[string]string{"aaa": "bbb"},
 				},
 			}, tsNow, []*decode.Point{
 				{Attr: "gateway_id", Value: gatewayID},
-				{Attr: "time", Value: strconv.FormatInt(now.Unix(), 10)},
+				{
+					Attr:  "gateway_time",
+					Value: strconv.FormatInt(now.Unix(), 10),
+				},
 				{Attr: "lora_rssi", Value: int32(-74)},
 				{Attr: "lora_snr", Value: float64(7)},
 				{Attr: "channel", Value: int32(0)},
@@ -104,10 +105,13 @@ func TestParseRXInfos(t *testing.T) {
 		},
 		{
 			[]*gw.UplinkRxInfo{
-				{GatewayId: gatewayID, Time: tsBad, Rssi: -74, Snr: 7},
+				{GatewayId: gatewayID, GwTime: tsBad, Rssi: -74, Snr: 7},
 			}, nil, []*decode.Point{
 				{Attr: "gateway_id", Value: gatewayID},
-				{Attr: "time", Value: strconv.FormatInt(bad.Unix(), 10)},
+				{
+					Attr:  "gateway_time",
+					Value: strconv.FormatInt(bad.Unix(), 10),
+				},
 				{Attr: "lora_rssi", Value: int32(-74)},
 				{Attr: "lora_snr", Value: float64(7)},
 				{Attr: "channel", Value: int32(0)},

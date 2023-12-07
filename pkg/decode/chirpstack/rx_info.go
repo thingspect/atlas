@@ -66,14 +66,15 @@ func ParseRXInfos(rxInfos []*gw.UplinkRxInfo) (
 
 	// Populate time channel if it is provided by the gateway. Use it as msgTime
 	// if it is accurate.
-	if rxInfos[0].GetTime() != nil {
+	if rxInfos[0].GetGwTime() != nil {
 		msgs = append(msgs, &decode.Point{
-			Attr: "time", Value: strconv.FormatInt(rxInfos[0].GetTime().GetSeconds(), 10),
+			Attr:  "gateway_time",
+			Value: strconv.FormatInt(rxInfos[0].GetGwTime().GetSeconds(), 10),
 		})
 
-		ts := rxInfos[0].GetTime().AsTime()
+		ts := rxInfos[0].GetGwTime().AsTime()
 		if ts.Before(msgTime.AsTime()) && time.Since(ts) < decode.ValidWindow {
-			msgTime = rxInfos[0].GetTime()
+			msgTime = rxInfos[0].GetGwTime()
 		}
 	}
 

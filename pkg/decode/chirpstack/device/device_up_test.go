@@ -64,23 +64,25 @@ func TestDeviceUp(t *testing.T) {
 		{
 			&integration.UplinkEvent{
 				RxInfo: []*gw.UplinkRxInfo{
-					{
-						GatewayId: "aaa", Time: tsNow, Rssi: -80, Snr: 1,
-					}, {
-						GatewayId: gatewayID, Time: tsNow, Rssi: -74, Snr: 7,
-					},
+					{GatewayId: "aaa", GwTime: tsNow, Rssi: -80, Snr: 1},
+					{GatewayId: gatewayID, GwTime: tsNow, Rssi: -74, Snr: 7},
 				}, TxInfo: &gw.UplinkTxInfo{Frequency: 902700000}, Adr: true,
 				Dr: 3, Data: bData, Confirmed: true,
-			}, []*decode.Point{
+			},
+			[]*decode.Point{
 				{Attr: "raw_device", Value: fmt.Sprintf(`{"adr":true,"dr":3,`+
 					`"confirmed":true,"data":"%s","rxInfo":[{"gatewayId":`+
-					`"aaa","time":"%s","rssi":-80,"snr":1},{"gatewayId":"%s",`+
-					`"time":"%s","rssi":-74,"snr":7}],"txInfo":{"frequency":`+
-					`902700000}}`, b64Data, now.Format(time.RFC3339Nano),
-					gatewayID, now.Format(time.RFC3339Nano))},
+					`"aaa","gwTime":"%s","rssi":-80,"snr":1},{"gatewayId":`+
+					`"%s","gwTime":"%s","rssi":-74,"snr":7}],"txInfo":{`+
+					`"frequency":902700000}}`, b64Data,
+					now.Format(time.RFC3339Nano), gatewayID,
+					now.Format(time.RFC3339Nano))},
 				{Attr: "raw_data", Value: hex.EncodeToString(bData)},
 				{Attr: "gateway_id", Value: gatewayID},
-				{Attr: "time", Value: strconv.FormatInt(now.Unix(), 10)},
+				{
+					Attr:  "gateway_time",
+					Value: strconv.FormatInt(now.Unix(), 10),
+				},
 				{Attr: "lora_rssi", Value: int32(-74)},
 				{Attr: "lora_snr", Value: float64(7)},
 				{Attr: "channel", Value: int32(0)},
@@ -88,7 +90,8 @@ func TestDeviceUp(t *testing.T) {
 				{Attr: "adr", Value: true},
 				{Attr: "data_rate", Value: int32(3)},
 				{Attr: "confirmed", Value: true},
-			}, now, bData, "",
+			},
+			now, bData, "",
 		},
 		// Device Uplink bad length.
 		{
