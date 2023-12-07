@@ -12,7 +12,8 @@ import (
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
-// ParseRXInfo parses a gateway UplinkRxInfo payload according to the spec.
+// ParseRXInfo parses a gateway UplinkRxInfo payload according to the spec for
+// gateway and device use.
 func ParseRXInfo(rxInfo *gw.UplinkRxInfo) []*decode.Point {
 	if rxInfo == nil {
 		return nil
@@ -41,7 +42,8 @@ func ParseRXInfo(rxInfo *gw.UplinkRxInfo) []*decode.Point {
 	return msgs
 }
 
-// ParseRXInfos parses a gateway UplinkRxInfo slice according to the spec.
+// ParseRXInfos parses a gateway UplinkRxInfo slice according to the spec for
+// device use.
 func ParseRXInfos(rxInfos []*gw.UplinkRxInfo) (
 	*timestamppb.Timestamp, []*decode.Point,
 ) {

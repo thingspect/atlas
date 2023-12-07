@@ -30,7 +30,8 @@ func gatewayStats(body []byte) ([]*decode.Point, error) {
 	}
 	if statsMsg.GetTime() != nil {
 		msgs = append(msgs, &decode.Point{
-			Attr: "time", Value: strconv.FormatInt(statsMsg.GetTime().GetSeconds(), 10),
+			Attr:  "gateway_time",
+			Value: strconv.FormatInt(statsMsg.GetTime().GetSeconds(), 10),
 		})
 	}
 	if statsMsg.GetRxPacketsReceived() != 0 {
