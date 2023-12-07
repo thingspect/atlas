@@ -51,7 +51,10 @@ func TestGatewayStats(t *testing.T) {
 					`"txPacketsEmitted":4,"metadata":{"aaa":"bbb"}}`, uniqID,
 					now.Format(time.RFC3339Nano))},
 				{Attr: "id", Value: uniqID},
-				{Attr: "time", Value: strconv.FormatInt(now.Unix(), 10)},
+				{
+					Attr:  "gateway_time",
+					Value: strconv.FormatInt(now.Unix(), 10),
+				},
 				{Attr: "rx_received", Value: int32(1)},
 				{Attr: "rx_received_valid", Value: int32(2)},
 				{Attr: "tx_received", Value: int32(3)},
