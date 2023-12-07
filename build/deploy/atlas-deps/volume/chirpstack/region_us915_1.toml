@@ -22,7 +22,6 @@ client_id="$CS_REGION_US915_1_MQTT_CLIENT_ID"
 ca_cert=""
 tls_cert=""
 tls_key=""
-v4_migrate=false
 
 [[regions.gateway.channels]]
 frequency=903900000
