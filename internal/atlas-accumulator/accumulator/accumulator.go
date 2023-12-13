@@ -9,12 +9,12 @@ import (
 	"os/signal"
 	"syscall"
 
-	"github.com/thingspect/api/go/common"
 	"github.com/thingspect/atlas/internal/atlas-accumulator/config"
 	"github.com/thingspect/atlas/pkg/alog"
 	"github.com/thingspect/atlas/pkg/dao"
 	"github.com/thingspect/atlas/pkg/dao/datapoint"
 	"github.com/thingspect/atlas/pkg/queue"
+	"github.com/thingspect/proto/go/common"
 )
 
 // ServiceName provides consistent naming, including logs and metrics.

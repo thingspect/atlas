@@ -8,7 +8,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/require"
-	"github.com/thingspect/atlas/api/go/token"
+	"github.com/thingspect/atlas/proto/go/token"
 	"go.uber.org/mock/gomock"
 )
 

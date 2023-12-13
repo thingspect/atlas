@@ -6,8 +6,8 @@ import (
 	"context"
 	"time"
 
-	"github.com/thingspect/api/go/api"
 	"github.com/thingspect/atlas/internal/atlas-api/session"
+	"github.com/thingspect/proto/go/api"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )

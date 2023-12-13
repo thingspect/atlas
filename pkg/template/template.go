@@ -6,8 +6,8 @@ import (
 	"html/template"
 	"strings"
 
-	"github.com/thingspect/api/go/api"
-	"github.com/thingspect/api/go/common"
+	"github.com/thingspect/proto/go/api"
+	"github.com/thingspect/proto/go/common"
 )
 
 // Generate generates HTML-safe output from templates using the Go template

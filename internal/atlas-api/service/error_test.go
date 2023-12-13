@@ -8,9 +8,9 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/require"
-	"github.com/thingspect/api/go/api"
 	"github.com/thingspect/atlas/pkg/dao"
 	"github.com/thingspect/atlas/pkg/test/random"
+	"github.com/thingspect/proto/go/api"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )

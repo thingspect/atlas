@@ -8,12 +8,12 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/thingspect/api/go/api"
 	"github.com/thingspect/atlas/internal/atlas-api/crypto"
 	"github.com/thingspect/atlas/internal/atlas-api/key"
 	"github.com/thingspect/atlas/internal/atlas-api/session"
 	"github.com/thingspect/atlas/pkg/alog"
 	"github.com/thingspect/atlas/pkg/cache"
+	"github.com/thingspect/proto/go/api"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"

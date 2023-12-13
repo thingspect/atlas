@@ -9,7 +9,6 @@ import (
 	"testing"
 	"time"
 
-	"github.com/thingspect/api/go/api"
 	iapi "github.com/thingspect/atlas/internal/atlas-api/api"
 	"github.com/thingspect/atlas/internal/atlas-api/config"
 	"github.com/thingspect/atlas/internal/atlas-api/crypto"
@@ -22,6 +21,7 @@ import (
 	"github.com/thingspect/atlas/pkg/queue"
 	testconfig "github.com/thingspect/atlas/pkg/test/config"
 	"github.com/thingspect/atlas/pkg/test/random"
+	"github.com/thingspect/proto/go/api"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 	"google.golang.org/grpc/encoding/gzip"

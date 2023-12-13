@@ -8,8 +8,8 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/require"
-	"github.com/thingspect/api/go/api"
 	"github.com/thingspect/atlas/pkg/decode"
+	"github.com/thingspect/proto/go/api"
 )
 
 func TestNew(t *testing.T) {

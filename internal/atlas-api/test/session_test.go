@@ -9,10 +9,10 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/require"
-	"github.com/thingspect/api/go/api"
 	iapi "github.com/thingspect/atlas/internal/atlas-api/api"
 	"github.com/thingspect/atlas/internal/atlas-api/session"
 	"github.com/thingspect/atlas/pkg/test/random"
+	"github.com/thingspect/proto/go/api"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 )

@@ -5,8 +5,8 @@ package service
 import (
 	"context"
 
-	"github.com/thingspect/api/go/api"
 	"github.com/thingspect/atlas/internal/atlas-api/session"
+	"github.com/thingspect/proto/go/api"
 )
 
 // Tagger defines the methods provided by a tag.DAO.

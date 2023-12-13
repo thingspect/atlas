@@ -5,13 +5,13 @@ import (
 	"context"
 	"time"
 
-	"github.com/thingspect/api/go/api"
-	"github.com/thingspect/atlas/api/go/message"
 	"github.com/thingspect/atlas/pkg/alog"
 	"github.com/thingspect/atlas/pkg/consterr"
 	"github.com/thingspect/atlas/pkg/metric"
 	"github.com/thingspect/atlas/pkg/queue"
 	"github.com/thingspect/atlas/pkg/template"
+	"github.com/thingspect/atlas/proto/go/message"
+	"github.com/thingspect/proto/go/api"
 	"google.golang.org/protobuf/proto"
 )
 

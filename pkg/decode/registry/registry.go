@@ -4,11 +4,11 @@ package registry
 import (
 	"fmt"
 
-	"github.com/thingspect/api/go/api"
 	"github.com/thingspect/atlas/pkg/consterr"
 	"github.com/thingspect/atlas/pkg/decode"
 	"github.com/thingspect/atlas/pkg/decode/globalsat"
 	"github.com/thingspect/atlas/pkg/decode/radiobridge"
+	"github.com/thingspect/proto/go/api"
 )
 
 // ErrNotFound is returned when a decoder function name is not registered.

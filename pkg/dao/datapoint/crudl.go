@@ -5,9 +5,9 @@ import (
 	"strings"
 	"time"
 
-	"github.com/thingspect/api/go/common"
 	"github.com/thingspect/atlas/pkg/alog"
 	"github.com/thingspect/atlas/pkg/dao"
+	"github.com/thingspect/proto/go/common"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 

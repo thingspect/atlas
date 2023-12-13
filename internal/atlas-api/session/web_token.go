@@ -5,10 +5,10 @@ import (
 	"time"
 
 	"github.com/google/uuid"
-	"github.com/thingspect/api/go/api"
-	"github.com/thingspect/atlas/api/go/token"
 	"github.com/thingspect/atlas/internal/atlas-api/crypto"
 	"github.com/thingspect/atlas/pkg/consterr"
+	"github.com/thingspect/atlas/proto/go/token"
+	"github.com/thingspect/proto/go/api"
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )

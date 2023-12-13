@@ -11,7 +11,7 @@ package matcher
 import (
 	reflect "reflect"
 
-	token "github.com/thingspect/atlas/api/go/token"
+	token "github.com/thingspect/atlas/proto/go/token"
 	gomock "go.uber.org/mock/gomock"
 )
 
