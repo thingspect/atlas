@@ -12,7 +12,6 @@ import (
 
 	"github.com/NYTimes/gziphandler"
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
-	"github.com/thingspect/api/go/api"
 	"github.com/thingspect/atlas/internal/atlas-api/config"
 	"github.com/thingspect/atlas/internal/atlas-api/interceptor"
 	"github.com/thingspect/atlas/internal/atlas-api/lora"
@@ -33,6 +32,7 @@ import (
 	"github.com/thingspect/atlas/pkg/dao/user"
 	"github.com/thingspect/atlas/pkg/notify"
 	"github.com/thingspect/atlas/pkg/queue"
+	"github.com/thingspect/proto/go/api"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 	_ "google.golang.org/grpc/encoding/gzip" // For UseCompressor CallOption.

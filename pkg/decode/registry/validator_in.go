@@ -1,10 +1,10 @@
 package registry
 
 import (
-	"github.com/thingspect/api/go/common"
-	"github.com/thingspect/atlas/api/go/message"
 	"github.com/thingspect/atlas/pkg/alog"
 	"github.com/thingspect/atlas/pkg/decode"
+	"github.com/thingspect/atlas/proto/go/message"
+	"github.com/thingspect/proto/go/common"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 

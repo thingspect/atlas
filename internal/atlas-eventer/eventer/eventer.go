@@ -9,13 +9,13 @@ import (
 	"os/signal"
 	"syscall"
 
-	"github.com/thingspect/api/go/api"
 	"github.com/thingspect/atlas/internal/atlas-eventer/config"
 	"github.com/thingspect/atlas/pkg/alog"
 	"github.com/thingspect/atlas/pkg/dao"
 	"github.com/thingspect/atlas/pkg/dao/event"
 	"github.com/thingspect/atlas/pkg/dao/rule"
 	"github.com/thingspect/atlas/pkg/queue"
+	"github.com/thingspect/proto/go/api"
 )
 
 // ServiceName provides consistent naming, including logs and metrics.

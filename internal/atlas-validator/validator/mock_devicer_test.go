@@ -12,7 +12,7 @@ import (
 	context "context"
 	reflect "reflect"
 
-	api "github.com/thingspect/api/go/api"
+	api "github.com/thingspect/proto/go/api"
 	gomock "go.uber.org/mock/gomock"
 )
 

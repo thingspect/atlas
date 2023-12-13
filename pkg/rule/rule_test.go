@@ -8,7 +8,7 @@ import (
 	"time"
 
 	"github.com/stretchr/testify/require"
-	"github.com/thingspect/api/go/common"
+	"github.com/thingspect/proto/go/common"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 

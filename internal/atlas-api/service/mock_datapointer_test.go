@@ -13,7 +13,7 @@ import (
 	reflect "reflect"
 	time "time"
 
-	common "github.com/thingspect/api/go/common"
+	common "github.com/thingspect/proto/go/common"
 	gomock "go.uber.org/mock/gomock"
 )
 

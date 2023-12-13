@@ -10,11 +10,11 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/require"
-	"github.com/thingspect/api/go/api"
-	"github.com/thingspect/api/go/common"
-	"github.com/thingspect/atlas/api/go/message"
 	"github.com/thingspect/atlas/internal/atlas-alerter/alerter"
 	"github.com/thingspect/atlas/pkg/test/random"
+	"github.com/thingspect/atlas/proto/go/message"
+	"github.com/thingspect/proto/go/api"
+	"github.com/thingspect/proto/go/common"
 	"google.golang.org/protobuf/proto"
 )
 

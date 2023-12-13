@@ -7,8 +7,8 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/require"
-	"github.com/thingspect/api/go/api"
-	"github.com/thingspect/api/go/common"
+	"github.com/thingspect/proto/go/api"
+	"github.com/thingspect/proto/go/common"
 )
 
 func TestGenerate(t *testing.T) {

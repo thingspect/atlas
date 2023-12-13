@@ -10,7 +10,6 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/thingspect/api/go/api"
 	"github.com/thingspect/atlas/internal/atlas-decoder/config"
 	"github.com/thingspect/atlas/pkg/alog"
 	"github.com/thingspect/atlas/pkg/cache"
@@ -18,6 +17,7 @@ import (
 	"github.com/thingspect/atlas/pkg/dao/device"
 	"github.com/thingspect/atlas/pkg/decode/registry"
 	"github.com/thingspect/atlas/pkg/queue"
+	"github.com/thingspect/proto/go/api"
 )
 
 // ServiceName provides consistent naming, including logs and metrics.

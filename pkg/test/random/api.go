@@ -5,7 +5,7 @@ import (
 	"time"
 
 	"github.com/google/uuid"
-	"github.com/thingspect/api/go/api"
+	"github.com/thingspect/proto/go/api"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 

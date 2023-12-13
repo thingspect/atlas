@@ -19,8 +19,8 @@ func ParseRXInfo(rxInfo *gw.UplinkRxInfo) []*decode.Point {
 		return nil
 	}
 
-	// Preallocate at least as large of a slice as exists in rxInfo.Metadata.
-	msgs := make([]*decode.Point, 0, len(rxInfo.GetMetadata()))
+	// Preallocate as large of a slice as exists in rxInfo.Metadata and channel.
+	msgs := make([]*decode.Point, 0, len(rxInfo.GetMetadata())+1)
 
 	if rxInfo.GetRssi() != 0 {
 		msgs = append(msgs, &decode.Point{

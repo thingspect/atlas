@@ -5,8 +5,8 @@ import (
 	"time"
 
 	"github.com/expr-lang/expr"
-	"github.com/thingspect/api/go/common"
 	"github.com/thingspect/atlas/pkg/consterr"
+	"github.com/thingspect/proto/go/common"
 )
 
 // ErrNotBool is returned when the expression being evaluated is not boolean.
