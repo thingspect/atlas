@@ -29,12 +29,10 @@ install:
 
 lint:
 	go install honnef.co/go/tools/cmd/staticcheck@latest
-	staticcheck -version
 # staticcheck defaults are all,-ST1000,-ST1003,-ST1016,-ST1020,-ST1021,-ST1022
 	staticcheck -checks all ./...
 
 	go install github.com/golangci/golangci-lint/cmd/golangci-lint@latest
-	golangci-lint version
 	golangci-lint run -E bidichk,durationcheck,errname,exportloopref \
 	-E forcetypeassert,godot,goerr113,gofumpt,gosec,nlreturn,prealloc \
 	-E protogetter,testifylint,unconvert,unparam,usestdlibvars \
@@ -51,11 +49,13 @@ init_db:
 	migrate -path config/db/atlas -database $(TEST_PG_URI) up
 
 test: install lint unit_test integration_test
-# -count 1 is the idiomatic way to disable test caching in package list mode
+# -count=1 is the idiomatic way to disable test caching in package list mode
 unit_test:
-	go test -count=1 -cover -cpu 1,4 -failfast $(RFLAG) -tags unit ./...
+	go test -count=1 -cover -cpu=1,4 -failfast -shuffle=on $(RFLAG) -tags unit \
+	./...
 integration_test: init_db
-	go test -count=1 -cover -cpu 1,4 -failfast $(RFLAG) -tags integration ./...
+	go test -count=1 -cover -cpu=1,4 -failfast -shuffle=on $(RFLAG) -tags \
+	integration ./...
 
 mod:
 	go get -t -u ./... || true
@@ -67,7 +67,6 @@ mod:
 
 generate:
 	go install go.uber.org/mock/mockgen@latest
-	mockgen -version
 	go generate -x ./...
 	find . -type f -name 'mock_*.go' -exec sh -c \
 	'echo "//lint:file-ignore ST1000 Mockgen package comment" >> {}' \;
