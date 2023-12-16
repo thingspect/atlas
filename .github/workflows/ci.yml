@@ -46,7 +46,6 @@ jobs:
         run: |
           apk update && apk upgrade
           apk add --no-cache git tar make
-          go version
           go env
       - name: Clone
         uses: actions/checkout@v4
@@ -68,7 +67,6 @@ jobs:
         # Run Dockerfile build and condense four actions into one step
         run: |
           apk add --no-cache docker docker-cli-buildx
-          docker version
           docker login -u thingspect -p ${{ secrets.GHCR_PAT }} ghcr.io
           git config --global --add safe.directory /__w/atlas/atlas
           TAG=$(git rev-parse --short=8 HEAD)
