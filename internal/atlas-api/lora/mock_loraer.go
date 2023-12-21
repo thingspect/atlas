@@ -5,6 +5,7 @@
 //
 //	mockgen -source loraer.go -destination mock_loraer.go -package lora
 //
+
 // Package lora is a generated GoMock package.
 package lora
 
@@ -93,4 +94,3 @@ func (mr *MockLoraerMockRecorder) DeleteGateway(ctx, uniqID any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteGateway", reflect.TypeOf((*MockLoraer)(nil).DeleteGateway), ctx, uniqID)
 }
-//lint:file-ignore ST1000 Mockgen package comment

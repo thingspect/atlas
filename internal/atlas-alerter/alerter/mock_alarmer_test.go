@@ -5,6 +5,7 @@
 //
 //	mockgen -source alerter.go -destination mock_alarmer_test.go -package alerter
 //
+
 // Package alerter is a generated GoMock package.
 package alerter
 
@@ -168,4 +169,3 @@ func (mr *MockalerterMockRecorder) Create(ctx, alert any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Create", reflect.TypeOf((*Mockalerter)(nil).Create), ctx, alert)
 }
-//lint:file-ignore ST1000 Mockgen package comment

@@ -5,6 +5,7 @@
 //
 //	mockgen -source accumulator.go -destination mock_datapointer_test.go -package accumulator
 //
+
 // Package accumulator is a generated GoMock package.
 package accumulator
 
@@ -52,4 +53,3 @@ func (mr *MockdatapointerMockRecorder) Create(ctx, point, orgID any) *gomock.Cal
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Create", reflect.TypeOf((*Mockdatapointer)(nil).Create), ctx, point, orgID)
 }
-//lint:file-ignore ST1000 Mockgen package comment

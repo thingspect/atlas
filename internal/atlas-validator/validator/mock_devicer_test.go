@@ -5,6 +5,7 @@
 //
 //	mockgen -source validator.go -destination mock_devicer_test.go -package validator
 //
+
 // Package validator is a generated GoMock package.
 package validator
 
@@ -53,4 +54,3 @@ func (mr *MockdevicerMockRecorder) ReadByUniqID(ctx, uniqID any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ReadByUniqID", reflect.TypeOf((*Mockdevicer)(nil).ReadByUniqID), ctx, uniqID)
 }
-//lint:file-ignore ST1000 Mockgen package comment

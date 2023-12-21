@@ -5,6 +5,7 @@
 //
 //	mockgen -source tag.go -destination mock_tagger_test.go -package service
 //
+
 // Package service is a generated GoMock package.
 package service
 
@@ -52,4 +53,3 @@ func (mr *MockTaggerMockRecorder) List(ctx, orgID any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "List", reflect.TypeOf((*MockTagger)(nil).List), ctx, orgID)
 }
-//lint:file-ignore ST1000 Mockgen package comment

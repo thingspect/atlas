@@ -68,5 +68,3 @@ mod:
 generate:
 	go install go.uber.org/mock/mockgen@latest
 	go generate -x ./...
-	find . -type f -name 'mock_*.go' -exec sh -c \
-	'echo "//lint:file-ignore ST1000 Mockgen package comment" >> {}' \;

@@ -5,6 +5,7 @@
 //
 //	mockgen -source cacher.go -destination mock_cacher.go -package cache
 //
+
 // Package cache is a generated GoMock package.
 package cache
 
@@ -187,4 +188,3 @@ func (mr *MockCacherMockRecorder) SetTTL(ctx, key, value, exp any) *gomock.Call 
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SetTTL", reflect.TypeOf((*MockCacher)(nil).SetTTL), ctx, key, value, exp)
 }
-//lint:file-ignore ST1000 Mockgen package comment

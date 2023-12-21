@@ -11,16 +11,16 @@ require (
 	github.com/gregdel/pushover v1.3.0
 	github.com/grpc-ecosystem/grpc-gateway/v2 v2.18.1
 	github.com/jackc/pgx/v5 v5.5.1
-	github.com/jellydator/ttlcache/v3 v3.1.0
+	github.com/jellydator/ttlcache/v3 v3.1.1
 	github.com/mennanov/fmutils v0.2.1
 	github.com/nsqio/go-nsq v1.1.0
-	github.com/redis/go-redis/v9 v9.3.0
+	github.com/redis/go-redis/v9 v9.3.1
 	github.com/smira/go-statsd v1.3.3
 	github.com/stretchr/testify v1.8.4
 	github.com/thingspect/proto/go v1.1.0
-	go.uber.org/mock v0.3.0
-	golang.org/x/crypto v0.16.0
-	google.golang.org/grpc v1.60.0
+	go.uber.org/mock v0.4.0
+	golang.org/x/crypto v0.17.0
+	google.golang.org/grpc v1.60.1
 	google.golang.org/protobuf v1.31.0
 )
 

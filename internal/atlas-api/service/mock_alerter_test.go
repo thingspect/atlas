@@ -5,6 +5,7 @@
 //
 //	mockgen -source alert.go -destination mock_alerter_test.go -package service
 //
+
 // Package service is a generated GoMock package.
 package service
 
@@ -54,4 +55,3 @@ func (mr *MockAlerterMockRecorder) List(ctx, orgID, uniqID, devID, alarmID, user
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "List", reflect.TypeOf((*MockAlerter)(nil).List), ctx, orgID, uniqID, devID, alarmID, userID, end, start)
 }
-//lint:file-ignore ST1000 Mockgen package comment

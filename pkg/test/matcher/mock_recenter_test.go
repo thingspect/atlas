@@ -5,6 +5,7 @@
 //
 //	mockgen -source recent_test.go -destination mock_recenter_test.go -package matcher
 //
+
 // Package matcher is a generated GoMock package.
 package matcher
 
@@ -51,4 +52,3 @@ func (mr *MockrecenterMockRecorder) f(t any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "f", reflect.TypeOf((*Mockrecenter)(nil).f), t)
 }
-//lint:file-ignore ST1000 Mockgen package comment
