@@ -5,6 +5,7 @@
 //
 //	mockgen -destination mock_respwriter_test.go -package api -build_flags=-mod=mod net/http ResponseWriter
 //
+
 // Package api is a generated GoMock package.
 package api
 
@@ -78,4 +79,3 @@ func (mr *MockResponseWriterMockRecorder) WriteHeader(arg0 any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "WriteHeader", reflect.TypeOf((*MockResponseWriter)(nil).WriteHeader), arg0)
 }
-//lint:file-ignore ST1000 Mockgen package comment

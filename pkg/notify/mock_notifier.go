@@ -5,6 +5,7 @@
 //
 //	mockgen -source notifier.go -destination mock_notifier.go -package notify
 //
+
 // Package notify is a generated GoMock package.
 package notify
 
@@ -107,4 +108,3 @@ func (mr *MockNotifierMockRecorder) ValidateSMS(ctx, phone any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ValidateSMS", reflect.TypeOf((*MockNotifier)(nil).ValidateSMS), ctx, phone)
 }
-//lint:file-ignore ST1000 Mockgen package comment

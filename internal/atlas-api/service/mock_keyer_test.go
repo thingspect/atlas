@@ -5,6 +5,7 @@
 //
 //	mockgen -source session.go -destination mock_keyer_test.go -package service
 //
+
 // Package service is a generated GoMock package.
 package service
 
@@ -84,4 +85,3 @@ func (mr *MockKeyerMockRecorder) List(ctx, orgID, lBoundTS, prevID, limit any) *
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "List", reflect.TypeOf((*MockKeyer)(nil).List), ctx, orgID, lBoundTS, prevID, limit)
 }
-//lint:file-ignore ST1000 Mockgen package comment

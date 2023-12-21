@@ -5,6 +5,7 @@
 //
 //	mockgen -source eventer.go -destination mock_ruler_test.go -package eventer
 //
+
 // Package eventer is a generated GoMock package.
 package eventer
 
@@ -90,4 +91,3 @@ func (mr *MockeventerMockRecorder) Create(ctx, event any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Create", reflect.TypeOf((*Mockeventer)(nil).Create), ctx, event)
 }
-//lint:file-ignore ST1000 Mockgen package comment

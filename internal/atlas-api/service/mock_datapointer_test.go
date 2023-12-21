@@ -5,6 +5,7 @@
 //
 //	mockgen -source datapoint.go -destination mock_datapointer_test.go -package service
 //
+
 // Package service is a generated GoMock package.
 package service
 
@@ -69,4 +70,3 @@ func (mr *MockDataPointerMockRecorder) List(ctx, orgID, uniqID, devID, attr, end
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "List", reflect.TypeOf((*MockDataPointer)(nil).List), ctx, orgID, uniqID, devID, attr, end, start)
 }
-//lint:file-ignore ST1000 Mockgen package comment

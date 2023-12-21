@@ -5,6 +5,7 @@
 //
 //	mockgen -source rule.go -destination mock_ruler_test.go -package service
 //
+
 // Package service is a generated GoMock package.
 package service
 
@@ -114,4 +115,3 @@ func (mr *MockRulerMockRecorder) Update(ctx, rule any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Update", reflect.TypeOf((*MockRuler)(nil).Update), ctx, rule)
 }
-//lint:file-ignore ST1000 Mockgen package comment

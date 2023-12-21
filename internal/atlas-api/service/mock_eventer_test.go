@@ -5,6 +5,7 @@
 //
 //	mockgen -source event.go -destination mock_eventer_test.go -package service
 //
+
 // Package service is a generated GoMock package.
 package service
 
@@ -69,4 +70,3 @@ func (mr *MockEventerMockRecorder) List(ctx, orgID, uniqID, devID, ruleID, end, 
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "List", reflect.TypeOf((*MockEventer)(nil).List), ctx, orgID, uniqID, devID, ruleID, end, start)
 }
-//lint:file-ignore ST1000 Mockgen package comment

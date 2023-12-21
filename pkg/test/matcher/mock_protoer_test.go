@@ -5,6 +5,7 @@
 //
 //	mockgen -source proto_test.go -destination mock_protoer_test.go -package matcher
 //
+
 // Package matcher is a generated GoMock package.
 package matcher
 
@@ -51,4 +52,3 @@ func (mr *MockprotoerMockRecorder) f(vIn any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "f", reflect.TypeOf((*Mockprotoer)(nil).f), vIn)
 }
-//lint:file-ignore ST1000 Mockgen package comment

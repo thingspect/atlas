@@ -5,6 +5,7 @@
 //
 //	mockgen -source device.go -destination mock_devicer_test.go -package service
 //
+
 // Package service is a generated GoMock package.
 package service
 
@@ -114,4 +115,3 @@ func (mr *MockDevicerMockRecorder) Update(ctx, dev any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Update", reflect.TypeOf((*MockDevicer)(nil).Update), ctx, dev)
 }
-//lint:file-ignore ST1000 Mockgen package comment

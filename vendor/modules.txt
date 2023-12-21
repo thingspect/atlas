@@ -91,7 +91,7 @@ github.com/jackc/pgx/v5/stdlib
 ## explicit; go 1.19
 github.com/jackc/puddle/v2
 github.com/jackc/puddle/v2/internal/genstack
-# github.com/jellydator/ttlcache/v3 v3.1.0
+# github.com/jellydator/ttlcache/v3 v3.1.1
 ## explicit; go 1.18
 github.com/jellydator/ttlcache/v3
 # github.com/mennanov/fmutils v0.2.1
@@ -103,7 +103,7 @@ github.com/nsqio/go-nsq
 # github.com/pmezard/go-difflib v1.0.0
 ## explicit
 github.com/pmezard/go-difflib/difflib
-# github.com/redis/go-redis/v9 v9.3.0
+# github.com/redis/go-redis/v9 v9.3.1
 ## explicit; go 1.18
 github.com/redis/go-redis/v9
 github.com/redis/go-redis/v9/internal
@@ -127,10 +127,10 @@ github.com/stretchr/testify/require
 github.com/thingspect/proto/go/api
 github.com/thingspect/proto/go/common
 github.com/thingspect/proto/go/mqtt
-# go.uber.org/mock v0.3.0
+# go.uber.org/mock v0.4.0
 ## explicit; go 1.20
 go.uber.org/mock/gomock
-# golang.org/x/crypto v0.16.0
+# golang.org/x/crypto v0.17.0
 ## explicit; go 1.18
 golang.org/x/crypto/bcrypt
 golang.org/x/crypto/blowfish
@@ -178,7 +178,7 @@ google.golang.org/genproto/googleapis/api/httpbody
 # google.golang.org/genproto/googleapis/rpc v0.0.0-20231212172506-995d672761c0
 ## explicit; go 1.19
 google.golang.org/genproto/googleapis/rpc/status
-# google.golang.org/grpc v1.60.0
+# google.golang.org/grpc v1.60.1
 ## explicit; go 1.19
 google.golang.org/grpc
 google.golang.org/grpc/attributes

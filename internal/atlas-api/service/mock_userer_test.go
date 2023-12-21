@@ -5,6 +5,7 @@
 //
 //	mockgen -source user.go -destination mock_userer_test.go -package service
 //
+
 // Package service is a generated GoMock package.
 package service
 
@@ -144,4 +145,3 @@ func (mr *MockUsererMockRecorder) UpdatePassword(ctx, userID, orgID, passHash an
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdatePassword", reflect.TypeOf((*MockUserer)(nil).UpdatePassword), ctx, userID, orgID, passHash)
 }
-//lint:file-ignore ST1000 Mockgen package comment

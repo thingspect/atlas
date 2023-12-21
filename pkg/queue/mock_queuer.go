@@ -5,6 +5,7 @@
 //
 //	mockgen -source queuer.go -destination mock_queuer.go -package queue
 //
+
 // Package queue is a generated GoMock package.
 package queue
 
@@ -217,4 +218,3 @@ func (mr *MockQueuerMockRecorder) Subscribe(topic any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Subscribe", reflect.TypeOf((*MockQueuer)(nil).Subscribe), topic)
 }
-//lint:file-ignore ST1000 Mockgen package comment
