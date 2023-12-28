@@ -14,11 +14,11 @@ services:
       - ./volume/postgres:/var/lib/postgresql/data
 
   nsqlookupd:
-    image: nsqio/nsq:v1.2.1
+    image: nsqio/nsq:v1.3.0
     command: /nsqlookupd
 
   nsqd:
-    image: nsqio/nsq:v1.2.1
+    image: nsqio/nsq:v1.3.0
     command: /nsqd --lookupd-tcp-address=nsqlookupd:4160 --broadcast-address=nsqd
     depends_on:
       - nsqlookupd
@@ -26,7 +26,7 @@ services:
       - ./volume/nsqd:/data
 
   nsqadmin:
-    image: nsqio/nsq:v1.2.1
+    image: nsqio/nsq:v1.3.0
     command: /nsqadmin --lookupd-http-address=nsqlookupd:4161
     depends_on:
       - nsqlookupd
