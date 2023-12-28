@@ -10,13 +10,13 @@ services:
       - POSTGRES_DB=atlas_test
 
   nsqlookupd:
-    image: nsqio/nsq:v1.2.1
+    image: nsqio/nsq:v1.3.0
     command: /nsqlookupd
     ports:
       - "127.0.0.1:4161:4161"
 
   nsqd_nsqadmin:
-    image: nsqio/nsq:v1.2.1
+    image: nsqio/nsq:v1.3.0
     # Run nsqd and nsqadmin in the same container to support nsqd-nsqadmin
     # connectivity and clients outside of Docker without DNS manipulation
     command: >
