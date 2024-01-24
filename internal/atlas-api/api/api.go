@@ -275,4 +275,5 @@ func (api *API) Serve() {
 
 	alog.Info("Serve received signal, exiting")
 	api.httpCancel()
+	api.grpcSrv.GracefulStop()
 }
