@@ -8,6 +8,7 @@ import (
 	"github.com/thingspect/atlas/pkg/decode"
 	"github.com/thingspect/atlas/pkg/decode/globalsat"
 	"github.com/thingspect/atlas/pkg/decode/radiobridge"
+	"github.com/thingspect/atlas/pkg/decode/tektelic"
 	"github.com/thingspect/proto/go/api"
 )
 
@@ -34,6 +35,7 @@ func New() *Registry {
 			api.Decoder_GLOBALSAT_CO2:        globalsat.CO2,
 			api.Decoder_GLOBALSAT_CO:         globalsat.CO,
 			api.Decoder_GLOBALSAT_PM25:       globalsat.PM25,
+			api.Decoder_TEKTELIC_HOME:        tektelic.Home,
 		},
 	}
 }

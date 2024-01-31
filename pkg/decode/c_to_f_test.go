@@ -1,6 +1,6 @@
 //go:build !integration
 
-package globalsat
+package decode
 
 import (
 	"fmt"
@@ -30,7 +30,7 @@ func TestCToF(t *testing.T) {
 		t.Run(fmt.Sprintf("Can convert %+v", lTest), func(t *testing.T) {
 			t.Parallel()
 
-			res := cToF(lTest.inp)
+			res := CToF(lTest.inp)
 			t.Logf("res: %v", res)
 			require.InDelta(t, lTest.res, res, epsilon)
 		})

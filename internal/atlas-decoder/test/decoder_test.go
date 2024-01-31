@@ -46,6 +46,13 @@ func TestDecodeMessages(t *testing.T) {
 	t.Logf("createCO2Dev, err: %+v, %v", createCO2Dev, err)
 	require.NoError(t, err)
 
+	homeDev := random.Device("dec", createOrg.GetId())
+	homeDev.Status = api.Status_ACTIVE
+	homeDev.Decoder = api.Decoder_TEKTELIC_HOME
+	createHomeDev, err := globalDevDAO.Create(ctx, homeDev)
+	t.Logf("createHomeDev, err: %+v, %v", createHomeDev, err)
+	require.NoError(t, err)
+
 	tests := []struct {
 		inp *message.DecoderIn
 		res []*message.ValidatorIn
@@ -121,6 +128,43 @@ func TestDecodeMessages(t *testing.T) {
 					Point: &common.DataPoint{
 						UniqId: co2Dev.GetUniqId(), Attr: "co2_ppm",
 						ValOneof: &common.DataPoint_IntVal{IntVal: 658},
+						Ts:       now, TraceId: traceID.String(),
+					}, SkipToken: true,
+				},
+			},
+		},
+		{
+			&message.DecoderIn{
+				UniqId: homeDev.GetUniqId(), Data: []byte{
+					0x03, 0x67, 0x00, 0xc4, 0x04, 0x68, 0x7f, 0x00, 0xff, 0x01,
+					0x38,
+				}, Ts: now, TraceId: traceID[:],
+			}, []*message.ValidatorIn{
+				{
+					Point: &common.DataPoint{
+						UniqId: homeDev.GetUniqId(), Attr: "temp_c",
+						ValOneof: &common.DataPoint_Fl64Val{Fl64Val: 19.6},
+						Ts:       now, TraceId: traceID.String(),
+					}, SkipToken: true,
+				},
+				{
+					Point: &common.DataPoint{
+						UniqId: homeDev.GetUniqId(), Attr: "temp_f",
+						ValOneof: &common.DataPoint_Fl64Val{Fl64Val: 67.3},
+						Ts:       now, TraceId: traceID.String(),
+					}, SkipToken: true,
+				},
+				{
+					Point: &common.DataPoint{
+						UniqId: homeDev.GetUniqId(), Attr: "humidity_pct",
+						ValOneof: &common.DataPoint_Fl64Val{Fl64Val: 63.5},
+						Ts:       now, TraceId: traceID.String(),
+					}, SkipToken: true,
+				},
+				{
+					Point: &common.DataPoint{
+						UniqId: homeDev.GetUniqId(), Attr: "battery_v",
+						ValOneof: &common.DataPoint_Fl64Val{Fl64Val: 3.12},
 						Ts:       now, TraceId: traceID.String(),
 					}, SkipToken: true,
 				},

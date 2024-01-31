@@ -112,6 +112,43 @@ func TestDecodeMessages(t *testing.T) {
 				},
 			},
 		},
+		{
+			&message.DecoderIn{
+				UniqId: uniqID, Data: []byte{
+					0x03, 0x67, 0x00, 0xc4, 0x04, 0x68, 0x7f, 0x00, 0xff, 0x01,
+					0x38,
+				}, Ts: now, TraceId: traceID[:],
+			}, api.Decoder_TEKTELIC_HOME, []*message.ValidatorIn{
+				{
+					Point: &common.DataPoint{
+						UniqId: uniqID, Attr: "temp_c",
+						ValOneof: &common.DataPoint_Fl64Val{Fl64Val: 19.6},
+						Ts:       now, TraceId: traceID.String(),
+					}, SkipToken: true,
+				},
+				{
+					Point: &common.DataPoint{
+						UniqId: uniqID, Attr: "temp_f",
+						ValOneof: &common.DataPoint_Fl64Val{Fl64Val: 67.3},
+						Ts:       now, TraceId: traceID.String(),
+					}, SkipToken: true,
+				},
+				{
+					Point: &common.DataPoint{
+						UniqId: uniqID, Attr: "humidity_pct",
+						ValOneof: &common.DataPoint_Fl64Val{Fl64Val: 63.5},
+						Ts:       now, TraceId: traceID.String(),
+					}, SkipToken: true,
+				},
+				{
+					Point: &common.DataPoint{
+						UniqId: uniqID, Attr: "battery_v",
+						ValOneof: &common.DataPoint_Fl64Val{Fl64Val: 3.12},
+						Ts:       now, TraceId: traceID.String(),
+					}, SkipToken: true,
+				},
+			},
+		},
 	}
 
 	for _, test := range tests {

@@ -18,7 +18,8 @@ func ls11x(body []byte) ([]*decode.Point, error) {
 	// Parse temperature, rounded to one decimal digit.
 	tempC := float64(int16(binary.BigEndian.Uint16(body[1:3]))) / 100
 	msgs := []*decode.Point{{Attr: "temp_c", Value: math.Round(tempC*10) / 10}}
-	msgs = append(msgs, &decode.Point{Attr: "temp_f", Value: cToF(tempC)})
+	msgs = append(msgs,
+		&decode.Point{Attr: "temp_f", Value: decode.CToF(tempC)})
 
 	// Parse humidity.
 	hum := float64(binary.BigEndian.Uint16(body[3:5])) / 100
