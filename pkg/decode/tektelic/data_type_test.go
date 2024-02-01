@@ -69,6 +69,7 @@ func TestTypeTempC(t *testing.T) {
 	}{
 		// Temperature.
 		{"0367000a", 1, []byte{}, ""},
+		{"036700ca", 20.2, []byte{}, ""},
 		{"036700c4", 19.6, []byte{}, ""},
 		{"036700c404687f", 19.6, []byte{0x04, 0x68, 0x7f}, ""},
 		// Temperature bad length.
