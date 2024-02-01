@@ -34,7 +34,8 @@ func typeDigital(body []byte) (bool, []byte, error) {
 	case 0xff:
 		return true, body[3:], nil
 	default:
-		return false, nil, decode.ErrFormat("typeDigital", "unknown value", body)
+		return false, nil, decode.ErrFormat("typeDigital", "unknown value",
+			body)
 	}
 }
 
@@ -51,7 +52,7 @@ func typeTempC(body []byte) (float64, []byte, error) {
 	}
 
 	// Parse temperature.
-	tempC := float64(int16(binary.BigEndian.Uint16(body[2:4]))) * 0.1
+	tempC := float64(int16(binary.BigEndian.Uint16(body[2:4]))) / 10
 
 	return tempC, body[4:], nil
 }
@@ -69,7 +70,7 @@ func typeHumidity(body []byte) (float64, []byte, error) {
 	}
 
 	// Parse humidity.
-	humidity := float64(body[2]) * 0.5
+	humidity := float64(body[2]) / 2
 
 	return humidity, body[3:], nil
 }
@@ -87,7 +88,7 @@ func typeAnalogV(body []byte) (float64, []byte, error) {
 	}
 
 	// Parse voltage.
-	voltage := float64(int16(binary.BigEndian.Uint16(body[2:4]))) * 0.01
+	voltage := float64(int16(binary.BigEndian.Uint16(body[2:4]))) / 100
 
 	return voltage, body[4:], nil
 }

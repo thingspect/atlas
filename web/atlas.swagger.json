@@ -1693,7 +1693,7 @@
                 },
                 "expr": {
                   "type": "string",
-                  "description": "Rule expression. The rules engine evaluates a boolean expression using the [Expr language](https://github.com/expr-lang/expr/blob/master/docs/Language-Definition.md)."
+                  "description": "Rule expression. The rules engine evaluates a boolean expression using the [Expr language](https://expr-lang.org/)."
                 },
                 "createdAt": {
                   "type": "string",
@@ -1779,7 +1779,7 @@
                 },
                 "expr": {
                   "type": "string",
-                  "description": "Rule expression. The rules engine evaluates a boolean expression using the [Expr language](https://github.com/expr-lang/expr/blob/master/docs/Language-Definition.md)."
+                  "description": "Rule expression. The rules engine evaluates a boolean expression using the [Expr language](https://expr-lang.org/)."
                 },
                 "createdAt": {
                   "type": "string",
@@ -3216,7 +3216,7 @@
         },
         "expr": {
           "type": "string",
-          "description": "Rule expression. The rules engine evaluates a boolean expression using the [Expr language](https://github.com/expr-lang/expr/blob/master/docs/Language-Definition.md)."
+          "description": "Rule expression. The rules engine evaluates a boolean expression using the [Expr language](https://expr-lang.org/)."
         },
         "createdAt": {
           "type": "string",
