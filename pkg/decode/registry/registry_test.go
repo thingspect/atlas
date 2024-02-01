@@ -38,10 +38,16 @@ func TestDecode(t *testing.T) {
 			{Attr: "open", Value: true},
 		}, nil},
 		{api.Decoder_GLOBALSAT_CO2, "01096113950292", []*decode.Point{
-			{Attr: "temp_c", Value: float64(24)},
+			{Attr: "temp_c", Value: 24.0},
 			{Attr: "temp_f", Value: 75.2},
 			{Attr: "humidity_pct", Value: 50.13},
 			{Attr: "co2_ppm", Value: int32(658)},
+		}, nil},
+		{api.Decoder_TEKTELIC_HOME, "036700c404687f00ff0138", []*decode.Point{
+			{Attr: "temp_c", Value: 19.6},
+			{Attr: "temp_f", Value: 67.3},
+			{Attr: "humidity_pct", Value: 63.5},
+			{Attr: "battery_v", Value: 3.12},
 		}, nil},
 		// Decoder function not found.
 		{api.Decoder(999), "", nil, fmt.Errorf("%w: 999", ErrNotFound)},

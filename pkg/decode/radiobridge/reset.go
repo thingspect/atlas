@@ -9,7 +9,7 @@ import (
 
 const identReset = 0x00
 
-// reset parses an Reset (boot) payload from a []byte according to the spec.
+// reset parses a Reset (boot) payload from a []byte according to the spec.
 // Reset payloads are used to confirm device settings on boot.
 func reset(body []byte) ([]*decode.Point, error) {
 	const fwFormat = 0b10000000
