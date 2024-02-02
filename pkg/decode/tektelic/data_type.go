@@ -69,10 +69,14 @@ func typeHumidity(body []byte) (float64, []byte, error) {
 		return 0, nil, decode.ErrFormat("typeHumidity", "bad identifier", body)
 	}
 
-	// Parse humidity.
-	humidity := float64(body[2]) / 2
+	// Parse hum.
+	hum := float64(body[2]) / 2
+	if hum > 100 {
+		return 0, nil, decode.ErrFormat("typeHumidity", "outside allowed range",
+			body)
+	}
 
-	return humidity, body[3:], nil
+	return hum, body[3:], nil
 }
 
 // typeAnalogV parses a Analog (V) data type from a []byte according to the spec
@@ -87,8 +91,8 @@ func typeAnalogV(body []byte) (float64, []byte, error) {
 		return 0, nil, decode.ErrFormat("typeAnalogV", "bad identifier", body)
 	}
 
-	// Parse voltage.
-	voltage := float64(int16(binary.BigEndian.Uint16(body[2:4]))) / 100
+	// Parse volt.
+	volt := float64(binary.BigEndian.Uint16(body[2:4])) / 100
 
-	return voltage, body[4:], nil
+	return volt, body[4:], nil
 }

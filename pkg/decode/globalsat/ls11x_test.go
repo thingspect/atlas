@@ -39,6 +39,11 @@ func TestLs11x(t *testing.T) {
 		// LS-11X bad length.
 		{"000102030405", nil, "ls11x format bad length: 000102030405"},
 		{"0001020304050607", nil, "ls11x format bad length: 0001020304050607"},
+		// LS-11X humidity outside allowed range.
+		{"020a18f0e70000", []*decode.Point{
+			{Attr: "temp_c", Value: 25.8},
+			{Attr: "temp_f", Value: 78.5},
+		}, "ls11x format humidity outside allowed range: 020a18f0e70000"},
 	}
 
 	for _, test := range tests {

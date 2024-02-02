@@ -66,8 +66,8 @@ func supervisory(body []byte) ([]*decode.Point, error) {
 	// Parse battery level.
 	vInt := body[4] >> 4
 	vFract := body[4] & clearVolt
-	batt := float64(vInt) + float64(vFract)/10
-	msgs = append(msgs, &decode.Point{Attr: "battery_v", Value: batt})
+	volt := float64(vInt) + float64(vFract)/10
+	msgs = append(msgs, &decode.Point{Attr: "battery_v", Value: volt})
 
 	// Parse event count.
 	if len(body) >= 11 {
