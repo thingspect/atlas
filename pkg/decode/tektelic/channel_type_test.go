@@ -76,6 +76,14 @@ func TestChanTempC(t *testing.T) {
 			{Attr: "temp_c", Value: 1.0},
 			{Attr: "temp_f", Value: 33.8},
 		}, []byte{}, ""},
+		{"036700ca", []*decode.Point{
+			{Attr: "temp_c", Value: 20.2},
+			{Attr: "temp_f", Value: 68.4},
+		}, []byte{}, ""},
+		{"0367fff0", []*decode.Point{
+			{Attr: "temp_c", Value: -1.6},
+			{Attr: "temp_f", Value: 29.1},
+		}, []byte{}, ""},
 		{"036700c4", []*decode.Point{
 			{Attr: "temp_c", Value: 19.6},
 			{Attr: "temp_f", Value: 67.3},

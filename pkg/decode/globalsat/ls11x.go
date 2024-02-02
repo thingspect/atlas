@@ -23,6 +23,11 @@ func ls11x(body []byte) ([]*decode.Point, error) {
 
 	// Parse humidity.
 	hum := float64(binary.BigEndian.Uint16(body[3:5])) / 100
+	if hum > 100 {
+		return msgs, decode.ErrFormat("ls11x", "humidity outside allowed range",
+			body)
+	}
+
 	msgs = append(msgs, &decode.Point{Attr: "humidity_pct", Value: hum})
 
 	return msgs, nil
