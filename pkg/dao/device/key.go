@@ -10,5 +10,5 @@ func devKey(orgID, devID string) string {
 // devKeyByUniqID returns a cache key by device UniqID. This key does not limit
 // by org ID and should only be read in the service layer.
 func devKeyByUniqID(uniqID string) string {
-	return fmt.Sprintf("dao:device:uniqid:%s", uniqID)
+	return "dao:device:uniqid:" + uniqID
 }

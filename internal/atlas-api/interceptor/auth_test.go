@@ -36,8 +36,8 @@ func TestAuth(t *testing.T) {
 	require.NoError(t, err)
 
 	user := random.User("auth", uuid.NewString())
-	keyToken, err := session.GenerateKeyToken(key, uuid.NewString(), user.GetOrgId(),
-		user.GetRole())
+	keyToken, err := session.GenerateKeyToken(key, uuid.NewString(),
+		user.GetOrgId(), user.GetRole())
 	t.Logf("keyToken, err: %v, %v", keyToken, err)
 	require.NoError(t, err)
 
@@ -122,7 +122,7 @@ func TestAuth(t *testing.T) {
 					metadata.Pairs(lTest.inpMD...))
 			}
 
-			handler := func(ctx context.Context, req interface{}) (
+			handler := func(_ context.Context, req interface{}) (
 				interface{}, error,
 			) {
 				return req, lTest.inpHandlerErr

@@ -60,8 +60,8 @@ func TestAlertMessages(t *testing.T) {
 		{
 			&message.EventerOut{
 				Point:  &common.DataPoint{},
-				Device: random.Device("ale", org.GetId()), Rule: random.Rule("ale",
-					org.GetId()),
+				Device: random.Device("ale", org.GetId()),
+				Rule:   random.Rule("ale", org.GetId()),
 			},
 			[]*api.Alarm{appAlarm},
 			[]*api.User{random.User("ale", org.GetId())},
@@ -70,8 +70,8 @@ func TestAlertMessages(t *testing.T) {
 		{
 			&message.EventerOut{
 				Point:  &common.DataPoint{},
-				Device: random.Device("ale", org.GetId()), Rule: random.Rule("ale",
-					org.GetId()),
+				Device: random.Device("ale", org.GetId()),
+				Rule:   random.Rule("ale", org.GetId()),
 			},
 			[]*api.Alarm{smsAlarm},
 			[]*api.User{random.User("ale", org.GetId())},
@@ -80,8 +80,8 @@ func TestAlertMessages(t *testing.T) {
 		{
 			&message.EventerOut{
 				Point:  &common.DataPoint{},
-				Device: random.Device("ale", org.GetId()), Rule: random.Rule("ale",
-					org.GetId()),
+				Device: random.Device("ale", org.GetId()),
+				Rule:   random.Rule("ale", org.GetId()),
 			}, []*api.Alarm{emailAlarm}, []*api.User{
 				random.User("ale", org.GetId()),
 			}, 1, 0, 0, 1, 1, false,
@@ -89,8 +89,8 @@ func TestAlertMessages(t *testing.T) {
 		{
 			&message.EventerOut{
 				Point:  &common.DataPoint{},
-				Device: random.Device("ale", org.GetId()), Rule: random.Rule("ale",
-					org.GetId()),
+				Device: random.Device("ale", org.GetId()),
+				Rule:   random.Rule("ale", org.GetId()),
 			},
 			[]*api.Alarm{disAlarm},
 			[]*api.User{random.User("ale", org.GetId())},
@@ -99,15 +99,15 @@ func TestAlertMessages(t *testing.T) {
 		{
 			&message.EventerOut{
 				Point:  &common.DataPoint{},
-				Device: random.Device("ale", org.GetId()), Rule: random.Rule("ale",
-					org.GetId()),
+				Device: random.Device("ale", org.GetId()),
+				Rule:   random.Rule("ale", org.GetId()),
 			}, []*api.Alarm{appAlarm}, []*api.User{}, 1, 0, 0, 0, 0, false,
 		},
 		{
 			&message.EventerOut{
 				Point:  &common.DataPoint{},
-				Device: random.Device("ale", org.GetId()), Rule: random.Rule("ale",
-					org.GetId()),
+				Device: random.Device("ale", org.GetId()),
+				Rule:   random.Rule("ale", org.GetId()),
 			},
 			[]*api.Alarm{appAlarm},
 			[]*api.User{random.User("ale", org.GetId())},
@@ -130,18 +130,18 @@ func TestAlertMessages(t *testing.T) {
 
 			ctrl := gomock.NewController(t)
 			orger := NewMockorger(ctrl)
-			orger.EXPECT().Read(gomock.Any(), lTest.inpEOut.GetDevice().GetOrgId()).
-				Return(org, nil).Times(1)
+			orger.EXPECT().Read(gomock.Any(), lTest.inpEOut.GetDevice().
+				GetOrgId()).Return(org, nil).Times(1)
 
 			alarmer := NewMockalarmer(ctrl)
-			alarmer.EXPECT().List(gomock.Any(), lTest.inpEOut.GetDevice().GetOrgId(),
-				time.Time{}, "", int32(0), lTest.inpEOut.GetRule().GetId()).Return(
-				lTest.inpAlarms, int32(0), nil).Times(1)
+			alarmer.EXPECT().List(gomock.Any(), lTest.inpEOut.GetDevice().
+				GetOrgId(), time.Time{}, "", int32(0), lTest.inpEOut.GetRule().
+				GetId()).Return(lTest.inpAlarms, int32(0), nil).Times(1)
 
 			userer := NewMockuserer(ctrl)
-			userer.EXPECT().ListByTags(gomock.Any(), lTest.inpEOut.GetDevice().GetOrgId(),
-				lTest.inpAlarms[0].GetUserTags()).Return(lTest.inpUsers, nil).
-				Times(lTest.inpUserTimes)
+			userer.EXPECT().ListByTags(gomock.Any(), lTest.inpEOut.GetDevice().
+				GetOrgId(), lTest.inpAlarms[0].GetUserTags()).Return(lTest.
+				inpUsers, nil).Times(lTest.inpUserTimes)
 
 			var alert *api.Alert
 			if lTest.inpAlertTimes > 0 {
@@ -160,14 +160,14 @@ func TestAlertMessages(t *testing.T) {
 				gomock.Any()).Return(nil).Times(lTest.inpAppTimes)
 			notifier.EXPECT().SMS(gomock.Any(), gomock.Any(), gomock.Any(),
 				gomock.Any()).Return(nil).Times(lTest.inpSMSTimes)
-			notifier.EXPECT().Email(gomock.Any(), org.GetDisplayName(), org.GetEmail(),
-				gomock.Any(), gomock.Any(), gomock.Any()).Return(nil).
-				Times(lTest.inpEmailTimes)
+			notifier.EXPECT().Email(gomock.Any(), org.GetDisplayName(),
+				org.GetEmail(), gomock.Any(), gomock.Any(), gomock.Any()).
+				Return(nil).Times(lTest.inpEmailTimes)
 
 			alerter := NewMockalerter(ctrl)
 			alerter.EXPECT().Create(gomock.Any(),
 				matcher.NewProtoMatcher(alert)).
-				DoAndReturn(func(ctx interface{}, alert interface{}) error {
+				DoAndReturn(func(_ interface{}, _ interface{}) error {
 					defer wg.Done()
 
 					return nil
@@ -181,8 +181,8 @@ func TestAlertMessages(t *testing.T) {
 				defer cancel()
 
 				key := repeatKey(lTest.inpEOut.GetDevice().GetOrgId(),
-					lTest.inpEOut.GetDevice().GetId(), lTest.inpAlarms[0].GetId(),
-					lTest.inpUsers[0].GetId())
+					lTest.inpEOut.GetDevice().GetId(),
+					lTest.inpAlarms[0].GetId(), lTest.inpUsers[0].GetId())
 				ok, err := cache.SetIfNotExistTTL(ctx, key, 1, time.Minute)
 				require.True(t, ok)
 				require.NoError(t, err)
@@ -417,7 +417,7 @@ func TestAlertMessagesError(t *testing.T) {
 
 			alerter := NewMockalerter(ctrl)
 			alerter.EXPECT().Create(gomock.Any(), gomock.Any()).
-				DoAndReturn(func(ctx interface{}, alert interface{}) error {
+				DoAndReturn(func(_ interface{}, _ interface{}) error {
 					defer wg.Done()
 
 					return lTest.inpAlertErr

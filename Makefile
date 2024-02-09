@@ -34,8 +34,8 @@ lint:
 
 	go install github.com/golangci/golangci-lint/cmd/golangci-lint@latest
 	golangci-lint run -E bidichk,durationcheck,errname,exportloopref \
-	-E forcetypeassert,godot,goerr113,gofumpt,gosec,nlreturn,prealloc \
-	-E protogetter,testifylint,unconvert,unparam,usestdlibvars \
+	-E forcetypeassert,godot,goerr113,gofumpt,gosec,nlreturn,perfsprint \
+	-E prealloc,protogetter,testifylint,unconvert,unparam,usestdlibvars \
 	--exclude-use-default=false
 
 	go install golang.org/x/vuln/cmd/govulncheck@latest

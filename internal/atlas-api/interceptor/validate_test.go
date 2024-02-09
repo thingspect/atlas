@@ -63,7 +63,7 @@ func TestValidate(t *testing.T) {
 				testTimeout)
 			defer cancel()
 
-			handler := func(ctx context.Context, req interface{}) (
+			handler := func(_ context.Context, _ interface{}) (
 				interface{}, error,
 			) {
 				return nil, lTest.err

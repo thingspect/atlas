@@ -2,7 +2,6 @@ package notify
 
 import (
 	"context"
-	"fmt"
 	"time"
 
 	"github.com/thingspect/atlas/pkg/consterr"
@@ -38,7 +37,7 @@ func (n *notify) SMS(ctx context.Context, phone, subject, body string) error {
 	// https://www.twilio.com/docs/glossary/what-sms-character-limit
 	msg := subject + " - " + body
 	if len(msg) > 300 {
-		msg = fmt.Sprintf("%s...", msg[:297])
+		msg = msg[:297] + "..."
 	}
 
 	// Support modified Twilio rate limit of 1 per second, serially. Twilio will

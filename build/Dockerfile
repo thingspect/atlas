@@ -6,7 +6,7 @@
 # docker buildx build -f build/Dockerfile -t ghcr.io/thingspect/atlas:${TAG} --push .
 # docker buildx rm
 # docker logout ghcr.io
-FROM golang:1.21-alpine AS build
+FROM golang:1.22-alpine AS build
 
 # Add packages needed to support builds and tests
 RUN apk update && apk upgrade

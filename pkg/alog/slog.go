@@ -30,7 +30,7 @@ func parseLevel(level string) slog.Level {
 	slevel, ok := levels[strings.ToUpper(level)]
 	if !ok {
 		slog.LogAttrs(context.Background(), slog.LevelError,
-			fmt.Sprintf("parseLevel unknown level, using INFO: %s", level))
+			"parseLevel unknown level, using INFO: "+level)
 		slevel = slog.LevelInfo
 	}
 

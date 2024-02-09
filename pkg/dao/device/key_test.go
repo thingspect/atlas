@@ -47,7 +47,7 @@ func TestDevKeyByUniqID(t *testing.T) {
 			key := devKeyByUniqID(uniqID)
 			t.Logf("key: %v", key)
 
-			require.Equal(t, fmt.Sprintf("dao:device:uniqid:%s", uniqID), key)
+			require.Equal(t, "dao:device:uniqid:"+uniqID, key)
 			require.Equal(t, key, devKeyByUniqID(uniqID))
 		})
 	}
