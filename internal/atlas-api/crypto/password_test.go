@@ -41,20 +41,18 @@ func TestHashPass(t *testing.T) {
 	t.Parallel()
 
 	pass := random.String(10)
-	hashChan := make(chan []byte)
 
-	for i := 0; i < 2; i++ {
-		go func() {
-			h, err := HashPass(pass)
-			t.Logf("h, err: %s, %v", h, err)
-			require.NoError(t, err)
-			require.Len(t, h, 60)
+	h1, err := HashPass(pass)
+	t.Logf("h1, err: %s, %v", h1, err)
+	require.NoError(t, err)
+	require.Len(t, h1, 60)
 
-			hashChan <- h
-		}()
-	}
+	h2, err := HashPass(pass)
+	t.Logf("h2, err: %s, %v", h2, err)
+	require.NoError(t, err)
+	require.Len(t, h2, 60)
 
-	require.NotEqual(t, <-hashChan, <-hashChan)
+	require.NotEqual(t, h1, h2)
 }
 
 func TestCompareHashPass(t *testing.T) {

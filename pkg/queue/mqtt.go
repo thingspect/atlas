@@ -116,7 +116,7 @@ func (m *mqttQueue) Subscribe(topic string) (Subber, error) {
 	msgs := make(chan Messager)
 
 	token := m.client.Subscribe(topic, 1,
-		func(client mqtt.Client, msg mqtt.Message) {
+		func(_ mqtt.Client, msg mqtt.Message) {
 			msgs <- &mqttMessage{Message: msg}
 		})
 	if ok := token.WaitTimeout(m.connectTimeout); !ok {

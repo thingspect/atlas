@@ -100,9 +100,9 @@ type Rule struct {
 	Status Status `protobuf:"varint,4,opt,name=status,proto3,enum=thingspect.api.Status" json:"status,omitempty"`
 	// Device tag to which the rule applies.
 	DeviceTag string `protobuf:"bytes,5,opt,name=device_tag,json=deviceTag,proto3" json:"device_tag,omitempty"`
-	// Device and data point attribute to which the rule applies.
+	// Data point attribute to which the rule applies.
 	Attr string `protobuf:"bytes,6,opt,name=attr,proto3" json:"attr,omitempty"`
-	// Rule expression. The rules engine evaluates a boolean expression using the [Expr language](https://github.com/expr-lang/expr/blob/master/docs/Language-Definition.md).
+	// Rule expression. The rules engine evaluates a boolean expression using the [Expr language](https://expr-lang.org/).
 	Expr string `protobuf:"bytes,7,opt,name=expr,proto3" json:"expr,omitempty"`
 	// Rule creation timestamp.
 	CreatedAt *timestamppb.Timestamp `protobuf:"bytes,8,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
@@ -666,7 +666,7 @@ type Alarm struct {
 	SubjectTemplate string `protobuf:"bytes,8,opt,name=subject_template,json=subjectTemplate,proto3" json:"subject_template,omitempty"`
 	// Alarm body template. Templates generate HTML-safe output using the [Go template engine](https://golang.org/pkg/html/template/).
 	BodyTemplate string `protobuf:"bytes,9,opt,name=body_template,json=bodyTemplate,proto3" json:"body_template,omitempty"`
-	// Alarm repeat interval, in minutes. Duration after which a duplicate event will cause an alert to be sent. Minimum is 1 minute, maximum is 14 days.
+	// Alarm repeat interval, in minutes, per device. Duration after which a duplicate event will cause an alert to be sent. Minimum is 1 minute, maximum is 14 days.
 	RepeatInterval int32 `protobuf:"varint,10,opt,name=repeat_interval,json=repeatInterval,proto3" json:"repeat_interval,omitempty"`
 	// Alarm creation timestamp.
 	CreatedAt *timestamppb.Timestamp `protobuf:"bytes,11,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
