@@ -58,18 +58,16 @@ func TestParse(t *testing.T) {
 	}
 
 	for _, test := range tests {
-		lTest := test
-
-		t.Run(fmt.Sprintf("Can parse %+v", lTest), func(t *testing.T) {
+		t.Run(fmt.Sprintf("Can parse %+v", test), func(t *testing.T) {
 			t.Parallel()
 
-			bInpBody, err := hex.DecodeString(lTest.inpBody)
+			bInpBody, err := hex.DecodeString(test.inpBody)
 			require.NoError(t, err)
 
-			res, err := Parse(lTest.inpEvent, bInpBody)
+			res, err := Parse(test.inpEvent, bInpBody)
 			t.Logf("res, err: %#v, %v", res, err)
-			require.Equal(t, lTest.res, res)
-			require.Equal(t, lTest.err, err)
+			require.Equal(t, test.res, res)
+			require.Equal(t, test.err, err)
 		})
 	}
 }

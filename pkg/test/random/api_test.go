@@ -15,10 +15,8 @@ import (
 func TestOrg(t *testing.T) {
 	t.Parallel()
 
-	for i := 0; i < 5; i++ {
-		lTest := i
-
-		t.Run(fmt.Sprintf("Can generate %v", lTest), func(t *testing.T) {
+	for i := range 5 {
+		t.Run(fmt.Sprintf("Can generate %v", i), func(t *testing.T) {
 			t.Parallel()
 
 			prefix := String(10)
@@ -41,10 +39,8 @@ func TestOrg(t *testing.T) {
 func TestDevice(t *testing.T) {
 	t.Parallel()
 
-	for i := 0; i < 5; i++ {
-		lTest := i
-
-		t.Run(fmt.Sprintf("Can generate %v", lTest), func(t *testing.T) {
+	for i := range 5 {
+		t.Run(fmt.Sprintf("Can generate %v", i), func(t *testing.T) {
 			t.Parallel()
 
 			prefix := String(10)
@@ -68,10 +64,8 @@ func TestDevice(t *testing.T) {
 func TestRule(t *testing.T) {
 	t.Parallel()
 
-	for i := 0; i < 5; i++ {
-		lTest := i
-
-		t.Run(fmt.Sprintf("Can generate %v", lTest), func(t *testing.T) {
+	for i := range 5 {
+		t.Run(fmt.Sprintf("Can generate %v", i), func(t *testing.T) {
 			t.Parallel()
 
 			prefix := String(10)
@@ -93,10 +87,8 @@ func TestRule(t *testing.T) {
 func TestEvent(t *testing.T) {
 	t.Parallel()
 
-	for i := 0; i < 5; i++ {
-		lTest := i
-
-		t.Run(fmt.Sprintf("Can generate %v", lTest), func(t *testing.T) {
+	for i := range 5 {
+		t.Run(fmt.Sprintf("Can generate %v", i), func(t *testing.T) {
 			t.Parallel()
 
 			prefix := String(10)
@@ -120,10 +112,8 @@ func TestEvent(t *testing.T) {
 func TestAlarm(t *testing.T) {
 	t.Parallel()
 
-	for i := 0; i < 5; i++ {
-		lTest := i
-
-		t.Run(fmt.Sprintf("Can generate %v", lTest), func(t *testing.T) {
+	for i := range 5 {
+		t.Run(fmt.Sprintf("Can generate %v", i), func(t *testing.T) {
 			t.Parallel()
 
 			prefix := String(10)
@@ -148,10 +138,8 @@ func TestAlarm(t *testing.T) {
 func TestAlert(t *testing.T) {
 	t.Parallel()
 
-	for i := 0; i < 5; i++ {
-		lTest := i
-
-		t.Run(fmt.Sprintf("Can generate %v", lTest), func(t *testing.T) {
+	for i := range 5 {
+		t.Run(fmt.Sprintf("Can generate %v", i), func(t *testing.T) {
 			t.Parallel()
 
 			prefix := String(10)
@@ -171,10 +159,8 @@ func TestAlert(t *testing.T) {
 func TestUser(t *testing.T) {
 	t.Parallel()
 
-	for i := 0; i < 5; i++ {
-		lTest := i
-
-		t.Run(fmt.Sprintf("Can generate %v", lTest), func(t *testing.T) {
+	for i := range 5 {
+		t.Run(fmt.Sprintf("Can generate %v", i), func(t *testing.T) {
 			t.Parallel()
 
 			prefix := String(10)
@@ -202,10 +188,8 @@ func TestUser(t *testing.T) {
 func TestSMSUser(t *testing.T) {
 	t.Parallel()
 
-	for i := 0; i < 5; i++ {
-		lTest := i
-
-		t.Run(fmt.Sprintf("Can generate %v", lTest), func(t *testing.T) {
+	for i := range 5 {
+		t.Run(fmt.Sprintf("Can generate %v", i), func(t *testing.T) {
 			t.Parallel()
 
 			prefix := String(10)
@@ -233,10 +217,8 @@ func TestSMSUser(t *testing.T) {
 func TestAppUser(t *testing.T) {
 	t.Parallel()
 
-	for i := 0; i < 5; i++ {
-		lTest := i
-
-		t.Run(fmt.Sprintf("Can generate %v", lTest), func(t *testing.T) {
+	for i := range 5 {
+		t.Run(fmt.Sprintf("Can generate %v", i), func(t *testing.T) {
 			t.Parallel()
 
 			prefix := String(10)
@@ -264,10 +246,8 @@ func TestAppUser(t *testing.T) {
 func TestKey(t *testing.T) {
 	t.Parallel()
 
-	for i := 0; i < 5; i++ {
-		lTest := i
-
-		t.Run(fmt.Sprintf("Can generate %v", lTest), func(t *testing.T) {
+	for i := range 5 {
+		t.Run(fmt.Sprintf("Can generate %v", i), func(t *testing.T) {
 			t.Parallel()
 
 			prefix := String(10)
@@ -288,17 +268,15 @@ func TestTags(t *testing.T) {
 	t.Parallel()
 
 	for i := 5; i < 15; i++ {
-		lTest := i
-
-		t.Run(fmt.Sprintf("Can generate %v", lTest), func(t *testing.T) {
+		t.Run(fmt.Sprintf("Can generate %v", i), func(t *testing.T) {
 			t.Parallel()
 
-			t1 := Tags(String(10), lTest)
-			t2 := Tags(String(10), lTest)
+			t1 := Tags(String(10), i)
+			t2 := Tags(String(10), i)
 			t.Logf("t1, t2: %v, %v", t1, t2)
 
-			require.Len(t, t1, lTest)
-			require.Len(t, t2, lTest)
+			require.Len(t, t1, i)
+			require.Len(t, t2, i)
 			require.NotEqual(t, t1, t2)
 		})
 	}

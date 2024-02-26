@@ -25,14 +25,12 @@ func TestCToF(t *testing.T) {
 	}
 
 	for _, test := range tests {
-		lTest := test
-
-		t.Run(fmt.Sprintf("Can convert %+v", lTest), func(t *testing.T) {
+		t.Run(fmt.Sprintf("Can convert %+v", test), func(t *testing.T) {
 			t.Parallel()
 
-			res := CToF(lTest.inp)
+			res := CToF(test.inp)
 			t.Logf("res: %v", res)
-			require.InDelta(t, lTest.res, res, epsilon)
+			require.InDelta(t, test.res, res, epsilon)
 		})
 	}
 }

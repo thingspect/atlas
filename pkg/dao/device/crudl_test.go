@@ -630,7 +630,7 @@ func TestList(t *testing.T) {
 	devDecoders := []api.Decoder{}
 	devTags := [][]string{}
 	devTSes := []time.Time{}
-	for i := 0; i < 3; i++ {
+	for range 3 {
 		createDev, err := globalDevDAO.Create(ctx, random.Device("dao-device",
 			createOrg.GetId()))
 		t.Logf("createDev, err: %+v, %v", createDev, err)

@@ -77,16 +77,14 @@ func TestCreate(t *testing.T) {
 		}
 
 		for _, test := range tests {
-			lTest := test
-
-			t.Run(fmt.Sprintf("Can create %+v", lTest), func(t *testing.T) {
+			t.Run(fmt.Sprintf("Can create %+v", test), func(t *testing.T) {
 				t.Parallel()
 
 				ctx, cancel := context.WithTimeout(context.Background(),
 					testTimeout)
 				defer cancel()
 
-				err := globalDPDAO.Create(ctx, lTest.inp, createOrg.GetId())
+				err := globalDPDAO.Create(ctx, test.inp, createOrg.GetId())
 				t.Logf("err: %v", err)
 				require.NoError(t, err)
 			})
@@ -120,18 +118,16 @@ func TestCreate(t *testing.T) {
 		}
 
 		for _, test := range tests {
-			lTest := test
-
-			t.Run(fmt.Sprintf("Cannot create %+v", lTest), func(t *testing.T) {
+			t.Run(fmt.Sprintf("Cannot create %+v", test), func(t *testing.T) {
 				t.Parallel()
 
 				ctx, cancel := context.WithTimeout(context.Background(),
 					testTimeout)
 				defer cancel()
 
-				err := globalDPDAO.Create(ctx, lTest.inp, orgID)
+				err := globalDPDAO.Create(ctx, test.inp, orgID)
 				t.Logf("err: %#v", err)
-				require.ErrorIs(t, err, lTest.err)
+				require.ErrorIs(t, err, test.err)
 			})
 		}
 	})

@@ -409,7 +409,7 @@ func TestList(t *testing.T) {
 	alarmNames := []string{}
 	alarmTypes := []api.AlarmType{}
 	alarmTSes := []time.Time{}
-	for i := 0; i < 3; i++ {
+	for range 3 {
 		createAlarm, err := globalAlarmDAO.Create(ctx, random.Alarm("dao-alarm",
 			createOrg.GetId(), createRule.GetId()))
 		t.Logf("createAlarm, err: %+v, %v", createAlarm, err)

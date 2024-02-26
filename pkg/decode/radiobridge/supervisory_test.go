@@ -73,21 +73,19 @@ func TestSupervisory(t *testing.T) {
 	}
 
 	for _, test := range tests {
-		lTest := test
-
-		t.Run(fmt.Sprintf("Can parse %+v", lTest), func(t *testing.T) {
+		t.Run(fmt.Sprintf("Can parse %+v", test), func(t *testing.T) {
 			t.Parallel()
 
-			bInp, err := hex.DecodeString(lTest.inp)
+			bInp, err := hex.DecodeString(test.inp)
 			require.NoError(t, err)
 
 			res, err := supervisory(bInp)
 			t.Logf("res, err: %#v, %v", res, err)
-			require.Equal(t, lTest.res, res)
-			if lTest.err == "" {
+			require.Equal(t, test.res, res)
+			if test.err == "" {
 				require.NoError(t, err)
 			} else {
-				require.EqualError(t, err, lTest.err)
+				require.EqualError(t, err, test.err)
 			}
 		})
 	}

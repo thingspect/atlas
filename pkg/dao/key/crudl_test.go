@@ -209,7 +209,7 @@ func TestList(t *testing.T) {
 	keyNames := []string{}
 	keyRoles := []api.Role{}
 	keyTSes := []time.Time{}
-	for i := 0; i < 3; i++ {
+	for range 3 {
 		createKey, err := globalKeyDAO.Create(ctx, random.Key("dao-key",
 			createOrg.GetId()))
 		t.Logf("createKey, err: %+v, %v", createKey, err)

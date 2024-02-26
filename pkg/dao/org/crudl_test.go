@@ -249,7 +249,7 @@ func TestList(t *testing.T) {
 	orgNames := []string{}
 	orgEmails := []string{}
 	orgTSes := []time.Time{}
-	for i := 0; i < 3; i++ {
+	for range 3 {
 		createOrg, err := globalOrgDAO.Create(ctx, random.Org("dao-org"))
 		t.Logf("createOrg, err: %+v, %v", createOrg, err)
 		require.NoError(t, err)

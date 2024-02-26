@@ -466,7 +466,7 @@ func TestList(t *testing.T) {
 	userTags := [][]string{}
 	userAppKeys := []string{}
 	userTSes := []time.Time{}
-	for i := 0; i < 3; i++ {
+	for range 3 {
 		createUser, err := globalUserDAO.Create(ctx, random.User("dao-user",
 			createOrg.GetId()))
 		t.Logf("createUser, err: %+v, %v", createUser, err)
@@ -635,7 +635,7 @@ func TestListByTags(t *testing.T) {
 	userIDs := []string{}
 	userNames := []string{}
 	userTags := [][]string{}
-	for i := 0; i < 3; i++ {
+	for range 3 {
 		user := random.User("dao-user", createOrg.GetId())
 		user.Status = api.Status_ACTIVE
 		createUser, err := globalUserDAO.Create(ctx, user)

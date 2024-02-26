@@ -45,6 +45,9 @@ func Compile(tree *parser.Tree, config *conf.Config) (program *Program, err erro
 		case reflect.Float64:
 			c.emit(OpCast, 2)
 		}
+		if c.config.Optimize {
+			c.optimize()
+		}
 	}
 
 	program = NewProgram(
@@ -113,7 +116,7 @@ func (c *compiler) addConstant(constant any) int {
 	indexable := true
 	hash := constant
 	switch reflect.TypeOf(constant).Kind() {
-	case reflect.Slice, reflect.Map, reflect.Struct:
+	case reflect.Slice, reflect.Map, reflect.Struct, reflect.Func:
 		indexable = false
 	}
 	if field, ok := constant.(*runtime.Field); ok {
@@ -870,11 +873,31 @@ func (c *compiler) BuiltinNode(node *ast.BuiltinNode) {
 	case "groupBy":
 		c.compile(node.Arguments[0])
 		c.emit(OpBegin)
+		c.emit(OpCreate, 1)
+		c.emit(OpSetAcc)
 		c.emitLoop(func() {
 			c.compile(node.Arguments[1])
 			c.emit(OpGroupBy)
 		})
-		c.emit(OpGetGroupBy)
+		c.emit(OpGetAcc)
+		c.emit(OpEnd)
+		return
+
+	case "sortBy":
+		c.compile(node.Arguments[0])
+		c.emit(OpBegin)
+		if len(node.Arguments) == 3 {
+			c.compile(node.Arguments[2])
+		} else {
+			c.emit(OpPush, c.addConstant("asc"))
+		}
+		c.emit(OpCreate, 2)
+		c.emit(OpSetAcc)
+		c.emitLoop(func() {
+			c.compile(node.Arguments[1])
+			c.emit(OpSortBy)
+		})
+		c.emit(OpSort)
 		c.emit(OpEnd)
 		return
 
@@ -905,13 +928,11 @@ func (c *compiler) BuiltinNode(node *ast.BuiltinNode) {
 			c.compile(arg)
 		}
 
-		if f.ValidateArgs != nil {
-			c.emit(OpLoadFunc, c.addFunction("$_validate_args_"+f.Name, f.ValidateArgs))
-			c.emit(OpValidateArgs, len(node.Arguments))
-		}
-
 		if f.Fast != nil {
 			c.emit(OpCallBuiltin1, id)
+		} else if f.Safe != nil {
+			c.emit(OpPush, c.addConstant(f.Safe))
+			c.emit(OpCallSafe, len(node.Arguments))
 		} else if f.Func != nil {
 			c.emitFunction(f, len(node.Arguments))
 		}
@@ -1047,6 +1068,19 @@ func (c *compiler) derefInNeeded(node ast.Node) {
 	switch kind(node) {
 	case reflect.Ptr, reflect.Interface:
 		c.emit(OpDeref)
+	}
+}
+
+func (c *compiler) optimize() {
+	for i, op := range c.bytecode {
+		switch op {
+		case OpJumpIfTrue, OpJumpIfFalse, OpJumpIfNil, OpJumpIfNotNil:
+			target := i + c.arguments[i] + 1
+			for target < len(c.bytecode) && c.bytecode[target] == op {
+				target += c.arguments[target] + 1
+			}
+			c.arguments[i] = target - i - 1
+		}
 	}
 }
 

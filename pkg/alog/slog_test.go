@@ -22,20 +22,18 @@ func TestStlogLevel(t *testing.T) {
 	}
 
 	for _, test := range tests {
-		lTest := test
-
-		t.Run(fmt.Sprintf("Can log %v", lTest), func(t *testing.T) {
+		t.Run(fmt.Sprintf("Can log %v", test), func(t *testing.T) {
 			t.Parallel()
 
-			logLevel := newStlogConsole(lTest)
+			logLevel := newStlogConsole(test)
 			t.Logf("logLevel: %#v", logLevel)
 
 			logLevel.Debug("Debug")
-			logLevel.Debugf("Debugf: %v and above", lTest)
+			logLevel.Debugf("Debugf: %v and above", test)
 			logLevel.Info("Info")
-			logLevel.Infof("Infof: %v and above", lTest)
+			logLevel.Infof("Infof: %v and above", test)
 			logLevel.Error("Error")
-			logLevel.Errorf("Errorf: %v and above", lTest)
+			logLevel.Errorf("Errorf: %v and above", test)
 			// Do not test Fatal* due to os.Exit.
 		})
 	}
@@ -47,21 +45,19 @@ func TestStlogWithField(t *testing.T) {
 	logger := newStlogJSON("DEBUG")
 	t.Logf("logger: %#v", logger)
 
-	for i := 0; i < 5; i++ {
-		lTest := i
-
-		t.Run(fmt.Sprintf("Can log %v with string", lTest), func(t *testing.T) {
+	for i := range 5 {
+		t.Run(fmt.Sprintf("Can log %v with string", i), func(t *testing.T) {
 			t.Parallel()
 
-			logField := logger.WithField(strconv.Itoa(lTest), random.String(10))
+			logField := logger.WithField(strconv.Itoa(i), random.String(10))
 			t.Logf("logField: %#v", logField)
 
 			logField.Debug("Debug")
-			logField.Debugf("Debugf: %v", lTest)
+			logField.Debugf("Debugf: %v", i)
 			logField.Info("Info")
-			logField.Infof("Infof: %v", lTest)
+			logField.Infof("Infof: %v", i)
 			logField.Error("Error")
-			logField.Errorf("Errorf: %v", lTest)
+			logField.Errorf("Errorf: %v", i)
 			// Do not test Fatal* due to os.Exit.
 		})
 	}

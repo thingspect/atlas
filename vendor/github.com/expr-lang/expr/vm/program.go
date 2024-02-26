@@ -64,6 +64,11 @@ func (program *Program) Node() ast.Node {
 	return program.node
 }
 
+// Locations returns a slice of bytecode's locations.
+func (program *Program) Locations() []file.Location {
+	return program.locations
+}
+
 // Disassemble returns opcodes as a string.
 func (program *Program) Disassemble() string {
 	var buf bytes.Buffer
@@ -285,15 +290,15 @@ func (program *Program) DisassembleWriter(w io.Writer) {
 		case OpCallFast:
 			argument("OpCallFast")
 
+		case OpCallSafe:
+			argument("OpCallSafe")
+
 		case OpCallTyped:
 			signature := reflect.TypeOf(FuncTypes[arg]).Elem().String()
 			_, _ = fmt.Fprintf(w, "%v\t%v\t<%v>\t%v\n", pp, "OpCallTyped", arg, signature)
 
 		case OpCallBuiltin1:
 			builtinArg("OpCallBuiltin1")
-
-		case OpValidateArgs:
-			argument("OpValidateArgs")
 
 		case OpArray:
 			code("OpArray")
@@ -322,20 +327,20 @@ func (program *Program) DisassembleWriter(w io.Writer) {
 		case OpGetIndex:
 			code("OpGetIndex")
 
-		case OpSetIndex:
-			code("OpSetIndex")
-
 		case OpGetCount:
 			code("OpGetCount")
 
 		case OpGetLen:
 			code("OpGetLen")
 
-		case OpGetGroupBy:
-			code("OpGetGroupBy")
-
 		case OpGetAcc:
 			code("OpGetAcc")
+
+		case OpSetAcc:
+			code("OpSetAcc")
+
+		case OpSetIndex:
+			code("OpSetIndex")
 
 		case OpPointer:
 			code("OpPointer")
@@ -343,11 +348,17 @@ func (program *Program) DisassembleWriter(w io.Writer) {
 		case OpThrow:
 			code("OpThrow")
 
+		case OpCreate:
+			argument("OpCreate")
+
 		case OpGroupBy:
 			code("OpGroupBy")
 
-		case OpSetAcc:
-			code("OpSetAcc")
+		case OpSortBy:
+			code("OpSortBy")
+
+		case OpSort:
+			code("OpSort")
 
 		case OpBegin:
 			code("OpBegin")
