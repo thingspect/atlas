@@ -125,7 +125,7 @@ func New(cfg *config.Config) (*Alerter, error) {
 
 // Serve starts the message alerters.
 func (ale *Alerter) Serve(concurrency int) {
-	for i := 0; i < concurrency; i++ {
+	for range concurrency {
 		go ale.alertMessages()
 	}
 

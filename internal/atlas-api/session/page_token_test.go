@@ -30,18 +30,16 @@ func TestGeneratePageToken(t *testing.T) {
 	}
 
 	for _, test := range tests {
-		lTest := test
-
-		t.Run(fmt.Sprintf("Can generate %+v", lTest), func(t *testing.T) {
+		t.Run(fmt.Sprintf("Can generate %+v", test), func(t *testing.T) {
 			t.Parallel()
 
-			res, err := GeneratePageToken(lTest.inpTS, lTest.inpID)
+			res, err := GeneratePageToken(test.inpTS, test.inpID)
 			t.Logf("res, err: %v, %#v", res, err)
-			require.GreaterOrEqual(t, len(res), lTest.resMinLen)
-			if lTest.err == "" {
+			require.GreaterOrEqual(t, len(res), test.resMinLen)
+			if test.err == "" {
 				require.NoError(t, err)
 			} else {
-				require.EqualError(t, err, lTest.err)
+				require.EqualError(t, err, test.err)
 			}
 		})
 	}
@@ -93,31 +91,29 @@ func TestParsePageToken(t *testing.T) {
 	}
 
 	for _, test := range tests {
-		lTest := test
-
-		t.Run(fmt.Sprintf("Can generate %+v", lTest), func(t *testing.T) {
+		t.Run(fmt.Sprintf("Can generate %+v", test), func(t *testing.T) {
 			t.Parallel()
 
-			resGen, err := GeneratePageToken(lTest.inpTS, lTest.inpID)
+			resGen, err := GeneratePageToken(test.inpTS, test.inpID)
 			t.Logf("resGen, err: %v, %#v", resGen, err)
 			require.NoError(t, err)
 
 			var resTS time.Time
 			var resID string
-			if lTest.inpPT == "res" {
+			if test.inpPT == "res" {
 				resTS, resID, err = ParsePageToken(resGen)
 			} else {
-				resTS, resID, err = ParsePageToken(lTest.inpPT)
+				resTS, resID, err = ParsePageToken(test.inpPT)
 			}
 			t.Logf("resTS, resID, err: %v, %v, %#v", resTS, resID, err)
 			if resID != "" {
-				require.Equal(t, lTest.inpID, resID)
-				require.Equal(t, lTest.inpTS, resTS)
+				require.Equal(t, test.inpID, resID)
+				require.Equal(t, test.inpTS, resTS)
 			}
-			if lTest.err == "" {
+			if test.err == "" {
 				require.NoError(t, err)
 			} else {
-				require.Contains(t, err.Error(), lTest.err)
+				require.Contains(t, err.Error(), test.err)
 			}
 		})
 	}

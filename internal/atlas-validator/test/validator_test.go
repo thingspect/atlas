@@ -118,10 +118,8 @@ func TestValidateMessages(t *testing.T) {
 	}
 
 	for _, test := range tests {
-		lTest := test
-
-		t.Run(fmt.Sprintf("Can validate %+v", lTest), func(t *testing.T) {
-			bVIn, err := proto.Marshal(lTest.inp)
+		t.Run(fmt.Sprintf("Can validate %+v", test), func(t *testing.T) {
+			bVIn, err := proto.Marshal(test.inp)
 			require.NoError(t, err)
 			t.Logf("bVIn: %s", bVIn)
 
@@ -140,8 +138,8 @@ func TestValidateMessages(t *testing.T) {
 
 				// Testify does not currently support protobuf equality:
 				// https://github.com/stretchr/testify/issues/758
-				if !proto.Equal(lTest.res, vOut) {
-					t.Fatalf("\nExpect: %+v\nActual: %+v", lTest.res, vOut)
+				if !proto.Equal(test.res, vOut) {
+					t.Fatalf("\nExpect: %+v\nActual: %+v", test.res, vOut)
 				}
 			case <-time.After(testTimeout):
 				t.Fatal("Message timed out")
@@ -219,15 +217,13 @@ func TestValidateMessagesError(t *testing.T) {
 	}
 
 	for _, test := range tests {
-		lTest := test
-
-		t.Run(fmt.Sprintf("Cannot validate %+v", lTest), func(t *testing.T) {
+		t.Run(fmt.Sprintf("Cannot validate %+v", test), func(t *testing.T) {
 			t.Parallel()
 
 			bVIn := []byte("val-aaa")
-			if lTest.inp != nil {
+			if test.inp != nil {
 				var err error
-				bVIn, err = proto.Marshal(lTest.inp)
+				bVIn, err = proto.Marshal(test.inp)
 				require.NoError(t, err)
 				t.Logf("bVIn: %s", bVIn)
 			}

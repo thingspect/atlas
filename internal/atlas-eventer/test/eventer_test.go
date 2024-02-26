@@ -107,10 +107,8 @@ func TestEventMessages(t *testing.T) {
 	}
 
 	for _, test := range tests {
-		lTest := test
-
-		t.Run(fmt.Sprintf("Can event %+v", lTest), func(t *testing.T) {
-			bVOut, err := proto.Marshal(lTest.inp)
+		t.Run(fmt.Sprintf("Can event %+v", test), func(t *testing.T) {
+			bVOut, err := proto.Marshal(test.inp)
 			require.NoError(t, err)
 			t.Logf("bVOut: %s", bVOut)
 
@@ -119,7 +117,7 @@ func TestEventMessages(t *testing.T) {
 			// Don't stop the flow of execution (assert) to avoid leaving
 			// messages orphaned in the queue.
 			//nolint:testifylint
-			for _, res := range lTest.res {
+			for _, res := range test.res {
 				t.Logf("DEBUG res: %+v", res)
 				select {
 				case msg := <-globalEOutSub.C():
@@ -144,7 +142,7 @@ func TestEventMessages(t *testing.T) {
 				// Verify events by rule ID.
 				event := &api.Event{
 					OrgId: createOrg.GetId(), RuleId: res.GetRule().GetId(),
-					UniqId: lTest.inp.GetDevice().GetUniqId(),
+					UniqId: test.inp.GetDevice().GetUniqId(),
 					CreatedAt: timestamppb.New(now.AsTime().Truncate(
 						time.Millisecond)),
 					TraceId: traceID,
@@ -155,7 +153,7 @@ func TestEventMessages(t *testing.T) {
 				defer cancel()
 
 				listEvents, err := globalEvDAO.List(ctx, createOrg.GetId(),
-					lTest.inp.GetDevice().GetUniqId(), "",
+					test.inp.GetDevice().GetUniqId(), "",
 					res.GetRule().GetId(), now.AsTime(), now.AsTime().Add(
 						-time.Millisecond))
 				t.Logf("listEvents, err: %+v, %v", listEvents, err)
@@ -169,7 +167,7 @@ func TestEventMessages(t *testing.T) {
 				}
 			}
 
-			if len(lTest.res) == 0 {
+			if len(test.res) == 0 {
 				select {
 				case msg := <-globalEOutSub.C():
 					t.Fatalf("Received unexpected msg.Topic, msg.Payload: %v, "+
@@ -232,15 +230,13 @@ func TestEventMessagesError(t *testing.T) {
 	}
 
 	for _, test := range tests {
-		lTest := test
-
-		t.Run(fmt.Sprintf("Cannot event %+v", lTest), func(t *testing.T) {
+		t.Run(fmt.Sprintf("Cannot event %+v", test), func(t *testing.T) {
 			t.Parallel()
 
 			bVOut := []byte("ev-aaa")
-			if lTest.inp != nil {
+			if test.inp != nil {
 				var err error
-				bVOut, err = proto.Marshal(lTest.inp)
+				bVOut, err = proto.Marshal(test.inp)
 				require.NoError(t, err)
 				t.Logf("bVOut: %s", bVOut)
 			}

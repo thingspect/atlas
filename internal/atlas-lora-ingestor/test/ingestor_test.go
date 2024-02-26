@@ -138,19 +138,17 @@ func TestDecodeGateways(t *testing.T) {
 	}
 
 	for _, test := range tests {
-		lTest := test
-
-		t.Run(fmt.Sprintf("Can decode %+v", lTest), func(t *testing.T) {
-			bInpProto, err := proto.Marshal(lTest.inpProto)
+		t.Run(fmt.Sprintf("Can decode %+v", test), func(t *testing.T) {
+			bInpProto, err := proto.Marshal(test.inpProto)
 			require.NoError(t, err)
 			t.Logf("bInpProto: %s", bInpProto)
 
-			require.NoError(t, globalMQTTQueue.Publish(lTest.inpTopic,
+			require.NoError(t, globalMQTTQueue.Publish(test.inpTopic,
 				bInpProto))
 
 			// Don't stop the flow of execution (assert) to avoid leaving
 			// messages orphaned in the queue.
-			for _, res := range lTest.res {
+			for _, res := range test.res {
 				select {
 				//nolint:testifylint // above
 				case msg := <-globalVInGWSub.C():
@@ -356,19 +354,17 @@ func TestDecodeDevices(t *testing.T) {
 	}
 
 	for _, test := range tests {
-		lTest := test
-
-		t.Run(fmt.Sprintf("Can decode %+v", lTest), func(t *testing.T) {
-			bInpProto, err := proto.Marshal(lTest.inpProto)
+		t.Run(fmt.Sprintf("Can decode %+v", test), func(t *testing.T) {
+			bInpProto, err := proto.Marshal(test.inpProto)
 			require.NoError(t, err)
 			t.Logf("bInpProto: %s", bInpProto)
 
-			require.NoError(t, globalMQTTQueue.Publish(lTest.inpTopic,
+			require.NoError(t, globalMQTTQueue.Publish(test.inpTopic,
 				bInpProto))
 
 			// Don't stop the flow of execution (assert) to avoid leaving
 			// messages orphaned in the queue.
-			for _, res := range lTest.resVIn {
+			for _, res := range test.resVIn {
 				select {
 				//nolint:testifylint // above
 				case msg := <-globalVInDevSub.C():
@@ -398,7 +394,7 @@ func TestDecodeDevices(t *testing.T) {
 				}
 			}
 
-			if lTest.resPIn != nil {
+			if test.resPIn != nil {
 				select {
 				case msg := <-globalDInDataSub.C():
 					msg.Ack()
@@ -411,16 +407,16 @@ func TestDecodeDevices(t *testing.T) {
 					t.Logf("pIn: %+v", pIn)
 
 					// Normalize generated trace ID.
-					lTest.resPIn.TraceId = pIn.GetTraceId()
+					test.resPIn.TraceId = pIn.GetTraceId()
 					// Normalize timestamp.
 					require.WithinDuration(t, time.Now(), pIn.GetTs().AsTime(),
 						testTimeout)
-					lTest.resPIn.Ts = pIn.GetTs()
+					test.resPIn.Ts = pIn.GetTs()
 
 					// Testify does not currently support protobuf equality:
 					// https://github.com/stretchr/testify/issues/758
-					if !proto.Equal(lTest.resPIn, pIn) {
-						t.Fatalf("\nExpect: %+v\nActual: %+v", lTest.resPIn,
+					if !proto.Equal(test.resPIn, pIn) {
+						t.Fatalf("\nExpect: %+v\nActual: %+v", test.resPIn,
 							pIn)
 					}
 				case <-time.After(testTimeout):
@@ -453,13 +449,11 @@ func TestDecodeGatewaysDevicesError(t *testing.T) {
 	}
 
 	for _, test := range tests {
-		lTest := test
-
-		t.Run(fmt.Sprintf("Cannot decode %+v", lTest), func(t *testing.T) {
+		t.Run(fmt.Sprintf("Cannot decode %+v", test), func(t *testing.T) {
 			t.Parallel()
 
-			require.NoError(t, globalMQTTQueue.Publish(lTest.inpTopic,
-				lTest.inpPayl))
+			require.NoError(t, globalMQTTQueue.Publish(test.inpTopic,
+				test.inpPayl))
 
 			select {
 			case msg := <-globalVInGWSub.C():

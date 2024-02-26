@@ -25,14 +25,12 @@ func TestCheckPass(t *testing.T) {
 	}
 
 	for _, test := range tests {
-		lTest := test
-
-		t.Run(fmt.Sprintf("Can check %+v", lTest), func(t *testing.T) {
+		t.Run(fmt.Sprintf("Can check %+v", test), func(t *testing.T) {
 			t.Parallel()
 
-			err := CheckPass(lTest.inp)
+			err := CheckPass(test.inp)
 			t.Logf("err: %v", err)
-			require.Equal(t, lTest.err, err)
+			require.Equal(t, test.err, err)
 		})
 	}
 }

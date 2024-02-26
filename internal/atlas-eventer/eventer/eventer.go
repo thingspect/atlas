@@ -85,7 +85,7 @@ func New(cfg *config.Config) (*Eventer, error) {
 
 // Serve starts the message eventers.
 func (ev *Eventer) Serve(concurrency int) {
-	for i := 0; i < concurrency; i++ {
+	for range concurrency {
 		go ev.eventMessages()
 	}
 

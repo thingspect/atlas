@@ -297,15 +297,13 @@ func TestAlertMessagesError(t *testing.T) {
 	}
 
 	for _, test := range tests {
-		lTest := test
-
-		t.Run(fmt.Sprintf("Cannot alert %+v", lTest), func(t *testing.T) {
+		t.Run(fmt.Sprintf("Cannot alert %+v", test), func(t *testing.T) {
 			t.Parallel()
 
 			bEOut := []byte("ale-aaa")
-			if lTest.inpEOut != nil {
+			if test.inpEOut != nil {
 				var err error
-				bEOut, err = proto.Marshal(lTest.inpEOut)
+				bEOut, err = proto.Marshal(test.inpEOut)
 				require.NoError(t, err)
 				t.Logf("bEOut: %s", bEOut)
 			}
@@ -319,22 +317,22 @@ func TestAlertMessagesError(t *testing.T) {
 			defer cancel()
 
 			listAlerts, err := globalAleDAO.List(ctx, createOrg.GetId(),
-				dev.GetUniqId(), "", lTest.inpAlarmID, createUser.GetId(), time.Now(),
+				dev.GetUniqId(), "", test.inpAlarmID, createUser.GetId(), time.Now(),
 				time.Now().Add(-4*time.Second))
 			t.Logf("listAlerts, err: %+v, %v", listAlerts, err)
 			require.NoError(t, err)
 
-			if lTest.inpNotifyErr != nil {
+			if test.inpNotifyErr != nil {
 				require.Len(t, listAlerts, 1)
 
 				alert := &api.Alert{
 					OrgId:   createOrg.GetId(),
 					UniqId:  dev.GetUniqId(),
-					AlarmId: lTest.inpAlarmID,
+					AlarmId: test.inpAlarmID,
 					UserId:  createUser.GetId(),
 					Status:  api.AlertStatus_ERROR,
-					Error:   lTest.inpNotifyErr.Error(),
-					TraceId: lTest.inpEOut.GetPoint().GetTraceId(),
+					Error:   test.inpNotifyErr.Error(),
+					TraceId: test.inpEOut.GetPoint().GetTraceId(),
 				}
 
 				// Normalize timestamp.

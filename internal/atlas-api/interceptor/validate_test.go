@@ -54,9 +54,7 @@ func TestValidate(t *testing.T) {
 	}
 
 	for _, test := range tests {
-		lTest := test
-
-		t.Run(fmt.Sprintf("Can log %+v", lTest), func(t *testing.T) {
+		t.Run(fmt.Sprintf("Can log %+v", test), func(t *testing.T) {
 			t.Parallel()
 
 			ctx, cancel := context.WithTimeout(context.Background(),
@@ -66,14 +64,14 @@ func TestValidate(t *testing.T) {
 			handler := func(_ context.Context, _ interface{}) (
 				interface{}, error,
 			) {
-				return nil, lTest.err
+				return nil, test.err
 			}
 
-			res, err := Validate(lTest.inpSkipPaths)(ctx, lTest.inpReq,
-				lTest.inpInfo, handler)
+			res, err := Validate(test.inpSkipPaths)(ctx, test.inpReq,
+				test.inpInfo, handler)
 			t.Logf("res, err: %v, %v", res, err)
 			require.Nil(t, res)
-			require.Equal(t, lTest.err, err)
+			require.Equal(t, test.err, err)
 		})
 	}
 }

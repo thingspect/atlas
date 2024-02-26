@@ -13,10 +13,8 @@ import (
 func TestDisabled(t *testing.T) {
 	t.Parallel()
 
-	for i := 0; i < 5; i++ {
-		lTest := i
-
-		t.Run(fmt.Sprintf("Can key %v", lTest), func(t *testing.T) {
+	for i := range 5 {
+		t.Run(fmt.Sprintf("Can key %v", i), func(t *testing.T) {
 			t.Parallel()
 
 			orgID := uuid.NewString()

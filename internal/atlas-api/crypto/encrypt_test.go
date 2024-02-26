@@ -33,15 +33,13 @@ func TestEncrypt(t *testing.T) {
 	}
 
 	for _, test := range tests {
-		lTest := test
-
-		t.Run(fmt.Sprintf("Can encrypt %+v", lTest), func(t *testing.T) {
+		t.Run(fmt.Sprintf("Can encrypt %+v", test), func(t *testing.T) {
 			t.Parallel()
 
-			res, err := Encrypt(lTest.inpKey, lTest.inpPlaintext)
+			res, err := Encrypt(test.inpKey, test.inpPlaintext)
 			t.Logf("res, err: %x, %v", res, err)
-			require.Len(t, res, lTest.resLen)
-			require.Equal(t, lTest.err, err)
+			require.Len(t, res, test.resLen)
+			require.Equal(t, test.err, err)
 		})
 	}
 }
@@ -70,24 +68,22 @@ func TestDecrypt(t *testing.T) {
 	}
 
 	for _, test := range tests {
-		lTest := test
-
-		t.Run(fmt.Sprintf("Can encrypt %+v", lTest), func(t *testing.T) {
+		t.Run(fmt.Sprintf("Can encrypt %+v", test), func(t *testing.T) {
 			t.Parallel()
 
-			resEnc, err := Encrypt(lTest.inpEncKey, lTest.inpPlaintext)
+			resEnc, err := Encrypt(test.inpEncKey, test.inpPlaintext)
 			t.Logf("resEnc, err: %x, %v", resEnc, err)
 			require.NoError(t, err)
 
 			var resDec []byte
-			if lTest.inpCiphertext == nil {
-				resDec, err = Decrypt(lTest.inpDecKey, resEnc)
+			if test.inpCiphertext == nil {
+				resDec, err = Decrypt(test.inpDecKey, resEnc)
 			} else {
-				resDec, err = Decrypt(lTest.inpDecKey, lTest.inpCiphertext)
+				resDec, err = Decrypt(test.inpDecKey, test.inpCiphertext)
 			}
 			t.Logf("resDec, err: %x, %#v", resDec, err)
-			require.Equal(t, lTest.inpPlaintext, resDec)
-			require.Equal(t, lTest.err, err)
+			require.Equal(t, test.inpPlaintext, resDec)
+			require.Equal(t, test.err, err)
 		})
 	}
 }

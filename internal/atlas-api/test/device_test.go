@@ -732,7 +732,7 @@ func TestListDevices(t *testing.T) {
 	devStatuses := []api.Status{}
 	devDecoders := []api.Decoder{}
 	devTags := [][]string{}
-	for i := 0; i < 3; i++ {
+	for range 3 {
 		devCli := api.NewDeviceServiceClient(globalAdminGRPCConn)
 		createDev, err := devCli.CreateDevice(ctx, &api.CreateDeviceRequest{
 			Device: random.Device("api-device", uuid.NewString()),

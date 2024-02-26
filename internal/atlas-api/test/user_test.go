@@ -779,7 +779,7 @@ func TestListUsers(t *testing.T) {
 	userRoles := []api.Role{}
 	userStatuses := []api.Status{}
 	userTags := [][]string{}
-	for i := 0; i < 3; i++ {
+	for range 3 {
 		user := random.User("api-user", uuid.NewString())
 		user.Role = api.Role_BUILDER
 

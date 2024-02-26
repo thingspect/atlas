@@ -138,9 +138,7 @@ func TestDecodeGateways(t *testing.T) {
 	}
 
 	for _, test := range tests {
-		lTest := test
-
-		t.Run(fmt.Sprintf("Can decode %+v", lTest), func(t *testing.T) {
+		t.Run(fmt.Sprintf("Can decode %+v", test), func(t *testing.T) {
 			t.Parallel()
 
 			mqttGWQueue := queue.NewFake()
@@ -162,13 +160,13 @@ func TestDecodeGateways(t *testing.T) {
 				ing.decodeGateways()
 			}()
 
-			bInpProto, err := proto.Marshal(lTest.inpProto)
+			bInpProto, err := proto.Marshal(test.inpProto)
 			require.NoError(t, err)
 			t.Logf("bInpProto: %s", bInpProto)
 
-			require.NoError(t, mqttGWQueue.Publish(lTest.inpTopic, bInpProto))
+			require.NoError(t, mqttGWQueue.Publish(test.inpTopic, bInpProto))
 
-			for _, res := range lTest.res {
+			for _, res := range test.res {
 				select {
 				case msg := <-vInSub.C():
 					msg.Ack()
@@ -216,9 +214,7 @@ func TestDecodeGatewaysError(t *testing.T) {
 	}
 
 	for _, test := range tests {
-		lTest := test
-
-		t.Run(fmt.Sprintf("Can decode %+v", lTest), func(t *testing.T) {
+		t.Run(fmt.Sprintf("Can decode %+v", test), func(t *testing.T) {
 			t.Parallel()
 
 			mqttGWQueue := queue.NewFake()
@@ -240,8 +236,8 @@ func TestDecodeGatewaysError(t *testing.T) {
 				ing.decodeGateways()
 			}()
 
-			require.NoError(t, mqttGWQueue.Publish(lTest.inpTopic,
-				lTest.inpPayl))
+			require.NoError(t, mqttGWQueue.Publish(test.inpTopic,
+				test.inpPayl))
 
 			select {
 			case msg := <-vInSub.C():
@@ -422,9 +418,7 @@ func TestDecodeDevices(t *testing.T) {
 	}
 
 	for _, test := range tests {
-		lTest := test
-
-		t.Run(fmt.Sprintf("Can decode %+v", lTest), func(t *testing.T) {
+		t.Run(fmt.Sprintf("Can decode %+v", test), func(t *testing.T) {
 			t.Parallel()
 
 			mqttDevQueue := queue.NewFake()
@@ -448,13 +442,13 @@ func TestDecodeDevices(t *testing.T) {
 				ing.decodeDevices()
 			}()
 
-			bInpProto, err := proto.Marshal(lTest.inpProto)
+			bInpProto, err := proto.Marshal(test.inpProto)
 			require.NoError(t, err)
 			t.Logf("bInpProto: %s", bInpProto)
 
-			require.NoError(t, mqttDevQueue.Publish(lTest.inpTopic, bInpProto))
+			require.NoError(t, mqttDevQueue.Publish(test.inpTopic, bInpProto))
 
-			for _, res := range lTest.res {
+			for _, res := range test.res {
 				select {
 				case msg := <-vInSub.C():
 					msg.Ack()
@@ -507,9 +501,7 @@ func TestDecodeDevicesError(t *testing.T) {
 	}
 
 	for _, test := range tests {
-		lTest := test
-
-		t.Run(fmt.Sprintf("Can decode %+v", lTest), func(t *testing.T) {
+		t.Run(fmt.Sprintf("Can decode %+v", test), func(t *testing.T) {
 			t.Parallel()
 
 			mqttDevQueue := queue.NewFake()
@@ -533,8 +525,8 @@ func TestDecodeDevicesError(t *testing.T) {
 				ing.decodeDevices()
 			}()
 
-			require.NoError(t, mqttDevQueue.Publish(lTest.inpTopic,
-				lTest.inpPayl))
+			require.NoError(t, mqttDevQueue.Publish(test.inpTopic,
+				test.inpPayl))
 
 			select {
 			case msg := <-vInSub.C():

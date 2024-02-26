@@ -364,7 +364,7 @@ func TestListKeys(t *testing.T) {
 	keyIDs := []string{}
 	keyNames := []string{}
 	keyRoles := []api.Role{}
-	for i := 0; i < 3; i++ {
+	for range 3 {
 		key := random.Key("api-key", uuid.NewString())
 		key.Role = api.Role_BUILDER
 

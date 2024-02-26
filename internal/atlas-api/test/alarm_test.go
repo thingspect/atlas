@@ -676,7 +676,7 @@ func TestListAlarms(t *testing.T) {
 	alarmIDs := []string{}
 	alarmNames := []string{}
 	alarmStatuses := []api.Status{}
-	for i := 0; i < 3; i++ {
+	for range 3 {
 		createAlarm, err := raCli.CreateAlarm(ctx, &api.CreateAlarmRequest{
 			Alarm: random.Alarm("api-alarm", uuid.NewString(), createRule.GetId()),
 		})
@@ -861,26 +861,24 @@ func TestTestAlarm(t *testing.T) {
 		}
 
 		for _, test := range tests {
-			lTest := test
-
-			t.Run(fmt.Sprintf("Can evaluate %+v", lTest), func(t *testing.T) {
+			t.Run(fmt.Sprintf("Can evaluate %+v", test), func(t *testing.T) {
 				t.Parallel()
 
-				lTest.inpPoint.UniqId = "api-alarm-" + random.String(16)
-				lTest.inpPoint.Attr = "api-alarm" + random.String(10)
+				test.inpPoint.UniqId = "api-alarm-" + random.String(16)
+				test.inpPoint.Attr = "api-alarm" + random.String(10)
 
-				if lTest.inpRule == nil {
-					lTest.inpRule = random.Rule("api-alarm", uuid.NewString())
+				if test.inpRule == nil {
+					test.inpRule = random.Rule("api-alarm", uuid.NewString())
 				}
 
-				if lTest.inpDev == nil {
-					lTest.inpDev = random.Device("api-alarm", uuid.NewString())
+				if test.inpDev == nil {
+					test.inpDev = random.Device("api-alarm", uuid.NewString())
 				}
 
 				alarm := random.Alarm("api-alarm", uuid.NewString(),
 					uuid.NewString())
-				alarm.SubjectTemplate = lTest.inpTempl
-				alarm.BodyTemplate = lTest.inpTempl
+				alarm.SubjectTemplate = test.inpTempl
+				alarm.BodyTemplate = test.inpTempl
 
 				ctx, cancel := context.WithTimeout(context.Background(),
 					testTimeout)
@@ -888,17 +886,17 @@ func TestTestAlarm(t *testing.T) {
 
 				raCli := api.NewRuleAlarmServiceClient(globalAdminGRPCConn)
 				testRes, err := raCli.TestAlarm(ctx, &api.TestAlarmRequest{
-					Point: lTest.inpPoint, Rule: lTest.inpRule,
-					Device: lTest.inpDev, Alarm: alarm,
+					Point: test.inpPoint, Rule: test.inpRule,
+					Device: test.inpDev, Alarm: alarm,
 				})
 				t.Logf("testRes, err: %+v, %v", testRes, err)
-				if lTest.err == "" {
-					require.Equal(t, lTest.res+" - "+lTest.res, testRes.GetResult())
+				if test.err == "" {
+					require.Equal(t, test.res+" - "+test.res, testRes.GetResult())
 					require.NoError(t, err)
 				} else {
 					require.Nil(t, testRes)
 					require.Equal(t, codes.InvalidArgument, status.Code(err))
-					require.Contains(t, err.Error(), lTest.err)
+					require.Contains(t, err.Error(), test.err)
 				}
 			})
 		}

@@ -85,14 +85,12 @@ func TestEventMessages(t *testing.T) {
 	}
 
 	for _, test := range tests {
-		lTest := test
-
-		t.Run(fmt.Sprintf("Can event %+v", lTest), func(t *testing.T) {
+		t.Run(fmt.Sprintf("Can event %+v", test), func(t *testing.T) {
 			t.Parallel()
 
 			dev := random.Device("ev", uuid.NewString())
 			dev.OrgId = orgID
-			lTest.inpVOut.Device = dev
+			test.inpVOut.Device = dev
 
 			vOutQueue := queue.NewFake()
 			vOutSub, err := vOutQueue.Subscribe("")
@@ -104,20 +102,20 @@ func TestEventMessages(t *testing.T) {
 			eOutPubTopic := "topic-" + random.String(10)
 
 			ruler := NewMockruler(gomock.NewController(t))
-			ruler.EXPECT().ListByTags(gomock.Any(), lTest.inpVOut.GetDevice().GetOrgId(),
-				lTest.inpVOut.GetPoint().GetAttr(), lTest.inpVOut.GetDevice().GetTags()).
-				Return(lTest.inpRules, nil).Times(1)
+			ruler.EXPECT().ListByTags(gomock.Any(), test.inpVOut.GetDevice().GetOrgId(),
+				test.inpVOut.GetPoint().GetAttr(), test.inpVOut.GetDevice().GetTags()).
+				Return(test.inpRules, nil).Times(1)
 
 			// Reuse ruleID for less branching in the mocking paths.
 			event := &api.Event{
-				OrgId:  lTest.inpVOut.GetDevice().GetOrgId(),
+				OrgId:  test.inpVOut.GetDevice().GetOrgId(),
 				RuleId: ruleID, UniqId: dev.GetUniqId(), CreatedAt: now,
 				TraceId: traceID,
 			}
 			eventer := NewMockeventer(gomock.NewController(t))
 			eventer.EXPECT().Create(gomock.Any(),
 				matcher.NewProtoMatcher(event)).Return(nil).
-				Times(lTest.inpTimes)
+				Times(test.inpTimes)
 
 			ev := Eventer{
 				ruleDAO: ruler,
@@ -131,13 +129,13 @@ func TestEventMessages(t *testing.T) {
 				ev.eventMessages()
 			}()
 
-			bVOut, err := proto.Marshal(lTest.inpVOut)
+			bVOut, err := proto.Marshal(test.inpVOut)
 			require.NoError(t, err)
 			t.Logf("bVOut: %s", bVOut)
 
 			require.NoError(t, vOutQueue.Publish("", bVOut))
 
-			for _, res := range lTest.res {
+			for _, res := range test.res {
 				select {
 				case msg := <-vInSub.C():
 					msg.Ack()
@@ -162,7 +160,7 @@ func TestEventMessages(t *testing.T) {
 				}
 			}
 
-			if len(lTest.res) == 0 {
+			if len(test.res) == 0 {
 				select {
 				case msg := <-vInSub.C():
 					t.Fatalf("Received unexpected msg.Topic, msg.Payload: %v, "+
@@ -232,9 +230,7 @@ func TestEventMessagesError(t *testing.T) {
 	}
 
 	for _, test := range tests {
-		lTest := test
-
-		t.Run(fmt.Sprintf("Cannot event %+v", lTest), func(t *testing.T) {
+		t.Run(fmt.Sprintf("Cannot event %+v", test), func(t *testing.T) {
 			t.Parallel()
 
 			vOutQueue := queue.NewFake()
@@ -248,12 +244,12 @@ func TestEventMessagesError(t *testing.T) {
 
 			ruler := NewMockruler(gomock.NewController(t))
 			ruler.EXPECT().ListByTags(gomock.Any(), gomock.Any(), gomock.Any(),
-				gomock.Any()).Return(lTest.inpRules, lTest.inpRulerErr).
-				Times(lTest.inpRulerTimes)
+				gomock.Any()).Return(test.inpRules, test.inpRulerErr).
+				Times(test.inpRulerTimes)
 
 			eventer := NewMockeventer(gomock.NewController(t))
 			eventer.EXPECT().Create(gomock.Any(), gomock.Any()).
-				Return(lTest.inpEventerErr).Times(lTest.inpEventerTimes)
+				Return(test.inpEventerErr).Times(test.inpEventerTimes)
 
 			ev := Eventer{
 				ruleDAO: ruler,
@@ -268,8 +264,8 @@ func TestEventMessagesError(t *testing.T) {
 			}()
 
 			bVOut := []byte("ev-aaa")
-			if lTest.inpVOut != nil {
-				bVOut, err = proto.Marshal(lTest.inpVOut)
+			if test.inpVOut != nil {
+				bVOut, err = proto.Marshal(test.inpVOut)
 				require.NoError(t, err)
 				t.Logf("bVOut: %s", bVOut)
 			}
