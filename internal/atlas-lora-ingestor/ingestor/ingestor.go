@@ -89,7 +89,7 @@ func New(cfg *config.Config) (*Ingestor, error) {
 
 // Serve starts the message decoders.
 func (ing *Ingestor) Serve(concurrency int) {
-	for i := 0; i < concurrency; i++ {
+	for range concurrency {
 		go ing.decodeGateways()
 		go ing.decodeDevices()
 	}

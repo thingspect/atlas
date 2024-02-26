@@ -18,10 +18,8 @@ func TestNewFake(t *testing.T) {
 	loraer := NewFake()
 	t.Logf("loraer: %#v", loraer)
 
-	for i := 0; i < 5; i++ {
-		lTest := i
-
-		t.Run(fmt.Sprintf("Can lora %v", lTest), func(t *testing.T) {
+	for i := range 5 {
+		t.Run(fmt.Sprintf("Can lora %v", i), func(t *testing.T) {
 			t.Parallel()
 
 			ctx, cancel := context.WithTimeout(context.Background(),

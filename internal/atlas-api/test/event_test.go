@@ -34,7 +34,7 @@ func TestListEvents(t *testing.T) {
 
 		events := []*api.Event{}
 
-		for i := 0; i < 5; i++ {
+		for range 5 {
 			event := random.Event("api-event", globalAdminOrgID)
 			event.UniqId = createDev.GetUniqId()
 			events = append(events, event)
@@ -190,7 +190,7 @@ func TestLatestEvents(t *testing.T) {
 
 		events := []*api.Event{}
 
-		for i := 0; i < 5; i++ {
+		for range 5 {
 			event := random.Event("api-event", globalAdminOrgID)
 			events = append(events, event)
 

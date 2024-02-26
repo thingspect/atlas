@@ -69,9 +69,7 @@ func TestAccumulateMessages(t *testing.T) {
 	}
 
 	for _, test := range tests {
-		lTest := test
-
-		t.Run(fmt.Sprintf("Can accumulate %+v", lTest), func(t *testing.T) {
+		t.Run(fmt.Sprintf("Can accumulate %+v", test), func(t *testing.T) {
 			t.Parallel()
 
 			vOutQueue := queue.NewFake()
@@ -83,7 +81,7 @@ func TestAccumulateMessages(t *testing.T) {
 
 			datapointer := NewMockdatapointer(gomock.NewController(t))
 			datapointer.EXPECT().Create(gomock.Any(), matcher.NewProtoMatcher(
-				lTest.inp.GetPoint()), lTest.inp.GetDevice().GetOrgId()).
+				test.inp.GetPoint()), test.inp.GetDevice().GetOrgId()).
 				DoAndReturn(func(
 					_ interface{}, _ interface{}, _ interface{},
 				) error {
@@ -102,7 +100,7 @@ func TestAccumulateMessages(t *testing.T) {
 				acc.accumulateMessages()
 			}()
 
-			bVOut, err := proto.Marshal(lTest.inp)
+			bVOut, err := proto.Marshal(test.inp)
 			require.NoError(t, err)
 			t.Logf("bVOut: %s", bVOut)
 
@@ -141,9 +139,7 @@ func TestAccumulateMessagesError(t *testing.T) {
 	}
 
 	for _, test := range tests {
-		lTest := test
-
-		t.Run(fmt.Sprintf("Cannot accumulate %+v", lTest), func(t *testing.T) {
+		t.Run(fmt.Sprintf("Cannot accumulate %+v", test), func(t *testing.T) {
 			t.Parallel()
 
 			vOutQueue := queue.NewFake()
@@ -160,8 +156,8 @@ func TestAccumulateMessagesError(t *testing.T) {
 				) error {
 					defer wg.Done()
 
-					return lTest.inpErr
-				}).Times(lTest.inpTimes)
+					return test.inpErr
+				}).Times(test.inpTimes)
 
 			acc := Accumulator{
 				dpDAO: datapointer,
@@ -174,15 +170,15 @@ func TestAccumulateMessagesError(t *testing.T) {
 			}()
 
 			bVOut := []byte("acc-aaa")
-			if lTest.inpVOut != nil {
+			if test.inpVOut != nil {
 				var err error
-				bVOut, err = proto.Marshal(lTest.inpVOut)
+				bVOut, err = proto.Marshal(test.inpVOut)
 				require.NoError(t, err)
 				t.Logf("bVOut: %s", bVOut)
 			}
 
 			require.NoError(t, vOutQueue.Publish("", bVOut))
-			if lTest.inpTimes > 0 {
+			if test.inpTimes > 0 {
 				wg.Wait()
 			} else {
 				// If the failure mode isn't supported by WaitGroup operation,

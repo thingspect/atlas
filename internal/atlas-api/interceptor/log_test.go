@@ -55,28 +55,26 @@ func TestLog(t *testing.T) {
 	}
 
 	for _, test := range tests {
-		lTest := test
-
-		t.Run(fmt.Sprintf("Can log %+v", lTest), func(t *testing.T) {
+		t.Run(fmt.Sprintf("Can log %+v", test), func(t *testing.T) {
 			t.Parallel()
 
 			ctx, cancel := context.WithTimeout(context.Background(),
 				testTimeout)
 			defer cancel()
 			ctx = metadata.NewIncomingContext(ctx,
-				metadata.Pairs(lTest.inpMD...))
+				metadata.Pairs(test.inpMD...))
 
 			handler := func(_ context.Context, req interface{}) (
 				interface{}, error,
 			) {
-				return req, lTest.inpHandlerErr
+				return req, test.inpHandlerErr
 			}
 
-			res, err := Log(lTest.inpSkipPaths)(ctx, lTest.inpReq,
-				lTest.inpInfo, handler)
+			res, err := Log(test.inpSkipPaths)(ctx, test.inpReq,
+				test.inpInfo, handler)
 			t.Logf("res, err: %v, %v", res, err)
-			require.Equal(t, lTest.inpReq, res)
-			require.Equal(t, lTest.inpHandlerErr, err)
+			require.Equal(t, test.inpReq, res)
+			require.Equal(t, test.inpHandlerErr, err)
 		})
 	}
 }

@@ -759,9 +759,7 @@ func TestTestAlarm(t *testing.T) {
 		}
 
 		for _, test := range tests {
-			lTest := test
-
-			t.Run(fmt.Sprintf("Can evaluate %+v", lTest), func(t *testing.T) {
+			t.Run(fmt.Sprintf("Can evaluate %+v", test), func(t *testing.T) {
 				t.Parallel()
 
 				ctx, cancel := context.WithTimeout(session.NewContext(
@@ -773,20 +771,20 @@ func TestTestAlarm(t *testing.T) {
 
 				raSvc := NewRuleAlarm(nil, nil)
 				testRes, err := raSvc.TestAlarm(ctx, &api.TestAlarmRequest{
-					Point: lTest.inpPoint, Rule: lTest.inpRule,
-					Device: lTest.inpDev, Alarm: &api.Alarm{
-						SubjectTemplate: lTest.inpTempl,
-						BodyTemplate:    lTest.inpTempl,
+					Point: test.inpPoint, Rule: test.inpRule,
+					Device: test.inpDev, Alarm: &api.Alarm{
+						SubjectTemplate: test.inpTempl,
+						BodyTemplate:    test.inpTempl,
 					},
 				})
 				t.Logf("testRes, err: %+v, %v", testRes, err)
-				if lTest.err == "" {
-					require.Equal(t, lTest.res+" - "+lTest.res, testRes.GetResult())
+				if test.err == "" {
+					require.Equal(t, test.res+" - "+test.res, testRes.GetResult())
 					require.NoError(t, err)
 				} else {
 					require.Nil(t, testRes)
 					require.Equal(t, codes.InvalidArgument, status.Code(err))
-					require.Contains(t, err.Error(), lTest.err)
+					require.Contains(t, err.Error(), test.err)
 				}
 			})
 		}

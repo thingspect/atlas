@@ -20,7 +20,7 @@ func TestListTags(t *testing.T) {
 
 	var tCount int
 	var lastTag string
-	for i := 0; i < 3; i++ {
+	for range 3 {
 		devCli := api.NewDeviceServiceClient(globalAdminGRPCConn)
 		createDev, err := devCli.CreateDevice(ctx, &api.CreateDeviceRequest{
 			Device: random.Device("api-tag", uuid.NewString()),
@@ -32,7 +32,7 @@ func TestListTags(t *testing.T) {
 		lastTag = createDev.GetTags()[len(createDev.GetTags())-1]
 	}
 
-	for i := 0; i < 3; i++ {
+	for range 3 {
 		user := random.User("api-user", uuid.NewString())
 		user.Role = api.Role_BUILDER
 

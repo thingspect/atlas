@@ -173,10 +173,8 @@ func TestDecodeMessages(t *testing.T) {
 	}
 
 	for _, test := range tests {
-		lTest := test
-
-		t.Run(fmt.Sprintf("Can decode %+v", lTest), func(t *testing.T) {
-			bDIn, err := proto.Marshal(lTest.inp)
+		t.Run(fmt.Sprintf("Can decode %+v", test), func(t *testing.T) {
+			bDIn, err := proto.Marshal(test.inp)
 			require.NoError(t, err)
 			t.Logf("bDIn: %s", bDIn)
 
@@ -184,7 +182,7 @@ func TestDecodeMessages(t *testing.T) {
 
 			// Don't stop the flow of execution (assert) to avoid leaving
 			// messages orphaned in the queue.
-			for _, res := range lTest.res {
+			for _, res := range test.res {
 				select {
 				//nolint:testifylint // above
 				case msg := <-globalVInSub.C():
@@ -261,15 +259,13 @@ func TestDecodeMessagesError(t *testing.T) {
 	}
 
 	for _, test := range tests {
-		lTest := test
-
-		t.Run(fmt.Sprintf("Cannot decode %+v", lTest), func(t *testing.T) {
+		t.Run(fmt.Sprintf("Cannot decode %+v", test), func(t *testing.T) {
 			t.Parallel()
 
 			bDIn := []byte("dec-aaa")
-			if lTest.inp != nil {
+			if test.inp != nil {
 				var err error
-				bDIn, err = proto.Marshal(lTest.inp)
+				bDIn, err = proto.Marshal(test.inp)
 				require.NoError(t, err)
 				t.Logf("bDIn: %s", bDIn)
 			}

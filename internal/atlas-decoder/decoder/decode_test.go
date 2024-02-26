@@ -152,14 +152,12 @@ func TestDecodeMessages(t *testing.T) {
 	}
 
 	for _, test := range tests {
-		lTest := test
-
-		t.Run(fmt.Sprintf("Can decode %+v", lTest), func(t *testing.T) {
+		t.Run(fmt.Sprintf("Can decode %+v", test), func(t *testing.T) {
 			t.Parallel()
 
 			dev := random.Device("dec", uuid.NewString())
 			dev.UniqId = uniqID
-			dev.Decoder = lTest.inpDecoder
+			dev.Decoder = test.inpDecoder
 
 			dInQueue := queue.NewFake()
 			dInSub, err := dInQueue.Subscribe("")
@@ -171,7 +169,7 @@ func TestDecodeMessages(t *testing.T) {
 			vInPubTopic := "topic-" + random.String(10)
 
 			devicer := NewMockdevicer(gomock.NewController(t))
-			devicer.EXPECT().ReadByUniqID(gomock.Any(), lTest.inpDIn.GetUniqId()).
+			devicer.EXPECT().ReadByUniqID(gomock.Any(), test.inpDIn.GetUniqId()).
 				Return(dev, nil).Times(1)
 
 			dec := Decoder{
@@ -186,13 +184,13 @@ func TestDecodeMessages(t *testing.T) {
 				dec.decodeMessages()
 			}()
 
-			bDIn, err := proto.Marshal(lTest.inpDIn)
+			bDIn, err := proto.Marshal(test.inpDIn)
 			require.NoError(t, err)
 			t.Logf("bDIn: %s", bDIn)
 
 			require.NoError(t, dInQueue.Publish("", bDIn))
 
-			for _, res := range lTest.res {
+			for _, res := range test.res {
 				select {
 				case msg := <-vInSub.C():
 					msg.Ack()
@@ -239,13 +237,11 @@ func TestDecodeMessagesError(t *testing.T) {
 	}
 
 	for _, test := range tests {
-		lTest := test
-
-		t.Run(fmt.Sprintf("Cannot decode %+v", lTest), func(t *testing.T) {
+		t.Run(fmt.Sprintf("Cannot decode %+v", test), func(t *testing.T) {
 			t.Parallel()
 
 			dev := random.Device("dec", uuid.NewString())
-			dev.Decoder = lTest.inpDecoder
+			dev.Decoder = test.inpDecoder
 
 			dInQueue := queue.NewFake()
 			dInSub, err := dInQueue.Subscribe("")
@@ -257,7 +253,7 @@ func TestDecodeMessagesError(t *testing.T) {
 
 			devicer := NewMockdevicer(gomock.NewController(t))
 			devicer.EXPECT().ReadByUniqID(gomock.Any(), gomock.Any()).
-				Return(dev, lTest.inpErr).Times(lTest.inpTimes)
+				Return(dev, test.inpErr).Times(test.inpTimes)
 
 			dec := Decoder{
 				devDAO: devicer,
@@ -272,9 +268,9 @@ func TestDecodeMessagesError(t *testing.T) {
 			}()
 
 			bDIn := []byte("dec-aaa")
-			if lTest.inpDIn != nil {
+			if test.inpDIn != nil {
 				var err error
-				bDIn, err = proto.Marshal(lTest.inpDIn)
+				bDIn, err = proto.Marshal(test.inpDIn)
 				require.NoError(t, err)
 				t.Logf("bDIn: %s", bDIn)
 			}

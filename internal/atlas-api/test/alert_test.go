@@ -34,7 +34,7 @@ func TestListAlerts(t *testing.T) {
 
 		alerts := []*api.Alert{}
 
-		for i := 0; i < 5; i++ {
+		for range 5 {
 			alert := random.Alert("dao-alert", globalAdminOrgID)
 			alert.UniqId = createDev.GetUniqId()
 			alerts = append(alerts, alert)

@@ -52,25 +52,23 @@ func TestGenerateWebToken(t *testing.T) {
 	}
 
 	for _, test := range tests {
-		lTest := test
-
-		t.Run(fmt.Sprintf("Can generate %+v", lTest), func(t *testing.T) {
+		t.Run(fmt.Sprintf("Can generate %+v", test), func(t *testing.T) {
 			t.Parallel()
 
-			res, exp, err := GenerateWebToken(lTest.inpKey, &api.User{
-				Id: lTest.inpUserID, OrgId: lTest.inpOrgID,
+			res, exp, err := GenerateWebToken(test.inpKey, &api.User{
+				Id: test.inpUserID, OrgId: test.inpOrgID,
 				Role: api.Role_BUILDER,
 			})
 			t.Logf("res, exp, err: %v, %+v, %#v", res, exp, err)
-			require.GreaterOrEqual(t, len(res), lTest.resMinLen)
+			require.GreaterOrEqual(t, len(res), test.resMinLen)
 			if exp != nil {
 				require.WithinDuration(t, time.Now().Add(
 					WebTokenExp*time.Second), exp.AsTime(), 2*time.Second)
 			}
-			if lTest.err == "" {
+			if test.err == "" {
 				require.NoError(t, err)
 			} else {
-				require.EqualError(t, err, lTest.err)
+				require.EqualError(t, err, test.err)
 			}
 		})
 	}
@@ -109,19 +107,17 @@ func TestGenerateKeyToken(t *testing.T) {
 	}
 
 	for _, test := range tests {
-		lTest := test
-
-		t.Run(fmt.Sprintf("Can generate %+v", lTest), func(t *testing.T) {
+		t.Run(fmt.Sprintf("Can generate %+v", test), func(t *testing.T) {
 			t.Parallel()
 
-			res, err := GenerateKeyToken(lTest.inpKey, lTest.inpKeyID,
-				lTest.inpOrgID, api.Role_BUILDER)
+			res, err := GenerateKeyToken(test.inpKey, test.inpKeyID,
+				test.inpOrgID, api.Role_BUILDER)
 			t.Logf("res, err: %v, %#v", res, err)
-			require.GreaterOrEqual(t, len(res), lTest.resMinLen)
-			if lTest.err == "" {
+			require.GreaterOrEqual(t, len(res), test.resMinLen)
+			if test.err == "" {
 				require.NoError(t, err)
 			} else {
-				require.EqualError(t, err, lTest.err)
+				require.EqualError(t, err, test.err)
 			}
 		})
 	}
@@ -169,22 +165,20 @@ func TestValidateWebToken(t *testing.T) {
 	}
 
 	for _, test := range tests {
-		lTest := test
-
-		t.Run(fmt.Sprintf("Can validate %+v", lTest), func(t *testing.T) {
+		t.Run(fmt.Sprintf("Can validate %+v", test), func(t *testing.T) {
 			t.Parallel()
 
 			user := random.User("webtoken", uuid.NewString())
-			resGen, exp, err := GenerateWebToken(lTest.inpKey, user)
+			resGen, exp, err := GenerateWebToken(test.inpKey, user)
 			t.Logf("resGen, exp, err: %v, %v, %v", resGen, exp, err)
 			require.NoError(t, err)
 
 			var resVal *Session
-			if lTest.inpCiphertoken == "" {
-				resVal, err = ValidateWebToken(lTest.inpKey, resGen)
+			if test.inpCiphertoken == "" {
+				resVal, err = ValidateWebToken(test.inpKey, resGen)
 			} else {
-				resVal, err = ValidateWebToken(lTest.inpKey,
-					lTest.inpCiphertoken)
+				resVal, err = ValidateWebToken(test.inpKey,
+					test.inpCiphertoken)
 			}
 			t.Logf("resVal, err: %+v, %v", resVal, err)
 			if resVal != nil {
@@ -194,10 +188,10 @@ func TestValidateWebToken(t *testing.T) {
 				require.Equal(t, user.GetRole(), resVal.Role)
 				require.NotEmpty(t, resVal.TraceID)
 			}
-			if lTest.err == "" {
+			if test.err == "" {
 				require.NoError(t, err)
 			} else {
-				require.Contains(t, err.Error(), lTest.err)
+				require.Contains(t, err.Error(), test.err)
 			}
 		})
 	}
@@ -234,25 +228,23 @@ func TestValidateKeyToken(t *testing.T) {
 	}
 
 	for _, test := range tests {
-		lTest := test
-
-		t.Run(fmt.Sprintf("Can validate %+v", lTest), func(t *testing.T) {
+		t.Run(fmt.Sprintf("Can validate %+v", test), func(t *testing.T) {
 			t.Parallel()
 
 			keyID := uuid.NewString()
 			user := random.User("keytoken", uuid.NewString())
 
-			resGen, err := GenerateKeyToken(lTest.inpKey, keyID, user.GetOrgId(),
+			resGen, err := GenerateKeyToken(test.inpKey, keyID, user.GetOrgId(),
 				user.GetRole())
 			t.Logf("resGen, err: %v, %v", resGen, err)
 			require.NoError(t, err)
 
 			var resVal *Session
-			if lTest.inpCiphertoken == "" {
-				resVal, err = ValidateWebToken(lTest.inpKey, resGen)
+			if test.inpCiphertoken == "" {
+				resVal, err = ValidateWebToken(test.inpKey, resGen)
 			} else {
-				resVal, err = ValidateWebToken(lTest.inpKey,
-					lTest.inpCiphertoken)
+				resVal, err = ValidateWebToken(test.inpKey,
+					test.inpCiphertoken)
 			}
 			t.Logf("resVal, err: %+v, %v", resVal, err)
 			if resVal != nil {
@@ -262,10 +254,10 @@ func TestValidateKeyToken(t *testing.T) {
 				require.Equal(t, user.GetRole(), resVal.Role)
 				require.NotEmpty(t, resVal.TraceID)
 			}
-			if lTest.err == "" {
+			if test.err == "" {
 				require.NoError(t, err)
 			} else {
-				require.Contains(t, err.Error(), lTest.err)
+				require.Contains(t, err.Error(), test.err)
 			}
 		})
 	}

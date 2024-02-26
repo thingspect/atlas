@@ -75,7 +75,7 @@ func New(cfg *config.Config) (*Accumulator, error) {
 
 // Serve starts the message accumulators.
 func (acc *Accumulator) Serve(concurrency int) {
-	for i := 0; i < concurrency; i++ {
+	for range concurrency {
 		go acc.accumulateMessages()
 	}
 

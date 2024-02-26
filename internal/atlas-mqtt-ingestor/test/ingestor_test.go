@@ -103,16 +103,14 @@ func TestDecodeMessages(t *testing.T) {
 	}
 
 	for _, test := range tests {
-		lTest := test
-
-		t.Run(fmt.Sprintf("Can decode %+v", lTest), func(t *testing.T) {
+		t.Run(fmt.Sprintf("Can decode %+v", test), func(t *testing.T) {
 			var bPayl []byte
 			var err error
 			payl := &mqtt.Payload{
-				Points: lTest.inpPoints, Token: lTest.inpPaylToken,
+				Points: test.inpPoints, Token: test.inpPaylToken,
 			}
 
-			if lTest.inpTopicParts[len(lTest.inpTopicParts)-1] == "json" {
+			if test.inpTopicParts[len(test.inpTopicParts)-1] == "json" {
 				bPayl, err = protojson.Marshal(payl)
 			} else {
 				bPayl, err = proto.Marshal(payl)
@@ -121,11 +119,11 @@ func TestDecodeMessages(t *testing.T) {
 			t.Logf("bPayl: %s", bPayl)
 
 			require.NoError(t, globalMQTTQueue.Publish(strings.Join(
-				lTest.inpTopicParts, "/"), bPayl))
+				test.inpTopicParts, "/"), bPayl))
 
 			// Don't stop the flow of execution (assert) to avoid leaving
 			// messages orphaned in the queue.
-			for i, res := range lTest.res {
+			for i, res := range test.res {
 				select {
 				//nolint:testifylint // above
 				case msg := <-globalVInSub.C():
@@ -141,7 +139,7 @@ func TestDecodeMessages(t *testing.T) {
 					// Normalize generated trace ID.
 					res.Point.TraceId = vIn.GetPoint().GetTraceId()
 					// Normalize timestamp.
-					if lTest.inpPoints[i].GetTs() == nil {
+					if test.inpPoints[i].GetTs() == nil {
 						assert.WithinDuration(t, time.Now(),
 							vIn.GetPoint().GetTs().AsTime(), testTimeout)
 						res.Point.Ts = vIn.GetPoint().GetTs()
@@ -178,13 +176,11 @@ func TestDecodeMessagesError(t *testing.T) {
 	}
 
 	for _, test := range tests {
-		lTest := test
-
-		t.Run(fmt.Sprintf("Cannot decode %+v", lTest), func(t *testing.T) {
+		t.Run(fmt.Sprintf("Cannot decode %+v", test), func(t *testing.T) {
 			t.Parallel()
 
-			require.NoError(t, globalMQTTQueue.Publish(lTest.inpTopic,
-				lTest.inpPayl))
+			require.NoError(t, globalMQTTQueue.Publish(test.inpTopic,
+				test.inpPayl))
 
 			select {
 			case msg := <-globalVInSub.C():

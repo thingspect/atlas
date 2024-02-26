@@ -90,7 +90,7 @@ func New(cfg *config.Config) (*Decoder, error) {
 
 // Serve starts the message decoders.
 func (dec *Decoder) Serve(concurrency int) {
-	for i := 0; i < concurrency; i++ {
+	for range concurrency {
 		go dec.decodeMessages()
 	}
 

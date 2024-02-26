@@ -112,9 +112,7 @@ func TestValidateMessages(t *testing.T) {
 	}
 
 	for _, test := range tests {
-		lTest := test
-
-		t.Run(fmt.Sprintf("Can validate %+v", lTest), func(t *testing.T) {
+		t.Run(fmt.Sprintf("Can validate %+v", test), func(t *testing.T) {
 			t.Parallel()
 
 			vInQueue := queue.NewFake()
@@ -127,7 +125,7 @@ func TestValidateMessages(t *testing.T) {
 			vOutPubTopic := "topic-" + random.String(10)
 
 			devicer := NewMockdevicer(gomock.NewController(t))
-			devicer.EXPECT().ReadByUniqID(gomock.Any(), lTest.inp.GetPoint().GetUniqId()).
+			devicer.EXPECT().ReadByUniqID(gomock.Any(), test.inp.GetPoint().GetUniqId()).
 				Return(dev, nil).Times(1)
 
 			val := Validator{
@@ -141,7 +139,7 @@ func TestValidateMessages(t *testing.T) {
 				val.validateMessages()
 			}()
 
-			bVIn, err := proto.Marshal(lTest.inp)
+			bVIn, err := proto.Marshal(test.inp)
 			require.NoError(t, err)
 			t.Logf("bVIn: %s", bVIn)
 
@@ -160,8 +158,8 @@ func TestValidateMessages(t *testing.T) {
 
 				// Testify does not currently support protobuf equality:
 				// https://github.com/stretchr/testify/issues/758
-				if !proto.Equal(lTest.res, vOut) {
-					t.Fatalf("\nExpect: %+v\nActual: %+v", lTest.res, vOut)
+				if !proto.Equal(test.res, vOut) {
+					t.Fatalf("\nExpect: %+v\nActual: %+v", test.res, vOut)
 				}
 			case <-time.After(2 * time.Second):
 				t.Fatal("Message timed out")
@@ -234,13 +232,11 @@ func TestValidateMessagesError(t *testing.T) {
 	}
 
 	for _, test := range tests {
-		lTest := test
-
-		t.Run(fmt.Sprintf("Cannot validate %+v", lTest), func(t *testing.T) {
+		t.Run(fmt.Sprintf("Cannot validate %+v", test), func(t *testing.T) {
 			t.Parallel()
 
 			dev := random.Device("val", orgID)
-			dev.Status = lTest.inpStatus
+			dev.Status = test.inpStatus
 
 			vInQueue := queue.NewFake()
 			vInSub, err := vInQueue.Subscribe("")
@@ -252,7 +248,7 @@ func TestValidateMessagesError(t *testing.T) {
 
 			devicer := NewMockdevicer(gomock.NewController(t))
 			devicer.EXPECT().ReadByUniqID(gomock.Any(), gomock.Any()).
-				Return(dev, lTest.inpErr).Times(lTest.inpTimes)
+				Return(dev, test.inpErr).Times(test.inpTimes)
 
 			val := Validator{
 				devDAO: devicer,
@@ -266,9 +262,9 @@ func TestValidateMessagesError(t *testing.T) {
 			}()
 
 			bVIn := []byte("val-aaa")
-			if lTest.inpVIn != nil {
+			if test.inpVIn != nil {
 				var err error
-				bVIn, err = proto.Marshal(lTest.inpVIn)
+				bVIn, err = proto.Marshal(test.inpVIn)
 				require.NoError(t, err)
 				t.Logf("bVIn: %s", bVIn)
 			}

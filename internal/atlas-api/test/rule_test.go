@@ -461,7 +461,7 @@ func TestListRules(t *testing.T) {
 	ruleIDs := []string{}
 	ruleNames := []string{}
 	ruleStatuses := []api.Status{}
-	for i := 0; i < 3; i++ {
+	for range 3 {
 		raCli := api.NewRuleAlarmServiceClient(globalAdminGRPCConn)
 		createRule, err := raCli.CreateRule(ctx, &api.CreateRuleRequest{
 			Rule: random.Rule("api-rule", uuid.NewString()),
@@ -624,17 +624,15 @@ func TestTestRule(t *testing.T) {
 		}
 
 		for _, test := range tests {
-			lTest := test
-
-			t.Run(fmt.Sprintf("Can evaluate %+v", lTest), func(t *testing.T) {
+			t.Run(fmt.Sprintf("Can evaluate %+v", test), func(t *testing.T) {
 				t.Parallel()
 
-				lTest.inpPoint.UniqId = "api-rule-" + random.String(16)
-				lTest.inpPoint.Attr = "api-rule" + random.String(10)
+				test.inpPoint.UniqId = "api-rule-" + random.String(16)
+				test.inpPoint.Attr = "api-rule" + random.String(10)
 
 				rule := random.Rule("api-rule", uuid.NewString())
-				rule.Attr = lTest.inpPoint.GetAttr()
-				rule.Expr = lTest.inpRuleExpr
+				rule.Attr = test.inpPoint.GetAttr()
+				rule.Expr = test.inpRuleExpr
 
 				ctx, cancel := context.WithTimeout(context.Background(),
 					testTimeout)
@@ -642,16 +640,16 @@ func TestTestRule(t *testing.T) {
 
 				raCli := api.NewRuleAlarmServiceClient(globalAdminGRPCConn)
 				testRes, err := raCli.TestRule(ctx, &api.TestRuleRequest{
-					Point: lTest.inpPoint, Rule: rule,
+					Point: test.inpPoint, Rule: rule,
 				})
 				t.Logf("testRes, err: %+v, %v", testRes, err)
-				if lTest.err == "" {
-					require.Equal(t, lTest.res, testRes.GetResult())
+				if test.err == "" {
+					require.Equal(t, test.res, testRes.GetResult())
 					require.NoError(t, err)
 				} else {
 					require.Nil(t, testRes)
 					require.Equal(t, codes.InvalidArgument, status.Code(err))
-					require.Contains(t, err.Error(), lTest.err)
+					require.Contains(t, err.Error(), test.err)
 				}
 			})
 		}

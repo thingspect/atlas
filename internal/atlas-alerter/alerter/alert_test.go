@@ -116,9 +116,7 @@ func TestAlertMessages(t *testing.T) {
 	}
 
 	for _, test := range tests {
-		lTest := test
-
-		t.Run(fmt.Sprintf("Can alert %+v", lTest), func(t *testing.T) {
+		t.Run(fmt.Sprintf("Can alert %+v", test), func(t *testing.T) {
 			t.Parallel()
 
 			eOutQueue := queue.NewFake()
@@ -130,39 +128,39 @@ func TestAlertMessages(t *testing.T) {
 
 			ctrl := gomock.NewController(t)
 			orger := NewMockorger(ctrl)
-			orger.EXPECT().Read(gomock.Any(), lTest.inpEOut.GetDevice().
+			orger.EXPECT().Read(gomock.Any(), test.inpEOut.GetDevice().
 				GetOrgId()).Return(org, nil).Times(1)
 
 			alarmer := NewMockalarmer(ctrl)
-			alarmer.EXPECT().List(gomock.Any(), lTest.inpEOut.GetDevice().
-				GetOrgId(), time.Time{}, "", int32(0), lTest.inpEOut.GetRule().
-				GetId()).Return(lTest.inpAlarms, int32(0), nil).Times(1)
+			alarmer.EXPECT().List(gomock.Any(), test.inpEOut.GetDevice().
+				GetOrgId(), time.Time{}, "", int32(0), test.inpEOut.GetRule().
+				GetId()).Return(test.inpAlarms, int32(0), nil).Times(1)
 
 			userer := NewMockuserer(ctrl)
-			userer.EXPECT().ListByTags(gomock.Any(), lTest.inpEOut.GetDevice().
-				GetOrgId(), lTest.inpAlarms[0].GetUserTags()).Return(lTest.
-				inpUsers, nil).Times(lTest.inpUserTimes)
+			userer.EXPECT().ListByTags(gomock.Any(), test.inpEOut.GetDevice().
+				GetOrgId(), test.inpAlarms[0].GetUserTags()).Return(test.
+				inpUsers, nil).Times(test.inpUserTimes)
 
 			var alert *api.Alert
-			if lTest.inpAlertTimes > 0 {
+			if test.inpAlertTimes > 0 {
 				alert = &api.Alert{
-					OrgId:   lTest.inpEOut.GetDevice().GetOrgId(),
-					UniqId:  lTest.inpEOut.GetDevice().GetUniqId(),
-					AlarmId: lTest.inpAlarms[0].GetId(),
-					UserId:  lTest.inpUsers[0].GetId(),
+					OrgId:   test.inpEOut.GetDevice().GetOrgId(),
+					UniqId:  test.inpEOut.GetDevice().GetUniqId(),
+					AlarmId: test.inpAlarms[0].GetId(),
+					UserId:  test.inpUsers[0].GetId(),
 					Status:  api.AlertStatus_SENT,
-					TraceId: lTest.inpEOut.GetPoint().GetTraceId(),
+					TraceId: test.inpEOut.GetPoint().GetTraceId(),
 				}
 			}
 
 			notifier := notify.NewMockNotifier(ctrl)
 			notifier.EXPECT().App(gomock.Any(), gomock.Any(), gomock.Any(),
-				gomock.Any()).Return(nil).Times(lTest.inpAppTimes)
+				gomock.Any()).Return(nil).Times(test.inpAppTimes)
 			notifier.EXPECT().SMS(gomock.Any(), gomock.Any(), gomock.Any(),
-				gomock.Any()).Return(nil).Times(lTest.inpSMSTimes)
+				gomock.Any()).Return(nil).Times(test.inpSMSTimes)
 			notifier.EXPECT().Email(gomock.Any(), org.GetDisplayName(),
 				org.GetEmail(), gomock.Any(), gomock.Any(), gomock.Any()).
-				Return(nil).Times(lTest.inpEmailTimes)
+				Return(nil).Times(test.inpEmailTimes)
 
 			alerter := NewMockalerter(ctrl)
 			alerter.EXPECT().Create(gomock.Any(),
@@ -171,18 +169,18 @@ func TestAlertMessages(t *testing.T) {
 					defer wg.Done()
 
 					return nil
-				}).Times(lTest.inpAlertTimes)
+				}).Times(test.inpAlertTimes)
 
 			cache := cache.NewMemory()
 
-			if lTest.inpSeedCache {
+			if test.inpSeedCache {
 				ctx, cancel := context.WithTimeout(context.Background(),
 					5*time.Second)
 				defer cancel()
 
-				key := repeatKey(lTest.inpEOut.GetDevice().GetOrgId(),
-					lTest.inpEOut.GetDevice().GetId(),
-					lTest.inpAlarms[0].GetId(), lTest.inpUsers[0].GetId())
+				key := repeatKey(test.inpEOut.GetDevice().GetOrgId(),
+					test.inpEOut.GetDevice().GetId(),
+					test.inpAlarms[0].GetId(), test.inpUsers[0].GetId())
 				ok, err := cache.SetIfNotExistTTL(ctx, key, 1, time.Minute)
 				require.True(t, ok)
 				require.NoError(t, err)
@@ -204,12 +202,12 @@ func TestAlertMessages(t *testing.T) {
 				ale.alertMessages()
 			}()
 
-			bEOut, err := proto.Marshal(lTest.inpEOut)
+			bEOut, err := proto.Marshal(test.inpEOut)
 			require.NoError(t, err)
 			t.Logf("bEOut: %s", bEOut)
 
 			require.NoError(t, eOutQueue.Publish("", bEOut))
-			if lTest.inpAlertTimes > 0 {
+			if test.inpAlertTimes > 0 {
 				wg.Wait()
 			} else {
 				// If the success mode isn't supported by WaitGroup operation,
@@ -378,9 +376,7 @@ func TestAlertMessagesError(t *testing.T) {
 	}
 
 	for _, test := range tests {
-		lTest := test
-
-		t.Run(fmt.Sprintf("Can alert %+v", lTest), func(t *testing.T) {
+		t.Run(fmt.Sprintf("Can alert %+v", test), func(t *testing.T) {
 			t.Parallel()
 
 			eOutQueue := queue.NewFake()
@@ -392,36 +388,36 @@ func TestAlertMessagesError(t *testing.T) {
 
 			ctrl := gomock.NewController(t)
 			orger := NewMockorger(ctrl)
-			orger.EXPECT().Read(gomock.Any(), gomock.Any()).Return(lTest.inpOrg,
-				lTest.inpOrgErr).Times(lTest.inpOrgTimes)
+			orger.EXPECT().Read(gomock.Any(), gomock.Any()).Return(test.inpOrg,
+				test.inpOrgErr).Times(test.inpOrgTimes)
 
 			alarmer := NewMockalarmer(ctrl)
 			alarmer.EXPECT().List(gomock.Any(), gomock.Any(), gomock.Any(),
 				gomock.Any(), gomock.Any(), gomock.Any()).
-				Return(lTest.inpAlarms, int32(0), lTest.inpAlarmsErr).
-				Times(lTest.inpAlarmTimes)
+				Return(test.inpAlarms, int32(0), test.inpAlarmsErr).
+				Times(test.inpAlarmTimes)
 
 			userer := NewMockuserer(ctrl)
 			userer.EXPECT().ListByTags(gomock.Any(), gomock.Any(),
-				gomock.Any()).Return(lTest.inpUsers, lTest.inpUsersErr).
-				Times(lTest.inpUserTimes)
+				gomock.Any()).Return(test.inpUsers, test.inpUsersErr).
+				Times(test.inpUserTimes)
 
 			cacher := cache.NewMockCacher(ctrl)
 			cacher.EXPECT().SetIfNotExistTTL(gomock.Any(), gomock.Any(),
-				gomock.Any(), gomock.Any()).Return(lTest.inpCache,
-				lTest.inpCacheErr).Times(lTest.inpCacheTimes)
+				gomock.Any(), gomock.Any()).Return(test.inpCache,
+				test.inpCacheErr).Times(test.inpCacheTimes)
 
 			notifier := notify.NewMockNotifier(ctrl)
 			notifier.EXPECT().App(gomock.Any(), gomock.Any(), gomock.Any(),
-				gomock.Any()).Return(lTest.inpAppErr).Times(lTest.inpAppTimes)
+				gomock.Any()).Return(test.inpAppErr).Times(test.inpAppTimes)
 
 			alerter := NewMockalerter(ctrl)
 			alerter.EXPECT().Create(gomock.Any(), gomock.Any()).
 				DoAndReturn(func(_ interface{}, _ interface{}) error {
 					defer wg.Done()
 
-					return lTest.inpAlertErr
-				}).Times(lTest.inpAlertTimes)
+					return test.inpAlertErr
+				}).Times(test.inpAlertTimes)
 
 			ale := Alerter{
 				orgDAO:   orger,
@@ -440,14 +436,14 @@ func TestAlertMessagesError(t *testing.T) {
 			}()
 
 			bEOut := []byte("ale-aaa")
-			if lTest.inpEOut != nil {
-				bEOut, err = proto.Marshal(lTest.inpEOut)
+			if test.inpEOut != nil {
+				bEOut, err = proto.Marshal(test.inpEOut)
 				require.NoError(t, err)
 				t.Logf("bEOut: %s", bEOut)
 			}
 
 			require.NoError(t, eOutQueue.Publish("", bEOut))
-			if lTest.inpAlertTimes > 0 {
+			if test.inpAlertTimes > 0 {
 				wg.Wait()
 			} else {
 				// If the success mode isn't supported by WaitGroup operation,

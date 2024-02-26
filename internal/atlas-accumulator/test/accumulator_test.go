@@ -69,12 +69,10 @@ func TestAccumulateMessages(t *testing.T) {
 	}
 
 	for _, test := range tests {
-		lTest := test
-
-		t.Run(fmt.Sprintf("Can accumulate %+v", lTest), func(t *testing.T) {
+		t.Run(fmt.Sprintf("Can accumulate %+v", test), func(t *testing.T) {
 			t.Parallel()
 
-			bVOut, err := proto.Marshal(lTest.inp)
+			bVOut, err := proto.Marshal(test.inp)
 			require.NoError(t, err)
 			t.Logf("bVOut: %s", bVOut)
 
@@ -86,23 +84,23 @@ func TestAccumulateMessages(t *testing.T) {
 				testTimeout)
 			defer cancel()
 
-			listPoints, err := globalDPDAO.List(ctx, lTest.inp.GetDevice().GetOrgId(),
-				lTest.inp.GetPoint().GetUniqId(), "", "", lTest.inp.GetPoint().GetTs().AsTime(),
-				lTest.inp.GetPoint().GetTs().AsTime().Add(-time.Millisecond))
+			listPoints, err := globalDPDAO.List(ctx, test.inp.GetDevice().GetOrgId(),
+				test.inp.GetPoint().GetUniqId(), "", "", test.inp.GetPoint().GetTs().AsTime(),
+				test.inp.GetPoint().GetTs().AsTime().Add(-time.Millisecond))
 			t.Logf("listPoints, err: %+v, %v", listPoints, err)
 			require.NoError(t, err)
 			require.Len(t, listPoints, 1)
 
 			// Normalize token.
-			listPoints[0].Token = lTest.inp.GetPoint().GetToken()
+			listPoints[0].Token = test.inp.GetPoint().GetToken()
 			// Normalize timestamp.
-			lTest.inp.Point.Ts = timestamppb.New(
-				lTest.inp.GetPoint().GetTs().AsTime().Truncate(time.Millisecond))
+			test.inp.Point.Ts = timestamppb.New(
+				test.inp.GetPoint().GetTs().AsTime().Truncate(time.Millisecond))
 
 			// Testify does not currently support protobuf equality:
 			// https://github.com/stretchr/testify/issues/758
-			if !proto.Equal(lTest.inp.GetPoint(), listPoints[0]) {
-				t.Fatalf("\nExpect: %+v\nActual: %+v", lTest.inp.GetPoint(),
+			if !proto.Equal(test.inp.GetPoint(), listPoints[0]) {
+				t.Fatalf("\nExpect: %+v\nActual: %+v", test.inp.GetPoint(),
 					listPoints[0])
 			}
 		})
