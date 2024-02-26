@@ -30,18 +30,16 @@ func TestNewPgDB(t *testing.T) {
 	}
 
 	for _, test := range tests {
-		lTest := test
-
-		t.Run(fmt.Sprintf("Can connect %+v", lTest), func(t *testing.T) {
+		t.Run(fmt.Sprintf("Can connect %+v", test), func(t *testing.T) {
 			t.Parallel()
 
-			res, err := NewPgDB(lTest.inp)
+			res, err := NewPgDB(test.inp)
 			t.Logf("res, err: %+v, %#v", res, err)
-			if lTest.err == "" {
+			if test.err == "" {
 				require.NotNil(t, res)
 				require.NoError(t, err)
 			} else {
-				require.Contains(t, err.Error(), lTest.err)
+				require.Contains(t, err.Error(), test.err)
 			}
 		})
 	}

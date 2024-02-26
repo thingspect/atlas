@@ -62,18 +62,16 @@ func TestCreate(t *testing.T) {
 		}
 
 		for _, test := range tests {
-			lTest := test
-
-			t.Run(fmt.Sprintf("Cannot create %+v", lTest), func(t *testing.T) {
+			t.Run(fmt.Sprintf("Cannot create %+v", test), func(t *testing.T) {
 				t.Parallel()
 
 				ctx, cancel := context.WithTimeout(context.Background(),
 					testTimeout)
 				defer cancel()
 
-				err := globalAleDAO.Create(ctx, lTest.inpAlert)
+				err := globalAleDAO.Create(ctx, test.inpAlert)
 				t.Logf("err: %#v", err)
-				require.ErrorIs(t, err, lTest.err)
+				require.ErrorIs(t, err, test.err)
 			})
 		}
 	})
@@ -99,7 +97,7 @@ func TestList(t *testing.T) {
 
 		alerts := []*api.Alert{}
 
-		for i := 0; i < 5; i++ {
+		for range 5 {
 			alert := random.Alert("dao-alert", createOrg.GetId())
 			alert.UniqId = createDev.GetUniqId()
 			alerts = append(alerts, alert)

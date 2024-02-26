@@ -100,30 +100,28 @@ func TestDeviceUp(t *testing.T) {
 	}
 
 	for _, test := range tests {
-		lTest := test
-
-		t.Run(fmt.Sprintf("Can parse %+v", lTest), func(t *testing.T) {
+		t.Run(fmt.Sprintf("Can parse %+v", test), func(t *testing.T) {
 			t.Parallel()
 
 			bInp := []byte("aaa")
-			if lTest.inp != nil {
+			if test.inp != nil {
 				var err error
-				bInp, err = proto.Marshal(lTest.inp)
+				bInp, err = proto.Marshal(test.inp)
 				require.NoError(t, err)
 			}
 
 			res, ts, data, err := deviceUp(bInp)
 			t.Logf("res, ts, data, err: %#v, %v, %x, %v", res, ts, data, err)
-			require.Equal(t, lTest.resPoints, res)
-			if !lTest.resTime.IsZero() {
-				require.WithinDuration(t, lTest.resTime, ts.AsTime(),
+			require.Equal(t, test.resPoints, res)
+			if !test.resTime.IsZero() {
+				require.WithinDuration(t, test.resTime, ts.AsTime(),
 					2*time.Second)
 			}
-			require.Equal(t, lTest.resData, data)
-			if lTest.err == "" {
+			require.Equal(t, test.resData, data)
+			if test.err == "" {
 				require.NoError(t, err)
 			} else {
-				require.Contains(t, err.Error(), lTest.err)
+				require.Contains(t, err.Error(), test.err)
 			}
 		})
 	}

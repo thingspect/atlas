@@ -199,7 +199,7 @@ func Key(prefix, orgID string) *api.Key {
 // Tags generates n random tags with prefixed identifiers.
 func Tags(prefix string, n int) []string {
 	tags := []string{}
-	for i := 0; i < n; i++ {
+	for range n {
 		tags = append(tags, prefix+"-"+String(10))
 	}
 

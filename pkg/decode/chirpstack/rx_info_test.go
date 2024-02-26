@@ -48,14 +48,12 @@ func TestParseRXInfo(t *testing.T) {
 	}
 
 	for _, test := range tests {
-		lTest := test
-
-		t.Run(fmt.Sprintf("Can parse %+v", lTest), func(t *testing.T) {
+		t.Run(fmt.Sprintf("Can parse %+v", test), func(t *testing.T) {
 			t.Parallel()
 
-			res := ParseRXInfo(lTest.inp)
+			res := ParseRXInfo(test.inp)
 			t.Logf("res: %v", res)
-			require.Equal(t, lTest.res, res)
+			require.Equal(t, test.res, res)
 		})
 	}
 }
@@ -124,21 +122,19 @@ func TestParseRXInfos(t *testing.T) {
 	}
 
 	for _, test := range tests {
-		lTest := test
-
-		t.Run(fmt.Sprintf("Can parse %+v", lTest), func(t *testing.T) {
+		t.Run(fmt.Sprintf("Can parse %+v", test), func(t *testing.T) {
 			t.Parallel()
 
-			ts, res := ParseRXInfos(lTest.inp)
+			ts, res := ParseRXInfos(test.inp)
 			t.Logf("ts, res: %v, %#v", ts, res)
-			require.Equal(t, lTest.resPoints, res)
-			if lTest.resTS == nil {
+			require.Equal(t, test.resPoints, res)
+			if test.resTS == nil {
 				require.WithinDuration(t, time.Now(), ts.AsTime(),
 					2*time.Second)
-			} else if !proto.Equal(lTest.resTS, ts) {
+			} else if !proto.Equal(test.resTS, ts) {
 				// Testify does not currently support protobuf equality:
 				// https://github.com/stretchr/testify/issues/758
-				t.Fatalf("\nExpect: %+v\nActual: %+v", lTest.resTS, ts)
+				t.Fatalf("\nExpect: %+v\nActual: %+v", test.resTS, ts)
 			}
 		})
 	}

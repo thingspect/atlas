@@ -49,14 +49,12 @@ func TestDBToSentinel(t *testing.T) {
 	}
 
 	for _, test := range tests {
-		lTest := test
-
-		t.Run(fmt.Sprintf("Can map %+v", lTest), func(t *testing.T) {
+		t.Run(fmt.Sprintf("Can map %+v", test), func(t *testing.T) {
 			t.Parallel()
 
-			res := DBToSentinel(lTest.inp)
+			res := DBToSentinel(test.inp)
 			t.Logf("res: %#v", res)
-			require.Equal(t, lTest.res, res)
+			require.Equal(t, test.res, res)
 		})
 	}
 }

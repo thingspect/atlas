@@ -34,14 +34,12 @@ func TestString(t *testing.T) {
 	}
 
 	for _, test := range tests {
-		lTest := test
-
-		t.Run(fmt.Sprintf("Can parse %+v", lTest), func(t *testing.T) {
+		t.Run(fmt.Sprintf("Can parse %+v", test), func(t *testing.T) {
 			t.Parallel()
 
-			res := String(lTest.inpKey, lTest.inpDef)
+			res := String(test.inpKey, test.inpDef)
 			t.Logf("res: %v", res)
-			require.Equal(t, lTest.res, res)
+			require.Equal(t, test.res, res)
 		})
 	}
 }
@@ -70,14 +68,12 @@ func TestStringSlice(t *testing.T) {
 	}
 
 	for _, test := range tests {
-		lTest := test
-
-		t.Run(fmt.Sprintf("Can parse %+v", lTest), func(t *testing.T) {
+		t.Run(fmt.Sprintf("Can parse %+v", test), func(t *testing.T) {
 			t.Parallel()
 
-			res := StringSlice(lTest.inpKey, lTest.inpDef)
+			res := StringSlice(test.inpKey, test.inpDef)
 			t.Logf("res: %#v", res)
-			require.Equal(t, lTest.res, res)
+			require.Equal(t, test.res, res)
 		})
 	}
 }
@@ -101,14 +97,12 @@ func TestInt(t *testing.T) {
 	}
 
 	for _, test := range tests {
-		lTest := test
-
-		t.Run(fmt.Sprintf("Can parse %+v", lTest), func(t *testing.T) {
+		t.Run(fmt.Sprintf("Can parse %+v", test), func(t *testing.T) {
 			t.Parallel()
 
-			res := Int(lTest.inpKey, lTest.inpDef)
+			res := Int(test.inpKey, test.inpDef)
 			t.Logf("res: %v", res)
-			require.Equal(t, lTest.res, res)
+			require.Equal(t, test.res, res)
 		})
 	}
 }
@@ -131,14 +125,12 @@ func TestBool(t *testing.T) {
 	}
 
 	for _, test := range tests {
-		lTest := test
-
-		t.Run(fmt.Sprintf("Can parse %+v", lTest), func(t *testing.T) {
+		t.Run(fmt.Sprintf("Can parse %+v", test), func(t *testing.T) {
 			t.Parallel()
 
-			res := Bool(lTest.inpKey, lTest.inpDef)
+			res := Bool(test.inpKey, test.inpDef)
 			t.Logf("res: %v", res)
-			require.Equal(t, lTest.res, res)
+			require.Equal(t, test.res, res)
 		})
 	}
 }
@@ -162,14 +154,12 @@ func TestDuration(t *testing.T) {
 	}
 
 	for _, test := range tests {
-		lTest := test
-
-		t.Run(fmt.Sprintf("Can parse %+v", lTest), func(t *testing.T) {
+		t.Run(fmt.Sprintf("Can parse %+v", test), func(t *testing.T) {
 			t.Parallel()
 
-			res := Duration(lTest.inpKey, lTest.inpDef)
+			res := Duration(test.inpKey, test.inpDef)
 			t.Logf("res: %#v", res)
-			require.Equal(t, lTest.res, res)
+			require.Equal(t, test.res, res)
 		})
 	}
 }
@@ -197,14 +187,12 @@ func TestByteSlice(t *testing.T) {
 	}
 
 	for _, test := range tests {
-		lTest := test
-
-		t.Run(fmt.Sprintf("Can parse %+v", lTest), func(t *testing.T) {
+		t.Run(fmt.Sprintf("Can parse %+v", test), func(t *testing.T) {
 			t.Parallel()
 
-			res := ByteSlice(lTest.inp)
+			res := ByteSlice(test.inp)
 			t.Logf("res: %x", res)
-			require.Equal(t, lTest.res, res)
+			require.Equal(t, test.res, res)
 		})
 	}
 }

@@ -40,22 +40,20 @@ func TestChanMotion(t *testing.T) {
 	}
 
 	for _, test := range tests {
-		lTest := test
-
-		t.Run(fmt.Sprintf("Can parse %+v", lTest), func(t *testing.T) {
+		t.Run(fmt.Sprintf("Can parse %+v", test), func(t *testing.T) {
 			t.Parallel()
 
-			bInp, err := hex.DecodeString(lTest.inp)
+			bInp, err := hex.DecodeString(test.inp)
 			require.NoError(t, err)
 
 			res, rem, err := chanMotion(bInp)
 			t.Logf("res, rem, err: %#v, %v, %v", res, rem, err)
-			require.Equal(t, lTest.res, res)
-			require.Equal(t, lTest.rem, rem)
-			if lTest.err == "" {
+			require.Equal(t, test.res, res)
+			require.Equal(t, test.rem, rem)
+			if test.err == "" {
 				require.NoError(t, err)
 			} else {
-				require.EqualError(t, err, lTest.err)
+				require.EqualError(t, err, test.err)
 			}
 		})
 	}
@@ -101,22 +99,20 @@ func TestChanTempC(t *testing.T) {
 	}
 
 	for _, test := range tests {
-		lTest := test
-
-		t.Run(fmt.Sprintf("Can parse %+v", lTest), func(t *testing.T) {
+		t.Run(fmt.Sprintf("Can parse %+v", test), func(t *testing.T) {
 			t.Parallel()
 
-			bInp, err := hex.DecodeString(lTest.inp)
+			bInp, err := hex.DecodeString(test.inp)
 			require.NoError(t, err)
 
 			res, rem, err := chanTempC(bInp)
 			t.Logf("res, rem, err: %#v, %v, %v", res, rem, err)
-			require.Equal(t, lTest.res, res)
-			require.Equal(t, lTest.rem, rem)
-			if lTest.err == "" {
+			require.Equal(t, test.res, res)
+			require.Equal(t, test.rem, rem)
+			if test.err == "" {
 				require.NoError(t, err)
 			} else {
-				require.EqualError(t, err, lTest.err)
+				require.EqualError(t, err, test.err)
 			}
 		})
 	}
@@ -151,22 +147,20 @@ func TestChanHumidity(t *testing.T) {
 	}
 
 	for _, test := range tests {
-		lTest := test
-
-		t.Run(fmt.Sprintf("Can parse %+v", lTest), func(t *testing.T) {
+		t.Run(fmt.Sprintf("Can parse %+v", test), func(t *testing.T) {
 			t.Parallel()
 
-			bInp, err := hex.DecodeString(lTest.inp)
+			bInp, err := hex.DecodeString(test.inp)
 			require.NoError(t, err)
 
 			res, rem, err := chanHumidity(bInp)
 			t.Logf("res, rem, err: %#v, %v, %v", res, rem, err)
-			require.Equal(t, lTest.res, res)
-			require.Equal(t, lTest.rem, rem)
-			if lTest.err == "" {
+			require.Equal(t, test.res, res)
+			require.Equal(t, test.rem, rem)
+			if test.err == "" {
 				require.NoError(t, err)
 			} else {
-				require.EqualError(t, err, lTest.err)
+				require.EqualError(t, err, test.err)
 			}
 		})
 	}
@@ -201,22 +195,20 @@ func TestChanBatteryV(t *testing.T) {
 	}
 
 	for _, test := range tests {
-		lTest := test
-
-		t.Run(fmt.Sprintf("Can parse %+v", lTest), func(t *testing.T) {
+		t.Run(fmt.Sprintf("Can parse %+v", test), func(t *testing.T) {
 			t.Parallel()
 
-			bInp, err := hex.DecodeString(lTest.inp)
+			bInp, err := hex.DecodeString(test.inp)
 			require.NoError(t, err)
 
 			res, rem, err := chanBatteryV(bInp)
 			t.Logf("res, rem, err: %#v, %v, %v", res, rem, err)
-			require.Equal(t, lTest.res, res)
-			require.Equal(t, lTest.rem, rem)
-			if lTest.err == "" {
+			require.Equal(t, test.res, res)
+			require.Equal(t, test.rem, rem)
+			if test.err == "" {
 				require.NoError(t, err)
 			} else {
-				require.EqualError(t, err, lTest.err)
+				require.EqualError(t, err, test.err)
 			}
 		})
 	}

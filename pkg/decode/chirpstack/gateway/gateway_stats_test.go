@@ -69,25 +69,23 @@ func TestGatewayStats(t *testing.T) {
 	}
 
 	for _, test := range tests {
-		lTest := test
-
-		t.Run(fmt.Sprintf("Can parse %+v", lTest), func(t *testing.T) {
+		t.Run(fmt.Sprintf("Can parse %+v", test), func(t *testing.T) {
 			t.Parallel()
 
 			bInp := []byte("aaa")
-			if lTest.inp != nil {
+			if test.inp != nil {
 				var err error
-				bInp, err = proto.Marshal(lTest.inp)
+				bInp, err = proto.Marshal(test.inp)
 				require.NoError(t, err)
 			}
 
 			res, err := gatewayStats(bInp)
 			t.Logf("res, err: %#v, %v", res, err)
-			require.Equal(t, lTest.res, res)
-			if lTest.err == "" {
+			require.Equal(t, test.res, res)
+			if test.err == "" {
 				require.NoError(t, err)
 			} else {
-				require.Contains(t, err.Error(), lTest.err)
+				require.Contains(t, err.Error(), test.err)
 			}
 		})
 	}

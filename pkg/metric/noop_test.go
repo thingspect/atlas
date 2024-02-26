@@ -16,10 +16,8 @@ func TestNoOp(t *testing.T) {
 	metricer := &noOpMetric{}
 	t.Logf("metricer: %#v", metricer)
 
-	for i := 0; i < 5; i++ {
-		lTest := i
-
-		t.Run(fmt.Sprintf("Can send %v", lTest), func(t *testing.T) {
+	for i := range 5 {
+		t.Run(fmt.Sprintf("Can send %v", i), func(t *testing.T) {
 			t.Parallel()
 
 			metricer.Incr(random.String(10), nil)

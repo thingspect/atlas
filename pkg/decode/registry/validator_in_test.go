@@ -110,18 +110,16 @@ func TestPointToVIn(t *testing.T) {
 	}
 
 	for _, test := range tests {
-		lTest := test
-
-		t.Run(fmt.Sprintf("Can convert %+v", lTest), func(t *testing.T) {
+		t.Run(fmt.Sprintf("Can convert %+v", test), func(t *testing.T) {
 			t.Parallel()
 
-			res := PointToVIn(traceID, uniqID, lTest.inp, now)
+			res := PointToVIn(traceID, uniqID, test.inp, now)
 			t.Logf("res: %+v", res)
 
 			// Testify does not currently support protobuf equality:
 			// https://github.com/stretchr/testify/issues/758
-			if !proto.Equal(lTest.res, res) {
-				t.Fatalf("\nExpect: %+v\nActual: %+v", lTest.res, res)
+			if !proto.Equal(test.res, res) {
+				t.Fatalf("\nExpect: %+v\nActual: %+v", test.res, res)
 			}
 		})
 	}

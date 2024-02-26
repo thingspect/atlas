@@ -62,18 +62,16 @@ func TestCreate(t *testing.T) {
 		}
 
 		for _, test := range tests {
-			lTest := test
-
-			t.Run(fmt.Sprintf("Cannot create %+v", lTest), func(t *testing.T) {
+			t.Run(fmt.Sprintf("Cannot create %+v", test), func(t *testing.T) {
 				t.Parallel()
 
 				ctx, cancel := context.WithTimeout(context.Background(),
 					testTimeout)
 				defer cancel()
 
-				err := globalEvDAO.Create(ctx, lTest.inpEvent)
+				err := globalEvDAO.Create(ctx, test.inpEvent)
 				t.Logf("err: %#v", err)
-				require.ErrorIs(t, err, lTest.err)
+				require.ErrorIs(t, err, test.err)
 			})
 		}
 	})
@@ -120,7 +118,7 @@ func TestList(t *testing.T) {
 
 		events := []*api.Event{}
 
-		for i := 0; i < 5; i++ {
+		for range 5 {
 			event := random.Event("dao-event", createOrg.GetId())
 			event.UniqId = createDev.GetUniqId()
 			events = append(events, event)
@@ -248,7 +246,7 @@ func TestLatest(t *testing.T) {
 
 		events := []*api.Event{}
 
-		for i := 0; i < 5; i++ {
+		for range 5 {
 			event := random.Event("dao-event", createOrg.GetId())
 			events = append(events, event)
 

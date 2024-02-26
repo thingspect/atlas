@@ -56,20 +56,18 @@ func TestEval(t *testing.T) {
 	}
 
 	for _, test := range tests {
-		lTest := test
-
-		t.Run(fmt.Sprintf("Can evaluate %+v", lTest), func(t *testing.T) {
+		t.Run(fmt.Sprintf("Can evaluate %+v", test), func(t *testing.T) {
 			t.Parallel()
 
-			lTest.inpPoint.Ts = timestamppb.New(time.Now().Add(-time.Second))
+			test.inpPoint.Ts = timestamppb.New(time.Now().Add(-time.Second))
 
-			res, err := Eval(lTest.inpPoint, lTest.inpRuleExpr)
+			res, err := Eval(test.inpPoint, test.inpRuleExpr)
 			t.Logf("res, err: %v, %#v", res, err)
-			require.Equal(t, lTest.res, res)
-			if lTest.err == "" {
+			require.Equal(t, test.res, res)
+			if test.err == "" {
 				require.NoError(t, err)
 			} else {
-				require.Contains(t, err.Error(), lTest.err)
+				require.Contains(t, err.Error(), test.err)
 			}
 		})
 	}

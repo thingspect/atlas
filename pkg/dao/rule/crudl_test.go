@@ -313,7 +313,7 @@ func TestList(t *testing.T) {
 	ruleNames := []string{}
 	ruleStatuses := []api.Status{}
 	ruleTSes := []time.Time{}
-	for i := 0; i < 3; i++ {
+	for range 3 {
 		createRule, err := globalRuleDAO.Create(ctx, random.Rule("dao-rule",
 			createOrg.GetId()))
 		t.Logf("createRule, err: %+v, %v", createRule, err)
@@ -434,7 +434,7 @@ func TestListByTags(t *testing.T) {
 	ruleIDs := []string{}
 	ruleDeviceTags := []string{}
 	ruleAttrs := []string{}
-	for i := 0; i < 3; i++ {
+	for range 3 {
 		rule := random.Rule("dao-rule", createOrg.GetId())
 		rule.Status = api.Status_ACTIVE
 		createRule, err := globalRuleDAO.Create(ctx, rule)

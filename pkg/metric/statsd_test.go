@@ -21,10 +21,8 @@ func TestStatsD(t *testing.T) {
 	}
 	t.Logf("metStats: %#v", metStats)
 
-	for i := 0; i < 5; i++ {
-		lTest := i
-
-		t.Run(fmt.Sprintf("Can send %v", lTest), func(t *testing.T) {
+	for i := range 5 {
+		t.Run(fmt.Sprintf("Can send %v", i), func(t *testing.T) {
 			t.Parallel()
 
 			metStats.Incr(random.String(10), nil)
@@ -41,10 +39,8 @@ func TestStatsD(t *testing.T) {
 func TestSetStatsD(t *testing.T) {
 	SetStatsD("127.0.0.1:8125", "testnewstatsd")
 
-	for i := 0; i < 5; i++ {
-		lTest := i
-
-		t.Run(fmt.Sprintf("Can send %v", lTest), func(t *testing.T) {
+	for i := range 5 {
+		t.Run(fmt.Sprintf("Can send %v", i), func(t *testing.T) {
 			t.Parallel()
 
 			Incr(random.String(10), nil)
@@ -63,10 +59,8 @@ func TestNewStatsDNoAddr(t *testing.T) {
 
 	SetStatsD("", "testnewstatsdnoaddr")
 
-	for i := 0; i < 5; i++ {
-		lTest := i
-
-		t.Run(fmt.Sprintf("Can send %v", lTest), func(t *testing.T) {
+	for i := range 5 {
+		t.Run(fmt.Sprintf("Can send %v", i), func(t *testing.T) {
 			t.Parallel()
 
 			Incr(random.String(10), nil)
