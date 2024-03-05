@@ -13,7 +13,6 @@ import (
 	"github.com/stretchr/testify/require"
 	"github.com/thingspect/atlas/pkg/test/random"
 	"github.com/thingspect/proto/go/api"
-	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/known/fieldmaskpb"
 )
 
@@ -141,12 +140,7 @@ func TestGetUser(t *testing.T) {
 			&api.GetUserRequest{Id: createUser.GetId()})
 		t.Logf("getUser, err: %+v, %v", getUser, err)
 		require.NoError(t, err)
-
-		// Testify does not currently support protobuf equality:
-		// https://github.com/stretchr/testify/issues/758
-		if !proto.Equal(createUser, getUser) {
-			t.Fatalf("\nExpect: %+v\nActual: %+v", createUser, getUser)
-		}
+		require.EqualExportedValues(t, createUser, getUser)
 	})
 
 	t.Run("Get user with insufficient role", func(t *testing.T) {
@@ -253,12 +247,7 @@ func TestUpdateUser(t *testing.T) {
 			&api.GetUserRequest{Id: createUser.GetId()})
 		t.Logf("getUser, err: %+v, %v", getUser, err)
 		require.NoError(t, err)
-
-		// Testify does not currently support protobuf equality:
-		// https://github.com/stretchr/testify/issues/758
-		if !proto.Equal(updateUser, getUser) {
-			t.Fatalf("\nExpect: %+v\nActual: %+v", updateUser, getUser)
-		}
+		require.EqualExportedValues(t, updateUser, getUser)
 	})
 
 	t.Run("Partial update user by valid user", func(t *testing.T) {
@@ -304,12 +293,7 @@ func TestUpdateUser(t *testing.T) {
 			&api.GetUserRequest{Id: createUser.GetId()})
 		t.Logf("getUser, err: %+v, %v", getUser, err)
 		require.NoError(t, err)
-
-		// Testify does not currently support protobuf equality:
-		// https://github.com/stretchr/testify/issues/758
-		if !proto.Equal(updateUser, getUser) {
-			t.Fatalf("\nExpect: %+v\nActual: %+v", updateUser, getUser)
-		}
+		require.EqualExportedValues(t, updateUser, getUser)
 	})
 
 	t.Run("Update nil user", func(t *testing.T) {

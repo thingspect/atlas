@@ -16,7 +16,6 @@ import (
 	"github.com/thingspect/proto/go/common"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
-	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/known/fieldmaskpb"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
@@ -105,12 +104,7 @@ func TestGetRule(t *testing.T) {
 			&api.GetRuleRequest{Id: createRule.GetId()})
 		t.Logf("getRule, err: %+v, %v", getRule, err)
 		require.NoError(t, err)
-
-		// Testify does not currently support protobuf equality:
-		// https://github.com/stretchr/testify/issues/758
-		if !proto.Equal(createRule, getRule) {
-			t.Fatalf("\nExpect: %+v\nActual: %+v", createRule, getRule)
-		}
+		require.EqualExportedValues(t, createRule, getRule)
 	})
 
 	t.Run("Get rule by unknown ID", func(t *testing.T) {
@@ -179,12 +173,7 @@ func TestUpdateRule(t *testing.T) {
 			&api.GetRuleRequest{Id: createRule.GetId()})
 		t.Logf("getRule, err: %+v, %v", getRule, err)
 		require.NoError(t, err)
-
-		// Testify does not currently support protobuf equality:
-		// https://github.com/stretchr/testify/issues/758
-		if !proto.Equal(updateRule, getRule) {
-			t.Fatalf("\nExpect: %+v\nActual: %+v", updateRule, getRule)
-		}
+		require.EqualExportedValues(t, updateRule, getRule)
 	})
 
 	t.Run("Partial update rule by valid rule", func(t *testing.T) {
@@ -222,12 +211,7 @@ func TestUpdateRule(t *testing.T) {
 			&api.GetRuleRequest{Id: createRule.GetId()})
 		t.Logf("getRule, err: %+v, %v", getRule, err)
 		require.NoError(t, err)
-
-		// Testify does not currently support protobuf equality:
-		// https://github.com/stretchr/testify/issues/758
-		if !proto.Equal(updateRule, getRule) {
-			t.Fatalf("\nExpect: %+v\nActual: %+v", updateRule, getRule)
-		}
+		require.EqualExportedValues(t, updateRule, getRule)
 	})
 
 	t.Run("Update rule with insufficient role", func(t *testing.T) {

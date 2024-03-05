@@ -12,7 +12,6 @@ import (
 	"github.com/stretchr/testify/require"
 	"github.com/thingspect/atlas/pkg/decode"
 	"github.com/thingspect/atlas/pkg/test/random"
-	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
@@ -131,10 +130,8 @@ func TestParseRXInfos(t *testing.T) {
 			if test.resTS == nil {
 				require.WithinDuration(t, time.Now(), ts.AsTime(),
 					2*time.Second)
-			} else if !proto.Equal(test.resTS, ts) {
-				// Testify does not currently support protobuf equality:
-				// https://github.com/stretchr/testify/issues/758
-				t.Fatalf("\nExpect: %+v\nActual: %+v", test.resTS, ts)
+			} else {
+				require.EqualExportedValues(t, test.resTS, ts)
 			}
 		})
 	}

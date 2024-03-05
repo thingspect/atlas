@@ -169,8 +169,8 @@ func TestDecodeMessages(t *testing.T) {
 			vInPubTopic := "topic-" + random.String(10)
 
 			devicer := NewMockdevicer(gomock.NewController(t))
-			devicer.EXPECT().ReadByUniqID(gomock.Any(), test.inpDIn.GetUniqId()).
-				Return(dev, nil).Times(1)
+			devicer.EXPECT().ReadByUniqID(gomock.Any(),
+				test.inpDIn.GetUniqId()).Return(dev, nil).Times(1)
 
 			dec := Decoder{
 				devDAO: devicer,
@@ -202,11 +202,11 @@ func TestDecodeMessages(t *testing.T) {
 					require.NoError(t, proto.Unmarshal(msg.Payload(), vIn))
 					t.Logf("vIn: %+v", vIn)
 
-					// Testify does not currently support protobuf equality:
-					// https://github.com/stretchr/testify/issues/758
-					if !proto.Equal(res, vIn) {
-						t.Fatalf("\nExpect: %+v\nActual: %+v", res, vIn)
-					}
+					// Result must be cloned due to its shared Timestamp across
+					// tests.
+					resVIn, _ := proto.Clone(res).(*message.ValidatorIn)
+
+					require.EqualExportedValues(t, resVIn, vIn)
 				case <-time.After(2 * time.Second):
 					t.Fatal("Message timed out")
 				}

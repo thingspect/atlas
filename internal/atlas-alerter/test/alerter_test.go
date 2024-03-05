@@ -79,9 +79,9 @@ func TestAlertMessages(t *testing.T) {
 			ctx, cancel = context.WithTimeout(context.Background(), testTimeout)
 			defer cancel()
 
-			listAlerts, err := globalAleDAO.List(ctx, createOrg.GetId(), dev.GetUniqId(),
-				"", createAlarm.GetId(), createUser.GetId(), time.Now(),
-				time.Now().Add(-4*time.Second))
+			listAlerts, err := globalAleDAO.List(ctx, createOrg.GetId(),
+				dev.GetUniqId(), "", createAlarm.GetId(), createUser.GetId(),
+				time.Now(), time.Now().Add(-4*time.Second))
 			t.Logf("listAlerts, err: %+v, %v", listAlerts, err)
 			require.NoError(t, err)
 			require.Len(t, listAlerts, 1)
@@ -100,11 +100,7 @@ func TestAlertMessages(t *testing.T) {
 				listAlerts[0].GetCreatedAt().AsTime(), testTimeout)
 			alert.CreatedAt = listAlerts[0].GetCreatedAt()
 
-			// Testify does not currently support protobuf equality:
-			// https://github.com/stretchr/testify/issues/758
-			if !proto.Equal(alert, listAlerts[0]) {
-				t.Fatalf("\nExpect: %+v\nActual: %+v", alert, listAlerts[0])
-			}
+			require.EqualExportedValues(t, alert, listAlerts[0])
 		})
 	}
 }
@@ -171,9 +167,9 @@ func TestAlertMessagesRepeat(t *testing.T) {
 			ctx, cancel = context.WithTimeout(context.Background(), testTimeout)
 			defer cancel()
 
-			listAlerts, err := globalAleDAO.List(ctx, createOrg.GetId(), dev.GetUniqId(),
-				"", createAlarm.GetId(), createUser.GetId(), time.Now(),
-				time.Now().Add(-4*time.Second))
+			listAlerts, err := globalAleDAO.List(ctx, createOrg.GetId(),
+				dev.GetUniqId(), "", createAlarm.GetId(), createUser.GetId(),
+				time.Now(), time.Now().Add(-4*time.Second))
 			t.Logf("listAlerts, err: %+v, %v", listAlerts, err)
 			require.NoError(t, err)
 			require.Len(t, listAlerts, 1)
@@ -192,11 +188,7 @@ func TestAlertMessagesRepeat(t *testing.T) {
 				listAlerts[0].GetCreatedAt().AsTime(), testTimeout)
 			alert.CreatedAt = listAlerts[0].GetCreatedAt()
 
-			// Testify does not currently support protobuf equality:
-			// https://github.com/stretchr/testify/issues/758
-			if !proto.Equal(alert, listAlerts[0]) {
-				t.Fatalf("\nExpect: %+v\nActual: %+v", alert, listAlerts[0])
-			}
+			require.EqualExportedValues(t, alert, listAlerts[0])
 		})
 	}
 }
@@ -317,8 +309,8 @@ func TestAlertMessagesError(t *testing.T) {
 			defer cancel()
 
 			listAlerts, err := globalAleDAO.List(ctx, createOrg.GetId(),
-				dev.GetUniqId(), "", test.inpAlarmID, createUser.GetId(), time.Now(),
-				time.Now().Add(-4*time.Second))
+				dev.GetUniqId(), "", test.inpAlarmID, createUser.GetId(),
+				time.Now(), time.Now().Add(-4*time.Second))
 			t.Logf("listAlerts, err: %+v, %v", listAlerts, err)
 			require.NoError(t, err)
 
@@ -340,11 +332,7 @@ func TestAlertMessagesError(t *testing.T) {
 					listAlerts[0].GetCreatedAt().AsTime(), testTimeout)
 				alert.CreatedAt = listAlerts[0].GetCreatedAt()
 
-				// Testify does not currently support protobuf equality:
-				// https://github.com/stretchr/testify/issues/758
-				if !proto.Equal(alert, listAlerts[0]) {
-					t.Fatalf("\nExpect: %+v\nActual: %+v", alert, listAlerts[0])
-				}
+				require.EqualExportedValues(t, alert, listAlerts[0])
 			} else {
 				require.Empty(t, listAlerts)
 			}

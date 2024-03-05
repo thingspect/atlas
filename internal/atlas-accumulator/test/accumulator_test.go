@@ -84,8 +84,10 @@ func TestAccumulateMessages(t *testing.T) {
 				testTimeout)
 			defer cancel()
 
-			listPoints, err := globalDPDAO.List(ctx, test.inp.GetDevice().GetOrgId(),
-				test.inp.GetPoint().GetUniqId(), "", "", test.inp.GetPoint().GetTs().AsTime(),
+			listPoints, err := globalDPDAO.List(ctx,
+				test.inp.GetDevice().GetOrgId(),
+				test.inp.GetPoint().GetUniqId(), "", "",
+				test.inp.GetPoint().GetTs().AsTime(),
 				test.inp.GetPoint().GetTs().AsTime().Add(-time.Millisecond))
 			t.Logf("listPoints, err: %+v, %v", listPoints, err)
 			require.NoError(t, err)
@@ -97,12 +99,7 @@ func TestAccumulateMessages(t *testing.T) {
 			test.inp.Point.Ts = timestamppb.New(
 				test.inp.GetPoint().GetTs().AsTime().Truncate(time.Millisecond))
 
-			// Testify does not currently support protobuf equality:
-			// https://github.com/stretchr/testify/issues/758
-			if !proto.Equal(test.inp.GetPoint(), listPoints[0]) {
-				t.Fatalf("\nExpect: %+v\nActual: %+v", test.inp.GetPoint(),
-					listPoints[0])
-			}
+			require.EqualExportedValues(t, test.inp.GetPoint(), listPoints[0])
 		})
 	}
 }
@@ -143,8 +140,10 @@ func TestAccumulateMessagesDuplicate(t *testing.T) {
 	ctx, cancel = context.WithTimeout(context.Background(), testTimeout)
 	defer cancel()
 
-	listPoints, err := globalDPDAO.List(ctx, duplicateVOut.GetDevice().GetOrgId(),
-		duplicateVOut.GetPoint().GetUniqId(), "", "", duplicateVOut.GetPoint().GetTs().AsTime(),
+	listPoints, err := globalDPDAO.List(ctx,
+		duplicateVOut.GetDevice().GetOrgId(),
+		duplicateVOut.GetPoint().GetUniqId(), "", "",
+		duplicateVOut.GetPoint().GetTs().AsTime(),
 		duplicateVOut.GetPoint().GetTs().AsTime().Add(-time.Millisecond))
 	t.Logf("listPoints, err: %+v, %v", listPoints, err)
 	require.NoError(t, err)
@@ -156,12 +155,7 @@ func TestAccumulateMessagesDuplicate(t *testing.T) {
 	duplicateVOut.Point.Ts = timestamppb.New(
 		duplicateVOut.GetPoint().GetTs().AsTime().Truncate(time.Millisecond))
 
-	// Testify does not currently support protobuf equality:
-	// https://github.com/stretchr/testify/issues/758
-	if !proto.Equal(duplicateVOut.GetPoint(), listPoints[0]) {
-		t.Fatalf("\nExpect: %+v\nActual: %+v", duplicateVOut.GetPoint(),
-			listPoints[0])
-	}
+	require.EqualExportedValues(t, duplicateVOut.GetPoint(), listPoints[0])
 }
 
 func TestAccumulateMessagesError(t *testing.T) {

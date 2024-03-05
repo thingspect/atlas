@@ -172,12 +172,7 @@ func TestReadByEmail(t *testing.T) {
 		require.WithinDuration(t, readUser.GetUpdatedAt().AsTime(),
 			createUser.GetUpdatedAt().AsTime(), 2*time.Second)
 		createUser.UpdatedAt = readUser.GetUpdatedAt()
-
-		// Testify does not currently support protobuf equality:
-		// https://github.com/stretchr/testify/issues/758
-		if !proto.Equal(createUser, readUser) {
-			t.Fatalf("\nExpect: %+v\nActual: %+v", createUser, readUser)
-		}
+		require.EqualExportedValues(t, createUser, readUser)
 	})
 
 	t.Run("Read user by unknown email", func(t *testing.T) {

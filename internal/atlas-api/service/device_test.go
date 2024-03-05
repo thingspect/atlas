@@ -46,12 +46,7 @@ func TestCreateDevice(t *testing.T) {
 		})
 		t.Logf("dev, createDev, err: %+v, %+v, %v", dev, createDev, err)
 		require.NoError(t, err)
-
-		// Testify does not currently support protobuf equality:
-		// https://github.com/stretchr/testify/issues/758
-		if !proto.Equal(dev, createDev) {
-			t.Fatalf("\nExpect: %+v\nActual: %+v", dev, createDev)
-		}
+		require.EqualExportedValues(t, dev, createDev)
 	})
 
 	t.Run("Create device with invalid session", func(t *testing.T) {
@@ -284,12 +279,7 @@ func TestGetDevice(t *testing.T) {
 		getDev, err := devSvc.GetDevice(ctx, &api.GetDeviceRequest{Id: dev.GetId()})
 		t.Logf("dev, getDev, err: %+v, %+v, %v", dev, getDev, err)
 		require.NoError(t, err)
-
-		// Testify does not currently support protobuf equality:
-		// https://github.com/stretchr/testify/issues/758
-		if !proto.Equal(dev, getDev) {
-			t.Fatalf("\nExpect: %+v\nActual: %+v", dev, getDev)
-		}
+		require.EqualExportedValues(t, dev, getDev)
 	})
 
 	t.Run("Get device with invalid session", func(t *testing.T) {
@@ -368,12 +358,7 @@ func TestUpdateDevice(t *testing.T) {
 		})
 		t.Logf("dev, updateDev, err: %+v, %+v, %v", dev, updateDev, err)
 		require.NoError(t, err)
-
-		// Testify does not currently support protobuf equality:
-		// https://github.com/stretchr/testify/issues/758
-		if !proto.Equal(dev, updateDev) {
-			t.Fatalf("\nExpect: %+v\nActual: %+v", dev, updateDev)
-		}
+		require.EqualExportedValues(t, dev, updateDev)
 	})
 
 	t.Run("Partial update device by valid device", func(t *testing.T) {
@@ -412,12 +397,7 @@ func TestUpdateDevice(t *testing.T) {
 		})
 		t.Logf("merged, updateDev, err: %+v, %+v, %v", merged, updateDev, err)
 		require.NoError(t, err)
-
-		// Testify does not currently support protobuf equality:
-		// https://github.com/stretchr/testify/issues/758
-		if !proto.Equal(merged, updateDev) {
-			t.Fatalf("\nExpect: %+v\nActual: %+v", merged, updateDev)
-		}
+		require.EqualExportedValues(t, merged, updateDev)
 	})
 
 	t.Run("Update device with invalid session", func(t *testing.T) {
@@ -837,14 +817,8 @@ func TestListDevices(t *testing.T) {
 		t.Logf("listDevs, err: %+v, %v", listDevs, err)
 		require.NoError(t, err)
 		require.Equal(t, int32(3), listDevs.GetTotalSize())
-
-		// Testify does not currently support protobuf equality:
-		// https://github.com/stretchr/testify/issues/758
-		if !proto.Equal(&api.ListDevicesResponse{Devices: devs, TotalSize: 3},
-			listDevs) {
-			t.Fatalf("\nExpect: %+v\nActual: %+v",
-				&api.ListDevicesResponse{Devices: devs, TotalSize: 3}, listDevs)
-		}
+		require.EqualExportedValues(t,
+			&api.ListDevicesResponse{Devices: devs, TotalSize: 3}, listDevs)
 	})
 
 	t.Run("List devices by valid org ID with next page", func(t *testing.T) {
@@ -879,16 +853,9 @@ func TestListDevices(t *testing.T) {
 		t.Logf("listDevs, err: %+v, %v", listDevs, err)
 		require.NoError(t, err)
 		require.Equal(t, int32(3), listDevs.GetTotalSize())
-
-		// Testify does not currently support protobuf equality:
-		// https://github.com/stretchr/testify/issues/758
-		if !proto.Equal(&api.ListDevicesResponse{
+		require.EqualExportedValues(t, &api.ListDevicesResponse{
 			Devices: devs[:2], NextPageToken: next, TotalSize: 3,
-		}, listDevs) {
-			t.Fatalf("\nExpect: %+v\nActual: %+v", &api.ListDevicesResponse{
-				Devices: devs[:2], NextPageToken: next, TotalSize: 3,
-			}, listDevs)
-		}
+		}, listDevs)
 	})
 
 	t.Run("List devices with invalid session", func(t *testing.T) {
@@ -990,15 +957,7 @@ func TestListDevices(t *testing.T) {
 		t.Logf("listDevs, err: %+v, %v", listDevs, err)
 		require.NoError(t, err)
 		require.Equal(t, int32(3), listDevs.GetTotalSize())
-
-		// Testify does not currently support protobuf equality:
-		// https://github.com/stretchr/testify/issues/758
-		if !proto.Equal(&api.ListDevicesResponse{
-			Devices: devs[:2], TotalSize: 3,
-		}, listDevs) {
-			t.Fatalf("\nExpect: %+v\nActual: %+v", &api.ListDevicesResponse{
-				Devices: devs[:2], TotalSize: 3,
-			}, listDevs)
-		}
+		require.EqualExportedValues(t,
+			&api.ListDevicesResponse{Devices: devs[:2], TotalSize: 3}, listDevs)
 	})
 }

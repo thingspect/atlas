@@ -68,15 +68,9 @@ func TestPublishDataPoints(t *testing.T) {
 			// Normalize generated trace ID.
 			point.TraceId = vIn.GetPoint().GetTraceId()
 
-			// Testify does not currently support protobuf equality:
-			// https://github.com/stretchr/testify/issues/758
-			if !proto.Equal(&message.ValidatorIn{
+			require.EqualExportedValues(t, &message.ValidatorIn{
 				Point: point, OrgId: orgID, SkipToken: true,
-			}, vIn) {
-				t.Fatalf("\nExpect: %+v\nActual: %+v", &message.ValidatorIn{
-					Point: point, OrgId: orgID, SkipToken: true,
-				}, vIn)
-			}
+			}, vIn)
 		case <-time.After(testTimeout):
 			t.Fatal("Message timed out")
 		}
@@ -126,15 +120,9 @@ func TestPublishDataPoints(t *testing.T) {
 				2*time.Second)
 			point.Ts = vIn.GetPoint().GetTs()
 
-			// Testify does not currently support protobuf equality:
-			// https://github.com/stretchr/testify/issues/758
-			if !proto.Equal(&message.ValidatorIn{
+			require.EqualExportedValues(t, &message.ValidatorIn{
 				Point: point, OrgId: orgID, SkipToken: true,
-			}, vIn) {
-				t.Fatalf("\nExpect: %+v\nActual: %+v", &message.ValidatorIn{
-					Point: point, OrgId: orgID, SkipToken: true,
-				}, vIn)
-			}
+			}, vIn)
 		case <-time.After(testTimeout):
 			t.Fatal("Message timed out")
 		}
@@ -230,16 +218,9 @@ func TestListDataPoints(t *testing.T) {
 		})
 		t.Logf("point, listPoints, err: %+v, %+v, %v", point, listPoints, err)
 		require.NoError(t, err)
-
-		// Testify does not currently support protobuf equality:
-		// https://github.com/stretchr/testify/issues/758
-		if !proto.Equal(&api.ListDataPointsResponse{
+		require.EqualExportedValues(t, &api.ListDataPointsResponse{
 			Points: []*common.DataPoint{point},
-		}, listPoints) {
-			t.Fatalf("\nExpect: %+v\nActual: %+v", &api.ListDataPointsResponse{
-				Points: []*common.DataPoint{point},
-			}, listPoints)
-		}
+		}, listPoints)
 	})
 
 	t.Run("List data points by valid dev ID with attr", func(t *testing.T) {
@@ -273,16 +254,9 @@ func TestListDataPoints(t *testing.T) {
 		})
 		t.Logf("point, listPoints, err: %+v, %+v, %v", point, listPoints, err)
 		require.NoError(t, err)
-
-		// Testify does not currently support protobuf equality:
-		// https://github.com/stretchr/testify/issues/758
-		if !proto.Equal(&api.ListDataPointsResponse{
+		require.EqualExportedValues(t, &api.ListDataPointsResponse{
 			Points: []*common.DataPoint{point},
-		}, listPoints) {
-			t.Fatalf("\nExpect: %+v\nActual: %+v", &api.ListDataPointsResponse{
-				Points: []*common.DataPoint{point},
-			}, listPoints)
-		}
+		}, listPoints)
 	})
 
 	t.Run("List data points with invalid session", func(t *testing.T) {
@@ -397,17 +371,9 @@ func TestLatestDataPoints(t *testing.T) {
 			})
 		t.Logf("point, latPoints, err: %+v, %+v, %v", point, latPoints, err)
 		require.NoError(t, err)
-
-		// Testify does not currently support protobuf equality:
-		// https://github.com/stretchr/testify/issues/758
-		if !proto.Equal(&api.LatestDataPointsResponse{
+		require.EqualExportedValues(t, &api.LatestDataPointsResponse{
 			Points: []*common.DataPoint{point},
-		}, latPoints) {
-			t.Fatalf("\nExpect: %+v\nActual: %+v",
-				&api.LatestDataPointsResponse{
-					Points: []*common.DataPoint{point},
-				}, latPoints)
-		}
+		}, latPoints)
 	})
 
 	t.Run("Latest data points by valid dev ID with ts", func(t *testing.T) {
@@ -443,17 +409,9 @@ func TestLatestDataPoints(t *testing.T) {
 			})
 		t.Logf("point, latPoints, err: %+v, %+v, %v", point, latPoints, err)
 		require.NoError(t, err)
-
-		// Testify does not currently support protobuf equality:
-		// https://github.com/stretchr/testify/issues/758
-		if !proto.Equal(&api.LatestDataPointsResponse{
+		require.EqualExportedValues(t, &api.LatestDataPointsResponse{
 			Points: []*common.DataPoint{point},
-		}, latPoints) {
-			t.Fatalf("\nExpect: %+v\nActual: %+v",
-				&api.LatestDataPointsResponse{
-					Points: []*common.DataPoint{point},
-				}, latPoints)
-		}
+		}, latPoints)
 	})
 
 	t.Run("Latest data points with invalid session", func(t *testing.T) {

@@ -15,7 +15,6 @@ import (
 	"github.com/thingspect/proto/go/common"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
-	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/known/fieldmaskpb"
 )
 
@@ -134,12 +133,7 @@ func TestGetAlarm(t *testing.T) {
 		})
 		t.Logf("getAlarm, err: %+v, %v", getAlarm, err)
 		require.NoError(t, err)
-
-		// Testify does not currently support protobuf equality:
-		// https://github.com/stretchr/testify/issues/758
-		if !proto.Equal(createAlarm, getAlarm) {
-			t.Fatalf("\nExpect: %+v\nActual: %+v", createAlarm, getAlarm)
-		}
+		require.EqualExportedValues(t, createAlarm, getAlarm)
 	})
 
 	t.Run("Get alarm by unknown ID", func(t *testing.T) {
@@ -237,12 +231,7 @@ func TestUpdateAlarm(t *testing.T) {
 		})
 		t.Logf("getAlarm, err: %+v, %v", getAlarm, err)
 		require.NoError(t, err)
-
-		// Testify does not currently support protobuf equality:
-		// https://github.com/stretchr/testify/issues/758
-		if !proto.Equal(updateAlarm, getAlarm) {
-			t.Fatalf("\nExpect: %+v\nActual: %+v", updateAlarm, getAlarm)
-		}
+		require.EqualExportedValues(t, updateAlarm, getAlarm)
 	})
 
 	t.Run("Partial update alarm by valid alarm", func(t *testing.T) {
@@ -292,12 +281,7 @@ func TestUpdateAlarm(t *testing.T) {
 		})
 		t.Logf("getAlarm, err: %+v, %v", getAlarm, err)
 		require.NoError(t, err)
-
-		// Testify does not currently support protobuf equality:
-		// https://github.com/stretchr/testify/issues/758
-		if !proto.Equal(updateAlarm, getAlarm) {
-			t.Fatalf("\nExpect: %+v\nActual: %+v", updateAlarm, getAlarm)
-		}
+		require.EqualExportedValues(t, updateAlarm, getAlarm)
 	})
 
 	t.Run("Update alarm with insufficient role", func(t *testing.T) {

@@ -15,7 +15,6 @@ import (
 	"go.uber.org/mock/gomock"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
-	"google.golang.org/protobuf/proto"
 )
 
 func TestListTags(t *testing.T) {
@@ -40,13 +39,8 @@ func TestListTags(t *testing.T) {
 		listTags, err := tagSvc.ListTags(ctx, &api.ListTagsRequest{})
 		t.Logf("listTags, err: %+v, %v", listTags, err)
 		require.NoError(t, err)
-
-		// Testify does not currently support protobuf equality:
-		// https://github.com/stretchr/testify/issues/758
-		if !proto.Equal(&api.ListTagsResponse{Tags: tags}, listTags) {
-			t.Fatalf("\nExpect: %+v\nActual: %+v",
-				&api.ListTagsResponse{Tags: tags}, listTags)
-		}
+		require.EqualExportedValues(t, &api.ListTagsResponse{Tags: tags},
+			listTags)
 	})
 
 	t.Run("List tags with invalid session", func(t *testing.T) {

@@ -14,7 +14,6 @@ import (
 	"github.com/thingspect/atlas/pkg/dao"
 	"github.com/thingspect/atlas/pkg/test/random"
 	"github.com/thingspect/proto/go/common"
-	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
@@ -242,13 +241,8 @@ func TestList(t *testing.T) {
 		require.NoError(t, err)
 		require.Len(t, listPointsUniqID, len(points))
 
-		// Testify does not currently support protobuf equality:
-		// https://github.com/stretchr/testify/issues/758
 		for i, point := range points {
-			if !proto.Equal(point, listPointsUniqID[i]) {
-				t.Fatalf("\nExpect: %+v\nActual: %+v", point,
-					listPointsUniqID[i])
-			}
+			require.EqualExportedValues(t, point, listPointsUniqID[i])
 		}
 
 		// Verify results by dev ID without oldest point.
@@ -259,13 +253,8 @@ func TestList(t *testing.T) {
 		require.NoError(t, err)
 		require.Len(t, listPointsDevID, len(points)-1)
 
-		// Testify does not currently support protobuf equality:
-		// https://github.com/stretchr/testify/issues/758
 		for i, point := range points[:len(points)-1] {
-			if !proto.Equal(point, listPointsDevID[i]) {
-				t.Fatalf("\nExpect: %+v\nActual: %+v", point,
-					listPointsDevID[i])
-			}
+			require.EqualExportedValues(t, point, listPointsDevID[i])
 		}
 
 		// Verify results by UniqID and attribute.
@@ -276,15 +265,10 @@ func TestList(t *testing.T) {
 		require.NoError(t, err)
 		require.Len(t, listPointsUniqID, 2)
 
-		// Testify does not currently support protobuf equality:
-		// https://github.com/stretchr/testify/issues/758
 		mcount := 0
 		for _, point := range points {
 			if point.GetAttr() == "count" {
-				if !proto.Equal(point, listPointsUniqID[mcount]) {
-					t.Fatalf("\nExpect: %+v\nActual: %+v", point,
-						listPointsUniqID[mcount])
-				}
+				require.EqualExportedValues(t, point, listPointsUniqID[mcount])
 				mcount++
 			}
 		}
@@ -420,13 +404,8 @@ func TestLatest(t *testing.T) {
 		require.NoError(t, err)
 		require.Len(t, latPointsUniqID, len(points))
 
-		// Testify does not currently support protobuf equality:
-		// https://github.com/stretchr/testify/issues/758
 		for i, point := range points {
-			if !proto.Equal(point, latPointsUniqID[i]) {
-				t.Fatalf("\nExpect: %+v\nActual: %+v", point,
-					latPointsUniqID[i])
-			}
+			require.EqualExportedValues(t, point, latPointsUniqID[i])
 		}
 
 		// Verify results by dev ID without oldest point's attribute.
@@ -436,12 +415,8 @@ func TestLatest(t *testing.T) {
 		require.NoError(t, err)
 		require.Len(t, latPointsDevID, len(points)-1)
 
-		// Testify does not currently support protobuf equality:
-		// https://github.com/stretchr/testify/issues/758
 		for i, point := range points[1:] {
-			if !proto.Equal(point, latPointsDevID[i]) {
-				t.Fatalf("\nExpect: %+v\nActual: %+v", point, latPointsDevID[i])
-			}
+			require.EqualExportedValues(t, point, latPointsDevID[i])
 		}
 	})
 

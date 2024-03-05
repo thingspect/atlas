@@ -49,15 +49,8 @@ func TestListAlerts(t *testing.T) {
 		})
 		t.Logf("alert, listAlerts, err: %+v, %+v, %v", alert, listAlerts, err)
 		require.NoError(t, err)
-
-		// Testify does not currently support protobuf equality:
-		// https://github.com/stretchr/testify/issues/758
-		if !proto.Equal(&api.ListAlertsResponse{Alerts: []*api.Alert{alert}},
-			listAlerts) {
-			t.Fatalf("\nExpect: %+v\nActual: %+v", &api.ListAlertsResponse{
-				Alerts: []*api.Alert{alert},
-			}, listAlerts)
-		}
+		require.EqualExportedValues(t,
+			&api.ListAlertsResponse{Alerts: []*api.Alert{alert}}, listAlerts)
 	})
 
 	t.Run("List alerts by valid dev ID with alarm ID", func(t *testing.T) {
@@ -87,15 +80,8 @@ func TestListAlerts(t *testing.T) {
 		})
 		t.Logf("alert, listAlerts, err: %+v, %+v, %v", alert, listAlerts, err)
 		require.NoError(t, err)
-
-		// Testify does not currently support protobuf equality:
-		// https://github.com/stretchr/testify/issues/758
-		if !proto.Equal(&api.ListAlertsResponse{Alerts: []*api.Alert{alert}},
-			listAlerts) {
-			t.Fatalf("\nExpect: %+v\nActual: %+v", &api.ListAlertsResponse{
-				Alerts: []*api.Alert{alert},
-			}, listAlerts)
-		}
+		require.EqualExportedValues(t,
+			&api.ListAlertsResponse{Alerts: []*api.Alert{alert}}, listAlerts)
 	})
 
 	t.Run("List alerts by user ID", func(t *testing.T) {
@@ -122,15 +108,8 @@ func TestListAlerts(t *testing.T) {
 			&api.ListAlertsRequest{UserId: userID})
 		t.Logf("alert, listAlerts, err: %+v, %+v, %v", alert, listAlerts, err)
 		require.NoError(t, err)
-
-		// Testify does not currently support protobuf equality:
-		// https://github.com/stretchr/testify/issues/758
-		if !proto.Equal(&api.ListAlertsResponse{Alerts: []*api.Alert{alert}},
-			listAlerts) {
-			t.Fatalf("\nExpect: %+v\nActual: %+v", &api.ListAlertsResponse{
-				Alerts: []*api.Alert{alert},
-			}, listAlerts)
-		}
+		require.EqualExportedValues(t,
+			&api.ListAlertsResponse{Alerts: []*api.Alert{alert}}, listAlerts)
 	})
 
 	t.Run("List alerts with invalid session", func(t *testing.T) {

@@ -49,15 +49,8 @@ func TestListEvents(t *testing.T) {
 		})
 		t.Logf("event, listEvents, err: %+v, %+v, %v", event, listEvents, err)
 		require.NoError(t, err)
-
-		// Testify does not currently support protobuf equality:
-		// https://github.com/stretchr/testify/issues/758
-		if !proto.Equal(&api.ListEventsResponse{Events: []*api.Event{event}},
-			listEvents) {
-			t.Fatalf("\nExpect: %+v\nActual: %+v", &api.ListEventsResponse{
-				Events: []*api.Event{event},
-			}, listEvents)
-		}
+		require.EqualExportedValues(t,
+			&api.ListEventsResponse{Events: []*api.Event{event}}, listEvents)
 	})
 
 	t.Run("List events by valid dev ID with rule ID", func(t *testing.T) {
@@ -86,15 +79,8 @@ func TestListEvents(t *testing.T) {
 		})
 		t.Logf("event, listEvents, err: %+v, %+v, %v", event, listEvents, err)
 		require.NoError(t, err)
-
-		// Testify does not currently support protobuf equality:
-		// https://github.com/stretchr/testify/issues/758
-		if !proto.Equal(&api.ListEventsResponse{Events: []*api.Event{event}},
-			listEvents) {
-			t.Fatalf("\nExpect: %+v\nActual: %+v", &api.ListEventsResponse{
-				Events: []*api.Event{event},
-			}, listEvents)
-		}
+		require.EqualExportedValues(t,
+			&api.ListEventsResponse{Events: []*api.Event{event}}, listEvents)
 	})
 
 	t.Run("List events with invalid session", func(t *testing.T) {
@@ -196,15 +182,8 @@ func TestLatestEvents(t *testing.T) {
 		})
 		t.Logf("event, latEvents, err: %+v, %+v, %v", event, latEvents, err)
 		require.NoError(t, err)
-
-		// Testify does not currently support protobuf equality:
-		// https://github.com/stretchr/testify/issues/758
-		if !proto.Equal(&api.LatestEventsResponse{Events: []*api.Event{event}},
-			latEvents) {
-			t.Fatalf("\nExpect: %+v\nActual: %+v", &api.LatestEventsResponse{
-				Events: []*api.Event{event},
-			}, latEvents)
-		}
+		require.EqualExportedValues(t,
+			&api.LatestEventsResponse{Events: []*api.Event{event}}, latEvents)
 	})
 
 	t.Run("Latest events with invalid session", func(t *testing.T) {

@@ -125,8 +125,8 @@ func TestValidateMessages(t *testing.T) {
 			vOutPubTopic := "topic-" + random.String(10)
 
 			devicer := NewMockdevicer(gomock.NewController(t))
-			devicer.EXPECT().ReadByUniqID(gomock.Any(), test.inp.GetPoint().GetUniqId()).
-				Return(dev, nil).Times(1)
+			devicer.EXPECT().ReadByUniqID(gomock.Any(),
+				test.inp.GetPoint().GetUniqId()).Return(dev, nil).Times(1)
 
 			val := Validator{
 				devDAO: devicer,
@@ -143,6 +143,9 @@ func TestValidateMessages(t *testing.T) {
 			require.NoError(t, err)
 			t.Logf("bVIn: %s", bVIn)
 
+			// Result must be cloned due to its shared pointers across tests.
+			res, _ := proto.Clone(test.res).(*message.ValidatorOut)
+
 			require.NoError(t, vInQueue.Publish("", bVIn))
 
 			select {
@@ -155,12 +158,7 @@ func TestValidateMessages(t *testing.T) {
 				vOut := &message.ValidatorOut{}
 				require.NoError(t, proto.Unmarshal(msg.Payload(), vOut))
 				t.Logf("vOut: %+v", vOut)
-
-				// Testify does not currently support protobuf equality:
-				// https://github.com/stretchr/testify/issues/758
-				if !proto.Equal(test.res, vOut) {
-					t.Fatalf("\nExpect: %+v\nActual: %+v", test.res, vOut)
-				}
+				require.EqualExportedValues(t, res, vOut)
 			case <-time.After(2 * time.Second):
 				t.Fatal("Message timed out")
 			}

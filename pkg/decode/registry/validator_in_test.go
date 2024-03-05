@@ -9,11 +9,11 @@ import (
 	"time"
 
 	"github.com/google/uuid"
+	"github.com/stretchr/testify/require"
 	"github.com/thingspect/atlas/pkg/decode"
 	"github.com/thingspect/atlas/pkg/test/random"
 	"github.com/thingspect/atlas/proto/go/message"
 	"github.com/thingspect/proto/go/common"
-	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
@@ -115,12 +115,7 @@ func TestPointToVIn(t *testing.T) {
 
 			res := PointToVIn(traceID, uniqID, test.inp, now)
 			t.Logf("res: %+v", res)
-
-			// Testify does not currently support protobuf equality:
-			// https://github.com/stretchr/testify/issues/758
-			if !proto.Equal(test.res, res) {
-				t.Fatalf("\nExpect: %+v\nActual: %+v", test.res, res)
-			}
+			require.EqualExportedValues(t, test.res, res)
 		})
 	}
 }

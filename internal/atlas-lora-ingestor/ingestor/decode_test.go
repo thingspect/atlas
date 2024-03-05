@@ -181,15 +181,11 @@ func TestDecodeGateways(t *testing.T) {
 					// Normalize generated trace ID.
 					res.Point.TraceId = vIn.GetPoint().GetTraceId()
 					// Normalize timestamp.
-					require.WithinDuration(t, time.Now(), vIn.GetPoint().GetTs().AsTime(),
-						2*time.Second)
+					require.WithinDuration(t, time.Now(),
+						vIn.GetPoint().GetTs().AsTime(), 2*time.Second)
 					res.Point.Ts = vIn.GetPoint().GetTs()
 
-					// Testify does not currently support protobuf equality:
-					// https://github.com/stretchr/testify/issues/758
-					if !proto.Equal(res, vIn) {
-						t.Fatalf("\nExpect: %+v\nActual: %+v", res, vIn)
-					}
+					require.EqualExportedValues(t, res, vIn)
 				case <-time.After(2 * time.Second):
 					t.Fatal("Message timed out")
 				}
@@ -463,15 +459,11 @@ func TestDecodeDevices(t *testing.T) {
 					// Normalize generated trace ID.
 					res.Point.TraceId = vIn.GetPoint().GetTraceId()
 					// Normalize timestamp.
-					require.WithinDuration(t, time.Now(), vIn.GetPoint().GetTs().AsTime(),
-						2*time.Second)
+					require.WithinDuration(t, time.Now(),
+						vIn.GetPoint().GetTs().AsTime(), 2*time.Second)
 					res.Point.Ts = vIn.GetPoint().GetTs()
 
-					// Testify does not currently support protobuf equality:
-					// https://github.com/stretchr/testify/issues/758
-					if !proto.Equal(res, vIn) {
-						t.Fatalf("\nExpect: %+v\nActual: %+v", res, vIn)
-					}
+					require.EqualExportedValues(t, res, vIn)
 				case <-time.After(2 * time.Second):
 					t.Fatal("Message timed out")
 				}
