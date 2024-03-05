@@ -49,12 +49,7 @@ func TestCreateRule(t *testing.T) {
 		})
 		t.Logf("rule, createRule, err: %+v, %+v, %v", rule, createRule, err)
 		require.NoError(t, err)
-
-		// Testify does not currently support protobuf equality:
-		// https://github.com/stretchr/testify/issues/758
-		if !proto.Equal(rule, createRule) {
-			t.Fatalf("\nExpect: %+v\nActual: %+v", rule, createRule)
-		}
+		require.EqualExportedValues(t, rule, createRule)
 	})
 
 	t.Run("Create rule with invalid session", func(t *testing.T) {
@@ -136,12 +131,7 @@ func TestGetRule(t *testing.T) {
 		getRule, err := raSvc.GetRule(ctx, &api.GetRuleRequest{Id: rule.GetId()})
 		t.Logf("rule, getRule, err: %+v, %+v, %v", rule, getRule, err)
 		require.NoError(t, err)
-
-		// Testify does not currently support protobuf equality:
-		// https://github.com/stretchr/testify/issues/758
-		if !proto.Equal(rule, getRule) {
-			t.Fatalf("\nExpect: %+v\nActual: %+v", rule, getRule)
-		}
+		require.EqualExportedValues(t, rule, getRule)
 	})
 
 	t.Run("Get rule with invalid session", func(t *testing.T) {
@@ -220,12 +210,7 @@ func TestUpdateRule(t *testing.T) {
 		})
 		t.Logf("rule, updateRule, err: %+v, %+v, %v", rule, updateRule, err)
 		require.NoError(t, err)
-
-		// Testify does not currently support protobuf equality:
-		// https://github.com/stretchr/testify/issues/758
-		if !proto.Equal(rule, updateRule) {
-			t.Fatalf("\nExpect: %+v\nActual: %+v", rule, updateRule)
-		}
+		require.EqualExportedValues(t, rule, updateRule)
 	})
 
 	t.Run("Partial update rule by valid rule", func(t *testing.T) {
@@ -263,12 +248,7 @@ func TestUpdateRule(t *testing.T) {
 		})
 		t.Logf("merged, updateRule, err: %+v, %+v, %v", merged, updateRule, err)
 		require.NoError(t, err)
-
-		// Testify does not currently support protobuf equality:
-		// https://github.com/stretchr/testify/issues/758
-		if !proto.Equal(merged, updateRule) {
-			t.Fatalf("\nExpect: %+v\nActual: %+v", merged, updateRule)
-		}
+		require.EqualExportedValues(t, merged, updateRule)
 	})
 
 	t.Run("Update rule with invalid session", func(t *testing.T) {
@@ -521,14 +501,8 @@ func TestListRules(t *testing.T) {
 		t.Logf("listRules, err: %+v, %v", listRules, err)
 		require.NoError(t, err)
 		require.Equal(t, int32(3), listRules.GetTotalSize())
-
-		// Testify does not currently support protobuf equality:
-		// https://github.com/stretchr/testify/issues/758
-		if !proto.Equal(&api.ListRulesResponse{Rules: rules, TotalSize: 3},
-			listRules) {
-			t.Fatalf("\nExpect: %+v\nActual: %+v",
-				&api.ListRulesResponse{Rules: rules, TotalSize: 3}, listRules)
-		}
+		require.EqualExportedValues(t,
+			&api.ListRulesResponse{Rules: rules, TotalSize: 3}, listRules)
 	})
 
 	t.Run("List rules by valid org ID with next page", func(t *testing.T) {
@@ -563,16 +537,9 @@ func TestListRules(t *testing.T) {
 		t.Logf("listRules, err: %+v, %v", listRules, err)
 		require.NoError(t, err)
 		require.Equal(t, int32(3), listRules.GetTotalSize())
-
-		// Testify does not currently support protobuf equality:
-		// https://github.com/stretchr/testify/issues/758
-		if !proto.Equal(&api.ListRulesResponse{
+		require.EqualExportedValues(t, &api.ListRulesResponse{
 			Rules: rules[:2], NextPageToken: next, TotalSize: 3,
-		}, listRules) {
-			t.Fatalf("\nExpect: %+v\nActual: %+v", &api.ListRulesResponse{
-				Rules: rules[:2], NextPageToken: next, TotalSize: 3,
-			}, listRules)
-		}
+		}, listRules)
 	})
 
 	t.Run("List rules with invalid session", func(t *testing.T) {
@@ -673,16 +640,8 @@ func TestListRules(t *testing.T) {
 		t.Logf("listRules, err: %+v, %v", listRules, err)
 		require.NoError(t, err)
 		require.Equal(t, int32(3), listRules.GetTotalSize())
-
-		// Testify does not currently support protobuf equality:
-		// https://github.com/stretchr/testify/issues/758
-		if !proto.Equal(&api.ListRulesResponse{
-			Rules: rules[:2], TotalSize: 3,
-		}, listRules) {
-			t.Fatalf("\nExpect: %+v\nActual: %+v", &api.ListRulesResponse{
-				Rules: rules[:2], TotalSize: 3,
-			}, listRules)
-		}
+		require.EqualExportedValues(t,
+			&api.ListRulesResponse{Rules: rules[:2], TotalSize: 3}, listRules)
 	})
 }
 

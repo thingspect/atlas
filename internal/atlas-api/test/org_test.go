@@ -12,7 +12,6 @@ import (
 	"github.com/stretchr/testify/require"
 	"github.com/thingspect/atlas/pkg/test/random"
 	"github.com/thingspect/proto/go/api"
-	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/known/fieldmaskpb"
 )
 
@@ -120,12 +119,7 @@ func TestGetOrg(t *testing.T) {
 		getOrg, err := orgCli.GetOrg(ctx, &api.GetOrgRequest{Id: createOrg.GetId()})
 		t.Logf("getOrg, err: %+v, %v", getOrg, err)
 		require.NoError(t, err)
-
-		// Testify does not currently support protobuf equality:
-		// https://github.com/stretchr/testify/issues/758
-		if !proto.Equal(createOrg, getOrg) {
-			t.Fatalf("\nExpect: %+v\nActual: %+v", createOrg, getOrg)
-		}
+		require.EqualExportedValues(t, createOrg, getOrg)
 	})
 
 	t.Run("Get org with insufficient role", func(t *testing.T) {
@@ -195,12 +189,7 @@ func TestUpdateOrg(t *testing.T) {
 			&api.GetOrgRequest{Id: createOrg.GetId()})
 		t.Logf("getOrg, err: %+v, %v", getOrg, err)
 		require.NoError(t, err)
-
-		// Testify does not currently support protobuf equality:
-		// https://github.com/stretchr/testify/issues/758
-		if !proto.Equal(updateOrg, getOrg) {
-			t.Fatalf("\nExpect: %+v\nActual: %+v", updateOrg, getOrg)
-		}
+		require.EqualExportedValues(t, updateOrg, getOrg)
 	})
 
 	t.Run("Partial update org by valid org", func(t *testing.T) {
@@ -237,15 +226,11 @@ func TestUpdateOrg(t *testing.T) {
 		require.WithinDuration(t, createOrg.GetCreatedAt().AsTime(),
 			updateOrg.GetUpdatedAt().AsTime(), 2*time.Second)
 
-		getOrg, err := orgCli.GetOrg(ctx, &api.GetOrgRequest{Id: createOrg.GetId()})
+		getOrg, err := orgCli.GetOrg(ctx,
+			&api.GetOrgRequest{Id: createOrg.GetId()})
 		t.Logf("getOrg, err: %+v, %v", getOrg, err)
 		require.NoError(t, err)
-
-		// Testify does not currently support protobuf equality:
-		// https://github.com/stretchr/testify/issues/758
-		if !proto.Equal(updateOrg, getOrg) {
-			t.Fatalf("\nExpect: %+v\nActual: %+v", updateOrg, getOrg)
-		}
+		require.EqualExportedValues(t, updateOrg, getOrg)
 	})
 
 	t.Run("Update nil org", func(t *testing.T) {

@@ -61,12 +61,18 @@ func TestEventMessages(t *testing.T) {
 			{Id: ruleID, Expr: `true`},
 		}, 2, []*message.EventerOut{
 			{
-				Point: &common.DataPoint{Attr: "temp_c", Ts: now, TraceId: traceID},
-				Rule:  &api.Rule{Id: ruleID, Expr: `true`},
+				Point: &common.DataPoint{
+					Attr: "temp_c",
+					Ts:   now, TraceId: traceID,
+				},
+				Rule: &api.Rule{Id: ruleID, Expr: `true`},
 			},
 			{
-				Point: &common.DataPoint{Attr: "temp_c", Ts: now, TraceId: traceID},
-				Rule:  &api.Rule{Id: ruleID, Expr: `true`},
+				Point: &common.DataPoint{
+					Attr: "temp_c",
+					Ts:   now, TraceId: traceID,
+				},
+				Rule: &api.Rule{Id: ruleID, Expr: `true`},
 			},
 		}},
 		{&message.ValidatorOut{Point: &common.DataPoint{
@@ -102,8 +108,10 @@ func TestEventMessages(t *testing.T) {
 			eOutPubTopic := "topic-" + random.String(10)
 
 			ruler := NewMockruler(gomock.NewController(t))
-			ruler.EXPECT().ListByTags(gomock.Any(), test.inpVOut.GetDevice().GetOrgId(),
-				test.inpVOut.GetPoint().GetAttr(), test.inpVOut.GetDevice().GetTags()).
+			ruler.EXPECT().ListByTags(gomock.Any(),
+				test.inpVOut.GetDevice().GetOrgId(),
+				test.inpVOut.GetPoint().GetAttr(),
+				test.inpVOut.GetDevice().GetTags()).
 				Return(test.inpRules, nil).Times(1)
 
 			// Reuse ruleID for less branching in the mocking paths.
@@ -150,11 +158,11 @@ func TestEventMessages(t *testing.T) {
 					// Normalize device.
 					res.Device = dev
 
-					// Testify does not currently support protobuf equality:
-					// https://github.com/stretchr/testify/issues/758
-					if !proto.Equal(res, eOut) {
-						t.Fatalf("\nExpect: %+v\nActual: %+v", res, eOut)
-					}
+					// Result must be cloned due to its shared Timestamp across
+					// tests.
+					resEOut, _ := proto.Clone(res).(*message.EventerOut)
+
+					require.EqualExportedValues(t, resEOut, eOut)
 				case <-time.After(2 * time.Second):
 					t.Fatal("Message timed out")
 				}

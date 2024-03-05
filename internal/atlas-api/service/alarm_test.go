@@ -48,12 +48,7 @@ func TestCreateAlarm(t *testing.T) {
 		})
 		t.Logf("alarm, createAlarm, err: %+v, %+v, %v", alarm, createAlarm, err)
 		require.NoError(t, err)
-
-		// Testify does not currently support protobuf equality:
-		// https://github.com/stretchr/testify/issues/758
-		if !proto.Equal(alarm, createAlarm) {
-			t.Fatalf("\nExpect: %+v\nActual: %+v", alarm, createAlarm)
-		}
+		require.EqualExportedValues(t, alarm, createAlarm)
 	})
 
 	t.Run("Create alarm with invalid session", func(t *testing.T) {
@@ -137,12 +132,7 @@ func TestGetAlarm(t *testing.T) {
 		})
 		t.Logf("rule, getAlarm, err: %+v, %+v, %v", alarm, getAlarm, err)
 		require.NoError(t, err)
-
-		// Testify does not currently support protobuf equality:
-		// https://github.com/stretchr/testify/issues/758
-		if !proto.Equal(alarm, getAlarm) {
-			t.Fatalf("\nExpect: %+v\nActual: %+v", alarm, getAlarm)
-		}
+		require.EqualExportedValues(t, alarm, getAlarm)
 	})
 
 	t.Run("Get rule with invalid session", func(t *testing.T) {
@@ -222,12 +212,7 @@ func TestUpdateAlarm(t *testing.T) {
 		})
 		t.Logf("alarm, updateAlarm, err: %+v, %+v, %v", alarm, updateAlarm, err)
 		require.NoError(t, err)
-
-		// Testify does not currently support protobuf equality:
-		// https://github.com/stretchr/testify/issues/758
-		if !proto.Equal(alarm, updateAlarm) {
-			t.Fatalf("\nExpect: %+v\nActual: %+v", alarm, updateAlarm)
-		}
+		require.EqualExportedValues(t, alarm, updateAlarm)
 	})
 
 	t.Run("Partial update alarm by valid alarm", func(t *testing.T) {
@@ -236,15 +221,18 @@ func TestUpdateAlarm(t *testing.T) {
 		alarm := random.Alarm("api-alarm", uuid.NewString(), uuid.NewString())
 		retAlarm, _ := proto.Clone(alarm).(*api.Alarm)
 		part := &api.Alarm{
-			Id: alarm.GetId(), RuleId: alarm.GetRuleId(), Status: api.Status_ACTIVE,
-			SubjectTemplate: `test`, UserTags: random.Tags("api-alarm", 2),
+			Id: alarm.GetId(), RuleId: alarm.GetRuleId(),
+			Status: api.Status_ACTIVE, SubjectTemplate: `test`,
+			UserTags: random.Tags("api-alarm", 2),
 		}
 		merged := &api.Alarm{
-			Id: alarm.GetId(), OrgId: alarm.GetOrgId(), RuleId: alarm.GetRuleId(),
-			Name: alarm.GetName(), Status: part.GetStatus(), Type: alarm.GetType(),
-			UserTags: part.GetUserTags(), SubjectTemplate: part.GetSubjectTemplate(),
-			BodyTemplate:   alarm.GetBodyTemplate(),
-			RepeatInterval: alarm.GetRepeatInterval(),
+			Id: alarm.GetId(), OrgId: alarm.GetOrgId(),
+			RuleId: alarm.GetRuleId(), Name: alarm.GetName(),
+			Status: part.GetStatus(), Type: alarm.GetType(),
+			UserTags:        part.GetUserTags(),
+			SubjectTemplate: part.GetSubjectTemplate(),
+			BodyTemplate:    alarm.GetBodyTemplate(),
+			RepeatInterval:  alarm.GetRepeatInterval(),
 		}
 		retMerged, _ := proto.Clone(merged).(*api.Alarm)
 
@@ -269,12 +257,7 @@ func TestUpdateAlarm(t *testing.T) {
 		t.Logf("merged, updateAlarm, err: %+v, %+v, %v", merged, updateAlarm,
 			err)
 		require.NoError(t, err)
-
-		// Testify does not currently support protobuf equality:
-		// https://github.com/stretchr/testify/issues/758
-		if !proto.Equal(merged, updateAlarm) {
-			t.Fatalf("\nExpect: %+v\nActual: %+v", merged, updateAlarm)
-		}
+		require.EqualExportedValues(t, merged, updateAlarm)
 	})
 
 	t.Run("Update alarm with invalid session", func(t *testing.T) {
@@ -530,15 +513,8 @@ func TestListAlarms(t *testing.T) {
 		t.Logf("listAlarms, err: %+v, %v", listAlarms, err)
 		require.NoError(t, err)
 		require.Equal(t, int32(3), listAlarms.GetTotalSize())
-
-		// Testify does not currently support protobuf equality:
-		// https://github.com/stretchr/testify/issues/758
-		if !proto.Equal(&api.ListAlarmsResponse{Alarms: alarms, TotalSize: 3},
-			listAlarms) {
-			t.Fatalf("\nExpect: %+v\nActual: %+v",
-				&api.ListAlarmsResponse{Alarms: alarms, TotalSize: 3},
-				listAlarms)
-		}
+		require.EqualExportedValues(t,
+			&api.ListAlarmsResponse{Alarms: alarms, TotalSize: 3}, listAlarms)
 	})
 
 	t.Run("List alarms by valid org ID with next page", func(t *testing.T) {
@@ -573,16 +549,9 @@ func TestListAlarms(t *testing.T) {
 		t.Logf("listAlarms, err: %+v, %v", listAlarms, err)
 		require.NoError(t, err)
 		require.Equal(t, int32(3), listAlarms.GetTotalSize())
-
-		// Testify does not currently support protobuf equality:
-		// https://github.com/stretchr/testify/issues/758
-		if !proto.Equal(&api.ListAlarmsResponse{
+		require.EqualExportedValues(t, &api.ListAlarmsResponse{
 			Alarms: alarms[:2], NextPageToken: next, TotalSize: 3,
-		}, listAlarms) {
-			t.Fatalf("\nExpect: %+v\nActual: %+v", &api.ListAlarmsResponse{
-				Alarms: alarms[:2], NextPageToken: next, TotalSize: 3,
-			}, listAlarms)
-		}
+		}, listAlarms)
 	})
 
 	t.Run("List alarms with invalid session", func(t *testing.T) {
@@ -684,16 +653,9 @@ func TestListAlarms(t *testing.T) {
 		t.Logf("listAlarms, err: %+v, %v", listAlarms, err)
 		require.NoError(t, err)
 		require.Equal(t, int32(3), listAlarms.GetTotalSize())
-
-		// Testify does not currently support protobuf equality:
-		// https://github.com/stretchr/testify/issues/758
-		if !proto.Equal(&api.ListAlarmsResponse{
+		require.EqualExportedValues(t, &api.ListAlarmsResponse{
 			Alarms: alarms[:2], TotalSize: 3,
-		}, listAlarms) {
-			t.Fatalf("\nExpect: %+v\nActual: %+v", &api.ListAlarmsResponse{
-				Alarms: alarms[:2], TotalSize: 3,
-			}, listAlarms)
-		}
+		}, listAlarms)
 	})
 }
 

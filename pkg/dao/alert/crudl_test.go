@@ -14,7 +14,6 @@ import (
 	"github.com/thingspect/atlas/pkg/dao"
 	"github.com/thingspect/atlas/pkg/test/random"
 	"github.com/thingspect/proto/go/api"
-	"google.golang.org/protobuf/proto"
 )
 
 const testTimeout = 6 * time.Second
@@ -123,19 +122,15 @@ func TestList(t *testing.T) {
 
 		// Verify results by UniqID.
 		listAlertsUniqID, err := globalAleDAO.List(ctx, createOrg.GetId(),
-			createDev.GetUniqId(), "", "", "", alerts[0].GetCreatedAt().AsTime(),
-			alerts[len(alerts)-1].GetCreatedAt().AsTime().Add(-time.Millisecond))
+			createDev.GetUniqId(), "", "", "",
+			alerts[0].GetCreatedAt().AsTime(), alerts[len(alerts)-1].
+				GetCreatedAt().AsTime().Add(-time.Millisecond))
 		t.Logf("listAlertsUniqID, err: %+v, %v", listAlertsUniqID, err)
 		require.NoError(t, err)
 		require.Len(t, listAlertsUniqID, len(alerts))
 
-		// Testify does not currently support protobuf equality:
-		// https://github.com/stretchr/testify/issues/758
 		for i, alert := range alerts {
-			if !proto.Equal(alert, listAlertsUniqID[i]) {
-				t.Fatalf("\nExpect: %+v\nActual: %+v", alert,
-					listAlertsUniqID[i])
-			}
+			require.EqualExportedValues(t, alert, listAlertsUniqID[i])
 		}
 
 		// Verify results by dev ID without oldest alert.
@@ -146,30 +141,22 @@ func TestList(t *testing.T) {
 		require.NoError(t, err)
 		require.Len(t, listAlertsDevID, len(alerts)-1)
 
-		// Testify does not currently support protobuf equality:
-		// https://github.com/stretchr/testify/issues/758
 		for i, alert := range alerts[:len(alerts)-1] {
-			if !proto.Equal(alert, listAlertsDevID[i]) {
-				t.Fatalf("\nExpect: %+v\nActual: %+v", alert,
-					listAlertsDevID[i])
-			}
+			require.EqualExportedValues(t, alert, listAlertsDevID[i])
 		}
 
 		// Verify results by alarm ID and user ID.
-		listAlertsAlarmID, err := globalAleDAO.List(ctx, createOrg.GetId(), "", "",
-			alerts[len(alerts)-1].GetAlarmId(), alerts[len(alerts)-1].GetUserId(),
+		listAlertsAlarmID, err := globalAleDAO.List(ctx, createOrg.GetId(), "",
+			"", alerts[len(alerts)-1].GetAlarmId(),
+			alerts[len(alerts)-1].GetUserId(),
 			alerts[0].GetCreatedAt().AsTime(),
-			alerts[len(alerts)-1].GetCreatedAt().AsTime().Add(-time.Millisecond))
+			alerts[len(alerts)-1].GetCreatedAt().AsTime().
+				Add(-time.Millisecond))
 		t.Logf("listAlertsAlarmID, err: %+v, %v", listAlertsAlarmID, err)
 		require.NoError(t, err)
 		require.Len(t, listAlertsAlarmID, 1)
-
-		// Testify does not currently support protobuf equality:
-		// https://github.com/stretchr/testify/issues/758
-		if !proto.Equal(alerts[len(alerts)-1], listAlertsAlarmID[0]) {
-			t.Fatalf("\nExpect: %+v\nActual: %+v", alerts[len(alerts)-1],
-				listAlertsAlarmID[0])
-		}
+		require.EqualExportedValues(t, alerts[len(alerts)-1],
+			listAlertsAlarmID[0])
 	})
 
 	t.Run("Lists are isolated by org ID", func(t *testing.T) {

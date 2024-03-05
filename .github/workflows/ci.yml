@@ -55,7 +55,7 @@ jobs:
         with:
           args: docker restart mqtt
       - name: Cache
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           # Cache modules only, not build
           path: /go/pkg/mod

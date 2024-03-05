@@ -12,7 +12,6 @@ import (
 	"github.com/stretchr/testify/require"
 	"github.com/thingspect/atlas/pkg/test/random"
 	"github.com/thingspect/proto/go/api"
-	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
@@ -69,14 +68,8 @@ func TestListEvents(t *testing.T) {
 		t.Logf("listEventsUniqID, err: %+v, %v", listEventsUniqID, err)
 		require.NoError(t, err)
 		require.Len(t, listEventsUniqID.GetEvents(), len(events))
-
-		// Testify does not currently support protobuf equality:
-		// https://github.com/stretchr/testify/issues/758
-		if !proto.Equal(&api.ListEventsResponse{Events: events},
-			listEventsUniqID) {
-			t.Fatalf("\nExpect: %+v\nActual: %+v",
-				&api.ListEventsResponse{Events: events}, listEventsUniqID)
-		}
+		require.EqualExportedValues(t, &api.ListEventsResponse{Events: events},
+			listEventsUniqID)
 
 		// Verify results by dev ID without oldest event.
 		listEventsDevID, err := evCli.ListEvents(ctx, &api.ListEventsRequest{
@@ -86,36 +79,24 @@ func TestListEvents(t *testing.T) {
 		t.Logf("listEventsDevID, err: %+v, %v", listEventsDevID, err)
 		require.NoError(t, err)
 		require.Len(t, listEventsDevID.GetEvents(), len(events)-1)
-
-		// Testify does not currently support protobuf equality:
-		// https://github.com/stretchr/testify/issues/758
-		if !proto.Equal(&api.ListEventsResponse{Events: events[:len(events)-1]},
-			listEventsDevID) {
-			t.Fatalf("\nExpect: %+v\nActual: %+v", &api.ListEventsResponse{
-				Events: events[:len(events)-1],
-			}, listEventsDevID)
-		}
+		require.EqualExportedValues(t, &api.ListEventsResponse{
+			Events: events[:len(events)-1],
+		}, listEventsDevID)
 
 		// Verify results by UniqID and rule ID.
 		listEventsUniqID, err = evCli.ListEvents(ctx, &api.ListEventsRequest{
 			IdOneof: &api.ListEventsRequest_UniqId{UniqId: createDev.GetUniqId()},
-			RuleId:  events[len(events)-1].GetRuleId(), EndTime: events[0].GetCreatedAt(),
-			StartTime: timestamppb.New(events[len(events)-1].GetCreatedAt().AsTime().
-				Add(-time.Millisecond)),
+			RuleId:  events[len(events)-1].GetRuleId(),
+			EndTime: events[0].GetCreatedAt(),
+			StartTime: timestamppb.New(events[len(events)-1].GetCreatedAt().
+				AsTime().Add(-time.Millisecond)),
 		})
 		t.Logf("listEventsUniqID, err: %+v, %v", listEventsUniqID, err)
 		require.NoError(t, err)
 		require.Len(t, listEventsUniqID.GetEvents(), 1)
-
-		// Testify does not currently support protobuf equality:
-		// https://github.com/stretchr/testify/issues/758
-		if !proto.Equal(&api.ListEventsResponse{Events: []*api.Event{
-			events[len(events)-1],
-		}}, listEventsUniqID) {
-			t.Fatalf("\nExpect: %+v\nActual: %+v", &api.ListEventsResponse{
-				Events: []*api.Event{events[len(events)-1]},
-			}, listEventsUniqID)
-		}
+		require.EqualExportedValues(t, &api.ListEventsResponse{
+			Events: []*api.Event{events[len(events)-1]},
+		}, listEventsUniqID)
 	})
 
 	t.Run("List events are isolated by org ID", func(t *testing.T) {
@@ -235,16 +216,9 @@ func TestLatestEvents(t *testing.T) {
 		t.Logf("latEventsDevID, err: %+v, %v", latEventsRuleID, err)
 		require.NoError(t, err)
 		require.Len(t, latEventsRuleID.GetEvents(), 1)
-
-		// Testify does not currently support protobuf equality:
-		// https://github.com/stretchr/testify/issues/758
-		if !proto.Equal(&api.LatestEventsResponse{Events: []*api.Event{
-			events[len(events)-1],
-		}}, latEventsRuleID) {
-			t.Fatalf("\nExpect: %+v\nActual: %+v", &api.LatestEventsResponse{
-				Events: []*api.Event{events[len(events)-1]},
-			}, latEventsRuleID)
-		}
+		require.EqualExportedValues(t, &api.LatestEventsResponse{
+			Events: []*api.Event{events[len(events)-1]},
+		}, latEventsRuleID)
 	})
 
 	t.Run("Latest events are isolated by org ID", func(t *testing.T) {

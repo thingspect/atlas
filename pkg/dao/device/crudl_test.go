@@ -219,23 +219,13 @@ func TestReadUpdateDeleteCache(t *testing.T) {
 			createDev.GetOrgId())
 		t.Logf("readDev, err: %+v, %v", readDev, err)
 		require.NoError(t, err)
-
-		// Testify does not currently support protobuf equality:
-		// https://github.com/stretchr/testify/issues/758
-		if !proto.Equal(createDev, readDev) {
-			t.Fatalf("\nExpect: %+v\nActual: %+v", createDev, readDev)
-		}
+		require.EqualExportedValues(t, createDev, readDev)
 
 		readDev, err = globalDevDAOCache.Read(ctx, createDev.GetId(),
 			createDev.GetOrgId())
 		t.Logf("readDev, err: %+v, %v", readDev, err)
 		require.NoError(t, err)
-
-		// Testify does not currently support protobuf equality:
-		// https://github.com/stretchr/testify/issues/758
-		if !proto.Equal(createDev, readDev) {
-			t.Fatalf("\nExpect: %+v\nActual: %+v", createDev, readDev)
-		}
+		require.EqualExportedValues(t, createDev, readDev)
 	})
 
 	t.Run("Read cached device by valid UniqID", func(t *testing.T) {
@@ -252,22 +242,12 @@ func TestReadUpdateDeleteCache(t *testing.T) {
 		readDev, err := globalDevDAOCache.ReadByUniqID(ctx, createDev.GetUniqId())
 		t.Logf("readDev, err: %+v, %v", readDev, err)
 		require.NoError(t, err)
-
-		// Testify does not currently support protobuf equality:
-		// https://github.com/stretchr/testify/issues/758
-		if !proto.Equal(createDev, readDev) {
-			t.Fatalf("\nExpect: %+v\nActual: %+v", createDev, readDev)
-		}
+		require.EqualExportedValues(t, createDev, readDev)
 
 		readDev, err = globalDevDAOCache.ReadByUniqID(ctx, createDev.GetUniqId())
 		t.Logf("readDev, err: %+v, %v", readDev, err)
 		require.NoError(t, err)
-
-		// Testify does not currently support protobuf equality:
-		// https://github.com/stretchr/testify/issues/758
-		if !proto.Equal(createDev, readDev) {
-			t.Fatalf("\nExpect: %+v\nActual: %+v", createDev, readDev)
-		}
+		require.EqualExportedValues(t, createDev, readDev)
 	})
 
 	t.Run("Read updated device by valid ID and UniqID", func(t *testing.T) {
@@ -307,22 +287,12 @@ func TestReadUpdateDeleteCache(t *testing.T) {
 			createDev.GetOrgId())
 		t.Logf("readDev, err: %+v, %v", readDev, err)
 		require.NoError(t, err)
-
-		// Testify does not currently support protobuf equality:
-		// https://github.com/stretchr/testify/issues/758
-		if !proto.Equal(updateDev, readDev) {
-			t.Fatalf("\nExpect: %+v\nActual: %+v", updateDev, readDev)
-		}
+		require.EqualExportedValues(t, updateDev, readDev)
 
 		readDev, err = globalDevDAOCache.ReadByUniqID(ctx, createDev.GetUniqId())
 		t.Logf("readDev, err: %+v, %v", readDev, err)
 		require.NoError(t, err)
-
-		// Testify does not currently support protobuf equality:
-		// https://github.com/stretchr/testify/issues/758
-		if !proto.Equal(updateDev, readDev) {
-			t.Fatalf("\nExpect: %+v\nActual: %+v", updateDev, readDev)
-		}
+		require.EqualExportedValues(t, updateDev, readDev)
 	})
 
 	t.Run("Read delete device by valid ID and UniqID", func(t *testing.T) {
@@ -340,33 +310,27 @@ func TestReadUpdateDeleteCache(t *testing.T) {
 			createDev.GetOrgId())
 		t.Logf("readDev, err: %+v, %v", readDev, err)
 		require.NoError(t, err)
+		require.EqualExportedValues(t, createDev, readDev)
 
-		// Testify does not currently support protobuf equality:
-		// https://github.com/stretchr/testify/issues/758
-		if !proto.Equal(createDev, readDev) {
-			t.Fatalf("\nExpect: %+v\nActual: %+v", createDev, readDev)
-		}
-
-		readDev, err = globalDevDAOCache.ReadByUniqID(ctx, createDev.GetUniqId())
+		readDev, err = globalDevDAOCache.ReadByUniqID(ctx,
+			createDev.GetUniqId())
 		t.Logf("readDev, err: %+v, %v", readDev, err)
 		require.NoError(t, err)
+		require.EqualExportedValues(t, createDev, readDev)
 
-		// Testify does not currently support protobuf equality:
-		// https://github.com/stretchr/testify/issues/758
-		if !proto.Equal(createDev, readDev) {
-			t.Fatalf("\nExpect: %+v\nActual: %+v", createDev, readDev)
-		}
-
-		err = globalDevDAOCache.Delete(ctx, createDev.GetId(), createOrg.GetId())
+		err = globalDevDAOCache.Delete(ctx, createDev.GetId(),
+			createOrg.GetId())
 		t.Logf("err: %v", err)
 		require.NoError(t, err)
 
-		readDev, err = globalDevDAOCache.Read(ctx, createDev.GetId(), createOrg.GetId())
+		readDev, err = globalDevDAOCache.Read(ctx, createDev.GetId(),
+			createOrg.GetId())
 		t.Logf("readDev, err: %+v, %v", readDev, err)
 		require.Nil(t, readDev)
 		require.Equal(t, dao.ErrNotFound, err)
 
-		readDev, err = globalDevDAOCache.ReadByUniqID(ctx, createDev.GetUniqId())
+		readDev, err = globalDevDAOCache.ReadByUniqID(ctx,
+			createDev.GetUniqId())
 		t.Logf("readDev, err: %+v, %v", readDev, err)
 		require.Nil(t, readDev)
 		require.Equal(t, dao.ErrNotFound, err)
@@ -400,12 +364,7 @@ func TestReadUpdateDeleteCache(t *testing.T) {
 			createDev.GetOrgId())
 		t.Logf("readDev, err: %+v, %v", readDev, err)
 		require.NoError(t, err)
-
-		// Testify does not currently support protobuf equality:
-		// https://github.com/stretchr/testify/issues/758
-		if !proto.Equal(createDev, readDev) {
-			t.Fatalf("\nExpect: %+v\nActual: %+v", createDev, readDev)
-		}
+		require.EqualExportedValues(t, createDev, readDev)
 
 		readDev, err = globalDevDAOCache.Read(ctx, createDev.GetId(),
 			uuid.NewString())

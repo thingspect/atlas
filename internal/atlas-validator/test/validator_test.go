@@ -135,12 +135,7 @@ func TestValidateMessages(t *testing.T) {
 				vOut := &message.ValidatorOut{}
 				require.NoError(t, proto.Unmarshal(msg.Payload(), vOut))
 				t.Logf("vOut: %+v", vOut)
-
-				// Testify does not currently support protobuf equality:
-				// https://github.com/stretchr/testify/issues/758
-				if !proto.Equal(test.res, vOut) {
-					t.Fatalf("\nExpect: %+v\nActual: %+v", test.res, vOut)
-				}
+				require.EqualExportedValues(t, test.res, vOut)
 			case <-time.After(testTimeout):
 				t.Fatal("Message timed out")
 			}

@@ -14,7 +14,6 @@ import (
 	"github.com/thingspect/atlas/pkg/dao"
 	"github.com/thingspect/atlas/pkg/test/random"
 	"github.com/thingspect/proto/go/api"
-	"google.golang.org/protobuf/proto"
 )
 
 const testTimeout = 6 * time.Second
@@ -145,18 +144,14 @@ func TestList(t *testing.T) {
 		// Verify results by UniqID.
 		listEventsUniqID, err := globalEvDAO.List(ctx, createOrg.GetId(),
 			createDev.GetUniqId(), "", "", events[0].GetCreatedAt().AsTime(),
-			events[len(events)-1].GetCreatedAt().AsTime().Add(-time.Millisecond))
+			events[len(events)-1].GetCreatedAt().AsTime().
+				Add(-time.Millisecond))
 		t.Logf("listEventsUniqID, err: %+v, %v", listEventsUniqID, err)
 		require.NoError(t, err)
 		require.Len(t, listEventsUniqID, len(events))
 
-		// Testify does not currently support protobuf equality:
-		// https://github.com/stretchr/testify/issues/758
 		for i, event := range events {
-			if !proto.Equal(event, listEventsUniqID[i]) {
-				t.Fatalf("\nExpect: %+v\nActual: %+v", event,
-					listEventsUniqID[i])
-			}
+			require.EqualExportedValues(t, event, listEventsUniqID[i])
 		}
 
 		// Verify results by dev ID without oldest event.
@@ -167,30 +162,21 @@ func TestList(t *testing.T) {
 		require.NoError(t, err)
 		require.Len(t, listEventsDevID, len(events)-1)
 
-		// Testify does not currently support protobuf equality:
-		// https://github.com/stretchr/testify/issues/758
 		for i, event := range events[:len(events)-1] {
-			if !proto.Equal(event, listEventsDevID[i]) {
-				t.Fatalf("\nExpect: %+v\nActual: %+v", event,
-					listEventsDevID[i])
-			}
+			require.EqualExportedValues(t, event, listEventsDevID[i])
 		}
 
 		// Verify results by UniqID and rule ID.
 		listEventsUniqID, err = globalEvDAO.List(ctx, createOrg.GetId(),
 			createDev.GetUniqId(), "", events[len(events)-1].GetRuleId(),
 			events[0].GetCreatedAt().AsTime(),
-			events[len(events)-1].GetCreatedAt().AsTime().Add(-time.Millisecond))
+			events[len(events)-1].GetCreatedAt().AsTime().
+				Add(-time.Millisecond))
 		t.Logf("listEventsUniqID, err: %+v, %v", listEventsUniqID, err)
 		require.NoError(t, err)
 		require.Len(t, listEventsUniqID, 1)
-
-		// Testify does not currently support protobuf equality:
-		// https://github.com/stretchr/testify/issues/758
-		if !proto.Equal(events[len(events)-1], listEventsUniqID[0]) {
-			t.Fatalf("\nExpect: %+v\nActual: %+v", events[len(events)-1],
-				listEventsUniqID[0])
-		}
+		require.EqualExportedValues(t, events[len(events)-1],
+			listEventsUniqID[0])
 	})
 
 	t.Run("Lists are isolated by org ID", func(t *testing.T) {
@@ -275,13 +261,8 @@ func TestLatest(t *testing.T) {
 		require.NoError(t, err)
 		require.Len(t, latEvents, len(events))
 
-		// Testify does not currently support protobuf equality:
-		// https://github.com/stretchr/testify/issues/758
 		for i, event := range events {
-			if !proto.Equal(event, latEvents[i]) {
-				t.Fatalf("\nExpect: %+v\nActual: %+v", event,
-					latEvents[i])
-			}
+			require.EqualExportedValues(t, event, latEvents[i])
 		}
 
 		// Verify results by rule ID.
@@ -290,13 +271,8 @@ func TestLatest(t *testing.T) {
 		t.Logf("latEventsRuleID, err: %+v, %v", latEventsRuleID, err)
 		require.NoError(t, err)
 		require.Len(t, latEventsRuleID, 1)
-
-		// Testify does not currently support protobuf equality:
-		// https://github.com/stretchr/testify/issues/758
-		if !proto.Equal(events[len(events)-1], latEventsRuleID[0]) {
-			t.Fatalf("\nExpect: %+v\nActual: %+v", events[len(events)-1],
-				latEventsRuleID[0])
-		}
+		require.EqualExportedValues(t, events[len(events)-1],
+			latEventsRuleID[0])
 	})
 
 	t.Run("Latest events are isolated by org ID", func(t *testing.T) {

@@ -13,7 +13,6 @@ import (
 	"github.com/stretchr/testify/require"
 	"github.com/thingspect/atlas/pkg/test/random"
 	"github.com/thingspect/proto/go/api"
-	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/known/fieldmaskpb"
 )
 
@@ -236,12 +235,7 @@ func TestGetDevice(t *testing.T) {
 			&api.GetDeviceRequest{Id: createDev.GetId()})
 		t.Logf("getDev, err: %+v, %v", getDev, err)
 		require.NoError(t, err)
-
-		// Testify does not currently support protobuf equality:
-		// https://github.com/stretchr/testify/issues/758
-		if !proto.Equal(createDev, getDev) {
-			t.Fatalf("\nExpect: %+v\nActual: %+v", createDev, getDev)
-		}
+		require.EqualExportedValues(t, createDev, getDev)
 	})
 
 	t.Run("Get device by unknown ID", func(t *testing.T) {
@@ -316,12 +310,7 @@ func TestUpdateDevice(t *testing.T) {
 			&api.GetDeviceRequest{Id: createDev.GetId()})
 		t.Logf("getDev, err: %+v, %v", getDev, err)
 		require.NoError(t, err)
-
-		// Testify does not currently support protobuf equality:
-		// https://github.com/stretchr/testify/issues/758
-		if !proto.Equal(updateDev, getDev) {
-			t.Fatalf("\nExpect: %+v\nActual: %+v", updateDev, getDev)
-		}
+		require.EqualExportedValues(t, updateDev, getDev)
 	})
 
 	t.Run("Partial update device by valid device", func(t *testing.T) {
@@ -366,12 +355,7 @@ func TestUpdateDevice(t *testing.T) {
 			&api.GetDeviceRequest{Id: createDev.GetId()})
 		t.Logf("getDev, err: %+v, %v", getDev, err)
 		require.NoError(t, err)
-
-		// Testify does not currently support protobuf equality:
-		// https://github.com/stretchr/testify/issues/758
-		if !proto.Equal(updateDev, getDev) {
-			t.Fatalf("\nExpect: %+v\nActual: %+v", updateDev, getDev)
-		}
+		require.EqualExportedValues(t, updateDev, getDev)
 	})
 
 	t.Run("Update device with insufficient role", func(t *testing.T) {

@@ -168,11 +168,7 @@ func TestDecodeMessages(t *testing.T) {
 						res.Point.Ts = vIn.GetPoint().GetTs()
 					}
 
-					// Testify does not currently support protobuf equality:
-					// https://github.com/stretchr/testify/issues/758
-					if !proto.Equal(res, vIn) {
-						t.Fatalf("\nExpect: %+v\nActual: %+v", res, vIn)
-					}
+					require.EqualExportedValues(t, res, vIn)
 				case <-time.After(2 * time.Second):
 					t.Fatal("Message timed out")
 				}
@@ -310,11 +306,7 @@ func TestDataPointToVIn(t *testing.T) {
 				test.res.Point.Ts = res.GetPoint().GetTs()
 			}
 
-			// Testify does not currently support protobuf equality:
-			// https://github.com/stretchr/testify/issues/758
-			if !proto.Equal(test.res, res) {
-				t.Fatalf("\nExpect: %+v\nActual: %+v", test.res, res)
-			}
+			require.EqualExportedValues(t, test.res, res)
 		})
 	}
 }

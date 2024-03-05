@@ -129,12 +129,7 @@ func TestEventMessages(t *testing.T) {
 					eOut := &message.EventerOut{}
 					assert.NoError(t, proto.Unmarshal(msg.Payload(), eOut))
 					t.Logf("eOut: %+v", eOut)
-
-					// Testify does not currently support protobuf equality:
-					// https://github.com/stretchr/testify/issues/758
-					if !proto.Equal(res, eOut) {
-						t.Errorf("\nExpect: %+v\nActual: %+v", res, eOut)
-					}
+					assert.EqualExportedValues(t, res, eOut)
 				case <-time.After(testTimeout):
 					t.Error("Message timed out")
 				}
@@ -159,12 +154,7 @@ func TestEventMessages(t *testing.T) {
 				t.Logf("listEvents, err: %+v, %v", listEvents, err)
 				assert.NoError(t, err)
 				assert.Len(t, listEvents, 1)
-
-				// Testify does not currently support protobuf equality:
-				// https://github.com/stretchr/testify/issues/758
-				if !proto.Equal(event, listEvents[0]) {
-					t.Errorf("\nExpect: %+v\nActual: %+v", event, listEvents[0])
-				}
+				assert.EqualExportedValues(t, event, listEvents[0])
 			}
 
 			if len(test.res) == 0 {
