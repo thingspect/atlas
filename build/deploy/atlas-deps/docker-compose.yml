@@ -47,7 +47,7 @@ services:
       - ./volume/redis:/data
 
   chirpstack:
-    image: chirpstack/chirpstack:4
+    image: chirpstack/chirpstack:4.7
     command: -c /etc/chirpstack
     depends_on:
       - postgres
