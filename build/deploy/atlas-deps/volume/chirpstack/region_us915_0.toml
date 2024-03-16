@@ -1,4 +1,4 @@
-# sed -i '' -e '/^[[:blank:]]*#/d' -e '/^[[:blank:]]*$/d' -e 's/^[[:blank:]]*//' -e 's/^\[/\n[/' region_us915_0.toml
+# sed -i '' -e '/^[[:blank:]]*#/d' -e '/^[[:blank:]]*$/d' -e 's/^[[:blank:]]*//' -e 's/^\[/\n[/' chirpstack/configuration/region_us915_0.toml
 [[regions]]
 id="us915_0"
 description="US915 (channels 0-7 + 64)"
@@ -11,14 +11,15 @@ force_gws_private=false
 enabled="mqtt"
 
 [regions.gateway.backend.mqtt]
-event_topic="$share/csgroup/lora/us915_0/gateway/+/event/+"
 topic_prefix="lora/us915_0"
+share_name="csgroup"
 server="$CS_MQTT_SERVER"
 username="chirpstack"
 password="$CS_MQTT_PASSWORD"
 qos=0
 clean_session=false
 client_id="$CS_REGION_US915_0_MQTT_CLIENT_ID"
+keep_alive_interval="30s"
 ca_cert=""
 tls_cert=""
 tls_key=""
