@@ -6,7 +6,7 @@ import (
 	"reflect"
 	"strconv"
 
-	"github.com/expr-lang/expr/vm/runtime"
+	"github.com/expr-lang/expr/internal/deref"
 )
 
 func Len(x any) any {
@@ -209,6 +209,10 @@ func Int(x any) any {
 		}
 		return i
 	default:
+		val := reflect.ValueOf(x)
+		if val.CanConvert(integerType) {
+			return val.Convert(integerType).Interface()
+		}
 		panic(fmt.Sprintf("invalid operation: int(%T)", x))
 	}
 }
@@ -254,22 +258,143 @@ func String(arg any) any {
 	return fmt.Sprintf("%v", arg)
 }
 
-func Max(args ...any) (any, error) {
-	var max any
+func sum(args ...any) (any, error) {
+	var total int
+	var fTotal float64
+
 	for _, arg := range args {
-		if max == nil || runtime.Less(max, arg) {
-			max = arg
+		rv := reflect.ValueOf(deref.Deref(arg))
+
+		switch rv.Kind() {
+		case reflect.Array, reflect.Slice:
+			size := rv.Len()
+			for i := 0; i < size; i++ {
+				elemSum, err := sum(rv.Index(i).Interface())
+				if err != nil {
+					return nil, err
+				}
+				switch elemSum := elemSum.(type) {
+				case int:
+					total += elemSum
+				case float64:
+					fTotal += elemSum
+				}
+			}
+		case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
+			total += int(rv.Int())
+		case reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64:
+			total += int(rv.Uint())
+		case reflect.Float32, reflect.Float64:
+			fTotal += rv.Float()
+		default:
+			return nil, fmt.Errorf("invalid argument for sum (type %T)", arg)
 		}
 	}
-	return max, nil
+
+	if fTotal != 0.0 {
+		return fTotal + float64(total), nil
+	}
+	return total, nil
 }
 
-func Min(args ...any) (any, error) {
-	var min any
+func minMax(name string, fn func(any, any) bool, args ...any) (any, error) {
+	var val any
 	for _, arg := range args {
-		if min == nil || runtime.More(min, arg) {
-			min = arg
+		rv := reflect.ValueOf(deref.Deref(arg))
+		switch rv.Kind() {
+		case reflect.Array, reflect.Slice:
+			size := rv.Len()
+			for i := 0; i < size; i++ {
+				elemVal, err := minMax(name, fn, rv.Index(i).Interface())
+				if err != nil {
+					return nil, err
+				}
+				switch elemVal.(type) {
+				case int, int8, int16, int32, int64,
+					uint, uint8, uint16, uint32, uint64,
+					float32, float64:
+					if elemVal != nil && (val == nil || fn(val, elemVal)) {
+						val = elemVal
+					}
+				default:
+					return nil, fmt.Errorf("invalid argument for %s (type %T)", name, elemVal)
+				}
+
+			}
+		case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64,
+			reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64,
+			reflect.Float32, reflect.Float64:
+			elemVal := rv.Interface()
+			if val == nil || fn(val, elemVal) {
+				val = elemVal
+			}
+		default:
+			if len(args) == 1 {
+				return args[0], nil
+			}
+			return nil, fmt.Errorf("invalid argument for %s (type %T)", name, arg)
 		}
 	}
-	return min, nil
+	return val, nil
+}
+
+func mean(args ...any) (int, float64, error) {
+	var total float64
+	var count int
+
+	for _, arg := range args {
+		rv := reflect.ValueOf(deref.Deref(arg))
+		switch rv.Kind() {
+		case reflect.Array, reflect.Slice:
+			size := rv.Len()
+			for i := 0; i < size; i++ {
+				elemCount, elemSum, err := mean(rv.Index(i).Interface())
+				if err != nil {
+					return 0, 0, err
+				}
+				total += elemSum
+				count += elemCount
+			}
+		case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
+			total += float64(rv.Int())
+			count++
+		case reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64:
+			total += float64(rv.Uint())
+			count++
+		case reflect.Float32, reflect.Float64:
+			total += rv.Float()
+			count++
+		default:
+			return 0, 0, fmt.Errorf("invalid argument for mean (type %T)", arg)
+		}
+	}
+	return count, total, nil
+}
+
+func median(args ...any) ([]float64, error) {
+	var values []float64
+
+	for _, arg := range args {
+		rv := reflect.ValueOf(deref.Deref(arg))
+		switch rv.Kind() {
+		case reflect.Array, reflect.Slice:
+			size := rv.Len()
+			for i := 0; i < size; i++ {
+				elems, err := median(rv.Index(i).Interface())
+				if err != nil {
+					return nil, err
+				}
+				values = append(values, elems...)
+			}
+		case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
+			values = append(values, float64(rv.Int()))
+		case reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64:
+			values = append(values, float64(rv.Uint()))
+		case reflect.Float32, reflect.Float64:
+			values = append(values, rv.Float())
+		default:
+			return nil, fmt.Errorf("invalid argument for median (type %T)", arg)
+		}
+	}
+	return values, nil
 }
