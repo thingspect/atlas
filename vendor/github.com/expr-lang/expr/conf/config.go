@@ -20,6 +20,7 @@ type Config struct {
 	ExpectAny   bool
 	Optimize    bool
 	Strict      bool
+	Profile     bool
 	ConstFns    map[string]reflect.Value
 	Visitors    []ast.Visitor
 	Functions   FunctionsTable
@@ -31,6 +32,7 @@ type Config struct {
 func CreateNew() *Config {
 	c := &Config{
 		Optimize:  true,
+		Types:     make(TypesTable),
 		ConstFns:  make(map[string]reflect.Value),
 		Functions: make(map[string]*builtin.Function),
 		Builtins:  make(map[string]*builtin.Function),
@@ -61,7 +63,10 @@ func (c *Config) WithEnv(env any) {
 	}
 
 	c.Env = env
-	c.Types = CreateTypesTable(env)
+	types := CreateTypesTable(env)
+	for name, t := range types {
+		c.Types[name] = t
+	}
 	c.MapEnv = mapEnv
 	c.DefaultType = mapValueType
 	c.Strict = true

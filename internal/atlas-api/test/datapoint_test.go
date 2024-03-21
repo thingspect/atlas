@@ -386,7 +386,7 @@ func TestLatestDataPoints(t *testing.T) {
 		}
 
 		for i, point := range points {
-			for j := 0; j < random.Intn(6)+3; j++ {
+			for range random.Intn(6) + 3 {
 				ctx, cancel := context.WithTimeout(context.Background(),
 					testTimeout)
 				defer cancel()

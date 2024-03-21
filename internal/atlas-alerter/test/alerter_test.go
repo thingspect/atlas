@@ -28,9 +28,7 @@ func TestAlertMessages(t *testing.T) {
 		api.AlarmType_SMS,
 		api.AlarmType_EMAIL,
 	} {
-		lAlarmType := alarmType
-
-		t.Run(fmt.Sprintf("Can alert %v", lAlarmType), func(t *testing.T) {
+		t.Run(fmt.Sprintf("Can alert %v", alarmType), func(t *testing.T) {
 			t.Parallel()
 
 			ctx, cancel := context.WithTimeout(context.Background(),
@@ -55,7 +53,7 @@ func TestAlertMessages(t *testing.T) {
 
 			alarm := random.Alarm("ale", createOrg.GetId(), createRule.GetId())
 			alarm.Status = api.Status_ACTIVE
-			alarm.Type = lAlarmType
+			alarm.Type = alarmType
 			alarm.UserTags = createUser.GetTags()
 			createAlarm, err := globalAlarmDAO.Create(ctx, alarm)
 			t.Logf("createAlarm, err: %+v, %v", createAlarm, err)
@@ -113,9 +111,7 @@ func TestAlertMessagesRepeat(t *testing.T) {
 		api.AlarmType_SMS,
 		api.AlarmType_EMAIL,
 	} {
-		lAlarmType := alarmType
-
-		t.Run(fmt.Sprintf("Can repeat %v", lAlarmType), func(t *testing.T) {
+		t.Run(fmt.Sprintf("Can repeat %v", alarmType), func(t *testing.T) {
 			t.Parallel()
 
 			ctx, cancel := context.WithTimeout(context.Background(),
@@ -140,7 +136,7 @@ func TestAlertMessagesRepeat(t *testing.T) {
 
 			alarm := random.Alarm("ale", createOrg.GetId(), createRule.GetId())
 			alarm.Status = api.Status_ACTIVE
-			alarm.Type = lAlarmType
+			alarm.Type = alarmType
 			alarm.UserTags = createUser.GetTags()
 			createAlarm, err := globalAlarmDAO.Create(ctx, alarm)
 			t.Logf("createAlarm, err: %+v, %v", createAlarm, err)
