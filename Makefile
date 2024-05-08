@@ -33,9 +33,9 @@ lint:
 	staticcheck -checks all ./...
 
 	go install github.com/golangci/golangci-lint/cmd/golangci-lint@latest
-	golangci-lint run -E bidichk,copyloopvar,durationcheck,errname \
-	-E exportloopref,forcetypeassert,godot,goerr113,gofumpt,gosec,intrange \
-	-E nlreturn,perfsprint,prealloc,protogetter,testifylint,unconvert,unparam \
+	golangci-lint run -E bidichk,copyloopvar,durationcheck,err113,errname \
+	-E exportloopref,forcetypeassert,godot,gofumpt,gosec,intrange,nlreturn \
+	-E perfsprint,prealloc,protogetter,testifylint,unconvert,unparam \
 	-E usestdlibvars --exclude-use-default=false
 
 	go install golang.org/x/vuln/cmd/govulncheck@latest
