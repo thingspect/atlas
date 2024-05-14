@@ -4,8 +4,8 @@ github.com/NYTimes/gziphandler
 # github.com/cespare/xxhash/v2 v2.3.0
 ## explicit; go 1.11
 github.com/cespare/xxhash/v2
-# github.com/chirpstack/chirpstack/api/go/v4 v4.7.0
-## explicit; go 1.18
+# github.com/chirpstack/chirpstack/api/go/v4 v4.8.1
+## explicit; go 1.21
 github.com/chirpstack/chirpstack/api/go/v4/api
 github.com/chirpstack/chirpstack/api/go/v4/common
 github.com/chirpstack/chirpstack/api/go/v4/gw
@@ -23,7 +23,7 @@ github.com/eclipse/paho.mqtt.golang/packets
 # github.com/envoyproxy/protoc-gen-validate v1.0.4
 ## explicit; go 1.19
 github.com/envoyproxy/protoc-gen-validate/validate
-# github.com/expr-lang/expr v1.16.6
+# github.com/expr-lang/expr v1.16.7
 ## explicit; go 1.18
 github.com/expr-lang/expr
 github.com/expr-lang/expr/ast
@@ -161,14 +161,12 @@ golang.org/x/text/transform
 golang.org/x/text/unicode/bidi
 golang.org/x/text/unicode/norm
 golang.org/x/text/width
-# google.golang.org/genproto v0.0.0-20240228224816-df926f6c8641
-## explicit; go 1.19
-# google.golang.org/genproto/googleapis/api v0.0.0-20240506185236-b8a5c65736ae
+# google.golang.org/genproto/googleapis/api v0.0.0-20240513163218-0867130af1f8
 ## explicit; go 1.19
 google.golang.org/genproto/googleapis/api
 google.golang.org/genproto/googleapis/api/annotations
 google.golang.org/genproto/googleapis/api/httpbody
-# google.golang.org/genproto/googleapis/rpc v0.0.0-20240506185236-b8a5c65736ae
+# google.golang.org/genproto/googleapis/rpc v0.0.0-20240513163218-0867130af1f8
 ## explicit; go 1.19
 google.golang.org/genproto/googleapis/rpc/status
 # google.golang.org/grpc v1.63.2
