@@ -1,14 +1,12 @@
 module github.com/thingspect/atlas
 
-go 1.22.2
-
-toolchain go1.22.3
+go 1.22.3
 
 require (
 	github.com/NYTimes/gziphandler v1.1.1
-	github.com/chirpstack/chirpstack/api/go/v4 v4.7.0
+	github.com/chirpstack/chirpstack/api/go/v4 v4.8.1
 	github.com/eclipse/paho.mqtt.golang v1.4.3
-	github.com/expr-lang/expr v1.16.6
+	github.com/expr-lang/expr v1.16.7
 	github.com/google/uuid v1.6.0
 	github.com/gregdel/pushover v1.3.1
 	github.com/grpc-ecosystem/grpc-gateway/v2 v2.19.1
@@ -42,8 +40,7 @@ require (
 	golang.org/x/sync v0.7.0 // indirect
 	golang.org/x/sys v0.20.0 // indirect
 	golang.org/x/text v0.15.0 // indirect
-	google.golang.org/genproto v0.0.0-20240228224816-df926f6c8641 // indirect
-	google.golang.org/genproto/googleapis/api v0.0.0-20240506185236-b8a5c65736ae // indirect
-	google.golang.org/genproto/googleapis/rpc v0.0.0-20240506185236-b8a5c65736ae // indirect
+	google.golang.org/genproto/googleapis/api v0.0.0-20240513163218-0867130af1f8 // indirect
+	google.golang.org/genproto/googleapis/rpc v0.0.0-20240513163218-0867130af1f8 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
