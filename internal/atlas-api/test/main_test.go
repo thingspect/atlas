@@ -108,14 +108,13 @@ func TestMain(m *testing.M) {
 
 	// Build unauthenticated gRPC connection.
 	opts := []grpc.DialOption{
-		grpc.WithBlock(),
-		grpc.FailOnNonTempDialError(true),
 		grpc.WithTransportCredentials(insecure.NewCredentials()),
 		grpc.WithDefaultCallOptions(grpc.UseCompressor(gzip.Name)),
 	}
-	globalNoAuthGRPCConn, err = grpc.Dial(iapi.GRPCHost+iapi.GRPCPort, opts...)
+	globalNoAuthGRPCConn, err = grpc.NewClient(iapi.GRPCHost+iapi.GRPCPort,
+		opts...)
 	if err != nil {
-		log.Fatalf("TestMain grpc.Dial: %v", err)
+		log.Fatalf("TestMain grpc.NewClient: %v", err)
 	}
 
 	// Build authenticated gRPC connections.

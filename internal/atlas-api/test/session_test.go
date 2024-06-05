@@ -34,8 +34,8 @@ func TestLogin(t *testing.T) {
 	t.Logf("createUser, err: %+v, %v", createUser, err)
 	require.NoError(t, err)
 
-	err = globalUserDAO.UpdatePassword(ctx, createUser.GetId(), createOrg.GetId(),
-		globalHash)
+	err = globalUserDAO.UpdatePassword(ctx, createUser.GetId(),
+		createOrg.GetId(), globalHash)
 	t.Logf("err: %v", err)
 	require.NoError(t, err)
 
@@ -45,8 +45,8 @@ func TestLogin(t *testing.T) {
 	t.Logf("createDisUser, err: %+v, %v", createDisUser, err)
 	require.NoError(t, err)
 
-	err = globalUserDAO.UpdatePassword(ctx, createDisUser.GetId(), createOrg.GetId(),
-		globalHash)
+	err = globalUserDAO.UpdatePassword(ctx, createDisUser.GetId(),
+		createOrg.GetId(), globalHash)
 	t.Logf("err: %v", err)
 	require.NoError(t, err)
 
@@ -57,8 +57,8 @@ func TestLogin(t *testing.T) {
 	t.Logf("createContUser, err: %+v, %v", createContUser, err)
 	require.NoError(t, err)
 
-	err = globalUserDAO.UpdatePassword(ctx, createContUser.GetId(), createOrg.GetId(),
-		globalHash)
+	err = globalUserDAO.UpdatePassword(ctx, createContUser.GetId(),
+		createOrg.GetId(), globalHash)
 	t.Logf("err: %v", err)
 	require.NoError(t, err)
 
@@ -168,8 +168,8 @@ func TestCreateKey(t *testing.T) {
 		t.Logf("createKey, err: %+v, %v", createKey, err)
 		require.NoError(t, err)
 		require.NotEqual(t, key.GetId(), createKey.GetKey().GetId())
-		require.WithinDuration(t, time.Now(), createKey.GetKey().GetCreatedAt().AsTime(),
-			2*time.Second)
+		require.WithinDuration(t, time.Now(),
+			createKey.GetKey().GetCreatedAt().AsTime(), 2*time.Second)
 		require.NotEmpty(t, createKey.GetToken())
 	})
 
@@ -282,12 +282,10 @@ func TestDeleteKey(t *testing.T) {
 		require.NoError(t, err)
 
 		opts := []grpc.DialOption{
-			grpc.WithBlock(),
-			grpc.FailOnNonTempDialError(true),
 			grpc.WithTransportCredentials(insecure.NewCredentials()),
 			grpc.WithPerRPCCredentials(&credential{token: createKey.GetToken()}),
 		}
-		keyConn, err := grpc.Dial(iapi.GRPCHost+iapi.GRPCPort, opts...)
+		keyConn, err := grpc.NewClient(iapi.GRPCHost+iapi.GRPCPort, opts...)
 		require.NoError(t, err)
 
 		sessCli = api.NewSessionServiceClient(keyConn)

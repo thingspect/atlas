@@ -32,8 +32,17 @@ const usage = `Usage:
 `
 
 func main() {
+	checkErr := func(err error) {
+		if err != nil {
+			fmt.Fprintln(os.Stderr, err)
+			os.Exit(1)
+		}
+	}
+
 	flag.Usage = func() {
-		fmt.Fprintf(flag.CommandLine.Output(), usage, os.Args[0])
+		_, err := fmt.Fprintf(flag.CommandLine.Output(), usage, os.Args[0])
+		checkErr(err)
+
 		flag.PrintDefaults()
 	}
 
@@ -50,29 +59,22 @@ func main() {
 		os.Exit(2)
 	}
 
-	checkErr := func(err error) {
-		if err != nil {
-			fmt.Fprintln(os.Stderr, err)
-			os.Exit(1)
-		}
-	}
-
 	switch flag.Arg(0) {
 	// Generate UUID and return.
 	case "uuid":
-		fmt.Fprintln(os.Stdout, uuid.NewString())
+		_, err := fmt.Fprintln(os.Stdout, uuid.NewString())
+		checkErr(err)
 
 		return
 	// Generate UniqID and return.
 	case "uniqid":
-		fmt.Fprintln(os.Stdout, random.String(16))
+		_, err := fmt.Fprintln(os.Stdout, random.String(16))
+		checkErr(err)
 
 		return
 	// Log in user.
 	case "login":
 		opts := []grpc.DialOption{
-			grpc.WithBlock(),
-			grpc.FailOnNonTempDialError(true),
 			grpc.WithDefaultCallOptions(grpc.UseCompressor(gzip.Name)),
 		}
 
@@ -85,7 +87,7 @@ func main() {
 				credentials.NewTLS(&tls.Config{MinVersion: tls.VersionTLS12})))
 		}
 
-		conn, err := grpc.Dial(*grpcURI, opts...)
+		conn, err := grpc.NewClient(*grpcURI, opts...)
 		checkErr(err)
 
 		cli := api.NewSessionServiceClient(conn)
@@ -97,7 +99,8 @@ func main() {
 		checkErr(err)
 		checkErr(conn.Close())
 
-		fmt.Fprintf(os.Stdout, "Login: %+v\n", login)
+		_, err = fmt.Fprintf(os.Stdout, "Login: %+v\n", login)
+		checkErr(err)
 
 		return
 	}
@@ -129,7 +132,8 @@ func main() {
 		checkErr(err)
 
 		orgID = createOrg.GetId()
-		fmt.Fprintf(os.Stdout, "Org: %+v\n", createOrg)
+		_, err = fmt.Fprintf(os.Stdout, "Org: %+v\n", createOrg)
+		checkErr(err)
 
 		fallthrough
 	// Create user.
@@ -153,6 +157,7 @@ func main() {
 		checkErr(err)
 
 		checkErr(userDAO.UpdatePassword(ctx, createUser.GetId(), orgID, hash))
-		fmt.Fprintf(os.Stdout, "User: %+v\n", createUser)
+		_, err = fmt.Fprintf(os.Stdout, "User: %+v\n", createUser)
+		checkErr(err)
 	}
 }

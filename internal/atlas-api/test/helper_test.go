@@ -52,26 +52,25 @@ func authGRPCConn(role api.Role) (string, *grpc.ClientConn, error) {
 		return "", nil, err
 	}
 
-	if err = globalUserDAO.UpdatePassword(ctx, createUser.GetId(), createOrg.GetId(),
-		globalHash); err != nil {
+	if err = globalUserDAO.UpdatePassword(ctx, createUser.GetId(),
+		createOrg.GetId(), globalHash); err != nil {
 		return "", nil, err
 	}
 
 	sessCli := api.NewSessionServiceClient(globalNoAuthGRPCConn)
 	login, err := sessCli.Login(ctx, &api.LoginRequest{
-		Email: createUser.GetEmail(), OrgName: createOrg.GetName(), Password: globalPass,
+		Email: createUser.GetEmail(), OrgName: createOrg.GetName(),
+		Password: globalPass,
 	})
 	if err != nil {
 		return "", nil, err
 	}
 
 	opts := []grpc.DialOption{
-		grpc.WithBlock(),
-		grpc.FailOnNonTempDialError(true),
 		grpc.WithTransportCredentials(insecure.NewCredentials()),
 		grpc.WithPerRPCCredentials(&credential{token: login.GetToken()}),
 	}
-	authConn, err := grpc.Dial(iapi.GRPCHost+iapi.GRPCPort, opts...)
+	authConn, err := grpc.NewClient(iapi.GRPCHost+iapi.GRPCPort, opts...)
 	if err != nil {
 		return "", nil, err
 	}
@@ -95,12 +94,10 @@ func keyGRPCConn(conn *grpc.ClientConn, role api.Role) (
 	}
 
 	opts := []grpc.DialOption{
-		grpc.WithBlock(),
-		grpc.FailOnNonTempDialError(true),
 		grpc.WithTransportCredentials(insecure.NewCredentials()),
 		grpc.WithPerRPCCredentials(&credential{token: createKey.GetToken()}),
 	}
-	keyConn, err := grpc.Dial(iapi.GRPCHost+iapi.GRPCPort, opts...)
+	keyConn, err := grpc.NewClient(iapi.GRPCHost+iapi.GRPCPort, opts...)
 	if err != nil {
 		return nil, err
 	}
