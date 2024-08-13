@@ -184,7 +184,7 @@ func TestDecodeMessages(t *testing.T) {
 			// messages orphaned in the queue.
 			for _, res := range test.res {
 				select {
-				//nolint:testifylint // above
+				//nolint:testifylint // Above.
 				case msg := <-globalVInSub.C():
 					msg.Ack()
 					t.Logf("msg.Topic, msg.Payload: %v, %s", msg.Topic(),
