@@ -15,7 +15,7 @@ package crypto
 //
 // #nosec G101 // false positive for hardcoded credentials
 //
-//nolint:misspell // false positive for directly imported list
+//nolint:misspell // False positive for directly imported list.
 const weakPasswords = `
 ..qlvvcvdeero
 0000000000

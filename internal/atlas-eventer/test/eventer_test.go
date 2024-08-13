@@ -116,7 +116,7 @@ func TestEventMessages(t *testing.T) {
 
 			// Don't stop the flow of execution (assert) to avoid leaving
 			// messages orphaned in the queue.
-			//nolint:testifylint
+			//nolint:testifylint // Above.
 			for _, res := range test.res {
 				t.Logf("DEBUG res: %+v", res)
 				select {

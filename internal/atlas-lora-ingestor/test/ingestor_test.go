@@ -150,7 +150,7 @@ func TestDecodeGateways(t *testing.T) {
 			// messages orphaned in the queue.
 			for _, res := range test.res {
 				select {
-				//nolint:testifylint // above
+				//nolint:testifylint // Above.
 				case msg := <-globalVInGWSub.C():
 					msg.Ack()
 					t.Logf("GW msg.Topic, msg.Payload: %v, %s", msg.Topic(),
@@ -362,7 +362,7 @@ func TestDecodeDevices(t *testing.T) {
 			// messages orphaned in the queue.
 			for _, res := range test.resVIn {
 				select {
-				//nolint:testifylint // above
+				//nolint:testifylint // Above.
 				case msg := <-globalVInDevSub.C():
 					msg.Ack()
 					t.Logf("Dev msg.Topic, msg.Payload: %v, %s", msg.Topic(),

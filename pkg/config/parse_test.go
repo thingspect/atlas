@@ -21,8 +21,8 @@ func TestString(t *testing.T) {
 
 	envKey := random.String(10)
 	envVal := random.String(10)
+	//nolint:tenv // Require os.Setenv() for t.Parallel(), do not unset.
 	require.NoError(t, os.Setenv(envKey, envVal))
-	// Do not unset due to the mechanics of t.Parallel().
 
 	tests := []struct {
 		inpKey string
@@ -50,12 +50,13 @@ func TestStringSlice(t *testing.T) {
 	envKey := random.String(10)
 	envVal := fmt.Sprintf("%s,%s,%s", random.String(10), random.String(10),
 		random.String(10))
+	//nolint:tenv // Require os.Setenv() for t.Parallel(), do not unset.
 	require.NoError(t, os.Setenv(envKey, envVal))
 
 	envKeyNoDelim := random.String(10)
 	envValNoDelim := random.String(10)
+	//nolint:tenv // Require os.Setenv() for t.Parallel(), do not unset.
 	require.NoError(t, os.Setenv(envKeyNoDelim, envValNoDelim))
-	// Do not unset due to the mechanics of t.Parallel().
 
 	tests := []struct {
 		inpKey string
@@ -83,8 +84,8 @@ func TestInt(t *testing.T) {
 
 	envKey := random.String(10)
 	envVal := random.Intn(999)
+	//nolint:tenv // Require os.Setenv() for t.Parallel(), do not unset.
 	require.NoError(t, os.Setenv(envKey, strconv.Itoa(envVal)))
-	// Do not unset due to the mechanics of t.Parallel().
 
 	tests := []struct {
 		inpKey string
@@ -111,8 +112,8 @@ func TestBool(t *testing.T) {
 	t.Parallel()
 
 	envKey := random.String(10)
+	//nolint:tenv // Require os.Setenv() for t.Parallel(), do not unset.
 	require.NoError(t, os.Setenv(envKey, "true"))
-	// Do not unset due to the mechanics of t.Parallel().
 
 	tests := []struct {
 		inpKey string
@@ -140,8 +141,8 @@ func TestDuration(t *testing.T) {
 
 	envKey := random.String(10)
 	envVal := random.Intn(999)
+	//nolint:tenv // Require os.Setenv() for t.Parallel(), do not unset.
 	require.NoError(t, os.Setenv(envKey, strconv.Itoa(envVal)+"s"))
-	// Do not unset due to the mechanics of t.Parallel().
 
 	tests := []struct {
 		inpKey string
@@ -174,8 +175,8 @@ func TestByteSlice(t *testing.T) {
 
 	envKey := random.String(10)
 	envVal := base64.StdEncoding.EncodeToString(key)
+	//nolint:tenv // Require os.Setenv() for t.Parallel(), do not unset.
 	require.NoError(t, os.Setenv(envKey, envVal))
-	// Do not unset due to the mechanics of t.Parallel().
 
 	tests := []struct {
 		inp string
