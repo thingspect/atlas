@@ -108,7 +108,8 @@ func (ale *Alerter) evalAlarms(
 
 	// Retrieve users. Only active users with matching tags will be returned.
 	dCtx, cancel := context.WithTimeout(ctx, 5*time.Second)
-	users, err := ale.userDAO.ListByTags(dCtx, eOut.GetDevice().GetOrgId(), a.GetUserTags())
+	users, err := ale.userDAO.ListByTags(dCtx, eOut.GetDevice().GetOrgId(),
+		a.GetUserTags())
 	cancel()
 	if err != nil {
 		metric.Incr("error", map[string]string{"func": "listbytags"})
@@ -121,8 +122,8 @@ func (ale *Alerter) evalAlarms(
 	}
 
 	// Generate alert subject and body.
-	subj, err := template.Generate(eOut.GetPoint(), eOut.GetRule(), eOut.GetDevice(),
-		a.GetSubjectTemplate())
+	subj, err := template.Generate(eOut.GetPoint(), eOut.GetRule(),
+		eOut.GetDevice(), a.GetSubjectTemplate())
 	if err != nil {
 		metric.Incr("error", map[string]string{"func": "gensubject"})
 		logger.Errorf("alertMessages subject template.Generate: %v", err)
@@ -130,8 +131,8 @@ func (ale *Alerter) evalAlarms(
 		return
 	}
 
-	body, err := template.Generate(eOut.GetPoint(), eOut.GetRule(), eOut.GetDevice(),
-		a.GetBodyTemplate())
+	body, err := template.Generate(eOut.GetPoint(), eOut.GetRule(),
+		eOut.GetDevice(), a.GetBodyTemplate())
 	if err != nil {
 		metric.Incr("error", map[string]string{"func": "genbody"})
 		logger.Errorf("alertMessages body template.Generate: %v", err)
@@ -142,7 +143,8 @@ func (ale *Alerter) evalAlarms(
 	// Process alerts.
 	for _, user := range users {
 		// Check cache for existing repeat interval.
-		key := repeatKey(eOut.GetDevice().GetOrgId(), eOut.GetDevice().GetId(), a.GetId(), user.GetId())
+		key := repeatKey(eOut.GetDevice().GetOrgId(), eOut.GetDevice().GetId(),
+			a.GetId(), user.GetId())
 		cCtx, cancel := context.WithTimeout(ctx, 5*time.Second)
 		ok, err := ale.cache.SetIfNotExistTTL(cCtx, key, 1,
 			time.Duration(a.GetRepeatInterval())*time.Minute)
@@ -167,8 +169,8 @@ func (ale *Alerter) evalAlarms(
 		case api.AlarmType_SMS:
 			err = ale.notify.SMS(nCtx, user.GetPhone(), subj, body)
 		case api.AlarmType_EMAIL:
-			err = ale.notify.Email(nCtx, org.GetDisplayName(), org.GetEmail(), user.GetEmail(),
-				subj, body)
+			err = ale.notify.Email(nCtx, org.GetDisplayName(), org.GetEmail(),
+				user.GetEmail(), subj, body)
 		case api.AlarmType_ALARM_TYPE_UNSPECIFIED:
 			fallthrough
 		default:
@@ -200,7 +202,7 @@ func (ale *Alerter) evalAlarms(
 		}
 
 		// Store alert.
-		dCtx, cancel = context.WithTimeout(ctx, 5*time.Second)
+		dCtx, cancel := context.WithTimeout(ctx, 5*time.Second)
 		err = ale.aleDAO.Create(dCtx, alert)
 		cancel()
 		if err != nil {
