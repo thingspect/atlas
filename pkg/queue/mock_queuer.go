@@ -19,6 +19,7 @@ import (
 type MockMessager struct {
 	ctrl     *gomock.Controller
 	recorder *MockMessagerMockRecorder
+	isgomock struct{}
 }
 
 // MockMessagerMockRecorder is the mock recorder for MockMessager.
@@ -94,6 +95,7 @@ func (mr *MockMessagerMockRecorder) Topic() *gomock.Call {
 type MockSubber struct {
 	ctrl     *gomock.Controller
 	recorder *MockSubberMockRecorder
+	isgomock struct{}
 }
 
 // MockSubberMockRecorder is the mock recorder for MockSubber.
@@ -145,6 +147,7 @@ func (mr *MockSubberMockRecorder) Unsubscribe() *gomock.Call {
 type MockQueuer struct {
 	ctrl     *gomock.Controller
 	recorder *MockQueuerMockRecorder
+	isgomock struct{}
 }
 
 // MockQueuerMockRecorder is the mock recorder for MockQueuer.

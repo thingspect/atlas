@@ -21,6 +21,7 @@ import (
 type Mockdatapointer struct {
 	ctrl     *gomock.Controller
 	recorder *MockdatapointerMockRecorder
+	isgomock struct{}
 }
 
 // MockdatapointerMockRecorder is the mock recorder for Mockdatapointer.

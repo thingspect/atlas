@@ -22,6 +22,7 @@ import (
 type Mockorger struct {
 	ctrl     *gomock.Controller
 	recorder *MockorgerMockRecorder
+	isgomock struct{}
 }
 
 // MockorgerMockRecorder is the mock recorder for Mockorger.
@@ -60,6 +61,7 @@ func (mr *MockorgerMockRecorder) Read(ctx, orgID any) *gomock.Call {
 type Mockalarmer struct {
 	ctrl     *gomock.Controller
 	recorder *MockalarmerMockRecorder
+	isgomock struct{}
 }
 
 // MockalarmerMockRecorder is the mock recorder for Mockalarmer.
@@ -99,6 +101,7 @@ func (mr *MockalarmerMockRecorder) List(ctx, orgID, lBoundTS, prevID, limit, rul
 type Mockuserer struct {
 	ctrl     *gomock.Controller
 	recorder *MockusererMockRecorder
+	isgomock struct{}
 }
 
 // MockusererMockRecorder is the mock recorder for Mockuserer.
@@ -137,6 +140,7 @@ func (mr *MockusererMockRecorder) ListByTags(ctx, orgID, tags any) *gomock.Call 
 type Mockalerter struct {
 	ctrl     *gomock.Controller
 	recorder *MockalerterMockRecorder
+	isgomock struct{}
 }
 
 // MockalerterMockRecorder is the mock recorder for Mockalerter.
