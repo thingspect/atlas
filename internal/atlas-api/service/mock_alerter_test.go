@@ -22,6 +22,7 @@ import (
 type MockAlerter struct {
 	ctrl     *gomock.Controller
 	recorder *MockAlerterMockRecorder
+	isgomock struct{}
 }
 
 // MockAlerterMockRecorder is the mock recorder for MockAlerter.

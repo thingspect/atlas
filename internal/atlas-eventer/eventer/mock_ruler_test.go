@@ -21,6 +21,7 @@ import (
 type Mockruler struct {
 	ctrl     *gomock.Controller
 	recorder *MockrulerMockRecorder
+	isgomock struct{}
 }
 
 // MockrulerMockRecorder is the mock recorder for Mockruler.
@@ -59,6 +60,7 @@ func (mr *MockrulerMockRecorder) ListByTags(ctx, orgID, attr, deviceTags any) *g
 type Mockeventer struct {
 	ctrl     *gomock.Controller
 	recorder *MockeventerMockRecorder
+	isgomock struct{}
 }
 
 // MockeventerMockRecorder is the mock recorder for Mockeventer.
