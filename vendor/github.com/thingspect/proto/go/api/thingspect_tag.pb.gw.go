@@ -10,6 +10,7 @@ package api
 
 import (
 	"context"
+	"errors"
 	"io"
 	"net/http"
 
@@ -24,29 +25,32 @@ import (
 )
 
 // Suppress "imported and not used" errors
-var _ codes.Code
-var _ io.Reader
-var _ status.Status
-var _ = runtime.String
-var _ = utilities.NewDoubleArray
-var _ = metadata.Join
+var (
+	_ codes.Code
+	_ io.Reader
+	_ status.Status
+	_ = errors.New
+	_ = runtime.String
+	_ = utilities.NewDoubleArray
+	_ = metadata.Join
+)
 
 func request_TagService_ListTags_0(ctx context.Context, marshaler runtime.Marshaler, client TagServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq ListTagsRequest
-	var metadata runtime.ServerMetadata
-
+	var (
+		protoReq ListTagsRequest
+		metadata runtime.ServerMetadata
+	)
 	msg, err := client.ListTags(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
 	return msg, metadata, err
-
 }
 
 func local_request_TagService_ListTags_0(ctx context.Context, marshaler runtime.Marshaler, server TagServiceServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq ListTagsRequest
-	var metadata runtime.ServerMetadata
-
+	var (
+		protoReq ListTagsRequest
+		metadata runtime.ServerMetadata
+	)
 	msg, err := server.ListTags(ctx, &protoReq)
 	return msg, metadata, err
-
 }
 
 // RegisterTagServiceHandlerServer registers the http handlers for service TagService to "mux".
@@ -55,16 +59,13 @@ func local_request_TagService_ListTags_0(ctx context.Context, marshaler runtime.
 // Note that using this registration option will cause many gRPC library features to stop working. Consider using RegisterTagServiceHandlerFromEndpoint instead.
 // GRPC interceptors will not work for this type of registration. To use interceptors, you must use the "runtime.WithMiddlewares" option in the "runtime.NewServeMux" call.
 func RegisterTagServiceHandlerServer(ctx context.Context, mux *runtime.ServeMux, server TagServiceServer) error {
-
-	mux.Handle("GET", pattern_TagService_ListTags_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle(http.MethodGet, pattern_TagService_ListTags_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		var stream runtime.ServerTransportStream
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		var err error
-		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/thingspect.api.TagService/ListTags", runtime.WithHTTPPathPattern("/v1/tags"))
+		annotatedContext, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/thingspect.api.TagService/ListTags", runtime.WithHTTPPathPattern("/v1/tags"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -76,9 +77,7 @@ func RegisterTagServiceHandlerServer(ctx context.Context, mux *runtime.ServeMux,
 			runtime.HTTPError(annotatedContext, mux, outboundMarshaler, w, req, err)
 			return
 		}
-
 		forward_TagService_ListTags_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
-
 	})
 
 	return nil
@@ -105,7 +104,6 @@ func RegisterTagServiceHandlerFromEndpoint(ctx context.Context, mux *runtime.Ser
 			}
 		}()
 	}()
-
 	return RegisterTagServiceHandler(ctx, mux, conn)
 }
 
@@ -121,14 +119,11 @@ func RegisterTagServiceHandler(ctx context.Context, mux *runtime.ServeMux, conn 
 // doesn't go through the normal gRPC flow (creating a gRPC client etc.) then it will be up to the passed in
 // "TagServiceClient" to call the correct interceptors. This client ignores the HTTP middlewares.
 func RegisterTagServiceHandlerClient(ctx context.Context, mux *runtime.ServeMux, client TagServiceClient) error {
-
-	mux.Handle("GET", pattern_TagService_ListTags_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle(http.MethodGet, pattern_TagService_ListTags_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		var err error
-		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/thingspect.api.TagService/ListTags", runtime.WithHTTPPathPattern("/v1/tags"))
+		annotatedContext, err := runtime.AnnotateContext(ctx, mux, req, "/thingspect.api.TagService/ListTags", runtime.WithHTTPPathPattern("/v1/tags"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -139,11 +134,8 @@ func RegisterTagServiceHandlerClient(ctx context.Context, mux *runtime.ServeMux,
 			runtime.HTTPError(annotatedContext, mux, outboundMarshaler, w, req, err)
 			return
 		}
-
 		forward_TagService_ListTags_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
-
 	})
-
 	return nil
 }
 
