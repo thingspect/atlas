@@ -38,14 +38,16 @@ func TestDeviceJoin(t *testing.T) {
 				DeviceInfo: &integration.DeviceInfo{
 					DeviceProfileName: "1.0.2", DevEui: uniqID,
 					DeviceClassEnabled: common.DeviceClass_CLASS_C,
-				}, DevAddr: devAddr,
+				}, DevAddr: devAddr, RegionConfigId: "us915_0",
 			}, []*decode.Point{
 				{Attr: "raw_device", Value: fmt.Sprintf(`{"deviceInfo":`+
 					`{"deviceProfileName":"1.0.2","devEui":"%s",`+
-					`"deviceClassEnabled":"CLASS_C"},"devAddr":"%s"}`, uniqID,
+					`"deviceClassEnabled":"CLASS_C"},"devAddr":"%s",`+
+					`"regionConfigId":"us915_0"}`, uniqID,
 					devAddr)},
 				{Attr: "join", Value: true},
 				{Attr: "devaddr", Value: devAddr},
+				{Attr: "region_config_id", Value: "us915_0"},
 				{Attr: "id", Value: uniqID},
 				{Attr: "lora_profile", Value: "1.0.2"},
 				{Attr: "class", Value: "CLASS_C"},
