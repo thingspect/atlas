@@ -27,6 +27,11 @@ func deviceJoin(body []byte) ([]*decode.Point, error) {
 			Attr: "devaddr", Value: joinMsg.GetDevAddr(),
 		})
 	}
+	if joinMsg.GetRegionConfigId() != "" {
+		msgs = append(msgs, &decode.Point{
+			Attr: "region_config_id", Value: joinMsg.GetRegionConfigId(),
+		})
+	}
 
 	// Parse DeviceInfo.
 	if joinMsg.GetDeviceInfo() != nil {

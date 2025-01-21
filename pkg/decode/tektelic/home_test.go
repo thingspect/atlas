@@ -58,7 +58,9 @@ func TestHome(t *testing.T) {
 		// Digital bad identifier.
 		{"0a0100", nil, "typeDigital format bad identifier: 0a0100"},
 		// Home unused trailing bytes.
-		{"0a0000ff", []*decode.Point{{Attr: "motion", Value: false}}, "home format unused trailing bytes: ff"},
+		{"0a0000ff", []*decode.Point{
+			{Attr: "motion", Value: false},
+		}, "home format unused trailing bytes: ff"},
 	}
 
 	for _, test := range tests {

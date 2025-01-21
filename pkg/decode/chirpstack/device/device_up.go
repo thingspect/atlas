@@ -54,6 +54,11 @@ func deviceUp(body []byte) (
 	msgs = append(msgs, &decode.Point{
 		Attr: "confirmed", Value: upMsg.GetConfirmed(),
 	})
+	if upMsg.GetRegionConfigId() != "" {
+		msgs = append(msgs, &decode.Point{
+			Attr: "region_config_id", Value: upMsg.GetRegionConfigId(),
+		})
+	}
 
 	return msgs, upTime, upMsg.GetData(), nil
 }

@@ -67,15 +67,15 @@ func TestDeviceUp(t *testing.T) {
 					{GatewayId: "aaa", GwTime: tsNow, Rssi: -80, Snr: 1},
 					{GatewayId: gatewayID, GwTime: tsNow, Rssi: -74, Snr: 7},
 				}, TxInfo: &gw.UplinkTxInfo{Frequency: 902700000}, Adr: true,
-				Dr: 3, Data: bData, Confirmed: true,
+				Dr: 3, Data: bData, Confirmed: true, RegionConfigId: "us915_0",
 			},
 			[]*decode.Point{
 				{Attr: "raw_device", Value: fmt.Sprintf(`{"adr":true,"dr":3,`+
 					`"confirmed":true,"data":"%s","rxInfo":[{"gatewayId":`+
 					`"aaa","gwTime":"%s","rssi":-80,"snr":1},{"gatewayId":`+
 					`"%s","gwTime":"%s","rssi":-74,"snr":7}],"txInfo":{`+
-					`"frequency":902700000}}`, b64Data,
-					now.Format(time.RFC3339Nano), gatewayID,
+					`"frequency":902700000},"regionConfigId":"us915_0"}`,
+					b64Data, now.Format(time.RFC3339Nano), gatewayID,
 					now.Format(time.RFC3339Nano))},
 				{Attr: "raw_data", Value: hex.EncodeToString(bData)},
 				{Attr: "gateway_id", Value: gatewayID},
@@ -90,6 +90,7 @@ func TestDeviceUp(t *testing.T) {
 				{Attr: "adr", Value: true},
 				{Attr: "data_rate", Value: int32(3)},
 				{Attr: "confirmed", Value: true},
+				{Attr: "region_config_id", Value: "us915_0"},
 			},
 			now, bData, "",
 		},
