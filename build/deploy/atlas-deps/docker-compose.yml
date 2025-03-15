@@ -33,7 +33,7 @@ services:
       - "127.0.0.1:4179:4171"
 
   mqtt:
-    image: eclipse-mosquitto:2.0
+    image: eclipse-mosquitto:2
     ports:
       - "1883:1883"
     volumes:
@@ -46,7 +46,7 @@ services:
       - ./volume/redis:/data
 
   chirpstack:
-    image: chirpstack/chirpstack:4.9
+    image: chirpstack/chirpstack:4
     command: -c /etc/chirpstack
     depends_on:
       - postgres

@@ -25,7 +25,7 @@ func TestDecodeMessages(t *testing.T) {
 	now := timestamppb.New(time.Now().Add(-15 * time.Minute))
 	traceID := uuid.New()
 
-	ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
+	ctx, cancel := context.WithTimeout(t.Context(), testTimeout)
 	defer cancel()
 
 	createOrg, err := globalOrgDAO.Create(ctx, random.Org("dec"))
@@ -207,7 +207,7 @@ func TestDecodeMessagesError(t *testing.T) {
 	now := timestamppb.New(time.Now().Add(-15 * time.Minute))
 	traceID := uuid.New()
 
-	ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
+	ctx, cancel := context.WithTimeout(t.Context(), testTimeout)
 	defer cancel()
 
 	createOrg, err := globalOrgDAO.Create(ctx, random.Org("dec"))

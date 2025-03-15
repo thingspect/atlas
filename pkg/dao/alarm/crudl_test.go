@@ -20,7 +20,7 @@ const testTimeout = 8 * time.Second
 func TestCreate(t *testing.T) {
 	t.Parallel()
 
-	ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
+	ctx, cancel := context.WithTimeout(t.Context(), testTimeout)
 	defer cancel()
 
 	createOrg, err := globalOrgDAO.Create(ctx, random.Org("dao-alarm"))
@@ -38,7 +38,7 @@ func TestCreate(t *testing.T) {
 		alarm := random.Alarm("dao-alarm", createOrg.GetId(), createRule.GetId())
 		createAlarm, _ := proto.Clone(alarm).(*api.Alarm)
 
-		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
+		ctx, cancel := context.WithTimeout(t.Context(), testTimeout)
 		defer cancel()
 
 		createAlarm, err := globalAlarmDAO.Create(ctx, createAlarm)
@@ -57,7 +57,7 @@ func TestCreate(t *testing.T) {
 		alarm := random.Alarm("dao-alarm", createOrg.GetId(), createRule.GetId())
 		alarm.Name = "dao-alarm-" + random.String(80)
 
-		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
+		ctx, cancel := context.WithTimeout(t.Context(), testTimeout)
 		defer cancel()
 
 		createAlarm, err := globalAlarmDAO.Create(ctx, alarm)
@@ -69,7 +69,7 @@ func TestCreate(t *testing.T) {
 	t.Run("Create valid alarm by unknown rule", func(t *testing.T) {
 		t.Parallel()
 
-		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
+		ctx, cancel := context.WithTimeout(t.Context(), testTimeout)
 		defer cancel()
 
 		createAlarm, err := globalAlarmDAO.Create(ctx, random.Alarm("dao-alarm",
@@ -83,7 +83,7 @@ func TestCreate(t *testing.T) {
 func TestRead(t *testing.T) {
 	t.Parallel()
 
-	ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
+	ctx, cancel := context.WithTimeout(t.Context(), testTimeout)
 	defer cancel()
 
 	createOrg, err := globalOrgDAO.Create(ctx, random.Org("dao-alarm"))
@@ -103,7 +103,7 @@ func TestRead(t *testing.T) {
 	t.Run("Read alarm by valid ID", func(t *testing.T) {
 		t.Parallel()
 
-		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
+		ctx, cancel := context.WithTimeout(t.Context(), testTimeout)
 		defer cancel()
 
 		readAlarm, err := globalAlarmDAO.Read(ctx, createAlarm.GetId(),
@@ -116,7 +116,7 @@ func TestRead(t *testing.T) {
 	t.Run("Read alarm by unknown ID", func(t *testing.T) {
 		t.Parallel()
 
-		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
+		ctx, cancel := context.WithTimeout(t.Context(), testTimeout)
 		defer cancel()
 
 		readAlarm, err := globalAlarmDAO.Read(ctx, uuid.NewString(),
@@ -129,7 +129,7 @@ func TestRead(t *testing.T) {
 	t.Run("Read alarm by unknown rule", func(t *testing.T) {
 		t.Parallel()
 
-		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
+		ctx, cancel := context.WithTimeout(t.Context(), testTimeout)
 		defer cancel()
 
 		readAlarm, err := globalAlarmDAO.Read(ctx, createAlarm.GetId(),
@@ -142,7 +142,7 @@ func TestRead(t *testing.T) {
 	t.Run("Reads are isolated by org ID", func(t *testing.T) {
 		t.Parallel()
 
-		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
+		ctx, cancel := context.WithTimeout(t.Context(), testTimeout)
 		defer cancel()
 
 		readAlarm, err := globalAlarmDAO.Read(ctx, createAlarm.GetId(),
@@ -155,7 +155,7 @@ func TestRead(t *testing.T) {
 	t.Run("Read alarm by invalid ID", func(t *testing.T) {
 		t.Parallel()
 
-		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
+		ctx, cancel := context.WithTimeout(t.Context(), testTimeout)
 		defer cancel()
 
 		readAlarm, err := globalAlarmDAO.Read(ctx, random.String(10),
@@ -169,7 +169,7 @@ func TestRead(t *testing.T) {
 func TestUpdate(t *testing.T) {
 	t.Parallel()
 
-	ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
+	ctx, cancel := context.WithTimeout(t.Context(), testTimeout)
 	defer cancel()
 
 	createOrg, err := globalOrgDAO.Create(ctx, random.Org("dao-alarm"))
@@ -184,7 +184,7 @@ func TestUpdate(t *testing.T) {
 	t.Run("Update alarm by valid alarm", func(t *testing.T) {
 		t.Parallel()
 
-		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
+		ctx, cancel := context.WithTimeout(t.Context(), testTimeout)
 		defer cancel()
 
 		createAlarm, err := globalAlarmDAO.Create(ctx, random.Alarm("dao-alarm",
@@ -222,7 +222,7 @@ func TestUpdate(t *testing.T) {
 	t.Run("Update unknown alarm", func(t *testing.T) {
 		t.Parallel()
 
-		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
+		ctx, cancel := context.WithTimeout(t.Context(), testTimeout)
 		defer cancel()
 
 		updateAlarm, err := globalAlarmDAO.Update(ctx, random.Alarm("dao-alarm",
@@ -235,7 +235,7 @@ func TestUpdate(t *testing.T) {
 	t.Run("Update alarm by unknown rule", func(t *testing.T) {
 		t.Parallel()
 
-		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
+		ctx, cancel := context.WithTimeout(t.Context(), testTimeout)
 		defer cancel()
 
 		createAlarm, err := globalAlarmDAO.Create(ctx, random.Alarm("dao-alarm",
@@ -256,7 +256,7 @@ func TestUpdate(t *testing.T) {
 	t.Run("Updates are isolated by org ID", func(t *testing.T) {
 		t.Parallel()
 
-		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
+		ctx, cancel := context.WithTimeout(t.Context(), testTimeout)
 		defer cancel()
 
 		createAlarm, err := globalAlarmDAO.Create(ctx, random.Alarm("dao-alarm",
@@ -278,7 +278,7 @@ func TestUpdate(t *testing.T) {
 	t.Run("Update alarm by invalid alarm", func(t *testing.T) {
 		t.Parallel()
 
-		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
+		ctx, cancel := context.WithTimeout(t.Context(), testTimeout)
 		defer cancel()
 
 		createAlarm, err := globalAlarmDAO.Create(ctx, random.Alarm("dao-alarm",
@@ -300,7 +300,7 @@ func TestUpdate(t *testing.T) {
 func TestDelete(t *testing.T) {
 	t.Parallel()
 
-	ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
+	ctx, cancel := context.WithTimeout(t.Context(), testTimeout)
 	defer cancel()
 
 	createOrg, err := globalOrgDAO.Create(ctx, random.Org("dao-alarm"))
@@ -315,7 +315,7 @@ func TestDelete(t *testing.T) {
 	t.Run("Delete alarm by valid ID", func(t *testing.T) {
 		t.Parallel()
 
-		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
+		ctx, cancel := context.WithTimeout(t.Context(), testTimeout)
 		defer cancel()
 
 		createAlarm, err := globalAlarmDAO.Create(ctx, random.Alarm("dao-alarm",
@@ -331,7 +331,7 @@ func TestDelete(t *testing.T) {
 		t.Run("Read alarm by deleted ID", func(t *testing.T) {
 			t.Parallel()
 
-			ctx, cancel := context.WithTimeout(context.Background(),
+			ctx, cancel := context.WithTimeout(t.Context(),
 				testTimeout)
 			defer cancel()
 
@@ -346,7 +346,7 @@ func TestDelete(t *testing.T) {
 	t.Run("Delete alarm by unknown ID", func(t *testing.T) {
 		t.Parallel()
 
-		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
+		ctx, cancel := context.WithTimeout(t.Context(), testTimeout)
 		defer cancel()
 
 		err := globalAlarmDAO.Delete(ctx, uuid.NewString(), createOrg.GetId(),
@@ -358,7 +358,7 @@ func TestDelete(t *testing.T) {
 	t.Run("Delete alarm by unknown rule", func(t *testing.T) {
 		t.Parallel()
 
-		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
+		ctx, cancel := context.WithTimeout(t.Context(), testTimeout)
 		defer cancel()
 
 		createAlarm, err := globalAlarmDAO.Create(ctx, random.Alarm("dao-alarm",
@@ -375,7 +375,7 @@ func TestDelete(t *testing.T) {
 	t.Run("Deletes are isolated by org ID", func(t *testing.T) {
 		t.Parallel()
 
-		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
+		ctx, cancel := context.WithTimeout(t.Context(), testTimeout)
 		defer cancel()
 
 		createAlarm, err := globalAlarmDAO.Create(ctx, random.Alarm("dao-alarm",
@@ -393,7 +393,7 @@ func TestDelete(t *testing.T) {
 func TestList(t *testing.T) {
 	t.Parallel()
 
-	ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
+	ctx, cancel := context.WithTimeout(t.Context(), testTimeout)
 	defer cancel()
 
 	createOrg, err := globalOrgDAO.Create(ctx, random.Org("dao-alarm"))
@@ -424,7 +424,7 @@ func TestList(t *testing.T) {
 	t.Run("List alarms by valid org ID", func(t *testing.T) {
 		t.Parallel()
 
-		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
+		ctx, cancel := context.WithTimeout(t.Context(), testTimeout)
 		defer cancel()
 
 		listAlarms, listCount, err := globalAlarmDAO.List(ctx, createOrg.GetId(),
@@ -449,7 +449,7 @@ func TestList(t *testing.T) {
 	t.Run("List alarms by valid org ID with pagination", func(t *testing.T) {
 		t.Parallel()
 
-		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
+		ctx, cancel := context.WithTimeout(t.Context(), testTimeout)
 		defer cancel()
 
 		listAlarms, listCount, err := globalAlarmDAO.List(ctx, createOrg.GetId(),
@@ -474,7 +474,7 @@ func TestList(t *testing.T) {
 	t.Run("List alarms by valid org ID with limit", func(t *testing.T) {
 		t.Parallel()
 
-		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
+		ctx, cancel := context.WithTimeout(t.Context(), testTimeout)
 		defer cancel()
 
 		listAlarms, listCount, err := globalAlarmDAO.List(ctx, createOrg.GetId(),
@@ -489,7 +489,7 @@ func TestList(t *testing.T) {
 	t.Run("List alarms with rule filter", func(t *testing.T) {
 		t.Parallel()
 
-		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
+		ctx, cancel := context.WithTimeout(t.Context(), testTimeout)
 		defer cancel()
 
 		listAlarms, listCount, err := globalAlarmDAO.List(ctx, createOrg.GetId(),
@@ -514,7 +514,7 @@ func TestList(t *testing.T) {
 	t.Run("List alarms with rule filter and pagination", func(t *testing.T) {
 		t.Parallel()
 
-		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
+		ctx, cancel := context.WithTimeout(t.Context(), testTimeout)
 		defer cancel()
 
 		listAlarms, listCount, err := globalAlarmDAO.List(ctx, createOrg.GetId(),
@@ -539,7 +539,7 @@ func TestList(t *testing.T) {
 	t.Run("List alarms by unknown rule", func(t *testing.T) {
 		t.Parallel()
 
-		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
+		ctx, cancel := context.WithTimeout(t.Context(), testTimeout)
 		defer cancel()
 
 		listAlarms, listCount, err := globalAlarmDAO.List(ctx, uuid.NewString(),
@@ -554,7 +554,7 @@ func TestList(t *testing.T) {
 	t.Run("Lists are isolated by org ID", func(t *testing.T) {
 		t.Parallel()
 
-		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
+		ctx, cancel := context.WithTimeout(t.Context(), testTimeout)
 		defer cancel()
 
 		listAlarms, listCount, err := globalAlarmDAO.List(ctx, uuid.NewString(),
@@ -569,7 +569,7 @@ func TestList(t *testing.T) {
 	t.Run("List alarms by invalid org ID", func(t *testing.T) {
 		t.Parallel()
 
-		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
+		ctx, cancel := context.WithTimeout(t.Context(), testTimeout)
 		defer cancel()
 
 		listAlarms, listCount, err := globalAlarmDAO.List(ctx, random.String(10),

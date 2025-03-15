@@ -1,4 +1,4 @@
-FROM golang:1.23-alpine
+FROM golang:1-alpine
 
 RUN apk update && apk upgrade
 RUN apk add --no-cache git make protobuf protobuf-dev

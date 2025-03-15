@@ -28,7 +28,7 @@ func TestPublishDataPoints(t *testing.T) {
 			Ts:       timestamppb.New(time.Now().Add(-15 * time.Minute)),
 		}
 
-		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
+		ctx, cancel := context.WithTimeout(t.Context(), testTimeout)
 		defer cancel()
 
 		dpCli := api.NewDataPointServiceClient(globalAdminGRPCConn)
@@ -65,7 +65,7 @@ func TestPublishDataPoints(t *testing.T) {
 			ValOneof: &common.DataPoint_IntVal{IntVal: 123},
 		}
 
-		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
+		ctx, cancel := context.WithTimeout(t.Context(), testTimeout)
 		defer cancel()
 
 		dpCli := api.NewDataPointServiceClient(globalAdminKeyGRPCConn)
@@ -107,7 +107,7 @@ func TestPublishDataPoints(t *testing.T) {
 			Ts:       timestamppb.New(time.Now().Add(-15 * time.Minute)),
 		}
 
-		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
+		ctx, cancel := context.WithTimeout(t.Context(), testTimeout)
 		defer cancel()
 
 		dpCli := api.NewDataPointServiceClient(secondaryViewerGRPCConn)
@@ -126,7 +126,7 @@ func TestPublishDataPoints(t *testing.T) {
 			Ts:       timestamppb.New(time.Now().Add(-15 * time.Minute)),
 		}
 
-		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
+		ctx, cancel := context.WithTimeout(t.Context(), testTimeout)
 		defer cancel()
 
 		dpCli := api.NewDataPointServiceClient(globalAdminGRPCConn)
@@ -147,7 +147,7 @@ func TestListDataPoints(t *testing.T) {
 	t.Run("List data points by UniqID, dev ID, and attr", func(t *testing.T) {
 		t.Parallel()
 
-		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
+		ctx, cancel := context.WithTimeout(t.Context(), testTimeout)
 		defer cancel()
 
 		devCli := api.NewDeviceServiceClient(globalAdminGRPCConn)
@@ -193,7 +193,7 @@ func TestListDataPoints(t *testing.T) {
 		}
 
 		for _, point := range points {
-			ctx, cancel := context.WithTimeout(context.Background(),
+			ctx, cancel := context.WithTimeout(t.Context(),
 				testTimeout)
 			defer cancel()
 
@@ -212,7 +212,7 @@ func TestListDataPoints(t *testing.T) {
 			return points[i].GetTs().AsTime().After(points[j].GetTs().AsTime())
 		})
 
-		ctx, cancel = context.WithTimeout(context.Background(), testTimeout)
+		ctx, cancel = context.WithTimeout(t.Context(), testTimeout)
 		defer cancel()
 
 		// Verify results by UniqID.
@@ -277,7 +277,7 @@ func TestListDataPoints(t *testing.T) {
 			Ts:       timestamppb.Now(), TraceId: uuid.NewString(),
 		}
 
-		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
+		ctx, cancel := context.WithTimeout(t.Context(), testTimeout)
 		defer cancel()
 
 		createOrg, err := globalOrgDAO.Create(ctx, random.Org("api-point"))
@@ -300,7 +300,7 @@ func TestListDataPoints(t *testing.T) {
 	t.Run("List data points by invalid time range", func(t *testing.T) {
 		t.Parallel()
 
-		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
+		ctx, cancel := context.WithTimeout(t.Context(), testTimeout)
 		defer cancel()
 
 		dpCli := api.NewDataPointServiceClient(globalAdminGRPCConn)
@@ -319,7 +319,7 @@ func TestListDataPoints(t *testing.T) {
 	t.Run("List data points by invalid dev ID", func(t *testing.T) {
 		t.Parallel()
 
-		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
+		ctx, cancel := context.WithTimeout(t.Context(), testTimeout)
 		defer cancel()
 
 		dpCli := api.NewDataPointServiceClient(globalAdminGRPCConn)
@@ -342,7 +342,7 @@ func TestLatestDataPoints(t *testing.T) {
 	t.Run("Latest data points by valid UniqID and dev ID", func(t *testing.T) {
 		t.Parallel()
 
-		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
+		ctx, cancel := context.WithTimeout(t.Context(), testTimeout)
 		defer cancel()
 
 		devCli := api.NewDeviceServiceClient(globalAdminGRPCConn)
@@ -387,7 +387,7 @@ func TestLatestDataPoints(t *testing.T) {
 
 		for i, point := range points {
 			for range random.Intn(6) + 3 {
-				ctx, cancel := context.WithTimeout(context.Background(),
+				ctx, cancel := context.WithTimeout(t.Context(),
 					testTimeout)
 				defer cancel()
 
@@ -411,7 +411,7 @@ func TestLatestDataPoints(t *testing.T) {
 			return points[i].GetAttr() < points[j].GetAttr()
 		})
 
-		ctx, cancel = context.WithTimeout(context.Background(), testTimeout)
+		ctx, cancel = context.WithTimeout(t.Context(), testTimeout)
 		defer cancel()
 
 		// Verify results by UniqID.
@@ -451,7 +451,7 @@ func TestLatestDataPoints(t *testing.T) {
 			Ts:       timestamppb.Now(), TraceId: uuid.NewString(),
 		}
 
-		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
+		ctx, cancel := context.WithTimeout(t.Context(), testTimeout)
 		defer cancel()
 
 		createOrg, err := globalOrgDAO.Create(ctx, random.Org("api-point"))
@@ -477,7 +477,7 @@ func TestLatestDataPoints(t *testing.T) {
 	t.Run("Latest data points by invalid time range", func(t *testing.T) {
 		t.Parallel()
 
-		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
+		ctx, cancel := context.WithTimeout(t.Context(), testTimeout)
 		defer cancel()
 
 		dpCli := api.NewDataPointServiceClient(globalAdminGRPCConn)
@@ -497,7 +497,7 @@ func TestLatestDataPoints(t *testing.T) {
 	t.Run("Latest data points by invalid dev ID", func(t *testing.T) {
 		t.Parallel()
 
-		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
+		ctx, cancel := context.WithTimeout(t.Context(), testTimeout)
 		defer cancel()
 
 		dpCli := api.NewDataPointServiceClient(globalAdminGRPCConn)

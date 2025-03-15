@@ -25,7 +25,7 @@ func TestEventMessages(t *testing.T) {
 	now := timestamppb.New(time.Now().Add(-15 * time.Minute))
 	traceID := uuid.NewString()
 
-	ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
+	ctx, cancel := context.WithTimeout(t.Context(), testTimeout)
 	defer cancel()
 
 	createOrg, err := globalOrgDAO.Create(ctx, random.Org("ev"))
@@ -143,7 +143,7 @@ func TestEventMessages(t *testing.T) {
 					TraceId: traceID,
 				}
 
-				ctx, cancel := context.WithTimeout(context.Background(),
+				ctx, cancel := context.WithTimeout(t.Context(),
 					testTimeout)
 				defer cancel()
 
@@ -173,7 +173,7 @@ func TestEventMessages(t *testing.T) {
 func TestEventMessagesError(t *testing.T) {
 	now := timestamppb.New(time.Now().Add(-15 * time.Minute))
 
-	ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
+	ctx, cancel := context.WithTimeout(t.Context(), testTimeout)
 	defer cancel()
 
 	createOrg, err := globalOrgDAO.Create(ctx, random.Org("ev"))

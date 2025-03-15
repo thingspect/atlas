@@ -24,7 +24,7 @@ func TestAccumulateMessages(t *testing.T) {
 
 	now := timestamppb.New(time.Now().Add(-15 * time.Minute))
 
-	ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
+	ctx, cancel := context.WithTimeout(t.Context(), testTimeout)
 	defer cancel()
 
 	createOrg, err := globalOrgDAO.Create(ctx, random.Org("acc"))
@@ -80,7 +80,7 @@ func TestAccumulateMessages(t *testing.T) {
 				bVOut))
 			time.Sleep(2 * time.Second)
 
-			ctx, cancel := context.WithTimeout(context.Background(),
+			ctx, cancel := context.WithTimeout(t.Context(),
 				testTimeout)
 			defer cancel()
 
@@ -107,7 +107,7 @@ func TestAccumulateMessages(t *testing.T) {
 func TestAccumulateMessagesDuplicate(t *testing.T) {
 	t.Parallel()
 
-	ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
+	ctx, cancel := context.WithTimeout(t.Context(), testTimeout)
 	defer cancel()
 
 	createOrg, err := globalOrgDAO.Create(ctx, random.Org("acc"))
@@ -137,7 +137,7 @@ func TestAccumulateMessagesDuplicate(t *testing.T) {
 	require.NoError(t, globalAccQueue.Publish(globalVOutSubTopic, bVOut))
 	time.Sleep(2 * time.Second)
 
-	ctx, cancel = context.WithTimeout(context.Background(), testTimeout)
+	ctx, cancel = context.WithTimeout(t.Context(), testTimeout)
 	defer cancel()
 
 	listPoints, err := globalDPDAO.List(ctx,
@@ -161,7 +161,7 @@ func TestAccumulateMessagesDuplicate(t *testing.T) {
 func TestAccumulateMessagesError(t *testing.T) {
 	t.Parallel()
 
-	ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
+	ctx, cancel := context.WithTimeout(t.Context(), testTimeout)
 	defer cancel()
 
 	createOrg, err := globalOrgDAO.Create(ctx, random.Org("acc"))
@@ -189,7 +189,7 @@ func TestAccumulateMessagesError(t *testing.T) {
 	require.NoError(t, globalAccQueue.Publish(globalVOutSubTopic, bVOut))
 	time.Sleep(2 * time.Second)
 
-	ctx, cancel = context.WithTimeout(context.Background(), testTimeout)
+	ctx, cancel = context.WithTimeout(t.Context(), testTimeout)
 	defer cancel()
 
 	listPoints, err := globalDPDAO.List(ctx, invalidVOut.GetDevice().GetOrgId(),

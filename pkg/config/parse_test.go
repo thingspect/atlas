@@ -6,7 +6,6 @@ import (
 	"crypto/rand"
 	"encoding/base64"
 	"fmt"
-	"os"
 	"strconv"
 	"strings"
 	"testing"
@@ -17,12 +16,9 @@ import (
 )
 
 func TestString(t *testing.T) {
-	t.Parallel()
-
 	envKey := random.String(10)
 	envVal := random.String(10)
-	//nolint:tenv // Require os.Setenv() for t.Parallel(), do not unset.
-	require.NoError(t, os.Setenv(envKey, envVal))
+	t.Setenv(envKey, envVal)
 
 	tests := []struct {
 		inpKey string
@@ -35,8 +31,6 @@ func TestString(t *testing.T) {
 
 	for _, test := range tests {
 		t.Run(fmt.Sprintf("Can parse %+v", test), func(t *testing.T) {
-			t.Parallel()
-
 			res := String(test.inpKey, test.inpDef)
 			t.Logf("res: %v", res)
 			require.Equal(t, test.res, res)
@@ -45,18 +39,14 @@ func TestString(t *testing.T) {
 }
 
 func TestStringSlice(t *testing.T) {
-	t.Parallel()
-
 	envKey := random.String(10)
 	envVal := fmt.Sprintf("%s,%s,%s", random.String(10), random.String(10),
 		random.String(10))
-	//nolint:tenv // Require os.Setenv() for t.Parallel(), do not unset.
-	require.NoError(t, os.Setenv(envKey, envVal))
+	t.Setenv(envKey, envVal)
 
 	envKeyNoDelim := random.String(10)
 	envValNoDelim := random.String(10)
-	//nolint:tenv // Require os.Setenv() for t.Parallel(), do not unset.
-	require.NoError(t, os.Setenv(envKeyNoDelim, envValNoDelim))
+	t.Setenv(envKeyNoDelim, envValNoDelim)
 
 	tests := []struct {
 		inpKey string
@@ -70,8 +60,6 @@ func TestStringSlice(t *testing.T) {
 
 	for _, test := range tests {
 		t.Run(fmt.Sprintf("Can parse %+v", test), func(t *testing.T) {
-			t.Parallel()
-
 			res := StringSlice(test.inpKey, test.inpDef)
 			t.Logf("res: %#v", res)
 			require.Equal(t, test.res, res)
@@ -80,12 +68,9 @@ func TestStringSlice(t *testing.T) {
 }
 
 func TestInt(t *testing.T) {
-	t.Parallel()
-
 	envKey := random.String(10)
 	envVal := random.Intn(999)
-	//nolint:tenv // Require os.Setenv() for t.Parallel(), do not unset.
-	require.NoError(t, os.Setenv(envKey, strconv.Itoa(envVal)))
+	t.Setenv(envKey, strconv.Itoa(envVal))
 
 	tests := []struct {
 		inpKey string
@@ -99,8 +84,6 @@ func TestInt(t *testing.T) {
 
 	for _, test := range tests {
 		t.Run(fmt.Sprintf("Can parse %+v", test), func(t *testing.T) {
-			t.Parallel()
-
 			res := Int(test.inpKey, test.inpDef)
 			t.Logf("res: %v", res)
 			require.Equal(t, test.res, res)
@@ -109,11 +92,8 @@ func TestInt(t *testing.T) {
 }
 
 func TestBool(t *testing.T) {
-	t.Parallel()
-
 	envKey := random.String(10)
-	//nolint:tenv // Require os.Setenv() for t.Parallel(), do not unset.
-	require.NoError(t, os.Setenv(envKey, "true"))
+	t.Setenv(envKey, "true")
 
 	tests := []struct {
 		inpKey string
@@ -127,8 +107,6 @@ func TestBool(t *testing.T) {
 
 	for _, test := range tests {
 		t.Run(fmt.Sprintf("Can parse %+v", test), func(t *testing.T) {
-			t.Parallel()
-
 			res := Bool(test.inpKey, test.inpDef)
 			t.Logf("res: %v", res)
 			require.Equal(t, test.res, res)
@@ -137,12 +115,9 @@ func TestBool(t *testing.T) {
 }
 
 func TestDuration(t *testing.T) {
-	t.Parallel()
-
 	envKey := random.String(10)
 	envVal := random.Intn(999)
-	//nolint:tenv // Require os.Setenv() for t.Parallel(), do not unset.
-	require.NoError(t, os.Setenv(envKey, strconv.Itoa(envVal)+"s"))
+	t.Setenv(envKey, strconv.Itoa(envVal)+"s")
 
 	tests := []struct {
 		inpKey string
@@ -156,8 +131,6 @@ func TestDuration(t *testing.T) {
 
 	for _, test := range tests {
 		t.Run(fmt.Sprintf("Can parse %+v", test), func(t *testing.T) {
-			t.Parallel()
-
 			res := Duration(test.inpKey, test.inpDef)
 			t.Logf("res: %#v", res)
 			require.Equal(t, test.res, res)
@@ -166,8 +139,6 @@ func TestDuration(t *testing.T) {
 }
 
 func TestByteSlice(t *testing.T) {
-	t.Parallel()
-
 	key := make([]byte, 10)
 	_, err := rand.Read(key)
 	require.NoError(t, err)
@@ -175,8 +146,7 @@ func TestByteSlice(t *testing.T) {
 
 	envKey := random.String(10)
 	envVal := base64.StdEncoding.EncodeToString(key)
-	//nolint:tenv // Require os.Setenv() for t.Parallel(), do not unset.
-	require.NoError(t, os.Setenv(envKey, envVal))
+	t.Setenv(envKey, envVal)
 
 	tests := []struct {
 		inp string
@@ -189,8 +159,6 @@ func TestByteSlice(t *testing.T) {
 
 	for _, test := range tests {
 		t.Run(fmt.Sprintf("Can parse %+v", test), func(t *testing.T) {
-			t.Parallel()
-
 			res := ByteSlice(test.inp)
 			t.Logf("res: %x", res)
 			require.Equal(t, test.res, res)

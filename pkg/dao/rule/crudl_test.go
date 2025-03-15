@@ -20,7 +20,7 @@ const testTimeout = 8 * time.Second
 func TestCreate(t *testing.T) {
 	t.Parallel()
 
-	ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
+	ctx, cancel := context.WithTimeout(t.Context(), testTimeout)
 	defer cancel()
 
 	createOrg, err := globalOrgDAO.Create(ctx, random.Org("dao-rule"))
@@ -33,7 +33,7 @@ func TestCreate(t *testing.T) {
 		rule := random.Rule("dao-rule", createOrg.GetId())
 		createRule, _ := proto.Clone(rule).(*api.Rule)
 
-		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
+		ctx, cancel := context.WithTimeout(t.Context(), testTimeout)
 		defer cancel()
 
 		createRule, err := globalRuleDAO.Create(ctx, createRule)
@@ -52,7 +52,7 @@ func TestCreate(t *testing.T) {
 		rule := random.Rule("dao-rule", createOrg.GetId())
 		rule.Attr = "dao-rule-" + random.String(40)
 
-		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
+		ctx, cancel := context.WithTimeout(t.Context(), testTimeout)
 		defer cancel()
 
 		createRule, err := globalRuleDAO.Create(ctx, rule)
@@ -65,7 +65,7 @@ func TestCreate(t *testing.T) {
 func TestRead(t *testing.T) {
 	t.Parallel()
 
-	ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
+	ctx, cancel := context.WithTimeout(t.Context(), testTimeout)
 	defer cancel()
 
 	createOrg, err := globalOrgDAO.Create(ctx, random.Org("dao-rule"))
@@ -80,7 +80,7 @@ func TestRead(t *testing.T) {
 	t.Run("Read rule by valid ID", func(t *testing.T) {
 		t.Parallel()
 
-		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
+		ctx, cancel := context.WithTimeout(t.Context(), testTimeout)
 		defer cancel()
 
 		readRule, err := globalRuleDAO.Read(ctx, createRule.GetId(),
@@ -93,7 +93,7 @@ func TestRead(t *testing.T) {
 	t.Run("Read rule by unknown ID", func(t *testing.T) {
 		t.Parallel()
 
-		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
+		ctx, cancel := context.WithTimeout(t.Context(), testTimeout)
 		defer cancel()
 
 		readRule, err := globalRuleDAO.Read(ctx, uuid.NewString(),
@@ -106,7 +106,7 @@ func TestRead(t *testing.T) {
 	t.Run("Reads are isolated by org ID", func(t *testing.T) {
 		t.Parallel()
 
-		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
+		ctx, cancel := context.WithTimeout(t.Context(), testTimeout)
 		defer cancel()
 
 		readRule, err := globalRuleDAO.Read(ctx, createRule.GetId(),
@@ -119,7 +119,7 @@ func TestRead(t *testing.T) {
 	t.Run("Read rule by invalid ID", func(t *testing.T) {
 		t.Parallel()
 
-		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
+		ctx, cancel := context.WithTimeout(t.Context(), testTimeout)
 		defer cancel()
 
 		readRule, err := globalRuleDAO.Read(ctx, random.String(10),
@@ -133,7 +133,7 @@ func TestRead(t *testing.T) {
 func TestUpdate(t *testing.T) {
 	t.Parallel()
 
-	ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
+	ctx, cancel := context.WithTimeout(t.Context(), testTimeout)
 	defer cancel()
 
 	createOrg, err := globalOrgDAO.Create(ctx, random.Org("dao-rule"))
@@ -143,7 +143,7 @@ func TestUpdate(t *testing.T) {
 	t.Run("Update rule by valid rule", func(t *testing.T) {
 		t.Parallel()
 
-		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
+		ctx, cancel := context.WithTimeout(t.Context(), testTimeout)
 		defer cancel()
 
 		createRule, err := globalRuleDAO.Create(ctx, random.Rule("dao-rule",
@@ -177,7 +177,7 @@ func TestUpdate(t *testing.T) {
 	t.Run("Update unknown rule", func(t *testing.T) {
 		t.Parallel()
 
-		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
+		ctx, cancel := context.WithTimeout(t.Context(), testTimeout)
 		defer cancel()
 
 		updateRule, err := globalRuleDAO.Update(ctx, random.Rule("dao-rule",
@@ -190,7 +190,7 @@ func TestUpdate(t *testing.T) {
 	t.Run("Updates are isolated by org ID", func(t *testing.T) {
 		t.Parallel()
 
-		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
+		ctx, cancel := context.WithTimeout(t.Context(), testTimeout)
 		defer cancel()
 
 		createRule, err := globalRuleDAO.Create(ctx, random.Rule("dao-rule",
@@ -212,7 +212,7 @@ func TestUpdate(t *testing.T) {
 	t.Run("Update rule by invalid rule", func(t *testing.T) {
 		t.Parallel()
 
-		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
+		ctx, cancel := context.WithTimeout(t.Context(), testTimeout)
 		defer cancel()
 
 		createRule, err := globalRuleDAO.Create(ctx, random.Rule("dao-rule",
@@ -234,7 +234,7 @@ func TestUpdate(t *testing.T) {
 func TestDelete(t *testing.T) {
 	t.Parallel()
 
-	ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
+	ctx, cancel := context.WithTimeout(t.Context(), testTimeout)
 	defer cancel()
 
 	createOrg, err := globalOrgDAO.Create(ctx, random.Org("dao-rule"))
@@ -244,7 +244,7 @@ func TestDelete(t *testing.T) {
 	t.Run("Delete rule by valid ID", func(t *testing.T) {
 		t.Parallel()
 
-		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
+		ctx, cancel := context.WithTimeout(t.Context(), testTimeout)
 		defer cancel()
 
 		createRule, err := globalRuleDAO.Create(ctx, random.Rule("dao-rule",
@@ -259,7 +259,7 @@ func TestDelete(t *testing.T) {
 		t.Run("Read rule by deleted ID", func(t *testing.T) {
 			t.Parallel()
 
-			ctx, cancel := context.WithTimeout(context.Background(),
+			ctx, cancel := context.WithTimeout(t.Context(),
 				testTimeout)
 			defer cancel()
 
@@ -274,7 +274,7 @@ func TestDelete(t *testing.T) {
 	t.Run("Delete rule by unknown ID", func(t *testing.T) {
 		t.Parallel()
 
-		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
+		ctx, cancel := context.WithTimeout(t.Context(), testTimeout)
 		defer cancel()
 
 		err := globalRuleDAO.Delete(ctx, uuid.NewString(), createOrg.GetId())
@@ -285,7 +285,7 @@ func TestDelete(t *testing.T) {
 	t.Run("Deletes are isolated by org ID", func(t *testing.T) {
 		t.Parallel()
 
-		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
+		ctx, cancel := context.WithTimeout(t.Context(), testTimeout)
 		defer cancel()
 
 		createRule, err := globalRuleDAO.Create(ctx, random.Rule("dao-rule",
@@ -302,7 +302,7 @@ func TestDelete(t *testing.T) {
 func TestList(t *testing.T) {
 	t.Parallel()
 
-	ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
+	ctx, cancel := context.WithTimeout(t.Context(), testTimeout)
 	defer cancel()
 
 	createOrg, err := globalOrgDAO.Create(ctx, random.Org("dao-rule"))
@@ -328,7 +328,7 @@ func TestList(t *testing.T) {
 	t.Run("List rules by valid org ID", func(t *testing.T) {
 		t.Parallel()
 
-		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
+		ctx, cancel := context.WithTimeout(t.Context(), testTimeout)
 		defer cancel()
 
 		listRules, listCount, err := globalRuleDAO.List(ctx, createOrg.GetId(),
@@ -353,7 +353,7 @@ func TestList(t *testing.T) {
 	t.Run("List rules by valid org ID with pagination", func(t *testing.T) {
 		t.Parallel()
 
-		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
+		ctx, cancel := context.WithTimeout(t.Context(), testTimeout)
 		defer cancel()
 
 		listRules, listCount, err := globalRuleDAO.List(ctx, createOrg.GetId(),
@@ -378,7 +378,7 @@ func TestList(t *testing.T) {
 	t.Run("List rules by valid org ID with limit", func(t *testing.T) {
 		t.Parallel()
 
-		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
+		ctx, cancel := context.WithTimeout(t.Context(), testTimeout)
 		defer cancel()
 
 		listRules, listCount, err := globalRuleDAO.List(ctx, createOrg.GetId(),
@@ -393,7 +393,7 @@ func TestList(t *testing.T) {
 	t.Run("Lists are isolated by org ID", func(t *testing.T) {
 		t.Parallel()
 
-		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
+		ctx, cancel := context.WithTimeout(t.Context(), testTimeout)
 		defer cancel()
 
 		listRules, listCount, err := globalRuleDAO.List(ctx, uuid.NewString(),
@@ -408,7 +408,7 @@ func TestList(t *testing.T) {
 	t.Run("List rules by invalid org ID", func(t *testing.T) {
 		t.Parallel()
 
-		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
+		ctx, cancel := context.WithTimeout(t.Context(), testTimeout)
 		defer cancel()
 
 		listRules, listCount, err := globalRuleDAO.List(ctx, random.String(10),
@@ -424,7 +424,7 @@ func TestList(t *testing.T) {
 func TestListByTags(t *testing.T) {
 	t.Parallel()
 
-	ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
+	ctx, cancel := context.WithTimeout(t.Context(), testTimeout)
 	defer cancel()
 
 	createOrg, err := globalOrgDAO.Create(ctx, random.Org("dao-rule"))
@@ -449,7 +449,7 @@ func TestListByTags(t *testing.T) {
 	t.Run("List rules by valid org ID and unique attr", func(t *testing.T) {
 		t.Parallel()
 
-		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
+		ctx, cancel := context.WithTimeout(t.Context(), testTimeout)
 		defer cancel()
 
 		listRules, err := globalRuleDAO.ListByTags(ctx, createOrg.GetId(),
@@ -470,7 +470,7 @@ func TestListByTags(t *testing.T) {
 		rule.Status = api.Status_ACTIVE
 		rule.Attr = ruleAttrs[0]
 
-		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
+		ctx, cancel := context.WithTimeout(t.Context(), testTimeout)
 		defer cancel()
 
 		createRule, err := globalRuleDAO.Create(ctx, rule)
@@ -494,7 +494,7 @@ func TestListByTags(t *testing.T) {
 	t.Run("Lists are isolated by org ID", func(t *testing.T) {
 		t.Parallel()
 
-		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
+		ctx, cancel := context.WithTimeout(t.Context(), testTimeout)
 		defer cancel()
 
 		listRules, err := globalRuleDAO.ListByTags(ctx, uuid.NewString(),
@@ -507,7 +507,7 @@ func TestListByTags(t *testing.T) {
 	t.Run("List rules by invalid org ID", func(t *testing.T) {
 		t.Parallel()
 
-		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
+		ctx, cancel := context.WithTimeout(t.Context(), testTimeout)
 		defer cancel()
 
 		listRules, err := globalRuleDAO.ListByTags(ctx, random.String(10),

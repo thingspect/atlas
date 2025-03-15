@@ -19,7 +19,7 @@ func TestNewFromContext(t *testing.T) {
 	logger := &CtxLogger{Logger: WithField(random.String(10), random.String(10))}
 	t.Logf("logger: %+v", logger)
 
-	ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
+	ctx, cancel := context.WithTimeout(t.Context(), testTimeout)
 	defer cancel()
 
 	ctx = NewContext(ctx, logger)
@@ -31,7 +31,7 @@ func TestNewFromContext(t *testing.T) {
 func TestFromContextDefault(t *testing.T) {
 	t.Parallel()
 
-	ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
+	ctx, cancel := context.WithTimeout(t.Context(), testTimeout)
 	defer cancel()
 
 	ctxLogger := FromContext(ctx)

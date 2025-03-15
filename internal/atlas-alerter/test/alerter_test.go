@@ -31,7 +31,7 @@ func TestAlertMessages(t *testing.T) {
 		t.Run(fmt.Sprintf("Can alert %v", alarmType), func(t *testing.T) {
 			t.Parallel()
 
-			ctx, cancel := context.WithTimeout(context.Background(),
+			ctx, cancel := context.WithTimeout(t.Context(),
 				testTimeout)
 			defer cancel()
 
@@ -74,7 +74,7 @@ func TestAlertMessages(t *testing.T) {
 				bEOut))
 			time.Sleep(2 * time.Second)
 
-			ctx, cancel = context.WithTimeout(context.Background(), testTimeout)
+			ctx, cancel = context.WithTimeout(t.Context(), testTimeout)
 			defer cancel()
 
 			listAlerts, err := globalAleDAO.List(ctx, createOrg.GetId(),
@@ -114,7 +114,7 @@ func TestAlertMessagesRepeat(t *testing.T) {
 		t.Run(fmt.Sprintf("Can repeat %v", alarmType), func(t *testing.T) {
 			t.Parallel()
 
-			ctx, cancel := context.WithTimeout(context.Background(),
+			ctx, cancel := context.WithTimeout(t.Context(),
 				testTimeout)
 			defer cancel()
 
@@ -160,7 +160,7 @@ func TestAlertMessagesRepeat(t *testing.T) {
 				bEOut))
 			time.Sleep(2 * time.Second)
 
-			ctx, cancel = context.WithTimeout(context.Background(), testTimeout)
+			ctx, cancel = context.WithTimeout(t.Context(), testTimeout)
 			defer cancel()
 
 			listAlerts, err := globalAleDAO.List(ctx, createOrg.GetId(),
@@ -192,7 +192,7 @@ func TestAlertMessagesRepeat(t *testing.T) {
 func TestAlertMessagesError(t *testing.T) {
 	t.Parallel()
 
-	ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
+	ctx, cancel := context.WithTimeout(t.Context(), testTimeout)
 	defer cancel()
 
 	createOrg, err := globalOrgDAO.Create(ctx, random.Org("ale"))
@@ -300,7 +300,7 @@ func TestAlertMessagesError(t *testing.T) {
 				bEOut))
 			time.Sleep(2 * time.Second)
 
-			ctx, cancel := context.WithTimeout(context.Background(),
+			ctx, cancel := context.WithTimeout(t.Context(),
 				testTimeout)
 			defer cancel()
 
