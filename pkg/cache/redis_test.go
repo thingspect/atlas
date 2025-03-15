@@ -58,7 +58,7 @@ func TestRedisSetGet(t *testing.T) {
 	key := "testRedisSetGet-" + random.String(10)
 	val := random.String(10)
 
-	ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
+	ctx, cancel := context.WithTimeout(t.Context(), testTimeout)
 	defer cancel()
 
 	require.NoError(t, redis.Set(ctx, key, val))
@@ -96,7 +96,7 @@ func TestRedisSetTTLGetB(t *testing.T) {
 	key := "testRedisSetTTLGetB-" + random.String(10)
 	val := random.Bytes(10)
 
-	ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
+	ctx, cancel := context.WithTimeout(t.Context(), testTimeout)
 	defer cancel()
 
 	require.NoError(t, redis.SetTTL(ctx, key, val, testTimeout))
@@ -134,7 +134,7 @@ func TestRedisSetTTLGetBShort(t *testing.T) {
 	key := "testRedisSetTTLGetBShort-" + random.String(10)
 	val := random.Bytes(10)
 
-	ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
+	ctx, cancel := context.WithTimeout(t.Context(), testTimeout)
 	defer cancel()
 
 	require.NoError(t, redis.SetTTL(ctx, key, val, time.Millisecond))
@@ -159,7 +159,7 @@ func TestRedisSetGetI(t *testing.T) {
 	key := "testRedisSetGetI-" + random.String(10)
 	val := int64(random.Intn(999))
 
-	ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
+	ctx, cancel := context.WithTimeout(t.Context(), testTimeout)
 	defer cancel()
 
 	require.NoError(t, redis.Set(ctx, key, val))
@@ -196,7 +196,7 @@ func TestRedisSetIfNotExist(t *testing.T) {
 
 	key := "testRedisSetIfNotExist-" + random.String(10)
 
-	ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
+	ctx, cancel := context.WithTimeout(t.Context(), testTimeout)
 	defer cancel()
 
 	ok, err := redis.SetIfNotExist(ctx, key, random.Bytes(10))
@@ -221,7 +221,7 @@ func TestRedisSetIfNotExistTTL(t *testing.T) {
 
 	key := "testRedisSetIfNotExistTTL-" + random.String(10)
 
-	ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
+	ctx, cancel := context.WithTimeout(t.Context(), testTimeout)
 	defer cancel()
 
 	ok, err := redis.SetIfNotExistTTL(ctx, key, random.Bytes(10), testTimeout)
@@ -246,7 +246,7 @@ func TestRedisSetIfNotExistTTLShort(t *testing.T) {
 
 	key := "testRedisSetIfNotExistTTLShort-" + random.String(10)
 
-	ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
+	ctx, cancel := context.WithTimeout(t.Context(), testTimeout)
 	defer cancel()
 
 	ok, err := redis.SetIfNotExistTTL(ctx, key, random.Bytes(10),
@@ -274,7 +274,7 @@ func TestRedisIncr(t *testing.T) {
 	key := "testRedisIncr-" + random.String(10)
 	val := int64(random.Intn(999))
 
-	ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
+	ctx, cancel := context.WithTimeout(t.Context(), testTimeout)
 	defer cancel()
 
 	require.NoError(t, redis.Set(ctx, key, val))
@@ -309,7 +309,7 @@ func TestRedisDel(t *testing.T) {
 	key := "testRedisDel-" + random.String(10)
 	val := random.String(10)
 
-	ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
+	ctx, cancel := context.WithTimeout(t.Context(), testTimeout)
 	defer cancel()
 
 	require.NoError(t, redis.Set(ctx, key, val))

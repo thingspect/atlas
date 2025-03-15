@@ -42,6 +42,7 @@ func request_AlertService_ListAlerts_0(ctx context.Context, marshaler runtime.Ma
 		protoReq ListAlertsRequest
 		metadata runtime.ServerMetadata
 	)
+	io.Copy(io.Discard, req.Body)
 	if err := req.ParseForm(); err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}

@@ -35,7 +35,7 @@ func TestCreateDevice(t *testing.T) {
 		devicer.EXPECT().Create(gomock.Any(), dev).Return(retDev, nil).Times(1)
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
-			context.Background(), &session.Session{
+			t.Context(), &session.Session{
 				OrgID: dev.GetOrgId(), Role: api.Role_ADMIN,
 			}), testTimeout)
 		defer cancel()
@@ -52,7 +52,7 @@ func TestCreateDevice(t *testing.T) {
 	t.Run("Create device with invalid session", func(t *testing.T) {
 		t.Parallel()
 
-		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
+		ctx, cancel := context.WithTimeout(t.Context(), testTimeout)
 		defer cancel()
 
 		devSvc := NewDevice(nil, nil)
@@ -66,7 +66,7 @@ func TestCreateDevice(t *testing.T) {
 		t.Parallel()
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
-			context.Background(), &session.Session{
+			t.Context(), &session.Session{
 				OrgID: uuid.NewString(), Role: api.Role_VIEWER,
 			}), testTimeout)
 		defer cancel()
@@ -89,7 +89,7 @@ func TestCreateDevice(t *testing.T) {
 			dao.ErrInvalidFormat).Times(1)
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
-			context.Background(), &session.Session{
+			t.Context(), &session.Session{
 				OrgID: dev.GetOrgId(), Role: api.Role_ADMIN,
 			}), testTimeout)
 		defer cancel()
@@ -122,7 +122,7 @@ func TestCreateDeviceLoRaWAN(t *testing.T) {
 			Times(1)
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
-			context.Background(), &session.Session{
+			t.Context(), &session.Session{
 				OrgID: dev.GetOrgId(), Role: api.Role_ADMIN,
 			}), testTimeout)
 		defer cancel()
@@ -152,7 +152,7 @@ func TestCreateDeviceLoRaWAN(t *testing.T) {
 			Return(nil).Times(1)
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
-			context.Background(), &session.Session{
+			t.Context(), &session.Session{
 				OrgID: dev.GetOrgId(), Role: api.Role_ADMIN,
 			}), testTimeout)
 		defer cancel()
@@ -174,7 +174,7 @@ func TestCreateDeviceLoRaWAN(t *testing.T) {
 	t.Run("Create configuration with invalid session", func(t *testing.T) {
 		t.Parallel()
 
-		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
+		ctx, cancel := context.WithTimeout(t.Context(), testTimeout)
 		defer cancel()
 
 		devSvc := NewDevice(nil, nil)
@@ -188,7 +188,7 @@ func TestCreateDeviceLoRaWAN(t *testing.T) {
 		t.Parallel()
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
-			context.Background(), &session.Session{
+			t.Context(), &session.Session{
 				OrgID: uuid.NewString(), Role: api.Role_VIEWER,
 			}), testTimeout)
 		defer cancel()
@@ -208,7 +208,7 @@ func TestCreateDeviceLoRaWAN(t *testing.T) {
 			Return(nil, dao.ErrNotFound).Times(1)
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
-			context.Background(), &session.Session{
+			t.Context(), &session.Session{
 				OrgID: uuid.NewString(), Role: api.Role_ADMIN,
 			}), testTimeout)
 		defer cancel()
@@ -235,7 +235,7 @@ func TestCreateDeviceLoRaWAN(t *testing.T) {
 			Return(dao.ErrInvalidFormat).Times(1)
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
-			context.Background(), &session.Session{
+			t.Context(), &session.Session{
 				OrgID: dev.GetOrgId(), Role: api.Role_ADMIN,
 			}), testTimeout)
 		defer cancel()
@@ -270,7 +270,7 @@ func TestGetDevice(t *testing.T) {
 			nil).Times(1)
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
-			context.Background(), &session.Session{
+			t.Context(), &session.Session{
 				OrgID: dev.GetOrgId(), Role: api.Role_ADMIN,
 			}), testTimeout)
 		defer cancel()
@@ -285,7 +285,7 @@ func TestGetDevice(t *testing.T) {
 	t.Run("Get device with invalid session", func(t *testing.T) {
 		t.Parallel()
 
-		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
+		ctx, cancel := context.WithTimeout(t.Context(), testTimeout)
 		defer cancel()
 
 		devSvc := NewDevice(nil, nil)
@@ -299,7 +299,7 @@ func TestGetDevice(t *testing.T) {
 		t.Parallel()
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
-			context.Background(), &session.Session{
+			t.Context(), &session.Session{
 				OrgID: uuid.NewString(), Role: api.Role_CONTACT,
 			}), testTimeout)
 		defer cancel()
@@ -319,7 +319,7 @@ func TestGetDevice(t *testing.T) {
 			Return(nil, dao.ErrNotFound).Times(1)
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
-			context.Background(), &session.Session{
+			t.Context(), &session.Session{
 				OrgID: uuid.NewString(), Role: api.Role_ADMIN,
 			}), testTimeout)
 		defer cancel()
@@ -347,7 +347,7 @@ func TestUpdateDevice(t *testing.T) {
 		devicer.EXPECT().Update(gomock.Any(), dev).Return(retDev, nil).Times(1)
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
-			context.Background(), &session.Session{
+			t.Context(), &session.Session{
 				OrgID: dev.GetOrgId(), Role: api.Role_ADMIN,
 			}), testTimeout)
 		defer cancel()
@@ -384,7 +384,7 @@ func TestUpdateDevice(t *testing.T) {
 			Return(retMerged, nil).Times(1)
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
-			context.Background(), &session.Session{
+			t.Context(), &session.Session{
 				OrgID: dev.GetOrgId(), Role: api.Role_ADMIN,
 			}), testTimeout)
 		defer cancel()
@@ -403,7 +403,7 @@ func TestUpdateDevice(t *testing.T) {
 	t.Run("Update device with invalid session", func(t *testing.T) {
 		t.Parallel()
 
-		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
+		ctx, cancel := context.WithTimeout(t.Context(), testTimeout)
 		defer cancel()
 
 		devSvc := NewDevice(nil, nil)
@@ -417,7 +417,7 @@ func TestUpdateDevice(t *testing.T) {
 		t.Parallel()
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
-			context.Background(), &session.Session{
+			t.Context(), &session.Session{
 				OrgID: uuid.NewString(), Role: api.Role_VIEWER,
 			}), testTimeout)
 		defer cancel()
@@ -433,7 +433,7 @@ func TestUpdateDevice(t *testing.T) {
 		t.Parallel()
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
-			context.Background(), &session.Session{
+			t.Context(), &session.Session{
 				OrgID: uuid.NewString(), Role: api.Role_ADMIN,
 			}), testTimeout)
 		defer cancel()
@@ -454,7 +454,7 @@ func TestUpdateDevice(t *testing.T) {
 		dev := random.Device("api-device", uuid.NewString())
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
-			context.Background(), &session.Session{
+			t.Context(), &session.Session{
 				OrgID: uuid.NewString(), Role: api.Role_ADMIN,
 			}), testTimeout)
 		defer cancel()
@@ -482,7 +482,7 @@ func TestUpdateDevice(t *testing.T) {
 			Return(nil, dao.ErrNotFound).Times(1)
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
-			context.Background(), &session.Session{
+			t.Context(), &session.Session{
 				OrgID: orgID, Role: api.Role_ADMIN,
 			}), testTimeout)
 		defer cancel()
@@ -505,7 +505,7 @@ func TestUpdateDevice(t *testing.T) {
 		dev.UniqId = random.String(41)
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
-			context.Background(), &session.Session{
+			t.Context(), &session.Session{
 				OrgID: dev.GetOrgId(), Role: api.Role_ADMIN,
 			}), testTimeout)
 		defer cancel()
@@ -532,7 +532,7 @@ func TestUpdateDevice(t *testing.T) {
 			dao.ErrInvalidFormat).Times(1)
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
-			context.Background(), &session.Session{
+			t.Context(), &session.Session{
 				OrgID: dev.GetOrgId(), Role: api.Role_ADMIN,
 			}), testTimeout)
 		defer cancel()
@@ -567,7 +567,7 @@ func TestDeleteDeviceLoRaWAN(t *testing.T) {
 			Times(1)
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
-			context.Background(), &session.Session{
+			t.Context(), &session.Session{
 				OrgID: dev.GetOrgId(), Role: api.Role_ADMIN,
 			}), testTimeout)
 		defer cancel()
@@ -597,7 +597,7 @@ func TestDeleteDeviceLoRaWAN(t *testing.T) {
 				"authentication failed: not authorized")).Times(1)
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
-			context.Background(), &session.Session{
+			t.Context(), &session.Session{
 				OrgID: dev.GetOrgId(), Role: api.Role_ADMIN,
 			}), testTimeout)
 		defer cancel()
@@ -612,7 +612,7 @@ func TestDeleteDeviceLoRaWAN(t *testing.T) {
 	t.Run("Delete configurations with invalid session", func(t *testing.T) {
 		t.Parallel()
 
-		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
+		ctx, cancel := context.WithTimeout(t.Context(), testTimeout)
 		defer cancel()
 
 		devSvc := NewDevice(nil, nil)
@@ -626,7 +626,7 @@ func TestDeleteDeviceLoRaWAN(t *testing.T) {
 		t.Parallel()
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
-			context.Background(), &session.Session{
+			t.Context(), &session.Session{
 				OrgID: uuid.NewString(), Role: api.Role_VIEWER,
 			}), testTimeout)
 		defer cancel()
@@ -646,7 +646,7 @@ func TestDeleteDeviceLoRaWAN(t *testing.T) {
 			Return(nil, dao.ErrNotFound).Times(1)
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
-			context.Background(), &session.Session{
+			t.Context(), &session.Session{
 				OrgID: uuid.NewString(), Role: api.Role_ADMIN,
 			}), testTimeout)
 		defer cancel()
@@ -672,7 +672,7 @@ func TestDeleteDeviceLoRaWAN(t *testing.T) {
 			Return(dao.ErrInvalidFormat).Times(1)
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
-			context.Background(), &session.Session{
+			t.Context(), &session.Session{
 				OrgID: dev.GetOrgId(), Role: api.Role_ADMIN,
 			}), testTimeout)
 		defer cancel()
@@ -701,7 +701,7 @@ func TestDeleteDeviceLoRaWAN(t *testing.T) {
 			Return(dao.ErrInvalidFormat).Times(1)
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
-			context.Background(), &session.Session{
+			t.Context(), &session.Session{
 				OrgID: dev.GetOrgId(), Role: api.Role_ADMIN,
 			}), testTimeout)
 		defer cancel()
@@ -726,7 +726,7 @@ func TestDeleteDevice(t *testing.T) {
 			Return(nil).Times(1)
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
-			context.Background(), &session.Session{
+			t.Context(), &session.Session{
 				OrgID: uuid.NewString(), Role: api.Role_ADMIN,
 			}), testTimeout)
 		defer cancel()
@@ -742,7 +742,7 @@ func TestDeleteDevice(t *testing.T) {
 	t.Run("Delete device with invalid session", func(t *testing.T) {
 		t.Parallel()
 
-		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
+		ctx, cancel := context.WithTimeout(t.Context(), testTimeout)
 		defer cancel()
 
 		devSvc := NewDevice(nil, nil)
@@ -755,7 +755,7 @@ func TestDeleteDevice(t *testing.T) {
 		t.Parallel()
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
-			context.Background(), &session.Session{
+			t.Context(), &session.Session{
 				OrgID: uuid.NewString(), Role: api.Role_VIEWER,
 			}), testTimeout)
 		defer cancel()
@@ -774,7 +774,7 @@ func TestDeleteDevice(t *testing.T) {
 			Return(dao.ErrNotFound).Times(1)
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
-			context.Background(), &session.Session{
+			t.Context(), &session.Session{
 				OrgID: uuid.NewString(), Role: api.Role_ADMIN,
 			}), testTimeout)
 		defer cancel()
@@ -807,7 +807,7 @@ func TestListDevices(t *testing.T) {
 			"").Return(devs, int32(3), nil).Times(1)
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
-			context.Background(), &session.Session{
+			t.Context(), &session.Session{
 				OrgID: orgID, Role: api.Role_ADMIN,
 			}), testTimeout)
 		defer cancel()
@@ -841,7 +841,7 @@ func TestListDevices(t *testing.T) {
 			"").Return(devs, int32(3), nil).Times(1)
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
-			context.Background(), &session.Session{
+			t.Context(), &session.Session{
 				OrgID: orgID, Role: api.Role_ADMIN,
 			}), testTimeout)
 		defer cancel()
@@ -861,7 +861,7 @@ func TestListDevices(t *testing.T) {
 	t.Run("List devices with invalid session", func(t *testing.T) {
 		t.Parallel()
 
-		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
+		ctx, cancel := context.WithTimeout(t.Context(), testTimeout)
 		defer cancel()
 
 		devSvc := NewDevice(nil, nil)
@@ -875,7 +875,7 @@ func TestListDevices(t *testing.T) {
 		t.Parallel()
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
-			context.Background(), &session.Session{
+			t.Context(), &session.Session{
 				OrgID: uuid.NewString(), Role: api.Role_CONTACT,
 			}), testTimeout)
 		defer cancel()
@@ -891,7 +891,7 @@ func TestListDevices(t *testing.T) {
 		t.Parallel()
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
-			context.Background(), &session.Session{
+			t.Context(), &session.Session{
 				OrgID: uuid.NewString(), Role: api.Role_ADMIN,
 			}), testTimeout)
 		defer cancel()
@@ -915,7 +915,7 @@ func TestListDevices(t *testing.T) {
 			dao.ErrInvalidFormat).Times(1)
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
-			context.Background(), &session.Session{
+			t.Context(), &session.Session{
 				OrgID: "aaa", Role: api.Role_ADMIN,
 			}), testTimeout)
 		defer cancel()
@@ -945,7 +945,7 @@ func TestListDevices(t *testing.T) {
 			"").Return(devs, int32(3), nil).Times(1)
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
-			context.Background(), &session.Session{
+			t.Context(), &session.Session{
 				OrgID: orgID, Role: api.Role_ADMIN,
 			}), testTimeout)
 		defer cancel()

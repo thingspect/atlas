@@ -18,7 +18,7 @@ const testTimeout = 14 * time.Second
 func TestList(t *testing.T) {
 	t.Parallel()
 
-	ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
+	ctx, cancel := context.WithTimeout(t.Context(), testTimeout)
 	defer cancel()
 
 	createOrg, err := globalOrgDAO.Create(ctx, random.Org("dao-tag"))
@@ -50,7 +50,7 @@ func TestList(t *testing.T) {
 	t.Run("List tags by valid org ID", func(t *testing.T) {
 		t.Parallel()
 
-		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
+		ctx, cancel := context.WithTimeout(t.Context(), testTimeout)
 		defer cancel()
 
 		listTags, err := globalTagDAO.List(ctx, createOrg.GetId())
@@ -70,7 +70,7 @@ func TestList(t *testing.T) {
 	t.Run("List tags by valid org ID without duplicates", func(t *testing.T) {
 		t.Parallel()
 
-		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
+		ctx, cancel := context.WithTimeout(t.Context(), testTimeout)
 		defer cancel()
 
 		dev := random.Device("dao-tag", createOrg.GetId())
@@ -104,7 +104,7 @@ func TestList(t *testing.T) {
 	t.Run("Lists are isolated by org ID", func(t *testing.T) {
 		t.Parallel()
 
-		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
+		ctx, cancel := context.WithTimeout(t.Context(), testTimeout)
 		defer cancel()
 
 		listTags, err := globalTagDAO.List(ctx, uuid.NewString())
@@ -116,7 +116,7 @@ func TestList(t *testing.T) {
 	t.Run("List tags by invalid org ID", func(t *testing.T) {
 		t.Parallel()
 
-		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
+		ctx, cancel := context.WithTimeout(t.Context(), testTimeout)
 		defer cancel()
 
 		listTags, err := globalTagDAO.List(ctx, random.String(10))

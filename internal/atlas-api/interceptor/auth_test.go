@@ -112,7 +112,7 @@ func TestAuth(t *testing.T) {
 				Return(test.inpCache, "", test.inpCacheErr).
 				Times(test.inpCacheTimes)
 
-			ctx, cancel := context.WithTimeout(context.Background(),
+			ctx, cancel := context.WithTimeout(t.Context(),
 				testTimeout)
 			defer cancel()
 			if test.inpMD != nil {

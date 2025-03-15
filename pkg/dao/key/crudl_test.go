@@ -20,7 +20,7 @@ const testTimeout = 8 * time.Second
 func TestCreate(t *testing.T) {
 	t.Parallel()
 
-	ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
+	ctx, cancel := context.WithTimeout(t.Context(), testTimeout)
 	defer cancel()
 
 	createOrg, err := globalOrgDAO.Create(ctx, random.Org("dao-key"))
@@ -33,7 +33,7 @@ func TestCreate(t *testing.T) {
 		key := random.Key("dao-key", createOrg.GetId())
 		createKey, _ := proto.Clone(key).(*api.Key)
 
-		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
+		ctx, cancel := context.WithTimeout(t.Context(), testTimeout)
 		defer cancel()
 
 		createKey, err := globalKeyDAO.Create(ctx, createKey)
@@ -50,7 +50,7 @@ func TestCreate(t *testing.T) {
 		key := random.Key("dao-key", createOrg.GetId())
 		key.Name = "dao-key-" + random.String(80)
 
-		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
+		ctx, cancel := context.WithTimeout(t.Context(), testTimeout)
 		defer cancel()
 
 		createKey, err := globalKeyDAO.Create(ctx, key)
@@ -63,7 +63,7 @@ func TestCreate(t *testing.T) {
 func TestRead(t *testing.T) {
 	t.Parallel()
 
-	ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
+	ctx, cancel := context.WithTimeout(t.Context(), testTimeout)
 	defer cancel()
 
 	createOrg, err := globalOrgDAO.Create(ctx, random.Org("dao-key"))
@@ -78,7 +78,7 @@ func TestRead(t *testing.T) {
 	t.Run("Read key by valid ID", func(t *testing.T) {
 		t.Parallel()
 
-		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
+		ctx, cancel := context.WithTimeout(t.Context(), testTimeout)
 		defer cancel()
 
 		readKey, err := globalKeyDAO.read(ctx, createKey.GetId(), createKey.GetOrgId())
@@ -90,7 +90,7 @@ func TestRead(t *testing.T) {
 	t.Run("Read key by unknown ID", func(t *testing.T) {
 		t.Parallel()
 
-		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
+		ctx, cancel := context.WithTimeout(t.Context(), testTimeout)
 		defer cancel()
 
 		readKey, err := globalKeyDAO.read(ctx, uuid.NewString(),
@@ -103,7 +103,7 @@ func TestRead(t *testing.T) {
 	t.Run("Reads are isolated by org ID", func(t *testing.T) {
 		t.Parallel()
 
-		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
+		ctx, cancel := context.WithTimeout(t.Context(), testTimeout)
 		defer cancel()
 
 		readKey, err := globalKeyDAO.read(ctx, createKey.GetId(),
@@ -116,7 +116,7 @@ func TestRead(t *testing.T) {
 	t.Run("Read key by invalid ID", func(t *testing.T) {
 		t.Parallel()
 
-		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
+		ctx, cancel := context.WithTimeout(t.Context(), testTimeout)
 		defer cancel()
 
 		readKey, err := globalKeyDAO.read(ctx, random.String(10),
@@ -130,7 +130,7 @@ func TestRead(t *testing.T) {
 func TestDelete(t *testing.T) {
 	t.Parallel()
 
-	ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
+	ctx, cancel := context.WithTimeout(t.Context(), testTimeout)
 	defer cancel()
 
 	createOrg, err := globalOrgDAO.Create(ctx, random.Org("dao-key"))
@@ -140,7 +140,7 @@ func TestDelete(t *testing.T) {
 	t.Run("Delete key by valid ID", func(t *testing.T) {
 		t.Parallel()
 
-		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
+		ctx, cancel := context.WithTimeout(t.Context(), testTimeout)
 		defer cancel()
 
 		createKey, err := globalKeyDAO.Create(ctx, random.Key("dao-key",
@@ -155,7 +155,7 @@ func TestDelete(t *testing.T) {
 		t.Run("Read key by deleted ID", func(t *testing.T) {
 			t.Parallel()
 
-			ctx, cancel := context.WithTimeout(context.Background(),
+			ctx, cancel := context.WithTimeout(t.Context(),
 				testTimeout)
 			defer cancel()
 
@@ -170,7 +170,7 @@ func TestDelete(t *testing.T) {
 	t.Run("Delete key by unknown ID", func(t *testing.T) {
 		t.Parallel()
 
-		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
+		ctx, cancel := context.WithTimeout(t.Context(), testTimeout)
 		defer cancel()
 
 		err := globalKeyDAO.Delete(ctx, uuid.NewString(), createOrg.GetId())
@@ -181,7 +181,7 @@ func TestDelete(t *testing.T) {
 	t.Run("Deletes are isolated by org ID", func(t *testing.T) {
 		t.Parallel()
 
-		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
+		ctx, cancel := context.WithTimeout(t.Context(), testTimeout)
 		defer cancel()
 
 		createKey, err := globalKeyDAO.Create(ctx, random.Key("dao-key",
@@ -198,7 +198,7 @@ func TestDelete(t *testing.T) {
 func TestList(t *testing.T) {
 	t.Parallel()
 
-	ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
+	ctx, cancel := context.WithTimeout(t.Context(), testTimeout)
 	defer cancel()
 
 	createOrg, err := globalOrgDAO.Create(ctx, random.Org("dao-key"))
@@ -224,7 +224,7 @@ func TestList(t *testing.T) {
 	t.Run("List keys by valid org ID", func(t *testing.T) {
 		t.Parallel()
 
-		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
+		ctx, cancel := context.WithTimeout(t.Context(), testTimeout)
 		defer cancel()
 
 		listKeys, listCount, err := globalKeyDAO.List(ctx, createOrg.GetId(),
@@ -249,7 +249,7 @@ func TestList(t *testing.T) {
 	t.Run("List keys by valid org ID with pagination", func(t *testing.T) {
 		t.Parallel()
 
-		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
+		ctx, cancel := context.WithTimeout(t.Context(), testTimeout)
 		defer cancel()
 
 		listKeys, listCount, err := globalKeyDAO.List(ctx, createOrg.GetId(),
@@ -274,7 +274,7 @@ func TestList(t *testing.T) {
 	t.Run("List keys by valid org ID with limit", func(t *testing.T) {
 		t.Parallel()
 
-		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
+		ctx, cancel := context.WithTimeout(t.Context(), testTimeout)
 		defer cancel()
 
 		listKeys, listCount, err := globalKeyDAO.List(ctx, createOrg.GetId(),
@@ -289,7 +289,7 @@ func TestList(t *testing.T) {
 	t.Run("Lists are isolated by org ID", func(t *testing.T) {
 		t.Parallel()
 
-		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
+		ctx, cancel := context.WithTimeout(t.Context(), testTimeout)
 		defer cancel()
 
 		listKeys, listCount, err := globalKeyDAO.List(ctx, uuid.NewString(),
@@ -304,7 +304,7 @@ func TestList(t *testing.T) {
 	t.Run("List keys by invalid org ID", func(t *testing.T) {
 		t.Parallel()
 
-		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
+		ctx, cancel := context.WithTimeout(t.Context(), testTimeout)
 		defer cancel()
 
 		listKeys, listCount, err := globalKeyDAO.List(ctx, random.String(10),

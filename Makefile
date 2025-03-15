@@ -36,7 +36,7 @@ lint:
 	golangci-lint run -E bidichk,copyloopvar,durationcheck,err113,errname \
 	-E forcetypeassert,godot,gofumpt,gosec,intrange,nlreturn,perfsprint \
 	-E prealloc,protogetter,testifylint,unconvert,unparam,usestdlibvars \
-	--exclude-use-default=false
+	-E usetesting --exclude-use-default=false
 
 	go install golang.org/x/vuln/cmd/govulncheck@latest
 	govulncheck -test ./...
@@ -51,11 +51,10 @@ init_db:
 test: install lint unit_test integration_test
 # -count=1 is the idiomatic way to disable test caching in package list mode
 unit_test:
-	go test -count=1 -cover -cpu=1,4 -failfast -shuffle=on $(RFLAG) -tags unit \
-	./...
+	go test -count=1 -cpu=1,4 -failfast -shuffle=on $(RFLAG) -tags unit ./...
 integration_test: init_db
-	go test -count=1 -cover -cpu=1,4 -failfast -shuffle=on $(RFLAG) -tags \
-	integration ./...
+	go test -count=1 -cpu=1,4 -failfast -shuffle=on $(RFLAG) -tags integration \
+	./...
 
 mod:
 	go get -t -u ./... || true

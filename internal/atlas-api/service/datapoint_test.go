@@ -43,7 +43,7 @@ func TestPublishDataPoints(t *testing.T) {
 		vInPubTopic := "topic-" + random.String(10)
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
-			context.Background(), &session.Session{
+			t.Context(), &session.Session{
 				OrgID: orgID, Role: api.Role_PUBLISHER,
 			}), testTimeout)
 		defer cancel()
@@ -91,7 +91,7 @@ func TestPublishDataPoints(t *testing.T) {
 		pubTopic := "topic-" + random.String(10)
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
-			context.Background(), &session.Session{
+			t.Context(), &session.Session{
 				OrgID: orgID, Role: api.Role_ADMIN,
 			}), testTimeout)
 		defer cancel()
@@ -131,7 +131,7 @@ func TestPublishDataPoints(t *testing.T) {
 	t.Run("Publish data point with invalid session", func(t *testing.T) {
 		t.Parallel()
 
-		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
+		ctx, cancel := context.WithTimeout(t.Context(), testTimeout)
 		defer cancel()
 
 		dpSvc := NewDataPoint(nil, "", nil)
@@ -144,7 +144,7 @@ func TestPublishDataPoints(t *testing.T) {
 		t.Parallel()
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
-			context.Background(), &session.Session{
+			t.Context(), &session.Session{
 				OrgID: uuid.NewString(), Role: api.Role_VIEWER,
 			}), testTimeout)
 		defer cancel()
@@ -171,7 +171,7 @@ func TestPublishDataPoints(t *testing.T) {
 			Return(dao.ErrNotFound).Times(1)
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
-			context.Background(), &session.Session{
+			t.Context(), &session.Session{
 				OrgID: orgID, Role: api.Role_ADMIN,
 			}), testTimeout)
 		defer cancel()
@@ -206,7 +206,7 @@ func TestListDataPoints(t *testing.T) {
 			end, start).Return([]*common.DataPoint{retPoint}, nil).Times(1)
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
-			context.Background(), &session.Session{
+			t.Context(), &session.Session{
 				OrgID: orgID, Role: api.Role_ADMIN,
 			}), testTimeout)
 		defer cancel()
@@ -242,7 +242,7 @@ func TestListDataPoints(t *testing.T) {
 			Return([]*common.DataPoint{retPoint}, nil).Times(1)
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
-			context.Background(), &session.Session{
+			t.Context(), &session.Session{
 				OrgID: orgID, Role: api.Role_ADMIN,
 			}), testTimeout)
 		defer cancel()
@@ -262,7 +262,7 @@ func TestListDataPoints(t *testing.T) {
 	t.Run("List data points with invalid session", func(t *testing.T) {
 		t.Parallel()
 
-		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
+		ctx, cancel := context.WithTimeout(t.Context(), testTimeout)
 		defer cancel()
 
 		dpSvc := NewDataPoint(nil, "", nil)
@@ -277,7 +277,7 @@ func TestListDataPoints(t *testing.T) {
 		t.Parallel()
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
-			context.Background(), &session.Session{
+			t.Context(), &session.Session{
 				OrgID: uuid.NewString(), Role: api.Role_CONTACT,
 			}), testTimeout)
 		defer cancel()
@@ -294,7 +294,7 @@ func TestListDataPoints(t *testing.T) {
 		t.Parallel()
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
-			context.Background(), &session.Session{
+			t.Context(), &session.Session{
 				OrgID: uuid.NewString(), Role: api.Role_ADMIN,
 			}), testTimeout)
 		defer cancel()
@@ -320,7 +320,7 @@ func TestListDataPoints(t *testing.T) {
 			dao.ErrInvalidFormat).Times(1)
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
-			context.Background(), &session.Session{
+			t.Context(), &session.Session{
 				OrgID: "aaa", Role: api.Role_ADMIN,
 			}), testTimeout)
 		defer cancel()
@@ -357,7 +357,7 @@ func TestLatestDataPoints(t *testing.T) {
 			Return([]*common.DataPoint{retPoint}, nil).Times(1)
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
-			context.Background(), &session.Session{
+			t.Context(), &session.Session{
 				OrgID: orgID, Role: api.Role_ADMIN,
 			}), testTimeout)
 		defer cancel()
@@ -394,7 +394,7 @@ func TestLatestDataPoints(t *testing.T) {
 			Return([]*common.DataPoint{retPoint}, nil).Times(1)
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
-			context.Background(), &session.Session{
+			t.Context(), &session.Session{
 				OrgID: orgID, Role: api.Role_ADMIN,
 			}), testTimeout)
 		defer cancel()
@@ -417,7 +417,7 @@ func TestLatestDataPoints(t *testing.T) {
 	t.Run("Latest data points with invalid session", func(t *testing.T) {
 		t.Parallel()
 
-		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
+		ctx, cancel := context.WithTimeout(t.Context(), testTimeout)
 		defer cancel()
 
 		dpSvc := NewDataPoint(nil, "", nil)
@@ -432,7 +432,7 @@ func TestLatestDataPoints(t *testing.T) {
 		t.Parallel()
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
-			context.Background(), &session.Session{
+			t.Context(), &session.Session{
 				OrgID: uuid.NewString(), Role: api.Role_CONTACT,
 			}), testTimeout)
 		defer cancel()
@@ -449,7 +449,7 @@ func TestLatestDataPoints(t *testing.T) {
 		t.Parallel()
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
-			context.Background(), &session.Session{
+			t.Context(), &session.Session{
 				OrgID: uuid.NewString(), Role: api.Role_ADMIN,
 			}), testTimeout)
 		defer cancel()
@@ -478,7 +478,7 @@ func TestLatestDataPoints(t *testing.T) {
 			Return(nil, dao.ErrInvalidFormat).Times(1)
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
-			context.Background(), &session.Session{
+			t.Context(), &session.Session{
 				OrgID: "aaa", Role: api.Role_ADMIN,
 			}), testTimeout)
 		defer cancel()

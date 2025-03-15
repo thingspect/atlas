@@ -115,7 +115,7 @@ type AlertMultiError []error
 
 // Error returns a concatenation of all the error messages it wraps.
 func (m AlertMultiError) Error() string {
-	var msgs []string
+	msgs := make([]string, 0, len(m))
 	for _, err := range m {
 		msgs = append(msgs, err.Error())
 	}
@@ -358,7 +358,7 @@ type ListAlertsRequestMultiError []error
 
 // Error returns a concatenation of all the error messages it wraps.
 func (m ListAlertsRequestMultiError) Error() string {
-	var msgs []string
+	msgs := make([]string, 0, len(m))
 	for _, err := range m {
 		msgs = append(msgs, err.Error())
 	}
@@ -494,7 +494,7 @@ type ListAlertsResponseMultiError []error
 
 // Error returns a concatenation of all the error messages it wraps.
 func (m ListAlertsResponseMultiError) Error() string {
-	var msgs []string
+	msgs := make([]string, 0, len(m))
 	for _, err := range m {
 		msgs = append(msgs, err.Error())
 	}

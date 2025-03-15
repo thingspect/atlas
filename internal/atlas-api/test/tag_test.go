@@ -15,7 +15,7 @@ import (
 func TestListTags(t *testing.T) {
 	t.Parallel()
 
-	ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
+	ctx, cancel := context.WithTimeout(t.Context(), testTimeout)
 	defer cancel()
 
 	var tCount int
@@ -51,7 +51,7 @@ func TestListTags(t *testing.T) {
 	t.Run("List tags by valid org ID", func(t *testing.T) {
 		t.Parallel()
 
-		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
+		ctx, cancel := context.WithTimeout(t.Context(), testTimeout)
 		defer cancel()
 
 		tagCli := api.NewTagServiceClient(globalAdminGRPCConn)
@@ -72,7 +72,7 @@ func TestListTags(t *testing.T) {
 	t.Run("Lists are isolated by org ID", func(t *testing.T) {
 		t.Parallel()
 
-		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
+		ctx, cancel := context.WithTimeout(t.Context(), testTimeout)
 		defer cancel()
 
 		secCli := api.NewTagServiceClient(secondaryAdminGRPCConn)

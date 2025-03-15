@@ -27,7 +27,7 @@ func TestValidateMessages(t *testing.T) {
 		BoolVal: []bool{true, false}[random.Intn(2)],
 	}
 
-	ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
+	ctx, cancel := context.WithTimeout(t.Context(), testTimeout)
 	defer cancel()
 
 	createOrg, err := globalOrgDAO.Create(ctx, random.Org("val"))
@@ -144,7 +144,7 @@ func TestValidateMessages(t *testing.T) {
 }
 
 func TestValidateMessagesError(t *testing.T) {
-	ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
+	ctx, cancel := context.WithTimeout(t.Context(), testTimeout)
 	defer cancel()
 
 	createOrg, err := globalOrgDAO.Create(ctx, random.Org("val"))

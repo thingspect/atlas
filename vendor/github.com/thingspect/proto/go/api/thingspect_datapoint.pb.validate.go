@@ -119,7 +119,7 @@ type PublishDataPointsRequestMultiError []error
 
 // Error returns a concatenation of all the error messages it wraps.
 func (m PublishDataPointsRequestMultiError) Error() string {
-	var msgs []string
+	msgs := make([]string, 0, len(m))
 	for _, err := range m {
 		msgs = append(msgs, err.Error())
 	}
@@ -356,7 +356,7 @@ type ListDataPointsRequestMultiError []error
 
 // Error returns a concatenation of all the error messages it wraps.
 func (m ListDataPointsRequestMultiError) Error() string {
-	var msgs []string
+	msgs := make([]string, 0, len(m))
 	for _, err := range m {
 		msgs = append(msgs, err.Error())
 	}
@@ -492,7 +492,7 @@ type ListDataPointsResponseMultiError []error
 
 // Error returns a concatenation of all the error messages it wraps.
 func (m ListDataPointsResponseMultiError) Error() string {
-	var msgs []string
+	msgs := make([]string, 0, len(m))
 	for _, err := range m {
 		msgs = append(msgs, err.Error())
 	}
@@ -689,7 +689,7 @@ type LatestDataPointsRequestMultiError []error
 
 // Error returns a concatenation of all the error messages it wraps.
 func (m LatestDataPointsRequestMultiError) Error() string {
-	var msgs []string
+	msgs := make([]string, 0, len(m))
 	for _, err := range m {
 		msgs = append(msgs, err.Error())
 	}
@@ -825,7 +825,7 @@ type LatestDataPointsResponseMultiError []error
 
 // Error returns a concatenation of all the error messages it wraps.
 func (m LatestDataPointsResponseMultiError) Error() string {
-	var msgs []string
+	msgs := make([]string, 0, len(m))
 	for _, err := range m {
 		msgs = append(msgs, err.Error())
 	}

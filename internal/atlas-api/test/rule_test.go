@@ -28,7 +28,7 @@ func TestCreateRule(t *testing.T) {
 
 		rule := random.Rule("api-rule", uuid.NewString())
 
-		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
+		ctx, cancel := context.WithTimeout(t.Context(), testTimeout)
 		defer cancel()
 
 		raCli := api.NewRuleAlarmServiceClient(globalAdminGRPCConn)
@@ -46,7 +46,7 @@ func TestCreateRule(t *testing.T) {
 	t.Run("Create valid rule with insufficient role", func(t *testing.T) {
 		t.Parallel()
 
-		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
+		ctx, cancel := context.WithTimeout(t.Context(), testTimeout)
 		defer cancel()
 
 		raCli := api.NewRuleAlarmServiceClient(secondaryViewerGRPCConn)
@@ -65,7 +65,7 @@ func TestCreateRule(t *testing.T) {
 		rule := random.Rule("api-rule", uuid.NewString())
 		rule.Attr = "api-rule-" + random.String(40)
 
-		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
+		ctx, cancel := context.WithTimeout(t.Context(), testTimeout)
 		defer cancel()
 
 		raCli := api.NewRuleAlarmServiceClient(globalAdminGRPCConn)
@@ -83,7 +83,7 @@ func TestCreateRule(t *testing.T) {
 func TestGetRule(t *testing.T) {
 	t.Parallel()
 
-	ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
+	ctx, cancel := context.WithTimeout(t.Context(), testTimeout)
 	defer cancel()
 
 	raCli := api.NewRuleAlarmServiceClient(globalAdminGRPCConn)
@@ -96,7 +96,7 @@ func TestGetRule(t *testing.T) {
 	t.Run("Get rule by valid ID", func(t *testing.T) {
 		t.Parallel()
 
-		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
+		ctx, cancel := context.WithTimeout(t.Context(), testTimeout)
 		defer cancel()
 
 		raCli := api.NewRuleAlarmServiceClient(globalAdminGRPCConn)
@@ -110,7 +110,7 @@ func TestGetRule(t *testing.T) {
 	t.Run("Get rule by unknown ID", func(t *testing.T) {
 		t.Parallel()
 
-		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
+		ctx, cancel := context.WithTimeout(t.Context(), testTimeout)
 		defer cancel()
 
 		raCli := api.NewRuleAlarmServiceClient(globalAdminGRPCConn)
@@ -125,7 +125,7 @@ func TestGetRule(t *testing.T) {
 	t.Run("Gets are isolated by org ID", func(t *testing.T) {
 		t.Parallel()
 
-		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
+		ctx, cancel := context.WithTimeout(t.Context(), testTimeout)
 		defer cancel()
 
 		secCli := api.NewRuleAlarmServiceClient(secondaryAdminGRPCConn)
@@ -144,7 +144,7 @@ func TestUpdateRule(t *testing.T) {
 	t.Run("Update rule by valid rule", func(t *testing.T) {
 		t.Parallel()
 
-		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
+		ctx, cancel := context.WithTimeout(t.Context(), testTimeout)
 		defer cancel()
 
 		raCli := api.NewRuleAlarmServiceClient(globalAdminGRPCConn)
@@ -179,7 +179,7 @@ func TestUpdateRule(t *testing.T) {
 	t.Run("Partial update rule by valid rule", func(t *testing.T) {
 		t.Parallel()
 
-		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
+		ctx, cancel := context.WithTimeout(t.Context(), testTimeout)
 		defer cancel()
 
 		raCli := api.NewRuleAlarmServiceClient(globalAdminKeyGRPCConn)
@@ -217,7 +217,7 @@ func TestUpdateRule(t *testing.T) {
 	t.Run("Update rule with insufficient role", func(t *testing.T) {
 		t.Parallel()
 
-		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
+		ctx, cancel := context.WithTimeout(t.Context(), testTimeout)
 		defer cancel()
 
 		raCli := api.NewRuleAlarmServiceClient(secondaryViewerGRPCConn)
@@ -231,7 +231,7 @@ func TestUpdateRule(t *testing.T) {
 	t.Run("Update nil rule", func(t *testing.T) {
 		t.Parallel()
 
-		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
+		ctx, cancel := context.WithTimeout(t.Context(), testTimeout)
 		defer cancel()
 
 		raCli := api.NewRuleAlarmServiceClient(globalAdminGRPCConn)
@@ -246,7 +246,7 @@ func TestUpdateRule(t *testing.T) {
 	t.Run("Partial update invalid field mask", func(t *testing.T) {
 		t.Parallel()
 
-		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
+		ctx, cancel := context.WithTimeout(t.Context(), testTimeout)
 		defer cancel()
 
 		raCli := api.NewRuleAlarmServiceClient(globalAdminGRPCConn)
@@ -263,7 +263,7 @@ func TestUpdateRule(t *testing.T) {
 	t.Run("Partial update rule by unknown rule", func(t *testing.T) {
 		t.Parallel()
 
-		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
+		ctx, cancel := context.WithTimeout(t.Context(), testTimeout)
 		defer cancel()
 
 		raCli := api.NewRuleAlarmServiceClient(globalAdminGRPCConn)
@@ -282,7 +282,7 @@ func TestUpdateRule(t *testing.T) {
 	t.Run("Update rule by unknown rule", func(t *testing.T) {
 		t.Parallel()
 
-		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
+		ctx, cancel := context.WithTimeout(t.Context(), testTimeout)
 		defer cancel()
 
 		raCli := api.NewRuleAlarmServiceClient(globalAdminGRPCConn)
@@ -298,7 +298,7 @@ func TestUpdateRule(t *testing.T) {
 	t.Run("Updates are isolated by org ID", func(t *testing.T) {
 		t.Parallel()
 
-		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
+		ctx, cancel := context.WithTimeout(t.Context(), testTimeout)
 		defer cancel()
 
 		raCli := api.NewRuleAlarmServiceClient(globalAdminGRPCConn)
@@ -324,7 +324,7 @@ func TestUpdateRule(t *testing.T) {
 	t.Run("Update rule validation failure", func(t *testing.T) {
 		t.Parallel()
 
-		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
+		ctx, cancel := context.WithTimeout(t.Context(), testTimeout)
 		defer cancel()
 
 		raCli := api.NewRuleAlarmServiceClient(globalAdminGRPCConn)
@@ -354,7 +354,7 @@ func TestDeleteRule(t *testing.T) {
 	t.Run("Delete rule by valid ID", func(t *testing.T) {
 		t.Parallel()
 
-		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
+		ctx, cancel := context.WithTimeout(t.Context(), testTimeout)
 		defer cancel()
 
 		raCli := api.NewRuleAlarmServiceClient(globalAdminGRPCConn)
@@ -372,7 +372,7 @@ func TestDeleteRule(t *testing.T) {
 		t.Run("Read rule by deleted ID", func(t *testing.T) {
 			t.Parallel()
 
-			ctx, cancel := context.WithTimeout(context.Background(),
+			ctx, cancel := context.WithTimeout(t.Context(),
 				testTimeout)
 			defer cancel()
 
@@ -389,7 +389,7 @@ func TestDeleteRule(t *testing.T) {
 	t.Run("Delete rule with insufficient role", func(t *testing.T) {
 		t.Parallel()
 
-		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
+		ctx, cancel := context.WithTimeout(t.Context(), testTimeout)
 		defer cancel()
 
 		raCli := api.NewRuleAlarmServiceClient(secondaryViewerGRPCConn)
@@ -403,7 +403,7 @@ func TestDeleteRule(t *testing.T) {
 	t.Run("Delete rule by unknown ID", func(t *testing.T) {
 		t.Parallel()
 
-		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
+		ctx, cancel := context.WithTimeout(t.Context(), testTimeout)
 		defer cancel()
 
 		raCli := api.NewRuleAlarmServiceClient(globalAdminGRPCConn)
@@ -417,7 +417,7 @@ func TestDeleteRule(t *testing.T) {
 	t.Run("Deletes are isolated by org ID", func(t *testing.T) {
 		t.Parallel()
 
-		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
+		ctx, cancel := context.WithTimeout(t.Context(), testTimeout)
 		defer cancel()
 
 		raCli := api.NewRuleAlarmServiceClient(globalAdminGRPCConn)
@@ -439,7 +439,7 @@ func TestDeleteRule(t *testing.T) {
 func TestListRules(t *testing.T) {
 	t.Parallel()
 
-	ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
+	ctx, cancel := context.WithTimeout(t.Context(), testTimeout)
 	defer cancel()
 
 	ruleIDs := []string{}
@@ -461,7 +461,7 @@ func TestListRules(t *testing.T) {
 	t.Run("List rules by valid org ID", func(t *testing.T) {
 		t.Parallel()
 
-		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
+		ctx, cancel := context.WithTimeout(t.Context(), testTimeout)
 		defer cancel()
 
 		raCli := api.NewRuleAlarmServiceClient(globalAdminGRPCConn)
@@ -485,7 +485,7 @@ func TestListRules(t *testing.T) {
 	t.Run("List rules by valid org ID with next page", func(t *testing.T) {
 		t.Parallel()
 
-		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
+		ctx, cancel := context.WithTimeout(t.Context(), testTimeout)
 		defer cancel()
 
 		raCli := api.NewRuleAlarmServiceClient(globalAdminKeyGRPCConn)
@@ -509,7 +509,7 @@ func TestListRules(t *testing.T) {
 	t.Run("Lists are isolated by org ID", func(t *testing.T) {
 		t.Parallel()
 
-		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
+		ctx, cancel := context.WithTimeout(t.Context(), testTimeout)
 		defer cancel()
 
 		secCli := api.NewRuleAlarmServiceClient(secondaryAdminGRPCConn)
@@ -523,7 +523,7 @@ func TestListRules(t *testing.T) {
 	t.Run("List rules by invalid page token", func(t *testing.T) {
 		t.Parallel()
 
-		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
+		ctx, cancel := context.WithTimeout(t.Context(), testTimeout)
 		defer cancel()
 
 		raCli := api.NewRuleAlarmServiceClient(globalAdminGRPCConn)
@@ -618,7 +618,7 @@ func TestTestRule(t *testing.T) {
 				rule.Attr = test.inpPoint.GetAttr()
 				rule.Expr = test.inpRuleExpr
 
-				ctx, cancel := context.WithTimeout(context.Background(),
+				ctx, cancel := context.WithTimeout(t.Context(),
 					testTimeout)
 				defer cancel()
 
@@ -649,7 +649,7 @@ func TestTestRule(t *testing.T) {
 		}
 		rule := random.Rule("api-rule", uuid.NewString())
 
-		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
+		ctx, cancel := context.WithTimeout(t.Context(), testTimeout)
 		defer cancel()
 
 		raCli := api.NewRuleAlarmServiceClient(secondaryViewerGRPCConn)
@@ -671,7 +671,7 @@ func TestTestRule(t *testing.T) {
 		}
 		rule := random.Rule("api-rule", uuid.NewString())
 
-		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
+		ctx, cancel := context.WithTimeout(t.Context(), testTimeout)
 		defer cancel()
 
 		raCli := api.NewRuleAlarmServiceClient(globalAdminGRPCConn)

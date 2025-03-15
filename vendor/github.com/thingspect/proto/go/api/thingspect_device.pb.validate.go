@@ -224,7 +224,7 @@ type DeviceMultiError []error
 
 // Error returns a concatenation of all the error messages it wraps.
 func (m DeviceMultiError) Error() string {
-	var msgs []string
+	msgs := make([]string, 0, len(m))
 	for _, err := range m {
 		msgs = append(msgs, err.Error())
 	}
@@ -369,7 +369,7 @@ type CreateDeviceRequestMultiError []error
 
 // Error returns a concatenation of all the error messages it wraps.
 func (m CreateDeviceRequestMultiError) Error() string {
-	var msgs []string
+	msgs := make([]string, 0, len(m))
 	for _, err := range m {
 		msgs = append(msgs, err.Error())
 	}
@@ -591,7 +591,7 @@ type CreateDeviceLoRaWANRequestMultiError []error
 
 // Error returns a concatenation of all the error messages it wraps.
 func (m CreateDeviceLoRaWANRequestMultiError) Error() string {
-	var msgs []string
+	msgs := make([]string, 0, len(m))
 	for _, err := range m {
 		msgs = append(msgs, err.Error())
 	}
@@ -713,7 +713,7 @@ type GetDeviceRequestMultiError []error
 
 // Error returns a concatenation of all the error messages it wraps.
 func (m GetDeviceRequestMultiError) Error() string {
-	var msgs []string
+	msgs := make([]string, 0, len(m))
 	for _, err := range m {
 		msgs = append(msgs, err.Error())
 	}
@@ -882,7 +882,7 @@ type UpdateDeviceRequestMultiError []error
 
 // Error returns a concatenation of all the error messages it wraps.
 func (m UpdateDeviceRequestMultiError) Error() string {
-	var msgs []string
+	msgs := make([]string, 0, len(m))
 	for _, err := range m {
 		msgs = append(msgs, err.Error())
 	}
@@ -1004,7 +1004,7 @@ type DeleteDeviceLoRaWANRequestMultiError []error
 
 // Error returns a concatenation of all the error messages it wraps.
 func (m DeleteDeviceLoRaWANRequestMultiError) Error() string {
-	var msgs []string
+	msgs := make([]string, 0, len(m))
 	for _, err := range m {
 		msgs = append(msgs, err.Error())
 	}
@@ -1126,7 +1126,7 @@ type DeleteDeviceRequestMultiError []error
 
 // Error returns a concatenation of all the error messages it wraps.
 func (m DeleteDeviceRequestMultiError) Error() string {
-	var msgs []string
+	msgs := make([]string, 0, len(m))
 	for _, err := range m {
 		msgs = append(msgs, err.Error())
 	}
@@ -1252,7 +1252,7 @@ type ListDevicesRequestMultiError []error
 
 // Error returns a concatenation of all the error messages it wraps.
 func (m ListDevicesRequestMultiError) Error() string {
-	var msgs []string
+	msgs := make([]string, 0, len(m))
 	for _, err := range m {
 		msgs = append(msgs, err.Error())
 	}
@@ -1392,7 +1392,7 @@ type ListDevicesResponseMultiError []error
 
 // Error returns a concatenation of all the error messages it wraps.
 func (m ListDevicesResponseMultiError) Error() string {
-	var msgs []string
+	msgs := make([]string, 0, len(m))
 	for _, err := range m {
 		msgs = append(msgs, err.Error())
 	}
@@ -1497,7 +1497,7 @@ type CreateDeviceLoRaWANRequest_GatewayLoRaWANTypeMultiError []error
 
 // Error returns a concatenation of all the error messages it wraps.
 func (m CreateDeviceLoRaWANRequest_GatewayLoRaWANTypeMultiError) Error() string {
-	var msgs []string
+	msgs := make([]string, 0, len(m))
 	for _, err := range m {
 		msgs = append(msgs, err.Error())
 	}
@@ -1618,7 +1618,7 @@ type CreateDeviceLoRaWANRequest_DeviceLoRaWANTypeMultiError []error
 
 // Error returns a concatenation of all the error messages it wraps.
 func (m CreateDeviceLoRaWANRequest_DeviceLoRaWANTypeMultiError) Error() string {
-	var msgs []string
+	msgs := make([]string, 0, len(m))
 	for _, err := range m {
 		msgs = append(msgs, err.Error())
 	}

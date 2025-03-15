@@ -24,7 +24,7 @@ func TestCreate(t *testing.T) {
 	t.Run("Create valid alerts", func(t *testing.T) {
 		t.Parallel()
 
-		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
+		ctx, cancel := context.WithTimeout(t.Context(), testTimeout)
 		defer cancel()
 
 		createOrg, err := globalOrgDAO.Create(ctx, random.Org("dao-alert"))
@@ -39,7 +39,7 @@ func TestCreate(t *testing.T) {
 	t.Run("Create invalid alert", func(t *testing.T) {
 		t.Parallel()
 
-		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
+		ctx, cancel := context.WithTimeout(t.Context(), testTimeout)
 		defer cancel()
 
 		createOrg, err := globalOrgDAO.Create(ctx, random.Org("dao-alert"))
@@ -64,7 +64,7 @@ func TestCreate(t *testing.T) {
 			t.Run(fmt.Sprintf("Cannot create %+v", test), func(t *testing.T) {
 				t.Parallel()
 
-				ctx, cancel := context.WithTimeout(context.Background(),
+				ctx, cancel := context.WithTimeout(t.Context(),
 					testTimeout)
 				defer cancel()
 
@@ -82,7 +82,7 @@ func TestList(t *testing.T) {
 	t.Run("List alerts by UniqID, dev, alarm, and user ID", func(t *testing.T) {
 		t.Parallel()
 
-		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
+		ctx, cancel := context.WithTimeout(t.Context(), testTimeout)
 		defer cancel()
 
 		createOrg, err := globalOrgDAO.Create(ctx, random.Org("dao-alert"))
@@ -101,7 +101,7 @@ func TestList(t *testing.T) {
 			alert.UniqId = createDev.GetUniqId()
 			alerts = append(alerts, alert)
 
-			ctx, cancel := context.WithTimeout(context.Background(),
+			ctx, cancel := context.WithTimeout(t.Context(),
 				testTimeout)
 			defer cancel()
 
@@ -117,7 +117,7 @@ func TestList(t *testing.T) {
 				alerts[j].GetCreatedAt().AsTime())
 		})
 
-		ctx, cancel = context.WithTimeout(context.Background(), testTimeout)
+		ctx, cancel = context.WithTimeout(t.Context(), testTimeout)
 		defer cancel()
 
 		// Verify results by UniqID.
@@ -162,7 +162,7 @@ func TestList(t *testing.T) {
 	t.Run("Lists are isolated by org ID", func(t *testing.T) {
 		t.Parallel()
 
-		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
+		ctx, cancel := context.WithTimeout(t.Context(), testTimeout)
 		defer cancel()
 
 		createOrg, err := globalOrgDAO.Create(ctx, random.Org("dao-alert"))
@@ -186,7 +186,7 @@ func TestList(t *testing.T) {
 	t.Run("List alerts by invalid org ID", func(t *testing.T) {
 		t.Parallel()
 
-		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
+		ctx, cancel := context.WithTimeout(t.Context(), testTimeout)
 		defer cancel()
 
 		listAlerts, err := globalAleDAO.List(ctx, random.String(10),

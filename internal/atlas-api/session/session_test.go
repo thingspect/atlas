@@ -22,7 +22,7 @@ func TestNewUserFromContext(t *testing.T) {
 	}
 	t.Logf("sess: %+v", sess)
 
-	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
+	ctx, cancel := context.WithTimeout(t.Context(), 2*time.Second)
 	defer cancel()
 
 	ctx = NewContext(ctx, sess)
@@ -42,7 +42,7 @@ func TestNewKeyFromContext(t *testing.T) {
 	}
 	t.Logf("sess: %+v", sess)
 
-	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
+	ctx, cancel := context.WithTimeout(t.Context(), 2*time.Second)
 	defer cancel()
 
 	ctx = NewContext(ctx, sess)

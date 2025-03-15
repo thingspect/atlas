@@ -40,7 +40,7 @@ func TestLogin(t *testing.T) {
 		_, err := rand.Read(pwtKey)
 		require.NoError(t, err)
 
-		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
+		ctx, cancel := context.WithTimeout(t.Context(), testTimeout)
 		defer cancel()
 
 		sessSvc := NewSession(userer, nil, nil, pwtKey)
@@ -70,7 +70,7 @@ func TestLogin(t *testing.T) {
 		_, err := rand.Read(pwtKey)
 		require.NoError(t, err)
 
-		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
+		ctx, cancel := context.WithTimeout(t.Context(), testTimeout)
 		defer cancel()
 
 		sessSvc := NewSession(userer, nil, nil, pwtKey)
@@ -98,7 +98,7 @@ func TestLogin(t *testing.T) {
 		_, err := rand.Read(pwtKey)
 		require.NoError(t, err)
 
-		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
+		ctx, cancel := context.WithTimeout(t.Context(), testTimeout)
 		defer cancel()
 
 		sessSvc := NewSession(userer, nil, nil, pwtKey)
@@ -126,7 +126,7 @@ func TestLogin(t *testing.T) {
 		_, err := rand.Read(pwtKey)
 		require.NoError(t, err)
 
-		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
+		ctx, cancel := context.WithTimeout(t.Context(), testTimeout)
 		defer cancel()
 
 		sessSvc := NewSession(userer, nil, nil, pwtKey)
@@ -155,7 +155,7 @@ func TestLogin(t *testing.T) {
 		_, err := rand.Read(pwtKey)
 		require.NoError(t, err)
 
-		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
+		ctx, cancel := context.WithTimeout(t.Context(), testTimeout)
 		defer cancel()
 
 		sessSvc := NewSession(userer, nil, nil, pwtKey)
@@ -180,7 +180,7 @@ func TestLogin(t *testing.T) {
 		userer.EXPECT().ReadByEmail(gomock.Any(), user.GetEmail(), org.GetName()).
 			Return(user, globalHash, nil).Times(1)
 
-		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
+		ctx, cancel := context.WithTimeout(t.Context(), testTimeout)
 		defer cancel()
 
 		sessSvc := NewSession(userer, nil, nil, nil)
@@ -212,7 +212,7 @@ func TestCreateKey(t *testing.T) {
 		require.NoError(t, err)
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
-			context.Background(), &session.Session{
+			t.Context(), &session.Session{
 				OrgID: key.GetOrgId(), Role: api.Role_ADMIN,
 			}), testTimeout)
 		defer cancel()
@@ -231,7 +231,7 @@ func TestCreateKey(t *testing.T) {
 	t.Run("Create key with invalid session", func(t *testing.T) {
 		t.Parallel()
 
-		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
+		ctx, cancel := context.WithTimeout(t.Context(), testTimeout)
 		defer cancel()
 
 		keySvc := NewSession(nil, nil, nil, nil)
@@ -245,7 +245,7 @@ func TestCreateKey(t *testing.T) {
 		t.Parallel()
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
-			context.Background(), &session.Session{
+			t.Context(), &session.Session{
 				OrgID: uuid.NewString(), Role: api.Role_BUILDER,
 			}), testTimeout)
 		defer cancel()
@@ -264,7 +264,7 @@ func TestCreateKey(t *testing.T) {
 		key.Role = api.Role_SYS_ADMIN
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
-			context.Background(), &session.Session{
+			t.Context(), &session.Session{
 				OrgID: uuid.NewString(), Role: api.Role_ADMIN,
 			}), testTimeout)
 		defer cancel()
@@ -288,7 +288,7 @@ func TestCreateKey(t *testing.T) {
 			dao.ErrInvalidFormat).Times(1)
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
-			context.Background(), &session.Session{
+			t.Context(), &session.Session{
 				OrgID: key.GetOrgId(), Role: api.Role_ADMIN,
 			}), testTimeout)
 		defer cancel()
@@ -312,7 +312,7 @@ func TestCreateKey(t *testing.T) {
 		keyer.EXPECT().Create(gomock.Any(), key).Return(retKey, nil).Times(1)
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
-			context.Background(), &session.Session{
+			t.Context(), &session.Session{
 				OrgID: uuid.NewString(), Role: api.Role_ADMIN,
 			}), testTimeout)
 		defer cancel()
@@ -340,7 +340,7 @@ func TestDeleteKey(t *testing.T) {
 		cacher.EXPECT().Set(gomock.Any(), gomock.Any(), "").Return(nil).Times(1)
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
-			context.Background(), &session.Session{
+			t.Context(), &session.Session{
 				OrgID: uuid.NewString(), Role: api.Role_ADMIN,
 			}), testTimeout)
 		defer cancel()
@@ -355,7 +355,7 @@ func TestDeleteKey(t *testing.T) {
 	t.Run("Delete key with invalid session", func(t *testing.T) {
 		t.Parallel()
 
-		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
+		ctx, cancel := context.WithTimeout(t.Context(), testTimeout)
 		defer cancel()
 
 		keySvc := NewSession(nil, nil, nil, nil)
@@ -368,7 +368,7 @@ func TestDeleteKey(t *testing.T) {
 		t.Parallel()
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
-			context.Background(), &session.Session{
+			t.Context(), &session.Session{
 				OrgID: uuid.NewString(), Role: api.Role_BUILDER,
 			}), testTimeout)
 		defer cancel()
@@ -387,7 +387,7 @@ func TestDeleteKey(t *testing.T) {
 			Return(dao.ErrInvalidFormat).Times(1)
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
-			context.Background(), &session.Session{
+			t.Context(), &session.Session{
 				OrgID: uuid.NewString(), Role: api.Role_ADMIN,
 			}), testTimeout)
 		defer cancel()
@@ -411,7 +411,7 @@ func TestDeleteKey(t *testing.T) {
 		cacher.EXPECT().Set(gomock.Any(), gomock.Any(), "").Return(nil).Times(1)
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
-			context.Background(), &session.Session{
+			t.Context(), &session.Session{
 				OrgID: uuid.NewString(), Role: api.Role_ADMIN,
 			}), testTimeout)
 		defer cancel()
@@ -443,7 +443,7 @@ func TestListKeys(t *testing.T) {
 			Return(keys, int32(3), nil).Times(1)
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
-			context.Background(), &session.Session{
+			t.Context(), &session.Session{
 				OrgID: orgID, Role: api.Role_ADMIN,
 			}), testTimeout)
 		defer cancel()
@@ -477,7 +477,7 @@ func TestListKeys(t *testing.T) {
 			Return(keys, int32(3), nil).Times(1)
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
-			context.Background(), &session.Session{
+			t.Context(), &session.Session{
 				OrgID: orgID, Role: api.Role_ADMIN,
 			}), testTimeout)
 		defer cancel()
@@ -495,7 +495,7 @@ func TestListKeys(t *testing.T) {
 	t.Run("List keys with invalid session", func(t *testing.T) {
 		t.Parallel()
 
-		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
+		ctx, cancel := context.WithTimeout(t.Context(), testTimeout)
 		defer cancel()
 
 		keySvc := NewSession(nil, nil, nil, nil)
@@ -509,7 +509,7 @@ func TestListKeys(t *testing.T) {
 		t.Parallel()
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
-			context.Background(), &session.Session{
+			t.Context(), &session.Session{
 				OrgID: uuid.NewString(), Role: api.Role_ADMIN,
 			}), testTimeout)
 		defer cancel()
@@ -532,7 +532,7 @@ func TestListKeys(t *testing.T) {
 			dao.ErrInvalidFormat).Times(1)
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
-			context.Background(), &session.Session{
+			t.Context(), &session.Session{
 				OrgID: "aaa", Role: api.Role_ADMIN,
 			}), testTimeout)
 		defer cancel()
@@ -562,7 +562,7 @@ func TestListKeys(t *testing.T) {
 			Return(keys, int32(3), nil).Times(1)
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
-			context.Background(), &session.Session{
+			t.Context(), &session.Session{
 				OrgID: orgID, Role: api.Role_ADMIN,
 			}), testTimeout)
 		defer cancel()

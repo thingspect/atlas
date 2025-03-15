@@ -216,7 +216,7 @@ type OrgMultiError []error
 
 // Error returns a concatenation of all the error messages it wraps.
 func (m OrgMultiError) Error() string {
-	var msgs []string
+	msgs := make([]string, 0, len(m))
 	for _, err := range m {
 		msgs = append(msgs, err.Error())
 	}
@@ -356,7 +356,7 @@ type CreateOrgRequestMultiError []error
 
 // Error returns a concatenation of all the error messages it wraps.
 func (m CreateOrgRequestMultiError) Error() string {
-	var msgs []string
+	msgs := make([]string, 0, len(m))
 	for _, err := range m {
 		msgs = append(msgs, err.Error())
 	}
@@ -476,7 +476,7 @@ type GetOrgRequestMultiError []error
 
 // Error returns a concatenation of all the error messages it wraps.
 func (m GetOrgRequestMultiError) Error() string {
-	var msgs []string
+	msgs := make([]string, 0, len(m))
 	for _, err := range m {
 		msgs = append(msgs, err.Error())
 	}
@@ -645,7 +645,7 @@ type UpdateOrgRequestMultiError []error
 
 // Error returns a concatenation of all the error messages it wraps.
 func (m UpdateOrgRequestMultiError) Error() string {
-	var msgs []string
+	msgs := make([]string, 0, len(m))
 	for _, err := range m {
 		msgs = append(msgs, err.Error())
 	}
@@ -765,7 +765,7 @@ type DeleteOrgRequestMultiError []error
 
 // Error returns a concatenation of all the error messages it wraps.
 func (m DeleteOrgRequestMultiError) Error() string {
-	var msgs []string
+	msgs := make([]string, 0, len(m))
 	for _, err := range m {
 		msgs = append(msgs, err.Error())
 	}
@@ -878,7 +878,7 @@ type ListOrgsRequestMultiError []error
 
 // Error returns a concatenation of all the error messages it wraps.
 func (m ListOrgsRequestMultiError) Error() string {
-	var msgs []string
+	msgs := make([]string, 0, len(m))
 	for _, err := range m {
 		msgs = append(msgs, err.Error())
 	}
@@ -1016,7 +1016,7 @@ type ListOrgsResponseMultiError []error
 
 // Error returns a concatenation of all the error messages it wraps.
 func (m ListOrgsResponseMultiError) Error() string {
-	var msgs []string
+	msgs := make([]string, 0, len(m))
 	for _, err := range m {
 		msgs = append(msgs, err.Error())
 	}

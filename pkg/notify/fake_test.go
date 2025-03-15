@@ -22,7 +22,7 @@ func TestNewFake(t *testing.T) {
 		t.Run(fmt.Sprintf("Can notify %v", i), func(t *testing.T) {
 			t.Parallel()
 
-			ctx, cancel := context.WithTimeout(context.Background(),
+			ctx, cancel := context.WithTimeout(t.Context(),
 				2*time.Second)
 			defer cancel()
 

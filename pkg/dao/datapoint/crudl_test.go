@@ -25,7 +25,7 @@ func TestCreate(t *testing.T) {
 	t.Run("Create valid data points", func(t *testing.T) {
 		t.Parallel()
 
-		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
+		ctx, cancel := context.WithTimeout(t.Context(), testTimeout)
 		defer cancel()
 
 		createOrg, err := globalOrgDAO.Create(ctx, random.Org("dao-point"))
@@ -79,7 +79,7 @@ func TestCreate(t *testing.T) {
 			t.Run(fmt.Sprintf("Can create %+v", test), func(t *testing.T) {
 				t.Parallel()
 
-				ctx, cancel := context.WithTimeout(context.Background(),
+				ctx, cancel := context.WithTimeout(t.Context(),
 					testTimeout)
 				defer cancel()
 
@@ -120,7 +120,7 @@ func TestCreate(t *testing.T) {
 			t.Run(fmt.Sprintf("Cannot create %+v", test), func(t *testing.T) {
 				t.Parallel()
 
-				ctx, cancel := context.WithTimeout(context.Background(),
+				ctx, cancel := context.WithTimeout(t.Context(),
 					testTimeout)
 				defer cancel()
 
@@ -134,7 +134,7 @@ func TestCreate(t *testing.T) {
 	t.Run("Dedupe data point", func(t *testing.T) {
 		t.Parallel()
 
-		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
+		ctx, cancel := context.WithTimeout(t.Context(), testTimeout)
 		defer cancel()
 
 		createOrg, err := globalOrgDAO.Create(ctx, random.Org("dao-point"))
@@ -163,7 +163,7 @@ func TestList(t *testing.T) {
 	t.Run("List data points by UniqID, dev ID, and attr", func(t *testing.T) {
 		t.Parallel()
 
-		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
+		ctx, cancel := context.WithTimeout(t.Context(), testTimeout)
 		defer cancel()
 
 		createOrg, err := globalOrgDAO.Create(ctx, random.Org("dao-point"))
@@ -211,7 +211,7 @@ func TestList(t *testing.T) {
 		}
 
 		for _, point := range points {
-			ctx, cancel := context.WithTimeout(context.Background(),
+			ctx, cancel := context.WithTimeout(t.Context(),
 				testTimeout)
 			defer cancel()
 
@@ -230,7 +230,7 @@ func TestList(t *testing.T) {
 			return points[i].GetTs().AsTime().After(points[j].GetTs().AsTime())
 		})
 
-		ctx, cancel = context.WithTimeout(context.Background(), testTimeout)
+		ctx, cancel = context.WithTimeout(t.Context(), testTimeout)
 		defer cancel()
 
 		// Verify results by UniqID.
@@ -277,7 +277,7 @@ func TestList(t *testing.T) {
 	t.Run("Lists are isolated by org ID", func(t *testing.T) {
 		t.Parallel()
 
-		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
+		ctx, cancel := context.WithTimeout(t.Context(), testTimeout)
 		defer cancel()
 
 		createOrg, err := globalOrgDAO.Create(ctx, random.Org("dao-point"))
@@ -305,7 +305,7 @@ func TestList(t *testing.T) {
 	t.Run("List data points by invalid org ID", func(t *testing.T) {
 		t.Parallel()
 
-		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
+		ctx, cancel := context.WithTimeout(t.Context(), testTimeout)
 		defer cancel()
 
 		listPoints, err := globalDPDAO.List(ctx, random.String(10),
@@ -322,7 +322,7 @@ func TestLatest(t *testing.T) {
 	t.Run("Latest data points by valid UniqID and dev ID", func(t *testing.T) {
 		t.Parallel()
 
-		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
+		ctx, cancel := context.WithTimeout(t.Context(), testTimeout)
 		defer cancel()
 
 		createOrg, err := globalOrgDAO.Create(ctx, random.Org("dao-point"))
@@ -370,7 +370,7 @@ func TestLatest(t *testing.T) {
 
 		for i, point := range points {
 			for range random.Intn(6) + 3 {
-				ctx, cancel := context.WithTimeout(context.Background(),
+				ctx, cancel := context.WithTimeout(t.Context(),
 					testTimeout)
 				defer cancel()
 
@@ -394,7 +394,7 @@ func TestLatest(t *testing.T) {
 			return points[i].GetAttr() < points[j].GetAttr()
 		})
 
-		ctx, cancel = context.WithTimeout(context.Background(), testTimeout)
+		ctx, cancel = context.WithTimeout(t.Context(), testTimeout)
 		defer cancel()
 
 		// Verify results by UniqID.
@@ -423,7 +423,7 @@ func TestLatest(t *testing.T) {
 	t.Run("Latest data points are isolated by org ID", func(t *testing.T) {
 		t.Parallel()
 
-		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
+		ctx, cancel := context.WithTimeout(t.Context(), testTimeout)
 		defer cancel()
 
 		createOrg, err := globalOrgDAO.Create(ctx, random.Org("dao-point"))
@@ -450,7 +450,7 @@ func TestLatest(t *testing.T) {
 	t.Run("Latest data points by invalid dev ID", func(t *testing.T) {
 		t.Parallel()
 
-		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
+		ctx, cancel := context.WithTimeout(t.Context(), testTimeout)
 		defer cancel()
 
 		latPoints, err := globalDPDAO.Latest(ctx, uuid.NewString(), "",

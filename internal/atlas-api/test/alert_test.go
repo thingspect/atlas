@@ -21,7 +21,7 @@ func TestListAlerts(t *testing.T) {
 	t.Run("List alerts by UniqID, dev, alarm, and user ID", func(t *testing.T) {
 		t.Parallel()
 
-		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
+		ctx, cancel := context.WithTimeout(t.Context(), testTimeout)
 		defer cancel()
 
 		devCli := api.NewDeviceServiceClient(globalAdminGRPCConn)
@@ -38,7 +38,7 @@ func TestListAlerts(t *testing.T) {
 			alert.UniqId = createDev.GetUniqId()
 			alerts = append(alerts, alert)
 
-			ctx, cancel := context.WithTimeout(context.Background(),
+			ctx, cancel := context.WithTimeout(t.Context(),
 				testTimeout)
 			defer cancel()
 
@@ -54,7 +54,7 @@ func TestListAlerts(t *testing.T) {
 				alerts[j].GetCreatedAt().AsTime())
 		})
 
-		ctx, cancel = context.WithTimeout(context.Background(), testTimeout)
+		ctx, cancel = context.WithTimeout(t.Context(), testTimeout)
 		defer cancel()
 
 		// Verify results by UniqID.
@@ -102,7 +102,7 @@ func TestListAlerts(t *testing.T) {
 	t.Run("List alerts are isolated by org ID", func(t *testing.T) {
 		t.Parallel()
 
-		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
+		ctx, cancel := context.WithTimeout(t.Context(), testTimeout)
 		defer cancel()
 
 		createOrg, err := globalOrgDAO.Create(ctx, random.Org("api-alert"))
@@ -127,7 +127,7 @@ func TestListAlerts(t *testing.T) {
 	t.Run("List alerts by invalid time range", func(t *testing.T) {
 		t.Parallel()
 
-		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
+		ctx, cancel := context.WithTimeout(t.Context(), testTimeout)
 		defer cancel()
 
 		aleCli := api.NewAlertServiceClient(globalAdminGRPCConn)
@@ -146,7 +146,7 @@ func TestListAlerts(t *testing.T) {
 	t.Run("List alerts by invalid dev ID", func(t *testing.T) {
 		t.Parallel()
 
-		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
+		ctx, cancel := context.WithTimeout(t.Context(), testTimeout)
 		defer cancel()
 
 		aleCli := api.NewAlertServiceClient(globalAdminGRPCConn)

@@ -38,7 +38,7 @@ func TestCreateRule(t *testing.T) {
 		ruler.EXPECT().Create(gomock.Any(), rule).Return(retRule, nil).Times(1)
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
-			context.Background(), &session.Session{
+			t.Context(), &session.Session{
 				OrgID: rule.GetOrgId(), Role: api.Role_ADMIN,
 			}), testTimeout)
 		defer cancel()
@@ -55,7 +55,7 @@ func TestCreateRule(t *testing.T) {
 	t.Run("Create rule with invalid session", func(t *testing.T) {
 		t.Parallel()
 
-		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
+		ctx, cancel := context.WithTimeout(t.Context(), testTimeout)
 		defer cancel()
 
 		raSvc := NewRuleAlarm(nil, nil)
@@ -69,7 +69,7 @@ func TestCreateRule(t *testing.T) {
 		t.Parallel()
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
-			context.Background(), &session.Session{
+			t.Context(), &session.Session{
 				OrgID: uuid.NewString(), Role: api.Role_VIEWER,
 			}), testTimeout)
 		defer cancel()
@@ -92,7 +92,7 @@ func TestCreateRule(t *testing.T) {
 			dao.ErrInvalidFormat).Times(1)
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
-			context.Background(), &session.Session{
+			t.Context(), &session.Session{
 				OrgID: rule.GetOrgId(), Role: api.Role_ADMIN,
 			}), testTimeout)
 		defer cancel()
@@ -122,7 +122,7 @@ func TestGetRule(t *testing.T) {
 			nil).Times(1)
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
-			context.Background(), &session.Session{
+			t.Context(), &session.Session{
 				OrgID: rule.GetOrgId(), Role: api.Role_ADMIN,
 			}), testTimeout)
 		defer cancel()
@@ -137,7 +137,7 @@ func TestGetRule(t *testing.T) {
 	t.Run("Get rule with invalid session", func(t *testing.T) {
 		t.Parallel()
 
-		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
+		ctx, cancel := context.WithTimeout(t.Context(), testTimeout)
 		defer cancel()
 
 		raSvc := NewRuleAlarm(nil, nil)
@@ -151,7 +151,7 @@ func TestGetRule(t *testing.T) {
 		t.Parallel()
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
-			context.Background(), &session.Session{
+			t.Context(), &session.Session{
 				OrgID: uuid.NewString(), Role: api.Role_CONTACT,
 			}), testTimeout)
 		defer cancel()
@@ -171,7 +171,7 @@ func TestGetRule(t *testing.T) {
 			Return(nil, dao.ErrNotFound).Times(1)
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
-			context.Background(), &session.Session{
+			t.Context(), &session.Session{
 				OrgID: uuid.NewString(), Role: api.Role_ADMIN,
 			}), testTimeout)
 		defer cancel()
@@ -199,7 +199,7 @@ func TestUpdateRule(t *testing.T) {
 		ruler.EXPECT().Update(gomock.Any(), rule).Return(retRule, nil).Times(1)
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
-			context.Background(), &session.Session{
+			t.Context(), &session.Session{
 				OrgID: rule.GetOrgId(), Role: api.Role_ADMIN,
 			}), testTimeout)
 		defer cancel()
@@ -235,7 +235,7 @@ func TestUpdateRule(t *testing.T) {
 			Return(retMerged, nil).Times(1)
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
-			context.Background(), &session.Session{
+			t.Context(), &session.Session{
 				OrgID: rule.GetOrgId(), Role: api.Role_ADMIN,
 			}), testTimeout)
 		defer cancel()
@@ -254,7 +254,7 @@ func TestUpdateRule(t *testing.T) {
 	t.Run("Update rule with invalid session", func(t *testing.T) {
 		t.Parallel()
 
-		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
+		ctx, cancel := context.WithTimeout(t.Context(), testTimeout)
 		defer cancel()
 
 		raSvc := NewRuleAlarm(nil, nil)
@@ -268,7 +268,7 @@ func TestUpdateRule(t *testing.T) {
 		t.Parallel()
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
-			context.Background(), &session.Session{
+			t.Context(), &session.Session{
 				OrgID: uuid.NewString(), Role: api.Role_VIEWER,
 			}), testTimeout)
 		defer cancel()
@@ -284,7 +284,7 @@ func TestUpdateRule(t *testing.T) {
 		t.Parallel()
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
-			context.Background(), &session.Session{
+			t.Context(), &session.Session{
 				OrgID: uuid.NewString(), Role: api.Role_ADMIN,
 			}), testTimeout)
 		defer cancel()
@@ -305,7 +305,7 @@ func TestUpdateRule(t *testing.T) {
 		rule := random.Rule("api-rule", uuid.NewString())
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
-			context.Background(), &session.Session{
+			t.Context(), &session.Session{
 				OrgID: uuid.NewString(), Role: api.Role_ADMIN,
 			}), testTimeout)
 		defer cancel()
@@ -333,7 +333,7 @@ func TestUpdateRule(t *testing.T) {
 			Return(nil, dao.ErrNotFound).Times(1)
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
-			context.Background(), &session.Session{
+			t.Context(), &session.Session{
 				OrgID: orgID, Role: api.Role_ADMIN,
 			}), testTimeout)
 		defer cancel()
@@ -356,7 +356,7 @@ func TestUpdateRule(t *testing.T) {
 		rule.Attr = random.String(41)
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
-			context.Background(), &session.Session{
+			t.Context(), &session.Session{
 				OrgID: rule.GetOrgId(), Role: api.Role_ADMIN,
 			}), testTimeout)
 		defer cancel()
@@ -383,7 +383,7 @@ func TestUpdateRule(t *testing.T) {
 			dao.ErrInvalidFormat).Times(1)
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
-			context.Background(), &session.Session{
+			t.Context(), &session.Session{
 				OrgID: rule.GetOrgId(), Role: api.Role_ADMIN,
 			}), testTimeout)
 		defer cancel()
@@ -410,7 +410,7 @@ func TestDeleteRule(t *testing.T) {
 			Return(nil).Times(1)
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
-			context.Background(), &session.Session{
+			t.Context(), &session.Session{
 				OrgID: uuid.NewString(), Role: api.Role_ADMIN,
 			}), testTimeout)
 		defer cancel()
@@ -426,7 +426,7 @@ func TestDeleteRule(t *testing.T) {
 	t.Run("Delete rule with invalid session", func(t *testing.T) {
 		t.Parallel()
 
-		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
+		ctx, cancel := context.WithTimeout(t.Context(), testTimeout)
 		defer cancel()
 
 		raSvc := NewRuleAlarm(nil, nil)
@@ -439,7 +439,7 @@ func TestDeleteRule(t *testing.T) {
 		t.Parallel()
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
-			context.Background(), &session.Session{
+			t.Context(), &session.Session{
 				OrgID: uuid.NewString(), Role: api.Role_VIEWER,
 			}), testTimeout)
 		defer cancel()
@@ -458,7 +458,7 @@ func TestDeleteRule(t *testing.T) {
 			Return(dao.ErrNotFound).Times(1)
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
-			context.Background(), &session.Session{
+			t.Context(), &session.Session{
 				OrgID: uuid.NewString(), Role: api.Role_ADMIN,
 			}), testTimeout)
 		defer cancel()
@@ -491,7 +491,7 @@ func TestListRules(t *testing.T) {
 			Return(rules, int32(3), nil).Times(1)
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
-			context.Background(), &session.Session{
+			t.Context(), &session.Session{
 				OrgID: orgID, Role: api.Role_ADMIN,
 			}), testTimeout)
 		defer cancel()
@@ -525,7 +525,7 @@ func TestListRules(t *testing.T) {
 			Return(rules, int32(3), nil).Times(1)
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
-			context.Background(), &session.Session{
+			t.Context(), &session.Session{
 				OrgID: orgID, Role: api.Role_ADMIN,
 			}), testTimeout)
 		defer cancel()
@@ -545,7 +545,7 @@ func TestListRules(t *testing.T) {
 	t.Run("List rules with invalid session", func(t *testing.T) {
 		t.Parallel()
 
-		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
+		ctx, cancel := context.WithTimeout(t.Context(), testTimeout)
 		defer cancel()
 
 		raSvc := NewRuleAlarm(nil, nil)
@@ -559,7 +559,7 @@ func TestListRules(t *testing.T) {
 		t.Parallel()
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
-			context.Background(), &session.Session{
+			t.Context(), &session.Session{
 				OrgID: uuid.NewString(), Role: api.Role_CONTACT,
 			}), testTimeout)
 		defer cancel()
@@ -575,7 +575,7 @@ func TestListRules(t *testing.T) {
 		t.Parallel()
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
-			context.Background(), &session.Session{
+			t.Context(), &session.Session{
 				OrgID: uuid.NewString(), Role: api.Role_ADMIN,
 			}), testTimeout)
 		defer cancel()
@@ -598,7 +598,7 @@ func TestListRules(t *testing.T) {
 			gomock.Any()).Return(nil, int32(0), dao.ErrInvalidFormat).Times(1)
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
-			context.Background(), &session.Session{
+			t.Context(), &session.Session{
 				OrgID: "aaa", Role: api.Role_ADMIN,
 			}), testTimeout)
 		defer cancel()
@@ -628,7 +628,7 @@ func TestListRules(t *testing.T) {
 			Return(rules, int32(3), nil).Times(1)
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
-			context.Background(), &session.Session{
+			t.Context(), &session.Session{
 				OrgID: orgID, Role: api.Role_ADMIN,
 			}), testTimeout)
 		defer cancel()
@@ -712,7 +712,7 @@ func TestTestRule(t *testing.T) {
 				test.inpPoint.Attr = "api-rule" + random.String(10)
 
 				ctx, cancel := context.WithTimeout(session.NewContext(
-					context.Background(), &session.Session{
+					t.Context(), &session.Session{
 						OrgID: uuid.NewString(), Role: api.Role_ADMIN,
 					}),
 					testTimeout)
@@ -740,7 +740,7 @@ func TestTestRule(t *testing.T) {
 	t.Run("Test rule with invalid session", func(t *testing.T) {
 		t.Parallel()
 
-		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
+		ctx, cancel := context.WithTimeout(t.Context(), testTimeout)
 		defer cancel()
 
 		raSvc := NewRuleAlarm(nil, nil)
@@ -754,7 +754,7 @@ func TestTestRule(t *testing.T) {
 		t.Parallel()
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
-			context.Background(), &session.Session{
+			t.Context(), &session.Session{
 				OrgID: uuid.NewString(), Role: api.Role_VIEWER,
 			}), testTimeout)
 		defer cancel()
@@ -773,7 +773,7 @@ func TestTestRule(t *testing.T) {
 		rule := random.Rule("api-rule", uuid.NewString())
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
-			context.Background(), &session.Session{
+			t.Context(), &session.Session{
 				OrgID: rule.GetOrgId(), Role: api.Role_ADMIN,
 			}), testTimeout)
 		defer cancel()

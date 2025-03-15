@@ -20,7 +20,7 @@ import (
 func TestLogin(t *testing.T) {
 	t.Parallel()
 
-	ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
+	ctx, cancel := context.WithTimeout(t.Context(), testTimeout)
 	defer cancel()
 
 	createOrg, err := globalOrgDAO.Create(ctx, random.Org("api-session"))
@@ -65,7 +65,7 @@ func TestLogin(t *testing.T) {
 	t.Run("Log in valid user", func(t *testing.T) {
 		t.Parallel()
 
-		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
+		ctx, cancel := context.WithTimeout(t.Context(), testTimeout)
 		defer cancel()
 
 		sessCli := api.NewSessionServiceClient(globalNoAuthGRPCConn)
@@ -84,7 +84,7 @@ func TestLogin(t *testing.T) {
 	t.Run("Log in unknown user", func(t *testing.T) {
 		t.Parallel()
 
-		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
+		ctx, cancel := context.WithTimeout(t.Context(), testTimeout)
 		defer cancel()
 
 		sessCli := api.NewSessionServiceClient(globalNoAuthGRPCConn)
@@ -101,7 +101,7 @@ func TestLogin(t *testing.T) {
 	t.Run("Log in wrong password", func(t *testing.T) {
 		t.Parallel()
 
-		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
+		ctx, cancel := context.WithTimeout(t.Context(), testTimeout)
 		defer cancel()
 
 		sessCli := api.NewSessionServiceClient(globalNoAuthGRPCConn)
@@ -118,7 +118,7 @@ func TestLogin(t *testing.T) {
 	t.Run("Log in disabled user", func(t *testing.T) {
 		t.Parallel()
 
-		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
+		ctx, cancel := context.WithTimeout(t.Context(), testTimeout)
 		defer cancel()
 
 		sessCli := api.NewSessionServiceClient(globalNoAuthGRPCConn)
@@ -135,7 +135,7 @@ func TestLogin(t *testing.T) {
 	t.Run("Log in contact user", func(t *testing.T) {
 		t.Parallel()
 
-		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
+		ctx, cancel := context.WithTimeout(t.Context(), testTimeout)
 		defer cancel()
 
 		sessCli := api.NewSessionServiceClient(globalNoAuthGRPCConn)
@@ -159,7 +159,7 @@ func TestCreateKey(t *testing.T) {
 		key := random.Key("api-key", uuid.NewString())
 		key.Role = api.Role_BUILDER
 
-		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
+		ctx, cancel := context.WithTimeout(t.Context(), testTimeout)
 		defer cancel()
 
 		sessCli := api.NewSessionServiceClient(globalAdminGRPCConn)
@@ -176,7 +176,7 @@ func TestCreateKey(t *testing.T) {
 	t.Run("Create valid key with insufficient role", func(t *testing.T) {
 		t.Parallel()
 
-		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
+		ctx, cancel := context.WithTimeout(t.Context(), testTimeout)
 		defer cancel()
 
 		sessCli := api.NewSessionServiceClient(secondaryViewerGRPCConn)
@@ -194,7 +194,7 @@ func TestCreateKey(t *testing.T) {
 		key := random.Key("api-key", uuid.NewString())
 		key.Role = api.Role_SYS_ADMIN
 
-		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
+		ctx, cancel := context.WithTimeout(t.Context(), testTimeout)
 		defer cancel()
 
 		sessCli := api.NewSessionServiceClient(globalAdminGRPCConn)
@@ -212,7 +212,7 @@ func TestCreateKey(t *testing.T) {
 		key := random.Key("api-key", uuid.NewString())
 		key.Name = "api-key-" + random.String(80)
 
-		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
+		ctx, cancel := context.WithTimeout(t.Context(), testTimeout)
 		defer cancel()
 
 		sessCli := api.NewSessionServiceClient(globalAdminGRPCConn)
@@ -236,7 +236,7 @@ func TestDeleteKey(t *testing.T) {
 		key := random.Key("api-key", uuid.NewString())
 		key.Role = api.Role_BUILDER
 
-		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
+		ctx, cancel := context.WithTimeout(t.Context(), testTimeout)
 		defer cancel()
 
 		sessCli := api.NewSessionServiceClient(globalAdminGRPCConn)
@@ -253,7 +253,7 @@ func TestDeleteKey(t *testing.T) {
 		t.Run("Delete key by deleted ID", func(t *testing.T) {
 			t.Parallel()
 
-			ctx, cancel := context.WithTimeout(context.Background(),
+			ctx, cancel := context.WithTimeout(t.Context(),
 				testTimeout)
 			defer cancel()
 
@@ -272,7 +272,7 @@ func TestDeleteKey(t *testing.T) {
 		key := random.Key("api-key", uuid.NewString())
 		key.Role = api.Role_ADMIN
 
-		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
+		ctx, cancel := context.WithTimeout(t.Context(), testTimeout)
 		defer cancel()
 
 		sessCli := api.NewSessionServiceClient(globalAdminGRPCConn)
@@ -304,7 +304,7 @@ func TestDeleteKey(t *testing.T) {
 	t.Run("Delete key with insufficient role", func(t *testing.T) {
 		t.Parallel()
 
-		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
+		ctx, cancel := context.WithTimeout(t.Context(), testTimeout)
 		defer cancel()
 
 		sessCli := api.NewSessionServiceClient(secondaryViewerGRPCConn)
@@ -318,7 +318,7 @@ func TestDeleteKey(t *testing.T) {
 	t.Run("Delete key by unknown ID", func(t *testing.T) {
 		t.Parallel()
 
-		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
+		ctx, cancel := context.WithTimeout(t.Context(), testTimeout)
 		defer cancel()
 
 		sessCli := api.NewSessionServiceClient(globalAdminGRPCConn)
@@ -335,7 +335,7 @@ func TestDeleteKey(t *testing.T) {
 		key := random.Key("api-key", uuid.NewString())
 		key.Role = api.Role_BUILDER
 
-		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
+		ctx, cancel := context.WithTimeout(t.Context(), testTimeout)
 		defer cancel()
 
 		sessCli := api.NewSessionServiceClient(globalAdminGRPCConn)
@@ -356,7 +356,7 @@ func TestDeleteKey(t *testing.T) {
 func TestListKeys(t *testing.T) {
 	t.Parallel()
 
-	ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
+	ctx, cancel := context.WithTimeout(t.Context(), testTimeout)
 	defer cancel()
 
 	keyIDs := []string{}
@@ -380,7 +380,7 @@ func TestListKeys(t *testing.T) {
 	t.Run("List keys by valid org ID", func(t *testing.T) {
 		t.Parallel()
 
-		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
+		ctx, cancel := context.WithTimeout(t.Context(), testTimeout)
 		defer cancel()
 
 		sessCli := api.NewSessionServiceClient(globalAdminGRPCConn)
@@ -404,7 +404,7 @@ func TestListKeys(t *testing.T) {
 	t.Run("List keys by valid org ID with next page", func(t *testing.T) {
 		t.Parallel()
 
-		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
+		ctx, cancel := context.WithTimeout(t.Context(), testTimeout)
 		defer cancel()
 
 		sessCli := api.NewSessionServiceClient(globalAdminKeyGRPCConn)
@@ -428,7 +428,7 @@ func TestListKeys(t *testing.T) {
 	t.Run("List keys with insufficient role", func(t *testing.T) {
 		t.Parallel()
 
-		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
+		ctx, cancel := context.WithTimeout(t.Context(), testTimeout)
 		defer cancel()
 
 		secCli := api.NewSessionServiceClient(secondaryViewerGRPCConn)
@@ -442,7 +442,7 @@ func TestListKeys(t *testing.T) {
 	t.Run("Lists are isolated by org ID", func(t *testing.T) {
 		t.Parallel()
 
-		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
+		ctx, cancel := context.WithTimeout(t.Context(), testTimeout)
 		defer cancel()
 
 		secCli := api.NewSessionServiceClient(secondaryAdminGRPCConn)
@@ -456,7 +456,7 @@ func TestListKeys(t *testing.T) {
 	t.Run("List keys by invalid page token", func(t *testing.T) {
 		t.Parallel()
 
-		ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
+		ctx, cancel := context.WithTimeout(t.Context(), testTimeout)
 		defer cancel()
 
 		sessCli := api.NewSessionServiceClient(globalAdminGRPCConn)
