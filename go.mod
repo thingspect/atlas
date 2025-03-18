@@ -6,7 +6,7 @@ require (
 	github.com/NYTimes/gziphandler v1.1.1
 	github.com/chirpstack/chirpstack/api/go/v4 v4.11.1
 	github.com/eclipse/paho.mqtt.golang v1.5.0
-	github.com/expr-lang/expr v1.16.9
+	github.com/expr-lang/expr v1.17.0
 	github.com/google/uuid v1.6.0
 	github.com/gregdel/pushover v1.3.1
 	github.com/grpc-ecosystem/grpc-gateway/v2 v2.26.3
