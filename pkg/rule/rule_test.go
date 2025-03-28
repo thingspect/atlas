@@ -50,7 +50,7 @@ func TestEval(t *testing.T) {
 		},
 		{
 			&common.DataPoint{}, `1 + "aaa"`, false,
-			"invalid operation: + (mismatched types int and string)",
+			"invalid operation: int + string",
 		},
 		{&common.DataPoint{}, `"aaa"`, false, ErrNotBool.Error()},
 	}

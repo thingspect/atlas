@@ -32,11 +32,10 @@ lint:
 # staticcheck defaults are all,-ST1000,-ST1003,-ST1016,-ST1020,-ST1021,-ST1022
 	staticcheck -checks all ./...
 
-	go install github.com/golangci/golangci-lint/cmd/golangci-lint@latest
+	go install github.com/golangci/golangci-lint/v2/cmd/golangci-lint@latest
 	golangci-lint run -E bidichk,copyloopvar,durationcheck,err113,errname \
-	-E forcetypeassert,godot,gofumpt,gosec,intrange,nlreturn,perfsprint \
-	-E prealloc,protogetter,testifylint,unconvert,unparam,usestdlibvars \
-	-E usetesting --exclude-use-default=false
+	-E forcetypeassert,godot,gosec,intrange,nlreturn,perfsprint,prealloc \
+	-E protogetter,testifylint,unconvert,unparam,usestdlibvars,usetesting
 
 	go install golang.org/x/vuln/cmd/govulncheck@latest
 	govulncheck -test ./...
