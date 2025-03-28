@@ -598,7 +598,7 @@ func TestTestRule(t *testing.T) {
 				&common.DataPoint{ValOneof: &common.DataPoint_IntVal{
 					IntVal: 40,
 				}}, `1 + "aaa"`, false,
-				"invalid operation: + (mismatched types int and string)",
+				"invalid operation: int + string",
 			},
 			{
 				&common.DataPoint{ValOneof: &common.DataPoint_IntVal{
