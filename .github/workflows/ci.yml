@@ -17,7 +17,7 @@ jobs:
         TEST_MQTT_ADDR: tcp://mqtt:1883
     services:
       postgres:
-        image: postgres:16-alpine
+        image: postgres:17-alpine
         env:
           POSTGRES_PASSWORD: postgres
           POSTGRES_DB: atlas_test
