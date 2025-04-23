@@ -1,6 +1,6 @@
 services:
   postgres:
-    image: postgres:16-alpine
+    image: postgres:17-alpine
     # command: postgres -c log_statement=all
     ports:
       - "127.0.0.1:5432:5432"
