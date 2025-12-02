@@ -25,7 +25,7 @@ func NewProtoMatcher(msg proto.Message) gomock.Matcher {
 }
 
 // Matches returns whether x is a match.
-func (pm *protoMatcher) Matches(x interface{}) bool {
+func (pm *protoMatcher) Matches(x any) bool {
 	msg, ok := x.(proto.Message)
 	if !ok {
 		return false

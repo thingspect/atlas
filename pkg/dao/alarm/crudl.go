@@ -161,7 +161,7 @@ func (d *DAO) List(
 ) ([]*api.Alarm, int32, error) {
 	// Build count query.
 	cQuery := countAlarms
-	cArgs := []interface{}{orgID}
+	cArgs := []any{orgID}
 
 	if ruleID != "" {
 		cQuery += countAlarmsRule
@@ -177,7 +177,7 @@ func (d *DAO) List(
 
 	// Build list query.
 	lQuery := listAlarms
-	lArgs := []interface{}{orgID}
+	lArgs := []any{orgID}
 
 	if prevID != "" && !lBoundTS.IsZero() {
 		lQuery += fmt.Sprintf(listAlarmsTSAndID, 2, 2, 3)

@@ -208,7 +208,7 @@ func (d *DAO) List(
 ) ([]*api.User, int32, error) {
 	// Build count query.
 	cQuery := countUsers
-	cArgs := []interface{}{orgID}
+	cArgs := []any{orgID}
 
 	if tag != "" {
 		cQuery += countUsersTag
@@ -224,7 +224,7 @@ func (d *DAO) List(
 
 	// Build list query.
 	lQuery := listUsers
-	lArgs := []interface{}{orgID}
+	lArgs := []any{orgID}
 
 	if prevID != "" && !lBoundTS.IsZero() {
 		lQuery += fmt.Sprintf(listUsersTSAndID, 2, 2, 3)

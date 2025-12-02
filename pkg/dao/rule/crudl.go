@@ -146,7 +146,7 @@ func (d *DAO) List(
 
 	// Build list query.
 	query := listRules
-	args := []interface{}{orgID}
+	args := []any{orgID}
 
 	if prevID != "" && !lBoundTS.IsZero() {
 		query += listRulesTSAndID

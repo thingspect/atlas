@@ -165,7 +165,7 @@ func TestAlertMessages(t *testing.T) {
 			alerter := NewMockalerter(ctrl)
 			alerter.EXPECT().Create(gomock.Any(),
 				matcher.NewProtoMatcher(alert)).
-				DoAndReturn(func(_ interface{}, _ interface{}) error {
+				DoAndReturn(func(_ any, _ any) error {
 					defer wg.Done()
 
 					return nil
@@ -413,7 +413,7 @@ func TestAlertMessagesError(t *testing.T) {
 
 			alerter := NewMockalerter(ctrl)
 			alerter.EXPECT().Create(gomock.Any(), gomock.Any()).
-				DoAndReturn(func(_ interface{}, _ interface{}) error {
+				DoAndReturn(func(_ any, _ any) error {
 					defer wg.Done()
 
 					return test.inpAlertErr

@@ -290,7 +290,7 @@ func (d *DAO) List(
 ) ([]*api.Device, int32, error) {
 	// Build count query.
 	cQuery := countDevices
-	cArgs := []interface{}{orgID}
+	cArgs := []any{orgID}
 
 	if tag != "" {
 		cQuery += countDevicesTag
@@ -306,7 +306,7 @@ func (d *DAO) List(
 
 	// Build list query.
 	lQuery := listDevices
-	lArgs := []interface{}{orgID}
+	lArgs := []any{orgID}
 
 	if prevID != "" && !lBoundTS.IsZero() {
 		lQuery += fmt.Sprintf(listDevicesTSAndID, 2, 2, 3)

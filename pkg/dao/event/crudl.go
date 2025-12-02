@@ -63,7 +63,7 @@ func (d *DAO) List(
 ) ([]*api.Event, error) {
 	// Build list query.
 	query := listEventsByUniqID
-	args := []interface{}{orgID}
+	args := []any{orgID}
 
 	if uniqID == "" && devID != "" {
 		query = listEventsByDevID
@@ -155,7 +155,7 @@ func (d *DAO) Latest(ctx context.Context, orgID, ruleID string) (
 ) {
 	// Build latest query.
 	query := latestEvents
-	args := []interface{}{orgID}
+	args := []any{orgID}
 
 	if ruleID != "" {
 		query += latestEventsRuleID

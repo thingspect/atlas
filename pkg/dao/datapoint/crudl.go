@@ -88,7 +88,7 @@ func (d *DAO) List(
 ) ([]*common.DataPoint, error) {
 	// Build list query.
 	query := listDataPointsByUniqID
-	args := []interface{}{orgID}
+	args := []any{orgID}
 
 	if uniqID == "" && devID != "" {
 		query = listDataPointsByDevID
@@ -239,7 +239,7 @@ func (d *DAO) Latest(
 ) ([]*common.DataPoint, error) {
 	// Build latest query.
 	query := latestDataPointsByUniqID
-	args := []interface{}{orgID}
+	args := []any{orgID}
 
 	if uniqID == "" && devID != "" {
 		query = latestDataPointsByDevID

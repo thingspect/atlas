@@ -15,7 +15,7 @@ const ErrNotBool consterr.Error = "not a boolean expression"
 // Eval evaluates a boolean expression using the Expr language:
 // https://github.com/expr-lang/expr/blob/master/docs/Language-Definition.md
 func Eval(point *common.DataPoint, ruleExpr string) (bool, error) {
-	env := map[string]interface{}{
+	env := map[string]any{
 		"point":   point,
 		"pointTS": point.GetTs().GetSeconds(),
 		"currTS":  time.Now().Unix(),

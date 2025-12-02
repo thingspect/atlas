@@ -15,10 +15,9 @@ type validator interface {
 // Validate performs request validation, and implements the
 // grpc.UnaryServerInterceptor type signature.
 func Validate(skipPaths map[string]struct{}) grpc.UnaryServerInterceptor {
-	return func(
-		ctx context.Context, req interface{}, info *grpc.UnaryServerInfo,
+	return func(ctx context.Context, req any, info *grpc.UnaryServerInfo,
 		handler grpc.UnaryHandler,
-	) (interface{}, error) {
+	) (any, error) {
 		if _, ok := skipPaths[info.FullMethod]; ok {
 			return handler(ctx, req)
 		}

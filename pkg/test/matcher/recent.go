@@ -23,7 +23,7 @@ func NewRecentMatcher(d time.Duration) gomock.Matcher {
 }
 
 // Matches returns whether x is a match.
-func (pm *recentMatcher) Matches(x interface{}) bool {
+func (pm *recentMatcher) Matches(x any) bool {
 	t, ok := x.(time.Time)
 	if !ok {
 		return false

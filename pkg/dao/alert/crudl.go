@@ -81,7 +81,7 @@ func (d *DAO) List(
 ) ([]*api.Alert, error) {
 	// Build list query.
 	var query string
-	args := []interface{}{orgID}
+	args := []any{orgID}
 	var devIncr int
 
 	switch {
