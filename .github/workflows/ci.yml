@@ -34,12 +34,12 @@ jobs:
         env:
           LOOKUP_ADDR: nsqlookupd:4160
       mqtt:
-        image: eclipse-mosquitto:2.0
+        image: eclipse-mosquitto:2
         volumes:
           - ${{ github.workspace }}/build/volume/mosquitto:/mosquitto/config
         options: --name mqtt
       redis:
-        image: redis:7-alpine
+        image: redis:8-alpine
     steps:
       - name: Deps
         # Add packages needed to support checkout, builds, and tests

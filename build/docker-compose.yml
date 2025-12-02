@@ -29,13 +29,13 @@ services:
       - "127.0.0.1:4171:4171"
 
   mqtt:
-    image: eclipse-mosquitto:2.0
+    image: eclipse-mosquitto:2
     ports:
       - "127.0.0.1:1883:1883"
     volumes:
       - ./volume/mosquitto:/mosquitto/config
 
   redis:
-    image: redis:7-alpine
+    image: redis:8-alpine
     ports:
       - "127.0.0.1:6379:6379"

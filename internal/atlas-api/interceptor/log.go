@@ -18,10 +18,9 @@ import (
 // Log logs requests, responses, and metadata, sends metrics, and implements the
 // grpc.UnaryServerInterceptor type signature.
 func Log(skipPaths map[string]struct{}) grpc.UnaryServerInterceptor {
-	return func(
-		ctx context.Context, req interface{}, info *grpc.UnaryServerInfo,
+	return func(ctx context.Context, req any, info *grpc.UnaryServerInfo,
 		handler grpc.UnaryHandler,
-	) (interface{}, error) {
+	) (any, error) {
 		// Set up logging fields and context.
 		logger := &alog.CtxLogger{Logger: alog.WithField("path", info.FullMethod)}
 		ctx = alog.NewContext(ctx, logger)

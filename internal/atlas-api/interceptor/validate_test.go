@@ -31,7 +31,7 @@ func TestValidate(t *testing.T) {
 	tests := []struct {
 		err          error
 		inpSkipPaths map[string]struct{}
-		inpReq       interface{}
+		inpReq       any
 		inpInfo      *grpc.UnaryServerInfo
 	}{
 		{
@@ -61,9 +61,7 @@ func TestValidate(t *testing.T) {
 				testTimeout)
 			defer cancel()
 
-			handler := func(_ context.Context, _ interface{}) (
-				interface{}, error,
-			) {
+			handler := func(_ context.Context, _ any) (any, error) {
 				return nil, test.err
 			}
 

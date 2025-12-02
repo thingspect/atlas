@@ -15,7 +15,7 @@ import (
 func Generate(
 	point *common.DataPoint, rule *api.Rule, dev *api.Device, templ string,
 ) (string, error) {
-	env := map[string]interface{}{
+	env := map[string]any{
 		"point":  point,
 		"rule":   rule,
 		"device": dev,

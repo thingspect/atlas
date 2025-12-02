@@ -120,9 +120,7 @@ func TestAuth(t *testing.T) {
 					metadata.Pairs(test.inpMD...))
 			}
 
-			handler := func(_ context.Context, req interface{}) (
-				interface{}, error,
-			) {
+			handler := func(_ context.Context, req any) (any, error) {
 				return req, test.inpHandlerErr
 			}
 
