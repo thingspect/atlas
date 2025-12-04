@@ -11,7 +11,7 @@ import (
 	"time"
 
 	"github.com/mennanov/fmutils"
-	"github.com/thingspect/atlas/internal/atlas-api/crypto"
+	"github.com/thingspect/atlas/internal/atlas-api/auth"
 	"github.com/thingspect/atlas/internal/atlas-api/session"
 	"github.com/thingspect/atlas/pkg/alog"
 	"github.com/thingspect/atlas/pkg/notify"
@@ -220,16 +220,16 @@ func (u *User) UpdateUserPassword(
 		return nil, errPerm(api.Role_ADMIN)
 	}
 
-	if err := crypto.CheckPass(req.GetPassword()); err != nil {
+	if err := auth.CheckPass(req.GetPassword()); err != nil {
 		return nil, errToStatus(err)
 	}
 
-	hash, err := crypto.HashPass(req.GetPassword())
+	hash, err := auth.HashPass(req.GetPassword())
 	if err != nil {
 		logger := alog.FromContext(ctx)
 		logger.Errorf("UpdateUserPassword crypto.HashPass: %v", err)
 
-		return nil, errToStatus(crypto.ErrWeakPass)
+		return nil, errToStatus(auth.ErrWeakPass)
 	}
 
 	if err := u.userDAO.UpdatePassword(ctx, req.GetId(), sess.OrgID,

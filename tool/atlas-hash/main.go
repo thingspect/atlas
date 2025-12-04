@@ -7,7 +7,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/thingspect/atlas/internal/atlas-api/crypto"
+	"github.com/thingspect/atlas/internal/atlas-api/auth"
 	"github.com/thingspect/atlas/internal/atlas-api/session"
 )
 
@@ -36,7 +36,7 @@ func main() {
 	switch {
 	// Hash password.
 	case flag.NArg() == 2 && flag.Arg(0) == "pass":
-		hash, err := crypto.HashPass(flag.Arg(1))
+		hash, err := auth.HashPass(flag.Arg(1))
 		checkErr(err)
 
 		_, err = fmt.Fprintf(os.Stdout, "%s\n", hash)

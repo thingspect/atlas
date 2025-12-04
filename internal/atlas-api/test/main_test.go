@@ -10,8 +10,8 @@ import (
 	"time"
 
 	iapi "github.com/thingspect/atlas/internal/atlas-api/api"
+	"github.com/thingspect/atlas/internal/atlas-api/auth"
 	"github.com/thingspect/atlas/internal/atlas-api/config"
-	"github.com/thingspect/atlas/internal/atlas-api/crypto"
 	"github.com/thingspect/atlas/pkg/dao"
 	"github.com/thingspect/atlas/pkg/dao/alert"
 	"github.com/thingspect/atlas/pkg/dao/datapoint"
@@ -100,7 +100,7 @@ func TestMain(m *testing.M) {
 	globalAleDAO = alert.NewDAO(pg, pg)
 
 	globalPass = random.String(10)
-	globalHash, err = crypto.HashPass(globalPass)
+	globalHash, err = auth.HashPass(globalPass)
 	if err != nil {
 		log.Fatalf("TestMain crypto.HashPass: %v", err)
 	}

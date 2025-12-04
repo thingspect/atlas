@@ -87,8 +87,7 @@ func Alarm(prefix, orgID, ruleID string) *api.Alarm {
 		UserTags:        Tags(prefix, Intn(4)+1),
 		SubjectTemplate: `rule name is: {{.rule.Name}}`,
 		BodyTemplate:    `device status is: {{.device.Status}}`,
-		//nolint:gosec // Safe conversion for limited values.
-		RepeatInterval: int32(Intn(99) + 1),
+		RepeatInterval:  int32(Intn(99) + 1),
 	}
 }
 

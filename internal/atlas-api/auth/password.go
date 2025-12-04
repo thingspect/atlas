@@ -1,5 +1,5 @@
-// Package crypto provides cryptography functions.
-package crypto
+// Package auth provides authentication helper functions.
+package auth
 
 import (
 	"strings"

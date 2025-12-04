@@ -32,7 +32,6 @@ func ParseRXInfo(rxInfo *gw.UplinkRxInfo) []*decode.Point {
 			Attr: "lora_snr", Value: float64(rxInfo.GetSnr()),
 		})
 	}
-	//nolint:gosec // Safe conversion for limited values.
 	msgs = append(msgs, &decode.Point{
 		Attr: "channel", Value: int32(rxInfo.GetChannel()),
 	})

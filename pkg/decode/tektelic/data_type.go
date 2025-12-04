@@ -52,7 +52,6 @@ func typeTempC(body []byte) (float64, []byte, error) {
 	}
 
 	// Parse temperature.
-	//nolint:gosec // Safe conversion for limited values.
 	tempC := float64(int16(binary.BigEndian.Uint16(body[2:4]))) / 10
 
 	return tempC, body[4:], nil

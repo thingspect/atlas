@@ -5,7 +5,7 @@ import (
 	"time"
 
 	"github.com/google/uuid"
-	"github.com/thingspect/atlas/internal/atlas-api/crypto"
+	"github.com/thingspect/atlas/internal/atlas-api/auth"
 	"github.com/thingspect/atlas/pkg/consterr"
 	"github.com/thingspect/atlas/proto/go/token"
 	"github.com/thingspect/proto/go/api"
@@ -57,7 +57,7 @@ func GenerateWebToken(pwtKey []byte, user *api.User) (
 	}
 
 	// Encrypt and encode PWT.
-	ePWT, err := crypto.Encrypt(pwtKey, bPWT)
+	ePWT, err := auth.Encrypt(pwtKey, bPWT)
 	if err != nil {
 		return "", nil, err
 	}
@@ -94,7 +94,7 @@ func GenerateKeyToken(pwtKey []byte, keyID, orgID string, role api.Role) (
 	}
 
 	// Encrypt and encode PWT.
-	ePWT, err := crypto.Encrypt(pwtKey, bPWT)
+	ePWT, err := auth.Encrypt(pwtKey, bPWT)
 	if err != nil {
 		return "", err
 	}
@@ -110,7 +110,7 @@ func ValidateWebToken(pwtKey []byte, ciphertoken string) (*Session, error) {
 		return nil, err
 	}
 
-	bPWT, err := crypto.Decrypt(pwtKey, ePWT)
+	bPWT, err := auth.Decrypt(pwtKey, ePWT)
 	if err != nil {
 		return nil, err
 	}

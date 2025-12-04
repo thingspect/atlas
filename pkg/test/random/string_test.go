@@ -14,7 +14,6 @@ func TestBytes(t *testing.T) {
 	t.Parallel()
 
 	for i := 5; i < 15; i++ {
-		//nolint:gosec // Safe conversion for limited values.
 		t.Run(fmt.Sprintf("Can generate %v", i), func(t *testing.T) {
 			t.Parallel()
 
@@ -33,7 +32,6 @@ func TestString(t *testing.T) {
 	t.Parallel()
 
 	for i := 5; i < 15; i++ {
-		//nolint:gosec // Safe conversion for limited values.
 		t.Run(fmt.Sprintf("Can generate %v", i), func(t *testing.T) {
 			t.Parallel()
 

@@ -8,7 +8,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/thingspect/atlas/internal/atlas-api/crypto"
+	"github.com/thingspect/atlas/internal/atlas-api/auth"
 	"github.com/thingspect/atlas/pkg/test/random"
 )
 
@@ -27,7 +27,7 @@ func TestMain(m *testing.M) {
 	var err error
 
 	globalPass = random.String(10)
-	globalHash, err = crypto.HashPass(globalPass)
+	globalHash, err = auth.HashPass(globalPass)
 	if err != nil {
 		log.Fatalf("TestMain crypto.HashPass: %v", err)
 	}

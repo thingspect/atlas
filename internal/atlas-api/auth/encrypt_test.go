@@ -1,6 +1,6 @@
 //go:build !integration
 
-package crypto
+package auth
 
 import (
 	"crypto/rand"
