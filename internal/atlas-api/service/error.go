@@ -5,7 +5,7 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/thingspect/atlas/internal/atlas-api/crypto"
+	"github.com/thingspect/atlas/internal/atlas-api/auth"
 	"github.com/thingspect/atlas/pkg/alog"
 	"github.com/thingspect/atlas/pkg/dao"
 	"github.com/thingspect/atlas/pkg/notify"
@@ -23,7 +23,7 @@ const (
 
 // errToCode maps DAO errors to gRPC error codes.
 var errToCode = map[error]codes.Code{
-	crypto.ErrWeakPass:   codes.InvalidArgument,
+	auth.ErrWeakPass:     codes.InvalidArgument,
 	dao.ErrAlreadyExists: codes.AlreadyExists,
 	dao.ErrInvalidFormat: codes.InvalidArgument,
 	dao.ErrNotFound:      codes.NotFound,

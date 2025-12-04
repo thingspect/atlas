@@ -10,7 +10,7 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/require"
-	"github.com/thingspect/atlas/internal/atlas-api/crypto"
+	"github.com/thingspect/atlas/internal/atlas-api/auth"
 	"github.com/thingspect/atlas/internal/atlas-api/session"
 	"github.com/thingspect/atlas/pkg/dao"
 	"github.com/thingspect/atlas/pkg/notify"
@@ -797,7 +797,7 @@ func TestUpdateUserPassword(t *testing.T) {
 			})
 		t.Logf("err: %v", err)
 		require.Equal(t, status.Error(codes.InvalidArgument,
-			crypto.ErrWeakPass.Error()), err)
+			auth.ErrWeakPass.Error()), err)
 	})
 
 	t.Run("Update user password by unknown ID", func(t *testing.T) {

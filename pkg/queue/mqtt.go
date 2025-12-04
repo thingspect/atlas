@@ -132,6 +132,5 @@ func (m *mqttQueue) Subscribe(topic string) (Subber, error) {
 
 // Disconnect ends the connection to a Queue.
 func (m *mqttQueue) Disconnect() {
-	//nolint:gosec // Safe conversion for limited values.
 	m.client.Disconnect(uint(m.connectTimeout / time.Millisecond))
 }

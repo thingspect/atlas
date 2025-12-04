@@ -1,4 +1,4 @@
-package crypto
+package auth
 
 // weakPasswords contains a list of weak passwords >= 10 characters in length,
 // lowercase (27 KB), from an original list of 100,000. While a map lookup would

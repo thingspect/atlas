@@ -8,7 +8,7 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/thingspect/atlas/internal/atlas-api/crypto"
+	"github.com/thingspect/atlas/internal/atlas-api/auth"
 	"github.com/thingspect/atlas/internal/atlas-api/key"
 	"github.com/thingspect/atlas/internal/atlas-api/session"
 	"github.com/thingspect/atlas/pkg/alog"
@@ -63,7 +63,7 @@ func (s *Session) Login(ctx context.Context, req *api.LoginRequest) (
 	// Hash the provided password if an error is returned to prevent account
 	// enumeration attacks.
 	if err != nil {
-		_, hashErr := crypto.HashPass(req.GetPassword())
+		_, hashErr := auth.HashPass(req.GetPassword())
 		logger.Debugf("Login s.userDAO.ReadByEmail Email, OrgName, err, "+
 			"hashErr: %v, %v, %v, %v", req.GetEmail(), req.GetOrgName(), err, hashErr)
 
@@ -73,7 +73,7 @@ func (s *Session) Login(ctx context.Context, req *api.LoginRequest) (
 	logger.Logger = logger.WithField("userID", user.GetId()).WithField("orgID",
 		user.GetOrgId())
 
-	if err := crypto.CompareHashPass(hash, req.GetPassword()); err != nil ||
+	if err := auth.CompareHashPass(hash, req.GetPassword()); err != nil ||
 		user.GetStatus() != api.Status_ACTIVE || user.GetRole() < api.Role_VIEWER {
 		logger.Debugf("Login crypto.CompareHashPass err, user.Status: %v, %s",
 			err, user.GetStatus())

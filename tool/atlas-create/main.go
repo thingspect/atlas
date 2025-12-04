@@ -11,7 +11,7 @@ import (
 	"time"
 
 	"github.com/google/uuid"
-	"github.com/thingspect/atlas/internal/atlas-api/crypto"
+	"github.com/thingspect/atlas/internal/atlas-api/auth"
 	"github.com/thingspect/atlas/pkg/dao"
 	"github.com/thingspect/atlas/pkg/dao/org"
 	"github.com/thingspect/atlas/pkg/dao/user"
@@ -138,7 +138,7 @@ func main() {
 		fallthrough
 	// Create user.
 	case "user":
-		hash, err := crypto.HashPass(flag.Arg(3))
+		hash, err := auth.HashPass(flag.Arg(3))
 		checkErr(err)
 
 		ctx, cancel := context.WithTimeout(context.Background(), 6*time.Second)

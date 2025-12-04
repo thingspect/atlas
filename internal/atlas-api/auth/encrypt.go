@@ -1,4 +1,4 @@
-package crypto
+package auth
 
 import (
 	"crypto/aes"

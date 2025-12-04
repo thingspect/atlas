@@ -31,7 +31,6 @@ func deviceTXAck(body []byte) ([]*decode.Point, error) {
 
 	// Parse DownlinkTXInfo.
 	if txAckMsg.GetTxInfo().GetFrequency() != 0 {
-		//nolint:gosec // Safe conversion for limited values.
 		msgs = append(msgs, &decode.Point{
 			Attr:  "tx_frequency",
 			Value: int32(txAckMsg.GetTxInfo().GetFrequency()),
