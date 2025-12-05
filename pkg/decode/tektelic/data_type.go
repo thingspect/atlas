@@ -19,11 +19,11 @@ const (
 func typeDigital(body []byte) (bool, []byte, error) {
 	// Digital data type must be at least 3 bytes.
 	if len(body) < 3 {
-		return false, nil, decode.ErrFormat("typeDigital", "bad length", body)
+		return false, nil, decode.FormatErr("typeDigital", "bad length", body)
 	}
 
 	if body[1] != identTypeDigital {
-		return false, nil, decode.ErrFormat("typeDigital", "bad identifier",
+		return false, nil, decode.FormatErr("typeDigital", "bad identifier",
 			body)
 	}
 
@@ -34,7 +34,7 @@ func typeDigital(body []byte) (bool, []byte, error) {
 	case 0xff:
 		return true, body[3:], nil
 	default:
-		return false, nil, decode.ErrFormat("typeDigital", "unknown value",
+		return false, nil, decode.FormatErr("typeDigital", "unknown value",
 			body)
 	}
 }
@@ -44,11 +44,11 @@ func typeDigital(body []byte) (bool, []byte, error) {
 func typeTempC(body []byte) (float64, []byte, error) {
 	// Temperature data type must be at least 4 bytes.
 	if len(body) < 4 {
-		return 0, nil, decode.ErrFormat("typeTempC", "bad length", body)
+		return 0, nil, decode.FormatErr("typeTempC", "bad length", body)
 	}
 
 	if body[1] != identTypeTempC {
-		return 0, nil, decode.ErrFormat("typeTempC", "bad identifier", body)
+		return 0, nil, decode.FormatErr("typeTempC", "bad identifier", body)
 	}
 
 	// Parse temperature.
@@ -62,17 +62,17 @@ func typeTempC(body []byte) (float64, []byte, error) {
 func typeHumidity(body []byte) (float64, []byte, error) {
 	// Humidity data type must be at least 3 bytes.
 	if len(body) < 3 {
-		return 0, nil, decode.ErrFormat("typeHumidity", "bad length", body)
+		return 0, nil, decode.FormatErr("typeHumidity", "bad length", body)
 	}
 
 	if body[1] != identTypeHumidity {
-		return 0, nil, decode.ErrFormat("typeHumidity", "bad identifier", body)
+		return 0, nil, decode.FormatErr("typeHumidity", "bad identifier", body)
 	}
 
 	// Parse hum.
 	hum := float64(body[2]) / 2
 	if hum > 100 {
-		return 0, nil, decode.ErrFormat("typeHumidity", "outside allowed range",
+		return 0, nil, decode.FormatErr("typeHumidity", "outside allowed range",
 			body)
 	}
 
@@ -84,11 +84,11 @@ func typeHumidity(body []byte) (float64, []byte, error) {
 func typeAnalogV(body []byte) (float64, []byte, error) {
 	// Analog (V) data type must be at least 4 bytes.
 	if len(body) < 4 {
-		return 0, nil, decode.ErrFormat("typeAnalogV", "bad length", body)
+		return 0, nil, decode.FormatErr("typeAnalogV", "bad length", body)
 	}
 
 	if body[1] != identTypeAnalogV {
-		return 0, nil, decode.ErrFormat("typeAnalogV", "bad identifier", body)
+		return 0, nil, decode.FormatErr("typeAnalogV", "bad identifier", body)
 	}
 
 	// Parse volt.

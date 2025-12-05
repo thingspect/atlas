@@ -12,11 +12,11 @@ const identLinkQuality = 0xfb
 func linkQuality(body []byte) ([]*decode.Point, error) {
 	// Link Quality payload must be 5 bytes.
 	if len(body) != 5 {
-		return nil, decode.ErrFormat("link quality", "bad length", body)
+		return nil, decode.FormatErr("link quality", "bad length", body)
 	}
 
 	if body[1] != identLinkQuality {
-		return nil, decode.ErrFormat("link quality", "bad identifier", body)
+		return nil, decode.FormatErr("link quality", "bad identifier", body)
 	}
 
 	// Parse protocol and count.

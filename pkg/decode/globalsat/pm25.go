@@ -17,7 +17,7 @@ func PM25(body []byte) ([]*decode.Point, error) {
 	}
 
 	if body[0] != identPM25 {
-		return msgs, decode.ErrFormat("pm25", "bad identifier", body)
+		return msgs, decode.FormatErr("pm25", "bad identifier", body)
 	}
 
 	// Parse PM25.

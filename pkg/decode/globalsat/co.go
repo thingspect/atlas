@@ -17,7 +17,7 @@ func CO(body []byte) ([]*decode.Point, error) {
 	}
 
 	if body[0] != identCO {
-		return msgs, decode.ErrFormat("co", "bad identifier", body)
+		return msgs, decode.FormatErr("co", "bad identifier", body)
 	}
 
 	// Parse CO.

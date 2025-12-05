@@ -16,11 +16,11 @@ func reset(body []byte) ([]*decode.Point, error) {
 
 	// Reset payload must be at least 8 bytes.
 	if len(body) < 8 {
-		return nil, decode.ErrFormat("reset", "bad length", body)
+		return nil, decode.FormatErr("reset", "bad length", body)
 	}
 
 	if body[1] != identReset {
-		return nil, decode.ErrFormat("reset", "bad identifier", body)
+		return nil, decode.FormatErr("reset", "bad identifier", body)
 	}
 
 	// Parse protocol, count, and hardware version.
@@ -48,7 +48,7 @@ func reset(body []byte) ([]*decode.Point, error) {
 
 	// Check for any remaining bytes.
 	if len(body) > 8 {
-		return msgs, decode.ErrFormat("reset", "unused trailing bytes", body)
+		return msgs, decode.FormatErr("reset", "unused trailing bytes", body)
 	}
 
 	return msgs, nil
