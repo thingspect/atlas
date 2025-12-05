@@ -32,11 +32,11 @@ func supervisory(body []byte) ([]*decode.Point, error) {
 
 	// Supervisory payload must be at least 5 bytes.
 	if len(body) < 5 {
-		return nil, decode.ErrFormat("supervisory", "bad length", body)
+		return nil, decode.FormatErr("supervisory", "bad length", body)
 	}
 
 	if body[1] != identSupervisory {
-		return nil, decode.ErrFormat("supervisory", "bad identifier", body)
+		return nil, decode.FormatErr("supervisory", "bad identifier", body)
 	}
 
 	// Parse protocol and count.
@@ -55,7 +55,7 @@ func supervisory(body []byte) ([]*decode.Point, error) {
 	}
 
 	if errCodes&errorSuperReserved > 0 {
-		return msgs, decode.ErrFormat("supervisory", "bad error bitmap", body)
+		return msgs, decode.FormatErr("supervisory", "bad error bitmap", body)
 	}
 
 	// Parse tamper status. Matching bit flag indicates closed/false state.
@@ -79,7 +79,7 @@ func supervisory(body []byte) ([]*decode.Point, error) {
 
 	// Check for any remaining bytes.
 	if len(body) > 11 {
-		return msgs, decode.ErrFormat("supervisory", "unused trailing bytes",
+		return msgs, decode.FormatErr("supervisory", "unused trailing bytes",
 			body)
 	}
 

@@ -2,21 +2,20 @@ package cache
 
 import (
 	"context"
-	"sync"
 	"time"
 
 	"github.com/jellydator/ttlcache/v3"
 	"github.com/thingspect/atlas/pkg/consterr"
 )
 
-var errWrongType consterr.Error = "value wrong type"
+// ErrWrongType is returned when a stored value does not match the type of a
+// called method.
+const ErrWrongType consterr.Error = "value wrong type"
 
 // memoryCache contains methods to create and query data in memory and
-// implements the Cacher interface. An additional RWMutex is used to support
-// transactions.
+// implements the Cacher interface.
 type memoryCache struct {
-	cache   *ttlcache.Cache[string, any]
-	cacheMu sync.RWMutex
+	cache *ttlcache.Cache[string, any]
 }
 
 // Verify memoryCache implements Cacher.
@@ -42,9 +41,6 @@ func (m *memoryCache) Set(ctx context.Context, key string, value any) error {
 func (m *memoryCache) SetTTL(
 	_ context.Context, key string, value any, exp time.Duration,
 ) error {
-	m.cacheMu.Lock()
-	defer m.cacheMu.Unlock()
-
 	_ = m.cache.Set(key, value, exp)
 
 	return nil
@@ -53,9 +49,6 @@ func (m *memoryCache) SetTTL(
 // Get retrieves a string value by key. If the key does not exist, the boolean
 // returned is set to false.
 func (m *memoryCache) Get(_ context.Context, key string) (bool, string, error) {
-	m.cacheMu.RLock()
-	defer m.cacheMu.RUnlock()
-
 	iface := m.cache.Get(key)
 	if iface == nil {
 		return false, "", nil
@@ -63,7 +56,7 @@ func (m *memoryCache) Get(_ context.Context, key string) (bool, string, error) {
 
 	s, ok := iface.Value().(string)
 	if !ok {
-		return false, "", errWrongType
+		return false, "", ErrWrongType
 	}
 
 	return true, s, nil
@@ -74,9 +67,6 @@ func (m *memoryCache) Get(_ context.Context, key string) (bool, string, error) {
 func (m *memoryCache) GetB(_ context.Context, key string) (
 	bool, []byte, error,
 ) {
-	m.cacheMu.RLock()
-	defer m.cacheMu.RUnlock()
-
 	iface := m.cache.Get(key)
 	if iface == nil {
 		return false, nil, nil
@@ -84,7 +74,7 @@ func (m *memoryCache) GetB(_ context.Context, key string) (
 
 	b, ok := iface.Value().([]byte)
 	if !ok {
-		return false, nil, errWrongType
+		return false, nil, ErrWrongType
 	}
 
 	return true, b, nil
@@ -93,9 +83,6 @@ func (m *memoryCache) GetB(_ context.Context, key string) (
 // GetI retrieves an int64 value by key. If the key does not exist, the boolean
 // returned is set to false.
 func (m *memoryCache) GetI(_ context.Context, key string) (bool, int64, error) {
-	m.cacheMu.RLock()
-	defer m.cacheMu.RUnlock()
-
 	iface := m.cache.Get(key)
 	if iface == nil {
 		return false, 0, nil
@@ -103,7 +90,7 @@ func (m *memoryCache) GetI(_ context.Context, key string) (bool, int64, error) {
 
 	i, ok := iface.Value().(int64)
 	if !ok {
-		return false, 0, errWrongType
+		return false, 0, ErrWrongType
 	}
 
 	return true, i, nil
@@ -122,45 +109,21 @@ func (m *memoryCache) SetIfNotExist(
 func (m *memoryCache) SetIfNotExistTTL(
 	_ context.Context, key string, value any, exp time.Duration,
 ) (bool, error) {
-	m.cacheMu.Lock()
-	defer m.cacheMu.Unlock()
-
-	if iface := m.cache.Get(key); iface != nil {
+	if _, ok := m.cache.GetOrSet(key, value,
+		ttlcache.WithTTL[string, any](exp)); ok {
 		return false, nil
 	}
-
-	_ = m.cache.Set(key, value, exp)
 
 	return true, nil
 }
 
-// Incr increments an int64 value at key by one. If the key does not exist, the
-// value is set to 1. The incremented value is returned.
-func (m *memoryCache) Incr(_ context.Context, key string) (int64, error) {
-	m.cacheMu.Lock()
-	defer m.cacheMu.Unlock()
-
-	var i int64
-	var ok bool
-
-	if iface := m.cache.Get(key); iface != nil {
-		i, ok = iface.Value().(int64)
-		if !ok {
-			return 0, errWrongType
-		}
-	}
-	i++
-
-	_ = m.cache.Set(key, i, ttlcache.NoTTL)
-
-	return i, nil
+// Incr is not supported.
+func (m *memoryCache) Incr(_ context.Context, _ string) (int64, error) {
+	panic("unimplemented")
 }
 
 // Del removes the specified key. A key is ignored if it does not exist.
 func (m *memoryCache) Del(_ context.Context, key string) error {
-	m.cacheMu.Lock()
-	defer m.cacheMu.Unlock()
-
 	m.cache.Delete(key)
 
 	return nil

@@ -46,7 +46,7 @@ func TestMemorySetGet(t *testing.T) {
 	t.Logf("ok, res, err: %v, %v, %v", ok, res, err)
 	require.False(t, ok)
 	require.Empty(t, res)
-	require.Equal(t, errWrongType, err)
+	require.Equal(t, ErrWrongType, err)
 }
 
 func TestMemorySetTTLGetB(t *testing.T) {
@@ -79,7 +79,7 @@ func TestMemorySetTTLGetB(t *testing.T) {
 	t.Logf("ok, res, err: %v, %x, %v", ok, res, err)
 	require.False(t, ok)
 	require.Empty(t, res)
-	require.Equal(t, errWrongType, err)
+	require.Equal(t, ErrWrongType, err)
 }
 
 func TestMemorySetTTLGetBShort(t *testing.T) {
@@ -128,7 +128,7 @@ func TestMemorySetGetI(t *testing.T) {
 	t.Logf("ok, res, err: %v, %v, %v", ok, res, err)
 	require.False(t, ok)
 	require.Empty(t, res)
-	require.Equal(t, errWrongType, err)
+	require.Equal(t, ErrWrongType, err)
 }
 
 func TestMemorySetIfNotExist(t *testing.T) {
@@ -185,34 +185,6 @@ func TestMemorySetIfNotExistTTLShort(t *testing.T) {
 	t.Logf("ok, err: %v, %v", ok, err)
 	require.True(t, ok)
 	require.NoError(t, err)
-}
-
-func TestMemoryIncr(t *testing.T) {
-	t.Parallel()
-
-	mem := NewMemory()
-	key := "testMemoryIncr-" + random.String(10)
-	val := int64(random.Intn(999))
-
-	require.NoError(t, mem.Set(t.Context(), key, val))
-
-	res, err := mem.Incr(t.Context(), key)
-	t.Logf("res, err: %v, %v", res, err)
-	require.Equal(t, val+1, res)
-	require.NoError(t, err)
-
-	res, err = mem.Incr(t.Context(),
-		"testMemoryIncr-"+random.String(10))
-	t.Logf("res, err: %v, %v", res, err)
-	require.Equal(t, int64(1), res)
-	require.NoError(t, err)
-
-	require.NoError(t, mem.Set(t.Context(), key, random.String(10)))
-
-	res, err = mem.Incr(t.Context(), key)
-	t.Logf("res, err: %v, %v", res, err)
-	require.Empty(t, res)
-	require.Equal(t, errWrongType, err)
 }
 
 func TestMemoryDel(t *testing.T) {

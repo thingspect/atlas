@@ -16,11 +16,11 @@ const (
 func chanMotion(body []byte) ([]*decode.Point, []byte, error) {
 	// Motion data channel must be at least 3 bytes.
 	if len(body) < 3 {
-		return nil, nil, decode.ErrFormat("chanMotion", "bad length", body)
+		return nil, nil, decode.FormatErr("chanMotion", "bad length", body)
 	}
 
 	if body[0] != identChanMotion {
-		return nil, nil, decode.ErrFormat("chanMotion", "bad identifier", body)
+		return nil, nil, decode.FormatErr("chanMotion", "bad identifier", body)
 	}
 
 	// Parse motion.
@@ -37,11 +37,11 @@ func chanMotion(body []byte) ([]*decode.Point, []byte, error) {
 func chanTempC(body []byte) ([]*decode.Point, []byte, error) {
 	// Temperature data channel must be at least 4 bytes.
 	if len(body) < 4 {
-		return nil, nil, decode.ErrFormat("chanTempC", "bad length", body)
+		return nil, nil, decode.FormatErr("chanTempC", "bad length", body)
 	}
 
 	if body[0] != identChanTempC {
-		return nil, nil, decode.ErrFormat("chanTempC", "bad identifier", body)
+		return nil, nil, decode.FormatErr("chanTempC", "bad identifier", body)
 	}
 
 	// Parse temperature.
@@ -61,11 +61,11 @@ func chanTempC(body []byte) ([]*decode.Point, []byte, error) {
 func chanHumidity(body []byte) ([]*decode.Point, []byte, error) {
 	// Humidity data channel must be at least 3 bytes.
 	if len(body) < 3 {
-		return nil, nil, decode.ErrFormat("chanHumidity", "bad length", body)
+		return nil, nil, decode.FormatErr("chanHumidity", "bad length", body)
 	}
 
 	if body[0] != identChanHumidity {
-		return nil, nil, decode.ErrFormat("chanHumidity", "bad identifier",
+		return nil, nil, decode.FormatErr("chanHumidity", "bad identifier",
 			body)
 	}
 
@@ -83,11 +83,11 @@ func chanHumidity(body []byte) ([]*decode.Point, []byte, error) {
 func chanBatteryV(body []byte) ([]*decode.Point, []byte, error) {
 	// Battery (V) data channel must be at least 4 bytes.
 	if len(body) < 4 {
-		return nil, nil, decode.ErrFormat("chanBatteryV", "bad length", body)
+		return nil, nil, decode.FormatErr("chanBatteryV", "bad length", body)
 	}
 
 	if body[0] != identChanBatteryV {
-		return nil, nil, decode.ErrFormat("chanBatteryV", "bad identifier",
+		return nil, nil, decode.FormatErr("chanBatteryV", "bad identifier",
 			body)
 	}
 

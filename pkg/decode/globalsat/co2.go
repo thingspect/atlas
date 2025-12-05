@@ -17,7 +17,7 @@ func CO2(body []byte) ([]*decode.Point, error) {
 	}
 
 	if body[0] != identCO2 {
-		return msgs, decode.ErrFormat("co2", "bad identifier", body)
+		return msgs, decode.FormatErr("co2", "bad identifier", body)
 	}
 
 	// Parse CO2.

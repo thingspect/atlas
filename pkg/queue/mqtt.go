@@ -4,7 +4,6 @@ import (
 	"time"
 
 	mqtt "github.com/eclipse/paho.mqtt.golang"
-	"github.com/thingspect/atlas/pkg/alog"
 )
 
 // Constants used for the configuration of MQTT behavior.
@@ -108,7 +107,7 @@ var _ Messager = &mqttMessage{}
 
 // Requeue is not supported.
 func (mm *mqttMessage) Requeue() {
-	alog.Fatal("Requeue unsupported")
+	panic("unimplemented")
 }
 
 // Subscribe subscribes to a topic and returns a Subber and an error value.

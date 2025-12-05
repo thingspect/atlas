@@ -11,11 +11,11 @@ const identTamper = 0x02
 func tamper(body []byte) ([]*decode.Point, error) {
 	// Tamper payload must be 3 bytes.
 	if len(body) != 3 {
-		return nil, decode.ErrFormat("tamper", "bad length", body)
+		return nil, decode.FormatErr("tamper", "bad length", body)
 	}
 
 	if body[1] != identTamper {
-		return nil, decode.ErrFormat("tamper", "bad identifier", body)
+		return nil, decode.FormatErr("tamper", "bad identifier", body)
 	}
 
 	// Parse protocol and count.

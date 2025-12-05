@@ -12,7 +12,7 @@ import (
 func ls11x(body []byte) ([]*decode.Point, error) {
 	// LS-11X payload must be 7 bytes.
 	if len(body) != 7 {
-		return nil, decode.ErrFormat("ls11x", "bad length", body)
+		return nil, decode.FormatErr("ls11x", "bad length", body)
 	}
 
 	// Parse temperature, rounded to one decimal digit.
@@ -24,7 +24,7 @@ func ls11x(body []byte) ([]*decode.Point, error) {
 	// Parse humidity.
 	hum := float64(binary.BigEndian.Uint16(body[3:5])) / 100
 	if hum > 100 {
-		return msgs, decode.ErrFormat("ls11x", "humidity outside allowed range",
+		return msgs, decode.FormatErr("ls11x", "humidity outside allowed range",
 			body)
 	}
 

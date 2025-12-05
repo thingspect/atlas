@@ -10,7 +10,7 @@ import (
 func Home(body []byte) ([]*decode.Point, error) {
 	// Home Sensor payloads must be at least 3 bytes.
 	if len(body) < 3 {
-		return nil, decode.ErrFormat("home", "bad length", body)
+		return nil, decode.FormatErr("home", "bad length", body)
 	}
 
 	var msgs, lMsgs []*decode.Point
@@ -28,7 +28,7 @@ func Home(body []byte) ([]*decode.Point, error) {
 		case identChanBatteryV:
 			lMsgs, body, err = chanBatteryV(body)
 		default:
-			return msgs, decode.ErrFormat("home", "bad identifier", body)
+			return msgs, decode.FormatErr("home", "bad identifier", body)
 		}
 
 		// Store valid points.
@@ -41,7 +41,7 @@ func Home(body []byte) ([]*decode.Point, error) {
 
 	// Check for any remaining bytes.
 	if len(body) > 0 {
-		return msgs, decode.ErrFormat("home", "unused trailing bytes", body)
+		return msgs, decode.FormatErr("home", "unused trailing bytes", body)
 	}
 
 	return msgs, nil

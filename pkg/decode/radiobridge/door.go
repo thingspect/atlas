@@ -13,7 +13,7 @@ const identDoor = 0x03
 func Door(body []byte) ([]*decode.Point, error) {
 	// Door and children payloads must be at least 3 bytes.
 	if len(body) < 3 {
-		return nil, decode.ErrFormat("door", "bad length", body)
+		return nil, decode.FormatErr("door", "bad length", body)
 	}
 
 	switch body[1] {
@@ -28,7 +28,7 @@ func Door(body []byte) ([]*decode.Point, error) {
 	case identLinkQuality:
 		return linkQuality(body)
 	default:
-		return nil, decode.ErrFormat("door", "bad identifier", body)
+		return nil, decode.FormatErr("door", "bad identifier", body)
 	}
 
 	// Parse count.
@@ -40,7 +40,7 @@ func Door(body []byte) ([]*decode.Point, error) {
 
 	// Check for any remaining bytes.
 	if len(body) > 3 {
-		return msgs, decode.ErrFormat("door", "unused trailing bytes", body)
+		return msgs, decode.FormatErr("door", "unused trailing bytes", body)
 	}
 
 	return msgs, nil
