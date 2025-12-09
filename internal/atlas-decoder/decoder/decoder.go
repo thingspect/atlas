@@ -55,7 +55,7 @@ func New(cfg *config.Config) (*Decoder, error) {
 	}
 
 	// Set up cache connection.
-	redis, err := cache.NewRedis(cfg.RedisHost + ":6379")
+	redis, err := cache.NewRedis[[]byte](cfg.RedisHost + ":6379")
 	if err != nil {
 		return nil, err
 	}

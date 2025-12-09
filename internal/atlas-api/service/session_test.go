@@ -336,7 +336,7 @@ func TestDeleteKey(t *testing.T) {
 		keyer := NewMockKeyer(ctrl)
 		keyer.EXPECT().Delete(gomock.Any(), gomock.Any(), gomock.Any()).
 			Return(nil).Times(1)
-		cacher := cache.NewMockCacher(ctrl)
+		cacher := cache.NewMockCacher[string](ctrl)
 		cacher.EXPECT().Set(gomock.Any(), gomock.Any(), "").Return(nil).Times(1)
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
@@ -382,7 +382,7 @@ func TestDeleteKey(t *testing.T) {
 	t.Run("Delete key with cacher error", func(t *testing.T) {
 		t.Parallel()
 
-		cacher := cache.NewMockCacher(gomock.NewController(t))
+		cacher := cache.NewMockCacher[string](gomock.NewController(t))
 		cacher.EXPECT().Set(gomock.Any(), gomock.Any(), "").
 			Return(dao.ErrInvalidFormat).Times(1)
 
@@ -407,7 +407,7 @@ func TestDeleteKey(t *testing.T) {
 		keyer := NewMockKeyer(ctrl)
 		keyer.EXPECT().Delete(gomock.Any(), gomock.Any(), gomock.Any()).
 			Return(dao.ErrNotFound).Times(1)
-		cacher := cache.NewMockCacher(ctrl)
+		cacher := cache.NewMockCacher[string](ctrl)
 		cacher.EXPECT().Set(gomock.Any(), gomock.Any(), "").Return(nil).Times(1)
 
 		ctx, cancel := context.WithTimeout(session.NewContext(

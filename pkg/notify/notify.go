@@ -5,7 +5,7 @@ import "github.com/thingspect/atlas/pkg/cache"
 // notify contains methods to send notifications and implements the Notifier
 // interface.
 type notify struct {
-	cache cache.Cacher
+	cache cache.Cacher[string]
 
 	appAPIKey string
 	twilio    *twilio
@@ -17,7 +17,7 @@ var _ Notifier = &notify{}
 
 // New builds a new Notifier and returns it.
 func New(
-	cache cache.Cacher, appAPIKey, smsKeyID, smsAccountID, smsKeySecret,
+	cache cache.Cacher[string], appAPIKey, smsKeyID, smsAccountID, smsKeySecret,
 	smsPhone, emailDomain, emailAPIKey string,
 ) Notifier {
 	return &notify{

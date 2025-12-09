@@ -3,9 +3,11 @@ package alerter
 import (
 	"bytes"
 	"context"
+	"errors"
 	"time"
 
 	"github.com/thingspect/atlas/pkg/alog"
+	"github.com/thingspect/atlas/pkg/cache"
 	"github.com/thingspect/atlas/pkg/consterr"
 	"github.com/thingspect/atlas/pkg/metric"
 	"github.com/thingspect/atlas/pkg/queue"
@@ -146,16 +148,16 @@ func (ale *Alerter) evalAlarms(
 		key := repeatKey(eOut.GetDevice().GetOrgId(), eOut.GetDevice().GetId(),
 			a.GetId(), user.GetId())
 		cCtx, cancel := context.WithTimeout(ctx, 5*time.Second)
-		ok, err := ale.cache.SetIfNotExistTTL(cCtx, key, 1,
+		err := ale.cache.SetIfNotExistTTL(cCtx, key, "",
 			time.Duration(a.GetRepeatInterval())*time.Minute)
 		cancel()
-		if err != nil {
+		if err != nil && !errors.Is(err, cache.ErrAlreadyExists) {
 			metric.Incr("error", map[string]string{"func": "setifnotexist"})
 			logger.Errorf("alertMessages ale.cache.SetIfNotExistTTL: %v", err)
 
 			continue
 		}
-		if !ok {
+		if errors.Is(err, cache.ErrAlreadyExists) {
 			metric.Incr("repeat", nil)
 
 			continue

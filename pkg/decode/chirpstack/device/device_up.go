@@ -40,6 +40,7 @@ func deviceUp(body []byte) (
 	// Parse UplinkTXInfo.
 	if upMsg.GetTxInfo().GetFrequency() != 0 {
 		msgs = append(msgs, &decode.Point{
+			//nolint:gosec // Safe conversion for limited values.
 			Attr: "frequency", Value: int32(upMsg.GetTxInfo().GetFrequency()),
 		})
 	}
@@ -47,6 +48,7 @@ func deviceUp(body []byte) (
 	// Parse UplinkEvent.
 	msgs = append(msgs, &decode.Point{Attr: "adr", Value: upMsg.GetAdr()})
 	msgs = append(msgs, &decode.Point{
+		//nolint:gosec // Safe conversion for limited values.
 		Attr: "data_rate", Value: int32(upMsg.GetDr()),
 	})
 	msgs = append(msgs, &decode.Point{

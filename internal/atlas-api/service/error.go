@@ -21,7 +21,7 @@ const (
 	defaultPageSize = 50
 )
 
-// errToCode maps DAO errors to gRPC error codes.
+// errToCode maps package errors to gRPC error codes.
 var errToCode = map[error]codes.Code{
 	auth.ErrWeakPass:     codes.InvalidArgument,
 	dao.ErrAlreadyExists: codes.AlreadyExists,
@@ -32,7 +32,7 @@ var errToCode = map[error]codes.Code{
 	rule.ErrNotBool:      codes.InvalidArgument,
 }
 
-// errToStatus maps DAO errors to gRPC status errors. This function is
+// errToStatus maps package errors to gRPC status errors. This function is
 // idempotent and is safe to call on the same error multiple times.
 func errToStatus(err error) error {
 	// If err is nil or is already a gRPC status, return it.
@@ -40,8 +40,8 @@ func errToStatus(err error) error {
 		return err
 	}
 
-	for daoErr, code := range errToCode {
-		if errors.Is(err, daoErr) {
+	for pkgErr, code := range errToCode {
+		if errors.Is(err, pkgErr) {
 			return status.Error(code, err.Error())
 		}
 	}

@@ -36,23 +36,27 @@ func gatewayStats(body []byte) ([]*decode.Point, error) {
 	}
 	if statsMsg.GetRxPacketsReceived() != 0 {
 		msgs = append(msgs, &decode.Point{
+			//nolint:gosec // Safe conversion for limited values.
 			Attr: "rx_received", Value: int32(statsMsg.GetRxPacketsReceived()),
 		})
 	}
 	if statsMsg.GetRxPacketsReceivedOk() != 0 {
 		msgs = append(msgs, &decode.Point{
-			Attr:  "rx_received_valid",
+			Attr: "rx_received_valid",
+			//nolint:gosec // Safe conversion for limited values.
 			Value: int32(statsMsg.GetRxPacketsReceivedOk()),
 		})
 	}
 	if statsMsg.GetTxPacketsReceived() != 0 {
 		msgs = append(msgs, &decode.Point{
+			//nolint:gosec // Safe conversion for limited values.
 			Attr: "tx_received", Value: int32(statsMsg.GetTxPacketsReceived()),
 		})
 	}
 	if statsMsg.GetTxPacketsEmitted() != 0 {
 		msgs = append(msgs, &decode.Point{
-			Attr:  "tx_transmitted",
+			Attr: "tx_transmitted",
+			//nolint:gosec // Safe conversion for limited values.
 			Value: int32(statsMsg.GetTxPacketsEmitted()),
 		})
 	}

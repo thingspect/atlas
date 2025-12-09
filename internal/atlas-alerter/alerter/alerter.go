@@ -54,7 +54,7 @@ type Alerter struct {
 	alarmDAO alarmer
 	userDAO  userer
 	aleDAO   alerter
-	cache    cache.Cacher
+	cache    cache.Cacher[string]
 
 	aleQueue queue.Queuer
 	eOutSub  queue.Subber
@@ -76,7 +76,7 @@ func New(cfg *config.Config) (*Alerter, error) {
 	}
 
 	// Set up cache connection.
-	redis, err := cache.NewRedis(cfg.RedisHost + ":6379")
+	redis, err := cache.NewRedis[string](cfg.RedisHost + ":6379")
 	if err != nil {
 		return nil, err
 	}
