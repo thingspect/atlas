@@ -6,30 +6,32 @@ package cache
 import (
 	"context"
 	"time"
+
+	"github.com/thingspect/atlas/pkg/consterr"
+)
+
+// Sentinel errors for Cacher.
+const (
+	ErrAlreadyExists consterr.Error = "object already exists"
+	ErrNotFound      consterr.Error = "object not found"
 )
 
 // Cacher defines the methods provided by a Cache.
-type Cacher interface {
+type Cacher[V any] interface {
 	// Set sets key to value.
-	Set(ctx context.Context, key string, value any) error
+	Set(ctx context.Context, key string, value V) error
 	// SetTTL sets key to value with expiration.
-	SetTTL(ctx context.Context, key string, value any, exp time.Duration) error
-	// Get retrieves a string value by key. If the key does not exist, the
-	// boolean returned is set to false.
-	Get(ctx context.Context, key string) (bool, string, error)
-	// Get retrieves a []byte value by key. If the key does not exist, the
-	// boolean returned is set to false.
-	GetB(ctx context.Context, key string) (bool, []byte, error)
-	// GetI retrieves an int64 value by key. If the key does not exist, the
-	// boolean returned is set to false.
-	GetI(ctx context.Context, key string) (bool, int64, error)
-	// SetIfNotExist sets key to value if the key does not exist. If it is
-	// successful, it returns true.
-	SetIfNotExist(ctx context.Context, key string, value any) (bool, error)
+	SetTTL(ctx context.Context, key string, value V, exp time.Duration) error
+	// Get retrieves a value by key. If the key does not exist, ErrNotFound is
+	// returned.
+	Get(ctx context.Context, key string) (V, error)
+	// SetIfNotExist sets key to value if the key does not exist. If the key
+	// already exists, ErrAlreadyExists is returned.
+	SetIfNotExist(ctx context.Context, key string, value V) error
 	// SetIfNotExistTTL sets key to value, with expiration, if the key does not
-	// exist. If it is successful, it returns true.
-	SetIfNotExistTTL(ctx context.Context, key string, value any,
-		exp time.Duration) (bool, error)
+	// exist. If the key already exists, ErrAlreadyExists is returned.
+	SetIfNotExistTTL(ctx context.Context, key string, value V,
+		exp time.Duration) error
 	// Incr increments an int64 value at key by one. If the key does not exist,
 	// the value is set to 1. The incremented value is returned.
 	//

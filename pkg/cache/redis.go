@@ -2,6 +2,7 @@ package cache
 
 import (
 	"context"
+	"encoding/json"
 	"errors"
 	"time"
 
@@ -10,15 +11,15 @@ import (
 
 // redisCache contains methods to create and query data in Redis and implements
 // the Cacher interface.
-type redisCache struct {
+type redisCache[V any] struct {
 	client redis.UniversalClient
 }
 
 // Verify redisCache implements Cacher.
-var _ Cacher = &redisCache{}
+var _ Cacher[string] = &redisCache[string]{}
 
 // NewRedis builds and verifies a new Cacher and returns it and an error value.
-func NewRedis(redisAddr string) (Cacher, error) {
+func NewRedis[V any](redisAddr string) (Cacher[V], error) {
 	client := redis.NewUniversalClient(&redis.UniversalOptions{
 		Addrs: []string{redisAddr},
 	})
@@ -30,90 +31,83 @@ func NewRedis(redisAddr string) (Cacher, error) {
 		return nil, err
 	}
 
-	return &redisCache{
+	return &redisCache[V]{
 		client: client,
 	}, nil
 }
 
 // Set sets key to value.
-func (r *redisCache) Set(ctx context.Context, key string, value any) error {
+func (r *redisCache[V]) Set(ctx context.Context, key string, value V) error {
 	return r.SetTTL(ctx, key, value, 0)
 }
 
 // SetTTL sets key to value with expiration.
-func (r *redisCache) SetTTL(
-	ctx context.Context, key string, value any, exp time.Duration,
+func (r *redisCache[V]) SetTTL(ctx context.Context, key string, value V,
+	exp time.Duration,
 ) error {
-	return r.client.Set(ctx, key, value, exp).Err()
-}
-
-// Get retrieves a string value by key. If the key does not exist, the boolean
-// returned is set to false.
-func (r *redisCache) Get(ctx context.Context, key string) (
-	bool, string, error,
-) {
-	s, err := r.client.Get(ctx, key).Result()
-	if errors.Is(err, redis.Nil) {
-		return false, "", nil
-	}
+	// Switching on, and converting back to, type parameters is not supported.
+	// Use JSON bytes as a workaround.
+	b, err := json.Marshal(value)
 	if err != nil {
-		return false, "", err
+		return err
 	}
 
-	return true, s, nil
+	return r.client.Set(ctx, key, b, exp).Err()
 }
 
-// GetB retrieves a []byte value by key. If the key does not exist, the boolean
-// returned is set to false.
-func (r *redisCache) GetB(ctx context.Context, key string) (
-	bool, []byte, error,
-) {
+// Get retrieves a value by key. If the key does not exist, ErrNotFound is
+// returned.
+func (r *redisCache[V]) Get(ctx context.Context, key string) (V, error) {
 	b, err := r.client.Get(ctx, key).Bytes()
 	if errors.Is(err, redis.Nil) {
-		return false, nil, nil
+		return *new(V), ErrNotFound
 	}
 	if err != nil {
-		return false, nil, err
+		return *new(V), err
 	}
 
-	return true, b, nil
+	var item V
+	if err = json.Unmarshal(b, &item); err != nil {
+		return *new(V), err
+	}
+
+	return item, nil
 }
 
-// GetI retrieves an int64 value by key. If the key does not exist, the boolean
-// returned is set to false.
-func (r *redisCache) GetI(ctx context.Context, key string) (
-	bool, int64, error,
-) {
-	i, err := r.client.Get(ctx, key).Int64()
-	if errors.Is(err, redis.Nil) {
-		return false, 0, nil
-	}
-	if err != nil {
-		return false, 0, err
-	}
-
-	return true, i, nil
-}
-
-// SetIfNotExist sets key to value if the key does not exist. If it is
-// successful, it returns true.
-func (r *redisCache) SetIfNotExist(ctx context.Context, key string, value any) (
-	bool, error,
-) {
+// SetIfNotExist sets key to value if the key does not exist. If the key already
+// exists, ErrAlreadyExists is returned.
+func (r *redisCache[V]) SetIfNotExist(ctx context.Context, key string,
+	value V,
+) error {
 	return r.SetIfNotExistTTL(ctx, key, value, 0)
 }
 
 // SetIfNotExistTTL sets key to value, with expiration, if the key does not
-// exist. If it is successful, it returns true.
-func (r *redisCache) SetIfNotExistTTL(
-	ctx context.Context, key string, value any, exp time.Duration,
-) (bool, error) {
-	return r.client.SetNX(ctx, key, value, exp).Result()
+// exist. If the key already exists, ErrAlreadyExists is returned.
+func (r *redisCache[V]) SetIfNotExistTTL(ctx context.Context, key string,
+	value V, exp time.Duration,
+) error {
+	// Switching on, and converting back to, type parameters is not supported.
+	// Use JSON bytes as a workaround.
+	b, err := json.Marshal(value)
+	if err != nil {
+		return err
+	}
+
+	ok, err := r.client.SetNX(ctx, key, b, exp).Result()
+	if err != nil {
+		return err
+	}
+	if !ok {
+		return ErrAlreadyExists
+	}
+
+	return nil
 }
 
 // Incr increments an int64 value at key by one. If the key does not exist, the
 // value is set to 1. The incremented value is returned.
-func (r *redisCache) Incr(ctx context.Context, key string) (int64, error) {
+func (r *redisCache[V]) Incr(ctx context.Context, key string) (int64, error) {
 	i, err := r.client.Incr(ctx, key).Result()
 	if err != nil {
 		return 0, err
@@ -123,11 +117,11 @@ func (r *redisCache) Incr(ctx context.Context, key string) (int64, error) {
 }
 
 // Del removes the specified key. A key is ignored if it does not exist.
-func (r *redisCache) Del(ctx context.Context, key string) error {
+func (r *redisCache[V]) Del(ctx context.Context, key string) error {
 	return r.client.Del(ctx, key).Err()
 }
 
 // Close closes the Cacher, releasing any open resources.
-func (r *redisCache) Close() error {
+func (r *redisCache[V]) Close() error {
 	return r.client.Close()
 }

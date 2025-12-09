@@ -31,7 +31,7 @@ func TestMain(m *testing.M) {
 	}
 	globalOrgDAO = org.NewDAO(pg, pg)
 	globalDevDAO = NewDAO(pg, pg, nil, 0)
-	globalDevDAOCache = NewDAO(pg, pg, cache.NewMemory(), time.Minute)
+	globalDevDAOCache = NewDAO(pg, pg, cache.NewMemory[[]byte](), time.Minute)
 
 	os.Exit(m.Run())
 }

@@ -26,9 +26,11 @@ func PointToVIn(
 	case int32:
 		vIn.Point.ValOneof = &common.DataPoint_IntVal{IntVal: v}
 	case int:
+		//nolint:gosec // Safe conversion for limited values.
 		vIn.Point.ValOneof = &common.DataPoint_IntVal{IntVal: int32(v)}
 		alog.Errorf("PointToVIn casting from int: %v, %v,", point.Attr, v)
 	case int64:
+		//nolint:gosec // Safe conversion for limited values.
 		vIn.Point.ValOneof = &common.DataPoint_IntVal{IntVal: int32(v)}
 		alog.Errorf("PointToVIn casting from int64: %v, %v,", point.Attr, v)
 	case float64:

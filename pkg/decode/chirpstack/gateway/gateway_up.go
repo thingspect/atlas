@@ -26,7 +26,8 @@ func gatewayUp(body []byte) ([]*decode.Point, error) {
 	if upMsg.GetTxInfo() != nil {
 		if upMsg.GetTxInfo().GetFrequency() != 0 {
 			msgs = append(msgs, &decode.Point{
-				Attr:  "frequency",
+				Attr: "frequency",
+				//nolint:gosec // Safe conversion for limited values.
 				Value: int32(upMsg.GetTxInfo().GetFrequency()),
 			})
 		}
@@ -35,6 +36,7 @@ func gatewayUp(body []byte) ([]*decode.Point, error) {
 			mod := upMsg.GetTxInfo().GetModulation().GetLora()
 			if mod.GetSpreadingFactor() != 0 {
 				msgs = append(msgs, &decode.Point{
+					//nolint:gosec // Safe conversion for limited values.
 					Attr: "sf", Value: int32(mod.GetSpreadingFactor()),
 				})
 			}

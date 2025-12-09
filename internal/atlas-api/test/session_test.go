@@ -266,7 +266,7 @@ func TestDeleteKey(t *testing.T) {
 		})
 	})
 
-	t.Run("Delete key with invalid key", func(t *testing.T) {
+	t.Run("Delete key with now-deleted key", func(t *testing.T) {
 		t.Parallel()
 
 		key := random.Key("api-key", uuid.NewString())

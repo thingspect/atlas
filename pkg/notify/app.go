@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/gregdel/pushover"
+	"github.com/thingspect/atlas/pkg/cache"
 	"github.com/thingspect/atlas/pkg/consterr"
 	"github.com/thingspect/atlas/pkg/metric"
 )
@@ -54,15 +55,15 @@ func (n *notify) App(ctx context.Context, userKey, subject, body string) error {
 
 	// Support modified Pushover rate limit of 2 per second, serially:
 	// https://pushover.net/api#friendly
-	ok, err := n.cache.SetIfNotExistTTL(ctx, appKey, 1, appRateDelay)
-	if err != nil {
+	err := n.cache.SetIfNotExistTTL(ctx, appKey, "", appRateDelay)
+	if err != nil && !errors.Is(err, cache.ErrAlreadyExists) {
 		return err
 	}
-	for !ok {
+	for errors.Is(err, cache.ErrAlreadyExists) {
 		time.Sleep(appRateDelay)
 
-		ok, err = n.cache.SetIfNotExistTTL(ctx, appKey, 1, appRateDelay)
-		if err != nil {
+		err = n.cache.SetIfNotExistTTL(ctx, appKey, "", appRateDelay)
+		if err != nil && !errors.Is(err, cache.ErrAlreadyExists) {
 			return err
 		}
 	}

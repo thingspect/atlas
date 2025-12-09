@@ -171,7 +171,7 @@ func TestAlertMessages(t *testing.T) {
 					return nil
 				}).Times(test.inpAlertTimes)
 
-			cache := cache.NewMemory()
+			cache := cache.NewMemory[string]()
 
 			if test.inpSeedCache {
 				ctx, cancel := context.WithTimeout(t.Context(),
@@ -181,9 +181,8 @@ func TestAlertMessages(t *testing.T) {
 				key := repeatKey(test.inpEOut.GetDevice().GetOrgId(),
 					test.inpEOut.GetDevice().GetId(),
 					test.inpAlarms[0].GetId(), test.inpUsers[0].GetId())
-				ok, err := cache.SetIfNotExistTTL(ctx, key, 1, time.Minute)
-				require.True(t, ok)
-				require.NoError(t, err)
+				require.NoError(t, cache.SetIfNotExistTTL(ctx, key, "",
+					time.Minute))
 			}
 
 			ale := Alerter{
@@ -251,7 +250,6 @@ func TestAlertMessagesError(t *testing.T) {
 		inpAlarmsErr  error
 		inpUsers      []*api.User
 		inpUsersErr   error
-		inpCache      bool
 		inpCacheErr   error
 		inpAppErr     error
 		inpAlertErr   error
@@ -264,41 +262,39 @@ func TestAlertMessagesError(t *testing.T) {
 	}{
 		// Bad payload.
 		{
-			nil, nil, nil, nil, nil, nil, nil, true, nil, nil, nil, 0, 0, 0, 0,
-			0, 0,
+			nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, 0, 0, 0, 0, 0, 0,
 		},
 		// Missing data point.
 		{
-			&message.EventerOut{}, nil, nil, nil, nil, nil, nil, true, nil, nil,
-			nil, 0, 0, 0, 0, 0, 0,
+			&message.EventerOut{}, nil, nil, nil, nil, nil, nil, nil, nil, nil,
+			0, 0, 0, 0, 0, 0,
 		},
 		// Missing device.
 		{
 			&message.EventerOut{Point: &common.DataPoint{}}, nil, nil, nil, nil,
-			nil, nil, true, nil, nil, nil, 0, 0, 0, 0, 0, 0,
+			nil, nil, nil, nil, nil, 0, 0, 0, 0, 0, 0,
 		},
 		// Missing rule.
 		{
 			&message.EventerOut{
 				Point: &common.DataPoint{}, Device: &api.Device{},
-			}, nil, nil, nil, nil, nil, nil, true, nil, nil, nil, 0, 0, 0, 0, 0,
-			0,
+			}, nil, nil, nil, nil, nil, nil, nil, nil, nil, 0, 0, 0, 0, 0, 0,
 		},
 		// Orger error.
 		{
 			&message.EventerOut{
 				Point: &common.DataPoint{}, Device: &api.Device{},
 				Rule: &api.Rule{},
-			}, nil, errTestProc, nil, nil, nil, nil, true, nil, nil, nil, 1, 0,
-			0, 0, 0, 0,
+			}, nil, errTestProc, nil, nil, nil, nil, nil, nil, nil, 1, 0, 0, 0,
+			0, 0,
 		},
 		// Alarmer error.
 		{
 			&message.EventerOut{
 				Point: &common.DataPoint{}, Device: &api.Device{},
 				Rule: &api.Rule{},
-			}, org, nil, nil, errTestProc, nil, nil, true, nil, nil, nil, 1, 1,
-			0, 0, 0, 0,
+			}, org, nil, nil, errTestProc, nil, nil, nil, nil, nil, 1, 1, 0, 0,
+			0, 0,
 		},
 		// Userer error.
 		{
@@ -307,8 +303,7 @@ func TestAlertMessagesError(t *testing.T) {
 				Rule: &api.Rule{},
 			}, org, nil,
 			[]*api.Alarm{appAlarm},
-			nil, nil, errTestProc, true,
-			nil, nil, nil, 1, 1, 1, 0, 0, 0,
+			nil, nil, errTestProc, nil, nil, nil, 1, 1, 1, 0, 0, 0,
 		},
 		// Bad alarm subject.
 		{
@@ -317,7 +312,7 @@ func TestAlertMessagesError(t *testing.T) {
 				Rule: &api.Rule{},
 			}, org, nil, []*api.Alarm{badSubj}, nil, []*api.User{
 				random.User("ale", uuid.NewString()),
-			}, nil, true, nil, nil, nil, 1, 1, 1, 0, 0, 0,
+			}, nil, nil, nil, nil, 1, 1, 1, 0, 0, 0,
 		},
 		// Bad alarm body.
 		{
@@ -326,7 +321,7 @@ func TestAlertMessagesError(t *testing.T) {
 				Rule: &api.Rule{},
 			}, org, nil, []*api.Alarm{badBody}, nil, []*api.User{
 				random.User("ale", uuid.NewString()),
-			}, nil, true, nil, nil, nil, 1, 1, 1, 0, 0, 0,
+			}, nil, nil, nil, nil, 1, 1, 1, 0, 0, 0,
 		},
 		// Cacher error.
 		{
@@ -335,7 +330,7 @@ func TestAlertMessagesError(t *testing.T) {
 				Rule: &api.Rule{},
 			}, org, nil, []*api.Alarm{appAlarm}, nil, []*api.User{
 				random.User("ale", uuid.NewString()),
-			}, nil, false, errTestProc, nil, nil, 1, 1, 1, 1, 0, 0,
+			}, nil, errTestProc, nil, nil, 1, 1, 1, 1, 0, 0,
 		},
 		// Notifier error.
 		{
@@ -344,7 +339,7 @@ func TestAlertMessagesError(t *testing.T) {
 				Rule: &api.Rule{},
 			}, org, nil, []*api.Alarm{appAlarm}, nil, []*api.User{
 				random.User("ale", uuid.NewString()),
-			}, nil, true, nil, errTestProc, nil, 1, 1, 1, 1, 1, 1,
+			}, nil, nil, errTestProc, nil, 1, 1, 1, 1, 1, 1,
 		},
 		// Unspecified alarm type.
 		{
@@ -353,7 +348,7 @@ func TestAlertMessagesError(t *testing.T) {
 				Rule: &api.Rule{},
 			}, org, nil, []*api.Alarm{unspecType}, nil, []*api.User{
 				random.User("ale", uuid.NewString()),
-			}, nil, true, nil, nil, nil, 1, 1, 1, 1, 0, 1,
+			}, nil, nil, nil, nil, 1, 1, 1, 1, 0, 1,
 		},
 		// Unknown alarm type.
 		{
@@ -362,7 +357,7 @@ func TestAlertMessagesError(t *testing.T) {
 				Rule: &api.Rule{},
 			}, org, nil, []*api.Alarm{unknownType}, nil, []*api.User{
 				random.User("ale", uuid.NewString()),
-			}, nil, true, nil, nil, nil, 1, 1, 1, 1, 0, 1,
+			}, nil, nil, nil, nil, 1, 1, 1, 1, 0, 1,
 		},
 		// Alerter error.
 		{
@@ -371,7 +366,7 @@ func TestAlertMessagesError(t *testing.T) {
 				Rule: &api.Rule{},
 			}, org, nil, []*api.Alarm{appAlarm}, nil, []*api.User{
 				random.User("ale", uuid.NewString()),
-			}, nil, true, nil, nil, errTestProc, 1, 1, 1, 1, 1, 1,
+			}, nil, nil, nil, errTestProc, 1, 1, 1, 1, 1, 1,
 		},
 	}
 
@@ -402,10 +397,10 @@ func TestAlertMessagesError(t *testing.T) {
 				gomock.Any()).Return(test.inpUsers, test.inpUsersErr).
 				Times(test.inpUserTimes)
 
-			cacher := cache.NewMockCacher(ctrl)
+			cacher := cache.NewMockCacher[string](ctrl)
 			cacher.EXPECT().SetIfNotExistTTL(gomock.Any(), gomock.Any(),
-				gomock.Any(), gomock.Any()).Return(test.inpCache,
-				test.inpCacheErr).Times(test.inpCacheTimes)
+				"", gomock.Any()).Return(test.inpCacheErr).
+				Times(test.inpCacheTimes)
 
 			notifier := notify.NewMockNotifier(ctrl)
 			notifier.EXPECT().App(gomock.Any(), gomock.Any(), gomock.Any(),

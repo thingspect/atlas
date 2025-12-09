@@ -2,12 +2,14 @@ package device
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"strings"
 	"time"
 
 	"github.com/jackc/pgx/v5/pgtype"
 	"github.com/thingspect/atlas/pkg/alog"
+	"github.com/thingspect/atlas/pkg/cache"
 	"github.com/thingspect/atlas/pkg/dao"
 	"github.com/thingspect/proto/go/api"
 	"google.golang.org/protobuf/proto"
@@ -55,13 +57,13 @@ func (d *DAO) Read(ctx context.Context, devID, orgID string) (
 	dev := &api.Device{}
 
 	if d.cache != nil {
-		ok, bDev, err := d.cache.GetB(ctx, devKey(orgID, devID))
-		if err != nil {
+		bDev, err := d.cache.Get(ctx, devKey(orgID, devID))
+		if err != nil && !errors.Is(err, cache.ErrNotFound) {
 			return nil, dao.DBToSentinel(err)
 		}
 
-		if ok {
-			if err := proto.Unmarshal(bDev, dev); err != nil {
+		if !errors.Is(err, cache.ErrNotFound) {
+			if err = proto.Unmarshal(bDev, dev); err != nil {
 				return nil, dao.DBToSentinel(err)
 			}
 
@@ -119,12 +121,12 @@ func (d *DAO) ReadByUniqID(ctx context.Context, uniqID string) (
 	dev := &api.Device{}
 
 	if d.cache != nil {
-		ok, bDev, err := d.cache.GetB(ctx, devKeyByUniqID(uniqID))
-		if err != nil {
+		bDev, err := d.cache.Get(ctx, devKeyByUniqID(uniqID))
+		if err != nil && !errors.Is(err, cache.ErrNotFound) {
 			return nil, dao.DBToSentinel(err)
 		}
 
-		if ok {
+		if !errors.Is(err, cache.ErrNotFound) {
 			if err := proto.Unmarshal(bDev, dev); err != nil {
 				return nil, dao.DBToSentinel(err)
 			}

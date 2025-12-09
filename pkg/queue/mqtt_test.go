@@ -98,6 +98,8 @@ func TestMQTTSubscribe(t *testing.T) {
 		t.Logf("msg.Topic, msg.Payload: %v, %x", msg.Topic(), msg.Payload())
 		require.Equal(t, topic, msg.Topic())
 		require.Equal(t, payload, msg.Payload())
+
+		require.PanicsWithValue(t, "unimplemented", func() { msg.Requeue() })
 	case <-time.After(testTimeout):
 		t.Fatal("Message timed out")
 	}

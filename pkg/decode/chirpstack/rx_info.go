@@ -33,6 +33,7 @@ func ParseRXInfo(rxInfo *gw.UplinkRxInfo) []*decode.Point {
 		})
 	}
 	msgs = append(msgs, &decode.Point{
+		//nolint:gosec // Safe conversion for limited values.
 		Attr: "channel", Value: int32(rxInfo.GetChannel()),
 	})
 	for k, v := range rxInfo.GetMetadata() {

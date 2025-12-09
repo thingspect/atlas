@@ -2,8 +2,11 @@ package notify
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"time"
+
+	"github.com/thingspect/atlas/pkg/cache"
 )
 
 const (
@@ -18,15 +21,15 @@ func (n *notify) Email(
 ) error {
 	// Mailgun does not employ a rate limit, so default to 3 per second,
 	// serially.
-	ok, err := n.cache.SetIfNotExistTTL(ctx, emailKey, 1, emailRateDelay)
-	if err != nil {
+	err := n.cache.SetIfNotExistTTL(ctx, emailKey, "", emailRateDelay)
+	if err != nil && !errors.Is(err, cache.ErrAlreadyExists) {
 		return err
 	}
-	for !ok {
+	for errors.Is(err, cache.ErrAlreadyExists) {
 		time.Sleep(emailRateDelay)
 
-		ok, err = n.cache.SetIfNotExistTTL(ctx, emailKey, 1, emailRateDelay)
-		if err != nil {
+		err = n.cache.SetIfNotExistTTL(ctx, emailKey, "", emailRateDelay)
+		if err != nil && !errors.Is(err, cache.ErrAlreadyExists) {
 			return err
 		}
 	}

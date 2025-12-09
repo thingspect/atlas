@@ -48,58 +48,64 @@ func TestAuth(t *testing.T) {
 		inpHandlerErr error
 		inpSkipPaths  map[string]struct{}
 		inpInfo       *grpc.UnaryServerInfo
-		inpCache      bool
 		inpCacheErr   error
 		inpCacheTimes int
 		err           error
 	}{
 		{
 			[]string{"authorization", "Bearer " + webToken},
-			nil, nil,
-			&grpc.UnaryServerInfo{FullMethod: random.String(10)}, false, nil, 0,
-			nil,
+			nil, nil, &grpc.UnaryServerInfo{FullMethod: random.String(10)},
+			cache.ErrNotFound, 0, nil,
 		},
 		{
 			[]string{"authorization", "Bearer " + keyToken},
-			nil, nil,
-			&grpc.UnaryServerInfo{FullMethod: random.String(10)}, false, nil, 1,
-			nil,
+			nil, nil, &grpc.UnaryServerInfo{FullMethod: random.String(10)},
+			cache.ErrNotFound, 1, nil,
 		},
 		{
 			nil, errTestFunc,
 			map[string]struct{}{skipPath: {}},
-			&grpc.UnaryServerInfo{FullMethod: skipPath}, false, nil, 0,
-			errTestFunc,
+			&grpc.UnaryServerInfo{FullMethod: skipPath}, cache.ErrNotFound,
+			0, errTestFunc,
 		},
 		{
-			nil, errTestFunc, nil, &grpc.UnaryServerInfo{
-				FullMethod: random.String(10),
-			}, false, nil, 0, status.Error(codes.Unauthenticated,
+			nil, errTestFunc, nil,
+			&grpc.UnaryServerInfo{FullMethod: random.String(10)},
+			cache.ErrNotFound, 0, status.Error(codes.Unauthenticated,
 				"unauthorized"),
 		},
 		{
-			[]string{}, errTestFunc, nil, &grpc.UnaryServerInfo{
-				FullMethod: random.String(10),
-			}, false, nil, 0, status.Error(codes.Unauthenticated,
+			[]string{},
+			errTestFunc, nil,
+			&grpc.UnaryServerInfo{FullMethod: random.String(10)},
+			cache.ErrNotFound, 0, status.Error(codes.Unauthenticated,
 				"unauthorized"),
 		},
 		{
 			[]string{"authorization", "NoBearer " + webToken},
 			errTestFunc, nil,
-			&grpc.UnaryServerInfo{FullMethod: random.String(10)}, false, nil, 0,
-			status.Error(codes.Unauthenticated, "unauthorized"),
+			&grpc.UnaryServerInfo{FullMethod: random.String(10)},
+			cache.ErrNotFound, 0, status.Error(codes.Unauthenticated,
+				"unauthorized"),
 		},
 		{
 			[]string{"authorization", "Bearer ..."},
 			errTestFunc, nil,
-			&grpc.UnaryServerInfo{FullMethod: random.String(10)}, false, nil, 0,
-			status.Error(codes.Unauthenticated, "unauthorized"),
+			&grpc.UnaryServerInfo{FullMethod: random.String(10)},
+			cache.ErrNotFound, 0, status.Error(codes.Unauthenticated,
+				"unauthorized"),
 		},
 		{
 			[]string{"authorization", "Bearer " + keyToken},
 			errTestFunc, nil,
-			&grpc.UnaryServerInfo{FullMethod: random.String(10)}, true, nil, 1,
-			status.Error(codes.Unauthenticated, "unauthorized"),
+			&grpc.UnaryServerInfo{FullMethod: random.String(10)}, nil,
+			1, status.Error(codes.Unauthenticated, "unauthorized"),
+		},
+		{
+			[]string{"authorization", "Bearer " + keyToken},
+			errTestFunc, nil,
+			&grpc.UnaryServerInfo{FullMethod: random.String(10)}, errTestFunc,
+			1, status.Error(codes.Unauthenticated, "unauthorized"),
 		},
 	}
 
@@ -107,10 +113,9 @@ func TestAuth(t *testing.T) {
 		t.Run(fmt.Sprintf("Can log %+v", test), func(t *testing.T) {
 			t.Parallel()
 
-			cacher := cache.NewMockCacher(gomock.NewController(t))
+			cacher := cache.NewMockCacher[string](gomock.NewController(t))
 			cacher.EXPECT().Get(gomock.Any(), gomock.Any()).
-				Return(test.inpCache, "", test.inpCacheErr).
-				Times(test.inpCacheTimes)
+				Return("", test.inpCacheErr).Times(test.inpCacheTimes)
 
 			ctx, cancel := context.WithTimeout(t.Context(),
 				testTimeout)
