@@ -152,7 +152,7 @@ func TestValidateWebToken(t *testing.T) {
 			key, "...", "illegal base64 data at input byte 0",
 		},
 		{
-			key, random.String(10), "crypto: malformed ciphertext",
+			key, random.String(10), "auth: malformed ciphertext",
 		},
 		{
 			key, base64.RawStdEncoding.EncodeToString(badCipher),
@@ -219,7 +219,7 @@ func TestValidateKeyToken(t *testing.T) {
 			key, "...", "illegal base64 data at input byte 0",
 		},
 		{
-			key, random.String(10), "crypto: malformed ciphertext",
+			key, random.String(10), "auth: malformed ciphertext",
 		},
 		{
 			key, base64.RawStdEncoding.EncodeToString(badCipher),

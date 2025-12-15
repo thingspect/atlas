@@ -183,8 +183,8 @@ func TestCreateUser(t *testing.T) {
 			&api.CreateUserRequest{User: user})
 		t.Logf("user, createUser, err: %+v, %+v, %v", user, createUser, err)
 		require.Nil(t, createUser)
-		require.Equal(t, status.Error(codes.InvalidArgument, "invalid format"),
-			err)
+		require.Equal(t, status.Error(codes.InvalidArgument,
+			"dao: invalid format"), err)
 	})
 
 	t.Run("Create invalid user with non-E.164 phone", func(t *testing.T) {
@@ -334,7 +334,8 @@ func TestGetUser(t *testing.T) {
 			&api.GetUserRequest{Id: uuid.NewString()})
 		t.Logf("getUser, err: %+v, %v", getUser, err)
 		require.Nil(t, getUser)
-		require.Equal(t, status.Error(codes.NotFound, "object not found"), err)
+		require.Equal(t, status.Error(codes.NotFound, "dao: object not found"),
+			err)
 	})
 }
 
@@ -672,7 +673,8 @@ func TestUpdateUser(t *testing.T) {
 		})
 		t.Logf("part, updateUser, err: %+v, %+v, %v", part, updateUser, err)
 		require.Nil(t, updateUser)
-		require.Equal(t, status.Error(codes.NotFound, "object not found"), err)
+		require.Equal(t, status.Error(codes.NotFound, "dao: object not found"),
+			err)
 	})
 
 	t.Run("Update user validation failure", func(t *testing.T) {
@@ -721,8 +723,8 @@ func TestUpdateUser(t *testing.T) {
 			&api.UpdateUserRequest{User: user})
 		t.Logf("user, updateUser, err: %+v, %+v, %v", user, updateUser, err)
 		require.Nil(t, updateUser)
-		require.Equal(t, status.Error(codes.InvalidArgument, "invalid format"),
-			err)
+		require.Equal(t, status.Error(codes.InvalidArgument,
+			"dao: invalid format"), err)
 	})
 }
 
@@ -819,7 +821,8 @@ func TestUpdateUserPassword(t *testing.T) {
 				Id: uuid.NewString(), Password: random.String(20),
 			})
 		t.Logf("err: %v", err)
-		require.Equal(t, status.Error(codes.NotFound, "object not found"), err)
+		require.Equal(t, status.Error(codes.NotFound, "dao: object not found"),
+			err)
 	})
 }
 
@@ -890,7 +893,8 @@ func TestDeleteUser(t *testing.T) {
 		_, err := userSvc.DeleteUser(ctx,
 			&api.DeleteUserRequest{Id: uuid.NewString()})
 		t.Logf("err: %v", err)
-		require.Equal(t, status.Error(codes.NotFound, "object not found"), err)
+		require.Equal(t, status.Error(codes.NotFound, "dao: object not found"),
+			err)
 	})
 }
 
@@ -1035,7 +1039,8 @@ func TestListUsers(t *testing.T) {
 		listUsers, err := userSvc.ListUsers(ctx, &api.ListUsersRequest{})
 		t.Logf("listUsers, err: %+v, %v", listUsers, err)
 		require.Nil(t, listUsers)
-		require.Equal(t, status.Error(codes.NotFound, "object not found"), err)
+		require.Equal(t, status.Error(codes.NotFound, "dao: object not found"),
+			err)
 	})
 
 	t.Run("List users by invalid page token", func(t *testing.T) {
@@ -1074,8 +1079,8 @@ func TestListUsers(t *testing.T) {
 		listUsers, err := userSvc.ListUsers(ctx, &api.ListUsersRequest{})
 		t.Logf("listUsers, err: %+v, %v", listUsers, err)
 		require.Nil(t, listUsers)
-		require.Equal(t, status.Error(codes.InvalidArgument, "invalid format"),
-			err)
+		require.Equal(t, status.Error(codes.InvalidArgument,
+			"dao: invalid format"), err)
 	})
 
 	t.Run("List users with generation failure", func(t *testing.T) {

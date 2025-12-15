@@ -332,8 +332,8 @@ func TestListDataPoints(t *testing.T) {
 		})
 		t.Logf("listPoints, err: %+v, %v", listPoints, err)
 		require.Nil(t, listPoints)
-		require.Equal(t, status.Error(codes.InvalidArgument, "invalid format"),
-			err)
+		require.Equal(t, status.Error(codes.InvalidArgument,
+			"dao: invalid format"), err)
 	})
 }
 
@@ -492,7 +492,7 @@ func TestLatestDataPoints(t *testing.T) {
 			})
 		t.Logf("latPoints, err: %+v, %v", latPoints, err)
 		require.Nil(t, latPoints)
-		require.Equal(t, status.Error(codes.InvalidArgument, "invalid format"),
-			err)
+		require.Equal(t, status.Error(codes.InvalidArgument,
+			"dao: invalid format"), err)
 	})
 }

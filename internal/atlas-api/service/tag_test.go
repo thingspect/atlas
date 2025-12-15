@@ -89,7 +89,7 @@ func TestListTags(t *testing.T) {
 		listTags, err := tagSvc.ListTags(ctx, &api.ListTagsRequest{})
 		t.Logf("listTags, err: %+v, %v", listTags, err)
 		require.Nil(t, listTags)
-		require.Equal(t, status.Error(codes.InvalidArgument, "invalid format"),
-			err)
+		require.Equal(t, status.Error(codes.InvalidArgument,
+			"dao: invalid format"), err)
 	})
 }

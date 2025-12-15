@@ -100,7 +100,9 @@ func TestCreateDevice(t *testing.T) {
 		})
 		t.Logf("dev, createDev, err: %+v, %+v, %v", dev, createDev, err)
 		require.Nil(t, createDev)
-		require.Equal(t, status.Error(codes.InvalidArgument, "invalid format"),
+		require.Equal(t, status.Error(codes.InvalidArgument,
+			"dao: invalid format"),
+
 			err)
 	})
 }
@@ -217,7 +219,8 @@ func TestCreateDeviceLoRaWAN(t *testing.T) {
 		_, err := devSvc.CreateDeviceLoRaWAN(ctx,
 			&api.CreateDeviceLoRaWANRequest{})
 		t.Logf("err: %v", err)
-		require.Equal(t, status.Error(codes.NotFound, "object not found"), err)
+		require.Equal(t, status.Error(codes.NotFound, "dao: object not found"),
+			err)
 	})
 
 	t.Run("Create invalid configuration", func(t *testing.T) {
@@ -251,8 +254,8 @@ func TestCreateDeviceLoRaWAN(t *testing.T) {
 				},
 			})
 		t.Logf("err: %v", err)
-		require.Equal(t, status.Error(codes.InvalidArgument, "invalid format"),
-			err)
+		require.Equal(t, status.Error(codes.InvalidArgument,
+			"dao: invalid format"), err)
 	})
 }
 
@@ -330,7 +333,8 @@ func TestGetDevice(t *testing.T) {
 		})
 		t.Logf("getDev, err: %+v, %v", getDev, err)
 		require.Nil(t, getDev)
-		require.Equal(t, status.Error(codes.NotFound, "object not found"), err)
+		require.Equal(t, status.Error(codes.NotFound, "dao: object not found"),
+			err)
 	})
 }
 
@@ -495,7 +499,8 @@ func TestUpdateDevice(t *testing.T) {
 		})
 		t.Logf("part, updateDev, err: %+v, %+v, %v", part, updateDev, err)
 		require.Nil(t, updateDev)
-		require.Equal(t, status.Error(codes.NotFound, "object not found"), err)
+		require.Equal(t, status.Error(codes.NotFound, "dao: object not found"),
+			err)
 	})
 
 	t.Run("Update device validation failure", func(t *testing.T) {
@@ -543,8 +548,8 @@ func TestUpdateDevice(t *testing.T) {
 		})
 		t.Logf("dev, updateDev, err: %+v, %+v, %v", dev, updateDev, err)
 		require.Nil(t, updateDev)
-		require.Equal(t, status.Error(codes.InvalidArgument, "invalid format"),
-			err)
+		require.Equal(t, status.Error(codes.InvalidArgument,
+			"dao: invalid format"), err)
 	})
 }
 
@@ -655,7 +660,8 @@ func TestDeleteDeviceLoRaWAN(t *testing.T) {
 		_, err := devSvc.DeleteDeviceLoRaWAN(ctx,
 			&api.DeleteDeviceLoRaWANRequest{Id: uuid.NewString()})
 		t.Logf("err: %v", err)
-		require.Equal(t, status.Error(codes.NotFound, "object not found"), err)
+		require.Equal(t, status.Error(codes.NotFound, "dao: object not found"),
+			err)
 	})
 
 	t.Run("Delete invalid gateway configuration", func(t *testing.T) {
@@ -681,8 +687,8 @@ func TestDeleteDeviceLoRaWAN(t *testing.T) {
 		_, err := devSvc.DeleteDeviceLoRaWAN(ctx,
 			&api.DeleteDeviceLoRaWANRequest{Id: dev.GetId()})
 		t.Logf("err: %v", err)
-		require.Equal(t, status.Error(codes.InvalidArgument, "invalid format"),
-			err)
+		require.Equal(t, status.Error(codes.InvalidArgument,
+			"dao: invalid format"), err)
 	})
 
 	t.Run("Delete invalid device configuration", func(t *testing.T) {
@@ -710,8 +716,8 @@ func TestDeleteDeviceLoRaWAN(t *testing.T) {
 		_, err := devSvc.DeleteDeviceLoRaWAN(ctx,
 			&api.DeleteDeviceLoRaWANRequest{Id: dev.GetId()})
 		t.Logf("err: %v", err)
-		require.Equal(t, status.Error(codes.InvalidArgument, "invalid format"),
-			err)
+		require.Equal(t, status.Error(codes.InvalidArgument,
+			"dao: invalid format"), err)
 	})
 }
 
@@ -784,7 +790,8 @@ func TestDeleteDevice(t *testing.T) {
 			Id: uuid.NewString(),
 		})
 		t.Logf("err: %v", err)
-		require.Equal(t, status.Error(codes.NotFound, "object not found"), err)
+		require.Equal(t, status.Error(codes.NotFound, "dao: object not found"),
+			err)
 	})
 }
 
@@ -924,8 +931,8 @@ func TestListDevices(t *testing.T) {
 		listDevs, err := devSvc.ListDevices(ctx, &api.ListDevicesRequest{})
 		t.Logf("listDevs, err: %+v, %v", listDevs, err)
 		require.Nil(t, listDevs)
-		require.Equal(t, status.Error(codes.InvalidArgument, "invalid format"),
-			err)
+		require.Equal(t, status.Error(codes.InvalidArgument,
+			"dao: invalid format"), err)
 	})
 
 	t.Run("List devices with generation failure", func(t *testing.T) {

@@ -102,8 +102,8 @@ func TestCreateAlarm(t *testing.T) {
 		})
 		t.Logf("alarm, createAlarm, err: %+v, %+v, %v", alarm, createAlarm, err)
 		require.Nil(t, createAlarm)
-		require.Equal(t, status.Error(codes.InvalidArgument, "invalid format"),
-			err)
+		require.Equal(t, status.Error(codes.InvalidArgument,
+			"dao: invalid format"), err)
 	})
 }
 
@@ -183,7 +183,8 @@ func TestGetAlarm(t *testing.T) {
 		})
 		t.Logf("getAlarm, err: %+v, %v", getAlarm, err)
 		require.Nil(t, getAlarm)
-		require.Equal(t, status.Error(codes.NotFound, "object not found"), err)
+		require.Equal(t, status.Error(codes.NotFound, "dao: object not found"),
+			err)
 	})
 }
 
@@ -358,7 +359,8 @@ func TestUpdateAlarm(t *testing.T) {
 		})
 		t.Logf("part, updateAlarm, err: %+v, %+v, %v", part, updateAlarm, err)
 		require.Nil(t, updateAlarm)
-		require.Equal(t, status.Error(codes.NotFound, "object not found"), err)
+		require.Equal(t, status.Error(codes.NotFound, "dao: object not found"),
+			err)
 	})
 
 	t.Run("Update alarm validation failure", func(t *testing.T) {
@@ -406,8 +408,8 @@ func TestUpdateAlarm(t *testing.T) {
 		})
 		t.Logf("alarm, updateAlarm, err: %+v, %+v, %v", alarm, updateAlarm, err)
 		require.Nil(t, updateAlarm)
-		require.Equal(t, status.Error(codes.InvalidArgument, "invalid format"),
-			err)
+		require.Equal(t, status.Error(codes.InvalidArgument,
+			"dao: invalid format"), err)
 	})
 }
 
@@ -480,7 +482,8 @@ func TestDeleteAlarm(t *testing.T) {
 			Id: uuid.NewString(),
 		})
 		t.Logf("err: %v", err)
-		require.Equal(t, status.Error(codes.NotFound, "object not found"), err)
+		require.Equal(t, status.Error(codes.NotFound, "dao: object not found"),
+			err)
 	})
 }
 
@@ -620,8 +623,8 @@ func TestListAlarms(t *testing.T) {
 		listAlarms, err := raSvc.ListAlarms(ctx, &api.ListAlarmsRequest{})
 		t.Logf("listAlarms, err: %+v, %v", listAlarms, err)
 		require.Nil(t, listAlarms)
-		require.Equal(t, status.Error(codes.InvalidArgument, "invalid format"),
-			err)
+		require.Equal(t, status.Error(codes.InvalidArgument,
+			"dao: invalid format"), err)
 	})
 
 	t.Run("List alarms with generation failure", func(t *testing.T) {

@@ -9,7 +9,7 @@ import (
 
 // memoryCache contains methods to create and query data in memory and
 // implements the Cacher interface.
-type memoryCache[V any] struct {
+type memoryCache[V Cacheable] struct {
 	cache *ttlcache.Cache[string, V]
 }
 
@@ -17,7 +17,7 @@ type memoryCache[V any] struct {
 var _ Cacher[string] = &memoryCache[string]{}
 
 // NewMemory builds a new Cacher and returns it.
-func NewMemory[V any]() Cacher[V] {
+func NewMemory[V Cacheable]() Cacher[V] {
 	cache := ttlcache.New(
 		ttlcache.WithDisableTouchOnHit[string, V](),
 	)

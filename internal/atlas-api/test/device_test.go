@@ -182,8 +182,8 @@ func TestCreateDeviceLoRaWAN(t *testing.T) {
 				TypeOneof: &api.CreateDeviceLoRaWANRequest_GatewayLorawanType{},
 			})
 		t.Logf("err: %v", err)
-		require.EqualError(t, err, "rpc error: code = NotFound desc = object "+
-			"not found")
+		require.EqualError(t, err, "rpc error: code = NotFound desc = "+
+			"dao: object not found")
 	})
 
 	t.Run("Configurations are isolated by org ID", func(t *testing.T) {
@@ -206,8 +206,8 @@ func TestCreateDeviceLoRaWAN(t *testing.T) {
 				TypeOneof: &api.CreateDeviceLoRaWANRequest_GatewayLorawanType{},
 			})
 		t.Logf("err: %v", err)
-		require.EqualError(t, err, "rpc error: code = NotFound desc = object "+
-			"not found")
+		require.EqualError(t, err, "rpc error: code = NotFound desc = "+
+			"dao: object not found")
 	})
 }
 
@@ -249,8 +249,8 @@ func TestGetDevice(t *testing.T) {
 			&api.GetDeviceRequest{Id: uuid.NewString()})
 		t.Logf("getDev, err: %+v, %v", getDev, err)
 		require.Nil(t, getDev)
-		require.EqualError(t, err, "rpc error: code = NotFound desc = object "+
-			"not found")
+		require.EqualError(t, err, "rpc error: code = NotFound desc = "+
+			"dao: object not found")
 	})
 
 	t.Run("Gets are isolated by org ID", func(t *testing.T) {
@@ -264,8 +264,8 @@ func TestGetDevice(t *testing.T) {
 			&api.GetDeviceRequest{Id: createDev.GetId()})
 		t.Logf("getDev, err: %+v, %v", getDev, err)
 		require.Nil(t, getDev)
-		require.EqualError(t, err, "rpc error: code = NotFound desc = object "+
-			"not found")
+		require.EqualError(t, err, "rpc error: code = NotFound desc = "+
+			"dao: object not found")
 	})
 }
 
@@ -419,8 +419,8 @@ func TestUpdateDevice(t *testing.T) {
 		})
 		t.Logf("updateDev, err: %+v, %v", updateDev, err)
 		require.Nil(t, updateDev)
-		require.EqualError(t, err, "rpc error: code = NotFound desc = object "+
-			"not found")
+		require.EqualError(t, err, "rpc error: code = NotFound desc = "+
+			"dao: object not found")
 	})
 
 	t.Run("Update device by unknown device", func(t *testing.T) {
@@ -435,8 +435,8 @@ func TestUpdateDevice(t *testing.T) {
 		})
 		t.Logf("updateDev, err: %+v, %v", updateDev, err)
 		require.Nil(t, updateDev)
-		require.EqualError(t, err, "rpc error: code = NotFound desc = object "+
-			"not found")
+		require.EqualError(t, err, "rpc error: code = NotFound desc = "+
+			"dao: object not found")
 	})
 
 	t.Run("Updates are isolated by org ID", func(t *testing.T) {
@@ -461,8 +461,8 @@ func TestUpdateDevice(t *testing.T) {
 			&api.UpdateDeviceRequest{Device: createDev})
 		t.Logf("updateDev, err: %+v, %v", updateDev, err)
 		require.Nil(t, updateDev)
-		require.EqualError(t, err, "rpc error: code = NotFound desc = object "+
-			"not found")
+		require.EqualError(t, err, "rpc error: code = NotFound desc = "+
+			"dao: object not found")
 	})
 
 	t.Run("Update device validation failure", func(t *testing.T) {
@@ -591,8 +591,8 @@ func TestDeleteDeviceLoRaWAN(t *testing.T) {
 		_, err := devCli.DeleteDeviceLoRaWAN(ctx,
 			&api.DeleteDeviceLoRaWANRequest{Id: uuid.NewString()})
 		t.Logf("err: %v", err)
-		require.EqualError(t, err, "rpc error: code = NotFound desc = object "+
-			"not found")
+		require.EqualError(t, err, "rpc error: code = NotFound desc = "+
+			"dao: object not found")
 	})
 
 	t.Run("Configurations are isolated by org ID", func(t *testing.T) {
@@ -612,8 +612,8 @@ func TestDeleteDeviceLoRaWAN(t *testing.T) {
 		_, err = secCli.DeleteDeviceLoRaWAN(ctx,
 			&api.DeleteDeviceLoRaWANRequest{Id: createDev.GetId()})
 		t.Logf("err: %v", err)
-		require.EqualError(t, err, "rpc error: code = NotFound desc = object "+
-			"not found")
+		require.EqualError(t, err, "rpc error: code = NotFound desc = "+
+			"dao: object not found")
 	})
 }
 
@@ -651,7 +651,7 @@ func TestDeleteDevice(t *testing.T) {
 			t.Logf("getDev, err: %+v, %v", getDev, err)
 			require.Nil(t, getDev)
 			require.EqualError(t, err, "rpc error: code = NotFound desc = "+
-				"object not found")
+				"dao: object not found")
 		})
 	})
 
@@ -679,8 +679,8 @@ func TestDeleteDevice(t *testing.T) {
 		_, err := devCli.DeleteDevice(ctx,
 			&api.DeleteDeviceRequest{Id: uuid.NewString()})
 		t.Logf("err: %v", err)
-		require.EqualError(t, err, "rpc error: code = NotFound desc = object "+
-			"not found")
+		require.EqualError(t, err, "rpc error: code = NotFound desc = "+
+			"dao: object not found")
 	})
 
 	t.Run("Deletes are isolated by org ID", func(t *testing.T) {
@@ -700,8 +700,8 @@ func TestDeleteDevice(t *testing.T) {
 		_, err = secCli.DeleteDevice(ctx,
 			&api.DeleteDeviceRequest{Id: createDev.GetId()})
 		t.Logf("err: %v", err)
-		require.EqualError(t, err, "rpc error: code = NotFound desc = object "+
-			"not found")
+		require.EqualError(t, err, "rpc error: code = NotFound desc = "+
+			"dao: object not found")
 	})
 }
 

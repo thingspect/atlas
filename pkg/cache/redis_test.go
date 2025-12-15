@@ -175,25 +175,6 @@ func TestRedisSetGetInt64(t *testing.T) {
 	require.EqualError(t, err, "redis: client is closed")
 }
 
-func TestRedisSetTTLChan(t *testing.T) {
-	t.Parallel()
-
-	testConfig := config.New()
-
-	redis, err := NewRedis[chan int](testConfig.RedisHost + ":6379")
-	t.Logf("redis, err: %+v, %v", redis, err)
-	require.NoError(t, err)
-
-	key := "testRedisSetTTLChan-" + random.String(10)
-	val := make(chan int)
-
-	ctx, cancel := context.WithTimeout(t.Context(), testTimeout)
-	defer cancel()
-
-	require.EqualError(t, redis.SetTTL(ctx, key, val, testTimeout),
-		"json: unsupported type: chan int")
-}
-
 func TestRedisSetIfNotExistBytes(t *testing.T) {
 	t.Parallel()
 
@@ -255,25 +236,6 @@ func TestRedisSetIfNotExistTTLBytesShort(t *testing.T) {
 	time.Sleep(10 * time.Millisecond)
 	require.NoError(t, redis.SetIfNotExistTTL(ctx, key, random.Bytes(10),
 		testTimeout))
-}
-
-func TestRedisSetIfNotExistTTLChan(t *testing.T) {
-	t.Parallel()
-
-	testConfig := config.New()
-
-	redis, err := NewRedis[chan int](testConfig.RedisHost + ":6379")
-	t.Logf("redis, err: %+v, %v", redis, err)
-	require.NoError(t, err)
-
-	key := "testRedisSetIfNotExistTTLChan-" + random.String(10)
-	val := make(chan int)
-
-	ctx, cancel := context.WithTimeout(t.Context(), testTimeout)
-	defer cancel()
-
-	require.EqualError(t, redis.SetIfNotExistTTL(ctx, key, val, testTimeout),
-		"json: unsupported type: chan int")
 }
 
 func TestRedisIncrInt64(t *testing.T) {

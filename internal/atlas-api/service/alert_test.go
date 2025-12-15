@@ -183,7 +183,7 @@ func TestListAlerts(t *testing.T) {
 		})
 		t.Logf("listAlerts, err: %+v, %v", listAlerts, err)
 		require.Nil(t, listAlerts)
-		require.Equal(t, status.Error(codes.InvalidArgument, "invalid format"),
-			err)
+		require.Equal(t, status.Error(codes.InvalidArgument,
+			"dao: invalid format"), err)
 	})
 }

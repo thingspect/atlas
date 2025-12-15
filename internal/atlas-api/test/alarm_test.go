@@ -98,7 +98,7 @@ func TestCreateAlarm(t *testing.T) {
 		t.Logf("createAlarm, err: %+v, %v", createAlarm, err)
 		require.Nil(t, createAlarm)
 		require.EqualError(t, err, "rpc error: code = InvalidArgument desc = "+
-			"invalid format: alarms_rule_id_fkey")
+			"dao: invalid format: alarms_rule_id_fkey")
 	})
 }
 
@@ -148,8 +148,8 @@ func TestGetAlarm(t *testing.T) {
 		})
 		t.Logf("getAlarm, err: %+v, %v", getAlarm, err)
 		require.Nil(t, getAlarm)
-		require.EqualError(t, err, "rpc error: code = NotFound desc = object "+
-			"not found")
+		require.EqualError(t, err, "rpc error: code = NotFound desc = "+
+			"dao: object not found")
 	})
 
 	t.Run("Get alarm by unknown rule", func(t *testing.T) {
@@ -164,8 +164,8 @@ func TestGetAlarm(t *testing.T) {
 		})
 		t.Logf("getAlarm, err: %+v, %v", getAlarm, err)
 		require.Nil(t, getAlarm)
-		require.EqualError(t, err, "rpc error: code = NotFound desc = object "+
-			"not found")
+		require.EqualError(t, err, "rpc error: code = NotFound desc = "+
+			"dao: object not found")
 	})
 
 	t.Run("Gets are isolated by org ID", func(t *testing.T) {
@@ -180,8 +180,8 @@ func TestGetAlarm(t *testing.T) {
 		})
 		t.Logf("getAlarm, err: %+v, %v", getAlarm, err)
 		require.Nil(t, getAlarm)
-		require.EqualError(t, err, "rpc error: code = NotFound desc = object "+
-			"not found")
+		require.EqualError(t, err, "rpc error: code = NotFound desc = "+
+			"dao: object not found")
 	})
 }
 
@@ -353,8 +353,8 @@ func TestUpdateAlarm(t *testing.T) {
 		})
 		t.Logf("updateAlarm, err: %+v, %v", updateAlarm, err)
 		require.Nil(t, updateAlarm)
-		require.EqualError(t, err, "rpc error: code = NotFound desc = object "+
-			"not found")
+		require.EqualError(t, err, "rpc error: code = NotFound desc = "+
+			"dao: object not found")
 	})
 
 	t.Run("Partial update alarm by unknown rule", func(t *testing.T) {
@@ -389,8 +389,8 @@ func TestUpdateAlarm(t *testing.T) {
 		})
 		t.Logf("updateAlarm, err: %+v, %v", updateAlarm, err)
 		require.Nil(t, updateAlarm)
-		require.EqualError(t, err, "rpc error: code = NotFound desc = object "+
-			"not found")
+		require.EqualError(t, err, "rpc error: code = NotFound desc = "+
+			"dao: object not found")
 	})
 
 	t.Run("Update alarm by unknown alarm", func(t *testing.T) {
@@ -411,8 +411,8 @@ func TestUpdateAlarm(t *testing.T) {
 		})
 		t.Logf("updateAlarm, err: %+v, %v", updateAlarm, err)
 		require.Nil(t, updateAlarm)
-		require.EqualError(t, err, "rpc error: code = NotFound desc = object "+
-			"not found")
+		require.EqualError(t, err, "rpc error: code = NotFound desc = "+
+			"dao: object not found")
 	})
 
 	t.Run("Update alarm by unknown rule", func(t *testing.T) {
@@ -443,8 +443,8 @@ func TestUpdateAlarm(t *testing.T) {
 			&api.UpdateAlarmRequest{Alarm: createAlarm})
 		t.Logf("updateAlarm, err: %+v, %v", updateAlarm, err)
 		require.Nil(t, updateAlarm)
-		require.EqualError(t, err, "rpc error: code = NotFound desc = object "+
-			"not found")
+		require.EqualError(t, err, "rpc error: code = NotFound desc = "+
+			"dao: object not found")
 	})
 
 	t.Run("Updates are isolated by org ID", func(t *testing.T) {
@@ -475,8 +475,8 @@ func TestUpdateAlarm(t *testing.T) {
 			&api.UpdateAlarmRequest{Alarm: createAlarm})
 		t.Logf("updateAlarm, err: %+v, %v", updateAlarm, err)
 		require.Nil(t, updateAlarm)
-		require.EqualError(t, err, "rpc error: code = NotFound desc = object "+
-			"not found")
+		require.EqualError(t, err, "rpc error: code = NotFound desc = "+
+			"dao: object not found")
 	})
 
 	t.Run("Update alarm validation failure", func(t *testing.T) {
@@ -554,7 +554,7 @@ func TestDeleteAlarm(t *testing.T) {
 			t.Logf("getAlarm, err: %+v, %v", getAlarm, err)
 			require.Nil(t, getAlarm)
 			require.EqualError(t, err, "rpc error: code = NotFound desc = "+
-				"object not found")
+				"dao: object not found")
 		})
 	})
 
@@ -584,8 +584,8 @@ func TestDeleteAlarm(t *testing.T) {
 			Id: uuid.NewString(), RuleId: uuid.NewString(),
 		})
 		t.Logf("err: %v", err)
-		require.EqualError(t, err, "rpc error: code = NotFound desc = object "+
-			"not found")
+		require.EqualError(t, err, "rpc error: code = NotFound desc = "+
+			"dao: object not found")
 	})
 
 	t.Run("Delete alarm by unknown rule", func(t *testing.T) {
@@ -602,7 +602,8 @@ func TestDeleteAlarm(t *testing.T) {
 		require.NoError(t, err)
 
 		createAlarm, err := raCli.CreateAlarm(ctx, &api.CreateAlarmRequest{
-			Alarm: random.Alarm("api-alarm", uuid.NewString(), createRule.GetId()),
+			Alarm: random.Alarm("api-alarm", uuid.NewString(),
+				createRule.GetId()),
 		})
 		t.Logf("createAlarm, err: %+v, %v", createAlarm, err)
 		require.NoError(t, err)
@@ -611,8 +612,8 @@ func TestDeleteAlarm(t *testing.T) {
 			Id: createAlarm.GetId(), RuleId: uuid.NewString(),
 		})
 		t.Logf("err: %v", err)
-		require.EqualError(t, err, "rpc error: code = NotFound desc = object "+
-			"not found")
+		require.EqualError(t, err, "rpc error: code = NotFound desc = "+
+			"dao: object not found")
 	})
 
 	t.Run("Deletes are isolated by org ID", func(t *testing.T) {
@@ -629,7 +630,8 @@ func TestDeleteAlarm(t *testing.T) {
 		require.NoError(t, err)
 
 		createAlarm, err := raCli.CreateAlarm(ctx, &api.CreateAlarmRequest{
-			Alarm: random.Alarm("api-alarm", uuid.NewString(), createRule.GetId()),
+			Alarm: random.Alarm("api-alarm", uuid.NewString(),
+				createRule.GetId()),
 		})
 		t.Logf("createAlarm, err: %+v, %v", createAlarm, err)
 		require.NoError(t, err)
@@ -639,8 +641,8 @@ func TestDeleteAlarm(t *testing.T) {
 			Id: createAlarm.GetId(), RuleId: createRule.GetId(),
 		})
 		t.Logf("err: %v", err)
-		require.EqualError(t, err, "rpc error: code = NotFound desc = object "+
-			"not found")
+		require.EqualError(t, err, "rpc error: code = NotFound desc = "+
+			"dao: object not found")
 	})
 }
 

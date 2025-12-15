@@ -15,9 +15,9 @@ import (
 
 // Sentinel errors for DAO packages.
 const (
-	ErrAlreadyExists consterr.Error = "object already exists"
-	ErrInvalidFormat consterr.Error = "invalid format"
-	ErrNotFound      consterr.Error = "object not found"
+	ErrAlreadyExists consterr.Error = "dao: object already exists"
+	ErrInvalidFormat consterr.Error = "dao: invalid format"
+	ErrNotFound      consterr.Error = "dao: object not found"
 )
 
 // DBToSentinel maps database/sql or driver errors to sentinel errors. This

@@ -103,8 +103,8 @@ func TestCreateRule(t *testing.T) {
 		})
 		t.Logf("rule, createRule, err: %+v, %+v, %v", rule, createRule, err)
 		require.Nil(t, createRule)
-		require.Equal(t, status.Error(codes.InvalidArgument, "invalid format"),
-			err)
+		require.Equal(t, status.Error(codes.InvalidArgument,
+			"dao: invalid format"), err)
 	})
 }
 
@@ -182,7 +182,8 @@ func TestGetRule(t *testing.T) {
 		})
 		t.Logf("getRule, err: %+v, %v", getRule, err)
 		require.Nil(t, getRule)
-		require.Equal(t, status.Error(codes.NotFound, "object not found"), err)
+		require.Equal(t, status.Error(codes.NotFound, "dao: object not found"),
+			err)
 	})
 }
 
@@ -346,7 +347,8 @@ func TestUpdateRule(t *testing.T) {
 		})
 		t.Logf("part, updateRule, err: %+v, %+v, %v", part, updateRule, err)
 		require.Nil(t, updateRule)
-		require.Equal(t, status.Error(codes.NotFound, "object not found"), err)
+		require.Equal(t, status.Error(codes.NotFound, "dao: object not found"),
+			err)
 	})
 
 	t.Run("Update rule validation failure", func(t *testing.T) {
@@ -394,8 +396,8 @@ func TestUpdateRule(t *testing.T) {
 		})
 		t.Logf("rule, updateRule, err: %+v, %+v, %v", rule, updateRule, err)
 		require.Nil(t, updateRule)
-		require.Equal(t, status.Error(codes.InvalidArgument, "invalid format"),
-			err)
+		require.Equal(t, status.Error(codes.InvalidArgument,
+			"dao: invalid format"), err)
 	})
 }
 
@@ -468,7 +470,8 @@ func TestDeleteRule(t *testing.T) {
 			Id: uuid.NewString(),
 		})
 		t.Logf("err: %v", err)
-		require.Equal(t, status.Error(codes.NotFound, "object not found"), err)
+		require.Equal(t, status.Error(codes.NotFound, "dao: object not found"),
+			err)
 	})
 }
 
@@ -607,8 +610,8 @@ func TestListRules(t *testing.T) {
 		listRules, err := raSvc.ListRules(ctx, &api.ListRulesRequest{})
 		t.Logf("listRules, err: %+v, %v", listRules, err)
 		require.Nil(t, listRules)
-		require.Equal(t, status.Error(codes.InvalidArgument, "invalid format"),
-			err)
+		require.Equal(t, status.Error(codes.InvalidArgument,
+			"dao: invalid format"), err)
 	})
 
 	t.Run("List rules with generation failure", func(t *testing.T) {

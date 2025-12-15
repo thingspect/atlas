@@ -297,8 +297,8 @@ func TestCreateKey(t *testing.T) {
 		createKey, err := keySvc.CreateKey(ctx, &api.CreateKeyRequest{Key: key})
 		t.Logf("key, createKey, err: %+v, %+v, %v", key, createKey, err)
 		require.Nil(t, createKey)
-		require.Equal(t, status.Error(codes.InvalidArgument, "invalid format"),
-			err)
+		require.Equal(t, status.Error(codes.InvalidArgument,
+			"dao: invalid format"), err)
 	})
 
 	t.Run("Create invalid token", func(t *testing.T) {
@@ -322,7 +322,7 @@ func TestCreateKey(t *testing.T) {
 		t.Logf("key, createKey, err: %+v, %+v, %v", key, createKey, err)
 		require.Nil(t, createKey)
 		require.Equal(t, status.Error(codes.Unknown,
-			"crypto: incorrect key length"), err)
+			"auth: incorrect key length"), err)
 	})
 }
 
@@ -396,8 +396,8 @@ func TestDeleteKey(t *testing.T) {
 		_, err := keySvc.DeleteKey(ctx,
 			&api.DeleteKeyRequest{Id: uuid.NewString()})
 		t.Logf("err: %v", err)
-		require.Equal(t, status.Error(codes.InvalidArgument, "invalid format"),
-			err)
+		require.Equal(t, status.Error(codes.InvalidArgument,
+			"dao: invalid format"), err)
 	})
 
 	t.Run("Delete key by unknown ID", func(t *testing.T) {
@@ -420,7 +420,8 @@ func TestDeleteKey(t *testing.T) {
 		_, err := keySvc.DeleteKey(ctx,
 			&api.DeleteKeyRequest{Id: uuid.NewString()})
 		t.Logf("err: %v", err)
-		require.Equal(t, status.Error(codes.NotFound, "object not found"), err)
+		require.Equal(t, status.Error(codes.NotFound, "dao: object not found"),
+			err)
 	})
 }
 
@@ -541,8 +542,8 @@ func TestListKeys(t *testing.T) {
 		listKeys, err := keySvc.ListKeys(ctx, &api.ListKeysRequest{})
 		t.Logf("listKeys, err: %+v, %v", listKeys, err)
 		require.Nil(t, listKeys)
-		require.Equal(t, status.Error(codes.InvalidArgument, "invalid format"),
-			err)
+		require.Equal(t, status.Error(codes.InvalidArgument,
+			"dao: invalid format"), err)
 	})
 
 	t.Run("List keys with generation failure", func(t *testing.T) {

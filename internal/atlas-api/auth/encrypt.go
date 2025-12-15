@@ -10,8 +10,8 @@ import (
 
 // Errors returned due to encryption or decryption failures.
 const (
-	ErrKeyLength consterr.Error = "crypto: incorrect key length"
-	ErrMalformed consterr.Error = "crypto: malformed ciphertext"
+	ErrKeyLength consterr.Error = "auth: incorrect key length"
+	ErrMalformed consterr.Error = "auth: malformed ciphertext"
 )
 
 // Encrypt encrypts data using 256-bit AES-GCM, providing authenticated
