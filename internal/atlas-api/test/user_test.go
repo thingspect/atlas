@@ -184,8 +184,8 @@ func TestGetUser(t *testing.T) {
 			&api.GetUserRequest{Id: uuid.NewString()})
 		t.Logf("getUser, err: %+v, %v", getUser, err)
 		require.Nil(t, getUser)
-		require.EqualError(t, err, "rpc error: code = NotFound desc = object "+
-			"not found")
+		require.EqualError(t, err, "rpc error: code = NotFound desc = "+
+			"dao: object not found")
 	})
 
 	t.Run("Gets are isolated by org ID", func(t *testing.T) {
@@ -199,8 +199,8 @@ func TestGetUser(t *testing.T) {
 			&api.GetUserRequest{Id: createUser.GetId()})
 		t.Logf("getUser, err: %+v, %v", getUser, err)
 		require.Nil(t, getUser)
-		require.EqualError(t, err, "rpc error: code = NotFound desc = object "+
-			"not found")
+		require.EqualError(t, err, "rpc error: code = NotFound desc = "+
+			"dao: object not found")
 	})
 }
 
@@ -433,8 +433,8 @@ func TestUpdateUser(t *testing.T) {
 		})
 		t.Logf("updateUser, err: %+v, %v", updateUser, err)
 		require.Nil(t, updateUser)
-		require.EqualError(t, err, "rpc error: code = NotFound desc = object "+
-			"not found")
+		require.EqualError(t, err, "rpc error: code = NotFound desc = "+
+			"dao: object not found")
 	})
 
 	t.Run("Update user by unknown user", func(t *testing.T) {
@@ -451,8 +451,8 @@ func TestUpdateUser(t *testing.T) {
 			&api.UpdateUserRequest{User: user})
 		t.Logf("updateUser, err: %+v, %v", updateUser, err)
 		require.Nil(t, updateUser)
-		require.EqualError(t, err, "rpc error: code = NotFound desc = object "+
-			"not found")
+		require.EqualError(t, err, "rpc error: code = NotFound desc = "+
+			"dao: object not found")
 	})
 
 	t.Run("Updates are isolated by org ID", func(t *testing.T) {
@@ -479,8 +479,8 @@ func TestUpdateUser(t *testing.T) {
 			&api.UpdateUserRequest{User: createUser})
 		t.Logf("updateUser, err: %+v, %v", updateUser, err)
 		require.Nil(t, updateUser)
-		require.EqualError(t, err, "rpc error: code = NotFound desc = object "+
-			"not found")
+		require.EqualError(t, err, "rpc error: code = NotFound desc = "+
+			"dao: object not found")
 	})
 
 	t.Run("Update user validation failure", func(t *testing.T) {
@@ -535,7 +535,7 @@ func TestUpdateUser(t *testing.T) {
 		t.Logf("updateUser, err: %+v, %v", updateUser, err)
 		require.Nil(t, updateUser)
 		require.EqualError(t, err, "rpc error: code = InvalidArgument desc = "+
-			"invalid format: value too long")
+			"dao: invalid format: value too long")
 	})
 }
 
@@ -631,8 +631,8 @@ func TestUpdateUserPassword(t *testing.T) {
 				Id: uuid.NewString(), Password: random.String(20),
 			})
 		t.Logf("err: %v", err)
-		require.EqualError(t, err, "rpc error: code = NotFound desc = object "+
-			"not found")
+		require.EqualError(t, err, "rpc error: code = NotFound desc = "+
+			"dao: object not found")
 	})
 
 	t.Run("Password updates are isolated by org ID", func(t *testing.T) {
@@ -655,8 +655,8 @@ func TestUpdateUserPassword(t *testing.T) {
 			Id: createUser.GetId(), Password: random.String(20),
 		})
 		t.Logf("err: %v", err)
-		require.EqualError(t, err, "rpc error: code = NotFound desc = object "+
-			"not found")
+		require.EqualError(t, err, "rpc error: code = NotFound desc = "+
+			"dao: object not found")
 	})
 }
 
@@ -696,7 +696,7 @@ func TestDeleteUser(t *testing.T) {
 			t.Logf("getUser, err: %+v, %v", getUser, err)
 			require.Nil(t, getUser)
 			require.EqualError(t, err, "rpc error: code = NotFound desc = "+
-				"object not found")
+				"dao: object not found")
 		})
 	})
 
@@ -724,8 +724,8 @@ func TestDeleteUser(t *testing.T) {
 		_, err := userCli.DeleteUser(ctx,
 			&api.DeleteUserRequest{Id: uuid.NewString()})
 		t.Logf("err: %v", err)
-		require.EqualError(t, err, "rpc error: code = NotFound desc = object "+
-			"not found")
+		require.EqualError(t, err, "rpc error: code = NotFound desc = "+
+			"dao: object not found")
 	})
 
 	t.Run("Deletes are isolated by org ID", func(t *testing.T) {
@@ -747,8 +747,8 @@ func TestDeleteUser(t *testing.T) {
 		_, err = secCli.DeleteUser(ctx,
 			&api.DeleteUserRequest{Id: createUser.GetId()})
 		t.Logf("err: %v", err)
-		require.EqualError(t, err, "rpc error: code = NotFound desc = object "+
-			"not found")
+		require.EqualError(t, err, "rpc error: code = NotFound desc = "+
+			"dao: object not found")
 	})
 }
 

@@ -32,11 +32,11 @@ func TestErrToStatus(t *testing.T) {
 		},
 		{
 			dao.ErrAlreadyExists,
-			"rpc error: code = AlreadyExists desc = object already exists",
+			"rpc error: code = AlreadyExists desc = dao: object already exists",
 		},
 		{
 			fmt.Errorf("%w: UUID", dao.ErrInvalidFormat),
-			"rpc error: code = InvalidArgument desc = invalid format: UUID",
+			"rpc error: code = InvalidArgument desc = dao: invalid format: UUID",
 		},
 	}
 

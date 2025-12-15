@@ -94,8 +94,8 @@ func TestCreateOrg(t *testing.T) {
 		createOrg, err := orgSvc.CreateOrg(ctx, &api.CreateOrgRequest{Org: org})
 		t.Logf("org, createOrg, err: %+v, %+v, %v", org, createOrg, err)
 		require.Nil(t, createOrg)
-		require.Equal(t, status.Error(codes.InvalidArgument, "invalid format"),
-			err)
+		require.Equal(t, status.Error(codes.InvalidArgument,
+			"dao: invalid format"), err)
 	})
 }
 
@@ -109,7 +109,8 @@ func TestGetOrg(t *testing.T) {
 		retOrg, _ := proto.Clone(org).(*api.Org)
 
 		orger := NewMockOrger(gomock.NewController(t))
-		orger.EXPECT().Read(gomock.Any(), org.GetId()).Return(retOrg, nil).Times(1)
+		orger.EXPECT().Read(gomock.Any(), org.GetId()).Return(retOrg, nil).
+			Times(1)
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
 			t.Context(), &session.Session{
@@ -171,7 +172,8 @@ func TestGetOrg(t *testing.T) {
 			&api.GetOrgRequest{Id: uuid.NewString()})
 		t.Logf("getOrg, err: %+v, %v", getOrg, err)
 		require.Nil(t, getOrg)
-		require.Equal(t, status.Error(codes.NotFound, "object not found"), err)
+		require.Equal(t, status.Error(codes.NotFound, "dao: object not found"),
+			err)
 	})
 }
 
@@ -207,13 +209,15 @@ func TestUpdateOrg(t *testing.T) {
 		retOrg, _ := proto.Clone(org).(*api.Org)
 		part := &api.Org{Id: org.GetId(), Name: random.String(10)}
 		merged := &api.Org{
-			Id: org.GetId(), Name: part.GetName(), DisplayName: org.GetDisplayName(),
-			Email: org.GetEmail(),
+			Id: org.GetId(), Name: part.GetName(),
+			DisplayName: org.GetDisplayName(),
+			Email:       org.GetEmail(),
 		}
 		retMerged, _ := proto.Clone(merged).(*api.Org)
 
 		orger := NewMockOrger(gomock.NewController(t))
-		orger.EXPECT().Read(gomock.Any(), org.GetId()).Return(retOrg, nil).Times(1)
+		orger.EXPECT().Read(gomock.Any(), org.GetId()).Return(retOrg, nil).
+			Times(1)
 		orger.EXPECT().Update(gomock.Any(), matcher.NewProtoMatcher(merged)).
 			Return(retMerged, nil).Times(1)
 
@@ -327,8 +331,8 @@ func TestUpdateOrg(t *testing.T) {
 		part := &api.Org{Id: uuid.NewString(), Name: random.String(10)}
 
 		orger := NewMockOrger(gomock.NewController(t))
-		orger.EXPECT().Read(gomock.Any(), part.GetId()).Return(nil, dao.ErrNotFound).
-			Times(1)
+		orger.EXPECT().Read(gomock.Any(), part.GetId()).Return(nil,
+			dao.ErrNotFound).Times(1)
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
 			t.Context(), &session.Session{
@@ -343,7 +347,8 @@ func TestUpdateOrg(t *testing.T) {
 		})
 		t.Logf("part, updateOrg, err: %+v, %+v, %v", part, updateOrg, err)
 		require.Nil(t, updateOrg)
-		require.Equal(t, status.Error(codes.NotFound, "object not found"), err)
+		require.Equal(t, status.Error(codes.NotFound, "dao: object not found"),
+			err)
 	})
 
 	t.Run("Update org validation failure", func(t *testing.T) {
@@ -387,8 +392,8 @@ func TestUpdateOrg(t *testing.T) {
 		updateOrg, err := orgSvc.UpdateOrg(ctx, &api.UpdateOrgRequest{Org: org})
 		t.Logf("org, updateOrg, err: %+v, %+v, %v", org, updateOrg, err)
 		require.Nil(t, updateOrg)
-		require.Equal(t, status.Error(codes.InvalidArgument, "invalid format"),
-			err)
+		require.Equal(t, status.Error(codes.InvalidArgument,
+			"dao: invalid format"), err)
 	})
 }
 
@@ -458,7 +463,8 @@ func TestDeleteOrg(t *testing.T) {
 		_, err := orgSvc.DeleteOrg(ctx,
 			&api.DeleteOrgRequest{Id: uuid.NewString()})
 		t.Logf("err: %v", err)
-		require.Equal(t, status.Error(codes.NotFound, "object not found"), err)
+		require.Equal(t, status.Error(codes.NotFound, "dao: object not found"),
+			err)
 	})
 }
 
@@ -585,7 +591,8 @@ func TestListOrgs(t *testing.T) {
 		listOrgs, err := orgSvc.ListOrgs(ctx, &api.ListOrgsRequest{})
 		t.Logf("listOrgs, err: %+v, %v", listOrgs, err)
 		require.Nil(t, listOrgs)
-		require.Equal(t, status.Error(codes.NotFound, "object not found"), err)
+		require.Equal(t, status.Error(codes.NotFound, "dao: object not found"),
+			err)
 	})
 
 	t.Run("List orgs by invalid page token", func(t *testing.T) {
@@ -623,8 +630,8 @@ func TestListOrgs(t *testing.T) {
 		listOrgs, err := orgSvc.ListOrgs(ctx, &api.ListOrgsRequest{})
 		t.Logf("listOrgs, err: %+v, %v", listOrgs, err)
 		require.Nil(t, listOrgs)
-		require.Equal(t, status.Error(codes.InvalidArgument, "invalid format"),
-			err)
+		require.Equal(t, status.Error(codes.InvalidArgument,
+			"dao: invalid format"), err)
 	})
 
 	t.Run("List orgs with generation failure", func(t *testing.T) {

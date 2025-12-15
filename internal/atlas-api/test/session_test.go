@@ -262,7 +262,7 @@ func TestDeleteKey(t *testing.T) {
 				&api.DeleteKeyRequest{Id: createKey.GetKey().GetId()})
 			t.Logf("err: %v", err)
 			require.EqualError(t, err, "rpc error: code = NotFound desc = "+
-				"object not found")
+				"dao: object not found")
 		})
 	})
 
@@ -325,8 +325,8 @@ func TestDeleteKey(t *testing.T) {
 		_, err := sessCli.DeleteKey(ctx,
 			&api.DeleteKeyRequest{Id: uuid.NewString()})
 		t.Logf("err: %v", err)
-		require.EqualError(t, err, "rpc error: code = NotFound desc = object "+
-			"not found")
+		require.EqualError(t, err, "rpc error: code = NotFound desc = "+
+			"dao: object not found")
 	})
 
 	t.Run("Deletes are isolated by org ID", func(t *testing.T) {
@@ -348,8 +348,8 @@ func TestDeleteKey(t *testing.T) {
 		_, err = secCli.DeleteKey(ctx,
 			&api.DeleteKeyRequest{Id: createKey.GetKey().GetId()})
 		t.Logf("err: %v", err)
-		require.EqualError(t, err, "rpc error: code = NotFound desc = object "+
-			"not found")
+		require.EqualError(t, err, "rpc error: code = NotFound desc = "+
+			"dao: object not found")
 	})
 }
 

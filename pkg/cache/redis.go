@@ -11,7 +11,7 @@ import (
 
 // redisCache contains methods to create and query data in Redis and implements
 // the Cacher interface.
-type redisCache[V any] struct {
+type redisCache[V Cacheable] struct {
 	client redis.UniversalClient
 }
 
@@ -19,7 +19,7 @@ type redisCache[V any] struct {
 var _ Cacher[string] = &redisCache[string]{}
 
 // NewRedis builds and verifies a new Cacher and returns it and an error value.
-func NewRedis[V any](redisAddr string) (Cacher[V], error) {
+func NewRedis[V Cacheable](redisAddr string) (Cacher[V], error) {
 	client := redis.NewUniversalClient(&redis.UniversalOptions{
 		Addrs: []string{redisAddr},
 	})
@@ -45,8 +45,9 @@ func (r *redisCache[V]) Set(ctx context.Context, key string, value V) error {
 func (r *redisCache[V]) SetTTL(ctx context.Context, key string, value V,
 	exp time.Duration,
 ) error {
-	// Switching on, and converting back to, type parameters is not supported.
-	// Use JSON bytes as a workaround.
+	// Switching on - and converting back to - type parameters is not supported.
+	// Use JSON bytes as a workaround. This has the added benefit of supporting
+	// primitives as understood by Redis.
 	b, err := json.Marshal(value)
 	if err != nil {
 		return err
@@ -87,8 +88,9 @@ func (r *redisCache[V]) SetIfNotExist(ctx context.Context, key string,
 func (r *redisCache[V]) SetIfNotExistTTL(ctx context.Context, key string,
 	value V, exp time.Duration,
 ) error {
-	// Switching on, and converting back to, type parameters is not supported.
-	// Use JSON bytes as a workaround.
+	// Switching on - and converting back to - type parameters is not supported.
+	// Use JSON bytes as a workaround. This has the added benefit of supporting
+	// primitives as understood by Redis.
 	b, err := json.Marshal(value)
 	if err != nil {
 		return err

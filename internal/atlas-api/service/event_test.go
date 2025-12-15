@@ -151,8 +151,8 @@ func TestListEvents(t *testing.T) {
 		listEvents, err := evSvc.ListEvents(ctx, &api.ListEventsRequest{})
 		t.Logf("listEvents, err: %+v, %v", listEvents, err)
 		require.Nil(t, listEvents)
-		require.Equal(t, status.Error(codes.InvalidArgument, "invalid format"),
-			err)
+		require.Equal(t, status.Error(codes.InvalidArgument,
+			"dao: invalid format"), err)
 	})
 }
 
@@ -232,7 +232,7 @@ func TestLatestEvents(t *testing.T) {
 		latEvents, err := evSvc.LatestEvents(ctx, &api.LatestEventsRequest{})
 		t.Logf("latEvents, err: %+v, %v", latEvents, err)
 		require.Nil(t, latEvents)
-		require.Equal(t, status.Error(codes.InvalidArgument, "invalid format"),
-			err)
+		require.Equal(t, status.Error(codes.InvalidArgument,
+			"dao: invalid format"), err)
 	})
 }

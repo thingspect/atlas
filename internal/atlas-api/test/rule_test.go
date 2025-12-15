@@ -118,8 +118,8 @@ func TestGetRule(t *testing.T) {
 			&api.GetRuleRequest{Id: uuid.NewString()})
 		t.Logf("getRule, err: %+v, %v", getRule, err)
 		require.Nil(t, getRule)
-		require.EqualError(t, err, "rpc error: code = NotFound desc = object "+
-			"not found")
+		require.EqualError(t, err, "rpc error: code = NotFound desc = "+
+			"dao: object not found")
 	})
 
 	t.Run("Gets are isolated by org ID", func(t *testing.T) {
@@ -133,8 +133,8 @@ func TestGetRule(t *testing.T) {
 			&api.GetRuleRequest{Id: createRule.GetId()})
 		t.Logf("getRule, err: %+v, %v", getRule, err)
 		require.Nil(t, getRule)
-		require.EqualError(t, err, "rpc error: code = NotFound desc = object "+
-			"not found")
+		require.EqualError(t, err, "rpc error: code = NotFound desc = "+
+			"dao: object not found")
 	})
 }
 
@@ -275,8 +275,8 @@ func TestUpdateRule(t *testing.T) {
 		})
 		t.Logf("updateRule, err: %+v, %v", updateRule, err)
 		require.Nil(t, updateRule)
-		require.EqualError(t, err, "rpc error: code = NotFound desc = object "+
-			"not found")
+		require.EqualError(t, err, "rpc error: code = NotFound desc = "+
+			"dao: object not found")
 	})
 
 	t.Run("Update rule by unknown rule", func(t *testing.T) {
@@ -291,8 +291,8 @@ func TestUpdateRule(t *testing.T) {
 		})
 		t.Logf("updateRule, err: %+v, %v", updateRule, err)
 		require.Nil(t, updateRule)
-		require.EqualError(t, err, "rpc error: code = NotFound desc = object "+
-			"not found")
+		require.EqualError(t, err, "rpc error: code = NotFound desc = "+
+			"dao: object not found")
 	})
 
 	t.Run("Updates are isolated by org ID", func(t *testing.T) {
@@ -317,8 +317,8 @@ func TestUpdateRule(t *testing.T) {
 			&api.UpdateRuleRequest{Rule: createRule})
 		t.Logf("updateRule, err: %+v, %v", updateRule, err)
 		require.Nil(t, updateRule)
-		require.EqualError(t, err, "rpc error: code = NotFound desc = object "+
-			"not found")
+		require.EqualError(t, err, "rpc error: code = NotFound desc = "+
+			"dao: object not found")
 	})
 
 	t.Run("Update rule validation failure", func(t *testing.T) {
@@ -382,7 +382,7 @@ func TestDeleteRule(t *testing.T) {
 			t.Logf("getRule, err: %+v, %v", getRule, err)
 			require.Nil(t, getRule)
 			require.EqualError(t, err, "rpc error: code = NotFound desc = "+
-				"object not found")
+				"dao: object not found")
 		})
 	})
 
@@ -410,8 +410,8 @@ func TestDeleteRule(t *testing.T) {
 		_, err := raCli.DeleteRule(ctx,
 			&api.DeleteRuleRequest{Id: uuid.NewString()})
 		t.Logf("err: %v", err)
-		require.EqualError(t, err, "rpc error: code = NotFound desc = object "+
-			"not found")
+		require.EqualError(t, err, "rpc error: code = NotFound desc = "+
+			"dao: object not found")
 	})
 
 	t.Run("Deletes are isolated by org ID", func(t *testing.T) {
@@ -431,8 +431,8 @@ func TestDeleteRule(t *testing.T) {
 		_, err = secCli.DeleteRule(ctx,
 			&api.DeleteRuleRequest{Id: createRule.GetId()})
 		t.Logf("err: %v", err)
-		require.EqualError(t, err, "rpc error: code = NotFound desc = object "+
-			"not found")
+		require.EqualError(t, err, "rpc error: code = NotFound desc = "+
+			"dao: object not found")
 	})
 }
 
