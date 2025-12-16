@@ -6,13 +6,13 @@ require (
 	github.com/NYTimes/gziphandler v1.1.1
 	github.com/chirpstack/chirpstack/api/go/v4 v4.15.0
 	github.com/eclipse/paho.mqtt.golang v1.5.1
-	github.com/expr-lang/expr v1.17.6
+	github.com/expr-lang/expr v1.17.7
 	github.com/google/uuid v1.6.0
 	github.com/gregdel/pushover v1.4.0
 	github.com/grpc-ecosystem/grpc-gateway/v2 v2.27.3
 	github.com/jackc/pgx/v5 v5.7.6
 	github.com/jellydator/ttlcache/v3 v3.4.0
-	github.com/mennanov/fmutils v0.3.4
+	github.com/mennanov/fmutils v0.3.5
 	github.com/nsqio/go-nsq v1.1.0
 	github.com/redis/go-redis/v9 v9.17.2
 	github.com/smira/go-statsd v1.3.4
