@@ -23,7 +23,7 @@ github.com/eclipse/paho.mqtt.golang/packets
 # github.com/envoyproxy/protoc-gen-validate v1.3.0
 ## explicit; go 1.21.1
 github.com/envoyproxy/protoc-gen-validate/validate
-# github.com/expr-lang/expr v1.17.6
+# github.com/expr-lang/expr v1.17.7
 ## explicit; go 1.18
 github.com/expr-lang/expr
 github.com/expr-lang/expr/ast
@@ -89,7 +89,7 @@ github.com/jackc/puddle/v2/internal/genstack
 # github.com/jellydator/ttlcache/v3 v3.4.0
 ## explicit; go 1.23.0
 github.com/jellydator/ttlcache/v3
-# github.com/mennanov/fmutils v0.3.4
+# github.com/mennanov/fmutils v0.3.5
 ## explicit; go 1.22
 github.com/mennanov/fmutils
 # github.com/nsqio/go-nsq v1.1.0
