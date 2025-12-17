@@ -52,12 +52,6 @@ func New(cfg *config.Config) (*Validator, error) {
 		return nil, err
 	}
 
-	// Set up cache connection.
-	redis, err := cache.NewRedis[[]byte](cfg.RedisHost + ":6379")
-	if err != nil {
-		return nil, err
-	}
-
 	// Build the NSQ connection for consuming and publishing.
 	nsq, err := queue.NewNSQ(cfg.NSQPubAddr, cfg.NSQLookupAddrs,
 		cfg.NSQSubChannel)
@@ -77,7 +71,7 @@ func New(cfg *config.Config) (*Validator, error) {
 	}
 
 	return &Validator{
-		devDAO: device.NewDAO(pgRW, pgRO, redis, deviceExp),
+		devDAO: device.NewDAO(pgRW, pgRO, cache.NewHeap[[]byte](), deviceExp),
 
 		valQueue:     nsq,
 		vInSub:       vInSub,

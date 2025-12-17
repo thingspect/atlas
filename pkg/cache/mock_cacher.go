@@ -18,19 +18,19 @@ import (
 )
 
 // MockCacher is a mock of Cacher interface.
-type MockCacher[V any] struct {
+type MockCacher[V Cacheable] struct {
 	ctrl     *gomock.Controller
 	recorder *MockCacherMockRecorder[V]
 	isgomock struct{}
 }
 
 // MockCacherMockRecorder is the mock recorder for MockCacher.
-type MockCacherMockRecorder[V any] struct {
+type MockCacherMockRecorder[V Cacheable] struct {
 	mock *MockCacher[V]
 }
 
 // NewMockCacher creates a new mock instance.
-func NewMockCacher[V any](ctrl *gomock.Controller) *MockCacher[V] {
+func NewMockCacher[V Cacheable](ctrl *gomock.Controller) *MockCacher[V] {
 	mock := &MockCacher[V]{ctrl: ctrl}
 	mock.recorder = &MockCacherMockRecorder[V]{mock}
 	return mock
