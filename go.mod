@@ -12,6 +12,7 @@ require (
 	github.com/grpc-ecosystem/grpc-gateway/v2 v2.27.3
 	github.com/jackc/pgx/v5 v5.7.6
 	github.com/jellydator/ttlcache/v3 v3.4.0
+	github.com/maypok86/otter/v2 v2.2.1
 	github.com/mennanov/fmutils v0.3.5
 	github.com/nsqio/go-nsq v1.1.0
 	github.com/redis/go-redis/v9 v9.17.2

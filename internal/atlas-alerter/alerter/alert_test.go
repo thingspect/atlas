@@ -171,7 +171,7 @@ func TestAlertMessages(t *testing.T) {
 					return nil
 				}).Times(test.inpAlertTimes)
 
-			cache := cache.NewMemory[string]()
+			cache := cache.NewHeap[string]()
 
 			if test.inpSeedCache {
 				ctx, cancel := context.WithTimeout(t.Context(),

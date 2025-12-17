@@ -79,13 +79,8 @@ func New(cfg *config.Config) (*API, error) {
 		return nil, err
 	}
 
-	// Set up cache connections.
-	sRedis, err := cache.NewRedis[string](cfg.RedisHost + ":6379")
-	if err != nil {
-		return nil, err
-	}
-
-	bRedis, err := cache.NewRedis[[]byte](cfg.RedisHost + ":6379")
+	// Set up cache connection.
+	redis, err := cache.NewRedis[string](cfg.RedisHost + ":6379")
 	if err != nil {
 		return nil, err
 	}
@@ -96,7 +91,7 @@ func New(cfg *config.Config) (*API, error) {
 		alog.Error("New notify secrets not found, using notify.NewFake()")
 		n = notify.NewFake()
 	} else {
-		n = notify.New(sRedis, cfg.AppAPIKey, cfg.SMSKeyID, "", cfg.SMSKeySecret,
+		n = notify.New(redis, cfg.AppAPIKey, cfg.SMSKeyID, "", cfg.SMSKeySecret,
 			"", "", "")
 	}
 
@@ -134,7 +129,7 @@ func New(cfg *config.Config) (*API, error) {
 
 	srv := grpc.NewServer(grpc.ChainUnaryInterceptor(
 		interceptor.Log(nil),
-		interceptor.Auth(skipAuth, cfg.PWTKey, sRedis),
+		interceptor.Auth(skipAuth, cfg.PWTKey, redis),
 		interceptor.Validate(skipValidate),
 	))
 	api.RegisterAlertServiceServer(srv, service.NewAlert(alert.NewDAO(pgRW,
@@ -142,14 +137,14 @@ func New(cfg *config.Config) (*API, error) {
 	api.RegisterDataPointServiceServer(srv, service.NewDataPoint(nsq,
 		cfg.NSQPubTopic, datapoint.NewDAO(pgRW, pgRO)))
 	api.RegisterDeviceServiceServer(srv, service.NewDevice(device.NewDAO(pgRW,
-		pgRO, bRedis, deviceExp), cs))
+		pgRO, cache.NewHeap[[]byte](), deviceExp), cs))
 	api.RegisterEventServiceServer(srv, service.NewEvent(event.NewDAO(pgRW,
 		pgRO)))
 	api.RegisterOrgServiceServer(srv, service.NewOrg(org.NewDAO(pgRW, pgRO)))
 	api.RegisterRuleAlarmServiceServer(srv,
 		service.NewRuleAlarm(rule.NewDAO(pgRW, pgRO), alarm.NewDAO(pgRW, pgRO)))
 	api.RegisterSessionServiceServer(srv, service.NewSession(user.NewDAO(pgRW,
-		pgRO), key.NewDAO(pgRW, pgRO), sRedis, cfg.PWTKey))
+		pgRO), key.NewDAO(pgRW, pgRO), redis, cfg.PWTKey))
 	api.RegisterTagServiceServer(srv, service.NewTag(tag.NewDAO(pgRW)))
 	api.RegisterUserServiceServer(srv, service.NewUser(user.NewDAO(pgRW, pgRO),
 		n))
