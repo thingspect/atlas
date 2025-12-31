@@ -1,13 +1,12 @@
 .PHONY: install lint init_db test unit_test integration_test mod generate
 
-# Non-cgo DNS is more reliable and faster for non-esoteric uses of resolv.conf
 export CGO_ENABLED = 0
 RFLAG = -buildmode=pie
 
-# Race detector is exclusive of non-cgo and PIE
+# Race detector is exclusive of PIE on some platforms
 # https://github.com/golang/go/issues/6508
 ifneq ($(RACE),)
-export CGO_ENABLED = 1
+unexport CGO_ENABLED
 RFLAG = -race
 export GORACE = halt_on_error=1
 endif
