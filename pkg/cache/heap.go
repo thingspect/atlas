@@ -89,7 +89,9 @@ func (h *heapCache[V]) Del(_ context.Context, key string) error {
 
 // Close closes the Cacher, releasing any open resources.
 func (h *heapCache[V]) Close() error {
+	h.cache.InvalidateAll()
 	h.cache.CleanUp()
+	_ = h.cache.StopAllGoroutines()
 
 	return nil
 }
