@@ -758,11 +758,11 @@ func TestListUsers(t *testing.T) {
 	ctx, cancel := context.WithTimeout(t.Context(), testTimeout)
 	defer cancel()
 
-	userIDs := []string{}
-	userNames := []string{}
-	userRoles := []api.Role{}
-	userStatuses := []api.Status{}
-	userTags := [][]string{}
+	userIDs := make([]string, 0, 3)
+	userNames := make([]string, 0, 3)
+	userRoles := make([]api.Role, 0, 3)
+	userStatuses := make([]api.Status, 0, 3)
+	userTags := make([][]string, 0, 3)
 	for range 3 {
 		user := random.User("api-user", uuid.NewString())
 		user.Role = api.Role_BUILDER

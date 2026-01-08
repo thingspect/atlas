@@ -17,9 +17,14 @@ func gatewayConn(body []byte) ([]*decode.Point, error) {
 		return nil, err
 	}
 
+	msgs := make([]*decode.Point, 0, 2)
+
 	// Build raw device and data payloads for debugging, with consistent output.
-	msgs := []*decode.Point{{Attr: "raw_gateway", Value: strings.ReplaceAll(
-		protojson.MarshalOptions{}.Format(connMsg), " ", "")}}
+	msgs = append(msgs, &decode.Point{
+		Attr: "raw_gateway",
+		Value: strings.ReplaceAll(protojson.MarshalOptions{}.Format(connMsg),
+			" ", ""),
+	})
 
 	// Parse ConnState.
 	msgs = append(msgs, &decode.Point{

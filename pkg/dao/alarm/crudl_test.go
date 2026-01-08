@@ -405,10 +405,10 @@ func TestList(t *testing.T) {
 	t.Logf("createRule, err: %+v, %v", createRule, err)
 	require.NoError(t, err)
 
-	alarmIDs := []string{}
-	alarmNames := []string{}
-	alarmTypes := []api.AlarmType{}
-	alarmTSes := []time.Time{}
+	alarmIDs := make([]string, 0, 3)
+	alarmNames := make([]string, 0, 3)
+	alarmTypes := make([]api.AlarmType, 0, 3)
+	alarmTSes := make([]time.Time, 0, 3)
 	for range 3 {
 		createAlarm, err := globalAlarmDAO.Create(ctx, random.Alarm("dao-alarm",
 			createOrg.GetId(), createRule.GetId()))

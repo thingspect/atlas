@@ -31,9 +31,11 @@ func Door(body []byte) ([]*decode.Point, error) {
 		return nil, decode.FormatErr("door", "bad identifier", body)
 	}
 
+	msgs := make([]*decode.Point, 0, 2)
+
 	// Parse count.
 	count := int32(body[0] & clearProto)
-	msgs := []*decode.Point{{Attr: "count", Value: count}}
+	msgs = append(msgs, &decode.Point{Attr: "count", Value: count})
 
 	// Parse open status.
 	msgs = append(msgs, &decode.Point{Attr: "open", Value: body[2] == 0x01})

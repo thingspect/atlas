@@ -205,10 +205,10 @@ func TestList(t *testing.T) {
 	t.Logf("createOrg, err: %+v, %v", createOrg, err)
 	require.NoError(t, err)
 
-	keyIDs := []string{}
-	keyNames := []string{}
-	keyRoles := []api.Role{}
-	keyTSes := []time.Time{}
+	keyIDs := make([]string, 0, 3)
+	keyNames := make([]string, 0, 3)
+	keyRoles := make([]api.Role, 0, 3)
+	keyTSes := make([]time.Time, 0, 3)
 	for range 3 {
 		createKey, err := globalKeyDAO.Create(ctx, random.Key("dao-key",
 			createOrg.GetId()))

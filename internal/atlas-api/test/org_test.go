@@ -410,8 +410,8 @@ func TestListOrgs(t *testing.T) {
 	ctx, cancel := context.WithTimeout(t.Context(), testTimeout)
 	defer cancel()
 
-	orgIDs := []string{}
-	orgNames := []string{}
+	orgIDs := make([]string, 0, 3)
+	orgNames := make([]string, 0, 3)
 	for range 3 {
 		orgCli := api.NewOrgServiceClient(secondarySysAdminGRPCConn)
 		createOrg, err := orgCli.CreateOrg(ctx,

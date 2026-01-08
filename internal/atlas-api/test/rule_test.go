@@ -442,9 +442,9 @@ func TestListRules(t *testing.T) {
 	ctx, cancel := context.WithTimeout(t.Context(), testTimeout)
 	defer cancel()
 
-	ruleIDs := []string{}
-	ruleNames := []string{}
-	ruleStatuses := []api.Status{}
+	ruleIDs := make([]string, 0, 3)
+	ruleNames := make([]string, 0, 3)
+	ruleStatuses := make([]api.Status, 0, 3)
 	for range 3 {
 		raCli := api.NewRuleAlarmServiceClient(globalAdminGRPCConn)
 		createRule, err := raCli.CreateRule(ctx, &api.CreateRuleRequest{

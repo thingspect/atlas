@@ -23,9 +23,11 @@ func reset(body []byte) ([]*decode.Point, error) {
 		return nil, decode.FormatErr("reset", "bad identifier", body)
 	}
 
+	msgs := make([]*decode.Point, 0, 4)
+
 	// Parse protocol, count, and hardware version.
 	proto := int32(body[0] >> 4)
-	msgs := []*decode.Point{{Attr: "proto", Value: proto}}
+	msgs = append(msgs, &decode.Point{Attr: "proto", Value: proto})
 
 	count := int32(body[0] & clearProto)
 	msgs = append(msgs, &decode.Point{Attr: "count", Value: count})

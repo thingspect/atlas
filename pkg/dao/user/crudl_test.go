@@ -455,12 +455,12 @@ func TestList(t *testing.T) {
 	t.Logf("createOrg, err: %+v, %v", createOrg, err)
 	require.NoError(t, err)
 
-	userIDs := []string{}
-	userNames := []string{}
-	userRoles := []api.Role{}
-	userTags := [][]string{}
-	userAppKeys := []string{}
-	userTSes := []time.Time{}
+	userIDs := make([]string, 0, 3)
+	userNames := make([]string, 0, 3)
+	userRoles := make([]api.Role, 0, 3)
+	userTags := make([][]string, 0, 3)
+	userAppKeys := make([]string, 0, 3)
+	userTSes := make([]time.Time, 0, 3)
 	for range 3 {
 		createUser, err := globalUserDAO.Create(ctx, random.User("dao-user",
 			createOrg.GetId()))
@@ -627,9 +627,9 @@ func TestListByTags(t *testing.T) {
 	t.Logf("createOrg, err: %+v, %v", createOrg, err)
 	require.NoError(t, err)
 
-	userIDs := []string{}
-	userNames := []string{}
-	userTags := [][]string{}
+	userIDs := make([]string, 0, 3)
+	userNames := make([]string, 0, 3)
+	userTags := make([][]string, 0, 3)
 	for range 3 {
 		user := random.User("dao-user", createOrg.GetId())
 		user.Status = api.Status_ACTIVE

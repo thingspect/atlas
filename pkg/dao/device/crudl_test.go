@@ -583,12 +583,12 @@ func TestList(t *testing.T) {
 	t.Logf("createOrg, err: %+v, %v", createOrg, err)
 	require.NoError(t, err)
 
-	devIDs := []string{}
-	devNames := []string{}
-	devStatuses := []api.Status{}
-	devDecoders := []api.Decoder{}
-	devTags := [][]string{}
-	devTSes := []time.Time{}
+	devIDs := make([]string, 0, 3)
+	devNames := make([]string, 0, 3)
+	devStatuses := make([]api.Status, 0, 3)
+	devDecoders := make([]api.Decoder, 0, 3)
+	devTags := make([][]string, 0, 3)
+	devTSes := make([]time.Time, 0, 3)
 	for range 3 {
 		createDev, err := globalDevDAO.Create(ctx, random.Device("dao-device",
 			createOrg.GetId()))
