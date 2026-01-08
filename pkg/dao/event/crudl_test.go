@@ -115,7 +115,7 @@ func TestList(t *testing.T) {
 		t.Logf("createDev, err: %+v, %v", createDev, err)
 		require.NoError(t, err)
 
-		events := []*api.Event{}
+		events := make([]*api.Event, 0, 5)
 
 		for range 5 {
 			event := random.Event("dao-event", createOrg.GetId())
@@ -230,7 +230,7 @@ func TestLatest(t *testing.T) {
 		t.Logf("createOrg, err: %+v, %v", createOrg, err)
 		require.NoError(t, err)
 
-		events := []*api.Event{}
+		events := make([]*api.Event, 0, 5)
 
 		for range 5 {
 			event := random.Event("dao-event", createOrg.GetId())

@@ -711,11 +711,11 @@ func TestListDevices(t *testing.T) {
 	ctx, cancel := context.WithTimeout(t.Context(), testTimeout)
 	defer cancel()
 
-	devIDs := []string{}
-	devNames := []string{}
-	devStatuses := []api.Status{}
-	devDecoders := []api.Decoder{}
-	devTags := [][]string{}
+	devIDs := make([]string, 0, 3)
+	devNames := make([]string, 0, 3)
+	devStatuses := make([]api.Status, 0, 3)
+	devDecoders := make([]api.Decoder, 0, 3)
+	devTags := make([][]string, 0, 3)
 	for range 3 {
 		devCli := api.NewDeviceServiceClient(globalAdminGRPCConn)
 		createDev, err := devCli.CreateDevice(ctx, &api.CreateDeviceRequest{

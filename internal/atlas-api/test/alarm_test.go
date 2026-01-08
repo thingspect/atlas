@@ -659,9 +659,9 @@ func TestListAlarms(t *testing.T) {
 	t.Logf("createRule, err: %+v, %v", createRule, err)
 	require.NoError(t, err)
 
-	alarmIDs := []string{}
-	alarmNames := []string{}
-	alarmStatuses := []api.Status{}
+	alarmIDs := make([]string, 0, 3)
+	alarmNames := make([]string, 0, 3)
+	alarmStatuses := make([]api.Status, 0, 3)
 	for range 3 {
 		createAlarm, err := raCli.CreateAlarm(ctx, &api.CreateAlarmRequest{
 			Alarm: random.Alarm("api-alarm", uuid.NewString(), createRule.GetId()),

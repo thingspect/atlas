@@ -19,9 +19,11 @@ func linkQuality(body []byte) ([]*decode.Point, error) {
 		return nil, decode.FormatErr("link quality", "bad identifier", body)
 	}
 
+	msgs := make([]*decode.Point, 0, 5)
+
 	// Parse protocol and count.
 	proto := int32(body[0] >> 4)
-	msgs := []*decode.Point{{Attr: "proto", Value: proto}}
+	msgs = append(msgs, &decode.Point{Attr: "proto", Value: proto})
 
 	count := int32(body[0] & clearProto)
 	msgs = append(msgs, &decode.Point{Attr: "count", Value: count})

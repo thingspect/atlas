@@ -94,7 +94,7 @@ func TestList(t *testing.T) {
 		t.Logf("createDev, err: %+v, %v", createDev, err)
 		require.NoError(t, err)
 
-		alerts := []*api.Alert{}
+		alerts := make([]*api.Alert, 0, 5)
 
 		for range 5 {
 			alert := random.Alert("dao-alert", createOrg.GetId())

@@ -245,10 +245,10 @@ func TestList(t *testing.T) {
 	ctx, cancel := context.WithTimeout(t.Context(), testTimeout)
 	defer cancel()
 
-	orgIDs := []string{}
-	orgNames := []string{}
-	orgEmails := []string{}
-	orgTSes := []time.Time{}
+	orgIDs := make([]string, 0, 3)
+	orgNames := make([]string, 0, 3)
+	orgEmails := make([]string, 0, 3)
+	orgTSes := make([]time.Time, 0, 3)
 	for range 3 {
 		createOrg, err := globalOrgDAO.Create(ctx, random.Org("dao-org"))
 		t.Logf("createOrg, err: %+v, %v", createOrg, err)

@@ -359,9 +359,9 @@ func TestListKeys(t *testing.T) {
 	ctx, cancel := context.WithTimeout(t.Context(), testTimeout)
 	defer cancel()
 
-	keyIDs := []string{}
-	keyNames := []string{}
-	keyRoles := []api.Role{}
+	keyIDs := make([]string, 0, 3)
+	keyNames := make([]string, 0, 3)
+	keyRoles := make([]api.Role, 0, 3)
 	for range 3 {
 		key := random.Key("api-key", uuid.NewString())
 		key.Role = api.Role_BUILDER

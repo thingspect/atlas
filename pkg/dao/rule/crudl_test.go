@@ -309,10 +309,10 @@ func TestList(t *testing.T) {
 	t.Logf("createOrg, err: %+v, %v", createOrg, err)
 	require.NoError(t, err)
 
-	ruleIDs := []string{}
-	ruleNames := []string{}
-	ruleStatuses := []api.Status{}
-	ruleTSes := []time.Time{}
+	ruleIDs := make([]string, 0, 3)
+	ruleNames := make([]string, 0, 3)
+	ruleStatuses := make([]api.Status, 0, 3)
+	ruleTSes := make([]time.Time, 0, 3)
 	for range 3 {
 		createRule, err := globalRuleDAO.Create(ctx, random.Rule("dao-rule",
 			createOrg.GetId()))
@@ -431,9 +431,9 @@ func TestListByTags(t *testing.T) {
 	t.Logf("createOrg, err: %+v, %v", createOrg, err)
 	require.NoError(t, err)
 
-	ruleIDs := []string{}
-	ruleDeviceTags := []string{}
-	ruleAttrs := []string{}
+	ruleIDs := make([]string, 0, 3)
+	ruleDeviceTags := make([]string, 0, 3)
+	ruleAttrs := make([]string, 0, 3)
 	for range 3 {
 		rule := random.Rule("dao-rule", createOrg.GetId())
 		rule.Status = api.Status_ACTIVE
