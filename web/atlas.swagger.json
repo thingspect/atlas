@@ -429,10 +429,7 @@
                   "readOnly": true
                 }
               },
-              "title": "Device message to update.",
-              "required": [
-                "device"
-              ]
+              "title": "Device message to update."
             }
           },
           {
@@ -525,10 +522,7 @@
                   "readOnly": true
                 }
               },
-              "title": "Device message to update.",
-              "required": [
-                "device"
-              ]
+              "title": "Device message to update."
             }
           }
         ],
@@ -982,10 +976,7 @@
                   "readOnly": true
                 }
               },
-              "title": "Org message to update.",
-              "required": [
-                "org"
-              ]
+              "title": "Org message to update."
             }
           },
           {
@@ -1058,10 +1049,7 @@
                   "readOnly": true
                 }
               },
-              "title": "Org message to update.",
-              "required": [
-                "org"
-              ]
+              "title": "Org message to update."
             }
           }
         ],
@@ -1358,10 +1346,7 @@
                   "readOnly": true
                 }
               },
-              "title": "Alarm message to create.",
-              "required": [
-                "alarm"
-              ]
+              "title": "Alarm message to create."
             }
           }
         ],
@@ -1461,10 +1446,7 @@
                   "readOnly": true
                 }
               },
-              "title": "Alarm message to update.",
-              "required": [
-                "alarm"
-              ]
+              "title": "Alarm message to update."
             }
           },
           {
@@ -1569,10 +1551,7 @@
                   "readOnly": true
                 }
               },
-              "title": "Alarm message to update.",
-              "required": [
-                "alarm"
-              ]
+              "title": "Alarm message to update."
             }
           }
         ],
@@ -1720,10 +1699,7 @@
                   "readOnly": true
                 }
               },
-              "title": "Rule message to update.",
-              "required": [
-                "rule"
-              ]
+              "title": "Rule message to update."
             }
           },
           {
@@ -1809,10 +1785,7 @@
                   "readOnly": true
                 }
               },
-              "title": "Rule message to update.",
-              "required": [
-                "rule"
-              ]
+              "title": "Rule message to update."
             }
           }
         ],
@@ -2398,10 +2371,7 @@
                   "readOnly": true
                 }
               },
-              "title": "User message to update.",
-              "required": [
-                "user"
-              ]
+              "title": "User message to update."
             }
           },
           {
@@ -2498,10 +2468,7 @@
                   "readOnly": true
                 }
               },
-              "title": "User message to update.",
-              "required": [
-                "user"
-              ]
+              "title": "User message to update."
             }
           }
         ],
