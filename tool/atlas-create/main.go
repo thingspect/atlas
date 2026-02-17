@@ -7,6 +7,7 @@ import (
 	"flag"
 	"fmt"
 	"os"
+	"path/filepath"
 	"strings"
 	"time"
 
@@ -23,7 +24,7 @@ import (
 	"google.golang.org/grpc/encoding/gzip"
 )
 
-const usage = `Usage:
+const usage = `Usage of %[1]s:
 %[1]s uuid
 %[1]s uniqid
 %[1]s [options] org <org name> <admin email> <admin password>
@@ -40,7 +41,10 @@ func main() {
 	}
 
 	flag.Usage = func() {
-		_, err := fmt.Fprintf(flag.CommandLine.Output(), usage, os.Args[0])
+		p, err := os.Executable()
+		checkErr(err)
+
+		_, err = fmt.Fprintf(flag.CommandLine.Output(), usage, filepath.Base(p))
 		checkErr(err)
 
 		flag.PrintDefaults()

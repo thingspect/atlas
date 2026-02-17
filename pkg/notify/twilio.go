@@ -59,6 +59,7 @@ func (t *twilio) lookupCarrier(ctx context.Context, phone string) (
 
 	// Send request.
 	client := &http.Client{}
+	//nolint:gosec // Built from constants and configuration.
 	resp, err := client.Do(req)
 	if err != nil {
 		return nil, err
@@ -109,6 +110,7 @@ func (t *twilio) sendSMS(ctx context.Context, to, body string) error {
 
 	// Send request.
 	client := &http.Client{}
+	//nolint:gosec // Built from constants and configuration.
 	resp, err := client.Do(req)
 	if err != nil {
 		return err

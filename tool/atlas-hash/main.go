@@ -6,12 +6,13 @@ import (
 	"flag"
 	"fmt"
 	"os"
+	"path/filepath"
 
 	"github.com/thingspect/atlas/internal/atlas-api/auth"
 	"github.com/thingspect/atlas/internal/atlas-api/session"
 )
 
-const usage = `Usage:
+const usage = `Usage of %[1]s:
 %[1]s pass <password>
 %[1]s pwt <base64 key> <token>
 `
@@ -25,7 +26,10 @@ func main() {
 	}
 
 	flag.Usage = func() {
-		_, err := fmt.Fprintf(flag.CommandLine.Output(), usage, os.Args[0])
+		p, err := os.Executable()
+		checkErr(err)
+
+		_, err = fmt.Fprintf(flag.CommandLine.Output(), usage, filepath.Base(p))
 		checkErr(err)
 
 		flag.PrintDefaults()
