@@ -6,18 +6,17 @@ package auth
 // acceptable due to lookups only taking place when a password is created or
 // updated.
 //
-// Source (1/12/2021):
+// Source (3/6/2026):
 // https://github.com/danielmiessler/SecLists/tree/master/Passwords/Common-Credentials
 //
 // Created by:
-// sed '/^.\{0,9\}$/d' 10-million-password-list-top-100000.txt|tr '[:upper:]' \
+// sed '/^.\{0,9\}$/d' xato-net-10-million-passwords-100000.txt|tr '[:upper:]' \
 // '[:lower:]'|sort -u
 //
-// #nosec G101 // false positive for hardcoded credentials
+// #nosec G101 // False positive for hardcoded credentials.
 //
 //nolint:misspell // False positive for directly imported list.
 const weakPasswords = `
-..qlvvcvdeero
 0000000000
 000000000000
 0000000000d
@@ -113,8 +112,8 @@ const weakPasswords = `
 1234567812345678
 123456782000
 1234567887654321
-123456789*
 123456789.
+123456789*
 1234567890
 1234567890-
 12345678900
@@ -562,9 +561,9 @@ asdf123456
 asdfdsasdf
 asdfg12345
 asdfgh123456
+asdfghjkl;
 asdfghjkl1
 asdfghjkl123
-asdfghjkl;
 ashleigh69
 asshole123
 astalavista
@@ -1125,10 +1124,10 @@ gunslinger
 gunsnroses
 gxlmxbewym
 gy3yt2rgls
+h_froeschl7
 h1y4dua229
 h2tmc4g358
 h72sfibbnl
-h_froeschl7
 hakunamatata
 hallelujah
 hammerfall

@@ -17,7 +17,7 @@ const (
 	// WebTokenExp represents the lifetime of a web token in seconds.
 	WebTokenExp = 10 * 60
 
-	//#nosec G101 // false positive for hardcoded credentials
+	// #nosec G101 // False positive for hardcoded credentials.
 	errWebTokenExp consterr.Error = "crypto: token expired"
 )
 
