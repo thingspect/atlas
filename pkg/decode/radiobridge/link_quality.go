@@ -33,9 +33,11 @@ func linkQuality(body []byte) ([]*decode.Point, error) {
 
 	// Parse device RSSI and SNR.
 	msgs = append(msgs, &decode.Point{
+		// #nosec G115 // False positive for signed values.
 		Attr: "device_rssi", Value: int32(int8(body[3])),
 	})
 	msgs = append(msgs, &decode.Point{
+		// #nosec G115 // False positive for signed values.
 		Attr: "device_snr", Value: int32(int8(body[4])),
 	})
 
