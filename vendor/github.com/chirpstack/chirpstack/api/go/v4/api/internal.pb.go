@@ -35,7 +35,9 @@ type ApiKey struct {
 	IsAdmin bool `protobuf:"varint,3,opt,name=is_admin,json=isAdmin,proto3" json:"is_admin,omitempty"`
 	// Tenant ID.
 	// In case the API key is intended to manage resources under a single tenant.
-	TenantId      string `protobuf:"bytes,4,opt,name=tenant_id,json=tenantId,proto3" json:"tenant_id,omitempty"`
+	TenantId string `protobuf:"bytes,4,opt,name=tenant_id,json=tenantId,proto3" json:"tenant_id,omitempty"`
+	// Is read-only.
+	IsReadOnly    bool `protobuf:"varint,5,opt,name=is_read_only,json=isReadOnly,proto3" json:"is_read_only,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -96,6 +98,13 @@ func (x *ApiKey) GetTenantId() string {
 		return x.TenantId
 	}
 	return ""
+}
+
+func (x *ApiKey) GetIsReadOnly() bool {
+	if x != nil {
+		return x.IsReadOnly
+	}
+	return false
 }
 
 type CreateApiKeyRequest struct {
@@ -2113,12 +2122,14 @@ var File_api_internal_proto protoreflect.FileDescriptor
 
 const file_api_internal_proto_rawDesc = "" +
 	"\n" +
-	"\x12api/internal.proto\x12\x03api\x1a\x0eapi/user.proto\x1a\x13common/common.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"d\n" +
+	"\x12api/internal.proto\x12\x03api\x1a\x0eapi/user.proto\x1a\x13common/common.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\x86\x01\n" +
 	"\x06ApiKey\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12\x12\n" +
 	"\x04name\x18\x02 \x01(\tR\x04name\x12\x19\n" +
 	"\bis_admin\x18\x03 \x01(\bR\aisAdmin\x12\x1b\n" +
-	"\ttenant_id\x18\x04 \x01(\tR\btenantId\";\n" +
+	"\ttenant_id\x18\x04 \x01(\tR\btenantId\x12 \n" +
+	"\fis_read_only\x18\x05 \x01(\bR\n" +
+	"isReadOnly\";\n" +
 	"\x13CreateApiKeyRequest\x12$\n" +
 	"\aapi_key\x18\x01 \x01(\v2\v.api.ApiKeyR\x06apiKey\"<\n" +
 	"\x14CreateApiKeyResponse\x12\x0e\n" +
