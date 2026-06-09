@@ -84,9 +84,7 @@ func TestMain(m *testing.M) {
 	}
 
 	// Serve connections.
-	go func() {
-		a.Serve()
-	}()
+	go a.Serve()
 
 	// Set up database connection.
 	pg, err := dao.NewPgDB(cfg.PgRwURI)

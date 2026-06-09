@@ -7,6 +7,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/require"
+	"github.com/thingspect/atlas/pkg/test/random"
 	"github.com/thingspect/proto/go/api"
 	"github.com/thingspect/proto/go/common"
 )
@@ -61,8 +62,8 @@ func TestGenerate(t *testing.T) {
 			&common.DataPoint{}, nil, nil, `{{if`, "", "unclosed action",
 		},
 		{
-			&common.DataPoint{}, nil, nil, `{{template "aaa"}}`, "",
-			"no such template",
+			&common.DataPoint{}, nil, nil, `{{template "` + random.String(10) +
+				`"}}`, "", "no such template",
 		},
 	}
 

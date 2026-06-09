@@ -11,6 +11,7 @@ import (
 	"github.com/stretchr/testify/require"
 	"github.com/thingspect/atlas/internal/atlas-api/session"
 	"github.com/thingspect/atlas/pkg/dao"
+	"github.com/thingspect/atlas/pkg/decode/radiobridge"
 	"github.com/thingspect/atlas/pkg/queue"
 	"github.com/thingspect/atlas/pkg/test/matcher"
 	"github.com/thingspect/atlas/pkg/test/random"
@@ -32,7 +33,7 @@ func TestPublishDataPoints(t *testing.T) {
 
 		orgID := uuid.NewString()
 		point := &common.DataPoint{
-			UniqId: "api-point-" + random.String(16), Attr: "count",
+			UniqId: "api-point-" + random.String(16), Attr: radiobridge.AttrCount,
 			ValOneof: &common.DataPoint_IntVal{IntVal: 123},
 			Ts:       timestamppb.New(time.Now().Add(-15 * time.Minute)),
 		}
@@ -81,7 +82,7 @@ func TestPublishDataPoints(t *testing.T) {
 
 		orgID := uuid.NewString()
 		point := &common.DataPoint{
-			UniqId: "api-point-" + random.String(16), Attr: "count",
+			UniqId: "api-point-" + random.String(16), Attr: radiobridge.AttrCount,
 			ValOneof: &common.DataPoint_IntVal{IntVal: 123},
 		}
 
@@ -160,7 +161,7 @@ func TestPublishDataPoints(t *testing.T) {
 
 		orgID := uuid.NewString()
 		point := &common.DataPoint{
-			UniqId: "api-point-" + random.String(16), Attr: "count",
+			UniqId: "api-point-" + random.String(16), Attr: radiobridge.AttrCount,
 			ValOneof: &common.DataPoint_IntVal{IntVal: 123},
 			Ts:       timestamppb.New(time.Now().Add(-15 * time.Minute)),
 		}
@@ -192,7 +193,7 @@ func TestListDataPoints(t *testing.T) {
 		t.Parallel()
 
 		point := &common.DataPoint{
-			UniqId: "api-point-" + random.String(16), Attr: "count",
+			UniqId: "api-point-" + random.String(16), Attr: radiobridge.AttrCount,
 			ValOneof: &common.DataPoint_IntVal{IntVal: 123},
 			Ts:       timestamppb.Now(), TraceId: uuid.NewString(),
 		}
@@ -227,7 +228,7 @@ func TestListDataPoints(t *testing.T) {
 		t.Parallel()
 
 		point := &common.DataPoint{
-			UniqId: "api-point-" + random.String(16), Attr: "count",
+			UniqId: "api-point-" + random.String(16), Attr: radiobridge.AttrCount,
 			ValOneof: &common.DataPoint_IntVal{IntVal: 123},
 			Ts:       timestamppb.Now(), TraceId: uuid.NewString(),
 		}
@@ -344,7 +345,7 @@ func TestLatestDataPoints(t *testing.T) {
 		t.Parallel()
 
 		point := &common.DataPoint{
-			UniqId: "api-point-" + random.String(16), Attr: "count",
+			UniqId: "api-point-" + random.String(16), Attr: radiobridge.AttrCount,
 			ValOneof: &common.DataPoint_IntVal{IntVal: 123},
 			Ts:       timestamppb.Now(), TraceId: uuid.NewString(),
 		}
@@ -380,7 +381,7 @@ func TestLatestDataPoints(t *testing.T) {
 		t.Parallel()
 
 		point := &common.DataPoint{
-			UniqId: "api-point-" + random.String(16), Attr: "count",
+			UniqId: "api-point-" + random.String(16), Attr: radiobridge.AttrCount,
 			ValOneof: &common.DataPoint_IntVal{IntVal: 123},
 			Ts:       timestamppb.Now(), TraceId: uuid.NewString(),
 		}

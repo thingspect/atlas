@@ -24,12 +24,12 @@ func TestGatewayUp(t *testing.T) {
 		// Gateway Uplink.
 		{
 			&gw.UplinkFrame{}, []*decode.Point{
-				{Attr: "raw_gateway", Value: `{}`},
+				{Attr: AttrRaw, Value: `{}`},
 			}, "",
 		},
 		{
 			&gw.UplinkFrame{RxInfo: &gw.UplinkRxInfo{}}, []*decode.Point{
-				{Attr: "raw_gateway", Value: `{"rxInfo":{}}`},
+				{Attr: AttrRaw, Value: `{"rxInfo":{}}`},
 				{Attr: "channel", Value: int32(0)},
 			}, "",
 		},
@@ -43,7 +43,7 @@ func TestGatewayUp(t *testing.T) {
 					},
 				}, RxInfo: &gw.UplinkRxInfo{Rssi: -74, Snr: 7, Channel: 2},
 			}, []*decode.Point{
-				{Attr: "raw_gateway", Value: `{"txInfo":{"frequency":` +
+				{Attr: AttrRaw, Value: `{"txInfo":{"frequency":` +
 					`902700000,"modulation":{"lora":{"spreadingFactor":7}}},` +
 					`"rxInfo":{"rssi":-74,"snr":7,"channel":2}}`},
 				{Attr: "frequency", Value: int32(902700000)},
@@ -63,7 +63,7 @@ func TestGatewayUp(t *testing.T) {
 		t.Run(fmt.Sprintf("Can parse %+v", test), func(t *testing.T) {
 			t.Parallel()
 
-			bInp := []byte("aaa")
+			bInp := []byte{0x00}
 			if test.inp != nil {
 				var err error
 				bInp, err = proto.Marshal(test.inp)

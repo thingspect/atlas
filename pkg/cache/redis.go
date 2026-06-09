@@ -21,7 +21,8 @@ var _ Cacher[string] = &redisCache[string]{}
 // NewRedis builds and verifies a new Cacher and returns it and an error value.
 func NewRedis[V Cacheable](redisAddr string) (Cacher[V], error) {
 	client := redis.NewUniversalClient(&redis.UniversalOptions{
-		Addrs: []string{redisAddr},
+		Addrs:      []string{redisAddr},
+		MaxRetries: -1,
 	})
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)

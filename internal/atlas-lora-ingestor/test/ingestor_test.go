@@ -13,6 +13,7 @@ import (
 	"github.com/chirpstack/chirpstack/api/go/v4/integration"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	"github.com/thingspect/atlas/pkg/decode/chirpstack/gateway"
 	"github.com/thingspect/atlas/pkg/test/random"
 	"github.com/thingspect/atlas/proto/go/message"
 	"github.com/thingspect/proto/go/common"
@@ -35,7 +36,7 @@ func TestDecodeGateways(t *testing.T) {
 			}, []*message.ValidatorIn{
 				{
 					Point: &common.DataPoint{
-						UniqId: uniqID, Attr: "raw_gateway",
+						UniqId: uniqID, Attr: gateway.AttrRaw,
 						ValOneof: &common.DataPoint_StrVal{
 							StrVal: `{"rxInfo":{"rssi":-74}}`,
 						},
@@ -61,7 +62,7 @@ func TestDecodeGateways(t *testing.T) {
 			}, []*message.ValidatorIn{
 				{
 					Point: &common.DataPoint{
-						UniqId: uniqID, Attr: "raw_gateway",
+						UniqId: uniqID, Attr: gateway.AttrRaw,
 						ValOneof: &common.DataPoint_StrVal{
 							StrVal: `{"rxPacketsReceivedOk":2}`,
 						},
@@ -81,7 +82,7 @@ func TestDecodeGateways(t *testing.T) {
 			}, []*message.ValidatorIn{
 				{
 					Point: &common.DataPoint{
-						UniqId: uniqID, Attr: "raw_gateway",
+						UniqId: uniqID, Attr: gateway.AttrRaw,
 						ValOneof: &common.DataPoint_StrVal{
 							StrVal: `{"items":[{"status":"OK"}]}`,
 						},
@@ -101,7 +102,7 @@ func TestDecodeGateways(t *testing.T) {
 			[]*message.ValidatorIn{
 				{
 					Point: &common.DataPoint{
-						UniqId: uniqID, Attr: "raw_gateway",
+						UniqId: uniqID, Attr: gateway.AttrRaw,
 						ValOneof: &common.DataPoint_StrVal{
 							StrVal: `{"stdout":"U1RET1VU"}`,
 						},
@@ -121,7 +122,7 @@ func TestDecodeGateways(t *testing.T) {
 			}, []*message.ValidatorIn{
 				{
 					Point: &common.DataPoint{
-						UniqId: uniqID, Attr: "raw_gateway",
+						UniqId: uniqID, Attr: gateway.AttrRaw,
 						ValOneof: &common.DataPoint_StrVal{
 							StrVal: `{"state":"ONLINE"}`,
 						},

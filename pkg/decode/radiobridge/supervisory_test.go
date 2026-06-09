@@ -22,33 +22,33 @@ func TestSupervisory(t *testing.T) {
 	}{
 		// Supervisory.
 		{"1401080131", []*decode.Point{
-			{Attr: "proto", Value: int32(1)},
-			{Attr: "count", Value: int32(4)},
-			{Attr: "tamper", Value: false},
+			{Attr: attrProto, Value: int32(1)},
+			{Attr: AttrCount, Value: int32(4)},
+			{Attr: attrTamper, Value: false},
 			{Attr: "battery_v", Value: 3.1},
 		}, ""},
 		{"1401170127", []*decode.Point{
-			{Attr: "proto", Value: int32(1)},
-			{Attr: "count", Value: int32(4)},
+			{Attr: attrProto, Value: int32(1)},
+			{Attr: AttrCount, Value: int32(4)},
 			{Attr: "error", Value: "radio_comm"},
 			{Attr: "error", Value: "battery_low"},
 			{Attr: "error", Value: "last_downlink"},
 			{Attr: "error", Value: "tamper_since_reset"},
-			{Attr: "tamper", Value: true},
+			{Attr: attrTamper, Value: true},
 			{Attr: "battery_v", Value: 2.7},
 		}, ""},
 		// Supervisory event count.
 		{"1701080130ffffffff1234", []*decode.Point{
-			{Attr: "proto", Value: int32(1)},
-			{Attr: "count", Value: int32(7)},
-			{Attr: "tamper", Value: false},
+			{Attr: attrProto, Value: int32(1)},
+			{Attr: AttrCount, Value: int32(7)},
+			{Attr: attrTamper, Value: false},
 			{Attr: "battery_v", Value: float64(3)},
 			{Attr: "total_count", Value: int32(4660)},
 		}, ""},
 		{"1401080132000000000002", []*decode.Point{
-			{Attr: "proto", Value: int32(1)},
-			{Attr: "count", Value: int32(4)},
-			{Attr: "tamper", Value: false},
+			{Attr: attrProto, Value: int32(1)},
+			{Attr: AttrCount, Value: int32(4)},
+			{Attr: attrTamper, Value: false},
 			{Attr: "battery_v", Value: 3.2},
 			{Attr: "total_count", Value: int32(2)},
 		}, ""},
@@ -58,14 +58,14 @@ func TestSupervisory(t *testing.T) {
 		{"1402080131", nil, "supervisory format bad identifier: 1402080131"},
 		// Supervisory bad error bitmap.
 		{"1401400131", []*decode.Point{
-			{Attr: "proto", Value: int32(1)},
-			{Attr: "count", Value: int32(4)},
+			{Attr: attrProto, Value: int32(1)},
+			{Attr: AttrCount, Value: int32(4)},
 		}, "supervisory format bad error bitmap: 1401400131"},
 		// Supervisory event count unused trailing bytes.
 		{"1701080130ffffffff1234ff", []*decode.Point{
-			{Attr: "proto", Value: int32(1)},
-			{Attr: "count", Value: int32(7)},
-			{Attr: "tamper", Value: false},
+			{Attr: attrProto, Value: int32(1)},
+			{Attr: AttrCount, Value: int32(7)},
+			{Attr: attrTamper, Value: false},
 			{Attr: "battery_v", Value: float64(3)},
 			{Attr: "total_count", Value: int32(4660)},
 		}, "supervisory format unused trailing bytes: " +

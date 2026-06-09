@@ -35,7 +35,7 @@ func Door(body []byte) ([]*decode.Point, error) {
 
 	// Parse count.
 	count := int32(body[0] & clearProto)
-	msgs = append(msgs, &decode.Point{Attr: "count", Value: count})
+	msgs = append(msgs, &decode.Point{Attr: AttrCount, Value: count})
 
 	// Parse open status.
 	msgs = append(msgs, &decode.Point{Attr: "open", Value: body[2] == 0x01})

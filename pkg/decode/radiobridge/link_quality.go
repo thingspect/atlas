@@ -23,10 +23,10 @@ func linkQuality(body []byte) ([]*decode.Point, error) {
 
 	// Parse protocol and count.
 	proto := int32(body[0] >> 4)
-	msgs = append(msgs, &decode.Point{Attr: "proto", Value: proto})
+	msgs = append(msgs, &decode.Point{Attr: attrProto, Value: proto})
 
 	count := int32(body[0] & clearProto)
-	msgs = append(msgs, &decode.Point{Attr: "count", Value: count})
+	msgs = append(msgs, &decode.Point{Attr: AttrCount, Value: count})
 
 	// Parse sub-band.
 	msgs = append(msgs, &decode.Point{Attr: "sub_band", Value: int32(body[2])})

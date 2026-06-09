@@ -27,18 +27,14 @@ install:
 	-ldflags="-w" ./$${x}; done
 
 lint:
-	go install honnef.co/go/tools/cmd/staticcheck@latest
-# staticcheck defaults are all,-ST1000,-ST1003,-ST1016,-ST1020,-ST1021,-ST1022
-	staticcheck -checks all ./...
+	go install golang.org/x/vuln/cmd/govulncheck@latest
+	govulncheck -test ./...
 
 	go install github.com/golangci/golangci-lint/v2/cmd/golangci-lint@latest
 	golangci-lint run -E bidichk,copyloopvar,durationcheck,err113,errname \
 	-E forcetypeassert,funcorder,godot,gosec,intrange,modernize,nlreturn \
 	-E perfsprint,prealloc,protogetter,testifylint,unconvert,unparam \
 	-E usestdlibvars,usetesting
-
-	go install golang.org/x/vuln/cmd/govulncheck@latest
-	govulncheck -test ./...
 
 init_db:
 	echo FLUSHALL|nc -w 2 $(TEST_REDIS_HOST) 6379

@@ -28,25 +28,25 @@ func TestParse(t *testing.T) {
 		// Gateway.
 		{
 			"up", "",
-			[]*decode.Point{{Attr: "raw_gateway", Value: `{}`}},
+			[]*decode.Point{{Attr: AttrRaw, Value: `{}`}},
 			nil,
 		},
 		{
 			"stats", "",
-			[]*decode.Point{{Attr: "raw_gateway", Value: `{}`}},
+			[]*decode.Point{{Attr: AttrRaw, Value: `{}`}},
 			nil,
 		},
 		{
-			"ack", "", []*decode.Point{{Attr: "raw_gateway", Value: `{}`}}, nil,
+			"ack", "", []*decode.Point{{Attr: AttrRaw, Value: `{}`}}, nil,
 		},
 		{
 			"exec", "",
-			[]*decode.Point{{Attr: "raw_gateway", Value: `{}`}},
+			[]*decode.Point{{Attr: AttrRaw, Value: `{}`}},
 			nil,
 		},
 		{
 			"conn", "", []*decode.Point{
-				{Attr: "raw_gateway", Value: `{}`},
+				{Attr: AttrRaw, Value: `{}`},
 				{Attr: "conn", Value: "OFFLINE"},
 			}, nil,
 		},

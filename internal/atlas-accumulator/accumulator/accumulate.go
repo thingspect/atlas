@@ -28,7 +28,8 @@ func (acc *Accumulator) accumulateMessages() {
 			msg.Ack()
 
 			if !bytes.Equal([]byte{queue.Prime}, msg.Payload()) {
-				metric.Incr("error", map[string]string{"func": "unmarshal"})
+				metric.Incr("error",
+					map[string]string{metric.TagFunc: "unmarshal"})
 				alog.Errorf("accumulateMessages proto.Unmarshal vOut, err: "+
 					"%+v, %v", vOut, err)
 			}
@@ -56,7 +57,7 @@ func (acc *Accumulator) accumulateMessages() {
 		}
 		if errors.Is(err, dao.ErrInvalidFormat) {
 			msg.Ack()
-			metric.Incr("error", map[string]string{"func": "create"})
+			metric.Incr("error", map[string]string{metric.TagFunc: "create"})
 			logger.Errorf("accumulateMessages invalid acc.dpDAO.Create: %v",
 				err)
 
@@ -64,7 +65,7 @@ func (acc *Accumulator) accumulateMessages() {
 		}
 		if err != nil {
 			msg.Requeue()
-			metric.Incr("error", map[string]string{"func": "create"})
+			metric.Incr("error", map[string]string{metric.TagFunc: "create"})
 			logger.Errorf("accumulateMessages requeue acc.dpDAO.Create: %v",
 				err)
 

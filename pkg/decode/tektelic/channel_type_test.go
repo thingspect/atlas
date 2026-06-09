@@ -71,24 +71,24 @@ func TestChanTempC(t *testing.T) {
 	}{
 		// Temperature.
 		{"0367000a", []*decode.Point{
-			{Attr: "temp_c", Value: 1.0},
-			{Attr: "temp_f", Value: 33.8},
+			{Attr: decode.AttrTempC, Value: 1.0},
+			{Attr: decode.AttrTempF, Value: 33.8},
 		}, []byte{}, ""},
 		{"036700ca", []*decode.Point{
-			{Attr: "temp_c", Value: 20.2},
-			{Attr: "temp_f", Value: 68.4},
+			{Attr: decode.AttrTempC, Value: 20.2},
+			{Attr: decode.AttrTempF, Value: 68.4},
 		}, []byte{}, ""},
 		{"0367fff0", []*decode.Point{
-			{Attr: "temp_c", Value: -1.6},
-			{Attr: "temp_f", Value: 29.1},
+			{Attr: decode.AttrTempC, Value: -1.6},
+			{Attr: decode.AttrTempF, Value: 29.1},
 		}, []byte{}, ""},
 		{"036700c4", []*decode.Point{
-			{Attr: "temp_c", Value: 19.6},
-			{Attr: "temp_f", Value: 67.3},
+			{Attr: decode.AttrTempC, Value: 19.6},
+			{Attr: decode.AttrTempF, Value: 67.3},
 		}, []byte{}, ""},
 		{"036700c404687f", []*decode.Point{
-			{Attr: "temp_c", Value: 19.6},
-			{Attr: "temp_f", Value: 67.3},
+			{Attr: decode.AttrTempC, Value: 19.6},
+			{Attr: decode.AttrTempF, Value: 67.3},
 		}, []byte{0x04, 0x68, 0x7f}, ""},
 		// Temperature bad length.
 		{"03", nil, nil, "chanTempC format bad length: 03"},
@@ -130,13 +130,13 @@ func TestChanHumidity(t *testing.T) {
 	}{
 		// Humidity.
 		{"046814", []*decode.Point{
-			{Attr: "humidity_pct", Value: 10.0},
+			{Attr: decode.AttrHumPct, Value: 10.0},
 		}, []byte{}, ""},
 		{"04687f", []*decode.Point{
-			{Attr: "humidity_pct", Value: 63.5},
+			{Attr: decode.AttrHumPct, Value: 63.5},
 		}, []byte{}, ""},
 		{"04687f00ff0138", []*decode.Point{
-			{Attr: "humidity_pct", Value: 63.5},
+			{Attr: decode.AttrHumPct, Value: 63.5},
 		}, []byte{0x00, 0xff, 0x01, 0x38}, ""},
 		// Humidity bad length.
 		{"04", nil, nil, "chanHumidity format bad length: 04"},

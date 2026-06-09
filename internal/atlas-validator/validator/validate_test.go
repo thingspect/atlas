@@ -11,6 +11,8 @@ import (
 	"github.com/stretchr/testify/require"
 	"github.com/thingspect/atlas/pkg/consterr"
 	"github.com/thingspect/atlas/pkg/dao"
+	"github.com/thingspect/atlas/pkg/decode"
+	"github.com/thingspect/atlas/pkg/decode/radiobridge"
 	"github.com/thingspect/atlas/pkg/queue"
 	"github.com/thingspect/atlas/pkg/test/random"
 	"github.com/thingspect/atlas/proto/go/message"
@@ -41,13 +43,13 @@ func TestValidateMessages(t *testing.T) {
 		{
 			&message.ValidatorIn{
 				Point: &common.DataPoint{
-					UniqId: dev.GetUniqId(), Attr: "count",
+					UniqId: dev.GetUniqId(), Attr: radiobridge.AttrCount,
 					ValOneof: &common.DataPoint_IntVal{IntVal: 123}, Ts: now,
 					Token: dev.GetToken(), TraceId: traceID,
 				}, OrgId: dev.GetOrgId(),
 			}, &message.ValidatorOut{
 				Point: &common.DataPoint{
-					UniqId: dev.GetUniqId(), Attr: "count",
+					UniqId: dev.GetUniqId(), Attr: radiobridge.AttrCount,
 					ValOneof: &common.DataPoint_IntVal{IntVal: 123}, Ts: now,
 					Token: dev.GetToken(), TraceId: traceID,
 				}, Device: dev,
@@ -56,13 +58,13 @@ func TestValidateMessages(t *testing.T) {
 		{
 			&message.ValidatorIn{
 				Point: &common.DataPoint{
-					UniqId: dev.GetUniqId(), Attr: "temp_c",
+					UniqId: dev.GetUniqId(), Attr: decode.AttrTempC,
 					ValOneof: &common.DataPoint_Fl64Val{Fl64Val: 9.3}, Ts: now,
 					Token: dev.GetToken(), TraceId: traceID,
 				}, OrgId: dev.GetOrgId(),
 			}, &message.ValidatorOut{
 				Point: &common.DataPoint{
-					UniqId: dev.GetUniqId(), Attr: "temp_c",
+					UniqId: dev.GetUniqId(), Attr: decode.AttrTempC,
 					ValOneof: &common.DataPoint_Fl64Val{Fl64Val: 9.3}, Ts: now,
 					Token: dev.GetToken(), TraceId: traceID,
 				}, Device: dev,

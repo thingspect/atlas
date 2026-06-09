@@ -22,21 +22,21 @@ func TestCO(t *testing.T) {
 	}{
 		// CO.
 		{"020a3a10e80000", []*decode.Point{
-			{Attr: "temp_c", Value: 26.2},
-			{Attr: "temp_f", Value: 79.1},
-			{Attr: "humidity_pct", Value: 43.28},
+			{Attr: decode.AttrTempC, Value: 26.2},
+			{Attr: decode.AttrTempF, Value: 79.1},
+			{Attr: decode.AttrHumPct, Value: 43.28},
 			{Attr: "co_ppm", Value: int32(0)},
 		}, ""},
 		{"020a1810e70000", []*decode.Point{
-			{Attr: "temp_c", Value: 25.8},
-			{Attr: "temp_f", Value: 78.5},
-			{Attr: "humidity_pct", Value: 43.27},
+			{Attr: decode.AttrTempC, Value: 25.8},
+			{Attr: decode.AttrTempF, Value: 78.5},
+			{Attr: decode.AttrHumPct, Value: 43.27},
 			{Attr: "co_ppm", Value: int32(0)},
 		}, ""},
 		{"020a1810e79999", []*decode.Point{
-			{Attr: "temp_c", Value: 25.8},
-			{Attr: "temp_f", Value: 78.5},
-			{Attr: "humidity_pct", Value: 43.27},
+			{Attr: decode.AttrTempC, Value: 25.8},
+			{Attr: decode.AttrTempF, Value: 78.5},
+			{Attr: decode.AttrHumPct, Value: 43.27},
 			{Attr: "co_ppm", Value: int32(39321)},
 		}, ""},
 		// CO bad length.
@@ -44,9 +44,9 @@ func TestCO(t *testing.T) {
 		{"0001020304050607", nil, "ls11x format bad length: 0001020304050607"},
 		// CO bad identifier.
 		{"030a3a10e80000", []*decode.Point{
-			{Attr: "temp_c", Value: 26.2},
-			{Attr: "temp_f", Value: 79.1},
-			{Attr: "humidity_pct", Value: 43.28},
+			{Attr: decode.AttrTempC, Value: 26.2},
+			{Attr: decode.AttrTempF, Value: 79.1},
+			{Attr: decode.AttrHumPct, Value: 43.28},
 		}, "co format bad identifier: 030a3a10e80000"},
 	}
 

@@ -43,7 +43,7 @@ func Set(stat string, value int, tags map[string]string) {
 	getDefault().Set(stat, value, tags)
 }
 
-// Timing submits a statsd timing metric in milliseconds.
+// Timing submits a statsd timing metric.
 func Timing(stat string, value time.Duration, tags map[string]string) {
 	getDefault().Timing(stat, value, tags)
 }

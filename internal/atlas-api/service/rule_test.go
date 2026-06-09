@@ -217,27 +217,28 @@ func TestUpdateRule(t *testing.T) {
 	t.Run("Partial update rule by valid rule", func(t *testing.T) {
 		t.Parallel()
 
-		rule := random.Rule("api-rule", uuid.NewString())
-		retRule, _ := proto.Clone(rule).(*api.Rule)
+		upRule := random.Rule("api-rule", uuid.NewString())
+		retRule, _ := proto.Clone(upRule).(*api.Rule)
 		part := &api.Rule{
-			Id: rule.GetId(), Status: api.Status_ACTIVE, Expr: `true`,
+			Id: upRule.GetId(), Status: api.Status_ACTIVE, Expr: rule.ExprTrue,
 		}
 		merged := &api.Rule{
-			Id: rule.GetId(), OrgId: rule.GetOrgId(), Name: rule.GetName(),
-			Status: part.GetStatus(), DeviceTag: rule.GetDeviceTag(), Attr: rule.GetAttr(),
+			Id: upRule.GetId(), OrgId: upRule.GetOrgId(),
+			Name: upRule.GetName(), Status: part.GetStatus(),
+			DeviceTag: upRule.GetDeviceTag(), Attr: upRule.GetAttr(),
 			Expr: part.GetExpr(),
 		}
 		retMerged, _ := proto.Clone(merged).(*api.Rule)
 
 		ruler := NewMockRuler(gomock.NewController(t))
-		ruler.EXPECT().Read(gomock.Any(), rule.GetId(), rule.GetOrgId()).Return(retRule,
-			nil).Times(1)
+		ruler.EXPECT().Read(gomock.Any(), upRule.GetId(), upRule.GetOrgId()).
+			Return(retRule, nil).Times(1)
 		ruler.EXPECT().Update(gomock.Any(), matcher.NewProtoMatcher(merged)).
 			Return(retMerged, nil).Times(1)
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
 			t.Context(), &session.Session{
-				OrgID: rule.GetOrgId(), Role: api.Role_ADMIN,
+				OrgID: upRule.GetOrgId(), Role: api.Role_ADMIN,
 			}), testTimeout)
 		defer cancel()
 
@@ -661,7 +662,7 @@ func TestTestRule(t *testing.T) {
 			err         string
 		}{
 			{
-				&common.DataPoint{}, `true`, true, "",
+				&common.DataPoint{}, rule.ExprTrue, true, "",
 			},
 			{
 				&common.DataPoint{}, `10 > 15`, false, "",

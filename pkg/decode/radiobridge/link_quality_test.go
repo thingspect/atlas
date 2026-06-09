@@ -22,15 +22,15 @@ func TestLinkQuality(t *testing.T) {
 	}{
 		// Link Quality.
 		{"1dfb010000", []*decode.Point{
-			{Attr: "proto", Value: int32(1)},
-			{Attr: "count", Value: int32(13)},
+			{Attr: attrProto, Value: int32(1)},
+			{Attr: AttrCount, Value: int32(13)},
 			{Attr: "sub_band", Value: int32(1)},
 			{Attr: "device_rssi", Value: int32(0)},
 			{Attr: "device_snr", Value: int32(0)},
 		}, ""},
 		{"1dfb01ca0b", []*decode.Point{
-			{Attr: "proto", Value: int32(1)},
-			{Attr: "count", Value: int32(13)},
+			{Attr: attrProto, Value: int32(1)},
+			{Attr: AttrCount, Value: int32(13)},
 			{Attr: "sub_band", Value: int32(1)},
 			{Attr: "device_rssi", Value: int32(-54)},
 			{Attr: "device_snr", Value: int32(11)},

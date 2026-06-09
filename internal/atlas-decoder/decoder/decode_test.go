@@ -11,6 +11,8 @@ import (
 	"github.com/stretchr/testify/require"
 	"github.com/thingspect/atlas/pkg/consterr"
 	"github.com/thingspect/atlas/pkg/dao"
+	"github.com/thingspect/atlas/pkg/decode"
+	"github.com/thingspect/atlas/pkg/decode/radiobridge"
 	"github.com/thingspect/atlas/pkg/decode/registry"
 	"github.com/thingspect/atlas/pkg/queue"
 	"github.com/thingspect/atlas/pkg/test/random"
@@ -43,7 +45,7 @@ func TestDecodeMessages(t *testing.T) {
 			}, api.Decoder_RADIO_BRIDGE_DOOR_V1, []*message.ValidatorIn{
 				{
 					Point: &common.DataPoint{
-						UniqId: uniqID, Attr: "count",
+						UniqId: uniqID, Attr: radiobridge.AttrCount,
 						ValOneof: &common.DataPoint_IntVal{IntVal: 9}, Ts: now,
 						TraceId: traceID.String(),
 					}, SkipToken: true,
@@ -63,7 +65,7 @@ func TestDecodeMessages(t *testing.T) {
 			}, api.Decoder_RADIO_BRIDGE_DOOR_V2, []*message.ValidatorIn{
 				{
 					Point: &common.DataPoint{
-						UniqId: uniqID, Attr: "count",
+						UniqId: uniqID, Attr: radiobridge.AttrCount,
 						ValOneof: &common.DataPoint_IntVal{IntVal: 10}, Ts: now,
 						TraceId: traceID.String(),
 					}, SkipToken: true,
@@ -84,21 +86,21 @@ func TestDecodeMessages(t *testing.T) {
 			}, api.Decoder_GLOBALSAT_CO2, []*message.ValidatorIn{
 				{
 					Point: &common.DataPoint{
-						UniqId: uniqID, Attr: "temp_c",
+						UniqId: uniqID, Attr: decode.AttrTempC,
 						ValOneof: &common.DataPoint_Fl64Val{Fl64Val: 24},
 						Ts:       now, TraceId: traceID.String(),
 					}, SkipToken: true,
 				},
 				{
 					Point: &common.DataPoint{
-						UniqId: uniqID, Attr: "temp_f",
+						UniqId: uniqID, Attr: decode.AttrTempF,
 						ValOneof: &common.DataPoint_Fl64Val{Fl64Val: 75.2},
 						Ts:       now, TraceId: traceID.String(),
 					}, SkipToken: true,
 				},
 				{
 					Point: &common.DataPoint{
-						UniqId: uniqID, Attr: "humidity_pct",
+						UniqId: uniqID, Attr: decode.AttrHumPct,
 						ValOneof: &common.DataPoint_Fl64Val{Fl64Val: 50.13},
 						Ts:       now, TraceId: traceID.String(),
 					}, SkipToken: true,
@@ -121,21 +123,21 @@ func TestDecodeMessages(t *testing.T) {
 			}, api.Decoder_TEKTELIC_HOME, []*message.ValidatorIn{
 				{
 					Point: &common.DataPoint{
-						UniqId: uniqID, Attr: "temp_c",
+						UniqId: uniqID, Attr: decode.AttrTempC,
 						ValOneof: &common.DataPoint_Fl64Val{Fl64Val: 19.6},
 						Ts:       now, TraceId: traceID.String(),
 					}, SkipToken: true,
 				},
 				{
 					Point: &common.DataPoint{
-						UniqId: uniqID, Attr: "temp_f",
+						UniqId: uniqID, Attr: decode.AttrTempF,
 						ValOneof: &common.DataPoint_Fl64Val{Fl64Val: 67.3},
 						Ts:       now, TraceId: traceID.String(),
 					}, SkipToken: true,
 				},
 				{
 					Point: &common.DataPoint{
-						UniqId: uniqID, Attr: "humidity_pct",
+						UniqId: uniqID, Attr: decode.AttrHumPct,
 						ValOneof: &common.DataPoint_Fl64Val{Fl64Val: 63.5},
 						Ts:       now, TraceId: traceID.String(),
 					}, SkipToken: true,

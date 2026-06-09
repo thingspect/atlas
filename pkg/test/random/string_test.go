@@ -14,12 +14,11 @@ func TestBytes(t *testing.T) {
 	t.Parallel()
 
 	for i := 5; i < 15; i++ {
-		//nolint:gosec // Safe conversion for limited values.
 		t.Run(fmt.Sprintf("Can generate %v", i), func(t *testing.T) {
 			t.Parallel()
 
-			b1 := Bytes(uint(i))
-			b2 := Bytes(uint(i))
+			b1 := Bytes(i)
+			b2 := Bytes(i)
 			t.Logf("b1, b2: %x, %x", b1, b2)
 
 			require.Len(t, b1, i)
@@ -33,12 +32,11 @@ func TestString(t *testing.T) {
 	t.Parallel()
 
 	for i := 5; i < 15; i++ {
-		//nolint:gosec // Safe conversion for limited values.
 		t.Run(fmt.Sprintf("Can generate %v", i), func(t *testing.T) {
 			t.Parallel()
 
-			s1 := String(uint(i))
-			s2 := String(uint(i))
+			s1 := String(i)
+			s2 := String(i)
 			t.Logf("s1, s2: %v, %v", s1, s2)
 
 			require.Len(t, s1, i)

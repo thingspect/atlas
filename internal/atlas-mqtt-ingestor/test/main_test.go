@@ -51,9 +51,7 @@ func TestMain(m *testing.M) {
 	}
 
 	// Serve connections.
-	go func() {
-		ing.Serve(cfg.Concurrency)
-	}()
+	go ing.Serve(cfg.Concurrency)
 
 	// Set up NSQ subscription to verify published messages. Use a unique
 	// channel for each test run. This prevents failed tests from interfering

@@ -11,7 +11,10 @@ import (
 	"github.com/stretchr/testify/require"
 	"github.com/thingspect/atlas/pkg/consterr"
 	"github.com/thingspect/atlas/pkg/dao"
+	"github.com/thingspect/atlas/pkg/decode"
+	"github.com/thingspect/atlas/pkg/decode/radiobridge"
 	"github.com/thingspect/atlas/pkg/queue"
+	"github.com/thingspect/atlas/pkg/rule"
 	"github.com/thingspect/atlas/pkg/test/matcher"
 	"github.com/thingspect/atlas/pkg/test/random"
 	"github.com/thingspect/atlas/proto/go/message"
@@ -40,39 +43,39 @@ func TestEventMessages(t *testing.T) {
 	}{
 		{
 			&message.ValidatorOut{Point: &common.DataPoint{
-				Attr: "count", Ts: now,
+				Attr: radiobridge.AttrCount, Ts: now,
 				TraceId: traceID,
 			}},
-			[]*api.Rule{{Id: ruleID, Expr: `true`}},
+			[]*api.Rule{{Id: ruleID, Expr: rule.ExprTrue}},
 			1,
 			[]*message.EventerOut{{Point: &common.DataPoint{
-				Attr: "count",
+				Attr: radiobridge.AttrCount,
 				Ts:   now, TraceId: traceID,
 			}, Rule: &api.Rule{
 				Id:   ruleID,
-				Expr: `true`,
+				Expr: rule.ExprTrue,
 			}}},
 		},
 		{&message.ValidatorOut{Point: &common.DataPoint{
-			Attr: "temp_c", Ts: now,
+			Attr: decode.AttrTempC, Ts: now,
 			TraceId: traceID,
 		}}, []*api.Rule{
-			{Id: ruleID, Expr: `true`},
-			{Id: ruleID, Expr: `true`},
+			{Id: ruleID, Expr: rule.ExprTrue},
+			{Id: ruleID, Expr: rule.ExprTrue},
 		}, 2, []*message.EventerOut{
 			{
 				Point: &common.DataPoint{
-					Attr: "temp_c",
+					Attr: decode.AttrTempC,
 					Ts:   now, TraceId: traceID,
 				},
-				Rule: &api.Rule{Id: ruleID, Expr: `true`},
+				Rule: &api.Rule{Id: ruleID, Expr: rule.ExprTrue},
 			},
 			{
 				Point: &common.DataPoint{
-					Attr: "temp_c",
+					Attr: decode.AttrTempC,
 					Ts:   now, TraceId: traceID,
 				},
-				Rule: &api.Rule{Id: ruleID, Expr: `true`},
+				Rule: &api.Rule{Id: ruleID, Expr: rule.ExprTrue},
 			},
 		}},
 		{&message.ValidatorOut{Point: &common.DataPoint{
@@ -84,7 +87,7 @@ func TestEventMessages(t *testing.T) {
 				Attr: "leak", Ts: now,
 				TraceId: traceID,
 			}},
-			[]*api.Rule{{Id: ruleID, Expr: `false`}},
+			[]*api.Rule{{Id: ruleID, Expr: rule.ExprFalse}},
 			0,
 			nil,
 		},
@@ -223,7 +226,7 @@ func TestEventMessagesError(t *testing.T) {
 				Point:  &common.DataPoint{Ts: now},
 				Device: &api.Device{},
 			}, nil, 1,
-			[]*api.Rule{{Expr: `true`}},
+			[]*api.Rule{{Expr: rule.ExprTrue}},
 			dao.ErrAlreadyExists, 1,
 		},
 		// Eventer error.
@@ -232,7 +235,7 @@ func TestEventMessagesError(t *testing.T) {
 				Point:  &common.DataPoint{Ts: now},
 				Device: &api.Device{},
 			}, nil, 1,
-			[]*api.Rule{{Expr: `true`}},
+			[]*api.Rule{{Expr: rule.ExprTrue}},
 			errTestProc, 1,
 		},
 	}

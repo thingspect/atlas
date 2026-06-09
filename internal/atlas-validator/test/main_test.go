@@ -62,9 +62,7 @@ func TestMain(m *testing.M) {
 	}
 
 	// Serve connections.
-	go func() {
-		val.Serve(cfg.Concurrency)
-	}()
+	go val.Serve(cfg.Concurrency)
 
 	// Set up database connection.
 	pg, err := dao.NewPgDB(cfg.PgRwURI)

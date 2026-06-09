@@ -191,7 +191,7 @@ func TestUpdateRule(t *testing.T) {
 
 		// Update rule fields.
 		part := &api.Rule{Id: createRule.GetId(), Name: "api-rule-" +
-			random.String(10), Status: api.Status_DISABLED, Expr: `false`}
+			random.String(10), Status: api.Status_DISABLED, Expr: rule.ExprFalse}
 
 		updateRule, err := raCli.UpdateRule(ctx, &api.UpdateRuleRequest{
 			Rule: part, UpdateMask: &fieldmaskpb.FieldMask{
@@ -551,7 +551,7 @@ func TestTestRule(t *testing.T) {
 			{
 				&common.DataPoint{ValOneof: &common.DataPoint_IntVal{
 					IntVal: 40,
-				}}, `true`, true, "",
+				}}, rule.ExprTrue, true, "",
 			},
 			{
 				&common.DataPoint{ValOneof: &common.DataPoint_IntVal{

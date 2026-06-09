@@ -5,6 +5,9 @@ package metric
 
 import "time"
 
+// TagFunc is the function tag.
+const TagFunc = "func"
+
 // Metricer defines the methods provided by a Metric.
 type Metricer interface {
 	// Incr increments a statsd count metric by 1.

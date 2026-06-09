@@ -64,7 +64,7 @@ func TestDeviceUp(t *testing.T) {
 		{
 			&integration.UplinkEvent{
 				RxInfo: []*gw.UplinkRxInfo{
-					{GatewayId: "aaa", GwTime: tsNow, Rssi: -80, Snr: 1},
+					{GatewayId: "low", GwTime: tsNow, Rssi: -80, Snr: 1},
 					{GatewayId: gatewayID, GwTime: tsNow, Rssi: -74, Snr: 7},
 				}, TxInfo: &gw.UplinkTxInfo{Frequency: 902700000}, Adr: true,
 				Dr: 3, Data: bData, Confirmed: true, RegionConfigId: "us915_0",
@@ -72,7 +72,7 @@ func TestDeviceUp(t *testing.T) {
 			[]*decode.Point{
 				{Attr: "raw_device", Value: fmt.Sprintf(`{"adr":true,"dr":3,`+
 					`"confirmed":true,"data":"%s","rxInfo":[{"gatewayId":`+
-					`"aaa","gwTime":"%s","rssi":-80,"snr":1},{"gatewayId":`+
+					`"low","gwTime":"%s","rssi":-80,"snr":1},{"gatewayId":`+
 					`"%s","gwTime":"%s","rssi":-74,"snr":7}],"txInfo":{`+
 					`"frequency":902700000},"regionConfigId":"us915_0"}`,
 					b64Data, now.Format(time.RFC3339Nano), gatewayID,
@@ -104,7 +104,7 @@ func TestDeviceUp(t *testing.T) {
 		t.Run(fmt.Sprintf("Can parse %+v", test), func(t *testing.T) {
 			t.Parallel()
 
-			bInp := []byte("aaa")
+			bInp := []byte{0x00}
 			if test.inp != nil {
 				var err error
 				bInp, err = proto.Marshal(test.inp)

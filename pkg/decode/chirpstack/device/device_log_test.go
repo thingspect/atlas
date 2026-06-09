@@ -56,7 +56,7 @@ func TestDeviceError(t *testing.T) {
 		t.Run(fmt.Sprintf("Can parse %+v", test), func(t *testing.T) {
 			t.Parallel()
 
-			bInp := []byte("aaa")
+			bInp := []byte{0x00}
 			if test.inp != nil {
 				var err error
 				bInp, err = proto.Marshal(test.inp)

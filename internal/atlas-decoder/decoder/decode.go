@@ -31,7 +31,8 @@ func (dec *Decoder) decodeMessages() {
 			msg.Ack()
 
 			if !bytes.Equal([]byte{queue.Prime}, msg.Payload()) {
-				metric.Incr("error", map[string]string{"func": "unmarshal"})
+				metric.Incr("error",
+					map[string]string{metric.TagFunc: "unmarshal"})
 				alog.Errorf("decodeMessages proto.Unmarshal dIn, err: %+v, %v",
 					dIn, err)
 			}
@@ -61,7 +62,8 @@ func (dec *Decoder) decodeMessages() {
 		}
 		if err != nil {
 			msg.Requeue()
-			metric.Incr("error", map[string]string{"func": "readbyuniqid"})
+			metric.Incr("error",
+				map[string]string{metric.TagFunc: "readbyuniqid"})
 			logger.Errorf("decodeMessages dec.devDAO.ReadByUniqID: %v", err)
 
 			continue
@@ -73,7 +75,7 @@ func (dec *Decoder) decodeMessages() {
 		// valid points may be returned.
 		points, err := dec.reg.Decode(dev.GetDecoder(), dIn.GetData())
 		if err != nil {
-			metric.Incr("error", map[string]string{"func": "decode"})
+			metric.Incr("error", map[string]string{metric.TagFunc: "decode"})
 			logger.Errorf("decodeMessages dec.registry.Decode: %v", err)
 		}
 		metric.Incr("processed", nil)
@@ -87,7 +89,8 @@ func (dec *Decoder) decodeMessages() {
 
 			bVIn, err := proto.Marshal(vIn)
 			if err != nil {
-				metric.Incr("error", map[string]string{"func": "marshal"})
+				metric.Incr("error",
+					map[string]string{metric.TagFunc: "marshal"})
 				logger.Errorf("decodeMessages proto.Marshal: %v", err)
 
 				continue
@@ -95,7 +98,8 @@ func (dec *Decoder) decodeMessages() {
 
 			if err = dec.decQueue.Publish(dec.vInPubTopic,
 				bVIn); err != nil {
-				metric.Incr("error", map[string]string{"func": "publish"})
+				metric.Incr("error",
+					map[string]string{metric.TagFunc: "publish"})
 				logger.Errorf("decodeMessages ing.decoderQueue.Publish: %v",
 					err)
 
