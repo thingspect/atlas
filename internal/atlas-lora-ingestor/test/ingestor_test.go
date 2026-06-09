@@ -422,18 +422,12 @@ func TestDecodeGatewaysDevicesError(t *testing.T) {
 		inpTopic string
 		inpPayl  []byte
 	}{
-		// Bad topic.
-		{
-			"lora", nil,
-		},
+		// Bad topics.
+		{"lora", nil},
+		{"lora/us915_0/gateway/" + uniqID + "/command/down", nil},
 		// Bad payload.
-		{
-			"lora/us915_0/gateway/" + uniqID + "/event/up", []byte("ing-aaa"),
-		},
-		{
-			"lora/application/1/device/" + uniqID + "/event/up",
-			[]byte("ing-aaa"),
-		},
+		{"lora/us915_0/gateway/" + uniqID + "/event/up", []byte{0x00}},
+		{"lora/application/1/device/" + uniqID + "/event/up", []byte{0x00}},
 	}
 
 	for _, test := range tests {

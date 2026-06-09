@@ -37,8 +37,11 @@ func (ing *Ingestor) decodeGateways() {
 			topicParts[2] != "gateway" ||
 			(topicParts[4] != "event" && topicParts[4] != "state") {
 			msg.Ack()
-			metric.Incr("error", map[string]string{metric.TagFunc: "topic"})
-			logger.Errorf("decodeGateways unknown topic: %v", topic)
+
+			if !strings.Contains(topic, "/command/") {
+				metric.Incr("error", map[string]string{metric.TagFunc: "topic"})
+				logger.Errorf("decodeGateways unknown topic: %v", topic)
+			}
 
 			continue
 		}

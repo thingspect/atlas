@@ -6,7 +6,7 @@ import "github.com/thingspect/atlas/pkg/consterr"
 //go:generate mockgen -source queuer.go -destination mock_queuer.go -package queue
 
 // Prime is the single-byte payload used to prime a Queue.
-const Prime = 0x00
+const Prime = 0x07
 
 // ErrTimeout is returned when a Queue operation times out.
 const ErrTimeout consterr.Error = "queue: timed out"
