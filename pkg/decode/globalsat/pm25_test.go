@@ -22,21 +22,21 @@ func TestPM25(t *testing.T) {
 	}{
 		// PM25.
 		{"03096113950088", []*decode.Point{
-			{Attr: "temp_c", Value: float64(24)},
-			{Attr: "temp_f", Value: 75.2},
-			{Attr: "humidity_pct", Value: 50.13},
+			{Attr: decode.AttrTempC, Value: float64(24)},
+			{Attr: decode.AttrTempF, Value: 75.2},
+			{Attr: decode.AttrHumPct, Value: 50.13},
 			{Attr: "pm25_ugm3", Value: int32(136)},
 		}, ""},
 		{"03096113950000", []*decode.Point{
-			{Attr: "temp_c", Value: float64(24)},
-			{Attr: "temp_f", Value: 75.2},
-			{Attr: "humidity_pct", Value: 50.13},
+			{Attr: decode.AttrTempC, Value: float64(24)},
+			{Attr: decode.AttrTempF, Value: 75.2},
+			{Attr: decode.AttrHumPct, Value: 50.13},
 			{Attr: "pm25_ugm3", Value: int32(0)},
 		}, ""},
 		{"03096113959999", []*decode.Point{
-			{Attr: "temp_c", Value: float64(24)},
-			{Attr: "temp_f", Value: 75.2},
-			{Attr: "humidity_pct", Value: 50.13},
+			{Attr: decode.AttrTempC, Value: float64(24)},
+			{Attr: decode.AttrTempF, Value: 75.2},
+			{Attr: decode.AttrHumPct, Value: 50.13},
 			{Attr: "pm25_ugm3", Value: int32(39321)},
 		}, ""},
 		// PM25 bad length.
@@ -44,9 +44,9 @@ func TestPM25(t *testing.T) {
 		{"0001020304050607", nil, "ls11x format bad length: 0001020304050607"},
 		// PM25 bad identifier.
 		{"04096113950292", []*decode.Point{
-			{Attr: "temp_c", Value: float64(24)},
-			{Attr: "temp_f", Value: 75.2},
-			{Attr: "humidity_pct", Value: 50.13},
+			{Attr: decode.AttrTempC, Value: float64(24)},
+			{Attr: decode.AttrTempF, Value: 75.2},
+			{Attr: decode.AttrHumPct, Value: 50.13},
 		}, "pm25 format bad identifier: 04096113950292"},
 	}
 

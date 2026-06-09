@@ -18,6 +18,9 @@ import (
 func TestParseRXInfo(t *testing.T) {
 	t.Parallel()
 
+	key := random.String(10)
+	val := random.String(10)
+
 	// Gateway UplinkRxInfo payloads, see ParseRXInfo() for format description.
 	tests := []struct {
 		inp *gw.UplinkRxInfo
@@ -32,12 +35,12 @@ func TestParseRXInfo(t *testing.T) {
 		{
 			&gw.UplinkRxInfo{
 				Rssi: -74, Snr: 7, Channel: 2,
-				Metadata: map[string]string{"aaa": "bbb"},
+				Metadata: map[string]string{key: val},
 			}, []*decode.Point{
 				{Attr: "lora_rssi", Value: int32(-74)},
 				{Attr: "lora_snr", Value: float64(7)},
 				{Attr: "channel", Value: int32(2)},
-				{Attr: "aaa", Value: "bbb"},
+				{Attr: key, Value: val},
 			},
 		},
 		// Gateway UplinkRxInfo bad length.
@@ -61,6 +64,8 @@ func TestParseRXInfos(t *testing.T) {
 	t.Parallel()
 
 	gatewayID := random.String(16)
+	key := random.String(10)
+	val := random.String(10)
 
 	now := time.Now().UTC().Add(-15 * time.Minute)
 	tsNow := timestamppb.New(now)
@@ -83,10 +88,10 @@ func TestParseRXInfos(t *testing.T) {
 		},
 		{
 			[]*gw.UplinkRxInfo{
-				{GatewayId: "aaa", GwTime: tsNow, Rssi: -80, Snr: 1},
+				{GatewayId: "low", GwTime: tsNow, Rssi: -80, Snr: 1},
 				{
 					GatewayId: gatewayID, GwTime: tsNow, Rssi: -74, Snr: 7,
-					Metadata: map[string]string{"aaa": "bbb"},
+					Metadata: map[string]string{key: val},
 				},
 			}, tsNow, []*decode.Point{
 				{Attr: "gateway_id", Value: gatewayID},
@@ -97,7 +102,7 @@ func TestParseRXInfos(t *testing.T) {
 				{Attr: "lora_rssi", Value: int32(-74)},
 				{Attr: "lora_snr", Value: float64(7)},
 				{Attr: "channel", Value: int32(0)},
-				{Attr: "aaa", Value: "bbb"},
+				{Attr: key, Value: val},
 			},
 		},
 		{

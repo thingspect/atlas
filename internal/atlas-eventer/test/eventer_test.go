@@ -11,6 +11,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	"github.com/thingspect/atlas/pkg/rule"
 	"github.com/thingspect/atlas/pkg/test/random"
 	"github.com/thingspect/atlas/proto/go/message"
 	"github.com/thingspect/proto/go/api"
@@ -41,7 +42,7 @@ func TestEventMessages(t *testing.T) {
 	sRule.Status = api.Status_ACTIVE
 	sRule.DeviceTag = singleDev.GetTags()[0]
 	sRule.Attr = "ev-motion"
-	sRule.Expr = `true`
+	sRule.Expr = rule.ExprTrue
 	singleRule, err := globalRuleDAO.Create(ctx, sRule)
 	t.Logf("singleRule, err: %+v, %v", singleRule, err)
 	require.NoError(t, err)
@@ -56,7 +57,7 @@ func TestEventMessages(t *testing.T) {
 	dRule1.Status = api.Status_ACTIVE
 	dRule1.DeviceTag = doubleDev.GetTags()[0]
 	dRule1.Attr = "ev-temp"
-	dRule1.Expr = `true`
+	dRule1.Expr = rule.ExprTrue
 	doubleRule1, err := globalRuleDAO.Create(ctx, dRule1)
 	t.Logf("doubleRule1, err: %+v, %v", doubleRule1, err)
 	require.NoError(t, err)

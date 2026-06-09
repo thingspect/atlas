@@ -37,7 +37,7 @@ func (ing *Ingestor) decodeGateways() {
 			topicParts[2] != "gateway" ||
 			(topicParts[4] != "event" && topicParts[4] != "state") {
 			msg.Ack()
-			metric.Incr("error", map[string]string{"func": "topic"})
+			metric.Incr("error", map[string]string{metric.TagFunc: "topic"})
 			logger.Errorf("decodeGateways unknown topic: %v", topic)
 
 			continue
@@ -49,7 +49,7 @@ func (ing *Ingestor) decodeGateways() {
 		// valid points may be returned.
 		points, err := gateway.Parse(topicParts[5], msg.Payload())
 		if err != nil {
-			metric.Incr("error", map[string]string{"func": "decode"})
+			metric.Incr("error", map[string]string{metric.TagFunc: "decode"})
 			logger.Errorf("decodeGateways gateway.Gateway: %v", err)
 		}
 		metric.Incr("processed", map[string]string{"type": "gateway"})
@@ -63,7 +63,8 @@ func (ing *Ingestor) decodeGateways() {
 			bVIn, err := proto.Marshal(vIn)
 			if err != nil {
 				msg.Ack()
-				metric.Incr("error", map[string]string{"func": "marshal"})
+				metric.Incr("error",
+					map[string]string{metric.TagFunc: "marshal"})
 				logger.Errorf("decodeGateways proto.Marshal: %v", err)
 
 				continue
@@ -72,7 +73,8 @@ func (ing *Ingestor) decodeGateways() {
 			if err = ing.ingQueue.Publish(ing.vInGWPubTopic,
 				bVIn); err != nil {
 				// Allow requeue.
-				metric.Incr("error", map[string]string{"func": "publish"})
+				metric.Incr("error",
+					map[string]string{metric.TagFunc: "publish"})
 				logger.Errorf("decodeGateways ing.decoderQueue.Publish: %v",
 					err)
 
@@ -113,7 +115,7 @@ func (ing *Ingestor) decodeDevices() {
 			topicParts[1] != "application" || topicParts[3] != "device" ||
 			topicParts[5] != "event" {
 			msg.Ack()
-			metric.Incr("error", map[string]string{"func": "topic"})
+			metric.Incr("error", map[string]string{metric.TagFunc: "topic"})
 			logger.Errorf("decodeDevices unknown topic: %v", topic)
 
 			continue
@@ -125,7 +127,7 @@ func (ing *Ingestor) decodeDevices() {
 		// valid points may be included.
 		points, ts, data, err := device.Parse(topicParts[6], msg.Payload())
 		if err != nil {
-			metric.Incr("error", map[string]string{"func": "decode"})
+			metric.Incr("error", map[string]string{metric.TagFunc: "decode"})
 			logger.Errorf("decodeDevices device.Device: %v", err)
 		}
 		metric.Incr("processed", map[string]string{"type": "device"})
@@ -141,7 +143,8 @@ func (ing *Ingestor) decodeDevices() {
 
 			bVIn, err := proto.Marshal(vIn)
 			if err != nil {
-				metric.Incr("error", map[string]string{"func": "marshal"})
+				metric.Incr("error",
+					map[string]string{metric.TagFunc: "marshal"})
 				logger.Errorf("decodeDevices point proto.Marshal: %v", err)
 
 				continue
@@ -149,7 +152,8 @@ func (ing *Ingestor) decodeDevices() {
 
 			if err = ing.ingQueue.Publish(ing.vInDevPubTopic,
 				bVIn); err != nil {
-				metric.Incr("error", map[string]string{"func": "publish"})
+				metric.Incr("error",
+					map[string]string{metric.TagFunc: "publish"})
 				logger.Errorf("decodeDevices point ing.decoderQueue.Publish: "+
 					"%v", err)
 
@@ -174,7 +178,8 @@ func (ing *Ingestor) decodeDevices() {
 			bPIn, err := proto.Marshal(pIn)
 			if err != nil {
 				msg.Ack()
-				metric.Incr("error", map[string]string{"func": "marshal"})
+				metric.Incr("error",
+					map[string]string{metric.TagFunc: "marshal"})
 				logger.Errorf("decodeDevices data proto.Marshal: %v", err)
 
 				continue
@@ -183,7 +188,8 @@ func (ing *Ingestor) decodeDevices() {
 			if err = ing.ingQueue.Publish(ing.dInPubTopic,
 				bPIn); err != nil {
 				// Allow requeue.
-				metric.Incr("error", map[string]string{"func": "publish"})
+				metric.Incr("error",
+					map[string]string{metric.TagFunc: "publish"})
 				logger.Errorf("decodeDevices data ing.decoderQueue.Publish: %v",
 					err)
 

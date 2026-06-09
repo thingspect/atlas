@@ -13,7 +13,7 @@ import (
 )
 
 // ErrNotFound is returned when a decoder function name is not registered.
-const ErrNotFound consterr.Error = "decoder function not found"
+const ErrNotFound consterr.Error = "registry: decoder function not found"
 
 // Registry holds decoder-function mappings.
 type Registry struct {

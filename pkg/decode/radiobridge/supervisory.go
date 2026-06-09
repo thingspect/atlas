@@ -41,10 +41,10 @@ func supervisory(body []byte) ([]*decode.Point, error) {
 
 	// Parse protocol and count.
 	proto := int32(body[0] >> 4)
-	msgs := []*decode.Point{{Attr: "proto", Value: proto}}
+	msgs := []*decode.Point{{Attr: attrProto, Value: proto}}
 
 	count := int32(body[0] & clearProto)
-	msgs = append(msgs, &decode.Point{Attr: "count", Value: count})
+	msgs = append(msgs, &decode.Point{Attr: AttrCount, Value: count})
 
 	// Parse error codes.
 	errCodes := body[2]
@@ -60,7 +60,8 @@ func supervisory(body []byte) ([]*decode.Point, error) {
 
 	// Parse tamper status. Matching bit flag indicates closed/false state.
 	msgs = append(msgs, &decode.Point{
-		Attr: "tamper", Value: errCodes&statusSuperTamper != statusSuperTamper,
+		Attr:  attrTamper,
+		Value: errCodes&statusSuperTamper != statusSuperTamper,
 	})
 
 	// Parse battery level.

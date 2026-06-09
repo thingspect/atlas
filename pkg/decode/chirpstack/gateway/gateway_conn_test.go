@@ -24,13 +24,13 @@ func TestGatewayConn(t *testing.T) {
 		// Gateway ConnState.
 		{
 			&gw.ConnState{}, []*decode.Point{
-				{Attr: "raw_gateway", Value: `{}`},
+				{Attr: AttrRaw, Value: `{}`},
 				{Attr: "conn", Value: "OFFLINE"},
 			}, "",
 		},
 		{
 			&gw.ConnState{State: gw.ConnState_ONLINE}, []*decode.Point{
-				{Attr: "raw_gateway", Value: `{"state":"ONLINE"}`},
+				{Attr: AttrRaw, Value: `{"state":"ONLINE"}`},
 				{Attr: "conn", Value: "ONLINE"},
 			}, "",
 		},
@@ -44,7 +44,7 @@ func TestGatewayConn(t *testing.T) {
 		t.Run(fmt.Sprintf("Can parse %+v", test), func(t *testing.T) {
 			t.Parallel()
 
-			bInp := []byte("aaa")
+			bInp := []byte{0x00}
 			if test.inp != nil {
 				var err error
 				bInp, err = proto.Marshal(test.inp)

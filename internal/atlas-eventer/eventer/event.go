@@ -33,7 +33,8 @@ func (ev *Eventer) eventMessages() {
 			msg.Ack()
 
 			if !bytes.Equal([]byte{queue.Prime}, msg.Payload()) {
-				metric.Incr("error", map[string]string{"func": "unmarshal"})
+				metric.Incr("error",
+					map[string]string{metric.TagFunc: "unmarshal"})
 				alog.Errorf("eventMessages proto.Unmarshal vOut, err: %+v, %v",
 					vOut, err)
 			}
@@ -56,7 +57,8 @@ func (ev *Eventer) eventMessages() {
 		cancel()
 		if err != nil {
 			msg.Requeue()
-			metric.Incr("error", map[string]string{"func": "listbytags"})
+			metric.Incr("error",
+				map[string]string{metric.TagFunc: "listbytags"})
 			logger.Errorf("eventMessages ev.ruleDAO.ListByTags: %v", err)
 
 			continue
@@ -88,7 +90,7 @@ func (ev *Eventer) evalRules(
 
 	res, err := rule.Eval(vOut.GetPoint(), r.GetExpr())
 	if err != nil {
-		metric.Incr("error", map[string]string{"func": "eval"})
+		metric.Incr("error", map[string]string{metric.TagFunc: "eval"})
 		logger.Errorf("eventMessages rule.Eval: %v", err)
 
 		return
@@ -119,7 +121,7 @@ func (ev *Eventer) evalRules(
 			return
 		}
 		if err != nil {
-			metric.Incr("error", map[string]string{"func": "create"})
+			metric.Incr("error", map[string]string{metric.TagFunc: "create"})
 			logger.Errorf("eventMessages ev.evDAO.Create: %v", err)
 
 			return
@@ -132,7 +134,7 @@ func (ev *Eventer) evalRules(
 		}
 		bEOut, err := proto.Marshal(eOut)
 		if err != nil {
-			metric.Incr("error", map[string]string{"func": "marshal"})
+			metric.Incr("error", map[string]string{metric.TagFunc: "marshal"})
 			logger.Errorf("eventMessages proto.Marshal: %v", err)
 
 			return
@@ -140,7 +142,7 @@ func (ev *Eventer) evalRules(
 
 		if err = ev.evQueue.Publish(ev.eOutPubTopic,
 			bEOut); err != nil {
-			metric.Incr("error", map[string]string{"func": "publish"})
+			metric.Incr("error", map[string]string{metric.TagFunc: "publish"})
 			logger.Errorf("eventMessages ev.evQueue.Publish: %v", err)
 
 			return

@@ -9,15 +9,32 @@
 # Test binary, built with `go test -c`
 *.test
 
-# Output of the go coverage tool, specifically when used with LiteIDE
+# Code coverage profiles and other test artifacts
 *.out
+coverage.*
+*.coverprofile
+profile.cov
 
 # Dependency directories (remove the comment below to include it)
 # vendor/
 
+# Go workspace file
+go.work
+go.work.sum
+
+# env file
+.env
+
+# Editor/IDE, AI not welcome
+.idea/
+.vscode/
+.claude/
+CLAUDE.md
+
 ### macOS ###
 .DS_Store
 
-### Thingspect ###
-/api/protobuf/common
+### Atlas ###
 /bin
+/proto/protobuf/api
+/proto/protobuf/common

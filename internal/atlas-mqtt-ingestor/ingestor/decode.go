@@ -31,7 +31,7 @@ func (ing *Ingestor) decodeMessages() {
 		topicParts := strings.Split(topic, "/")
 		if len(topicParts) < 2 || len(topicParts) > 4 || topicParts[0] != "v1" {
 			msg.Ack()
-			metric.Incr("error", map[string]string{"func": "topic"})
+			metric.Incr("error", map[string]string{metric.TagFunc: "topic"})
 			logger.Errorf("decodeMessages malformed topic: %v", topic)
 
 			continue
@@ -52,7 +52,7 @@ func (ing *Ingestor) decodeMessages() {
 		}
 		if err != nil {
 			msg.Ack()
-			metric.Incr("error", map[string]string{"func": "unmarshal"})
+			metric.Incr("error", map[string]string{metric.TagFunc: "unmarshal"})
 			logger.Errorf("decodeMessages proto.Unmarshal: %v", err)
 
 			continue
@@ -67,7 +67,8 @@ func (ing *Ingestor) decodeMessages() {
 			bVIn, err := proto.Marshal(vIn)
 			if err != nil {
 				msg.Ack()
-				metric.Incr("error", map[string]string{"func": "marshal"})
+				metric.Incr("error",
+					map[string]string{metric.TagFunc: "marshal"})
 				logger.Errorf("decodeMessages proto.Marshal: %v", err)
 
 				continue
@@ -76,7 +77,8 @@ func (ing *Ingestor) decodeMessages() {
 			if err = ing.ingQueue.Publish(ing.vInPubTopic,
 				bVIn); err != nil {
 				// Allow requeue.
-				metric.Incr("error", map[string]string{"func": "publish"})
+				metric.Incr("error",
+					map[string]string{metric.TagFunc: "publish"})
 				logger.Errorf("decodeMessages ing.decoderQueue.Publish: %v",
 					err)
 

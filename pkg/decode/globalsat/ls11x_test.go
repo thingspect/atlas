@@ -22,27 +22,27 @@ func TestLs11x(t *testing.T) {
 	}{
 		// LS-11X.
 		{"01096113950292", []*decode.Point{
-			{Attr: "temp_c", Value: float64(24)},
-			{Attr: "temp_f", Value: 75.2},
-			{Attr: "humidity_pct", Value: 50.13},
+			{Attr: decode.AttrTempC, Value: float64(24)},
+			{Attr: decode.AttrTempF, Value: 75.2},
+			{Attr: decode.AttrHumPct, Value: 50.13},
 		}, ""},
 		{"020a3a10e80000", []*decode.Point{
-			{Attr: "temp_c", Value: 26.2},
-			{Attr: "temp_f", Value: 79.1},
-			{Attr: "humidity_pct", Value: 43.28},
+			{Attr: decode.AttrTempC, Value: 26.2},
+			{Attr: decode.AttrTempF, Value: 79.1},
+			{Attr: decode.AttrHumPct, Value: 43.28},
 		}, ""},
 		{"020a1810e70000", []*decode.Point{
-			{Attr: "temp_c", Value: 25.8},
-			{Attr: "temp_f", Value: 78.5},
-			{Attr: "humidity_pct", Value: 43.27},
+			{Attr: decode.AttrTempC, Value: 25.8},
+			{Attr: decode.AttrTempF, Value: 78.5},
+			{Attr: decode.AttrHumPct, Value: 43.27},
 		}, ""},
 		// LS-11X bad length.
 		{"000102030405", nil, "ls11x format bad length: 000102030405"},
 		{"0001020304050607", nil, "ls11x format bad length: 0001020304050607"},
 		// LS-11X humidity outside allowed range.
 		{"020a18f0e70000", []*decode.Point{
-			{Attr: "temp_c", Value: 25.8},
-			{Attr: "temp_f", Value: 78.5},
+			{Attr: decode.AttrTempC, Value: 25.8},
+			{Attr: decode.AttrTempF, Value: 78.5},
 		}, "ls11x format humidity outside allowed range: 020a18f0e70000"},
 	}
 

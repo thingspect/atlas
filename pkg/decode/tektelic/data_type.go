@@ -70,7 +70,7 @@ func typeHumidity(body []byte) (float64, []byte, error) {
 		return 0, nil, decode.FormatErr("typeHumidity", "bad identifier", body)
 	}
 
-	// Parse hum.
+	// Parse humidity.
 	hum := float64(body[2]) / 2
 	if hum > 100 {
 		return 0, nil, decode.FormatErr("typeHumidity", "outside allowed range",

@@ -11,6 +11,8 @@ import (
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	"github.com/thingspect/atlas/pkg/decode"
+	"github.com/thingspect/atlas/pkg/decode/radiobridge"
 	"github.com/thingspect/atlas/pkg/test/random"
 	"github.com/thingspect/atlas/proto/go/message"
 	"github.com/thingspect/proto/go/common"
@@ -39,11 +41,11 @@ func TestDecodeMessages(t *testing.T) {
 		{
 			[]string{"v1", orgID, "json"}, "", []*common.DataPoint{
 				{
-					UniqId: uniqIDPoint, Attr: "count",
+					UniqId: uniqIDPoint, Attr: radiobridge.AttrCount,
 					ValOneof: &common.DataPoint_IntVal{IntVal: 123}, Ts: now,
 					Token: pointToken,
 				}, {
-					UniqId: uniqIDPoint, Attr: "count",
+					UniqId: uniqIDPoint, Attr: radiobridge.AttrCount,
 					ValOneof: &common.DataPoint_IntVal{IntVal: 321}, Ts: now,
 					Token: pointToken,
 				},
@@ -51,14 +53,14 @@ func TestDecodeMessages(t *testing.T) {
 				{
 					Point: &common.DataPoint{
 						UniqId: uniqIDPoint,
-						Attr:   "count", ValOneof: &common.DataPoint_IntVal{
+						Attr:   radiobridge.AttrCount, ValOneof: &common.DataPoint_IntVal{
 							IntVal: 123,
 						}, Ts: now, Token: pointToken,
 					}, OrgId: orgID,
 				}, {
 					Point: &common.DataPoint{
 						UniqId: uniqIDPoint,
-						Attr:   "count", ValOneof: &common.DataPoint_IntVal{
+						Attr:   radiobridge.AttrCount, ValOneof: &common.DataPoint_IntVal{
 							IntVal: 321,
 						}, Ts: now, Token: pointToken,
 					}, OrgId: orgID,
@@ -68,13 +70,13 @@ func TestDecodeMessages(t *testing.T) {
 		{
 			[]string{"v1", orgID, uniqIDTopic}, paylToken, []*common.DataPoint{
 				{
-					Attr:     "temp_c",
+					Attr:     decode.AttrTempC,
 					ValOneof: &common.DataPoint_Fl64Val{Fl64Val: 9.3},
 				},
 			}, []*message.ValidatorIn{
 				{
 					Point: &common.DataPoint{
-						UniqId: uniqIDTopic, Attr: "temp_c",
+						UniqId: uniqIDTopic, Attr: decode.AttrTempC,
 						ValOneof: &common.DataPoint_Fl64Val{Fl64Val: 9.3},
 						Token:    paylToken,
 					}, OrgId: orgID,

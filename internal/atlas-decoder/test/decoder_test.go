@@ -11,6 +11,8 @@ import (
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	"github.com/thingspect/atlas/pkg/decode"
+	"github.com/thingspect/atlas/pkg/decode/radiobridge"
 	"github.com/thingspect/atlas/pkg/test/random"
 	"github.com/thingspect/atlas/proto/go/message"
 	"github.com/thingspect/proto/go/api"
@@ -64,7 +66,7 @@ func TestDecodeMessages(t *testing.T) {
 			}, []*message.ValidatorIn{
 				{
 					Point: &common.DataPoint{
-						UniqId: doorDev.GetUniqId(), Attr: "count",
+						UniqId: doorDev.GetUniqId(), Attr: radiobridge.AttrCount,
 						ValOneof: &common.DataPoint_IntVal{IntVal: 9}, Ts: now,
 						TraceId: traceID.String(),
 					}, SkipToken: true,
@@ -84,7 +86,7 @@ func TestDecodeMessages(t *testing.T) {
 			}, []*message.ValidatorIn{
 				{
 					Point: &common.DataPoint{
-						UniqId: doorDev.GetUniqId(), Attr: "count",
+						UniqId: doorDev.GetUniqId(), Attr: radiobridge.AttrCount,
 						ValOneof: &common.DataPoint_IntVal{IntVal: 10}, Ts: now,
 						TraceId: traceID.String(),
 					}, SkipToken: true,
@@ -105,21 +107,21 @@ func TestDecodeMessages(t *testing.T) {
 			}, []*message.ValidatorIn{
 				{
 					Point: &common.DataPoint{
-						UniqId: co2Dev.GetUniqId(), Attr: "temp_c",
+						UniqId: co2Dev.GetUniqId(), Attr: decode.AttrTempC,
 						ValOneof: &common.DataPoint_Fl64Val{Fl64Val: 24},
 						Ts:       now, TraceId: traceID.String(),
 					}, SkipToken: true,
 				},
 				{
 					Point: &common.DataPoint{
-						UniqId: co2Dev.GetUniqId(), Attr: "temp_f",
+						UniqId: co2Dev.GetUniqId(), Attr: decode.AttrTempF,
 						ValOneof: &common.DataPoint_Fl64Val{Fl64Val: 75.2},
 						Ts:       now, TraceId: traceID.String(),
 					}, SkipToken: true,
 				},
 				{
 					Point: &common.DataPoint{
-						UniqId: co2Dev.GetUniqId(), Attr: "humidity_pct",
+						UniqId: co2Dev.GetUniqId(), Attr: decode.AttrHumPct,
 						ValOneof: &common.DataPoint_Fl64Val{Fl64Val: 50.13},
 						Ts:       now, TraceId: traceID.String(),
 					}, SkipToken: true,
@@ -142,21 +144,21 @@ func TestDecodeMessages(t *testing.T) {
 			}, []*message.ValidatorIn{
 				{
 					Point: &common.DataPoint{
-						UniqId: homeDev.GetUniqId(), Attr: "temp_c",
+						UniqId: homeDev.GetUniqId(), Attr: decode.AttrTempC,
 						ValOneof: &common.DataPoint_Fl64Val{Fl64Val: 19.6},
 						Ts:       now, TraceId: traceID.String(),
 					}, SkipToken: true,
 				},
 				{
 					Point: &common.DataPoint{
-						UniqId: homeDev.GetUniqId(), Attr: "temp_f",
+						UniqId: homeDev.GetUniqId(), Attr: decode.AttrTempF,
 						ValOneof: &common.DataPoint_Fl64Val{Fl64Val: 67.3},
 						Ts:       now, TraceId: traceID.String(),
 					}, SkipToken: true,
 				},
 				{
 					Point: &common.DataPoint{
-						UniqId: homeDev.GetUniqId(), Attr: "humidity_pct",
+						UniqId: homeDev.GetUniqId(), Attr: decode.AttrHumPct,
 						ValOneof: &common.DataPoint_Fl64Val{Fl64Val: 63.5},
 						Ts:       now, TraceId: traceID.String(),
 					}, SkipToken: true,

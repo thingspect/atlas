@@ -22,14 +22,14 @@ func TestTamper(t *testing.T) {
 	}{
 		// Tamper.
 		{"1c0200", []*decode.Point{
-			{Attr: "proto", Value: int32(1)},
-			{Attr: "count", Value: int32(12)},
-			{Attr: "tamper", Value: true},
+			{Attr: attrProto, Value: int32(1)},
+			{Attr: AttrCount, Value: int32(12)},
+			{Attr: attrTamper, Value: true},
 		}, ""},
 		{"1d0201", []*decode.Point{
-			{Attr: "proto", Value: int32(1)},
-			{Attr: "count", Value: int32(13)},
-			{Attr: "tamper", Value: false},
+			{Attr: attrProto, Value: int32(1)},
+			{Attr: AttrCount, Value: int32(13)},
+			{Attr: attrTamper, Value: false},
 		}, ""},
 		// Tamper bad length.
 		{"0001", nil, "tamper format bad length: 0001"},

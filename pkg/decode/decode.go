@@ -15,7 +15,14 @@ import (
 const ValidWindow = 4 * time.Hour
 
 // ErrUnknownEvent is returned when an event type is not recognized.
-const ErrUnknownEvent consterr.Error = "unknown event type"
+const ErrUnknownEvent consterr.Error = "decode: unknown event type"
+
+// Constants used for attributes shared between decoder functions.
+const (
+	AttrTempC  = "temp_c"
+	AttrTempF  = "temp_f"
+	AttrHumPct = "humidity_pct"
+)
 
 // Point represents an attribute-value pair as produced by a decoder function.
 // Values should conform to common.DataPoint types, specifically int32, float64,

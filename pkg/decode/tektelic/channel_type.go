@@ -51,8 +51,8 @@ func chanTempC(body []byte) ([]*decode.Point, []byte, error) {
 	}
 
 	return []*decode.Point{
-		{Attr: "temp_c", Value: tempC},
-		{Attr: "temp_f", Value: decode.CToF(tempC)},
+		{Attr: decode.AttrTempC, Value: tempC},
+		{Attr: decode.AttrTempF, Value: decode.CToF(tempC)},
 	}, rem, nil
 }
 
@@ -69,13 +69,13 @@ func chanHumidity(body []byte) ([]*decode.Point, []byte, error) {
 			body)
 	}
 
-	// Parse hum.
+	// Parse humidity.
 	hum, rem, err := typeHumidity(body)
 	if err != nil {
 		return nil, nil, err
 	}
 
-	return []*decode.Point{{Attr: "humidity_pct", Value: hum}}, rem, nil
+	return []*decode.Point{{Attr: decode.AttrHumPct, Value: hum}}, rem, nil
 }
 
 // chanBatteryV parses a Battery (V) data channel from a []byte according to the

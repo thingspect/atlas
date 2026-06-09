@@ -12,8 +12,14 @@ import (
 // ErrNotBool is returned when the expression being evaluated is not boolean.
 const ErrNotBool consterr.Error = "not a boolean expression"
 
+// Constants used for basic expressions.
+const (
+	ExprTrue  = `true`
+	ExprFalse = `false`
+)
+
 // Eval evaluates a boolean expression using the Expr language:
-// https://github.com/expr-lang/expr/blob/master/docs/Language-Definition.md
+// https://expr-lang.org/docs/language-definition
 func Eval(point *common.DataPoint, ruleExpr string) (bool, error) {
 	env := map[string]any{
 		"point":   point,

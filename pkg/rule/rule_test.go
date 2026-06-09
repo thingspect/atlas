@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/stretchr/testify/require"
+	"github.com/thingspect/atlas/pkg/test/random"
 	"github.com/thingspect/proto/go/common"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
@@ -21,7 +22,7 @@ func TestEval(t *testing.T) {
 		res         bool
 		err         string
 	}{
-		{&common.DataPoint{}, `true`, true, ""},
+		{&common.DataPoint{}, ExprTrue, true, ""},
 		{&common.DataPoint{}, `10 > 15`, false, ""},
 		{&common.DataPoint{}, `point.Token == ""`, true, ""},
 		{&common.DataPoint{}, `pointTS < currTS`, true, ""},
@@ -49,10 +50,13 @@ func TestEval(t *testing.T) {
 			}}, `pointVal`, true, "",
 		},
 		{
-			&common.DataPoint{}, `1 + "aaa"`, false,
+			&common.DataPoint{}, `1 + "` + random.String(10) + `"`, false,
 			"invalid operation: int + string",
 		},
-		{&common.DataPoint{}, `"aaa"`, false, ErrNotBool.Error()},
+		{
+			&common.DataPoint{}, `"` + random.String(10) + `"`, false,
+			ErrNotBool.Error(),
+		},
 	}
 
 	for _, test := range tests {

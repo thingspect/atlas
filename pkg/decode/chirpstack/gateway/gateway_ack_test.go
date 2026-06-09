@@ -24,14 +24,14 @@ func TestGatewayAck(t *testing.T) {
 		// Gateway ACK.
 		{
 			&gw.DownlinkTxAck{}, []*decode.Point{
-				{Attr: "raw_gateway", Value: `{}`},
+				{Attr: AttrRaw, Value: `{}`},
 			}, "",
 		},
 		{
 			&gw.DownlinkTxAck{
 				Items: []*gw.DownlinkTxAckItem{{Status: gw.TxAckStatus_OK}},
 			}, []*decode.Point{
-				{Attr: "raw_gateway", Value: `{"items":[{"status":"OK"}]}`},
+				{Attr: AttrRaw, Value: `{"items":[{"status":"OK"}]}`},
 				{Attr: "ack", Value: "OK"},
 			}, "",
 		},
@@ -41,7 +41,7 @@ func TestGatewayAck(t *testing.T) {
 					{Status: gw.TxAckStatus_TOO_LATE},
 				},
 			}, []*decode.Point{
-				{Attr: "raw_gateway", Value: `{"items":[{"status":` +
+				{Attr: AttrRaw, Value: `{"items":[{"status":` +
 					`"TOO_LATE"}]}`},
 				{Attr: "ack", Value: "TOO_LATE"},
 			}, "",
@@ -56,7 +56,7 @@ func TestGatewayAck(t *testing.T) {
 		t.Run(fmt.Sprintf("Can parse %+v", test), func(t *testing.T) {
 			t.Parallel()
 
-			bInp := []byte("aaa")
+			bInp := []byte{0x00}
 			if test.inp != nil {
 				var err error
 				bInp, err = proto.Marshal(test.inp)

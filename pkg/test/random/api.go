@@ -53,7 +53,6 @@ func Rule(prefix, orgID string) *api.Rule {
 		}[Intn(2)],
 		DeviceTag: prefix + "-" + String(10),
 		Attr:      prefix + "-" + String(10),
-		Expr:      []string{`true`, `false`}[Intn(2)],
 	}
 }
 

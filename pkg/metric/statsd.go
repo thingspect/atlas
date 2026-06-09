@@ -52,7 +52,7 @@ func (s *statsD) Set(stat string, value int, tags map[string]string) {
 	s.client.Gauge(stat, int64(value), tagsToSTags(tags)...)
 }
 
-// Timing submits a statsd timing metric in milliseconds.
+// Timing submits a statsd timing metric.
 func (s *statsD) Timing(
 	stat string, value time.Duration, tags map[string]string,
 ) {

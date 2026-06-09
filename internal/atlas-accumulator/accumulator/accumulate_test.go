@@ -12,6 +12,8 @@ import (
 	"github.com/stretchr/testify/require"
 	"github.com/thingspect/atlas/pkg/consterr"
 	"github.com/thingspect/atlas/pkg/dao"
+	"github.com/thingspect/atlas/pkg/decode"
+	"github.com/thingspect/atlas/pkg/decode/radiobridge"
 	"github.com/thingspect/atlas/pkg/queue"
 	"github.com/thingspect/atlas/pkg/test/matcher"
 	"github.com/thingspect/atlas/pkg/test/random"
@@ -36,7 +38,7 @@ func TestAccumulateMessages(t *testing.T) {
 		{
 			&message.ValidatorOut{
 				Point: &common.DataPoint{
-					UniqId: random.String(16), Attr: "count",
+					UniqId: random.String(16), Attr: radiobridge.AttrCount,
 					ValOneof: &common.DataPoint_IntVal{IntVal: 123},
 					Ts: timestamppb.New(time.Now().Add(
 						-15 * time.Minute)), Token: uuid.NewString(),
@@ -47,7 +49,7 @@ func TestAccumulateMessages(t *testing.T) {
 		{
 			&message.ValidatorOut{
 				Point: &common.DataPoint{
-					UniqId: random.String(16), Attr: "temp_c",
+					UniqId: random.String(16), Attr: decode.AttrTempC,
 					ValOneof: &common.DataPoint_Fl64Val{Fl64Val: 9.3},
 					Ts: timestamppb.New(time.Now().Add(
 						-15 * time.Minute)), Token: uuid.NewString(),

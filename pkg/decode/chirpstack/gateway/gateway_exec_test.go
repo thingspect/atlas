@@ -24,7 +24,7 @@ func TestGatewayExec(t *testing.T) {
 		// Gateway Exec.
 		{
 			&gw.GatewayCommandExecResponse{}, []*decode.Point{
-				{Attr: "raw_gateway", Value: `{}`},
+				{Attr: AttrRaw, Value: `{}`},
 			}, "",
 		},
 		{
@@ -32,7 +32,7 @@ func TestGatewayExec(t *testing.T) {
 				Stdout: []byte("STDOUT"), Stderr: []byte("STDERR"),
 				Error: "TOO_LATE",
 			}, []*decode.Point{
-				{Attr: "raw_gateway", Value: `{"stdout":"U1RET1VU","stderr":` +
+				{Attr: AttrRaw, Value: `{"stdout":"U1RET1VU","stderr":` +
 					`"U1RERVJS","error":"TOO_LATE"}`},
 				{Attr: "exec_stdout", Value: "STDOUT"},
 				{Attr: "exec_stderr", Value: "STDERR"},
@@ -49,7 +49,7 @@ func TestGatewayExec(t *testing.T) {
 		t.Run(fmt.Sprintf("Can parse %+v", test), func(t *testing.T) {
 			t.Parallel()
 
-			bInp := []byte("aaa")
+			bInp := []byte{0x00}
 			if test.inp != nil {
 				var err error
 				bInp, err = proto.Marshal(test.inp)

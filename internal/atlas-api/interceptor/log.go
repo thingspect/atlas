@@ -22,27 +22,9 @@ func Log(skipPaths map[string]struct{}) grpc.UnaryServerInterceptor {
 		handler grpc.UnaryHandler,
 	) (any, error) {
 		// Set up logging fields and context.
-		logger := &alog.CtxLogger{Logger: alog.WithField("path", info.FullMethod)}
+		logger := &alog.CtxLogger{Logger: alog.WithField(
+			"path", info.FullMethod)}
 		ctx = alog.NewContext(ctx, logger)
-
-		start := time.Now()
-		resp, err := handler(ctx, req)
-		dur := time.Since(start)
-
-		// Send metrics.
-		metric.Timing("durms", dur, nil)
-		if err != nil {
-			metric.Incr("error", nil)
-		}
-
-		if _, ok := skipPaths[info.FullMethod]; ok {
-			return resp, err
-		}
-
-		// Add additional logging fields.
-		logger.Logger = logger.
-			WithField("durms", fmt.Sprintf("%d", dur/time.Millisecond)).
-			WithField("code", status.Code(err).String())
 
 		// Populate additional fields with metadata.
 		if md, ok := metadata.FromIncomingContext(ctx); ok {
@@ -53,15 +35,36 @@ func Log(skipPaths map[string]struct{}) grpc.UnaryServerInterceptor {
 			}
 		}
 
+		start := time.Now()
+		resp, err := handler(ctx, req)
+		dur := time.Since(start)
+
+		// Send metrics.
+		metric.Timing("durms", dur, map[string]string{"path": info.FullMethod})
 		if err != nil {
-			logger.Info(err)
+			metric.Incr("error", map[string]string{"path": info.FullMethod})
+		}
+
+		if _, ok := skipPaths[info.FullMethod]; ok {
+			return resp, err
+		}
+
+		// Add additional logging fields for final logging. Do not modify logger
+		// once it has been passed downstream where it may be used by multiple
+		// goroutines.
+		flog := logger.
+			WithField("durms", fmt.Sprintf("%d", dur/time.Millisecond)).
+			WithField("code", status.Code(err).String())
+
+		if err != nil {
+			flog.Info(err)
 		} else {
 			respOut := fmt.Sprintf("%+v", resp)
 			if len(respOut) > 80 {
 				respOut = respOut[:77] + "..."
 			}
 
-			logger.Info(respOut)
+			flog.Info(respOut)
 		}
 
 		return resp, err

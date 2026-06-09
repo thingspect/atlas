@@ -20,6 +20,8 @@ func TestGatewayStats(t *testing.T) {
 	t.Parallel()
 
 	uniqID := random.String(16)
+	key := random.String(10)
+	val := random.String(10)
 
 	// Truncate to nearest second for compatibility with protojson.Format and
 	// time.RFC3339Nano formatting.
@@ -35,7 +37,7 @@ func TestGatewayStats(t *testing.T) {
 		// Gateway Stats.
 		{
 			&gw.GatewayStats{}, []*decode.Point{
-				{Attr: "raw_gateway", Value: `{}`},
+				{Attr: AttrRaw, Value: `{}`},
 			}, "",
 		},
 		{
@@ -43,13 +45,13 @@ func TestGatewayStats(t *testing.T) {
 				GatewayId: uniqID, Time: pNow,
 				RxPacketsReceived: 1, RxPacketsReceivedOk: 2,
 				TxPacketsReceived: 3, TxPacketsEmitted: 4,
-				Metadata: map[string]string{"aaa": "bbb"},
+				Metadata: map[string]string{key: val},
 			}, []*decode.Point{
-				{Attr: "raw_gateway", Value: fmt.Sprintf(`{"gatewayId":"%s",`+
+				{Attr: AttrRaw, Value: fmt.Sprintf(`{"gatewayId":"%s",`+
 					`"time":"%s","rxPacketsReceived":1,`+
 					`"rxPacketsReceivedOk":2,"txPacketsReceived":3,`+
-					`"txPacketsEmitted":4,"metadata":{"aaa":"bbb"}}`, uniqID,
-					now.Format(time.RFC3339Nano))},
+					`"txPacketsEmitted":4,"metadata":{"`+key+`":"`+val+`"}}`,
+					uniqID, now.Format(time.RFC3339Nano))},
 				{Attr: "id", Value: uniqID},
 				{
 					Attr:  "gateway_time",
@@ -59,7 +61,7 @@ func TestGatewayStats(t *testing.T) {
 				{Attr: "rx_received_valid", Value: int32(2)},
 				{Attr: "tx_received", Value: int32(3)},
 				{Attr: "tx_transmitted", Value: int32(4)},
-				{Attr: "aaa", Value: "bbb"},
+				{Attr: key, Value: val},
 			}, "",
 		},
 		// Gateway Stats bad length.
@@ -72,7 +74,7 @@ func TestGatewayStats(t *testing.T) {
 		t.Run(fmt.Sprintf("Can parse %+v", test), func(t *testing.T) {
 			t.Parallel()
 
-			bInp := []byte("aaa")
+			bInp := []byte{0x00}
 			if test.inp != nil {
 				var err error
 				bInp, err = proto.Marshal(test.inp)

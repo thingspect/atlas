@@ -30,7 +30,8 @@ func (val *Validator) validateMessages() {
 			msg.Ack()
 
 			if !bytes.Equal([]byte{queue.Prime}, msg.Payload()) {
-				metric.Incr("error", map[string]string{"func": "unmarshal"})
+				metric.Incr("error",
+					map[string]string{metric.TagFunc: "unmarshal"})
 				alog.Errorf("validateMessages proto.Unmarshal vIn, err: %+v, "+
 					"%v", vIn, err)
 			}
@@ -57,7 +58,8 @@ func (val *Validator) validateMessages() {
 		}
 		if err != nil {
 			msg.Requeue()
-			metric.Incr("error", map[string]string{"func": "readbyuniqid"})
+			metric.Incr("error",
+				map[string]string{metric.TagFunc: "readbyuniqid"})
 			logger.Errorf("validateMessages val.devDAO.ReadByUniqID: %v", err)
 
 			continue
@@ -68,26 +70,28 @@ func (val *Validator) validateMessages() {
 		switch err := vIn.GetPoint().Validate(); {
 		case err != nil:
 			msg.Ack()
-			metric.Incr("invalid", map[string]string{"func": "validate"})
+			metric.Incr("invalid",
+				map[string]string{metric.TagFunc: "validate"})
 			logger.Debugf("validateMessages vIn.Point.Validate: %v", err)
 
 			continue
 		case !vIn.GetSkipToken() && vIn.GetOrgId() != dev.GetOrgId():
 			msg.Ack()
-			metric.Incr("invalid", map[string]string{"func": "orgid"})
+			metric.Incr("invalid", map[string]string{metric.TagFunc: "orgid"})
 			logger.Errorf("validateMessages incorrect org ID, expected: %v, "+
 				"actual: %v", dev.GetOrgId(), vIn.GetOrgId())
 
 			continue
 		case dev.GetStatus() != api.Status_ACTIVE:
 			msg.Ack()
-			metric.Incr("invalid", map[string]string{"func": "disabled"})
+			metric.Incr("invalid",
+				map[string]string{metric.TagFunc: "disabled"})
 			logger.Debugf("validateMessages device disabled: %+v", vIn)
 
 			continue
 		case !vIn.GetSkipToken() && vIn.GetPoint().GetToken() != dev.GetToken():
 			msg.Ack()
-			metric.Incr("invalid", map[string]string{"func": "token"})
+			metric.Incr("invalid", map[string]string{metric.TagFunc: "token"})
 			logger.Debugf("validateMessages invalid token: %+v", vIn)
 
 			continue
@@ -103,7 +107,7 @@ func (val *Validator) validateMessages() {
 		bVOut, err := proto.Marshal(vOut)
 		if err != nil {
 			msg.Ack()
-			metric.Incr("error", map[string]string{"func": "marshal"})
+			metric.Incr("error", map[string]string{metric.TagFunc: "marshal"})
 			logger.Errorf("validateMessages proto.Marshal: %v", err)
 
 			continue
@@ -111,7 +115,7 @@ func (val *Validator) validateMessages() {
 
 		if err = val.valQueue.Publish(val.vOutPubTopic, bVOut); err != nil {
 			msg.Requeue()
-			metric.Incr("error", map[string]string{"func": "publish"})
+			metric.Incr("error", map[string]string{metric.TagFunc: "publish"})
 			logger.Errorf("validateMessages val.pub.Publish: %v", err)
 
 			continue

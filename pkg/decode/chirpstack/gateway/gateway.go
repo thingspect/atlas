@@ -7,6 +7,9 @@ import (
 	"github.com/thingspect/atlas/pkg/decode"
 )
 
+// AttrRaw is the raw gateway attribute.
+const AttrRaw = "raw_gateway"
+
 // Parse parses a gateway payload from a []byte according to the spec. Points
 // are built from successful parse results. If a fatal error is encountered, it
 // is returned along with any valid points.

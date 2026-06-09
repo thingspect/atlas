@@ -12,6 +12,8 @@ import (
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/require"
 	"github.com/thingspect/atlas/pkg/dao"
+	"github.com/thingspect/atlas/pkg/decode"
+	"github.com/thingspect/atlas/pkg/decode/radiobridge"
 	"github.com/thingspect/atlas/pkg/test/random"
 	"github.com/thingspect/proto/go/common"
 	"google.golang.org/protobuf/types/known/timestamppb"
@@ -37,14 +39,14 @@ func TestCreate(t *testing.T) {
 		}{
 			{
 				&common.DataPoint{
-					UniqId: "dao-point-" + random.String(16), Attr: "count",
+					UniqId: "dao-point-" + random.String(16), Attr: radiobridge.AttrCount,
 					ValOneof: &common.DataPoint_IntVal{IntVal: 123},
 					Ts:       timestamppb.Now(), TraceId: uuid.NewString(),
 				},
 			},
 			{
 				&common.DataPoint{
-					UniqId: "dao-point-" + random.String(16), Attr: "temp_c",
+					UniqId: "dao-point-" + random.String(16), Attr: decode.AttrTempC,
 					ValOneof: &common.DataPoint_Fl64Val{Fl64Val: 9.3},
 					Ts:       timestamppb.Now(), TraceId: uuid.NewString(),
 				},
@@ -101,7 +103,7 @@ func TestCreate(t *testing.T) {
 		}{
 			{
 				&common.DataPoint{
-					UniqId: "dao-point-" + random.String(40), Attr: "count",
+					UniqId: "dao-point-" + random.String(40), Attr: radiobridge.AttrCount,
 					ValOneof: &common.DataPoint_IntVal{IntVal: 123},
 					Ts:       timestamppb.Now(), TraceId: uuid.NewString(),
 				}, dao.ErrInvalidFormat,
@@ -142,7 +144,7 @@ func TestCreate(t *testing.T) {
 		require.NoError(t, err)
 
 		point := &common.DataPoint{
-			UniqId: "dao-point-" + random.String(16), Attr: "count",
+			UniqId: "dao-point-" + random.String(16), Attr: radiobridge.AttrCount,
 			ValOneof: &common.DataPoint_IntVal{IntVal: 123},
 			Ts:       timestamppb.Now(), TraceId: uuid.NewString(),
 		}
@@ -177,12 +179,12 @@ func TestList(t *testing.T) {
 
 		points := []*common.DataPoint{
 			{
-				UniqId: createDev.GetUniqId(), Attr: "count",
+				UniqId: createDev.GetUniqId(), Attr: radiobridge.AttrCount,
 				ValOneof: &common.DataPoint_IntVal{IntVal: 123},
 				TraceId:  uuid.NewString(),
 			},
 			{
-				UniqId: createDev.GetUniqId(), Attr: "temp_c",
+				UniqId: createDev.GetUniqId(), Attr: decode.AttrTempC,
 				ValOneof: &common.DataPoint_Fl64Val{Fl64Val: 9.3},
 				TraceId:  uuid.NewString(),
 			},
@@ -204,7 +206,7 @@ func TestList(t *testing.T) {
 				}, TraceId: uuid.NewString(),
 			},
 			{
-				UniqId: createDev.GetUniqId(), Attr: "count",
+				UniqId: createDev.GetUniqId(), Attr: radiobridge.AttrCount,
 				ValOneof: &common.DataPoint_IntVal{IntVal: 321},
 				TraceId:  uuid.NewString(),
 			},
@@ -259,7 +261,7 @@ func TestList(t *testing.T) {
 
 		// Verify results by UniqID and attribute.
 		listPointsUniqID, err = globalDPDAO.List(ctx, createOrg.GetId(),
-			createDev.GetUniqId(), "", "count", points[0].GetTs().AsTime(),
+			createDev.GetUniqId(), "", radiobridge.AttrCount, points[0].GetTs().AsTime(),
 			points[len(points)-1].GetTs().AsTime().Add(-time.Millisecond))
 		t.Logf("listPointsUniqID, err: %+v, %v", listPointsUniqID, err)
 		require.NoError(t, err)
@@ -267,7 +269,7 @@ func TestList(t *testing.T) {
 
 		mcount := 0
 		for _, point := range points {
-			if point.GetAttr() == "count" {
+			if point.GetAttr() == radiobridge.AttrCount {
 				require.EqualExportedValues(t, point, listPointsUniqID[mcount])
 				mcount++
 			}
@@ -285,7 +287,7 @@ func TestList(t *testing.T) {
 		require.NoError(t, err)
 
 		point := &common.DataPoint{
-			UniqId: "dao-point-" + random.String(16), Attr: "count",
+			UniqId: "dao-point-" + random.String(16), Attr: radiobridge.AttrCount,
 			ValOneof: &common.DataPoint_IntVal{IntVal: 123},
 			Ts:       timestamppb.Now(), TraceId: uuid.NewString(),
 		}
@@ -340,12 +342,12 @@ func TestLatest(t *testing.T) {
 		// The first point intentionally sorts first by attribute.
 		points := []*common.DataPoint{
 			{
-				UniqId: createDev.GetUniqId(), Attr: "count",
+				UniqId: createDev.GetUniqId(), Attr: radiobridge.AttrCount,
 				ValOneof: &common.DataPoint_IntVal{IntVal: 123},
 				TraceId:  uuid.NewString(),
 			},
 			{
-				UniqId: createDev.GetUniqId(), Attr: "temp_c",
+				UniqId: createDev.GetUniqId(), Attr: decode.AttrTempC,
 				ValOneof: &common.DataPoint_Fl64Val{Fl64Val: 9.3},
 				TraceId:  uuid.NewString(),
 			},
@@ -431,7 +433,7 @@ func TestLatest(t *testing.T) {
 		require.NoError(t, err)
 
 		point := &common.DataPoint{
-			UniqId: "dao-point-" + random.String(16), Attr: "count",
+			UniqId: "dao-point-" + random.String(16), Attr: radiobridge.AttrCount,
 			ValOneof: &common.DataPoint_IntVal{IntVal: 123},
 			Ts:       timestamppb.Now(), TraceId: uuid.NewString(),
 		}

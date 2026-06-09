@@ -315,8 +315,9 @@ func TestUpdateOrg(t *testing.T) {
 
 		orgSvc := NewOrg(nil)
 		updateOrg, err := orgSvc.UpdateOrg(ctx, &api.UpdateOrgRequest{
-			Org:        org,
-			UpdateMask: &fieldmaskpb.FieldMask{Paths: []string{"aaa"}},
+			Org: org, UpdateMask: &fieldmaskpb.FieldMask{
+				Paths: []string{random.String(10)},
+			},
 		})
 		t.Logf("org, updateOrg, err: %+v, %+v, %v", org, updateOrg, err)
 		require.Nil(t, updateOrg)
@@ -622,7 +623,7 @@ func TestListOrgs(t *testing.T) {
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
 			t.Context(), &session.Session{
-				OrgID: "aaa", Role: api.Role_SYS_ADMIN,
+				OrgID: random.String(10), Role: api.Role_SYS_ADMIN,
 			}), testTimeout)
 		defer cancel()
 

@@ -37,7 +37,8 @@ func (ale *Alerter) alertMessages() {
 			msg.Ack()
 
 			if !bytes.Equal([]byte{queue.Prime}, msg.Payload()) {
-				metric.Incr("error", map[string]string{"func": "unmarshal"})
+				metric.Incr("error",
+					map[string]string{metric.TagFunc: "unmarshal"})
 				alog.Errorf("alertMessages proto.Unmarshal eOut, err: %+v, %v",
 					eOut, err)
 			}
@@ -58,7 +59,7 @@ func (ale *Alerter) alertMessages() {
 		cancel()
 		if err != nil {
 			msg.Requeue()
-			metric.Incr("error", map[string]string{"func": "read"})
+			metric.Incr("error", map[string]string{metric.TagFunc: "read"})
 			logger.Errorf("alertMessages ale.orgDAO.Read: %v", err)
 
 			continue
@@ -72,7 +73,7 @@ func (ale *Alerter) alertMessages() {
 		cancel()
 		if err != nil {
 			msg.Requeue()
-			metric.Incr("error", map[string]string{"func": "list"})
+			metric.Incr("error", map[string]string{metric.TagFunc: "list"})
 			logger.Errorf("alertMessages ale.alarmDAO.List: %v", err)
 
 			continue
@@ -114,7 +115,7 @@ func (ale *Alerter) evalAlarms(
 		a.GetUserTags())
 	cancel()
 	if err != nil {
-		metric.Incr("error", map[string]string{"func": "listbytags"})
+		metric.Incr("error", map[string]string{metric.TagFunc: "listbytags"})
 		logger.Errorf("alertMessages ale.userDAO.ListByTags: %v", err)
 
 		return
@@ -127,7 +128,7 @@ func (ale *Alerter) evalAlarms(
 	subj, err := template.Generate(eOut.GetPoint(), eOut.GetRule(),
 		eOut.GetDevice(), a.GetSubjectTemplate())
 	if err != nil {
-		metric.Incr("error", map[string]string{"func": "gensubject"})
+		metric.Incr("error", map[string]string{metric.TagFunc: "gensubject"})
 		logger.Errorf("alertMessages subject template.Generate: %v", err)
 
 		return
@@ -136,7 +137,7 @@ func (ale *Alerter) evalAlarms(
 	body, err := template.Generate(eOut.GetPoint(), eOut.GetRule(),
 		eOut.GetDevice(), a.GetBodyTemplate())
 	if err != nil {
-		metric.Incr("error", map[string]string{"func": "genbody"})
+		metric.Incr("error", map[string]string{metric.TagFunc: "genbody"})
 		logger.Errorf("alertMessages body template.Generate: %v", err)
 
 		return
@@ -152,7 +153,8 @@ func (ale *Alerter) evalAlarms(
 			time.Duration(a.GetRepeatInterval())*time.Minute)
 		cancel()
 		if err != nil && !errors.Is(err, cache.ErrAlreadyExists) {
-			metric.Incr("error", map[string]string{"func": "setifnotexist"})
+			metric.Incr("error",
+				map[string]string{metric.TagFunc: "setifnotexist"})
 			logger.Errorf("alertMessages ale.cache.SetIfNotExistTTL: %v", err)
 
 			continue
@@ -191,7 +193,7 @@ func (ale *Alerter) evalAlarms(
 		if err != nil {
 			alert.Status = api.AlertStatus_ERROR
 			alert.Error = err.Error()
-			metric.Incr("error", map[string]string{"func": "notify"})
+			metric.Incr("error", map[string]string{metric.TagFunc: "notify"})
 			logger.Errorf("alertMessages ale.notify a, err: %+v, %v", a,
 				err.Error())
 		} else {
@@ -208,7 +210,7 @@ func (ale *Alerter) evalAlarms(
 		err = ale.aleDAO.Create(dCtx, alert)
 		cancel()
 		if err != nil {
-			metric.Incr("error", map[string]string{"func": "create"})
+			metric.Incr("error", map[string]string{metric.TagFunc: "create"})
 			logger.Errorf("alertMessages ale.aleDAO.Create: %v", err)
 
 			continue

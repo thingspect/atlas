@@ -26,7 +26,7 @@ func TestString(t *testing.T) {
 		res    string
 	}{
 		{envKey, "", envVal},
-		{random.String(10), "default", "default"},
+		{random.String(10), envVal, envVal},
 	}
 
 	for _, test := range tests {
@@ -55,7 +55,7 @@ func TestStringSlice(t *testing.T) {
 	}{
 		{envKey, []string{}, strings.Split(envVal, ",")},
 		{envKeyNoDelim, []string{}, []string{envValNoDelim}},
-		{random.String(10), []string{"default"}, []string{"default"}},
+		{random.String(10), []string{envValNoDelim}, []string{envValNoDelim}},
 	}
 
 	for _, test := range tests {

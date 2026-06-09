@@ -25,30 +25,30 @@ func TestHome(t *testing.T) {
 		{"0a00ff", []*decode.Point{{Attr: "motion", Value: true}}, ""},
 		// Temperature.
 		{"0367000a", []*decode.Point{
-			{Attr: "temp_c", Value: 1.0},
-			{Attr: "temp_f", Value: 33.8},
+			{Attr: decode.AttrTempC, Value: 1.0},
+			{Attr: decode.AttrTempF, Value: 33.8},
 		}, ""},
 		{"036700c4", []*decode.Point{
-			{Attr: "temp_c", Value: 19.6},
-			{Attr: "temp_f", Value: 67.3},
+			{Attr: decode.AttrTempC, Value: 19.6},
+			{Attr: decode.AttrTempF, Value: 67.3},
 		}, ""},
 		// Humidity.
-		{"046814", []*decode.Point{{Attr: "humidity_pct", Value: 10.0}}, ""},
-		{"04687f", []*decode.Point{{Attr: "humidity_pct", Value: 63.5}}, ""},
+		{"046814", []*decode.Point{{Attr: decode.AttrHumPct, Value: 10.0}}, ""},
+		{"04687f", []*decode.Point{{Attr: decode.AttrHumPct, Value: 63.5}}, ""},
 		// Battery (V).
 		{"00ff012c", []*decode.Point{{Attr: "battery_v", Value: 3.0}}, ""},
 		{"00ff0138", []*decode.Point{{Attr: "battery_v", Value: 3.12}}, ""},
 		// Temperature, Humidity, and Battery (V).
 		{"036700c404687f00ff0138", []*decode.Point{
-			{Attr: "temp_c", Value: 19.6},
-			{Attr: "temp_f", Value: 67.3},
-			{Attr: "humidity_pct", Value: 63.5},
+			{Attr: decode.AttrTempC, Value: 19.6},
+			{Attr: decode.AttrTempF, Value: 67.3},
+			{Attr: decode.AttrHumPct, Value: 63.5},
 			{Attr: "battery_v", Value: 3.12},
 		}, ""},
 		{"036700d004688000ff0139", []*decode.Point{
-			{Attr: "temp_c", Value: 20.8},
-			{Attr: "temp_f", Value: 69.4},
-			{Attr: "humidity_pct", Value: 64.0},
+			{Attr: decode.AttrTempC, Value: 20.8},
+			{Attr: decode.AttrTempF, Value: 69.4},
+			{Attr: decode.AttrHumPct, Value: 64.0},
 			{Attr: "battery_v", Value: 3.13},
 		}, ""},
 		// Home bad length.
