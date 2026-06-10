@@ -178,13 +178,13 @@ func TestChanBatteryV(t *testing.T) {
 	}{
 		// Battery (V).
 		{"00ff012c", []*decode.Point{
-			{Attr: "battery_v", Value: 3.0},
+			{Attr: decode.AttrBattV, Value: 3.0},
 		}, []byte{}, ""},
 		{"00ff0138", []*decode.Point{
-			{Attr: "battery_v", Value: 3.12},
+			{Attr: decode.AttrBattV, Value: 3.12},
 		}, []byte{}, ""},
 		{"00ff013804687f", []*decode.Point{
-			{Attr: "battery_v", Value: 3.12},
+			{Attr: decode.AttrBattV, Value: 3.12},
 		}, []byte{0x04, 0x68, 0x7f}, ""},
 		// Battery (V) bad length.
 		{"00", nil, nil, "chanBatteryV format bad length: 00"},

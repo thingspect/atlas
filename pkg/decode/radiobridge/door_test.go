@@ -24,15 +24,15 @@ func TestDoor(t *testing.T) {
 		{"100001120102181c", []*decode.Point{
 			{Attr: attrProto, Value: int32(1)},
 			{Attr: AttrCount, Value: int32(0)},
-			{Attr: "hw_ver", Value: int32(18)},
-			{Attr: "ver", Value: "1.2"},
+			{Attr: attrHWVer, Value: int32(18)},
+			{Attr: attrVer, Value: "1.2"},
 		}, ""},
 		// Supervisory.
 		{"1401080131", []*decode.Point{
 			{Attr: attrProto, Value: int32(1)},
 			{Attr: AttrCount, Value: int32(4)},
 			{Attr: attrTamper, Value: false},
-			{Attr: "battery_v", Value: 3.1},
+			{Attr: decode.AttrBattV, Value: 3.1},
 		}, ""},
 		// Tamper.
 		{"1c0200", []*decode.Point{

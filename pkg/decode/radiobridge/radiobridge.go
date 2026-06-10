@@ -6,6 +6,8 @@ const (
 	AttrCount  = "count"
 	attrProto  = "proto"
 	attrTamper = "tamper"
+	attrVer    = "ver"
+	attrHWVer  = "hw_ver"
 )
 
 const clearProto = 0b00001111

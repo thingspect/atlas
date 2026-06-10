@@ -17,7 +17,7 @@ import (
 
 // Log logs requests, responses, and metadata, sends metrics, and implements the
 // grpc.UnaryServerInterceptor type signature.
-func Log(skipPaths map[string]struct{}) grpc.UnaryServerInterceptor {
+func Log() grpc.UnaryServerInterceptor {
 	return func(ctx context.Context, req any, info *grpc.UnaryServerInfo,
 		handler grpc.UnaryHandler,
 	) (any, error) {
@@ -43,10 +43,6 @@ func Log(skipPaths map[string]struct{}) grpc.UnaryServerInterceptor {
 		metric.Timing("durms", dur, map[string]string{"path": info.FullMethod})
 		if err != nil {
 			metric.Incr("error", map[string]string{"path": info.FullMethod})
-		}
-
-		if _, ok := skipPaths[info.FullMethod]; ok {
-			return resp, err
 		}
 
 		// Add additional logging fields for final logging. Do not modify logger

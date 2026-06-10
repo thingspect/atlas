@@ -128,10 +128,10 @@ func New(cfg *config.Config) (*API, error) {
 	}
 
 	srv := grpc.NewServer(grpc.ChainUnaryInterceptor(
-		interceptor.Log(nil),
+		interceptor.Log(),
+		interceptor.Recover(),
 		interceptor.Auth(skipAuth, cfg.PWTKey, redis),
-		interceptor.Validate(skipValidate),
-	))
+		interceptor.Validate(skipValidate)))
 	api.RegisterAlertServiceServer(srv, service.NewAlert(alert.NewDAO(pgRW,
 		pgRO)))
 	api.RegisterDataPointServiceServer(srv, service.NewDataPoint(nsq,

@@ -24,32 +24,32 @@ func TestReset(t *testing.T) {
 		{"100001120102181c", []*decode.Point{
 			{Attr: attrProto, Value: int32(1)},
 			{Attr: AttrCount, Value: int32(0)},
-			{Attr: "hw_ver", Value: int32(18)},
-			{Attr: "ver", Value: "1.2"},
+			{Attr: attrHWVer, Value: int32(18)},
+			{Attr: attrVer, Value: "1.2"},
 		}, ""},
 		{"100001127fff181c", []*decode.Point{
 			{Attr: attrProto, Value: int32(1)},
 			{Attr: AttrCount, Value: int32(0)},
-			{Attr: "hw_ver", Value: int32(18)},
-			{Attr: "ver", Value: "127.255"},
+			{Attr: attrHWVer, Value: int32(18)},
+			{Attr: attrVer, Value: "127.255"},
 		}, ""},
 		{"100001128823181c", []*decode.Point{
 			{Attr: attrProto, Value: int32(1)},
 			{Attr: AttrCount, Value: int32(0)},
-			{Attr: "hw_ver", Value: int32(18)},
-			{Attr: "ver", Value: "2.1.3"},
+			{Attr: attrHWVer, Value: int32(18)},
+			{Attr: attrVer, Value: "2.1.3"},
 		}, ""},
 		{"100001128801181c", []*decode.Point{
 			{Attr: attrProto, Value: int32(1)},
 			{Attr: AttrCount, Value: int32(0)},
-			{Attr: "hw_ver", Value: int32(18)},
-			{Attr: "ver", Value: "2.0.1"},
+			{Attr: attrHWVer, Value: int32(18)},
+			{Attr: attrVer, Value: "2.0.1"},
 		}, ""},
 		{"10000112ffff181c", []*decode.Point{
 			{Attr: attrProto, Value: int32(1)},
 			{Attr: AttrCount, Value: int32(0)},
-			{Attr: "hw_ver", Value: int32(18)},
-			{Attr: "ver", Value: "31.31.31"},
+			{Attr: attrHWVer, Value: int32(18)},
+			{Attr: attrVer, Value: "31.31.31"},
 		}, ""},
 		// Reset bad length.
 		{"00010203040506", nil, "reset format bad length: 00010203040506"},
@@ -60,8 +60,8 @@ func TestReset(t *testing.T) {
 		{"100001120102181cff", []*decode.Point{
 			{Attr: attrProto, Value: int32(1)},
 			{Attr: AttrCount, Value: int32(0)},
-			{Attr: "hw_ver", Value: int32(18)},
-			{Attr: "ver", Value: "1.2"},
+			{Attr: attrHWVer, Value: int32(18)},
+			{Attr: attrVer, Value: "1.2"},
 		}, "reset format unused trailing bytes: 100001120102181cff"},
 	}
 
