@@ -97,5 +97,5 @@ func chanBatteryV(body []byte) ([]*decode.Point, []byte, error) {
 		return nil, nil, err
 	}
 
-	return []*decode.Point{{Attr: "battery_v", Value: volt}}, rem, nil
+	return []*decode.Point{{Attr: decode.AttrBattV, Value: volt}}, rem, nil
 }

@@ -144,7 +144,7 @@ func TestDecodeMessages(t *testing.T) {
 				},
 				{
 					Point: &common.DataPoint{
-						UniqId: uniqID, Attr: "battery_v",
+						UniqId: uniqID, Attr: decode.AttrBattV,
 						ValOneof: &common.DataPoint_Fl64Val{Fl64Val: 3.12},
 						Ts:       now, TraceId: traceID.String(),
 					}, SkipToken: true,

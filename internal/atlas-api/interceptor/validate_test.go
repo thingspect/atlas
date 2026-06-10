@@ -57,15 +57,11 @@ func TestValidate(t *testing.T) {
 		t.Run(fmt.Sprintf("Can log %+v", test), func(t *testing.T) {
 			t.Parallel()
 
-			ctx, cancel := context.WithTimeout(t.Context(),
-				testTimeout)
-			defer cancel()
-
 			handler := func(_ context.Context, _ any) (any, error) {
 				return nil, test.err
 			}
 
-			res, err := Validate(test.inpSkipPaths)(ctx, test.inpReq,
+			res, err := Validate(test.inpSkipPaths)(t.Context(), test.inpReq,
 				test.inpInfo, handler)
 			t.Logf("res, err: %v, %v", res, err)
 			require.Nil(t, res)

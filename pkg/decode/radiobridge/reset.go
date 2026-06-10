@@ -31,7 +31,7 @@ func reset(body []byte) ([]*decode.Point, error) {
 
 	count := int32(body[0] & clearProto)
 	msgs = append(msgs, &decode.Point{Attr: AttrCount, Value: count})
-	msgs = append(msgs, &decode.Point{Attr: "hw_ver", Value: int32(body[3])})
+	msgs = append(msgs, &decode.Point{Attr: attrHWVer, Value: int32(body[3])})
 
 	// Parse firmware version.
 	var firmware string
@@ -46,7 +46,7 @@ func reset(body []byte) ([]*decode.Point, error) {
 		build := body[5] & 0b00011111
 		firmware = fmt.Sprintf("%d.%d.%d", major, minor, build)
 	}
-	msgs = append(msgs, &decode.Point{Attr: "ver", Value: firmware})
+	msgs = append(msgs, &decode.Point{Attr: attrVer, Value: firmware})
 
 	// Check for any remaining bytes.
 	if len(body) > 8 {

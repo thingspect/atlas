@@ -21,6 +21,9 @@ import (
 	"google.golang.org/protobuf/types/known/emptypb"
 )
 
+// errUnauth is used for authentication  errors.
+const errUnauth = "unauthorized"
+
 // Keyer defines the methods provided by a key.DAO.
 type Keyer interface {
 	Create(ctx context.Context, key *api.Key) (*api.Key, error)
@@ -69,7 +72,7 @@ func (s *Session) Login(ctx context.Context, req *api.LoginRequest) (
 			"hashErr: %v, %v, %v, %v", req.GetEmail(), req.GetOrgName(), err,
 			hashErr)
 
-		return nil, status.Error(codes.Unauthenticated, "unauthorized")
+		return nil, status.Error(codes.Unauthenticated, errUnauth)
 	}
 
 	logger.Logger = logger.WithField("userID", user.GetId()).WithField("orgID",
@@ -81,14 +84,14 @@ func (s *Session) Login(ctx context.Context, req *api.LoginRequest) (
 		logger.Debugf("Login crypto.CompareHashPass err, user.Status: %v, %s",
 			err, user.GetStatus())
 
-		return nil, status.Error(codes.Unauthenticated, "unauthorized")
+		return nil, status.Error(codes.Unauthenticated, errUnauth)
 	}
 
 	token, exp, err := session.GenerateWebToken(s.pwtKey, user)
 	if err != nil {
 		logger.Errorf("Login session.GenerateWebToken: %v", err)
 
-		return nil, status.Error(codes.Unauthenticated, "unauthorized")
+		return nil, status.Error(codes.Unauthenticated, errUnauth)
 	}
 
 	return &api.LoginResponse{Token: token, ExpiresAt: exp}, nil

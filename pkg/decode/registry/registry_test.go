@@ -48,7 +48,7 @@ func TestDecode(t *testing.T) {
 			{Attr: decode.AttrTempC, Value: 19.6},
 			{Attr: decode.AttrTempF, Value: 67.3},
 			{Attr: decode.AttrHumPct, Value: 63.5},
-			{Attr: "battery_v", Value: 3.12},
+			{Attr: decode.AttrBattV, Value: 3.12},
 		}, nil},
 		// Decoder function not found.
 		{api.Decoder(999), "", nil, fmt.Errorf("%w: 999", ErrNotFound)},

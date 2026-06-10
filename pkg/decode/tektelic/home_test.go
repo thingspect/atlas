@@ -36,20 +36,20 @@ func TestHome(t *testing.T) {
 		{"046814", []*decode.Point{{Attr: decode.AttrHumPct, Value: 10.0}}, ""},
 		{"04687f", []*decode.Point{{Attr: decode.AttrHumPct, Value: 63.5}}, ""},
 		// Battery (V).
-		{"00ff012c", []*decode.Point{{Attr: "battery_v", Value: 3.0}}, ""},
-		{"00ff0138", []*decode.Point{{Attr: "battery_v", Value: 3.12}}, ""},
+		{"00ff012c", []*decode.Point{{Attr: decode.AttrBattV, Value: 3.0}}, ""},
+		{"00ff0138", []*decode.Point{{Attr: decode.AttrBattV, Value: 3.12}}, ""},
 		// Temperature, Humidity, and Battery (V).
 		{"036700c404687f00ff0138", []*decode.Point{
 			{Attr: decode.AttrTempC, Value: 19.6},
 			{Attr: decode.AttrTempF, Value: 67.3},
 			{Attr: decode.AttrHumPct, Value: 63.5},
-			{Attr: "battery_v", Value: 3.12},
+			{Attr: decode.AttrBattV, Value: 3.12},
 		}, ""},
 		{"036700d004688000ff0139", []*decode.Point{
 			{Attr: decode.AttrTempC, Value: 20.8},
 			{Attr: decode.AttrTempF, Value: 69.4},
 			{Attr: decode.AttrHumPct, Value: 64.0},
-			{Attr: "battery_v", Value: 3.13},
+			{Attr: decode.AttrBattV, Value: 3.13},
 		}, ""},
 		// Home bad length.
 		{"0a", nil, "home format bad length: 0a"},

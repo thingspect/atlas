@@ -22,6 +22,7 @@ const (
 	AttrTempC  = "temp_c"
 	AttrTempF  = "temp_f"
 	AttrHumPct = "humidity_pct"
+	AttrBattV  = "battery_v"
 )
 
 // Point represents an attribute-value pair as produced by a decoder function.

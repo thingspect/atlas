@@ -63,8 +63,8 @@ func TestLogin(t *testing.T) {
 		user.Status = api.Status_ACTIVE
 
 		userer := NewMockUserer(gomock.NewController(t))
-		userer.EXPECT().ReadByEmail(gomock.Any(), user.GetEmail(), org.GetName()).
-			Return(nil, nil, dao.ErrNotFound).Times(1)
+		userer.EXPECT().ReadByEmail(gomock.Any(), user.GetEmail(),
+			org.GetName()).Return(nil, nil, dao.ErrNotFound).Times(1)
 
 		pwtKey := make([]byte, 32)
 		_, err := rand.Read(pwtKey)
@@ -79,8 +79,7 @@ func TestLogin(t *testing.T) {
 		})
 		t.Logf("loginResp, err: %+v, %v", loginResp, err)
 		require.Nil(t, loginResp)
-		require.Equal(t, status.Error(codes.Unauthenticated, "unauthorized"),
-			err)
+		require.Equal(t, status.Error(codes.Unauthenticated, errUnauth), err)
 	})
 
 	t.Run("Log in wrong password", func(t *testing.T) {
@@ -91,8 +90,8 @@ func TestLogin(t *testing.T) {
 		user.Status = api.Status_ACTIVE
 
 		userer := NewMockUserer(gomock.NewController(t))
-		userer.EXPECT().ReadByEmail(gomock.Any(), user.GetEmail(), org.GetName()).
-			Return(user, globalHash, nil).Times(1)
+		userer.EXPECT().ReadByEmail(gomock.Any(), user.GetEmail(),
+			org.GetName()).Return(user, globalHash, nil).Times(1)
 
 		pwtKey := make([]byte, 32)
 		_, err := rand.Read(pwtKey)
@@ -103,12 +102,12 @@ func TestLogin(t *testing.T) {
 
 		sessSvc := NewSession(userer, nil, nil, pwtKey)
 		loginResp, err := sessSvc.Login(ctx, &api.LoginRequest{
-			Email: user.GetEmail(), OrgName: org.GetName(), Password: random.String(10),
+			Email: user.GetEmail(), OrgName: org.GetName(),
+			Password: random.String(10),
 		})
 		t.Logf("loginResp, err: %+v, %v", loginResp, err)
 		require.Nil(t, loginResp)
-		require.Equal(t, status.Error(codes.Unauthenticated, "unauthorized"),
-			err)
+		require.Equal(t, status.Error(codes.Unauthenticated, errUnauth), err)
 	})
 
 	t.Run("Log in disabled user", func(t *testing.T) {
@@ -135,8 +134,7 @@ func TestLogin(t *testing.T) {
 		})
 		t.Logf("loginResp, err: %+v, %v", loginResp, err)
 		require.Nil(t, loginResp)
-		require.Equal(t, status.Error(codes.Unauthenticated, "unauthorized"),
-			err)
+		require.Equal(t, status.Error(codes.Unauthenticated, errUnauth), err)
 	})
 
 	t.Run("Log in contact user", func(t *testing.T) {
@@ -148,8 +146,8 @@ func TestLogin(t *testing.T) {
 		user.Status = api.Status_ACTIVE
 
 		userer := NewMockUserer(gomock.NewController(t))
-		userer.EXPECT().ReadByEmail(gomock.Any(), user.GetEmail(), org.GetName()).
-			Return(user, globalHash, nil).Times(1)
+		userer.EXPECT().ReadByEmail(gomock.Any(), user.GetEmail(),
+			org.GetName()).Return(user, globalHash, nil).Times(1)
 
 		pwtKey := make([]byte, 32)
 		_, err := rand.Read(pwtKey)
@@ -164,8 +162,7 @@ func TestLogin(t *testing.T) {
 		})
 		t.Logf("loginResp, err: %+v, %v", loginResp, err)
 		require.Nil(t, loginResp)
-		require.Equal(t, status.Error(codes.Unauthenticated, "unauthorized"),
-			err)
+		require.Equal(t, status.Error(codes.Unauthenticated, errUnauth), err)
 	})
 
 	t.Run("Log in wrong key", func(t *testing.T) {
@@ -177,8 +174,8 @@ func TestLogin(t *testing.T) {
 		user.Status = api.Status_ACTIVE
 
 		userer := NewMockUserer(gomock.NewController(t))
-		userer.EXPECT().ReadByEmail(gomock.Any(), user.GetEmail(), org.GetName()).
-			Return(user, globalHash, nil).Times(1)
+		userer.EXPECT().ReadByEmail(gomock.Any(), user.GetEmail(),
+			org.GetName()).Return(user, globalHash, nil).Times(1)
 
 		ctx, cancel := context.WithTimeout(t.Context(), testTimeout)
 		defer cancel()
@@ -189,8 +186,7 @@ func TestLogin(t *testing.T) {
 		})
 		t.Logf("loginResp, err: %+v, %v", loginResp, err)
 		require.Nil(t, loginResp)
-		require.Equal(t, status.Error(codes.Unauthenticated, "unauthorized"),
-			err)
+		require.Equal(t, status.Error(codes.Unauthenticated, errUnauth), err)
 	})
 }
 
