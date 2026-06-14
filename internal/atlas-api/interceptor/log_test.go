@@ -33,8 +33,7 @@ func TestLog(t *testing.T) {
 		}},
 		{
 			[]string{random.String(10), random.String(10)},
-			nil,
-			random.String(10),
+			nil, random.String(10),
 			&grpc.UnaryServerInfo{FullMethod: random.String(10)},
 		},
 		{nil, io.EOF, "", &grpc.UnaryServerInfo{FullMethod: random.String(10)}},

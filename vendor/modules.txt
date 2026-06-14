@@ -109,7 +109,7 @@ github.com/nsqio/go-nsq
 # github.com/pmezard/go-difflib v1.0.0
 ## explicit
 github.com/pmezard/go-difflib/difflib
-# github.com/redis/go-redis/v9 v9.20.0
+# github.com/redis/go-redis/v9 v9.20.1
 ## explicit; go 1.24
 github.com/redis/go-redis/v9
 github.com/redis/go-redis/v9/auth
@@ -186,12 +186,12 @@ golang.org/x/text/transform
 golang.org/x/text/unicode/bidi
 golang.org/x/text/unicode/norm
 golang.org/x/text/width
-# google.golang.org/genproto/googleapis/api v0.0.0-20260608224507-4308a22a1bab
+# google.golang.org/genproto/googleapis/api v0.0.0-20260610212136-7ab31c22f7ad
 ## explicit; go 1.25.0
 google.golang.org/genproto/googleapis/api
 google.golang.org/genproto/googleapis/api/annotations
 google.golang.org/genproto/googleapis/api/httpbody
-# google.golang.org/genproto/googleapis/rpc v0.0.0-20260608224507-4308a22a1bab
+# google.golang.org/genproto/googleapis/rpc v0.0.0-20260610212136-7ab31c22f7ad
 ## explicit; go 1.25.0
 google.golang.org/genproto/googleapis/rpc/status
 # google.golang.org/grpc v1.81.1

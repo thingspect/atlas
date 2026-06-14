@@ -8,7 +8,7 @@ Install any compliant package of [Docker](https://docs.docker.com/get-started/ov
 
 ```
 brew install colima docker docker-compose docker-buildx
-colima start --cpu 3 --memory 3 --disk 16 --mount-type virtiofs --mount ~/code/go:w
+colima start --cpu 3 --memory 3 --disk 16 --mount-type virtiofs --mount ~/code/go:w --vz-rosetta
 ```
 
 Run the build and tests:
@@ -32,6 +32,29 @@ curl -v -X POST -d '{"email":"testadmin@thingspect.com", "orgName":"testorg", "p
 ```
 
 OpenAPI live docs are available at [http://localhost:8000/](http://localhost:8000/).
+
+## Tutorial
+
+Getting started with the Atlas API:
+
+- Log in with `/v1/sessions/login` using your provided credentials. Click `Authorize` below and enter the returned token.
+- (Optional) Create an `BUILDER` role API key with `/v1/sessions/keys`. Re-authorize using the returned token.
+
+Publish and verify data points:
+
+- Create a device with `/v1/devices`. Include a notable `tag` for future use.
+- Publish data with `/v1/datapoints`. The `attr` and `val` fields can be arbitrarily chosen.
+- Inspect the received data with `/v1/datapoints/latest` using the device's `uniqID`.
+
+Publish data points and receive alerts:
+
+- Update your user with `/v1/users/{user.id}` to include a notable `tag`.
+- Create a rule with `/v1/rules`. The `deviceTag` field should match a tag of the device. The `expr` field can be simply `true`.
+- Create an alarm with `/v1/rules/{alarm.ruleID}/alarms`. The `type` field should match data that is available in the user's fields, such as `EMAIL`. The `userTags` field should include a tag of the user.
+- Publish data for the device, as done in the previous section. The `attr` field should match the `attr` of the rule.
+- Verify the alert is received by the user on the configured `type` method.
+- Inspect the created event with `/v1/events` using the device's `uniqID`.
+- Inspect the created alert with `/v1/alerts` using the device's `uniqID`.
 
 ## Deploying
 
