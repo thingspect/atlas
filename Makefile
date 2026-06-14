@@ -2,6 +2,7 @@
 
 export CGO_ENABLED = 0
 RFLAG = -buildmode=pie
+export GOAMD64 = v3
 
 # Race detector is exclusive of PIE on some platforms
 # https://github.com/golang/go/issues/6508
