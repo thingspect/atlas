@@ -45,9 +45,9 @@ func TestParse(t *testing.T) {
 			nil,
 		},
 		{
-			"conn", "", []*decode.Point{
+			attrConn, "", []*decode.Point{
 				{Attr: AttrRaw, Value: `{}`},
-				{Attr: "conn", Value: "OFFLINE"},
+				{Attr: attrConn, Value: "OFFLINE"},
 			}, nil,
 		},
 		// Gateway unknown event type.

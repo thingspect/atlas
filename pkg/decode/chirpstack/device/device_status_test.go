@@ -23,20 +23,20 @@ func TestDeviceStatus(t *testing.T) {
 	}{
 		// Device Status.
 		{&integration.StatusEvent{}, []*decode.Point{
-			{Attr: "raw_device", Value: `{}`},
+			{Attr: AttrRaw, Value: `{}`},
 			{Attr: "ext_power", Value: false},
 		}, ""},
 		{&integration.StatusEvent{
 			Margin: 7, BatteryLevelUnavailable: true,
 		}, []*decode.Point{
-			{Attr: "raw_device", Value: `{"margin":7,` +
+			{Attr: AttrRaw, Value: `{"margin":7,` +
 				`"batteryLevelUnavailable":true}`},
 			{Attr: "lora_snr_margin", Value: int32(7)},
 			{Attr: "ext_power", Value: false},
 			{Attr: "battery_unavail", Value: true},
 		}, ""},
 		{&integration.StatusEvent{Margin: 7, BatteryLevel: 99}, []*decode.Point{
-			{Attr: "raw_device", Value: `{"margin":7,"batteryLevel":99}`},
+			{Attr: AttrRaw, Value: `{"margin":7,"batteryLevel":99}`},
 			{Attr: "lora_snr_margin", Value: int32(7)},
 			{Attr: "ext_power", Value: false},
 			{Attr: "battery_pct", Value: float64(99)},

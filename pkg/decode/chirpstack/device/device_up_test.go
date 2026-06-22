@@ -44,7 +44,7 @@ func TestDeviceUp(t *testing.T) {
 		// Device Uplink.
 		{
 			&integration.UplinkEvent{}, []*decode.Point{
-				{Attr: "raw_device", Value: `{}`},
+				{Attr: AttrRaw, Value: `{}`},
 				{Attr: "adr", Value: false},
 				{Attr: "data_rate", Value: int32(0)},
 				{Attr: "confirmed", Value: false},
@@ -53,7 +53,7 @@ func TestDeviceUp(t *testing.T) {
 		{
 			&integration.UplinkEvent{RxInfo: []*gw.UplinkRxInfo{{}}},
 			[]*decode.Point{
-				{Attr: "raw_device", Value: `{"rxInfo":[{}]}`},
+				{Attr: AttrRaw, Value: `{"rxInfo":[{}]}`},
 				{Attr: "channel", Value: int32(0)},
 				{Attr: "adr", Value: false},
 				{Attr: "data_rate", Value: int32(0)},
@@ -70,7 +70,7 @@ func TestDeviceUp(t *testing.T) {
 				Dr: 3, Data: bData, Confirmed: true, RegionConfigId: "us915_0",
 			},
 			[]*decode.Point{
-				{Attr: "raw_device", Value: fmt.Sprintf(`{"adr":true,"dr":3,`+
+				{Attr: AttrRaw, Value: fmt.Sprintf(`{"adr":true,"dr":3,`+
 					`"confirmed":true,"data":"%s","rxInfo":[{"gatewayId":`+
 					`"low","gwTime":"%s","rssi":-80,"snr":1},{"gatewayId":`+
 					`"%s","gwTime":"%s","rssi":-74,"snr":7}],"txInfo":{`+

@@ -18,7 +18,7 @@ func deviceLog(body []byte) ([]*decode.Point, error) {
 	}
 
 	// Build raw device and data payloads for debugging, with consistent output.
-	msgs := []*decode.Point{{Attr: "raw_device", Value: strings.ReplaceAll(
+	msgs := []*decode.Point{{Attr: AttrRaw, Value: strings.ReplaceAll(
 		protojson.MarshalOptions{}.Format(logMsg), " ", "")}}
 
 	// Parse ErrorEvent.

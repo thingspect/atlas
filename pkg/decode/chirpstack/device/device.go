@@ -8,6 +8,9 @@ import (
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
+// AttrRaw is the raw device attribute.
+const AttrRaw = "raw_device"
+
 // Parse parses a device payload from a []byte according to the spec. Points,
 // optional data []byte, and a timestamp are built from successful parse
 // results. If a fatal error is encountered, it is returned along with any valid

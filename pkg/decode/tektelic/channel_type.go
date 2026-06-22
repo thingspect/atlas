@@ -29,7 +29,7 @@ func chanMotion(body []byte) ([]*decode.Point, []byte, error) {
 		return nil, nil, err
 	}
 
-	return []*decode.Point{{Attr: "motion", Value: motion}}, rem, nil
+	return []*decode.Point{{Attr: attrMotion, Value: motion}}, rem, nil
 }
 
 // chanTempC parses a Temperature data channel from a []byte according to the

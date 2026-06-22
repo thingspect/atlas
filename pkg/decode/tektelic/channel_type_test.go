@@ -23,13 +23,13 @@ func TestChanMotion(t *testing.T) {
 	}{
 		// Motion.
 		{"0a0000", []*decode.Point{
-			{Attr: "motion", Value: false},
+			{Attr: attrMotion, Value: false},
 		}, []byte{}, ""},
 		{"0a00ff", []*decode.Point{
-			{Attr: "motion", Value: true},
+			{Attr: attrMotion, Value: true},
 		}, []byte{}, ""},
 		{"0a00000a00ff", []*decode.Point{
-			{Attr: "motion", Value: false},
+			{Attr: attrMotion, Value: false},
 		}, []byte{0x0a, 0x00, 0xff}, ""},
 		// Motion bad length.
 		{"0a", nil, nil, "chanMotion format bad length: 0a"},

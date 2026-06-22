@@ -28,7 +28,7 @@ func TestDeviceTXAck(t *testing.T) {
 		// Device TX ACK.
 		{
 			&integration.TxAckEvent{}, []*decode.Point{
-				{Attr: "raw_device", Value: `{}`},
+				{Attr: AttrRaw, Value: `{}`},
 				{Attr: "tx_queued", Value: true},
 			}, "",
 		},
@@ -37,7 +37,7 @@ func TestDeviceTXAck(t *testing.T) {
 				GatewayId: gatewayID,
 				TxInfo:    &gw.DownlinkTxInfo{Frequency: 902700000},
 			}, []*decode.Point{
-				{Attr: "raw_device", Value: fmt.Sprintf(`{"gatewayId":"%s",`+
+				{Attr: AttrRaw, Value: fmt.Sprintf(`{"gatewayId":"%s",`+
 					`"txInfo":{"frequency":902700000}}`, gatewayID)},
 				{Attr: "tx_queued", Value: true},
 				{Attr: "tx_gateway_id", Value: gatewayID},
