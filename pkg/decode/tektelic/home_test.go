@@ -21,8 +21,8 @@ func TestHome(t *testing.T) {
 		err string
 	}{
 		// Motion.
-		{"0a0000", []*decode.Point{{Attr: "motion", Value: false}}, ""},
-		{"0a00ff", []*decode.Point{{Attr: "motion", Value: true}}, ""},
+		{"0a0000", []*decode.Point{{Attr: attrMotion, Value: false}}, ""},
+		{"0a00ff", []*decode.Point{{Attr: attrMotion, Value: true}}, ""},
 		// Temperature.
 		{"0367000a", []*decode.Point{
 			{Attr: decode.AttrTempC, Value: 1.0},
@@ -59,7 +59,7 @@ func TestHome(t *testing.T) {
 		{"0a0100", nil, "typeDigital format bad identifier: 0a0100"},
 		// Home unused trailing bytes.
 		{"0a0000ff", []*decode.Point{
-			{Attr: "motion", Value: false},
+			{Attr: attrMotion, Value: false},
 		}, "home format unused trailing bytes: ff"},
 	}
 

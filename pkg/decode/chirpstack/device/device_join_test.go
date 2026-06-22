@@ -29,7 +29,7 @@ func TestDeviceJoin(t *testing.T) {
 		// Device Join.
 		{
 			&integration.JoinEvent{}, []*decode.Point{
-				{Attr: "raw_device", Value: `{}`},
+				{Attr: AttrRaw, Value: `{}`},
 				{Attr: "join", Value: true},
 			}, "",
 		},
@@ -40,7 +40,7 @@ func TestDeviceJoin(t *testing.T) {
 					DeviceClassEnabled: common.DeviceClass_CLASS_C,
 				}, DevAddr: devAddr, RegionConfigId: "us915_0",
 			}, []*decode.Point{
-				{Attr: "raw_device", Value: fmt.Sprintf(`{"deviceInfo":`+
+				{Attr: AttrRaw, Value: fmt.Sprintf(`{"deviceInfo":`+
 					`{"deviceProfileName":"1.0.2","devEui":"%s",`+
 					`"deviceClassEnabled":"CLASS_C"},"devAddr":"%s",`+
 					`"regionConfigId":"us915_0"}`, uniqID,

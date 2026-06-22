@@ -23,11 +23,11 @@ func TestDeviceAck(t *testing.T) {
 	}{
 		// Device ACK.
 		{&integration.AckEvent{}, []*decode.Point{
-			{Attr: "raw_device", Value: `{}`},
+			{Attr: AttrRaw, Value: `{}`},
 			{Attr: "ack", Value: ackTimeout},
 		}, ""},
 		{&integration.AckEvent{Acknowledged: true}, []*decode.Point{
-			{Attr: "raw_device", Value: `{"acknowledged":true}`},
+			{Attr: AttrRaw, Value: `{"acknowledged":true}`},
 			{Attr: "ack", Value: ackOK},
 		}, ""},
 		// Device ACK bad length.

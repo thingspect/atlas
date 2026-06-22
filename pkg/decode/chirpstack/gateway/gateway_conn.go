@@ -28,7 +28,7 @@ func gatewayConn(body []byte) ([]*decode.Point, error) {
 
 	// Parse ConnState.
 	msgs = append(msgs, &decode.Point{
-		Attr: "conn", Value: connMsg.GetState().String(),
+		Attr: attrConn, Value: connMsg.GetState().String(),
 	})
 
 	return msgs, nil

@@ -28,30 +28,30 @@ func TestParse(t *testing.T) {
 	}{
 		// Device.
 		{"up", "", []*decode.Point{
-			{Attr: "raw_device", Value: `{}`},
+			{Attr: AttrRaw, Value: `{}`},
 			{Attr: "adr", Value: false},
 			{Attr: "data_rate", Value: int32(0)},
 			{Attr: "confirmed", Value: false},
 		}, nil},
 		{"join", "", []*decode.Point{
-			{Attr: "raw_device", Value: `{}`},
+			{Attr: AttrRaw, Value: `{}`},
 			{Attr: "join", Value: true},
 		}, nil},
 		{"ack", "", []*decode.Point{
-			{Attr: "raw_device", Value: `{}`},
+			{Attr: AttrRaw, Value: `{}`},
 			{Attr: "ack", Value: ackTimeout},
 		}, nil},
 		{"log", "", []*decode.Point{
-			{Attr: "raw_device", Value: `{}`},
+			{Attr: AttrRaw, Value: `{}`},
 			{Attr: "log_level", Value: "INFO"},
 			{Attr: "log_code", Value: "UNKNOWN"},
 		}, nil},
 		{"txack", "", []*decode.Point{
-			{Attr: "raw_device", Value: `{}`},
+			{Attr: AttrRaw, Value: `{}`},
 			{Attr: "tx_queued", Value: true},
 		}, nil},
 		{"status", "", []*decode.Point{
-			{Attr: "raw_device", Value: `{}`},
+			{Attr: AttrRaw, Value: `{}`},
 			{Attr: "ext_power", Value: false},
 		}, nil},
 		// Device unknown event type.

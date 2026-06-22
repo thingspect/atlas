@@ -21,7 +21,7 @@ import (
 	"google.golang.org/protobuf/types/known/emptypb"
 )
 
-// errUnauth is used for authentication  errors.
+// errUnauth is used for authentication errors.
 const errUnauth = "unauthorized"
 
 // Keyer defines the methods provided by a key.DAO.

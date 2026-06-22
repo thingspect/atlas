@@ -48,7 +48,7 @@ jobs:
           apk add --no-cache git make
           go env
       - name: Clone
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
       - name: Restart_MQTT
         # Restart MQTT after volumes have been checked out
         uses: docker://docker

@@ -24,7 +24,7 @@ func TestDeviceError(t *testing.T) {
 		// Device Error.
 		{
 			&integration.LogEvent{}, []*decode.Point{
-				{Attr: "raw_device", Value: `{}`},
+				{Attr: AttrRaw, Value: `{}`},
 				{Attr: "log_level", Value: "INFO"},
 				{Attr: "log_code", Value: "UNKNOWN"},
 			}, "",
@@ -36,7 +36,7 @@ func TestDeviceError(t *testing.T) {
 			},
 			[]*decode.Point{
 				{
-					Attr: "raw_device",
+					Attr: AttrRaw,
 					Value: `{"level":"WARNING","code":"OTAA","description":` +
 						`"OTAA_ERROR"}`,
 				},

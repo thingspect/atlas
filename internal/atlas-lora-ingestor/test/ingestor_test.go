@@ -13,6 +13,7 @@ import (
 	"github.com/chirpstack/chirpstack/api/go/v4/integration"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	"github.com/thingspect/atlas/pkg/decode/chirpstack/device"
 	"github.com/thingspect/atlas/pkg/decode/chirpstack/gateway"
 	"github.com/thingspect/atlas/pkg/test/random"
 	"github.com/thingspect/atlas/proto/go/message"
@@ -198,7 +199,7 @@ func TestDecodeDevices(t *testing.T) {
 			[]*message.ValidatorIn{
 				{
 					Point: &common.DataPoint{
-						UniqId: uniqID, Attr: "raw_device",
+						UniqId: uniqID, Attr: device.AttrRaw,
 						ValOneof: &common.DataPoint_StrVal{
 							StrVal: fmt.Sprintf(`{"data":"%s"}`, b64Data),
 						},
@@ -239,7 +240,7 @@ func TestDecodeDevices(t *testing.T) {
 			[]*message.ValidatorIn{
 				{
 					Point: &common.DataPoint{
-						UniqId: uniqID, Attr: "raw_device",
+						UniqId: uniqID, Attr: device.AttrRaw,
 						ValOneof: &common.DataPoint_StrVal{
 							StrVal: fmt.Sprintf(`{"devAddr":"%s"}`, devAddr),
 						},
@@ -266,7 +267,7 @@ func TestDecodeDevices(t *testing.T) {
 			[]*message.ValidatorIn{
 				{
 					Point: &common.DataPoint{
-						UniqId: uniqID, Attr: "raw_device",
+						UniqId: uniqID, Attr: device.AttrRaw,
 						ValOneof: &common.DataPoint_StrVal{
 							StrVal: `{"acknowledged":true}`,
 						},
@@ -287,7 +288,7 @@ func TestDecodeDevices(t *testing.T) {
 			[]*message.ValidatorIn{
 				{
 					Point: &common.DataPoint{
-						UniqId: uniqID, Attr: "raw_device",
+						UniqId: uniqID, Attr: device.AttrRaw,
 						ValOneof: &common.DataPoint_StrVal{
 							StrVal: `{"code":"OTAA"}`,
 						},
@@ -314,7 +315,7 @@ func TestDecodeDevices(t *testing.T) {
 			[]*message.ValidatorIn{
 				{
 					Point: &common.DataPoint{
-						UniqId: uniqID, Attr: "raw_device",
+						UniqId: uniqID, Attr: device.AttrRaw,
 						ValOneof: &common.DataPoint_StrVal{StrVal: `{}`},
 					}, SkipToken: true,
 				},
@@ -334,7 +335,7 @@ func TestDecodeDevices(t *testing.T) {
 			[]*message.ValidatorIn{
 				{
 					Point: &common.DataPoint{
-						UniqId: uniqID, Attr: "raw_device",
+						UniqId: uniqID, Attr: device.AttrRaw,
 						ValOneof: &common.DataPoint_StrVal{StrVal: `{}`},
 					}, SkipToken: true,
 				},

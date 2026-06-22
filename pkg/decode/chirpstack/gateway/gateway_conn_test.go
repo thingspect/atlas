@@ -25,13 +25,13 @@ func TestGatewayConn(t *testing.T) {
 		{
 			&gw.ConnState{}, []*decode.Point{
 				{Attr: AttrRaw, Value: `{}`},
-				{Attr: "conn", Value: "OFFLINE"},
+				{Attr: attrConn, Value: "OFFLINE"},
 			}, "",
 		},
 		{
 			&gw.ConnState{State: gw.ConnState_ONLINE}, []*decode.Point{
 				{Attr: AttrRaw, Value: `{"state":"ONLINE"}`},
-				{Attr: "conn", Value: "ONLINE"},
+				{Attr: attrConn, Value: "ONLINE"},
 			}, "",
 		},
 		// Gateway ConnState bad length.
