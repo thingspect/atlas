@@ -8,7 +8,7 @@ Install any compliant package of [Docker](https://docs.docker.com/get-started/ov
 
 ```
 brew install colima docker docker-compose docker-buildx
-colima start --cpu 3 --memory 3 --disk 16 --mount-type virtiofs --mount ~/code/go:w --vz-rosetta
+colima start --cpu 3 --memory 3 --disk 16 --mount ~/code/go:w --vz-rosetta
 ```
 
 Run the build and tests:

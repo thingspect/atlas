@@ -8,6 +8,7 @@ const (
 	attrTamper = "tamper"
 	attrVer    = "ver"
 	attrHWVer  = "hw_ver"
+	attrErr    = "error"
 )
 
 const clearProto = 0b00001111

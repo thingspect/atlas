@@ -25,7 +25,8 @@ func deviceUp(body []byte) (
 
 	// Build raw device and data payloads for debugging, with consistent output.
 	msgs := []*decode.Point{{Attr: AttrRaw, Value: strings.ReplaceAll(
-		protojson.MarshalOptions{}.Format(upMsg), " ", "")}}
+		protojson.MarshalOptions{}.Format(upMsg), " ", "",
+	)}}
 
 	if upMsg.GetData() != nil {
 		msgs = append(msgs, &decode.Point{
@@ -52,7 +53,7 @@ func deviceUp(body []byte) (
 		Attr: "data_rate", Value: int32(upMsg.GetDr()),
 	})
 	msgs = append(msgs, &decode.Point{
-		Attr: "confirmed", Value: upMsg.GetConfirmed(),
+		Attr: attrConf, Value: upMsg.GetConfirmed(),
 	})
 	if upMsg.GetRegionConfigId() != "" {
 		msgs = append(msgs, &decode.Point{

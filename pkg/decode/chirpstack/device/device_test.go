@@ -31,7 +31,7 @@ func TestParse(t *testing.T) {
 			{Attr: AttrRaw, Value: `{}`},
 			{Attr: "adr", Value: false},
 			{Attr: "data_rate", Value: int32(0)},
-			{Attr: "confirmed", Value: false},
+			{Attr: attrConf, Value: false},
 		}, nil},
 		{"join", "", []*decode.Point{
 			{Attr: AttrRaw, Value: `{}`},

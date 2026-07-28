@@ -29,7 +29,7 @@ func TestParseRXInfo(t *testing.T) {
 		// Gateway UplinkRxInfo.
 		{
 			&gw.UplinkRxInfo{}, []*decode.Point{
-				{Attr: "channel", Value: int32(0)},
+				{Attr: AttrChan, Value: int32(0)},
 			},
 		},
 		{
@@ -39,7 +39,7 @@ func TestParseRXInfo(t *testing.T) {
 			}, []*decode.Point{
 				{Attr: "lora_rssi", Value: int32(-74)},
 				{Attr: "lora_snr", Value: float64(7)},
-				{Attr: "channel", Value: int32(2)},
+				{Attr: AttrChan, Value: int32(2)},
 				{Attr: key, Value: val},
 			},
 		},
@@ -83,7 +83,7 @@ func TestParseRXInfos(t *testing.T) {
 			[]*gw.UplinkRxInfo{
 				{},
 			}, nil, []*decode.Point{
-				{Attr: "channel", Value: int32(0)},
+				{Attr: AttrChan, Value: int32(0)},
 			},
 		},
 		{
@@ -101,7 +101,7 @@ func TestParseRXInfos(t *testing.T) {
 				},
 				{Attr: "lora_rssi", Value: int32(-74)},
 				{Attr: "lora_snr", Value: float64(7)},
-				{Attr: "channel", Value: int32(0)},
+				{Attr: AttrChan, Value: int32(0)},
 				{Attr: key, Value: val},
 			},
 		},
@@ -116,7 +116,7 @@ func TestParseRXInfos(t *testing.T) {
 				},
 				{Attr: "lora_rssi", Value: int32(-74)},
 				{Attr: "lora_snr", Value: float64(7)},
-				{Attr: "channel", Value: int32(0)},
+				{Attr: AttrChan, Value: int32(0)},
 			},
 		},
 		// Gateway UplinkRxInfo bad length.
