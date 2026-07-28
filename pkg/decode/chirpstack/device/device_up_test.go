@@ -14,6 +14,7 @@ import (
 	"github.com/chirpstack/chirpstack/api/go/v4/integration"
 	"github.com/stretchr/testify/require"
 	"github.com/thingspect/atlas/pkg/decode"
+	"github.com/thingspect/atlas/pkg/decode/chirpstack"
 	"github.com/thingspect/atlas/pkg/test/random"
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/known/timestamppb"
@@ -47,17 +48,17 @@ func TestDeviceUp(t *testing.T) {
 				{Attr: AttrRaw, Value: `{}`},
 				{Attr: "adr", Value: false},
 				{Attr: "data_rate", Value: int32(0)},
-				{Attr: "confirmed", Value: false},
+				{Attr: attrConf, Value: false},
 			}, time.Now(), nil, "",
 		},
 		{
 			&integration.UplinkEvent{RxInfo: []*gw.UplinkRxInfo{{}}},
 			[]*decode.Point{
 				{Attr: AttrRaw, Value: `{"rxInfo":[{}]}`},
-				{Attr: "channel", Value: int32(0)},
+				{Attr: chirpstack.AttrChan, Value: int32(0)},
 				{Attr: "adr", Value: false},
 				{Attr: "data_rate", Value: int32(0)},
-				{Attr: "confirmed", Value: false},
+				{Attr: attrConf, Value: false},
 			},
 			time.Now(), nil, "",
 		},
@@ -85,11 +86,11 @@ func TestDeviceUp(t *testing.T) {
 				},
 				{Attr: "lora_rssi", Value: int32(-74)},
 				{Attr: "lora_snr", Value: float64(7)},
-				{Attr: "channel", Value: int32(0)},
+				{Attr: chirpstack.AttrChan, Value: int32(0)},
 				{Attr: "frequency", Value: int32(902700000)},
 				{Attr: "adr", Value: true},
 				{Attr: "data_rate", Value: int32(3)},
-				{Attr: "confirmed", Value: true},
+				{Attr: attrConf, Value: true},
 				{Attr: "region_config_id", Value: "us915_0"},
 			},
 			now, bData, "",

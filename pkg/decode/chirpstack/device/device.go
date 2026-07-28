@@ -8,8 +8,11 @@ import (
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
-// AttrRaw is the raw device attribute.
-const AttrRaw = "raw_device"
+// Constants used for ChirpStack device attributes.
+const (
+	AttrRaw  = "raw_device"
+	attrConf = "confirmed"
+)
 
 // Parse parses a device payload from a []byte according to the spec. Points,
 // optional data []byte, and a timestamp are built from successful parse

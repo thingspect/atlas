@@ -9,6 +9,7 @@ import (
 	"github.com/chirpstack/chirpstack/api/go/v4/gw"
 	"github.com/stretchr/testify/require"
 	"github.com/thingspect/atlas/pkg/decode"
+	"github.com/thingspect/atlas/pkg/decode/chirpstack"
 	"google.golang.org/protobuf/proto"
 )
 
@@ -30,7 +31,7 @@ func TestGatewayUp(t *testing.T) {
 		{
 			&gw.UplinkFrame{RxInfo: &gw.UplinkRxInfo{}}, []*decode.Point{
 				{Attr: AttrRaw, Value: `{"rxInfo":{}}`},
-				{Attr: "channel", Value: int32(0)},
+				{Attr: chirpstack.AttrChan, Value: int32(0)},
 			}, "",
 		},
 		{
@@ -50,7 +51,7 @@ func TestGatewayUp(t *testing.T) {
 				{Attr: "sf", Value: int32(7)},
 				{Attr: "lora_rssi", Value: int32(-74)},
 				{Attr: "lora_snr", Value: float64(7)},
-				{Attr: "channel", Value: int32(2)},
+				{Attr: chirpstack.AttrChan, Value: int32(2)},
 			}, "",
 		},
 		// Gateway Uplink bad length.

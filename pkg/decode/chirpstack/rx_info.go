@@ -12,6 +12,9 @@ import (
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
+// AttrChan is the channel attribute.
+const AttrChan = "channel"
+
 // ParseRXInfo parses a gateway UplinkRxInfo payload according to the spec for
 // gateway and device use.
 func ParseRXInfo(rxInfo *gw.UplinkRxInfo) []*decode.Point {
@@ -34,7 +37,7 @@ func ParseRXInfo(rxInfo *gw.UplinkRxInfo) []*decode.Point {
 	}
 	msgs = append(msgs, &decode.Point{
 		//nolint:gosec // Safe conversion for limited values.
-		Attr: "channel", Value: int32(rxInfo.GetChannel()),
+		Attr: AttrChan, Value: int32(rxInfo.GetChannel()),
 	})
 	for k, v := range rxInfo.GetMetadata() {
 		msgs = append(msgs, &decode.Point{Attr: k, Value: v})

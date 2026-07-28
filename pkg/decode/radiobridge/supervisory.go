@@ -50,7 +50,7 @@ func supervisory(body []byte) ([]*decode.Point, error) {
 	errCodes := body[2]
 	for _, err := range errorSuper {
 		if errCodes&err.flag == err.flag {
-			msgs = append(msgs, &decode.Point{Attr: "error", Value: err.code})
+			msgs = append(msgs, &decode.Point{Attr: attrErr, Value: err.code})
 		}
 	}
 

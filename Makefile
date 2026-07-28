@@ -28,7 +28,7 @@ install:
 	-ldflags="-w" ./$${x}; done
 
 lint:
-	go install golang.org/x/vuln/cmd/govulncheck@v1.3.0
+	go install golang.org/x/vuln/cmd/govulncheck@v1.5.0
 	govulncheck -test ./...
 
 	go install github.com/golangci/golangci-lint/v2/cmd/golangci-lint@v2.12.2
