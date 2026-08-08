@@ -33,7 +33,9 @@ func (h *heapCache[V]) Set(_ context.Context, key string, value V) error {
 }
 
 // SetTTL sets key to value with expiration.
-func (h *heapCache[V]) SetTTL(_ context.Context, key string, value V, exp time.Duration) error {
+func (h *heapCache[V]) SetTTL(_ context.Context, key string, value V,
+	exp time.Duration,
+) error {
 	_, _ = h.cache.Set(key, value)
 	h.cache.SetExpiresAfter(key, exp)
 
@@ -53,7 +55,8 @@ func (h *heapCache[V]) Get(_ context.Context, key string) (V, error) {
 
 // SetIfNotExist sets key to value if the key does not exist. If the key already
 // exists, ErrAlreadyExists is returned.
-func (h *heapCache[V]) SetIfNotExist(_ context.Context, key string, value V) error {
+func (h *heapCache[V]) SetIfNotExist(_ context.Context, key string, value V,
+) error {
 	_, ok := h.cache.SetIfAbsent(key, value)
 	if !ok {
 		return ErrAlreadyExists
@@ -64,7 +67,9 @@ func (h *heapCache[V]) SetIfNotExist(_ context.Context, key string, value V) err
 
 // SetIfNotExistTTL sets key to value, with expiration, if the key does not
 // exist. If the key already exists, ErrAlreadyExists is returned.
-func (h *heapCache[V]) SetIfNotExistTTL(_ context.Context, key string, value V, exp time.Duration) error {
+func (h *heapCache[V]) SetIfNotExistTTL(_ context.Context, key string, value V,
+	exp time.Duration,
+) error {
 	_, ok := h.cache.SetIfAbsent(key, value)
 	if !ok {
 		return ErrAlreadyExists

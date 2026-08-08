@@ -46,8 +46,8 @@ func TestDeviceUp(t *testing.T) {
 		{
 			&integration.UplinkEvent{}, []*decode.Point{
 				{Attr: AttrRaw, Value: `{}`},
-				{Attr: "adr", Value: false},
-				{Attr: "data_rate", Value: int32(0)},
+				{Attr: AttrADR, Value: false},
+				{Attr: AttrDR, Value: int32(0)},
 				{Attr: attrConf, Value: false},
 			}, time.Now(), nil, "",
 		},
@@ -56,8 +56,8 @@ func TestDeviceUp(t *testing.T) {
 			[]*decode.Point{
 				{Attr: AttrRaw, Value: `{"rxInfo":[{}]}`},
 				{Attr: chirpstack.AttrChan, Value: int32(0)},
-				{Attr: "adr", Value: false},
-				{Attr: "data_rate", Value: int32(0)},
+				{Attr: AttrADR, Value: false},
+				{Attr: AttrDR, Value: int32(0)},
 				{Attr: attrConf, Value: false},
 			},
 			time.Now(), nil, "",
@@ -88,8 +88,8 @@ func TestDeviceUp(t *testing.T) {
 				{Attr: "lora_snr", Value: float64(7)},
 				{Attr: chirpstack.AttrChan, Value: int32(0)},
 				{Attr: "frequency", Value: int32(902700000)},
-				{Attr: "adr", Value: true},
-				{Attr: "data_rate", Value: int32(3)},
+				{Attr: AttrADR, Value: true},
+				{Attr: AttrDR, Value: int32(3)},
 				{Attr: attrConf, Value: true},
 				{Attr: "region_config_id", Value: "us915_0"},
 			},

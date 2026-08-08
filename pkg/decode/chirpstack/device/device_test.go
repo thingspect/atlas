@@ -29,8 +29,8 @@ func TestParse(t *testing.T) {
 		// Device.
 		{"up", "", []*decode.Point{
 			{Attr: AttrRaw, Value: `{}`},
-			{Attr: "adr", Value: false},
-			{Attr: "data_rate", Value: int32(0)},
+			{Attr: AttrADR, Value: false},
+			{Attr: AttrDR, Value: int32(0)},
 			{Attr: attrConf, Value: false},
 		}, nil},
 		{"join", "", []*decode.Point{

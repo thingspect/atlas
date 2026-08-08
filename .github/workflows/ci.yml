@@ -11,6 +11,8 @@ jobs:
       env:
         GOFLAGS: -buildvcs=false
         TEST_REDIS_HOST: redis
+        TEST_VALKEY_HOST: valkey
+        TEST_VALKEY_PORT: 6379
         TEST_PG_URI: pgx://postgres:postgres@postgres/atlas_test
         TEST_NSQ_PUB_ADDR: nsqd:4150
         TEST_NSQ_LOOKUP_ADDRS: nsqlookupd:4161
@@ -40,6 +42,8 @@ jobs:
         options: --name mqtt
       redis:
         image: redis:8-alpine
+      valkey:
+        image: valkey/valkey:9-alpine
     steps:
       - name: Deps
         # Add packages needed to support checkout, builds, and tests
