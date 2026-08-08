@@ -16,6 +16,14 @@ ifeq ($(strip $(TEST_REDIS_HOST)),)
 TEST_REDIS_HOST = 127.0.0.1
 endif
 
+ifeq ($(strip $(TEST_VALKEY_HOST)),)
+TEST_VALKEY_HOST = 127.0.0.1
+endif
+
+ifeq ($(strip $(TEST_VALKEY_PORT)),)
+TEST_VALKEY_PORT = 6380
+endif
+
 ifeq ($(strip $(TEST_PG_URI)),)
 TEST_PG_URI = pgx://postgres:postgres@127.0.0.1/atlas_test
 endif
@@ -28,7 +36,7 @@ install:
 	-ldflags="-w" ./$${x}; done
 
 lint:
-	go install golang.org/x/vuln/cmd/govulncheck@v1.5.0
+	go install golang.org/x/vuln/cmd/govulncheck@v1.6.0
 	govulncheck -test ./...
 
 	go install github.com/golangci/golangci-lint/v2/cmd/golangci-lint@v2.12.2
@@ -39,6 +47,7 @@ lint:
 
 init_db:
 	echo FLUSHALL|nc -w 2 $(TEST_REDIS_HOST) 6379
+	echo FLUSHALL|nc -w 2 $(TEST_VALKEY_HOST) $(TEST_VALKEY_PORT)
 
 	go install -tags pgx \
 	github.com/golang-migrate/migrate/v4/cmd/migrate@v4.19.1

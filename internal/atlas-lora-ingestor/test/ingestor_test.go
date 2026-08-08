@@ -215,13 +215,13 @@ func TestDecodeDevices(t *testing.T) {
 				},
 				{
 					Point: &common.DataPoint{
-						UniqId: uniqID, Attr: "adr",
+						UniqId: uniqID, Attr: device.AttrADR,
 						ValOneof: &common.DataPoint_BoolVal{BoolVal: false},
 					}, SkipToken: true,
 				},
 				{
 					Point: &common.DataPoint{
-						UniqId: uniqID, Attr: "data_rate",
+						UniqId: uniqID, Attr: device.AttrDR,
 						ValOneof: &common.DataPoint_IntVal{IntVal: 0},
 					}, SkipToken: true,
 				},

@@ -39,3 +39,8 @@ services:
     image: redis:8-alpine
     ports:
       - "127.0.0.1:6379:6379"
+
+  valkey:
+    image: valkey/valkey:9-alpine
+    ports:
+      - "127.0.0.1:6380:6379"

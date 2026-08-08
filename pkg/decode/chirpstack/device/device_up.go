@@ -47,10 +47,10 @@ func deviceUp(body []byte) (
 	}
 
 	// Parse UplinkEvent.
-	msgs = append(msgs, &decode.Point{Attr: "adr", Value: upMsg.GetAdr()})
+	msgs = append(msgs, &decode.Point{Attr: AttrADR, Value: upMsg.GetAdr()})
 	msgs = append(msgs, &decode.Point{
 		//nolint:gosec // Safe conversion for limited values.
-		Attr: "data_rate", Value: int32(upMsg.GetDr()),
+		Attr: AttrDR, Value: int32(upMsg.GetDr()),
 	})
 	msgs = append(msgs, &decode.Point{
 		Attr: attrConf, Value: upMsg.GetConfirmed(),

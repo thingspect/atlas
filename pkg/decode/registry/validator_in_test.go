@@ -11,6 +11,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/require"
 	"github.com/thingspect/atlas/pkg/decode"
+	"github.com/thingspect/atlas/pkg/decode/chirpstack/device"
 	"github.com/thingspect/atlas/pkg/test/random"
 	"github.com/thingspect/atlas/proto/go/message"
 	"github.com/thingspect/proto/go/common"
@@ -29,29 +30,29 @@ func TestPointToVIn(t *testing.T) {
 		res *message.ValidatorIn
 	}{
 		{
-			&decode.Point{Attr: "data_rate", Value: int32(3)},
+			&decode.Point{Attr: device.AttrDR, Value: int32(3)},
 			&message.ValidatorIn{
 				Point: &common.DataPoint{
-					UniqId: uniqID, Attr: "data_rate",
+					UniqId: uniqID, Attr: device.AttrDR,
 					ValOneof: &common.DataPoint_IntVal{IntVal: 3}, Ts: now,
 					TraceId: traceID,
 				}, SkipToken: true,
 			},
 		},
 		{
-			&decode.Point{Attr: "data_rate", Value: 3}, &message.ValidatorIn{
+			&decode.Point{Attr: device.AttrDR, Value: 3}, &message.ValidatorIn{
 				Point: &common.DataPoint{
-					UniqId: uniqID, Attr: "data_rate",
+					UniqId: uniqID, Attr: device.AttrDR,
 					ValOneof: &common.DataPoint_IntVal{IntVal: 3}, Ts: now,
 					TraceId: traceID,
 				}, SkipToken: true,
 			},
 		},
 		{
-			&decode.Point{Attr: "data_rate", Value: int64(3)},
+			&decode.Point{Attr: device.AttrDR, Value: int64(3)},
 			&message.ValidatorIn{
 				Point: &common.DataPoint{
-					UniqId: uniqID, Attr: "data_rate",
+					UniqId: uniqID, Attr: device.AttrDR,
 					ValOneof: &common.DataPoint_IntVal{IntVal: 3}, Ts: now,
 					TraceId: traceID,
 				}, SkipToken: true,
@@ -84,9 +85,9 @@ func TestPointToVIn(t *testing.T) {
 			},
 		},
 		{
-			&decode.Point{Attr: "adr", Value: false}, &message.ValidatorIn{
+			&decode.Point{Attr: device.AttrADR, Value: false}, &message.ValidatorIn{
 				Point: &common.DataPoint{
-					UniqId: uniqID, Attr: "adr",
+					UniqId: uniqID, Attr: device.AttrADR,
 					ValOneof: &common.DataPoint_BoolVal{BoolVal: false},
 					Ts:       now, TraceId: traceID,
 				}, SkipToken: true,

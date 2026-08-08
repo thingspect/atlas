@@ -38,8 +38,8 @@ type Cacher[V Cacheable] interface {
 	SetIfNotExistTTL(ctx context.Context, key string, value V,
 		exp time.Duration) error
 	// Incr increments an int64 value at key by one. If the key does not exist,
-	// the value is set to 1. The incremented value is returned. Incr is best
-	// used with an int64 type parameter, but is not required.
+	// the value is set to 1. The incremented value is returned. An int64 value
+	// is always returned, regardless of the type parameter.
 	//
 	// Incr is not supported by memory caches.
 	Incr(ctx context.Context, key string) (int64, error)

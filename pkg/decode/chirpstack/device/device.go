@@ -11,6 +11,8 @@ import (
 // Constants used for ChirpStack device attributes.
 const (
 	AttrRaw  = "raw_device"
+	AttrDR   = "data_rate"
+	AttrADR  = "adr"
 	attrConf = "confirmed"
 )
 
