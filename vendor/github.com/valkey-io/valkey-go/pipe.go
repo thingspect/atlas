@@ -21,7 +21,7 @@ import (
 )
 
 const LibName = "valkey"
-const LibVer = "1.0.76"
+const LibVer = "1.0.77"
 
 var (
 	noHello = regexp.MustCompile("unknown command .?(HELLO|hello).?")
@@ -81,8 +81,10 @@ type pipe struct {
 	psubs           *subs // pubsub pmessage subscriptions
 	r2p             *r2p
 	pingTimer       *time.Timer // timer for background ping
+	authTimer       *time.Timer // timer for refreshing dynamic auth credentials, written once in _newPipe
 	lftmTimer       *time.Timer // lifetime timer
 	info            map[string]ValkeyMessage
+	authRefreshAt   atomic.Pointer[time.Time]
 	timeout         time.Duration
 	pinggap         time.Duration
 	maxFlushDelay   time.Duration
@@ -149,11 +151,13 @@ func _newPipe(ctx context.Context, connFn func(context.Context) (net.Conn, error
 
 	username := option.Username
 	password := option.Password
+	var authCredentials AuthCredentials
+	var authCredentialsContext AuthCredentialsContext
 	if option.AuthCredentialsFn != nil {
-		authCredentialsContext := AuthCredentialsContext{
+		authCredentialsContext = AuthCredentialsContext{
 			Address: conn.RemoteAddr(),
 		}
-		authCredentials, err := option.AuthCredentialsFn(authCredentialsContext)
+		authCredentials, err = option.AuthCredentialsFn(authCredentialsContext)
 		if err != nil {
 			p.Close()
 			return nil, err
@@ -368,6 +372,26 @@ func _newPipe(ctx context.Context, connFn func(context.Context) (net.Conn, error
 			}
 		}
 	}
+	if option.AuthCredentialsFn != nil && !authCredentials.RefreshAfter.IsZero() {
+		authFn := option.AuthCredentialsFn
+		p.authRefreshAt.Store(&authCredentials.RefreshAfter)
+		// A RefreshAfter already in the past makes the timer fire before
+		// AfterFunc even returns. The captured mutex makes the callback wait
+		// for the assignment below, and everything the callback spawns
+		// inherits that ordering, so every reader reached through the
+		// callback sees authTimer set. All other readers see it through the
+		// pipe being published after _newPipe returns: the field is written
+		// exactly once, here. Holding the mutex for the whole refresh also
+		// keeps overlapping fires from running refreshAuth concurrently.
+		var mu sync.Mutex
+		mu.Lock()
+		p.authTimer = time.AfterFunc(time.Until(authCredentials.RefreshAfter), func() {
+			mu.Lock()
+			p.refreshAuth(authFn, authCredentialsContext)
+			mu.Unlock()
+		})
+		mu.Unlock()
+	}
 	if !nobg {
 		if p.timeout > 0 && p.pinggap > 0 {
 			p.backgroundPing()
@@ -396,7 +420,6 @@ func (p *pipe) _exit(err error) {
 	p.error.CompareAndSwap(nil, &errs{error: err})
 	atomic.CompareAndSwapInt32(&p.state, 1, 2) // stop accepting new requests
 	_ = p.conn.Close()                         // force both read & write goroutine to exit
-	p.StopTimer()
 	p.clhks.Load().(func(error))(err)
 }
 
@@ -434,6 +457,9 @@ func (p *pipe) _background() {
 	if p.pingTimer != nil {
 		p.pingTimer.Stop()
 	}
+	if p.authTimer != nil {
+		p.authTimer.Stop()
+	}
 	err := p.Error()
 	p.nsubs.Close()
 	p.psubs.Close()
@@ -460,7 +486,7 @@ func (p *pipe) _background() {
 		old.hooks.onInvalidations(nil)
 	}
 
-	resp := newErrResult(err)
+	resp := NewErrorResult(err)
 	for p.loadWaits() != 0 {
 		select {
 		case <-p.close: // p.queue.NextWriteCmd() can only be called after _backgroundWrite
@@ -548,9 +574,9 @@ func (p *pipe) _backgroundRead() (err error) {
 	)
 
 	defer func() {
-		resp := newErrResult(err)
+		resp := NewErrorResult(err)
 		if e := p.Error(); e == errConnExpired {
-			resp = newErrResult(e)
+			resp = NewErrorResult(e)
 		}
 		if err != nil && ff < len(multi) {
 			for ; ff < len(resps); ff++ {
@@ -693,7 +719,7 @@ func (p *pipe) _backgroundRead() (err error) {
 			skipUnsubReply = false
 			continue
 		}
-		resp := newResult(msg, err)
+		resp := NewResult(msg, err)
 		if resps != nil {
 			resps[ff] = resp
 		}
@@ -743,6 +769,50 @@ func (p *pipe) backgroundPing() {
 			p._exit(err)
 		}
 	})
+}
+
+func (p *pipe) scheduleAuthRefresh(refreshAfter time.Time) {
+	p.authRefreshAt.Store(&refreshAfter)
+	if refreshAfter.IsZero() || p.Error() != nil || p.authTimer == nil {
+		return
+	}
+	p.authTimer.Reset(time.Until(refreshAfter))
+}
+
+func (p *pipe) refreshAuth(authFn func(AuthCredentialsContext) (AuthCredentials, error), authContext AuthCredentialsContext) {
+	if p.Error() != nil {
+		return
+	}
+	auth, err := authFn(authContext)
+	if err != nil {
+		p._exit(err)
+		return
+	}
+	if auth.Username != "" || auth.Password != "" {
+		args := make([]string, 0, 3)
+		args = append(args, "AUTH")
+		if auth.Password != "" && auth.Username == "" {
+			if !p.r2ps && p.r2p == nil {
+				args = append(args, "default")
+			}
+			args = append(args, auth.Password)
+		} else {
+			args = append(args, auth.Username, auth.Password)
+		}
+		ctx := context.Background()
+		var cancel context.CancelFunc
+		if p.timeout > 0 {
+			ctx, cancel = context.WithTimeout(ctx, p.timeout)
+			defer cancel()
+		}
+		cmd := cmds.NewCompleted(args)
+		result := p.Do(ctx, cmd)
+		if err := result.Error(); err != nil {
+			p._exit(err)
+			return
+		}
+	}
+	p.scheduleAuthRefresh(auth.RefreshAfter)
 }
 
 func (p *pipe) handlePush(values []ValkeyMessage) (reply bool, unsubscribe bool) {
@@ -1020,7 +1090,7 @@ func (p *pipe) AZ() string {
 
 func (p *pipe) Do(ctx context.Context, cmd Completed) (resp ValkeyResult) {
 	if err := ctx.Err(); err != nil {
-		return newErrResult(err)
+		return NewErrorResult(err)
 	}
 
 	cmds.CompletedCS(cmd).Verify()
@@ -1060,7 +1130,7 @@ func (p *pipe) Do(ctx context.Context, cmd Completed) (resp ValkeyResult) {
 		}
 		resp = p.syncDo(dl, ok, cmd)
 	} else {
-		resp = newErrResult(p.Error())
+		resp = NewErrorResult(p.Error())
 	}
 
 	if left := p.decrWaitsAndIncrRecvs(); state == 0 && left != 0 {
@@ -1072,7 +1142,7 @@ queue:
 	ch, err := p.queue.PutOne(ctx, cmd)
 	if err != nil {
 		p.decrWaits()
-		return newErrResult(err)
+		return NewErrorResult(err)
 	}
 
 	if ctxCh := ctx.Done(); ctxCh == nil {
@@ -1091,18 +1161,17 @@ abort:
 		<-ch
 		p.decrWaitsAndIncrRecvs()
 	}(ch)
-	return newErrResult(ctx.Err())
+	return NewErrorResult(ctx.Err())
 }
 
 func (p *pipe) DoMulti(ctx context.Context, multi ...Completed) *valkeyresults {
 	resp := resultsp.Get(len(multi), len(multi))
 	if err := ctx.Err(); err != nil {
 		for i := 0; i < len(resp.s); i++ {
-			resp.s[i] = newErrResult(err)
+			resp.s[i] = NewErrorResult(err)
 		}
 		return resp
 	}
-
 	cmds.CompletedCS(multi[0]).Verify()
 
 	isOptIn := multi[0].IsOptIn() // len(multi) > 0 should have already been checked by the upper layer
@@ -1117,7 +1186,7 @@ func (p *pipe) DoMulti(ctx context.Context, multi ...Completed) *valkeyresults {
 	if p.version < 6 && noReply != 0 {
 		if noReply != len(multi) {
 			for i := 0; i < len(resp.s); i++ {
-				resp.s[i] = newErrResult(ErrRESP2PubSubMixed)
+				resp.s[i] = NewErrorResult(ErrRESP2PubSubMixed)
 			}
 			return resp
 		} else if p.r2p != nil {
@@ -1130,7 +1199,7 @@ func (p *pipe) DoMulti(ctx context.Context, multi ...Completed) *valkeyresults {
 		if cmd.IsBlock() {
 			if noReply != 0 {
 				for i := 0; i < len(resp.s); i++ {
-					resp.s[i] = newErrResult(ErrBlockingPubSubMixed)
+					resp.s[i] = NewErrorResult(ErrBlockingPubSubMixed)
 				}
 				return resp
 			}
@@ -1169,7 +1238,7 @@ func (p *pipe) DoMulti(ctx context.Context, multi ...Completed) *valkeyresults {
 		}
 		p.syncDoMulti(dl, ok, resp.s, multi)
 	} else {
-		err := newErrResult(p.Error())
+		err := NewErrorResult(p.Error())
 		for i := 0; i < len(resp.s); i++ {
 			resp.s[i] = err
 		}
@@ -1183,7 +1252,7 @@ queue:
 	ch, err := p.queue.PutMulti(ctx, multi, resp.s)
 	if err != nil {
 		p.decrWaits()
-		errResult := newErrResult(err)
+		errResult := NewErrorResult(err)
 		for i := 0; i < len(resp.s); i++ {
 			resp.s[i] = errResult
 		}
@@ -1208,7 +1277,7 @@ abort:
 		p.decrWaitsAndIncrRecvs()
 	}(resp, ch)
 	resp = resultsp.Get(len(multi), len(multi))
-	errResult := newErrResult(ctx.Err())
+	errResult := NewErrorResult(ctx.Err())
 	for i := 0; i < len(resp.s); i++ {
 		resp.s[i] = errResult
 	}
@@ -1216,6 +1285,11 @@ abort:
 }
 
 type MultiValkeyResultStream = ValkeyResultStream
+
+// NewErrorResultStream returns a ValkeyResultStream with the specified error. Useful for implementing hooks or mocking.
+func NewErrorResultStream(err error) ValkeyResultStream {
+	return ValkeyResultStream{e: err}
+}
 
 type ValkeyResultStream struct {
 	p *pool
@@ -1263,9 +1337,8 @@ func (p *pipe) DoStream(ctx context.Context, pool *pool, cmd Completed) ValkeyRe
 	cmds.CompletedCS(cmd).Verify()
 
 	if err := ctx.Err(); err != nil {
-		return ValkeyResultStream{e: err}
+		return NewErrorResultStream(err)
 	}
-
 	state := atomic.LoadInt32(&p.state)
 
 	if state == 1 {
@@ -1304,7 +1377,7 @@ func (p *pipe) DoStream(ctx context.Context, pool *pool, cmd Completed) ValkeyRe
 	atomic.AddInt32(&p.blcksig, -1)
 	p.decrWaits()
 	pool.Store(p)
-	return ValkeyResultStream{e: p.Error()}
+	return NewErrorResultStream(p.Error())
 }
 
 func (p *pipe) DoMultiStream(ctx context.Context, pool *pool, multi ...Completed) MultiValkeyResultStream {
@@ -1313,9 +1386,8 @@ func (p *pipe) DoMultiStream(ctx context.Context, pool *pool, multi ...Completed
 	}
 
 	if err := ctx.Err(); err != nil {
-		return ValkeyResultStream{e: err}
+		return NewErrorResultStream(err)
 	}
-
 	state := atomic.LoadInt32(&p.state)
 
 	if state == 1 {
@@ -1369,7 +1441,7 @@ func (p *pipe) DoMultiStream(ctx context.Context, pool *pool, multi ...Completed
 	atomic.AddInt32(&p.blcksig, -1)
 	p.decrWaits()
 	pool.Store(p)
-	return ValkeyResultStream{e: p.Error()}
+	return NewErrorResultStream(p.Error())
 }
 
 func (p *pipe) syncDo(dl time.Time, dlOk bool, cmd Completed) (resp ValkeyResult) {
@@ -1401,7 +1473,7 @@ func (p *pipe) syncDo(dl time.Time, dlOk bool, cmd Completed) (resp ValkeyResult
 		p.conn.Close()
 		p.background() // start the background worker to clean up goroutines
 	}
-	return newResult(msg, err)
+	return NewResult(msg, err)
 }
 
 func (p *pipe) syncDoMulti(dl time.Time, dlOk bool, resp []ValkeyResult, multi []Completed) {
@@ -1444,7 +1516,7 @@ process:
 		if msg, err = syncRead(p.r); err != nil {
 			goto abort
 		}
-		resp[i] = newResult(msg, err)
+		resp[i] = NewResult(msg, err)
 	}
 	return
 abort:
@@ -1455,7 +1527,7 @@ abort:
 	p.conn.Close()
 	p.background() // start the background worker to clean up goroutines
 	for i := range resp {
-		resp[i] = newErrResult(err)
+		resp[i] = NewErrorResult(err)
 	}
 }
 
@@ -1490,9 +1562,9 @@ func (p *pipe) DoCache(ctx context.Context, cmd Cacheable, ttl time.Duration) Va
 	ck, cc := cmds.CacheKey(cmd)
 	now := time.Now()
 	if v, entry := p.cache.Flight(ck, cc, ttl, now); v.typ != 0 {
-		return newResult(v, nil)
+		return NewResult(v, nil)
 	} else if entry != nil {
-		return newResult(entry.Wait(ctx))
+		return NewResult(entry.Wait(ctx))
 	}
 	if cmds.IsStaticTTL(Completed(cmd)) {
 		// Wire: [OPT_IN, cmd]. The read goroutine resolves the Flight
@@ -1526,9 +1598,9 @@ func (p *pipe) DoCache(ctx context.Context, cmd Cacheable, ttl time.Duration) Va
 			}
 		}
 		p.cache.Cancel(ck, cc, err)
-		return newErrResult(err)
+		return NewErrorResult(err)
 	}
-	return newResult(exec[1], nil)
+	return NewResult(exec[1], nil)
 }
 
 func (p *pipe) doCacheMGet(ctx context.Context, cmd Cacheable, ttl time.Duration) ValkeyResult {
@@ -1598,7 +1670,7 @@ func (p *pipe) doCacheMGet(ctx context.Context, cmd Cacheable, ttl time.Duration
 			for _, key := range rewritten.Commands()[1 : keys+1] {
 				p.cache.Cancel(key, mgetcc, err)
 			}
-			return newErrResult(err)
+			return NewErrorResult(err)
 		}
 		defer func() {
 			for _, cmd := range multi[2 : len(multi)-1] {
@@ -1607,7 +1679,7 @@ func (p *pipe) doCacheMGet(ctx context.Context, cmd Cacheable, ttl time.Duration
 		}()
 		last := len(exec) - 1
 		if len(rewritten.Commands()) == len(commands) { // all cache misses
-			return newResult(exec[last], nil)
+			return NewResult(exec[last], nil)
 		}
 		partial = exec[last].values()
 	} else { // all cache hit
@@ -1620,7 +1692,7 @@ func (p *pipe) doCacheMGet(ctx context.Context, cmd Cacheable, ttl time.Duration
 	for i, entry := range entries.e {
 		v, err := entry.Wait(ctx)
 		if err != nil {
-			return newErrResult(err)
+			return NewErrorResult(err)
 		}
 		result.val.values()[i] = v
 	}
@@ -1686,7 +1758,7 @@ func (p *pipe) DoMultiCache(ctx context.Context, multi ...CacheableTTL) *valkeyr
 			ck, cc := cmds.CacheKey(ct.Cmd)
 			v, entry := p.cache.Flight(ck, cc, ct.TTL, now)
 			if v.typ != 0 { // cache hit for one key
-				results.s[i] = newResult(v, nil)
+				results.s[i] = NewResult(v, nil)
 				continue
 			}
 			if entry != nil {
@@ -1737,7 +1809,7 @@ func (p *pipe) DoMultiCache(ctx context.Context, multi ...CacheableTTL) *valkeyr
 	}
 
 	for i, entry := range entries.e {
-		results.s[i] = newResult(entry.Wait(ctx))
+		results.s[i] = NewResult(entry.Wait(ctx))
 	}
 
 	if len(missing) == 0 {
@@ -1774,9 +1846,9 @@ func (p *pipe) DoMultiCache(ctx context.Context, multi ...CacheableTTL) *valkeyr
 							}
 						}
 					}
-					results.s[j] = newErrResult(err)
+					results.s[j] = NewErrorResult(err)
 				} else {
-					results.s[j] = newResult(exec[len(exec)-1], nil)
+					results.s[j] = NewResult(exec[len(exec)-1], nil)
 				}
 				break
 			}
@@ -1839,15 +1911,25 @@ func (p *pipe) Close() {
 		}
 		if block == 1 && (stopping1 || stopping2) { // make sure there is no block cmd
 			p.incrWaits()
+			// The timer closes the connection after one second. That is the
+			// only way to unblock the two steps below when the peer is silent:
+			// PutOne waits for a free slot, <-ch waits for the reply. A closed
+			// connection makes the background loops fail and drain the queue,
+			// which frees a slot and answers the PING with an error. The timer
+			// costs a goroutine only when it fires.
+			//
+			// The drain runs in the background worker. There is always one
+			// here: it is already running, or the branch above started it, or
+			// syncDo starts it when the closed connection breaks its read.
+			var escape *time.Timer
+			if p.conn != nil {
+				escape = time.AfterFunc(time.Second, func() { p.conn.Close() })
+			}
 			ch, _ := p.queue.PutOne(context.Background(), cmds.PingCmd)
-			select {
-			case <-ch:
-				p.decrWaits()
-			case <-time.After(time.Second):
-				go func(ch chan ValkeyResult) {
-					<-ch
-					p.decrWaits()
-				}(ch)
+			<-ch
+			p.decrWaits()
+			if escape != nil {
+				escape.Stop()
 			}
 		}
 	}
@@ -1855,6 +1937,9 @@ func (p *pipe) Close() {
 	atomic.AddInt32(&p.blcksig, -1)
 	if p.pingTimer != nil {
 		p.pingTimer.Stop()
+	}
+	if p.authTimer != nil {
+		p.authTimer.Stop()
 	}
 	if p.conn != nil {
 		p.conn.Close()
@@ -1865,17 +1950,30 @@ func (p *pipe) Close() {
 }
 
 func (p *pipe) StopTimer() bool {
-	if p.lftmTimer == nil {
-		return true
+	stopped := true
+	if p.lftmTimer != nil {
+		stopped = p.lftmTimer.Stop()
 	}
-	return p.lftmTimer.Stop()
+	if p.authTimer != nil {
+		stopped = p.authTimer.Stop() && stopped
+	}
+	return stopped
 }
 
 func (p *pipe) ResetTimer() bool {
-	if p.lftmTimer == nil || p.Error() != nil {
+	if p.Error() != nil {
 		return true
 	}
-	return p.lftmTimer.Reset(p.lftm)
+	reset := true
+	if p.lftmTimer != nil {
+		reset = p.lftmTimer.Reset(p.lftm)
+	}
+	if p.authTimer != nil {
+		if at := p.authRefreshAt.Load(); at != nil && !at.IsZero() {
+			reset = p.authTimer.Reset(time.Until(*at)) && reset
+		}
+	}
+	return reset
 }
 
 func (p *pipe) expired() {
