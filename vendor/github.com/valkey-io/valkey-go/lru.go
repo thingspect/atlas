@@ -142,7 +142,7 @@ func (c *lru) Flights(now time.Time, multi []CacheableTTL, results []ValkeyResul
 				if v.typ == 0 {
 					entries[i] = e
 				} else if v.relativePTTL(now) > 0 {
-					results[i] = newResult(v, nil)
+					results[i] = NewResult(v, nil)
 				} else {
 					goto miss1
 				}
@@ -196,7 +196,7 @@ func (c *lru) Flights(now time.Time, multi []CacheableTTL, results []ValkeyResul
 			if v.typ == 0 {
 				entries[i] = e
 			} else if v.relativePTTL(now) > 0 {
-				results[i] = newResult(v, nil)
+				results[i] = NewResult(v, nil)
 			} else {
 				c.list.Remove(ele)
 				c.size -= e.size
@@ -239,6 +239,7 @@ func (c *lru) Update(key, cmd string, value ValkeyMessage) (pxat int64) {
 
 			ele = c.list.Front()
 			for c.size > c.max && ele != nil {
+				next := ele.Next()
 				if e := ele.Value.(*cacheEntry); e.val.typ != 0 { // do not delete pending entries
 					kc := e.kc
 					if delete(kc.cache, e.cmd); len(kc.cache) == 0 {
@@ -247,7 +248,7 @@ func (c *lru) Update(key, cmd string, value ValkeyMessage) (pxat int64) {
 					c.list.Remove(ele)
 					c.size -= e.size
 				}
-				ele = ele.Next()
+				ele = next
 			}
 		}
 	}

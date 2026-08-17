@@ -36,10 +36,10 @@ install:
 	-ldflags="-w" ./$${x}; done
 
 lint:
-	go install golang.org/x/vuln/cmd/govulncheck@v1.6.0
+	go install golang.org/x/vuln/cmd/govulncheck@latest
 	govulncheck -test ./...
 
-	go install github.com/golangci/golangci-lint/v2/cmd/golangci-lint@v2.12.2
+	go install github.com/golangci/golangci-lint/v2/cmd/golangci-lint@latest
 	golangci-lint run -E bidichk,copyloopvar,durationcheck,err113,errname \
 	-E forcetypeassert,funcorder,godot,gosec,intrange,modernize,nlreturn \
 	-E perfsprint,prealloc,protogetter,testifylint,unconvert,unparam \
@@ -49,8 +49,7 @@ init_db:
 	echo FLUSHALL|nc -w 2 $(TEST_REDIS_HOST) 6379
 	echo FLUSHALL|nc -w 2 $(TEST_VALKEY_HOST) $(TEST_VALKEY_PORT)
 
-	go install -tags pgx \
-	github.com/golang-migrate/migrate/v4/cmd/migrate@v4.19.1
+	go install -tags pgx github.com/golang-migrate/migrate/v4/cmd/migrate@latest
 	migrate -path /tmp -database $(TEST_PG_URI) drop -f
 	migrate -path config/db/atlas -database $(TEST_PG_URI) up
 

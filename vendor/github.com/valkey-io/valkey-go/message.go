@@ -130,11 +130,15 @@ func (r *ValkeyError) IsBusyGroup() bool {
 	return strings.HasPrefix(r.string(), "BUSYGROUP")
 }
 
-func newResult(val ValkeyMessage, err error) ValkeyResult {
+// NewResult returns a ValkeyResult with the provided ValkeyMessage and error. This is mostly useful for implementing
+// hooks or mocking.
+func NewResult(val ValkeyMessage, err error) ValkeyResult {
 	return ValkeyResult{val: val, err: err}
 }
 
-func newErrResult(err error) ValkeyResult {
+// NewErrorResult returns a ValkeyResult with the provided error. This is useful for implementing
+// hooks or mocking.
+func NewErrorResult(err error) ValkeyResult {
 	return ValkeyResult{err: err}
 }
 
