@@ -7,8 +7,8 @@ import (
 	"fmt"
 	"testing"
 	"time"
+	"uuid"
 
-	"github.com/google/uuid"
 	"github.com/stretchr/testify/require"
 	"github.com/thingspect/atlas/internal/atlas-api/session"
 	"github.com/thingspect/atlas/pkg/dao"
@@ -31,16 +31,15 @@ func TestCreateRule(t *testing.T) {
 	t.Run("Create valid rule", func(t *testing.T) {
 		t.Parallel()
 
-		rule := random.Rule("api-rule", uuid.NewString())
+		rule := random.Rule("api-rule", uuid.NewV7().String())
 		retRule, _ := proto.Clone(rule).(*api.Rule)
 
 		ruler := NewMockRuler(gomock.NewController(t))
 		ruler.EXPECT().Create(gomock.Any(), rule).Return(retRule, nil).Times(1)
 
-		ctx, cancel := context.WithTimeout(session.NewContext(
-			t.Context(), &session.Session{
-				OrgID: rule.GetOrgId(), Role: api.Role_ADMIN,
-			}), testTimeout)
+		ctx, cancel := context.WithTimeout(session.NewContext(t.Context(),
+			&session.Session{OrgID: rule.GetOrgId(), Role: api.Role_ADMIN}),
+			testTimeout)
 		defer cancel()
 
 		raSvc := NewRuleAlarm(ruler, nil)
@@ -68,10 +67,9 @@ func TestCreateRule(t *testing.T) {
 	t.Run("Create rule with insufficient role", func(t *testing.T) {
 		t.Parallel()
 
-		ctx, cancel := context.WithTimeout(session.NewContext(
-			t.Context(), &session.Session{
-				OrgID: uuid.NewString(), Role: api.Role_VIEWER,
-			}), testTimeout)
+		ctx, cancel := context.WithTimeout(session.NewContext(t.Context(),
+			&session.Session{OrgID: uuid.NewV7().String(), Role: api.Role_VIEWER}),
+			testTimeout)
 		defer cancel()
 
 		raSvc := NewRuleAlarm(nil, nil)
@@ -84,17 +82,16 @@ func TestCreateRule(t *testing.T) {
 	t.Run("Create invalid rule", func(t *testing.T) {
 		t.Parallel()
 
-		rule := random.Rule("api-rule", uuid.NewString())
+		rule := random.Rule("api-rule", uuid.NewV7().String())
 		rule.Attr = random.String(41)
 
 		ruler := NewMockRuler(gomock.NewController(t))
 		ruler.EXPECT().Create(gomock.Any(), rule).Return(nil,
 			dao.ErrInvalidFormat).Times(1)
 
-		ctx, cancel := context.WithTimeout(session.NewContext(
-			t.Context(), &session.Session{
-				OrgID: rule.GetOrgId(), Role: api.Role_ADMIN,
-			}), testTimeout)
+		ctx, cancel := context.WithTimeout(session.NewContext(t.Context(),
+			&session.Session{OrgID: rule.GetOrgId(), Role: api.Role_ADMIN}),
+			testTimeout)
 		defer cancel()
 
 		raSvc := NewRuleAlarm(ruler, nil)
@@ -114,17 +111,16 @@ func TestGetRule(t *testing.T) {
 	t.Run("Get rule by valid ID", func(t *testing.T) {
 		t.Parallel()
 
-		rule := random.Rule("api-rule", uuid.NewString())
+		rule := random.Rule("api-rule", uuid.NewV7().String())
 		retRule, _ := proto.Clone(rule).(*api.Rule)
 
 		ruler := NewMockRuler(gomock.NewController(t))
 		ruler.EXPECT().Read(gomock.Any(), rule.GetId(), rule.GetOrgId()).Return(retRule,
 			nil).Times(1)
 
-		ctx, cancel := context.WithTimeout(session.NewContext(
-			t.Context(), &session.Session{
-				OrgID: rule.GetOrgId(), Role: api.Role_ADMIN,
-			}), testTimeout)
+		ctx, cancel := context.WithTimeout(session.NewContext(t.Context(),
+			&session.Session{OrgID: rule.GetOrgId(), Role: api.Role_ADMIN}),
+			testTimeout)
 		defer cancel()
 
 		raSvc := NewRuleAlarm(ruler, nil)
@@ -150,10 +146,9 @@ func TestGetRule(t *testing.T) {
 	t.Run("Get rule with insufficient role", func(t *testing.T) {
 		t.Parallel()
 
-		ctx, cancel := context.WithTimeout(session.NewContext(
-			t.Context(), &session.Session{
-				OrgID: uuid.NewString(), Role: api.Role_CONTACT,
-			}), testTimeout)
+		ctx, cancel := context.WithTimeout(session.NewContext(t.Context(),
+			&session.Session{OrgID: uuid.NewV7().String(), Role: api.Role_CONTACT}),
+			testTimeout)
 		defer cancel()
 
 		raSvc := NewRuleAlarm(nil, nil)
@@ -170,15 +165,14 @@ func TestGetRule(t *testing.T) {
 		ruler.EXPECT().Read(gomock.Any(), gomock.Any(), gomock.Any()).
 			Return(nil, dao.ErrNotFound).Times(1)
 
-		ctx, cancel := context.WithTimeout(session.NewContext(
-			t.Context(), &session.Session{
-				OrgID: uuid.NewString(), Role: api.Role_ADMIN,
-			}), testTimeout)
+		ctx, cancel := context.WithTimeout(session.NewContext(t.Context(),
+			&session.Session{OrgID: uuid.NewV7().String(), Role: api.Role_ADMIN}),
+			testTimeout)
 		defer cancel()
 
 		raSvc := NewRuleAlarm(ruler, nil)
 		getRule, err := raSvc.GetRule(ctx, &api.GetRuleRequest{
-			Id: uuid.NewString(),
+			Id: uuid.NewV7().String(),
 		})
 		t.Logf("getRule, err: %+v, %v", getRule, err)
 		require.Nil(t, getRule)
@@ -193,16 +187,15 @@ func TestUpdateRule(t *testing.T) {
 	t.Run("Update rule by valid rule", func(t *testing.T) {
 		t.Parallel()
 
-		rule := random.Rule("api-rule", uuid.NewString())
+		rule := random.Rule("api-rule", uuid.NewV7().String())
 		retRule, _ := proto.Clone(rule).(*api.Rule)
 
 		ruler := NewMockRuler(gomock.NewController(t))
 		ruler.EXPECT().Update(gomock.Any(), rule).Return(retRule, nil).Times(1)
 
-		ctx, cancel := context.WithTimeout(session.NewContext(
-			t.Context(), &session.Session{
-				OrgID: rule.GetOrgId(), Role: api.Role_ADMIN,
-			}), testTimeout)
+		ctx, cancel := context.WithTimeout(session.NewContext(t.Context(),
+			&session.Session{OrgID: rule.GetOrgId(), Role: api.Role_ADMIN}),
+			testTimeout)
 		defer cancel()
 
 		raSvc := NewRuleAlarm(ruler, nil)
@@ -217,7 +210,7 @@ func TestUpdateRule(t *testing.T) {
 	t.Run("Partial update rule by valid rule", func(t *testing.T) {
 		t.Parallel()
 
-		upRule := random.Rule("api-rule", uuid.NewString())
+		upRule := random.Rule("api-rule", uuid.NewV7().String())
 		retRule, _ := proto.Clone(upRule).(*api.Rule)
 		part := &api.Rule{
 			Id: upRule.GetId(), Status: api.Status_ACTIVE, Expr: rule.ExprTrue,
@@ -236,10 +229,9 @@ func TestUpdateRule(t *testing.T) {
 		ruler.EXPECT().Update(gomock.Any(), matcher.NewProtoMatcher(merged)).
 			Return(retMerged, nil).Times(1)
 
-		ctx, cancel := context.WithTimeout(session.NewContext(
-			t.Context(), &session.Session{
-				OrgID: upRule.GetOrgId(), Role: api.Role_ADMIN,
-			}), testTimeout)
+		ctx, cancel := context.WithTimeout(session.NewContext(t.Context(),
+			&session.Session{OrgID: upRule.GetOrgId(), Role: api.Role_ADMIN}),
+			testTimeout)
 		defer cancel()
 
 		raSvc := NewRuleAlarm(ruler, nil)
@@ -269,10 +261,9 @@ func TestUpdateRule(t *testing.T) {
 	t.Run("Update rule with insufficient role", func(t *testing.T) {
 		t.Parallel()
 
-		ctx, cancel := context.WithTimeout(session.NewContext(
-			t.Context(), &session.Session{
-				OrgID: uuid.NewString(), Role: api.Role_VIEWER,
-			}), testTimeout)
+		ctx, cancel := context.WithTimeout(session.NewContext(t.Context(),
+			&session.Session{OrgID: uuid.NewV7().String(), Role: api.Role_VIEWER}),
+			testTimeout)
 		defer cancel()
 
 		raSvc := NewRuleAlarm(nil, nil)
@@ -285,10 +276,9 @@ func TestUpdateRule(t *testing.T) {
 	t.Run("Update nil rule", func(t *testing.T) {
 		t.Parallel()
 
-		ctx, cancel := context.WithTimeout(session.NewContext(
-			t.Context(), &session.Session{
-				OrgID: uuid.NewString(), Role: api.Role_ADMIN,
-			}), testTimeout)
+		ctx, cancel := context.WithTimeout(session.NewContext(t.Context(),
+			&session.Session{OrgID: uuid.NewV7().String(), Role: api.Role_ADMIN}),
+			testTimeout)
 		defer cancel()
 
 		raSvc := NewRuleAlarm(nil, nil)
@@ -304,12 +294,11 @@ func TestUpdateRule(t *testing.T) {
 	t.Run("Partial update invalid field mask", func(t *testing.T) {
 		t.Parallel()
 
-		rule := random.Rule("api-rule", uuid.NewString())
+		rule := random.Rule("api-rule", uuid.NewV7().String())
 
-		ctx, cancel := context.WithTimeout(session.NewContext(
-			t.Context(), &session.Session{
-				OrgID: uuid.NewString(), Role: api.Role_ADMIN,
-			}), testTimeout)
+		ctx, cancel := context.WithTimeout(session.NewContext(t.Context(),
+			&session.Session{OrgID: uuid.NewV7().String(), Role: api.Role_ADMIN}),
+			testTimeout)
 		defer cancel()
 
 		raSvc := NewRuleAlarm(nil, nil)
@@ -327,17 +316,15 @@ func TestUpdateRule(t *testing.T) {
 	t.Run("Partial update rule by unknown rule", func(t *testing.T) {
 		t.Parallel()
 
-		orgID := uuid.NewString()
-		part := &api.Rule{Id: uuid.NewString(), Status: api.Status_ACTIVE}
+		orgID := uuid.NewV7().String()
+		part := &api.Rule{Id: uuid.NewV7().String(), Status: api.Status_ACTIVE}
 
 		ruler := NewMockRuler(gomock.NewController(t))
 		ruler.EXPECT().Read(gomock.Any(), part.GetId(), orgID).
 			Return(nil, dao.ErrNotFound).Times(1)
 
-		ctx, cancel := context.WithTimeout(session.NewContext(
-			t.Context(), &session.Session{
-				OrgID: orgID, Role: api.Role_ADMIN,
-			}), testTimeout)
+		ctx, cancel := context.WithTimeout(session.NewContext(t.Context(),
+			&session.Session{OrgID: orgID, Role: api.Role_ADMIN}), testTimeout)
 		defer cancel()
 
 		raSvc := NewRuleAlarm(ruler, nil)
@@ -355,13 +342,12 @@ func TestUpdateRule(t *testing.T) {
 	t.Run("Update rule validation failure", func(t *testing.T) {
 		t.Parallel()
 
-		rule := random.Rule("api-rule", uuid.NewString())
+		rule := random.Rule("api-rule", uuid.NewV7().String())
 		rule.Attr = random.String(41)
 
-		ctx, cancel := context.WithTimeout(session.NewContext(
-			t.Context(), &session.Session{
-				OrgID: rule.GetOrgId(), Role: api.Role_ADMIN,
-			}), testTimeout)
+		ctx, cancel := context.WithTimeout(session.NewContext(t.Context(),
+			&session.Session{OrgID: rule.GetOrgId(), Role: api.Role_ADMIN}),
+			testTimeout)
 		defer cancel()
 
 		raSvc := NewRuleAlarm(nil, nil)
@@ -379,16 +365,15 @@ func TestUpdateRule(t *testing.T) {
 	t.Run("Update rule by invalid rule", func(t *testing.T) {
 		t.Parallel()
 
-		rule := random.Rule("api-rule", uuid.NewString())
+		rule := random.Rule("api-rule", uuid.NewV7().String())
 
 		ruler := NewMockRuler(gomock.NewController(t))
 		ruler.EXPECT().Update(gomock.Any(), rule).Return(nil,
 			dao.ErrInvalidFormat).Times(1)
 
-		ctx, cancel := context.WithTimeout(session.NewContext(
-			t.Context(), &session.Session{
-				OrgID: rule.GetOrgId(), Role: api.Role_ADMIN,
-			}), testTimeout)
+		ctx, cancel := context.WithTimeout(session.NewContext(t.Context(),
+			&session.Session{OrgID: rule.GetOrgId(), Role: api.Role_ADMIN}),
+			testTimeout)
 		defer cancel()
 
 		raSvc := NewRuleAlarm(ruler, nil)
@@ -412,15 +397,14 @@ func TestDeleteRule(t *testing.T) {
 		ruler.EXPECT().Delete(gomock.Any(), gomock.Any(), gomock.Any()).
 			Return(nil).Times(1)
 
-		ctx, cancel := context.WithTimeout(session.NewContext(
-			t.Context(), &session.Session{
-				OrgID: uuid.NewString(), Role: api.Role_ADMIN,
-			}), testTimeout)
+		ctx, cancel := context.WithTimeout(session.NewContext(t.Context(),
+			&session.Session{OrgID: uuid.NewV7().String(), Role: api.Role_ADMIN}),
+			testTimeout)
 		defer cancel()
 
 		raSvc := NewRuleAlarm(ruler, nil)
 		_, err := raSvc.DeleteRule(ctx, &api.DeleteRuleRequest{
-			Id: uuid.NewString(),
+			Id: uuid.NewV7().String(),
 		})
 		t.Logf("err: %v", err)
 		require.NoError(t, err)
@@ -441,10 +425,9 @@ func TestDeleteRule(t *testing.T) {
 	t.Run("Delete rule with insufficient role", func(t *testing.T) {
 		t.Parallel()
 
-		ctx, cancel := context.WithTimeout(session.NewContext(
-			t.Context(), &session.Session{
-				OrgID: uuid.NewString(), Role: api.Role_VIEWER,
-			}), testTimeout)
+		ctx, cancel := context.WithTimeout(session.NewContext(t.Context(),
+			&session.Session{OrgID: uuid.NewV7().String(), Role: api.Role_VIEWER}),
+			testTimeout)
 		defer cancel()
 
 		raSvc := NewRuleAlarm(nil, nil)
@@ -460,15 +443,14 @@ func TestDeleteRule(t *testing.T) {
 		ruler.EXPECT().Delete(gomock.Any(), gomock.Any(), gomock.Any()).
 			Return(dao.ErrNotFound).Times(1)
 
-		ctx, cancel := context.WithTimeout(session.NewContext(
-			t.Context(), &session.Session{
-				OrgID: uuid.NewString(), Role: api.Role_ADMIN,
-			}), testTimeout)
+		ctx, cancel := context.WithTimeout(session.NewContext(t.Context(),
+			&session.Session{OrgID: uuid.NewV7().String(), Role: api.Role_ADMIN}),
+			testTimeout)
 		defer cancel()
 
 		raSvc := NewRuleAlarm(ruler, nil)
 		_, err := raSvc.DeleteRule(ctx, &api.DeleteRuleRequest{
-			Id: uuid.NewString(),
+			Id: uuid.NewV7().String(),
 		})
 		t.Logf("err: %v", err)
 		require.Equal(t, status.Error(codes.NotFound, "dao: object not found"),
@@ -482,22 +464,20 @@ func TestListRules(t *testing.T) {
 	t.Run("List rules by valid org ID", func(t *testing.T) {
 		t.Parallel()
 
-		orgID := uuid.NewString()
+		orgID := uuid.NewV7().String()
 
 		rules := []*api.Rule{
-			random.Rule("api-rule", uuid.NewString()),
-			random.Rule("api-rule", uuid.NewString()),
-			random.Rule("api-rule", uuid.NewString()),
+			random.Rule("api-rule", uuid.NewV7().String()),
+			random.Rule("api-rule", uuid.NewV7().String()),
+			random.Rule("api-rule", uuid.NewV7().String()),
 		}
 
 		ruler := NewMockRuler(gomock.NewController(t))
 		ruler.EXPECT().List(gomock.Any(), orgID, time.Time{}, "", int32(51)).
 			Return(rules, int32(3), nil).Times(1)
 
-		ctx, cancel := context.WithTimeout(session.NewContext(
-			t.Context(), &session.Session{
-				OrgID: orgID, Role: api.Role_ADMIN,
-			}), testTimeout)
+		ctx, cancel := context.WithTimeout(session.NewContext(t.Context(),
+			&session.Session{OrgID: orgID, Role: api.Role_ADMIN}), testTimeout)
 		defer cancel()
 
 		raSvc := NewRuleAlarm(ruler, nil)
@@ -512,12 +492,12 @@ func TestListRules(t *testing.T) {
 	t.Run("List rules by valid org ID with next page", func(t *testing.T) {
 		t.Parallel()
 
-		orgID := uuid.NewString()
+		orgID := uuid.NewV7().String()
 
 		rules := []*api.Rule{
-			random.Rule("api-rule", uuid.NewString()),
-			random.Rule("api-rule", uuid.NewString()),
-			random.Rule("api-rule", uuid.NewString()),
+			random.Rule("api-rule", uuid.NewV7().String()),
+			random.Rule("api-rule", uuid.NewV7().String()),
+			random.Rule("api-rule", uuid.NewV7().String()),
 		}
 
 		next, err := session.GeneratePageToken(rules[1].GetCreatedAt().AsTime(),
@@ -528,10 +508,8 @@ func TestListRules(t *testing.T) {
 		ruler.EXPECT().List(gomock.Any(), orgID, time.Time{}, "", int32(3)).
 			Return(rules, int32(3), nil).Times(1)
 
-		ctx, cancel := context.WithTimeout(session.NewContext(
-			t.Context(), &session.Session{
-				OrgID: orgID, Role: api.Role_ADMIN,
-			}), testTimeout)
+		ctx, cancel := context.WithTimeout(session.NewContext(t.Context(),
+			&session.Session{OrgID: orgID, Role: api.Role_ADMIN}), testTimeout)
 		defer cancel()
 
 		raSvc := NewRuleAlarm(ruler, nil)
@@ -562,10 +540,9 @@ func TestListRules(t *testing.T) {
 	t.Run("List rules with insufficient role", func(t *testing.T) {
 		t.Parallel()
 
-		ctx, cancel := context.WithTimeout(session.NewContext(
-			t.Context(), &session.Session{
-				OrgID: uuid.NewString(), Role: api.Role_CONTACT,
-			}), testTimeout)
+		ctx, cancel := context.WithTimeout(session.NewContext(t.Context(),
+			&session.Session{OrgID: uuid.NewV7().String(), Role: api.Role_CONTACT}),
+			testTimeout)
 		defer cancel()
 
 		raSvc := NewRuleAlarm(nil, nil)
@@ -578,10 +555,9 @@ func TestListRules(t *testing.T) {
 	t.Run("List rules by invalid page token", func(t *testing.T) {
 		t.Parallel()
 
-		ctx, cancel := context.WithTimeout(session.NewContext(
-			t.Context(), &session.Session{
-				OrgID: uuid.NewString(), Role: api.Role_ADMIN,
-			}), testTimeout)
+		ctx, cancel := context.WithTimeout(session.NewContext(t.Context(),
+			&session.Session{OrgID: uuid.NewV7().String(), Role: api.Role_ADMIN}),
+			testTimeout)
 		defer cancel()
 
 		raSvc := NewRuleAlarm(nil, nil)
@@ -601,10 +577,8 @@ func TestListRules(t *testing.T) {
 		ruler.EXPECT().List(gomock.Any(), "aaa", gomock.Any(), gomock.Any(),
 			gomock.Any()).Return(nil, int32(0), dao.ErrInvalidFormat).Times(1)
 
-		ctx, cancel := context.WithTimeout(session.NewContext(
-			t.Context(), &session.Session{
-				OrgID: "aaa", Role: api.Role_ADMIN,
-			}), testTimeout)
+		ctx, cancel := context.WithTimeout(session.NewContext(t.Context(),
+			&session.Session{OrgID: "aaa", Role: api.Role_ADMIN}), testTimeout)
 		defer cancel()
 
 		raSvc := NewRuleAlarm(ruler, nil)
@@ -618,12 +592,12 @@ func TestListRules(t *testing.T) {
 	t.Run("List rules with generation failure", func(t *testing.T) {
 		t.Parallel()
 
-		orgID := uuid.NewString()
+		orgID := uuid.NewV7().String()
 
 		rules := []*api.Rule{
-			random.Rule("api-rule", uuid.NewString()),
-			random.Rule("api-rule", uuid.NewString()),
-			random.Rule("api-rule", uuid.NewString()),
+			random.Rule("api-rule", uuid.NewV7().String()),
+			random.Rule("api-rule", uuid.NewV7().String()),
+			random.Rule("api-rule", uuid.NewV7().String()),
 		}
 		rules[1].Id = badUUID
 
@@ -631,10 +605,8 @@ func TestListRules(t *testing.T) {
 		ruler.EXPECT().List(gomock.Any(), orgID, time.Time{}, "", int32(3)).
 			Return(rules, int32(3), nil).Times(1)
 
-		ctx, cancel := context.WithTimeout(session.NewContext(
-			t.Context(), &session.Session{
-				OrgID: orgID, Role: api.Role_ADMIN,
-			}), testTimeout)
+		ctx, cancel := context.WithTimeout(session.NewContext(t.Context(),
+			&session.Session{OrgID: orgID, Role: api.Role_ADMIN}), testTimeout)
 		defer cancel()
 
 		raSvc := NewRuleAlarm(ruler, nil)
@@ -715,10 +687,8 @@ func TestTestRule(t *testing.T) {
 
 				test.inpPoint.Attr = "api-rule" + random.String(10)
 
-				ctx, cancel := context.WithTimeout(session.NewContext(
-					t.Context(), &session.Session{
-						OrgID: uuid.NewString(), Role: api.Role_ADMIN,
-					}),
+				ctx, cancel := context.WithTimeout(session.NewContext(t.Context(),
+					&session.Session{OrgID: uuid.NewV7().String(), Role: api.Role_ADMIN}),
 					testTimeout)
 				defer cancel()
 
@@ -757,10 +727,9 @@ func TestTestRule(t *testing.T) {
 	t.Run("Test rule with insufficient role", func(t *testing.T) {
 		t.Parallel()
 
-		ctx, cancel := context.WithTimeout(session.NewContext(
-			t.Context(), &session.Session{
-				OrgID: uuid.NewString(), Role: api.Role_VIEWER,
-			}), testTimeout)
+		ctx, cancel := context.WithTimeout(session.NewContext(t.Context(),
+			&session.Session{OrgID: uuid.NewV7().String(), Role: api.Role_VIEWER}),
+			testTimeout)
 		defer cancel()
 
 		raSvc := NewRuleAlarm(nil, nil)
@@ -774,12 +743,11 @@ func TestTestRule(t *testing.T) {
 		t.Parallel()
 
 		point := &common.DataPoint{Attr: "api-rule" + random.String(10)}
-		rule := random.Rule("api-rule", uuid.NewString())
+		rule := random.Rule("api-rule", uuid.NewV7().String())
 
-		ctx, cancel := context.WithTimeout(session.NewContext(
-			t.Context(), &session.Session{
-				OrgID: rule.GetOrgId(), Role: api.Role_ADMIN,
-			}), testTimeout)
+		ctx, cancel := context.WithTimeout(session.NewContext(t.Context(),
+			&session.Session{OrgID: rule.GetOrgId(), Role: api.Role_ADMIN}),
+			testTimeout)
 		defer cancel()
 
 		raSvc := NewRuleAlarm(nil, nil)

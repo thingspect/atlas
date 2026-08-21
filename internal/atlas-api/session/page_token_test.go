@@ -7,8 +7,8 @@ import (
 	"fmt"
 	"testing"
 	"time"
+	"uuid"
 
-	"github.com/google/uuid"
 	"github.com/stretchr/testify/require"
 	"github.com/thingspect/atlas/pkg/test/random"
 	"github.com/thingspect/atlas/proto/go/token"
@@ -25,8 +25,8 @@ func TestGeneratePageToken(t *testing.T) {
 		resMinLen int
 		err       string
 	}{
-		{time.Now(), uuid.NewString(), 40, ""},
-		{time.Time{}, random.String(10), 0, "invalid UUID length: 10"},
+		{time.Now(), uuid.NewV7().String(), 40, ""},
+		{time.Time{}, random.String(10), 0, "invalid uuid"},
 	}
 
 	for _, test := range tests {
@@ -78,15 +78,18 @@ func TestParsePageToken(t *testing.T) {
 		},
 		{
 			prevID.String(), time.Time{}, base64.RawURLEncoding.EncodeToString(
-				[]byte("aaa")), "cannot parse invalid wire-format data",
+				[]byte("aaa"),
+			), "cannot parse invalid wire-format data",
 		},
 		{
 			prevID.String(), time.Time{}, base64.RawURLEncoding.EncodeToString(
-				bNilTSPT), "",
+				bNilTSPT,
+			), "",
 		},
 		{
 			prevID.String(), time.Time{}, base64.RawURLEncoding.EncodeToString(
-				bBadUUIDPT), "invalid UUID (got 3 bytes)",
+				bBadUUIDPT,
+			), "invalid uuid",
 		},
 	}
 

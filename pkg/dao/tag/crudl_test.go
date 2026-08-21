@@ -6,8 +6,8 @@ import (
 	"context"
 	"testing"
 	"time"
+	"uuid"
 
-	"github.com/google/uuid"
 	"github.com/stretchr/testify/require"
 	"github.com/thingspect/atlas/pkg/dao"
 	"github.com/thingspect/atlas/pkg/test/random"
@@ -107,7 +107,7 @@ func TestList(t *testing.T) {
 		ctx, cancel := context.WithTimeout(t.Context(), testTimeout)
 		defer cancel()
 
-		listTags, err := globalTagDAO.List(ctx, uuid.NewString())
+		listTags, err := globalTagDAO.List(ctx, uuid.NewV7().String())
 		t.Logf("listTags, err: %+v, %v", listTags, err)
 		require.NoError(t, err)
 		require.Empty(t, listTags)

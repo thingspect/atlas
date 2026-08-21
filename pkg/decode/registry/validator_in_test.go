@@ -7,8 +7,8 @@ import (
 	"io"
 	"testing"
 	"time"
+	"uuid"
 
-	"github.com/google/uuid"
 	"github.com/stretchr/testify/require"
 	"github.com/thingspect/atlas/pkg/decode"
 	"github.com/thingspect/atlas/pkg/decode/chirpstack/device"
@@ -21,7 +21,7 @@ import (
 func TestPointToVIn(t *testing.T) {
 	t.Parallel()
 
-	traceID := uuid.NewString()
+	traceID := uuid.NewV7().String()
 	uniqID := random.String(16)
 	now := timestamppb.New(time.Now().Add(-15 * time.Minute))
 

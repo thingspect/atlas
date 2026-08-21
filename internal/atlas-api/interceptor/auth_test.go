@@ -7,8 +7,8 @@ import (
 	"crypto/rand"
 	"fmt"
 	"testing"
+	"uuid"
 
-	"github.com/google/uuid"
 	"github.com/stretchr/testify/require"
 	"github.com/thingspect/atlas/internal/atlas-api/session"
 	"github.com/thingspect/atlas/pkg/cache"
@@ -31,12 +31,12 @@ func TestAuth(t *testing.T) {
 	require.NoError(t, err)
 
 	webToken, _, err := session.GenerateWebToken(key, random.User("auth",
-		uuid.NewString()))
+		uuid.NewV7().String()))
 	t.Logf("webToken, err: %v, %v", webToken, err)
 	require.NoError(t, err)
 
-	user := random.User("auth", uuid.NewString())
-	keyToken, err := session.GenerateKeyToken(key, uuid.NewString(),
+	user := random.User("auth", uuid.NewV7().String())
+	keyToken, err := session.GenerateKeyToken(key, uuid.NewV7().String(),
 		user.GetOrgId(), user.GetRole())
 	t.Logf("keyToken, err: %v, %v", keyToken, err)
 	require.NoError(t, err)

@@ -6,8 +6,8 @@ import (
 	"context"
 	"testing"
 	"time"
+	"uuid"
 
-	"github.com/google/uuid"
 	"github.com/stretchr/testify/require"
 	"github.com/thingspect/atlas/pkg/dao"
 	"github.com/thingspect/atlas/pkg/test/random"
@@ -81,7 +81,8 @@ func TestRead(t *testing.T) {
 		ctx, cancel := context.WithTimeout(t.Context(), testTimeout)
 		defer cancel()
 
-		readKey, err := globalKeyDAO.read(ctx, createKey.GetId(), createKey.GetOrgId())
+		readKey, err := globalKeyDAO.read(ctx, createKey.GetId(),
+			createKey.GetOrgId())
 		t.Logf("readKey, err: %+v, %v", readKey, err)
 		require.NoError(t, err)
 		require.Equal(t, createKey, readKey)
@@ -93,8 +94,8 @@ func TestRead(t *testing.T) {
 		ctx, cancel := context.WithTimeout(t.Context(), testTimeout)
 		defer cancel()
 
-		readKey, err := globalKeyDAO.read(ctx, uuid.NewString(),
-			uuid.NewString())
+		readKey, err := globalKeyDAO.read(ctx, uuid.NewV7().String(),
+			uuid.NewV7().String())
 		t.Logf("readKey, err: %+v, %v", readKey, err)
 		require.Nil(t, readKey)
 		require.Equal(t, dao.ErrNotFound, err)
@@ -107,7 +108,7 @@ func TestRead(t *testing.T) {
 		defer cancel()
 
 		readKey, err := globalKeyDAO.read(ctx, createKey.GetId(),
-			uuid.NewString())
+			uuid.NewV7().String())
 		t.Logf("readKey, err: %+v, %v", readKey, err)
 		require.Nil(t, readKey)
 		require.Equal(t, dao.ErrNotFound, err)
@@ -173,7 +174,7 @@ func TestDelete(t *testing.T) {
 		ctx, cancel := context.WithTimeout(t.Context(), testTimeout)
 		defer cancel()
 
-		err := globalKeyDAO.Delete(ctx, uuid.NewString(), createOrg.GetId())
+		err := globalKeyDAO.Delete(ctx, uuid.NewV7().String(), createOrg.GetId())
 		t.Logf("err: %v", err)
 		require.Equal(t, dao.ErrNotFound, err)
 	})
@@ -189,7 +190,7 @@ func TestDelete(t *testing.T) {
 		t.Logf("createKey, err: %+v, %v", createKey, err)
 		require.NoError(t, err)
 
-		err = globalKeyDAO.Delete(ctx, createKey.GetId(), uuid.NewString())
+		err = globalKeyDAO.Delete(ctx, createKey.GetId(), uuid.NewV7().String())
 		t.Logf("err: %v", err)
 		require.Equal(t, dao.ErrNotFound, err)
 	})
@@ -292,7 +293,7 @@ func TestList(t *testing.T) {
 		ctx, cancel := context.WithTimeout(t.Context(), testTimeout)
 		defer cancel()
 
-		listKeys, listCount, err := globalKeyDAO.List(ctx, uuid.NewString(),
+		listKeys, listCount, err := globalKeyDAO.List(ctx, uuid.NewV7().String(),
 			time.Time{}, "", 0)
 		t.Logf("listKeys, listCount, err: %+v, %v, %v", listKeys, listCount,
 			err)

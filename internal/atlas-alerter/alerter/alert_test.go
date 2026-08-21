@@ -8,8 +8,8 @@ import (
 	"sync"
 	"testing"
 	"time"
+	"uuid"
 
-	"github.com/google/uuid"
 	"github.com/stretchr/testify/require"
 	"github.com/thingspect/atlas/pkg/cache"
 	"github.com/thingspect/atlas/pkg/consterr"
@@ -31,19 +31,19 @@ func TestAlertMessages(t *testing.T) {
 
 	org := random.Org("ale")
 
-	appAlarm := random.Alarm("ale", org.GetId(), uuid.NewString())
+	appAlarm := random.Alarm("ale", org.GetId(), uuid.NewV7().String())
 	appAlarm.Status = api.Status_ACTIVE
 	appAlarm.Type = api.AlarmType_APP
 
-	smsAlarm := random.Alarm("ale", org.GetId(), uuid.NewString())
+	smsAlarm := random.Alarm("ale", org.GetId(), uuid.NewV7().String())
 	smsAlarm.Status = api.Status_ACTIVE
 	smsAlarm.Type = api.AlarmType_SMS
 
-	emailAlarm := random.Alarm("ale", org.GetId(), uuid.NewString())
+	emailAlarm := random.Alarm("ale", org.GetId(), uuid.NewV7().String())
 	emailAlarm.Status = api.Status_ACTIVE
 	emailAlarm.Type = api.AlarmType_EMAIL
 
-	disAlarm := random.Alarm("ale", org.GetId(), uuid.NewString())
+	disAlarm := random.Alarm("ale", org.GetId(), uuid.NewV7().String())
 	disAlarm.Status = api.Status_DISABLED
 
 	tests := []struct {
@@ -222,23 +222,23 @@ func TestAlertMessagesError(t *testing.T) {
 
 	org := random.Org("ale")
 
-	appAlarm := random.Alarm("ale", uuid.NewString(), uuid.NewString())
+	appAlarm := random.Alarm("ale", uuid.NewV7().String(), uuid.NewV7().String())
 	appAlarm.Status = api.Status_ACTIVE
 	appAlarm.Type = api.AlarmType_APP
 
-	badSubj := random.Alarm("ale", uuid.NewString(), uuid.NewString())
+	badSubj := random.Alarm("ale", uuid.NewV7().String(), uuid.NewV7().String())
 	badSubj.Status = api.Status_ACTIVE
 	badSubj.SubjectTemplate = `{{if`
 
-	badBody := random.Alarm("ale", uuid.NewString(), uuid.NewString())
+	badBody := random.Alarm("ale", uuid.NewV7().String(), uuid.NewV7().String())
 	badBody.Status = api.Status_ACTIVE
 	badBody.BodyTemplate = `{{if`
 
-	unspecType := random.Alarm("ale", uuid.NewString(), uuid.NewString())
+	unspecType := random.Alarm("ale", uuid.NewV7().String(), uuid.NewV7().String())
 	unspecType.Status = api.Status_ACTIVE
 	unspecType.Type = api.AlarmType_ALARM_TYPE_UNSPECIFIED
 
-	unknownType := random.Alarm("ale", uuid.NewString(), uuid.NewString())
+	unknownType := random.Alarm("ale", uuid.NewV7().String(), uuid.NewV7().String())
 	unknownType.Status = api.Status_ACTIVE
 	unknownType.Type = 999
 
@@ -311,7 +311,7 @@ func TestAlertMessagesError(t *testing.T) {
 				Point: &common.DataPoint{}, Device: &api.Device{},
 				Rule: &api.Rule{},
 			}, org, nil, []*api.Alarm{badSubj}, nil, []*api.User{
-				random.User("ale", uuid.NewString()),
+				random.User("ale", uuid.NewV7().String()),
 			}, nil, nil, nil, nil, 1, 1, 1, 0, 0, 0,
 		},
 		// Bad alarm body.
@@ -320,7 +320,7 @@ func TestAlertMessagesError(t *testing.T) {
 				Point: &common.DataPoint{}, Device: &api.Device{},
 				Rule: &api.Rule{},
 			}, org, nil, []*api.Alarm{badBody}, nil, []*api.User{
-				random.User("ale", uuid.NewString()),
+				random.User("ale", uuid.NewV7().String()),
 			}, nil, nil, nil, nil, 1, 1, 1, 0, 0, 0,
 		},
 		// Cacher error.
@@ -329,7 +329,7 @@ func TestAlertMessagesError(t *testing.T) {
 				Point: &common.DataPoint{}, Device: &api.Device{},
 				Rule: &api.Rule{},
 			}, org, nil, []*api.Alarm{appAlarm}, nil, []*api.User{
-				random.User("ale", uuid.NewString()),
+				random.User("ale", uuid.NewV7().String()),
 			}, nil, errTestProc, nil, nil, 1, 1, 1, 1, 0, 0,
 		},
 		// Notifier error.
@@ -338,7 +338,7 @@ func TestAlertMessagesError(t *testing.T) {
 				Point: &common.DataPoint{}, Device: &api.Device{},
 				Rule: &api.Rule{},
 			}, org, nil, []*api.Alarm{appAlarm}, nil, []*api.User{
-				random.User("ale", uuid.NewString()),
+				random.User("ale", uuid.NewV7().String()),
 			}, nil, nil, errTestProc, nil, 1, 1, 1, 1, 1, 1,
 		},
 		// Unspecified alarm type.
@@ -347,7 +347,7 @@ func TestAlertMessagesError(t *testing.T) {
 				Point: &common.DataPoint{}, Device: &api.Device{},
 				Rule: &api.Rule{},
 			}, org, nil, []*api.Alarm{unspecType}, nil, []*api.User{
-				random.User("ale", uuid.NewString()),
+				random.User("ale", uuid.NewV7().String()),
 			}, nil, nil, nil, nil, 1, 1, 1, 1, 0, 1,
 		},
 		// Unknown alarm type.
@@ -356,7 +356,7 @@ func TestAlertMessagesError(t *testing.T) {
 				Point: &common.DataPoint{}, Device: &api.Device{},
 				Rule: &api.Rule{},
 			}, org, nil, []*api.Alarm{unknownType}, nil, []*api.User{
-				random.User("ale", uuid.NewString()),
+				random.User("ale", uuid.NewV7().String()),
 			}, nil, nil, nil, nil, 1, 1, 1, 1, 0, 1,
 		},
 		// Alerter error.
@@ -365,7 +365,7 @@ func TestAlertMessagesError(t *testing.T) {
 				Point: &common.DataPoint{}, Device: &api.Device{},
 				Rule: &api.Rule{},
 			}, org, nil, []*api.Alarm{appAlarm}, nil, []*api.User{
-				random.User("ale", uuid.NewString()),
+				random.User("ale", uuid.NewV7().String()),
 			}, nil, nil, nil, errTestProc, 1, 1, 1, 1, 1, 1,
 		},
 	}

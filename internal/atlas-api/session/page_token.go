@@ -2,9 +2,10 @@ package session
 
 import (
 	"encoding/base64"
+	"encoding/hex"
 	"time"
+	"uuid"
 
-	"github.com/google/uuid"
 	"github.com/thingspect/atlas/proto/go/token"
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/known/timestamppb"
@@ -55,7 +56,7 @@ func ParsePageToken(pToken string) (time.Time, string, error) {
 		return time.Time{}, "", err
 	}
 
-	lastUUID, err := uuid.FromBytes(pt.GetPrevId())
+	lastUUID, err := uuid.Parse(hex.EncodeToString(pt.GetPrevId()))
 	if err != nil {
 		return time.Time{}, "", err
 	}

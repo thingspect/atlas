@@ -2,8 +2,8 @@ package ingestor
 
 import (
 	"strings"
+	"uuid"
 
-	"github.com/google/uuid"
 	"github.com/thingspect/atlas/pkg/alog"
 	"github.com/thingspect/atlas/pkg/metric"
 	"github.com/thingspect/atlas/proto/go/message"
@@ -23,7 +23,7 @@ func (ing *Ingestor) decodeMessages() {
 		metric.Incr("received", nil)
 
 		// Set up logging fields.
-		traceID := uuid.NewString()
+		traceID := uuid.NewV7().String()
 		logger := alog.WithField("traceID", traceID)
 
 		// Parse and validate topic in format: 'v1/:orgID[/:uniqID][/json]'.

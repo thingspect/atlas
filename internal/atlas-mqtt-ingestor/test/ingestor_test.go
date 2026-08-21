@@ -7,8 +7,8 @@ import (
 	"strings"
 	"testing"
 	"time"
+	"uuid"
 
-	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"github.com/thingspect/atlas/pkg/decode"
@@ -25,12 +25,12 @@ import (
 const testTimeout = 6 * time.Second
 
 func TestDecodeMessages(t *testing.T) {
-	orgID := uuid.NewString()
+	orgID := uuid.NewV7().String()
 	uniqIDPoint := "ing-" + random.String(16)
 	now := timestamppb.New(time.Now().Add(-15 * time.Minute))
-	pointToken := uuid.NewString()
+	pointToken := uuid.NewV7().String()
 	uniqIDTopic := "ing-" + random.String(16)
-	paylToken := uuid.NewString()
+	paylToken := uuid.NewV7().String()
 
 	tests := []struct {
 		inpTopicParts []string
@@ -120,8 +120,8 @@ func TestDecodeMessages(t *testing.T) {
 			require.NoError(t, err)
 			t.Logf("bPayl: %s", bPayl)
 
-			require.NoError(t, globalMQTTQueue.Publish(strings.Join(
-				test.inpTopicParts, "/"), bPayl))
+			require.NoError(t, globalMQTTQueue.Publish(strings.
+				Join(test.inpTopicParts, "/"), bPayl))
 
 			// Don't stop the flow of execution (assert) to avoid leaving
 			// messages orphaned in the queue.
@@ -157,7 +157,7 @@ func TestDecodeMessages(t *testing.T) {
 }
 
 func TestDecodeMessagesError(t *testing.T) {
-	orgID := uuid.NewString()
+	orgID := uuid.NewV7().String()
 	uniqID := "ing-" + random.String(16)
 
 	tests := []struct {

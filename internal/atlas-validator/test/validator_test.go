@@ -7,8 +7,8 @@ import (
 	"fmt"
 	"testing"
 	"time"
+	"uuid"
 
-	"github.com/google/uuid"
 	"github.com/stretchr/testify/require"
 	"github.com/thingspect/atlas/pkg/test/random"
 	"github.com/thingspect/atlas/proto/go/message"
@@ -22,7 +22,7 @@ const testTimeout = 6 * time.Second
 
 func TestValidateMessages(t *testing.T) {
 	now := timestamppb.New(time.Now().Add(-15 * time.Minute))
-	traceID := uuid.NewString()
+	traceID := uuid.NewV7().String()
 	boolVal := &common.DataPoint_BoolVal{
 		BoolVal: []bool{true, false}[random.Intn(2)],
 	}

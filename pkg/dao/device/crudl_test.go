@@ -8,8 +8,8 @@ import (
 	"strings"
 	"testing"
 	"time"
+	"uuid"
 
-	"github.com/google/uuid"
 	"github.com/stretchr/testify/require"
 	"github.com/thingspect/atlas/pkg/dao"
 	"github.com/thingspect/atlas/pkg/test/random"
@@ -108,7 +108,8 @@ func TestRead(t *testing.T) {
 		ctx, cancel := context.WithTimeout(t.Context(), testTimeout)
 		defer cancel()
 
-		readDev, err := globalDevDAO.Read(ctx, createDev.GetId(), createDev.GetOrgId())
+		readDev, err := globalDevDAO.Read(ctx, createDev.GetId(),
+			createDev.GetOrgId())
 		t.Logf("readDev, err: %+v, %v", readDev, err)
 		require.NoError(t, err)
 		require.Equal(t, createDev, readDev)
@@ -120,8 +121,8 @@ func TestRead(t *testing.T) {
 		ctx, cancel := context.WithTimeout(t.Context(), testTimeout)
 		defer cancel()
 
-		readDev, err := globalDevDAO.Read(ctx, uuid.NewString(),
-			uuid.NewString())
+		readDev, err := globalDevDAO.Read(ctx, uuid.NewV7().String(),
+			uuid.NewV7().String())
 		t.Logf("readDev, err: %+v, %v", readDev, err)
 		require.Nil(t, readDev)
 		require.Equal(t, dao.ErrNotFound, err)
@@ -134,7 +135,7 @@ func TestRead(t *testing.T) {
 		defer cancel()
 
 		readDev, err := globalDevDAO.Read(ctx, createDev.GetId(),
-			uuid.NewString())
+			uuid.NewV7().String())
 		t.Logf("readDev, err: %+v, %v", readDev, err)
 		require.Nil(t, readDev)
 		require.Equal(t, dao.ErrNotFound, err)
@@ -278,8 +279,8 @@ func TestReadUpdateDeleteCache(t *testing.T) {
 		require.Equal(t, createDev.GetStatus(), updateDev.GetStatus())
 		require.Equal(t, createDev.GetDecoder(), updateDev.GetDecoder())
 		require.Equal(t, createDev.GetTags(), updateDev.GetTags())
-		require.True(t, updateDev.GetUpdatedAt().AsTime().After(
-			updateDev.GetCreatedAt().AsTime()))
+		require.True(t, updateDev.GetUpdatedAt().AsTime().
+			After(updateDev.GetCreatedAt().AsTime()))
 		require.WithinDuration(t, createDev.GetCreatedAt().AsTime(),
 			updateDev.GetUpdatedAt().AsTime(), 2*time.Second)
 
@@ -342,8 +343,8 @@ func TestReadUpdateDeleteCache(t *testing.T) {
 		ctx, cancel := context.WithTimeout(t.Context(), testTimeout)
 		defer cancel()
 
-		readDev, err := globalDevDAOCache.Read(ctx, uuid.NewString(),
-			uuid.NewString())
+		readDev, err := globalDevDAOCache.Read(ctx, uuid.NewV7().String(),
+			uuid.NewV7().String())
 		t.Logf("readDev, err: %+v, %v", readDev, err)
 		require.Nil(t, readDev)
 		require.Equal(t, dao.ErrNotFound, err)
@@ -367,7 +368,7 @@ func TestReadUpdateDeleteCache(t *testing.T) {
 		require.EqualExportedValues(t, createDev, readDev)
 
 		readDev, err = globalDevDAOCache.Read(ctx, createDev.GetId(),
-			uuid.NewString())
+			uuid.NewV7().String())
 		t.Logf("readDev, err: %+v, %v", readDev, err)
 		require.Nil(t, readDev)
 		require.Equal(t, dao.ErrNotFound, err)
@@ -437,8 +438,8 @@ func TestUpdate(t *testing.T) {
 		require.Equal(t, createDev.GetStatus(), updateDev.GetStatus())
 		require.Equal(t, createDev.GetDecoder(), updateDev.GetDecoder())
 		require.Equal(t, createDev.GetTags(), updateDev.GetTags())
-		require.True(t, updateDev.GetUpdatedAt().AsTime().After(
-			updateDev.GetCreatedAt().AsTime()))
+		require.True(t, updateDev.GetUpdatedAt().AsTime().
+			After(updateDev.GetCreatedAt().AsTime()))
 		require.WithinDuration(t, createDev.GetCreatedAt().AsTime(),
 			updateDev.GetUpdatedAt().AsTime(), 2*time.Second)
 
@@ -473,7 +474,7 @@ func TestUpdate(t *testing.T) {
 		require.NoError(t, err)
 
 		// Update device fields.
-		createDev.OrgId = uuid.NewString()
+		createDev.OrgId = uuid.NewV7().String()
 		createDev.UniqId = "dao-device-" + random.String(16)
 
 		updateDev, err := globalDevDAO.Update(ctx, createDev)
@@ -551,7 +552,7 @@ func TestDelete(t *testing.T) {
 		ctx, cancel := context.WithTimeout(t.Context(), testTimeout)
 		defer cancel()
 
-		err := globalDevDAO.Delete(ctx, uuid.NewString(), createOrg.GetId())
+		err := globalDevDAO.Delete(ctx, uuid.NewV7().String(), createOrg.GetId())
 		t.Logf("err: %v", err)
 		require.Equal(t, dao.ErrNotFound, err)
 	})
@@ -567,7 +568,7 @@ func TestDelete(t *testing.T) {
 		t.Logf("createDev, err: %+v, %v", createDev, err)
 		require.NoError(t, err)
 
-		err = globalDevDAO.Delete(ctx, createDev.GetId(), uuid.NewString())
+		err = globalDevDAO.Delete(ctx, createDev.GetId(), uuid.NewV7().String())
 		t.Logf("err: %v", err)
 		require.Equal(t, dao.ErrNotFound, err)
 	})
@@ -720,7 +721,7 @@ func TestList(t *testing.T) {
 		ctx, cancel := context.WithTimeout(t.Context(), testTimeout)
 		defer cancel()
 
-		listDevs, listCount, err := globalDevDAO.List(ctx, uuid.NewString(),
+		listDevs, listCount, err := globalDevDAO.List(ctx, uuid.NewV7().String(),
 			time.Time{}, "", 0, "")
 		t.Logf("listDevs, listCount, err: %+v, %v, %v", listDevs, listCount,
 			err)

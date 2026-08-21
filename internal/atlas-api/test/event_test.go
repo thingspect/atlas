@@ -7,8 +7,8 @@ import (
 	"sort"
 	"testing"
 	"time"
+	"uuid"
 
-	"github.com/google/uuid"
 	"github.com/stretchr/testify/require"
 	"github.com/thingspect/atlas/pkg/test/random"
 	"github.com/thingspect/proto/go/api"
@@ -26,7 +26,7 @@ func TestListEvents(t *testing.T) {
 
 		devCli := api.NewDeviceServiceClient(globalAdminGRPCConn)
 		createDev, err := devCli.CreateDevice(ctx, &api.CreateDeviceRequest{
-			Device: random.Device("api-event", uuid.NewString()),
+			Device: random.Device("api-event", uuid.NewV7().String()),
 		})
 		t.Logf("createDev, err: %+v, %v", createDev, err)
 		require.NoError(t, err)
@@ -50,8 +50,8 @@ func TestListEvents(t *testing.T) {
 
 		// Flip events to descending timestamp order.
 		sort.Slice(events, func(i, j int) bool {
-			return events[i].GetCreatedAt().AsTime().After(
-				events[j].GetCreatedAt().AsTime())
+			return events[i].GetCreatedAt().AsTime().
+				After(events[j].GetCreatedAt().AsTime())
 		})
 
 		ctx, cancel = context.WithTimeout(t.Context(), testTimeout)
@@ -61,9 +61,9 @@ func TestListEvents(t *testing.T) {
 		evCli := api.NewEventServiceClient(globalAdminGRPCConn)
 		listEventsUniqID, err := evCli.ListEvents(ctx, &api.ListEventsRequest{
 			IdOneof: &api.ListEventsRequest_UniqId{UniqId: createDev.GetUniqId()},
-			EndTime: events[0].GetCreatedAt(), StartTime: timestamppb.New(
-				events[len(events)-1].GetCreatedAt().AsTime().Add(
-					-time.Millisecond)),
+			EndTime: events[0].GetCreatedAt(),
+			StartTime: timestamppb.New(events[len(events)-1].GetCreatedAt().
+				AsTime().Add(-time.Millisecond)),
 		})
 		t.Logf("listEventsUniqID, err: %+v, %v", listEventsUniqID, err)
 		require.NoError(t, err)
@@ -133,9 +133,9 @@ func TestListEvents(t *testing.T) {
 		evCli := api.NewEventServiceClient(globalAdminGRPCConn)
 		listEvents, err := evCli.ListEvents(ctx, &api.ListEventsRequest{
 			IdOneof: &api.ListEventsRequest_DeviceId{
-				DeviceId: uuid.NewString(),
-			}, EndTime: timestamppb.Now(), StartTime: timestamppb.New(
-				time.Now().Add(-91 * 24 * time.Hour)),
+				DeviceId: uuid.NewV7().String(),
+			}, EndTime: timestamppb.Now(),
+			StartTime: timestamppb.New(time.Now().Add(-91 * 24 * time.Hour)),
 		})
 		t.Logf("listEvents, err: %+v, %v", listEvents, err)
 		require.Nil(t, listEvents)
@@ -187,8 +187,8 @@ func TestLatestEvents(t *testing.T) {
 
 		// Flip events to descending timestamp order.
 		sort.Slice(events, func(i, j int) bool {
-			return events[i].GetCreatedAt().AsTime().After(
-				events[j].GetCreatedAt().AsTime())
+			return events[i].GetCreatedAt().AsTime().
+				After(events[j].GetCreatedAt().AsTime())
 		})
 
 		ctx, cancel := context.WithTimeout(t.Context(), testTimeout)

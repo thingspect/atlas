@@ -8,8 +8,8 @@ import (
 	"sort"
 	"testing"
 	"time"
+	"uuid"
 
-	"github.com/google/uuid"
 	"github.com/stretchr/testify/require"
 	"github.com/thingspect/atlas/pkg/dao"
 	"github.com/thingspect/atlas/pkg/decode"
@@ -39,23 +39,25 @@ func TestCreate(t *testing.T) {
 		}{
 			{
 				&common.DataPoint{
-					UniqId: "dao-point-" + random.String(16), Attr: radiobridge.AttrCount,
+					UniqId:   "dao-point-" + random.String(16),
+					Attr:     radiobridge.AttrCount,
 					ValOneof: &common.DataPoint_IntVal{IntVal: 123},
-					Ts:       timestamppb.Now(), TraceId: uuid.NewString(),
+					Ts:       timestamppb.Now(), TraceId: uuid.NewV7().String(),
 				},
 			},
 			{
 				&common.DataPoint{
-					UniqId: "dao-point-" + random.String(16), Attr: decode.AttrTempC,
+					UniqId:   "dao-point-" + random.String(16),
+					Attr:     decode.AttrTempC,
 					ValOneof: &common.DataPoint_Fl64Val{Fl64Val: 9.3},
-					Ts:       timestamppb.Now(), TraceId: uuid.NewString(),
+					Ts:       timestamppb.Now(), TraceId: uuid.NewV7().String(),
 				},
 			},
 			{
 				&common.DataPoint{
 					UniqId: "dao-point-" + random.String(16), Attr: "power",
 					ValOneof: &common.DataPoint_StrVal{StrVal: "line"},
-					Ts:       timestamppb.Now(), TraceId: uuid.NewString(),
+					Ts:       timestamppb.Now(), TraceId: uuid.NewV7().String(),
 				},
 			},
 			{
@@ -64,7 +66,7 @@ func TestCreate(t *testing.T) {
 					ValOneof: &common.DataPoint_BoolVal{BoolVal: []bool{
 						true, false,
 					}[random.Intn(2)]}, Ts: timestamppb.Now(),
-					TraceId: uuid.NewString(),
+					TraceId: uuid.NewV7().String(),
 				},
 			},
 			{
@@ -72,7 +74,7 @@ func TestCreate(t *testing.T) {
 					UniqId: "dao-point-" + random.String(16), Attr: "raw",
 					ValOneof: &common.DataPoint_BytesVal{
 						BytesVal: random.Bytes(10),
-					}, Ts: timestamppb.Now(), TraceId: uuid.NewString(),
+					}, Ts: timestamppb.Now(), TraceId: uuid.NewV7().String(),
 				},
 			},
 		}
@@ -95,7 +97,7 @@ func TestCreate(t *testing.T) {
 	t.Run("Create invalid data point", func(t *testing.T) {
 		t.Parallel()
 
-		orgID := uuid.NewString()
+		orgID := uuid.NewV7().String()
 
 		tests := []struct {
 			inp *common.DataPoint
@@ -103,9 +105,10 @@ func TestCreate(t *testing.T) {
 		}{
 			{
 				&common.DataPoint{
-					UniqId: "dao-point-" + random.String(40), Attr: radiobridge.AttrCount,
+					UniqId:   "dao-point-" + random.String(40),
+					Attr:     radiobridge.AttrCount,
 					ValOneof: &common.DataPoint_IntVal{IntVal: 123},
-					Ts:       timestamppb.Now(), TraceId: uuid.NewString(),
+					Ts:       timestamppb.Now(), TraceId: uuid.NewV7().String(),
 				}, dao.ErrInvalidFormat,
 			},
 			{
@@ -113,7 +116,7 @@ func TestCreate(t *testing.T) {
 					UniqId: "dao-point-" + random.String(16), Attr: "raw",
 					ValOneof: &common.DataPoint_BytesVal{
 						BytesVal: random.Bytes(3000),
-					}, Ts: timestamppb.Now(), TraceId: uuid.NewString(),
+					}, Ts: timestamppb.Now(), TraceId: uuid.NewV7().String(),
 				}, dao.ErrInvalidFormat,
 			},
 		}
@@ -144,9 +147,10 @@ func TestCreate(t *testing.T) {
 		require.NoError(t, err)
 
 		point := &common.DataPoint{
-			UniqId: "dao-point-" + random.String(16), Attr: radiobridge.AttrCount,
+			UniqId:   "dao-point-" + random.String(16),
+			Attr:     radiobridge.AttrCount,
 			ValOneof: &common.DataPoint_IntVal{IntVal: 123},
-			Ts:       timestamppb.Now(), TraceId: uuid.NewString(),
+			Ts:       timestamppb.Now(), TraceId: uuid.NewV7().String(),
 		}
 
 		err = globalDPDAO.Create(ctx, point, createOrg.GetId())
@@ -181,34 +185,34 @@ func TestList(t *testing.T) {
 			{
 				UniqId: createDev.GetUniqId(), Attr: radiobridge.AttrCount,
 				ValOneof: &common.DataPoint_IntVal{IntVal: 123},
-				TraceId:  uuid.NewString(),
+				TraceId:  uuid.NewV7().String(),
 			},
 			{
 				UniqId: createDev.GetUniqId(), Attr: decode.AttrTempC,
 				ValOneof: &common.DataPoint_Fl64Val{Fl64Val: 9.3},
-				TraceId:  uuid.NewString(),
+				TraceId:  uuid.NewV7().String(),
 			},
 			{
 				UniqId: createDev.GetUniqId(), Attr: "power",
 				ValOneof: &common.DataPoint_StrVal{StrVal: "line"},
-				TraceId:  uuid.NewString(),
+				TraceId:  uuid.NewV7().String(),
 			},
 			{
 				UniqId: createDev.GetUniqId(), Attr: "leak",
 				ValOneof: &common.DataPoint_BoolVal{BoolVal: []bool{
 					true, false,
-				}[random.Intn(2)]}, TraceId: uuid.NewString(),
+				}[random.Intn(2)]}, TraceId: uuid.NewV7().String(),
 			},
 			{
 				UniqId: createDev.GetUniqId(), Attr: "raw",
 				ValOneof: &common.DataPoint_BytesVal{
 					BytesVal: random.Bytes(10),
-				}, TraceId: uuid.NewString(),
+				}, TraceId: uuid.NewV7().String(),
 			},
 			{
 				UniqId: createDev.GetUniqId(), Attr: radiobridge.AttrCount,
 				ValOneof: &common.DataPoint_IntVal{IntVal: 321},
-				TraceId:  uuid.NewString(),
+				TraceId:  uuid.NewV7().String(),
 			},
 		}
 
@@ -219,7 +223,8 @@ func TestList(t *testing.T) {
 
 			// Set a new in-place timestamp.
 			point.Ts = timestamppb.New(time.Now().UTC().Truncate(
-				time.Millisecond))
+				time.Millisecond,
+			))
 
 			err := globalDPDAO.Create(ctx, point, createOrg.GetId())
 			t.Logf("err: %v", err)
@@ -289,14 +294,14 @@ func TestList(t *testing.T) {
 		point := &common.DataPoint{
 			UniqId: "dao-point-" + random.String(16), Attr: radiobridge.AttrCount,
 			ValOneof: &common.DataPoint_IntVal{IntVal: 123},
-			Ts:       timestamppb.Now(), TraceId: uuid.NewString(),
+			Ts:       timestamppb.Now(), TraceId: uuid.NewV7().String(),
 		}
 
 		err = globalDPDAO.Create(ctx, point, createOrg.GetId())
 		t.Logf("err: %#v", err)
 		require.NoError(t, err)
 
-		listPoints, err := globalDPDAO.List(ctx, uuid.NewString(),
+		listPoints, err := globalDPDAO.List(ctx, uuid.NewV7().String(),
 			point.GetUniqId(), "", "", point.GetTs().AsTime(),
 			point.GetTs().AsTime().Add(-time.Millisecond))
 		t.Logf("listPoints, err: %+v, %v", listPoints, err)
@@ -311,7 +316,7 @@ func TestList(t *testing.T) {
 		defer cancel()
 
 		listPoints, err := globalDPDAO.List(ctx, random.String(10),
-			uuid.NewString(), "", "", time.Now(), time.Now())
+			uuid.NewV7().String(), "", "", time.Now(), time.Now())
 		t.Logf("listPoints, err: %+v, %v", listPoints, err)
 		require.Nil(t, listPoints)
 		require.ErrorIs(t, err, dao.ErrInvalidFormat)
@@ -344,29 +349,29 @@ func TestLatest(t *testing.T) {
 			{
 				UniqId: createDev.GetUniqId(), Attr: radiobridge.AttrCount,
 				ValOneof: &common.DataPoint_IntVal{IntVal: 123},
-				TraceId:  uuid.NewString(),
+				TraceId:  uuid.NewV7().String(),
 			},
 			{
 				UniqId: createDev.GetUniqId(), Attr: decode.AttrTempC,
 				ValOneof: &common.DataPoint_Fl64Val{Fl64Val: 9.3},
-				TraceId:  uuid.NewString(),
+				TraceId:  uuid.NewV7().String(),
 			},
 			{
 				UniqId: createDev.GetUniqId(), Attr: "power",
 				ValOneof: &common.DataPoint_StrVal{StrVal: "line"},
-				TraceId:  uuid.NewString(),
+				TraceId:  uuid.NewV7().String(),
 			},
 			{
 				UniqId: createDev.GetUniqId(), Attr: "leak",
 				ValOneof: &common.DataPoint_BoolVal{BoolVal: []bool{
 					true, false,
-				}[random.Intn(2)]}, TraceId: uuid.NewString(),
+				}[random.Intn(2)]}, TraceId: uuid.NewV7().String(),
 			},
 			{
 				UniqId: createDev.GetUniqId(), Attr: "raw",
 				ValOneof: &common.DataPoint_BytesVal{
 					BytesVal: random.Bytes(10),
-				}, TraceId: uuid.NewString(),
+				}, TraceId: uuid.NewV7().String(),
 			},
 		}
 
@@ -378,7 +383,8 @@ func TestLatest(t *testing.T) {
 
 				// Set a new in-place timestamp each point group.
 				point.Ts = timestamppb.New(time.Now().UTC().Truncate(
-					time.Millisecond))
+					time.Millisecond,
+				))
 
 				// Track the first point's latest time.
 				if i == 0 {
@@ -435,14 +441,14 @@ func TestLatest(t *testing.T) {
 		point := &common.DataPoint{
 			UniqId: "dao-point-" + random.String(16), Attr: radiobridge.AttrCount,
 			ValOneof: &common.DataPoint_IntVal{IntVal: 123},
-			Ts:       timestamppb.Now(), TraceId: uuid.NewString(),
+			Ts:       timestamppb.Now(), TraceId: uuid.NewV7().String(),
 		}
 
 		err = globalDPDAO.Create(ctx, point, createOrg.GetId())
 		t.Logf("err: %#v", err)
 		require.NoError(t, err)
 
-		latPoints, err := globalDPDAO.Latest(ctx, uuid.NewString(),
+		latPoints, err := globalDPDAO.Latest(ctx, uuid.NewV7().String(),
 			point.GetUniqId(), "", time.Now().UTC().Add(-15*time.Minute))
 		t.Logf("latPoints, err: %+v, %v", latPoints, err)
 		require.NoError(t, err)
@@ -455,7 +461,7 @@ func TestLatest(t *testing.T) {
 		ctx, cancel := context.WithTimeout(t.Context(), testTimeout)
 		defer cancel()
 
-		latPoints, err := globalDPDAO.Latest(ctx, uuid.NewString(), "",
+		latPoints, err := globalDPDAO.Latest(ctx, uuid.NewV7().String(), "",
 			random.String(10), time.Now().UTC().Add(-15*time.Minute))
 		t.Logf("latPoints, err: %+v, %v", latPoints, err)
 		require.Nil(t, latPoints)

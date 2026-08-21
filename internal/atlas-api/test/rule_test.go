@@ -7,8 +7,8 @@ import (
 	"fmt"
 	"testing"
 	"time"
+	"uuid"
 
-	"github.com/google/uuid"
 	"github.com/stretchr/testify/require"
 	"github.com/thingspect/atlas/pkg/rule"
 	"github.com/thingspect/atlas/pkg/test/random"
@@ -26,7 +26,7 @@ func TestCreateRule(t *testing.T) {
 	t.Run("Create valid rule", func(t *testing.T) {
 		t.Parallel()
 
-		rule := random.Rule("api-rule", uuid.NewString())
+		rule := random.Rule("api-rule", uuid.NewV7().String())
 
 		ctx, cancel := context.WithTimeout(t.Context(), testTimeout)
 		defer cancel()
@@ -51,7 +51,7 @@ func TestCreateRule(t *testing.T) {
 
 		raCli := api.NewRuleAlarmServiceClient(secondaryViewerGRPCConn)
 		createRule, err := raCli.CreateRule(ctx, &api.CreateRuleRequest{
-			Rule: random.Rule("api-rule", uuid.NewString()),
+			Rule: random.Rule("api-rule", uuid.NewV7().String()),
 		})
 		t.Logf("createRule, err: %+v, %v", createRule, err)
 		require.Nil(t, createRule)
@@ -62,7 +62,7 @@ func TestCreateRule(t *testing.T) {
 	t.Run("Create invalid rule", func(t *testing.T) {
 		t.Parallel()
 
-		rule := random.Rule("api-rule", uuid.NewString())
+		rule := random.Rule("api-rule", uuid.NewV7().String())
 		rule.Attr = "api-rule-" + random.String(40)
 
 		ctx, cancel := context.WithTimeout(t.Context(), testTimeout)
@@ -88,7 +88,7 @@ func TestGetRule(t *testing.T) {
 
 	raCli := api.NewRuleAlarmServiceClient(globalAdminGRPCConn)
 	createRule, err := raCli.CreateRule(ctx, &api.CreateRuleRequest{
-		Rule: random.Rule("api-rule", uuid.NewString()),
+		Rule: random.Rule("api-rule", uuid.NewV7().String()),
 	})
 	t.Logf("createRule, err: %+v, %v", createRule, err)
 	require.NoError(t, err)
@@ -115,7 +115,7 @@ func TestGetRule(t *testing.T) {
 
 		raCli := api.NewRuleAlarmServiceClient(globalAdminGRPCConn)
 		getRule, err := raCli.GetRule(ctx,
-			&api.GetRuleRequest{Id: uuid.NewString()})
+			&api.GetRuleRequest{Id: uuid.NewV7().String()})
 		t.Logf("getRule, err: %+v, %v", getRule, err)
 		require.Nil(t, getRule)
 		require.EqualError(t, err, "rpc error: code = NotFound desc = "+
@@ -149,7 +149,7 @@ func TestUpdateRule(t *testing.T) {
 
 		raCli := api.NewRuleAlarmServiceClient(globalAdminGRPCConn)
 		createRule, err := raCli.CreateRule(ctx, &api.CreateRuleRequest{
-			Rule: random.Rule("api-rule", uuid.NewString()),
+			Rule: random.Rule("api-rule", uuid.NewV7().String()),
 		})
 		t.Logf("createRule, err: %+v, %v", createRule, err)
 		require.NoError(t, err)
@@ -164,8 +164,8 @@ func TestUpdateRule(t *testing.T) {
 		require.NoError(t, err)
 		require.Equal(t, createRule.GetCreatedAt().AsTime(),
 			updateRule.GetCreatedAt().AsTime())
-		require.True(t, updateRule.GetUpdatedAt().AsTime().After(
-			updateRule.GetCreatedAt().AsTime()))
+		require.True(t, updateRule.GetUpdatedAt().AsTime().
+			After(updateRule.GetCreatedAt().AsTime()))
 		require.WithinDuration(t, createRule.GetCreatedAt().AsTime(),
 			updateRule.GetUpdatedAt().AsTime(), 2*time.Second)
 
@@ -184,7 +184,7 @@ func TestUpdateRule(t *testing.T) {
 
 		raCli := api.NewRuleAlarmServiceClient(globalAdminKeyGRPCConn)
 		createRule, err := raCli.CreateRule(ctx, &api.CreateRuleRequest{
-			Rule: random.Rule("api-rule", uuid.NewString()),
+			Rule: random.Rule("api-rule", uuid.NewV7().String()),
 		})
 		t.Logf("createRule, err: %+v, %v", createRule, err)
 		require.NoError(t, err)
@@ -202,8 +202,8 @@ func TestUpdateRule(t *testing.T) {
 		require.NoError(t, err)
 		require.Equal(t, createRule.GetCreatedAt().AsTime(),
 			updateRule.GetCreatedAt().AsTime())
-		require.True(t, updateRule.GetUpdatedAt().AsTime().After(
-			updateRule.GetCreatedAt().AsTime()))
+		require.True(t, updateRule.GetUpdatedAt().AsTime().
+			After(updateRule.GetCreatedAt().AsTime()))
 		require.WithinDuration(t, createRule.GetCreatedAt().AsTime(),
 			updateRule.GetUpdatedAt().AsTime(), 2*time.Second)
 
@@ -251,7 +251,7 @@ func TestUpdateRule(t *testing.T) {
 
 		raCli := api.NewRuleAlarmServiceClient(globalAdminGRPCConn)
 		updateRule, err := raCli.UpdateRule(ctx, &api.UpdateRuleRequest{
-			Rule:       random.Rule("api-rule", uuid.NewString()),
+			Rule:       random.Rule("api-rule", uuid.NewV7().String()),
 			UpdateMask: &fieldmaskpb.FieldMask{Paths: []string{"aaa"}},
 		})
 		t.Logf("updateRule, err: %+v, %v", updateRule, err)
@@ -268,7 +268,7 @@ func TestUpdateRule(t *testing.T) {
 
 		raCli := api.NewRuleAlarmServiceClient(globalAdminGRPCConn)
 		updateRule, err := raCli.UpdateRule(ctx, &api.UpdateRuleRequest{
-			Rule: random.Rule("api-rule", uuid.NewString()),
+			Rule: random.Rule("api-rule", uuid.NewV7().String()),
 			UpdateMask: &fieldmaskpb.FieldMask{
 				Paths: []string{"name", "status", "expr"},
 			},
@@ -287,7 +287,7 @@ func TestUpdateRule(t *testing.T) {
 
 		raCli := api.NewRuleAlarmServiceClient(globalAdminGRPCConn)
 		updateRule, err := raCli.UpdateRule(ctx, &api.UpdateRuleRequest{
-			Rule: random.Rule("api-rule", uuid.NewString()),
+			Rule: random.Rule("api-rule", uuid.NewV7().String()),
 		})
 		t.Logf("updateRule, err: %+v, %v", updateRule, err)
 		require.Nil(t, updateRule)
@@ -303,13 +303,13 @@ func TestUpdateRule(t *testing.T) {
 
 		raCli := api.NewRuleAlarmServiceClient(globalAdminGRPCConn)
 		createRule, err := raCli.CreateRule(ctx, &api.CreateRuleRequest{
-			Rule: random.Rule("api-rule", uuid.NewString()),
+			Rule: random.Rule("api-rule", uuid.NewV7().String()),
 		})
 		t.Logf("createRule, err: %+v, %v", createRule, err)
 		require.NoError(t, err)
 
 		// Update rule fields.
-		createRule.OrgId = uuid.NewString()
+		createRule.OrgId = uuid.NewV7().String()
 		createRule.Name = "api-rule-" + random.String(10)
 
 		secCli := api.NewRuleAlarmServiceClient(secondaryAdminGRPCConn)
@@ -329,7 +329,7 @@ func TestUpdateRule(t *testing.T) {
 
 		raCli := api.NewRuleAlarmServiceClient(globalAdminGRPCConn)
 		createRule, err := raCli.CreateRule(ctx, &api.CreateRuleRequest{
-			Rule: random.Rule("api-rule", uuid.NewString()),
+			Rule: random.Rule("api-rule", uuid.NewV7().String()),
 		})
 		t.Logf("createRule, err: %+v, %v", createRule, err)
 		require.NoError(t, err)
@@ -359,7 +359,7 @@ func TestDeleteRule(t *testing.T) {
 
 		raCli := api.NewRuleAlarmServiceClient(globalAdminGRPCConn)
 		createRule, err := raCli.CreateRule(ctx, &api.CreateRuleRequest{
-			Rule: random.Rule("api-rule", uuid.NewString()),
+			Rule: random.Rule("api-rule", uuid.NewV7().String()),
 		})
 		t.Logf("createRule, err: %+v, %v", createRule, err)
 		require.NoError(t, err)
@@ -394,7 +394,7 @@ func TestDeleteRule(t *testing.T) {
 
 		raCli := api.NewRuleAlarmServiceClient(secondaryViewerGRPCConn)
 		_, err := raCli.DeleteRule(ctx,
-			&api.DeleteRuleRequest{Id: uuid.NewString()})
+			&api.DeleteRuleRequest{Id: uuid.NewV7().String()})
 		t.Logf("err: %v", err)
 		require.EqualError(t, err, "rpc error: code = PermissionDenied desc = "+
 			"permission denied, BUILDER role required")
@@ -408,7 +408,7 @@ func TestDeleteRule(t *testing.T) {
 
 		raCli := api.NewRuleAlarmServiceClient(globalAdminGRPCConn)
 		_, err := raCli.DeleteRule(ctx,
-			&api.DeleteRuleRequest{Id: uuid.NewString()})
+			&api.DeleteRuleRequest{Id: uuid.NewV7().String()})
 		t.Logf("err: %v", err)
 		require.EqualError(t, err, "rpc error: code = NotFound desc = "+
 			"dao: object not found")
@@ -422,7 +422,7 @@ func TestDeleteRule(t *testing.T) {
 
 		raCli := api.NewRuleAlarmServiceClient(globalAdminGRPCConn)
 		createRule, err := raCli.CreateRule(ctx, &api.CreateRuleRequest{
-			Rule: random.Rule("api-rule", uuid.NewString()),
+			Rule: random.Rule("api-rule", uuid.NewV7().String()),
 		})
 		t.Logf("createRule, err: %+v, %v", createRule, err)
 		require.NoError(t, err)
@@ -448,7 +448,7 @@ func TestListRules(t *testing.T) {
 	for range 3 {
 		raCli := api.NewRuleAlarmServiceClient(globalAdminGRPCConn)
 		createRule, err := raCli.CreateRule(ctx, &api.CreateRuleRequest{
-			Rule: random.Rule("api-rule", uuid.NewString()),
+			Rule: random.Rule("api-rule", uuid.NewV7().String()),
 		})
 		t.Logf("createRule, err: %+v, %v", createRule, err)
 		require.NoError(t, err)
@@ -614,7 +614,7 @@ func TestTestRule(t *testing.T) {
 				test.inpPoint.UniqId = "api-rule-" + random.String(16)
 				test.inpPoint.Attr = "api-rule" + random.String(10)
 
-				rule := random.Rule("api-rule", uuid.NewString())
+				rule := random.Rule("api-rule", uuid.NewV7().String())
 				rule.Attr = test.inpPoint.GetAttr()
 				rule.Expr = test.inpRuleExpr
 
@@ -647,7 +647,7 @@ func TestTestRule(t *testing.T) {
 				random.String(10),
 			ValOneof: &common.DataPoint_IntVal{IntVal: 123},
 		}
-		rule := random.Rule("api-rule", uuid.NewString())
+		rule := random.Rule("api-rule", uuid.NewV7().String())
 
 		ctx, cancel := context.WithTimeout(t.Context(), testTimeout)
 		defer cancel()
@@ -669,7 +669,7 @@ func TestTestRule(t *testing.T) {
 				random.String(10),
 			ValOneof: &common.DataPoint_IntVal{IntVal: 123},
 		}
-		rule := random.Rule("api-rule", uuid.NewString())
+		rule := random.Rule("api-rule", uuid.NewV7().String())
 
 		ctx, cancel := context.WithTimeout(t.Context(), testTimeout)
 		defer cancel()

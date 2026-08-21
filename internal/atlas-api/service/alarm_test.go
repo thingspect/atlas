@@ -7,8 +7,8 @@ import (
 	"fmt"
 	"testing"
 	"time"
+	"uuid"
 
-	"github.com/google/uuid"
 	"github.com/stretchr/testify/require"
 	"github.com/thingspect/atlas/internal/atlas-api/session"
 	"github.com/thingspect/atlas/pkg/dao"
@@ -29,17 +29,17 @@ func TestCreateAlarm(t *testing.T) {
 	t.Run("Create valid alarm", func(t *testing.T) {
 		t.Parallel()
 
-		alarm := random.Alarm("api-alarm", uuid.NewString(), uuid.NewString())
+		alarm := random.Alarm("api-alarm", uuid.NewV7().String(),
+			uuid.NewV7().String())
 		retAlarm, _ := proto.Clone(alarm).(*api.Alarm)
 
 		alarmer := NewMockAlarmer(gomock.NewController(t))
 		alarmer.EXPECT().Create(gomock.Any(), alarm).Return(retAlarm, nil).
 			Times(1)
 
-		ctx, cancel := context.WithTimeout(session.NewContext(
-			t.Context(), &session.Session{
-				OrgID: alarm.GetOrgId(), Role: api.Role_ADMIN,
-			}), testTimeout)
+		ctx, cancel := context.WithTimeout(session.NewContext(t.Context(),
+			&session.Session{OrgID: alarm.GetOrgId(), Role: api.Role_ADMIN}),
+			testTimeout)
 		defer cancel()
 
 		raSvc := NewRuleAlarm(nil, alarmer)
@@ -67,10 +67,9 @@ func TestCreateAlarm(t *testing.T) {
 	t.Run("Create alarm with insufficient role", func(t *testing.T) {
 		t.Parallel()
 
-		ctx, cancel := context.WithTimeout(session.NewContext(
-			t.Context(), &session.Session{
-				OrgID: uuid.NewString(), Role: api.Role_VIEWER,
-			}), testTimeout)
+		ctx, cancel := context.WithTimeout(session.NewContext(t.Context(),
+			&session.Session{OrgID: uuid.NewV7().String(), Role: api.Role_VIEWER}),
+			testTimeout)
 		defer cancel()
 
 		raSvc := NewRuleAlarm(nil, nil)
@@ -83,17 +82,17 @@ func TestCreateAlarm(t *testing.T) {
 	t.Run("Create invalid alarm", func(t *testing.T) {
 		t.Parallel()
 
-		alarm := random.Alarm("api-alarm", uuid.NewString(), uuid.NewString())
+		alarm := random.Alarm("api-alarm", uuid.NewV7().String(),
+			uuid.NewV7().String())
 		alarm.Name = random.String(81)
 
 		alarmer := NewMockAlarmer(gomock.NewController(t))
 		alarmer.EXPECT().Create(gomock.Any(), alarm).Return(nil,
 			dao.ErrInvalidFormat).Times(1)
 
-		ctx, cancel := context.WithTimeout(session.NewContext(
-			t.Context(), &session.Session{
-				OrgID: alarm.GetOrgId(), Role: api.Role_ADMIN,
-			}), testTimeout)
+		ctx, cancel := context.WithTimeout(session.NewContext(t.Context(),
+			&session.Session{OrgID: alarm.GetOrgId(), Role: api.Role_ADMIN}),
+			testTimeout)
 		defer cancel()
 
 		raSvc := NewRuleAlarm(nil, alarmer)
@@ -113,17 +112,17 @@ func TestGetAlarm(t *testing.T) {
 	t.Run("Get alarm by valid ID", func(t *testing.T) {
 		t.Parallel()
 
-		alarm := random.Alarm("api-alarm", uuid.NewString(), uuid.NewString())
+		alarm := random.Alarm("api-alarm", uuid.NewV7().String(),
+			uuid.NewV7().String())
 		retAlarm, _ := proto.Clone(alarm).(*api.Alarm)
 
 		alarmer := NewMockAlarmer(gomock.NewController(t))
 		alarmer.EXPECT().Read(gomock.Any(), alarm.GetId(), alarm.GetOrgId(),
 			alarm.GetRuleId()).Return(retAlarm, nil).Times(1)
 
-		ctx, cancel := context.WithTimeout(session.NewContext(
-			t.Context(), &session.Session{
-				OrgID: alarm.GetOrgId(), Role: api.Role_ADMIN,
-			}), testTimeout)
+		ctx, cancel := context.WithTimeout(session.NewContext(t.Context(),
+			&session.Session{OrgID: alarm.GetOrgId(), Role: api.Role_ADMIN}),
+			testTimeout)
 		defer cancel()
 
 		raSvc := NewRuleAlarm(nil, alarmer)
@@ -151,10 +150,9 @@ func TestGetAlarm(t *testing.T) {
 	t.Run("Get rule with insufficient role", func(t *testing.T) {
 		t.Parallel()
 
-		ctx, cancel := context.WithTimeout(session.NewContext(
-			t.Context(), &session.Session{
-				OrgID: uuid.NewString(), Role: api.Role_CONTACT,
-			}), testTimeout)
+		ctx, cancel := context.WithTimeout(session.NewContext(t.Context(),
+			&session.Session{OrgID: uuid.NewV7().String(), Role: api.Role_CONTACT}),
+			testTimeout)
 		defer cancel()
 
 		raSvc := NewRuleAlarm(nil, nil)
@@ -171,15 +169,14 @@ func TestGetAlarm(t *testing.T) {
 		alarmer.EXPECT().Read(gomock.Any(), gomock.Any(), gomock.Any(),
 			gomock.Any()).Return(nil, dao.ErrNotFound).Times(1)
 
-		ctx, cancel := context.WithTimeout(session.NewContext(
-			t.Context(), &session.Session{
-				OrgID: uuid.NewString(), Role: api.Role_ADMIN,
-			}), testTimeout)
+		ctx, cancel := context.WithTimeout(session.NewContext(t.Context(),
+			&session.Session{OrgID: uuid.NewV7().String(), Role: api.Role_ADMIN}),
+			testTimeout)
 		defer cancel()
 
 		raSvc := NewRuleAlarm(nil, alarmer)
 		getAlarm, err := raSvc.GetAlarm(ctx, &api.GetAlarmRequest{
-			Id: uuid.NewString(), RuleId: uuid.NewString(),
+			Id: uuid.NewV7().String(), RuleId: uuid.NewV7().String(),
 		})
 		t.Logf("getAlarm, err: %+v, %v", getAlarm, err)
 		require.Nil(t, getAlarm)
@@ -194,17 +191,17 @@ func TestUpdateAlarm(t *testing.T) {
 	t.Run("Update alarm by valid alarm", func(t *testing.T) {
 		t.Parallel()
 
-		alarm := random.Alarm("api-alarm", uuid.NewString(), uuid.NewString())
+		alarm := random.Alarm("api-alarm", uuid.NewV7().String(),
+			uuid.NewV7().String())
 		retAlarm, _ := proto.Clone(alarm).(*api.Alarm)
 
 		alarmer := NewMockAlarmer(gomock.NewController(t))
 		alarmer.EXPECT().Update(gomock.Any(), alarm).Return(retAlarm, nil).
 			Times(1)
 
-		ctx, cancel := context.WithTimeout(session.NewContext(
-			t.Context(), &session.Session{
-				OrgID: alarm.GetOrgId(), Role: api.Role_ADMIN,
-			}), testTimeout)
+		ctx, cancel := context.WithTimeout(session.NewContext(t.Context(),
+			&session.Session{OrgID: alarm.GetOrgId(), Role: api.Role_ADMIN}),
+			testTimeout)
 		defer cancel()
 
 		raSvc := NewRuleAlarm(nil, alarmer)
@@ -219,7 +216,8 @@ func TestUpdateAlarm(t *testing.T) {
 	t.Run("Partial update alarm by valid alarm", func(t *testing.T) {
 		t.Parallel()
 
-		alarm := random.Alarm("api-alarm", uuid.NewString(), uuid.NewString())
+		alarm := random.Alarm("api-alarm", uuid.NewV7().String(),
+			uuid.NewV7().String())
 		retAlarm, _ := proto.Clone(alarm).(*api.Alarm)
 		part := &api.Alarm{
 			Id: alarm.GetId(), RuleId: alarm.GetRuleId(),
@@ -243,10 +241,9 @@ func TestUpdateAlarm(t *testing.T) {
 		alarmer.EXPECT().Update(gomock.Any(), matcher.NewProtoMatcher(merged)).
 			Return(retMerged, nil).Times(1)
 
-		ctx, cancel := context.WithTimeout(session.NewContext(
-			t.Context(), &session.Session{
-				OrgID: alarm.GetOrgId(), Role: api.Role_ADMIN,
-			}), testTimeout)
+		ctx, cancel := context.WithTimeout(session.NewContext(t.Context(),
+			&session.Session{OrgID: alarm.GetOrgId(), Role: api.Role_ADMIN}),
+			testTimeout)
 		defer cancel()
 
 		raSvc := NewRuleAlarm(nil, alarmer)
@@ -277,10 +274,9 @@ func TestUpdateAlarm(t *testing.T) {
 	t.Run("Update alarm with insufficient role", func(t *testing.T) {
 		t.Parallel()
 
-		ctx, cancel := context.WithTimeout(session.NewContext(
-			t.Context(), &session.Session{
-				OrgID: uuid.NewString(), Role: api.Role_VIEWER,
-			}), testTimeout)
+		ctx, cancel := context.WithTimeout(session.NewContext(t.Context(),
+			&session.Session{OrgID: uuid.NewV7().String(), Role: api.Role_VIEWER}),
+			testTimeout)
 		defer cancel()
 
 		raSvc := NewRuleAlarm(nil, nil)
@@ -293,10 +289,9 @@ func TestUpdateAlarm(t *testing.T) {
 	t.Run("Update nil alarm", func(t *testing.T) {
 		t.Parallel()
 
-		ctx, cancel := context.WithTimeout(session.NewContext(
-			t.Context(), &session.Session{
-				OrgID: uuid.NewString(), Role: api.Role_ADMIN,
-			}), testTimeout)
+		ctx, cancel := context.WithTimeout(session.NewContext(t.Context(),
+			&session.Session{OrgID: uuid.NewV7().String(), Role: api.Role_ADMIN}),
+			testTimeout)
 		defer cancel()
 
 		raSvc := NewRuleAlarm(nil, nil)
@@ -312,12 +307,12 @@ func TestUpdateAlarm(t *testing.T) {
 	t.Run("Partial update invalid field mask", func(t *testing.T) {
 		t.Parallel()
 
-		alarm := random.Alarm("api-alarm", uuid.NewString(), uuid.NewString())
+		alarm := random.Alarm("api-alarm", uuid.NewV7().String(),
+			uuid.NewV7().String())
 
-		ctx, cancel := context.WithTimeout(session.NewContext(
-			t.Context(), &session.Session{
-				OrgID: uuid.NewString(), Role: api.Role_ADMIN,
-			}), testTimeout)
+		ctx, cancel := context.WithTimeout(session.NewContext(t.Context(),
+			&session.Session{OrgID: uuid.NewV7().String(), Role: api.Role_ADMIN}),
+			testTimeout)
 		defer cancel()
 
 		raSvc := NewRuleAlarm(nil, nil)
@@ -335,9 +330,9 @@ func TestUpdateAlarm(t *testing.T) {
 	t.Run("Partial update alarm by unknown alarm", func(t *testing.T) {
 		t.Parallel()
 
-		orgID := uuid.NewString()
+		orgID := uuid.NewV7().String()
 		part := &api.Alarm{
-			Id: uuid.NewString(), RuleId: uuid.NewString(),
+			Id: uuid.NewV7().String(), RuleId: uuid.NewV7().String(),
 			Status: api.Status_ACTIVE,
 		}
 
@@ -345,10 +340,8 @@ func TestUpdateAlarm(t *testing.T) {
 		alarmer.EXPECT().Read(gomock.Any(), part.GetId(), orgID, part.GetRuleId()).
 			Return(nil, dao.ErrNotFound).Times(1)
 
-		ctx, cancel := context.WithTimeout(session.NewContext(
-			t.Context(), &session.Session{
-				OrgID: orgID, Role: api.Role_ADMIN,
-			}), testTimeout)
+		ctx, cancel := context.WithTimeout(session.NewContext(t.Context(),
+			&session.Session{OrgID: orgID, Role: api.Role_ADMIN}), testTimeout)
 		defer cancel()
 
 		raSvc := NewRuleAlarm(nil, alarmer)
@@ -366,13 +359,13 @@ func TestUpdateAlarm(t *testing.T) {
 	t.Run("Update alarm validation failure", func(t *testing.T) {
 		t.Parallel()
 
-		alarm := random.Alarm("api-alarm", uuid.NewString(), uuid.NewString())
+		alarm := random.Alarm("api-alarm", uuid.NewV7().String(),
+			uuid.NewV7().String())
 		alarm.Name = random.String(81)
 
-		ctx, cancel := context.WithTimeout(session.NewContext(
-			t.Context(), &session.Session{
-				OrgID: alarm.GetOrgId(), Role: api.Role_ADMIN,
-			}), testTimeout)
+		ctx, cancel := context.WithTimeout(session.NewContext(t.Context(),
+			&session.Session{OrgID: alarm.GetOrgId(), Role: api.Role_ADMIN}),
+			testTimeout)
 		defer cancel()
 
 		raSvc := NewRuleAlarm(nil, nil)
@@ -390,16 +383,16 @@ func TestUpdateAlarm(t *testing.T) {
 	t.Run("Update alarm by invalid alarm", func(t *testing.T) {
 		t.Parallel()
 
-		alarm := random.Alarm("api-alarm", uuid.NewString(), uuid.NewString())
+		alarm := random.Alarm("api-alarm", uuid.NewV7().String(),
+			uuid.NewV7().String())
 
 		alarmer := NewMockAlarmer(gomock.NewController(t))
 		alarmer.EXPECT().Update(gomock.Any(), alarm).Return(nil,
 			dao.ErrInvalidFormat).Times(1)
 
-		ctx, cancel := context.WithTimeout(session.NewContext(
-			t.Context(), &session.Session{
-				OrgID: alarm.GetOrgId(), Role: api.Role_ADMIN,
-			}), testTimeout)
+		ctx, cancel := context.WithTimeout(session.NewContext(t.Context(),
+			&session.Session{OrgID: alarm.GetOrgId(), Role: api.Role_ADMIN}),
+			testTimeout)
 		defer cancel()
 
 		raSvc := NewRuleAlarm(nil, alarmer)
@@ -425,13 +418,14 @@ func TestDeleteAlarm(t *testing.T) {
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
 			t.Context(), &session.Session{
-				OrgID: uuid.NewString(), Role: api.Role_ADMIN,
-			}), testTimeout)
+				OrgID: uuid.NewV7().String(), Role: api.Role_ADMIN,
+			},
+		), testTimeout)
 		defer cancel()
 
 		raSvc := NewRuleAlarm(nil, alarmer)
 		_, err := raSvc.DeleteAlarm(ctx, &api.DeleteAlarmRequest{
-			Id: uuid.NewString(),
+			Id: uuid.NewV7().String(),
 		})
 		t.Logf("err: %v", err)
 		require.NoError(t, err)
@@ -454,8 +448,9 @@ func TestDeleteAlarm(t *testing.T) {
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
 			t.Context(), &session.Session{
-				OrgID: uuid.NewString(), Role: api.Role_VIEWER,
-			}), testTimeout)
+				OrgID: uuid.NewV7().String(), Role: api.Role_VIEWER,
+			},
+		), testTimeout)
 		defer cancel()
 
 		raSvc := NewRuleAlarm(nil, nil)
@@ -473,13 +468,14 @@ func TestDeleteAlarm(t *testing.T) {
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
 			t.Context(), &session.Session{
-				OrgID: uuid.NewString(), Role: api.Role_ADMIN,
-			}), testTimeout)
+				OrgID: uuid.NewV7().String(), Role: api.Role_ADMIN,
+			},
+		), testTimeout)
 		defer cancel()
 
 		raSvc := NewRuleAlarm(nil, alarmer)
 		_, err := raSvc.DeleteAlarm(ctx, &api.DeleteAlarmRequest{
-			Id: uuid.NewString(),
+			Id: uuid.NewV7().String(),
 		})
 		t.Logf("err: %v", err)
 		require.Equal(t, status.Error(codes.NotFound, "dao: object not found"),
@@ -493,12 +489,15 @@ func TestListAlarms(t *testing.T) {
 	t.Run("List alarms by valid org ID", func(t *testing.T) {
 		t.Parallel()
 
-		orgID := uuid.NewString()
+		orgID := uuid.NewV7().String()
 
 		alarms := []*api.Alarm{
-			random.Alarm("api-alarm", uuid.NewString(), uuid.NewString()),
-			random.Alarm("api-alarm", uuid.NewString(), uuid.NewString()),
-			random.Alarm("api-alarm", uuid.NewString(), uuid.NewString()),
+			random.Alarm("api-alarm", uuid.NewV7().String(),
+				uuid.NewV7().String()),
+			random.Alarm("api-alarm", uuid.NewV7().String(),
+				uuid.NewV7().String()),
+			random.Alarm("api-alarm", uuid.NewV7().String(),
+				uuid.NewV7().String()),
 		}
 
 		alarmer := NewMockAlarmer(gomock.NewController(t))
@@ -508,7 +507,8 @@ func TestListAlarms(t *testing.T) {
 		ctx, cancel := context.WithTimeout(session.NewContext(
 			t.Context(), &session.Session{
 				OrgID: orgID, Role: api.Role_ADMIN,
-			}), testTimeout)
+			},
+		), testTimeout)
 		defer cancel()
 
 		raSvc := NewRuleAlarm(nil, alarmer)
@@ -523,12 +523,15 @@ func TestListAlarms(t *testing.T) {
 	t.Run("List alarms by valid org ID with next page", func(t *testing.T) {
 		t.Parallel()
 
-		orgID := uuid.NewString()
+		orgID := uuid.NewV7().String()
 
 		alarms := []*api.Alarm{
-			random.Alarm("api-alarm", uuid.NewString(), uuid.NewString()),
-			random.Alarm("api-alarm", uuid.NewString(), uuid.NewString()),
-			random.Alarm("api-alarm", uuid.NewString(), uuid.NewString()),
+			random.Alarm("api-alarm", uuid.NewV7().String(),
+				uuid.NewV7().String()),
+			random.Alarm("api-alarm", uuid.NewV7().String(),
+				uuid.NewV7().String()),
+			random.Alarm("api-alarm", uuid.NewV7().String(),
+				uuid.NewV7().String()),
 		}
 
 		next, err := session.GeneratePageToken(alarms[1].GetCreatedAt().AsTime(),
@@ -542,7 +545,8 @@ func TestListAlarms(t *testing.T) {
 		ctx, cancel := context.WithTimeout(session.NewContext(
 			t.Context(), &session.Session{
 				OrgID: orgID, Role: api.Role_ADMIN,
-			}), testTimeout)
+			},
+		), testTimeout)
 		defer cancel()
 
 		raSvc := NewRuleAlarm(nil, alarmer)
@@ -575,8 +579,9 @@ func TestListAlarms(t *testing.T) {
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
 			t.Context(), &session.Session{
-				OrgID: uuid.NewString(), Role: api.Role_CONTACT,
-			}), testTimeout)
+				OrgID: uuid.NewV7().String(), Role: api.Role_CONTACT,
+			},
+		), testTimeout)
 		defer cancel()
 
 		raSvc := NewRuleAlarm(nil, nil)
@@ -591,8 +596,9 @@ func TestListAlarms(t *testing.T) {
 
 		ctx, cancel := context.WithTimeout(session.NewContext(
 			t.Context(), &session.Session{
-				OrgID: uuid.NewString(), Role: api.Role_ADMIN,
-			}), testTimeout)
+				OrgID: uuid.NewV7().String(), Role: api.Role_ADMIN,
+			},
+		), testTimeout)
 		defer cancel()
 
 		raSvc := NewRuleAlarm(nil, nil)
@@ -616,7 +622,8 @@ func TestListAlarms(t *testing.T) {
 		ctx, cancel := context.WithTimeout(session.NewContext(
 			t.Context(), &session.Session{
 				OrgID: "aaa", Role: api.Role_ADMIN,
-			}), testTimeout)
+			},
+		), testTimeout)
 		defer cancel()
 
 		raSvc := NewRuleAlarm(nil, alarmer)
@@ -630,12 +637,15 @@ func TestListAlarms(t *testing.T) {
 	t.Run("List alarms with generation failure", func(t *testing.T) {
 		t.Parallel()
 
-		orgID := uuid.NewString()
+		orgID := uuid.NewV7().String()
 
 		alarms := []*api.Alarm{
-			random.Alarm("api-alarm", uuid.NewString(), uuid.NewString()),
-			random.Alarm("api-alarm", uuid.NewString(), uuid.NewString()),
-			random.Alarm("api-alarm", uuid.NewString(), uuid.NewString()),
+			random.Alarm("api-alarm", uuid.NewV7().String(),
+				uuid.NewV7().String()),
+			random.Alarm("api-alarm", uuid.NewV7().String(),
+				uuid.NewV7().String()),
+			random.Alarm("api-alarm", uuid.NewV7().String(),
+				uuid.NewV7().String()),
 		}
 		alarms[1].Id = badUUID
 
@@ -646,7 +656,8 @@ func TestListAlarms(t *testing.T) {
 		ctx, cancel := context.WithTimeout(session.NewContext(
 			t.Context(), &session.Session{
 				OrgID: orgID, Role: api.Role_ADMIN,
-			}), testTimeout)
+			},
+		), testTimeout)
 		defer cancel()
 
 		raSvc := NewRuleAlarm(nil, alarmer)
@@ -727,10 +738,8 @@ func TestTestAlarm(t *testing.T) {
 			t.Run(fmt.Sprintf("Can evaluate %+v", test), func(t *testing.T) {
 				t.Parallel()
 
-				ctx, cancel := context.WithTimeout(session.NewContext(
-					t.Context(), &session.Session{
-						OrgID: uuid.NewString(), Role: api.Role_ADMIN,
-					}),
+				ctx, cancel := context.WithTimeout(session.NewContext(t.Context(),
+					&session.Session{OrgID: uuid.NewV7().String(), Role: api.Role_ADMIN}),
 					testTimeout)
 				defer cancel()
 
@@ -771,10 +780,9 @@ func TestTestAlarm(t *testing.T) {
 	t.Run("Test alarm with insufficient role", func(t *testing.T) {
 		t.Parallel()
 
-		ctx, cancel := context.WithTimeout(session.NewContext(
-			t.Context(), &session.Session{
-				OrgID: uuid.NewString(), Role: api.Role_VIEWER,
-			}), testTimeout)
+		ctx, cancel := context.WithTimeout(session.NewContext(t.Context(),
+			&session.Session{OrgID: uuid.NewV7().String(), Role: api.Role_VIEWER}),
+			testTimeout)
 		defer cancel()
 
 		raSvc := NewRuleAlarm(nil, nil)
@@ -787,10 +795,9 @@ func TestTestAlarm(t *testing.T) {
 	t.Run("Test alarm with invalid body template", func(t *testing.T) {
 		t.Parallel()
 
-		ctx, cancel := context.WithTimeout(session.NewContext(
-			t.Context(), &session.Session{
-				OrgID: uuid.NewString(), Role: api.Role_ADMIN,
-			}), testTimeout)
+		ctx, cancel := context.WithTimeout(session.NewContext(t.Context(),
+			&session.Session{OrgID: uuid.NewV7().String(), Role: api.Role_ADMIN}),
+			testTimeout)
 		defer cancel()
 
 		raSvc := NewRuleAlarm(nil, nil)
