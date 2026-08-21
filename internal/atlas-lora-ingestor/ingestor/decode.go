@@ -2,8 +2,8 @@ package ingestor
 
 import (
 	"strings"
+	"uuid"
 
-	"github.com/google/uuid"
 	"github.com/thingspect/atlas/pkg/alog"
 	"github.com/thingspect/atlas/pkg/decode/chirpstack/device"
 	"github.com/thingspect/atlas/pkg/decode/chirpstack/gateway"
@@ -23,7 +23,7 @@ func (ing *Ingestor) decodeGateways() {
 		metric.Incr("received", map[string]string{"type": "gateway"})
 
 		// Set up logging fields.
-		traceID := uuid.NewString()
+		traceID := uuid.NewV7().String()
 		logger := alog.
 			WithField("type", "gateway").
 			WithField("traceID", traceID)

@@ -8,8 +8,8 @@ import (
 	"sort"
 	"testing"
 	"time"
+	"uuid"
 
-	"github.com/google/uuid"
 	"github.com/stretchr/testify/require"
 	"github.com/thingspect/atlas/pkg/dao"
 	"github.com/thingspect/atlas/pkg/test/random"
@@ -31,7 +31,8 @@ func TestCreate(t *testing.T) {
 		t.Logf("createOrg, err: %+v, %v", createOrg, err)
 		require.NoError(t, err)
 
-		err = globalEvDAO.Create(ctx, random.Event("dao-event", createOrg.GetId()))
+		err = globalEvDAO.Create(ctx, random.Event("dao-event",
+			createOrg.GetId()))
 		t.Logf("err: %v", err)
 		require.NoError(t, err)
 	})
@@ -134,8 +135,8 @@ func TestList(t *testing.T) {
 
 		// Flip events to descending timestamp order.
 		sort.Slice(events, func(i, j int) bool {
-			return events[i].GetCreatedAt().AsTime().After(
-				events[j].GetCreatedAt().AsTime())
+			return events[i].GetCreatedAt().AsTime().
+				After(events[j].GetCreatedAt().AsTime())
 		})
 
 		ctx, cancel = context.WithTimeout(t.Context(), testTimeout)
@@ -195,7 +196,7 @@ func TestList(t *testing.T) {
 		t.Logf("err: %#v", err)
 		require.NoError(t, err)
 
-		listEvents, err := globalEvDAO.List(ctx, uuid.NewString(),
+		listEvents, err := globalEvDAO.List(ctx, uuid.NewV7().String(),
 			event.GetUniqId(), "", "", event.GetCreatedAt().AsTime(),
 			event.GetCreatedAt().AsTime().Add(-time.Millisecond))
 		t.Logf("listEvents, err: %+v, %v", listEvents, err)
@@ -210,7 +211,7 @@ func TestList(t *testing.T) {
 		defer cancel()
 
 		listEvents, err := globalEvDAO.List(ctx, random.String(10),
-			uuid.NewString(), "", "", time.Now(), time.Now())
+			uuid.NewV7().String(), "", "", time.Now(), time.Now())
 		t.Logf("listEvents, err: %+v, %v", listEvents, err)
 		require.Nil(t, listEvents)
 		require.ErrorIs(t, err, dao.ErrInvalidFormat)
@@ -248,8 +249,8 @@ func TestLatest(t *testing.T) {
 
 		// Flip events to descending timestamp order.
 		sort.Slice(events, func(i, j int) bool {
-			return events[i].GetCreatedAt().AsTime().After(
-				events[j].GetCreatedAt().AsTime())
+			return events[i].GetCreatedAt().AsTime().
+				After(events[j].GetCreatedAt().AsTime())
 		})
 
 		ctx, cancel = context.WithTimeout(t.Context(), testTimeout)
@@ -291,7 +292,7 @@ func TestLatest(t *testing.T) {
 		t.Logf("err: %#v", err)
 		require.NoError(t, err)
 
-		latEvents, err := globalEvDAO.Latest(ctx, uuid.NewString(), "")
+		latEvents, err := globalEvDAO.Latest(ctx, uuid.NewV7().String(), "")
 		t.Logf("latEvents, err: %+v, %v", latEvents, err)
 		require.NoError(t, err)
 		require.Empty(t, latEvents)
@@ -303,7 +304,7 @@ func TestLatest(t *testing.T) {
 		ctx, cancel := context.WithTimeout(t.Context(), testTimeout)
 		defer cancel()
 
-		latEvents, err := globalEvDAO.Latest(ctx, uuid.NewString(),
+		latEvents, err := globalEvDAO.Latest(ctx, uuid.NewV7().String(),
 			random.String(10))
 		t.Logf("latEvents, err: %+v, %v", latEvents, err)
 		require.Nil(t, latEvents)

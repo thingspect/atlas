@@ -6,8 +6,8 @@ import (
 	"context"
 	"testing"
 	"time"
+	"uuid"
 
-	"github.com/google/uuid"
 	"github.com/stretchr/testify/require"
 	iapi "github.com/thingspect/atlas/internal/atlas-api/api"
 	"github.com/thingspect/atlas/internal/atlas-api/session"
@@ -76,9 +76,8 @@ func TestLogin(t *testing.T) {
 		t.Logf("loginResp, err: %+v, %v", login, err)
 		require.NoError(t, err)
 		require.Greater(t, len(login.GetToken()), 90)
-		require.WithinDuration(t, time.Now().Add(
-			session.WebTokenExp*time.Second), login.GetExpiresAt().AsTime(),
-			2*time.Second)
+		require.WithinDuration(t, time.Now().Add(session.WebTokenExp*time.Second),
+			login.GetExpiresAt().AsTime(), 2*time.Second)
 	})
 
 	t.Run("Log in unknown user", func(t *testing.T) {
@@ -156,7 +155,7 @@ func TestCreateKey(t *testing.T) {
 	t.Run("Create valid key", func(t *testing.T) {
 		t.Parallel()
 
-		key := random.Key("api-key", uuid.NewString())
+		key := random.Key("api-key", uuid.NewV7().String())
 		key.Role = api.Role_BUILDER
 
 		ctx, cancel := context.WithTimeout(t.Context(), testTimeout)
@@ -181,7 +180,7 @@ func TestCreateKey(t *testing.T) {
 
 		sessCli := api.NewSessionServiceClient(secondaryViewerGRPCConn)
 		createKey, err := sessCli.CreateKey(ctx,
-			&api.CreateKeyRequest{Key: random.Key("api-key", uuid.NewString())})
+			&api.CreateKeyRequest{Key: random.Key("api-key", uuid.NewV7().String())})
 		t.Logf("createKey, err: %+v, %v", createKey, err)
 		require.Nil(t, createKey)
 		require.EqualError(t, err, "rpc error: code = PermissionDenied desc = "+
@@ -191,7 +190,7 @@ func TestCreateKey(t *testing.T) {
 	t.Run("Create sysadmin key as non-sysadmin", func(t *testing.T) {
 		t.Parallel()
 
-		key := random.Key("api-key", uuid.NewString())
+		key := random.Key("api-key", uuid.NewV7().String())
 		key.Role = api.Role_SYS_ADMIN
 
 		ctx, cancel := context.WithTimeout(t.Context(), testTimeout)
@@ -209,7 +208,7 @@ func TestCreateKey(t *testing.T) {
 	t.Run("Create invalid key", func(t *testing.T) {
 		t.Parallel()
 
-		key := random.Key("api-key", uuid.NewString())
+		key := random.Key("api-key", uuid.NewV7().String())
 		key.Name = "api-key-" + random.String(80)
 
 		ctx, cancel := context.WithTimeout(t.Context(), testTimeout)
@@ -233,7 +232,7 @@ func TestDeleteKey(t *testing.T) {
 	t.Run("Delete key by valid ID", func(t *testing.T) {
 		t.Parallel()
 
-		key := random.Key("api-key", uuid.NewString())
+		key := random.Key("api-key", uuid.NewV7().String())
 		key.Role = api.Role_BUILDER
 
 		ctx, cancel := context.WithTimeout(t.Context(), testTimeout)
@@ -269,7 +268,7 @@ func TestDeleteKey(t *testing.T) {
 	t.Run("Delete key with now-deleted key", func(t *testing.T) {
 		t.Parallel()
 
-		key := random.Key("api-key", uuid.NewString())
+		key := random.Key("api-key", uuid.NewV7().String())
 		key.Role = api.Role_ADMIN
 
 		ctx, cancel := context.WithTimeout(t.Context(), testTimeout)
@@ -309,7 +308,7 @@ func TestDeleteKey(t *testing.T) {
 
 		sessCli := api.NewSessionServiceClient(secondaryViewerGRPCConn)
 		_, err := sessCli.DeleteKey(ctx,
-			&api.DeleteKeyRequest{Id: uuid.NewString()})
+			&api.DeleteKeyRequest{Id: uuid.NewV7().String()})
 		t.Logf("err: %v", err)
 		require.EqualError(t, err, "rpc error: code = PermissionDenied "+
 			"desc = permission denied, ADMIN role required")
@@ -323,7 +322,7 @@ func TestDeleteKey(t *testing.T) {
 
 		sessCli := api.NewSessionServiceClient(globalAdminGRPCConn)
 		_, err := sessCli.DeleteKey(ctx,
-			&api.DeleteKeyRequest{Id: uuid.NewString()})
+			&api.DeleteKeyRequest{Id: uuid.NewV7().String()})
 		t.Logf("err: %v", err)
 		require.EqualError(t, err, "rpc error: code = NotFound desc = "+
 			"dao: object not found")
@@ -332,7 +331,7 @@ func TestDeleteKey(t *testing.T) {
 	t.Run("Deletes are isolated by org ID", func(t *testing.T) {
 		t.Parallel()
 
-		key := random.Key("api-key", uuid.NewString())
+		key := random.Key("api-key", uuid.NewV7().String())
 		key.Role = api.Role_BUILDER
 
 		ctx, cancel := context.WithTimeout(t.Context(), testTimeout)
@@ -363,7 +362,7 @@ func TestListKeys(t *testing.T) {
 	keyNames := make([]string, 0, 3)
 	keyRoles := make([]api.Role, 0, 3)
 	for range 3 {
-		key := random.Key("api-key", uuid.NewString())
+		key := random.Key("api-key", uuid.NewV7().String())
 		key.Role = api.Role_BUILDER
 
 		sessCli := api.NewSessionServiceClient(globalAdminGRPCConn)

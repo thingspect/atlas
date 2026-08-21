@@ -8,8 +8,8 @@ import (
 	"reflect"
 	"testing"
 	"time"
+	"uuid"
 
-	"github.com/google/uuid"
 	"github.com/stretchr/testify/require"
 	"github.com/thingspect/atlas/pkg/test/random"
 	"github.com/thingspect/proto/go/api"
@@ -22,7 +22,7 @@ func TestCreateUser(t *testing.T) {
 	t.Run("Create valid user", func(t *testing.T) {
 		t.Parallel()
 
-		user := random.User("api-user", uuid.NewString())
+		user := random.User("api-user", uuid.NewV7().String())
 		user.Role = api.Role_BUILDER
 
 		ctx, cancel := context.WithTimeout(t.Context(), testTimeout)
@@ -48,7 +48,7 @@ func TestCreateUser(t *testing.T) {
 
 		userCli := api.NewUserServiceClient(secondaryViewerGRPCConn)
 		createUser, err := userCli.CreateUser(ctx, &api.CreateUserRequest{
-			User: random.User("api-user", uuid.NewString()),
+			User: random.User("api-user", uuid.NewV7().String()),
 		})
 		t.Logf("createUser, err: %+v, %v", createUser, err)
 		require.Nil(t, createUser)
@@ -59,7 +59,7 @@ func TestCreateUser(t *testing.T) {
 	t.Run("Create sysadmin user as non-sysadmin", func(t *testing.T) {
 		t.Parallel()
 
-		user := random.User("api-user", uuid.NewString())
+		user := random.User("api-user", uuid.NewV7().String())
 		user.Role = api.Role_SYS_ADMIN
 
 		ctx, cancel := context.WithTimeout(t.Context(), testTimeout)
@@ -77,7 +77,7 @@ func TestCreateUser(t *testing.T) {
 	t.Run("Create invalid user", func(t *testing.T) {
 		t.Parallel()
 
-		user := random.User("api-user", uuid.NewString())
+		user := random.User("api-user", uuid.NewV7().String())
 		user.Email = "api-user-" + random.String(80)
 
 		ctx, cancel := context.WithTimeout(t.Context(), testTimeout)
@@ -97,7 +97,7 @@ func TestCreateUser(t *testing.T) {
 	t.Run("Create invalid user with invalid phone", func(t *testing.T) {
 		t.Parallel()
 
-		user := random.User("api-user", uuid.NewString())
+		user := random.User("api-user", uuid.NewV7().String())
 		user.Role = api.Role_BUILDER
 		user.Phone = random.String(10)
 
@@ -117,7 +117,7 @@ func TestCreateUser(t *testing.T) {
 func TestGetUser(t *testing.T) {
 	t.Parallel()
 
-	user := random.User("api-user", uuid.NewString())
+	user := random.User("api-user", uuid.NewV7().String())
 	user.Role = api.Role_BUILDER
 
 	ctx, cancel := context.WithTimeout(t.Context(), testTimeout)
@@ -181,7 +181,7 @@ func TestGetUser(t *testing.T) {
 
 		userCli := api.NewUserServiceClient(globalAdminGRPCConn)
 		getUser, err := userCli.GetUser(ctx,
-			&api.GetUserRequest{Id: uuid.NewString()})
+			&api.GetUserRequest{Id: uuid.NewV7().String()})
 		t.Logf("getUser, err: %+v, %v", getUser, err)
 		require.Nil(t, getUser)
 		require.EqualError(t, err, "rpc error: code = NotFound desc = "+
@@ -210,7 +210,7 @@ func TestUpdateUser(t *testing.T) {
 	t.Run("Update user by valid user", func(t *testing.T) {
 		t.Parallel()
 
-		user := random.User("api-user", uuid.NewString())
+		user := random.User("api-user", uuid.NewV7().String())
 		user.Role = api.Role_BUILDER
 
 		ctx, cancel := context.WithTimeout(t.Context(), testTimeout)
@@ -238,8 +238,8 @@ func TestUpdateUser(t *testing.T) {
 		require.Equal(t, createUser.GetRole(), updateUser.GetRole())
 		require.Equal(t, createUser.GetStatus(), updateUser.GetStatus())
 		require.Equal(t, createUser.GetTags(), updateUser.GetTags())
-		require.True(t, updateUser.GetUpdatedAt().AsTime().After(
-			updateUser.GetCreatedAt().AsTime()))
+		require.True(t, updateUser.GetUpdatedAt().AsTime().
+			After(updateUser.GetCreatedAt().AsTime()))
 		require.WithinDuration(t, createUser.GetCreatedAt().AsTime(),
 			updateUser.GetUpdatedAt().AsTime(), 2*time.Second)
 
@@ -253,7 +253,7 @@ func TestUpdateUser(t *testing.T) {
 	t.Run("Partial update user by valid user", func(t *testing.T) {
 		t.Parallel()
 
-		user := random.User("api-user", uuid.NewString())
+		user := random.User("api-user", uuid.NewV7().String())
 		user.Role = api.Role_BUILDER
 
 		ctx, cancel := context.WithTimeout(t.Context(), testTimeout)
@@ -284,8 +284,8 @@ func TestUpdateUser(t *testing.T) {
 		require.Equal(t, part.GetRole(), updateUser.GetRole())
 		require.Equal(t, part.GetStatus(), updateUser.GetStatus())
 		require.Equal(t, part.GetTags(), updateUser.GetTags())
-		require.True(t, updateUser.GetUpdatedAt().AsTime().After(
-			updateUser.GetCreatedAt().AsTime()))
+		require.True(t, updateUser.GetUpdatedAt().AsTime().
+			After(updateUser.GetCreatedAt().AsTime()))
 		require.WithinDuration(t, createUser.GetCreatedAt().AsTime(),
 			updateUser.GetUpdatedAt().AsTime(), 2*time.Second)
 
@@ -319,7 +319,7 @@ func TestUpdateUser(t *testing.T) {
 
 		userCli := api.NewUserServiceClient(secondaryViewerGRPCConn)
 		updateUser, err := userCli.UpdateUser(ctx, &api.UpdateUserRequest{
-			User: random.User("api-user", uuid.NewString()),
+			User: random.User("api-user", uuid.NewV7().String()),
 		})
 		t.Logf("updateUser, err: %+v, %v", updateUser, err)
 		require.Nil(t, updateUser)
@@ -335,7 +335,7 @@ func TestUpdateUser(t *testing.T) {
 
 		userCli := api.NewUserServiceClient(secondaryViewerKeyGRPCConn)
 		updateUser, err := userCli.UpdateUser(ctx, &api.UpdateUserRequest{
-			User: random.User("api-user", uuid.NewString()),
+			User: random.User("api-user", uuid.NewV7().String()),
 		})
 		t.Logf("updateUser, err: %+v, %v", updateUser, err)
 		require.Nil(t, updateUser)
@@ -346,7 +346,7 @@ func TestUpdateUser(t *testing.T) {
 	t.Run("Update user role to sysadmin as non-sysadmin", func(t *testing.T) {
 		t.Parallel()
 
-		user := random.User("api-user", uuid.NewString())
+		user := random.User("api-user", uuid.NewV7().String())
 		user.Role = api.Role_BUILDER
 
 		ctx, cancel := context.WithTimeout(t.Context(), testTimeout)
@@ -372,7 +372,7 @@ func TestUpdateUser(t *testing.T) {
 	t.Run("Update user with invalid phone", func(t *testing.T) {
 		t.Parallel()
 
-		user := random.User("api-user", uuid.NewString())
+		user := random.User("api-user", uuid.NewV7().String())
 		user.Role = api.Role_BUILDER
 
 		ctx, cancel := context.WithTimeout(t.Context(), testTimeout)
@@ -398,7 +398,7 @@ func TestUpdateUser(t *testing.T) {
 	t.Run("Partial update invalid field mask", func(t *testing.T) {
 		t.Parallel()
 
-		user := random.User("api-user", uuid.NewString())
+		user := random.User("api-user", uuid.NewV7().String())
 		user.Role = api.Role_ADMIN
 
 		ctx, cancel := context.WithTimeout(t.Context(), testTimeout)
@@ -419,7 +419,7 @@ func TestUpdateUser(t *testing.T) {
 	t.Run("Partial update user by unknown user", func(t *testing.T) {
 		t.Parallel()
 
-		user := random.User("api-user", uuid.NewString())
+		user := random.User("api-user", uuid.NewV7().String())
 		user.Role = api.Role_ADMIN
 
 		ctx, cancel := context.WithTimeout(t.Context(), testTimeout)
@@ -440,7 +440,7 @@ func TestUpdateUser(t *testing.T) {
 	t.Run("Update user by unknown user", func(t *testing.T) {
 		t.Parallel()
 
-		user := random.User("api-user", uuid.NewString())
+		user := random.User("api-user", uuid.NewV7().String())
 		user.Role = api.Role_BUILDER
 
 		ctx, cancel := context.WithTimeout(t.Context(), testTimeout)
@@ -458,7 +458,7 @@ func TestUpdateUser(t *testing.T) {
 	t.Run("Updates are isolated by org ID", func(t *testing.T) {
 		t.Parallel()
 
-		user := random.User("api-user", uuid.NewString())
+		user := random.User("api-user", uuid.NewV7().String())
 		user.Role = api.Role_BUILDER
 
 		ctx, cancel := context.WithTimeout(t.Context(), testTimeout)
@@ -471,7 +471,7 @@ func TestUpdateUser(t *testing.T) {
 		require.NoError(t, err)
 
 		// Update user fields.
-		createUser.OrgId = uuid.NewString()
+		createUser.OrgId = uuid.NewV7().String()
 		createUser.Email = "api-user-" + random.Email()
 
 		secCli := api.NewUserServiceClient(secondaryAdminGRPCConn)
@@ -486,7 +486,7 @@ func TestUpdateUser(t *testing.T) {
 	t.Run("Update user validation failure", func(t *testing.T) {
 		t.Parallel()
 
-		user := random.User("api-user", uuid.NewString())
+		user := random.User("api-user", uuid.NewV7().String())
 		user.Role = api.Role_BUILDER
 
 		ctx, cancel := context.WithTimeout(t.Context(), testTimeout)
@@ -514,7 +514,7 @@ func TestUpdateUser(t *testing.T) {
 	t.Run("Update user by invalid user", func(t *testing.T) {
 		t.Parallel()
 
-		user := random.User("api-user", uuid.NewString())
+		user := random.User("api-user", uuid.NewV7().String())
 		user.Role = api.Role_BUILDER
 
 		ctx, cancel := context.WithTimeout(t.Context(), testTimeout)
@@ -545,7 +545,7 @@ func TestUpdateUserPassword(t *testing.T) {
 	t.Run("Update user password by valid ID", func(t *testing.T) {
 		t.Parallel()
 
-		user := random.User("api-user", uuid.NewString())
+		user := random.User("api-user", uuid.NewV7().String())
 		user.Role = api.Role_BUILDER
 
 		ctx, cancel := context.WithTimeout(t.Context(), testTimeout)
@@ -573,7 +573,7 @@ func TestUpdateUserPassword(t *testing.T) {
 		userCli := api.NewUserServiceClient(secondaryViewerGRPCConn)
 		_, err := userCli.UpdateUserPassword(ctx,
 			&api.UpdateUserPasswordRequest{
-				Id: uuid.NewString(), Password: random.String(20),
+				Id: uuid.NewV7().String(), Password: random.String(20),
 			})
 		t.Logf("err: %v", err)
 		require.EqualError(t, err, "rpc error: code = PermissionDenied desc = "+
@@ -589,7 +589,7 @@ func TestUpdateUserPassword(t *testing.T) {
 		userCli := api.NewUserServiceClient(secondaryViewerKeyGRPCConn)
 		_, err := userCli.UpdateUserPassword(ctx,
 			&api.UpdateUserPasswordRequest{
-				Id: uuid.NewString(), Password: random.String(20),
+				Id: uuid.NewV7().String(), Password: random.String(20),
 			})
 		t.Logf("err: %v", err)
 		require.EqualError(t, err, "rpc error: code = PermissionDenied desc = "+
@@ -599,7 +599,7 @@ func TestUpdateUserPassword(t *testing.T) {
 	t.Run("Update user password with weak password", func(t *testing.T) {
 		t.Parallel()
 
-		user := random.User("api-user", uuid.NewString())
+		user := random.User("api-user", uuid.NewV7().String())
 		user.Role = api.Role_BUILDER
 
 		ctx, cancel := context.WithTimeout(t.Context(), testTimeout)
@@ -628,7 +628,7 @@ func TestUpdateUserPassword(t *testing.T) {
 		userCli := api.NewUserServiceClient(globalAdminGRPCConn)
 		_, err := userCli.UpdateUserPassword(ctx,
 			&api.UpdateUserPasswordRequest{
-				Id: uuid.NewString(), Password: random.String(20),
+				Id: uuid.NewV7().String(), Password: random.String(20),
 			})
 		t.Logf("err: %v", err)
 		require.EqualError(t, err, "rpc error: code = NotFound desc = "+
@@ -638,7 +638,7 @@ func TestUpdateUserPassword(t *testing.T) {
 	t.Run("Password updates are isolated by org ID", func(t *testing.T) {
 		t.Parallel()
 
-		user := random.User("api-user", uuid.NewString())
+		user := random.User("api-user", uuid.NewV7().String())
 		user.Role = api.Role_BUILDER
 
 		ctx, cancel := context.WithTimeout(t.Context(), testTimeout)
@@ -666,7 +666,7 @@ func TestDeleteUser(t *testing.T) {
 	t.Run("Delete user by valid ID", func(t *testing.T) {
 		t.Parallel()
 
-		user := random.User("api-user", uuid.NewString())
+		user := random.User("api-user", uuid.NewV7().String())
 		user.Role = api.Role_BUILDER
 
 		ctx, cancel := context.WithTimeout(t.Context(), testTimeout)
@@ -708,7 +708,7 @@ func TestDeleteUser(t *testing.T) {
 
 		userCli := api.NewUserServiceClient(secondaryViewerGRPCConn)
 		_, err := userCli.DeleteUser(ctx,
-			&api.DeleteUserRequest{Id: uuid.NewString()})
+			&api.DeleteUserRequest{Id: uuid.NewV7().String()})
 		t.Logf("err: %v", err)
 		require.EqualError(t, err, "rpc error: code = PermissionDenied "+
 			"desc = permission denied, ADMIN role required")
@@ -722,7 +722,7 @@ func TestDeleteUser(t *testing.T) {
 
 		userCli := api.NewUserServiceClient(globalAdminGRPCConn)
 		_, err := userCli.DeleteUser(ctx,
-			&api.DeleteUserRequest{Id: uuid.NewString()})
+			&api.DeleteUserRequest{Id: uuid.NewV7().String()})
 		t.Logf("err: %v", err)
 		require.EqualError(t, err, "rpc error: code = NotFound desc = "+
 			"dao: object not found")
@@ -731,7 +731,7 @@ func TestDeleteUser(t *testing.T) {
 	t.Run("Deletes are isolated by org ID", func(t *testing.T) {
 		t.Parallel()
 
-		user := random.User("api-user", uuid.NewString())
+		user := random.User("api-user", uuid.NewV7().String())
 		user.Role = api.Role_BUILDER
 
 		ctx, cancel := context.WithTimeout(t.Context(), testTimeout)
@@ -764,7 +764,7 @@ func TestListUsers(t *testing.T) {
 	userStatuses := make([]api.Status, 0, 3)
 	userTags := make([][]string, 0, 3)
 	for range 3 {
-		user := random.User("api-user", uuid.NewString())
+		user := random.User("api-user", uuid.NewV7().String())
 		user.Role = api.Role_BUILDER
 
 		userCli := api.NewUserServiceClient(globalAdminGRPCConn)

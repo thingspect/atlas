@@ -3,8 +3,8 @@ package session
 import (
 	"encoding/base64"
 	"time"
+	"uuid"
 
-	"github.com/google/uuid"
 	"github.com/thingspect/atlas/internal/atlas-api/auth"
 	"github.com/thingspect/atlas/pkg/consterr"
 	"github.com/thingspect/atlas/proto/go/token"
@@ -18,7 +18,7 @@ const (
 	WebTokenExp = 10 * 60
 
 	// #nosec G101 // False positive for hardcoded credentials.
-	errWebTokenExp consterr.Error = "crypto: token expired"
+	errWebTokenExp consterr.Error = "session: token expired"
 )
 
 // GenerateWebToken generates an encrypted protobuf web token in raw (no
@@ -130,7 +130,7 @@ func ValidateWebToken(pwtKey []byte, ciphertoken string) (*Session, error) {
 	// safe to copy.
 	sess := &Session{
 		Role:    pwt.GetRole(),
-		TraceID: uuid.New(),
+		TraceID: uuid.NewV7(),
 	}
 
 	var idUUID uuid.UUID

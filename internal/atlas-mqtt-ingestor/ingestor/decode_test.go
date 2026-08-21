@@ -7,8 +7,8 @@ import (
 	"strings"
 	"testing"
 	"time"
+	"uuid"
 
-	"github.com/google/uuid"
 	"github.com/stretchr/testify/require"
 	"github.com/thingspect/atlas/pkg/decode"
 	"github.com/thingspect/atlas/pkg/decode/radiobridge"
@@ -25,12 +25,12 @@ import (
 func TestDecodeMessages(t *testing.T) {
 	t.Parallel()
 
-	orgID := uuid.NewString()
+	orgID := uuid.NewV7().String()
 	uniqIDPoint := random.String(16)
 	now := timestamppb.New(time.Now().Add(-15 * time.Minute))
-	pointToken := uuid.NewString()
+	pointToken := uuid.NewV7().String()
 	uniqIDTopic := random.String(16)
-	paylToken := uuid.NewString()
+	paylToken := uuid.NewV7().String()
 
 	tests := []struct {
 		inpTopicParts []string
@@ -146,8 +146,8 @@ func TestDecodeMessages(t *testing.T) {
 			require.NoError(t, err)
 			t.Logf("bPayl: %s", bPayl)
 
-			require.NoError(t, mqttQueue.Publish(strings.Join(
-				test.inpTopicParts, "/"), bPayl))
+			require.NoError(t, mqttQueue.Publish(strings.
+				Join(test.inpTopicParts, "/"), bPayl))
 
 			for i, res := range test.res {
 				select {
@@ -182,7 +182,7 @@ func TestDecodeMessages(t *testing.T) {
 func TestDecodeMessagesError(t *testing.T) {
 	t.Parallel()
 
-	orgID := uuid.NewString()
+	orgID := uuid.NewV7().String()
 	uniqID := random.String(16)
 
 	tests := []struct {
@@ -221,7 +221,8 @@ func TestDecodeMessagesError(t *testing.T) {
 			}()
 
 			require.NoError(t, mqttQueue.Publish(strings.Join(
-				test.inpTopicParts, "/"), test.inpPayl))
+				test.inpTopicParts, "/",
+			), test.inpPayl))
 
 			select {
 			case msg := <-vInSub.C():
@@ -237,13 +238,13 @@ func TestDecodeMessagesError(t *testing.T) {
 func TestDataPointToVIn(t *testing.T) {
 	t.Parallel()
 
-	orgID := uuid.NewString()
+	orgID := uuid.NewV7().String()
 	uniqIDPoint := random.String(16)
 	now := timestamppb.New(time.Now().Add(-15 * time.Minute))
-	pointToken := uuid.NewString()
-	traceID := uuid.NewString()
+	pointToken := uuid.NewV7().String()
+	traceID := uuid.NewV7().String()
 	uniqIDTopic := random.String(16)
-	paylToken := uuid.NewString()
+	paylToken := uuid.NewV7().String()
 
 	tests := []struct {
 		inpTopicParts []string

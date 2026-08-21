@@ -8,8 +8,8 @@ import (
 	"strings"
 	"testing"
 	"time"
+	"uuid"
 
-	"github.com/google/uuid"
 	"github.com/stretchr/testify/require"
 	"github.com/thingspect/atlas/pkg/test/random"
 	"github.com/thingspect/proto/go/api"
@@ -22,7 +22,7 @@ func TestCreateDevice(t *testing.T) {
 	t.Run("Create valid device", func(t *testing.T) {
 		t.Parallel()
 
-		dev := random.Device("api-device", uuid.NewString())
+		dev := random.Device("api-device", uuid.NewV7().String())
 
 		ctx, cancel := context.WithTimeout(t.Context(), testTimeout)
 		defer cancel()
@@ -44,7 +44,7 @@ func TestCreateDevice(t *testing.T) {
 	t.Run("Create valid device with uppercase UniqId", func(t *testing.T) {
 		t.Parallel()
 
-		dev := random.Device("api-device", uuid.NewString())
+		dev := random.Device("api-device", uuid.NewV7().String())
 		dev.UniqId = strings.ToUpper(dev.GetUniqId())
 
 		ctx, cancel := context.WithTimeout(t.Context(), testTimeout)
@@ -72,7 +72,7 @@ func TestCreateDevice(t *testing.T) {
 
 		devCli := api.NewDeviceServiceClient(secondaryViewerGRPCConn)
 		createDev, err := devCli.CreateDevice(ctx, &api.CreateDeviceRequest{
-			Device: random.Device("api-device", uuid.NewString()),
+			Device: random.Device("api-device", uuid.NewV7().String()),
 		})
 		t.Logf("createDev, err: %+v, %v", createDev, err)
 		require.Nil(t, createDev)
@@ -83,7 +83,7 @@ func TestCreateDevice(t *testing.T) {
 	t.Run("Create invalid device", func(t *testing.T) {
 		t.Parallel()
 
-		dev := random.Device("api-device", uuid.NewString())
+		dev := random.Device("api-device", uuid.NewV7().String())
 		dev.UniqId = "api-device-" + random.String(40)
 
 		ctx, cancel := context.WithTimeout(t.Context(), testTimeout)
@@ -112,7 +112,7 @@ func TestCreateDeviceLoRaWAN(t *testing.T) {
 
 		devCli := api.NewDeviceServiceClient(globalAdminGRPCConn)
 		createDev, err := devCli.CreateDevice(ctx, &api.CreateDeviceRequest{
-			Device: random.Device("api-device", uuid.NewString()),
+			Device: random.Device("api-device", uuid.NewV7().String()),
 		})
 		t.Logf("createDev, err: %+v, %v", createDev, err)
 		require.NoError(t, err)
@@ -134,7 +134,7 @@ func TestCreateDeviceLoRaWAN(t *testing.T) {
 
 		devCli := api.NewDeviceServiceClient(globalAdminKeyGRPCConn)
 		createDev, err := devCli.CreateDevice(ctx, &api.CreateDeviceRequest{
-			Device: random.Device("api-device", uuid.NewString()),
+			Device: random.Device("api-device", uuid.NewV7().String()),
 		})
 		t.Logf("createDev, err: %+v, %v", createDev, err)
 		require.NoError(t, err)
@@ -161,7 +161,7 @@ func TestCreateDeviceLoRaWAN(t *testing.T) {
 		devCli := api.NewDeviceServiceClient(secondaryViewerGRPCConn)
 		_, err := devCli.CreateDeviceLoRaWAN(ctx,
 			&api.CreateDeviceLoRaWANRequest{
-				Id:        uuid.NewString(),
+				Id:        uuid.NewV7().String(),
 				TypeOneof: &api.CreateDeviceLoRaWANRequest_GatewayLorawanType{},
 			})
 		t.Logf("err: %v", err)
@@ -178,7 +178,7 @@ func TestCreateDeviceLoRaWAN(t *testing.T) {
 		devCli := api.NewDeviceServiceClient(globalAdminGRPCConn)
 		_, err := devCli.CreateDeviceLoRaWAN(ctx,
 			&api.CreateDeviceLoRaWANRequest{
-				Id:        uuid.NewString(),
+				Id:        uuid.NewV7().String(),
 				TypeOneof: &api.CreateDeviceLoRaWANRequest_GatewayLorawanType{},
 			})
 		t.Logf("err: %v", err)
@@ -194,7 +194,7 @@ func TestCreateDeviceLoRaWAN(t *testing.T) {
 
 		devCli := api.NewDeviceServiceClient(globalAdminGRPCConn)
 		createDev, err := devCli.CreateDevice(ctx, &api.CreateDeviceRequest{
-			Device: random.Device("api-device", uuid.NewString()),
+			Device: random.Device("api-device", uuid.NewV7().String()),
 		})
 		t.Logf("createDev, err: %+v, %v", createDev, err)
 		require.NoError(t, err)
@@ -219,7 +219,7 @@ func TestGetDevice(t *testing.T) {
 
 	devCli := api.NewDeviceServiceClient(globalAdminGRPCConn)
 	createDev, err := devCli.CreateDevice(ctx, &api.CreateDeviceRequest{
-		Device: random.Device("api-device", uuid.NewString()),
+		Device: random.Device("api-device", uuid.NewV7().String()),
 	})
 	t.Logf("createDev, err: %+v, %v", createDev, err)
 	require.NoError(t, err)
@@ -246,7 +246,7 @@ func TestGetDevice(t *testing.T) {
 
 		devCli := api.NewDeviceServiceClient(globalAdminGRPCConn)
 		getDev, err := devCli.GetDevice(ctx,
-			&api.GetDeviceRequest{Id: uuid.NewString()})
+			&api.GetDeviceRequest{Id: uuid.NewV7().String()})
 		t.Logf("getDev, err: %+v, %v", getDev, err)
 		require.Nil(t, getDev)
 		require.EqualError(t, err, "rpc error: code = NotFound desc = "+
@@ -280,7 +280,7 @@ func TestUpdateDevice(t *testing.T) {
 
 		devCli := api.NewDeviceServiceClient(globalAdminGRPCConn)
 		createDev, err := devCli.CreateDevice(ctx, &api.CreateDeviceRequest{
-			Device: random.Device("api-device", uuid.NewString()),
+			Device: random.Device("api-device", uuid.NewV7().String()),
 		})
 		t.Logf("createDev, err: %+v, %v", createDev, err)
 		require.NoError(t, err)
@@ -301,8 +301,8 @@ func TestUpdateDevice(t *testing.T) {
 		require.Equal(t, createDev.GetStatus(), updateDev.GetStatus())
 		require.Equal(t, createDev.GetDecoder(), updateDev.GetDecoder())
 		require.Equal(t, createDev.GetTags(), updateDev.GetTags())
-		require.True(t, updateDev.GetUpdatedAt().AsTime().After(
-			updateDev.GetCreatedAt().AsTime()))
+		require.True(t, updateDev.GetUpdatedAt().AsTime().
+			After(updateDev.GetCreatedAt().AsTime()))
 		require.WithinDuration(t, createDev.GetCreatedAt().AsTime(),
 			updateDev.GetUpdatedAt().AsTime(), 2*time.Second)
 
@@ -321,7 +321,7 @@ func TestUpdateDevice(t *testing.T) {
 
 		devCli := api.NewDeviceServiceClient(globalAdminKeyGRPCConn)
 		createDev, err := devCli.CreateDevice(ctx, &api.CreateDeviceRequest{
-			Device: random.Device("api-device", uuid.NewString()),
+			Device: random.Device("api-device", uuid.NewV7().String()),
 		})
 		t.Logf("createDev, err: %+v, %v", createDev, err)
 		require.NoError(t, err)
@@ -346,8 +346,8 @@ func TestUpdateDevice(t *testing.T) {
 		require.Equal(t, part.GetStatus(), updateDev.GetStatus())
 		require.Equal(t, part.GetDecoder(), updateDev.GetDecoder())
 		require.Equal(t, part.GetTags(), updateDev.GetTags())
-		require.True(t, updateDev.GetUpdatedAt().AsTime().After(
-			updateDev.GetCreatedAt().AsTime()))
+		require.True(t, updateDev.GetUpdatedAt().AsTime().
+			After(updateDev.GetCreatedAt().AsTime()))
 		require.WithinDuration(t, createDev.GetCreatedAt().AsTime(),
 			updateDev.GetUpdatedAt().AsTime(), 2*time.Second)
 
@@ -395,7 +395,7 @@ func TestUpdateDevice(t *testing.T) {
 
 		devCli := api.NewDeviceServiceClient(globalAdminGRPCConn)
 		updateDev, err := devCli.UpdateDevice(ctx, &api.UpdateDeviceRequest{
-			Device:     random.Device("api-device", uuid.NewString()),
+			Device:     random.Device("api-device", uuid.NewV7().String()),
 			UpdateMask: &fieldmaskpb.FieldMask{Paths: []string{"aaa"}},
 		})
 		t.Logf("updateDev, err: %+v, %v", updateDev, err)
@@ -412,7 +412,7 @@ func TestUpdateDevice(t *testing.T) {
 
 		devCli := api.NewDeviceServiceClient(globalAdminGRPCConn)
 		updateDev, err := devCli.UpdateDevice(ctx, &api.UpdateDeviceRequest{
-			Device: random.Device("api-device", uuid.NewString()),
+			Device: random.Device("api-device", uuid.NewV7().String()),
 			UpdateMask: &fieldmaskpb.FieldMask{
 				Paths: []string{"uniq_id", "token"},
 			},
@@ -431,7 +431,7 @@ func TestUpdateDevice(t *testing.T) {
 
 		devCli := api.NewDeviceServiceClient(globalAdminGRPCConn)
 		updateDev, err := devCli.UpdateDevice(ctx, &api.UpdateDeviceRequest{
-			Device: random.Device("api-device", uuid.NewString()),
+			Device: random.Device("api-device", uuid.NewV7().String()),
 		})
 		t.Logf("updateDev, err: %+v, %v", updateDev, err)
 		require.Nil(t, updateDev)
@@ -447,13 +447,13 @@ func TestUpdateDevice(t *testing.T) {
 
 		devCli := api.NewDeviceServiceClient(globalAdminGRPCConn)
 		createDev, err := devCli.CreateDevice(ctx, &api.CreateDeviceRequest{
-			Device: random.Device("api-device", uuid.NewString()),
+			Device: random.Device("api-device", uuid.NewV7().String()),
 		})
 		t.Logf("createDev, err: %+v, %v", createDev, err)
 		require.NoError(t, err)
 
 		// Update device fields.
-		createDev.OrgId = uuid.NewString()
+		createDev.OrgId = uuid.NewV7().String()
 		createDev.UniqId = "api-device-" + random.String(16)
 
 		secCli := api.NewDeviceServiceClient(secondaryAdminGRPCConn)
@@ -473,7 +473,7 @@ func TestUpdateDevice(t *testing.T) {
 
 		devCli := api.NewDeviceServiceClient(globalAdminGRPCConn)
 		createDev, err := devCli.CreateDevice(ctx, &api.CreateDeviceRequest{
-			Device: random.Device("api-device", uuid.NewString()),
+			Device: random.Device("api-device", uuid.NewV7().String()),
 		})
 		t.Logf("createDev, err: %+v, %v", createDev, err)
 		require.NoError(t, err)
@@ -499,7 +499,7 @@ func TestUpdateDevice(t *testing.T) {
 
 		devCli := api.NewDeviceServiceClient(globalAdminGRPCConn)
 		createDev, err := devCli.CreateDevice(ctx, &api.CreateDeviceRequest{
-			Device: random.Device("api-device", uuid.NewString()),
+			Device: random.Device("api-device", uuid.NewV7().String()),
 		})
 		t.Logf("createDev, err: %+v, %v", createDev, err)
 		require.NoError(t, err)
@@ -529,7 +529,7 @@ func TestDeleteDeviceLoRaWAN(t *testing.T) {
 
 		devCli := api.NewDeviceServiceClient(globalAdminGRPCConn)
 		createDev, err := devCli.CreateDevice(ctx, &api.CreateDeviceRequest{
-			Device: random.Device("api-device", uuid.NewString()),
+			Device: random.Device("api-device", uuid.NewV7().String()),
 		})
 		t.Logf("createDev, err: %+v, %v", createDev, err)
 		require.NoError(t, err)
@@ -556,7 +556,7 @@ func TestDeleteDeviceLoRaWAN(t *testing.T) {
 
 		devCli := api.NewDeviceServiceClient(globalAdminGRPCConn)
 		createDev, err := devCli.CreateDevice(ctx, &api.CreateDeviceRequest{
-			Device: random.Device("api-device", uuid.NewString()),
+			Device: random.Device("api-device", uuid.NewV7().String()),
 		})
 		t.Logf("createDev, err: %+v, %v", createDev, err)
 		require.NoError(t, err)
@@ -575,7 +575,7 @@ func TestDeleteDeviceLoRaWAN(t *testing.T) {
 
 		devCli := api.NewDeviceServiceClient(secondaryViewerGRPCConn)
 		_, err := devCli.DeleteDeviceLoRaWAN(ctx,
-			&api.DeleteDeviceLoRaWANRequest{Id: uuid.NewString()})
+			&api.DeleteDeviceLoRaWANRequest{Id: uuid.NewV7().String()})
 		t.Logf("err: %v", err)
 		require.EqualError(t, err, "rpc error: code = PermissionDenied desc = "+
 			"permission denied, BUILDER role required")
@@ -589,7 +589,7 @@ func TestDeleteDeviceLoRaWAN(t *testing.T) {
 
 		devCli := api.NewDeviceServiceClient(globalAdminGRPCConn)
 		_, err := devCli.DeleteDeviceLoRaWAN(ctx,
-			&api.DeleteDeviceLoRaWANRequest{Id: uuid.NewString()})
+			&api.DeleteDeviceLoRaWANRequest{Id: uuid.NewV7().String()})
 		t.Logf("err: %v", err)
 		require.EqualError(t, err, "rpc error: code = NotFound desc = "+
 			"dao: object not found")
@@ -603,7 +603,7 @@ func TestDeleteDeviceLoRaWAN(t *testing.T) {
 
 		devCli := api.NewDeviceServiceClient(globalAdminGRPCConn)
 		createDev, err := devCli.CreateDevice(ctx, &api.CreateDeviceRequest{
-			Device: random.Device("api-device", uuid.NewString()),
+			Device: random.Device("api-device", uuid.NewV7().String()),
 		})
 		t.Logf("createDev, err: %+v, %v", createDev, err)
 		require.NoError(t, err)
@@ -628,7 +628,7 @@ func TestDeleteDevice(t *testing.T) {
 
 		devCli := api.NewDeviceServiceClient(globalAdminGRPCConn)
 		createDev, err := devCli.CreateDevice(ctx, &api.CreateDeviceRequest{
-			Device: random.Device("api-device", uuid.NewString()),
+			Device: random.Device("api-device", uuid.NewV7().String()),
 		})
 		t.Logf("createDev, err: %+v, %v", createDev, err)
 		require.NoError(t, err)
@@ -663,7 +663,7 @@ func TestDeleteDevice(t *testing.T) {
 
 		devCli := api.NewDeviceServiceClient(secondaryViewerGRPCConn)
 		_, err := devCli.DeleteDevice(ctx,
-			&api.DeleteDeviceRequest{Id: uuid.NewString()})
+			&api.DeleteDeviceRequest{Id: uuid.NewV7().String()})
 		t.Logf("err: %v", err)
 		require.EqualError(t, err, "rpc error: code = PermissionDenied desc = "+
 			"permission denied, BUILDER role required")
@@ -677,7 +677,7 @@ func TestDeleteDevice(t *testing.T) {
 
 		devCli := api.NewDeviceServiceClient(globalAdminGRPCConn)
 		_, err := devCli.DeleteDevice(ctx,
-			&api.DeleteDeviceRequest{Id: uuid.NewString()})
+			&api.DeleteDeviceRequest{Id: uuid.NewV7().String()})
 		t.Logf("err: %v", err)
 		require.EqualError(t, err, "rpc error: code = NotFound desc = "+
 			"dao: object not found")
@@ -691,7 +691,7 @@ func TestDeleteDevice(t *testing.T) {
 
 		devCli := api.NewDeviceServiceClient(globalAdminGRPCConn)
 		createDev, err := devCli.CreateDevice(ctx, &api.CreateDeviceRequest{
-			Device: random.Device("api-device", uuid.NewString()),
+			Device: random.Device("api-device", uuid.NewV7().String()),
 		})
 		t.Logf("createDev, err: %+v, %v", createDev, err)
 		require.NoError(t, err)
@@ -719,7 +719,7 @@ func TestListDevices(t *testing.T) {
 	for range 3 {
 		devCli := api.NewDeviceServiceClient(globalAdminGRPCConn)
 		createDev, err := devCli.CreateDevice(ctx, &api.CreateDeviceRequest{
-			Device: random.Device("api-device", uuid.NewString()),
+			Device: random.Device("api-device", uuid.NewV7().String()),
 		})
 		t.Logf("createDev, err: %+v, %v", createDev, err)
 		require.NoError(t, err)

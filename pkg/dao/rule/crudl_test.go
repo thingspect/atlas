@@ -6,8 +6,8 @@ import (
 	"context"
 	"testing"
 	"time"
+	"uuid"
 
-	"github.com/google/uuid"
 	"github.com/stretchr/testify/require"
 	"github.com/thingspect/atlas/pkg/dao"
 	"github.com/thingspect/atlas/pkg/test/random"
@@ -96,8 +96,8 @@ func TestRead(t *testing.T) {
 		ctx, cancel := context.WithTimeout(t.Context(), testTimeout)
 		defer cancel()
 
-		readRule, err := globalRuleDAO.Read(ctx, uuid.NewString(),
-			uuid.NewString())
+		readRule, err := globalRuleDAO.Read(ctx, uuid.NewV7().String(),
+			uuid.NewV7().String())
 		t.Logf("readRule, err: %+v, %v", readRule, err)
 		require.Nil(t, readRule)
 		require.Equal(t, dao.ErrNotFound, err)
@@ -110,7 +110,7 @@ func TestRead(t *testing.T) {
 		defer cancel()
 
 		readRule, err := globalRuleDAO.Read(ctx, createRule.GetId(),
-			uuid.NewString())
+			uuid.NewV7().String())
 		t.Logf("readRule, err: %+v, %v", readRule, err)
 		require.Nil(t, readRule)
 		require.Equal(t, dao.ErrNotFound, err)
@@ -162,8 +162,8 @@ func TestUpdate(t *testing.T) {
 		require.NoError(t, err)
 		require.Equal(t, createRule.GetName(), updateRule.GetName())
 		require.Equal(t, createRule.GetStatus(), updateRule.GetStatus())
-		require.True(t, updateRule.GetUpdatedAt().AsTime().After(
-			updateRule.GetCreatedAt().AsTime()))
+		require.True(t, updateRule.GetUpdatedAt().AsTime().
+			After(updateRule.GetCreatedAt().AsTime()))
 		require.WithinDuration(t, createRule.GetCreatedAt().AsTime(),
 			updateRule.GetUpdatedAt().AsTime(), 2*time.Second)
 
@@ -199,7 +199,7 @@ func TestUpdate(t *testing.T) {
 		require.NoError(t, err)
 
 		// Update rule fields.
-		createRule.OrgId = uuid.NewString()
+		createRule.OrgId = uuid.NewV7().String()
 		createRule.Name = "dao-rule-" + random.String(10)
 
 		updateRule, err := globalRuleDAO.Update(ctx, createRule)
@@ -277,7 +277,8 @@ func TestDelete(t *testing.T) {
 		ctx, cancel := context.WithTimeout(t.Context(), testTimeout)
 		defer cancel()
 
-		err := globalRuleDAO.Delete(ctx, uuid.NewString(), createOrg.GetId())
+		err := globalRuleDAO.Delete(ctx, uuid.NewV7().String(),
+			createOrg.GetId())
 		t.Logf("err: %v", err)
 		require.Equal(t, dao.ErrNotFound, err)
 	})
@@ -293,7 +294,8 @@ func TestDelete(t *testing.T) {
 		t.Logf("createRule, err: %+v, %v", createRule, err)
 		require.NoError(t, err)
 
-		err = globalRuleDAO.Delete(ctx, createRule.GetId(), uuid.NewString())
+		err = globalRuleDAO.Delete(ctx, createRule.GetId(),
+			uuid.NewV7().String())
 		t.Logf("err: %v", err)
 		require.Equal(t, dao.ErrNotFound, err)
 	})
@@ -396,8 +398,8 @@ func TestList(t *testing.T) {
 		ctx, cancel := context.WithTimeout(t.Context(), testTimeout)
 		defer cancel()
 
-		listRules, listCount, err := globalRuleDAO.List(ctx, uuid.NewString(),
-			time.Time{}, "", 0)
+		listRules, listCount, err := globalRuleDAO.List(ctx,
+			uuid.NewV7().String(), time.Time{}, "", 0)
 		t.Logf("listRules, listCount, err: %+v, %v, %v", listRules, listCount,
 			err)
 		require.NoError(t, err)
@@ -497,7 +499,7 @@ func TestListByTags(t *testing.T) {
 		ctx, cancel := context.WithTimeout(t.Context(), testTimeout)
 		defer cancel()
 
-		listRules, err := globalRuleDAO.ListByTags(ctx, uuid.NewString(),
+		listRules, err := globalRuleDAO.ListByTags(ctx, uuid.NewV7().String(),
 			ruleAttrs[len(ruleAttrs)-1], ruleDeviceTags)
 		t.Logf("listRules, err: %+v, %v", listRules, err)
 		require.NoError(t, err)

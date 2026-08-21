@@ -6,8 +6,8 @@ import (
 	"context"
 	"testing"
 	"time"
+	"uuid"
 
-	"github.com/google/uuid"
 	"github.com/stretchr/testify/require"
 	"github.com/thingspect/atlas/internal/atlas-api/session"
 	"github.com/thingspect/atlas/pkg/dao"
@@ -27,19 +27,18 @@ func TestListAlerts(t *testing.T) {
 	t.Run("List alerts by valid UniqID with ts", func(t *testing.T) {
 		t.Parallel()
 
-		alert := random.Alert("dao-alert", uuid.NewString())
+		alert := random.Alert("dao-alert", uuid.NewV7().String())
 		retAlert, _ := proto.Clone(alert).(*api.Alert)
 		end := time.Now().UTC()
 		start := time.Now().UTC().Add(-15 * time.Minute)
 
 		alerter := NewMockAlerter(gomock.NewController(t))
-		alerter.EXPECT().List(gomock.Any(), alert.GetOrgId(), alert.GetUniqId(), "", "",
-			"", end, start).Return([]*api.Alert{retAlert}, nil).Times(1)
+		alerter.EXPECT().List(gomock.Any(), alert.GetOrgId(), alert.GetUniqId(),
+			"", "", "", end, start).Return([]*api.Alert{retAlert}, nil).Times(1)
 
-		ctx, cancel := context.WithTimeout(session.NewContext(
-			t.Context(), &session.Session{
-				OrgID: alert.GetOrgId(), Role: api.Role_ADMIN,
-			}), testTimeout)
+		ctx, cancel := context.WithTimeout(session.NewContext(t.Context(),
+			&session.Session{OrgID: alert.GetOrgId(), Role: api.Role_ADMIN}),
+			testTimeout)
 		defer cancel()
 
 		aleSvc := NewAlert(alerter)
@@ -56,10 +55,10 @@ func TestListAlerts(t *testing.T) {
 	t.Run("List alerts by valid dev ID with alarm ID", func(t *testing.T) {
 		t.Parallel()
 
-		alert := random.Alert("dao-alert", uuid.NewString())
+		alert := random.Alert("dao-alert", uuid.NewV7().String())
 		retAlert, _ := proto.Clone(alert).(*api.Alert)
-		devID := uuid.NewString()
-		alarmID := uuid.NewString()
+		devID := uuid.NewV7().String()
+		alarmID := uuid.NewV7().String()
 
 		alerter := NewMockAlerter(gomock.NewController(t))
 		alerter.EXPECT().List(gomock.Any(), alert.GetOrgId(), "", devID,
@@ -67,10 +66,9 @@ func TestListAlerts(t *testing.T) {
 			matcher.NewRecentMatcher(24*time.Hour+2*time.Second)).
 			Return([]*api.Alert{retAlert}, nil).Times(1)
 
-		ctx, cancel := context.WithTimeout(session.NewContext(
-			t.Context(), &session.Session{
-				OrgID: alert.GetOrgId(), Role: api.Role_ADMIN,
-			}), testTimeout)
+		ctx, cancel := context.WithTimeout(session.NewContext(t.Context(),
+			&session.Session{OrgID: alert.GetOrgId(), Role: api.Role_ADMIN}),
+			testTimeout)
 		defer cancel()
 
 		aleSvc := NewAlert(alerter)
@@ -87,9 +85,9 @@ func TestListAlerts(t *testing.T) {
 	t.Run("List alerts by user ID", func(t *testing.T) {
 		t.Parallel()
 
-		alert := random.Alert("dao-alert", uuid.NewString())
+		alert := random.Alert("dao-alert", uuid.NewV7().String())
 		retAlert, _ := proto.Clone(alert).(*api.Alert)
-		userID := uuid.NewString()
+		userID := uuid.NewV7().String()
 
 		alerter := NewMockAlerter(gomock.NewController(t))
 		alerter.EXPECT().List(gomock.Any(), alert.GetOrgId(), "", "",
@@ -97,10 +95,9 @@ func TestListAlerts(t *testing.T) {
 			matcher.NewRecentMatcher(24*time.Hour+2*time.Second)).
 			Return([]*api.Alert{retAlert}, nil).Times(1)
 
-		ctx, cancel := context.WithTimeout(session.NewContext(
-			t.Context(), &session.Session{
-				OrgID: alert.GetOrgId(), Role: api.Role_ADMIN,
-			}), testTimeout)
+		ctx, cancel := context.WithTimeout(session.NewContext(t.Context(),
+			&session.Session{OrgID: alert.GetOrgId(), Role: api.Role_ADMIN}),
+			testTimeout)
 		defer cancel()
 
 		aleSvc := NewAlert(alerter)
@@ -128,10 +125,9 @@ func TestListAlerts(t *testing.T) {
 	t.Run("List alerts with insufficient role", func(t *testing.T) {
 		t.Parallel()
 
-		ctx, cancel := context.WithTimeout(session.NewContext(
-			t.Context(), &session.Session{
-				OrgID: uuid.NewString(), Role: api.Role_CONTACT,
-			}), testTimeout)
+		ctx, cancel := context.WithTimeout(session.NewContext(t.Context(),
+			&session.Session{OrgID: uuid.NewV7().String(), Role: api.Role_CONTACT}),
+			testTimeout)
 		defer cancel()
 
 		aleSvc := NewAlert(nil)
@@ -144,10 +140,9 @@ func TestListAlerts(t *testing.T) {
 	t.Run("List alerts by invalid time range", func(t *testing.T) {
 		t.Parallel()
 
-		ctx, cancel := context.WithTimeout(session.NewContext(
-			t.Context(), &session.Session{
-				OrgID: uuid.NewString(), Role: api.Role_ADMIN,
-			}), testTimeout)
+		ctx, cancel := context.WithTimeout(session.NewContext(t.Context(),
+			&session.Session{OrgID: uuid.NewV7().String(), Role: api.Role_ADMIN}),
+			testTimeout)
 		defer cancel()
 
 		aleSvc := NewAlert(nil)
@@ -170,10 +165,8 @@ func TestListAlerts(t *testing.T) {
 			gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any()).Return(nil,
 			dao.ErrInvalidFormat).Times(1)
 
-		ctx, cancel := context.WithTimeout(session.NewContext(
-			t.Context(), &session.Session{
-				OrgID: "aaa", Role: api.Role_ADMIN,
-			}), testTimeout)
+		ctx, cancel := context.WithTimeout(session.NewContext(t.Context(),
+			&session.Session{OrgID: "aaa", Role: api.Role_ADMIN}), testTimeout)
 		defer cancel()
 
 		aleSvc := NewAlert(alerter)

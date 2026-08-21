@@ -6,8 +6,8 @@ import (
 	"fmt"
 	"testing"
 	"time"
+	"uuid"
 
-	"github.com/google/uuid"
 	"github.com/stretchr/testify/require"
 	"github.com/thingspect/atlas/pkg/consterr"
 	"github.com/thingspect/atlas/pkg/dao"
@@ -157,7 +157,7 @@ func TestDecodeMessages(t *testing.T) {
 		t.Run(fmt.Sprintf("Can decode %+v", test), func(t *testing.T) {
 			t.Parallel()
 
-			dev := random.Device("dec", uuid.NewString())
+			dev := random.Device("dec", uuid.NewV7().String())
 			dev.UniqId = uniqID
 			dev.Decoder = test.inpDecoder
 
@@ -242,7 +242,7 @@ func TestDecodeMessagesError(t *testing.T) {
 		t.Run(fmt.Sprintf("Cannot decode %+v", test), func(t *testing.T) {
 			t.Parallel()
 
-			dev := random.Device("dec", uuid.NewString())
+			dev := random.Device("dec", uuid.NewV7().String())
 			dev.Decoder = test.inpDecoder
 
 			dInQueue := queue.NewFake()

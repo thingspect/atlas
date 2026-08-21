@@ -8,8 +8,8 @@ import (
 	"sort"
 	"testing"
 	"time"
+	"uuid"
 
-	"github.com/google/uuid"
 	"github.com/stretchr/testify/require"
 	"github.com/thingspect/atlas/pkg/dao"
 	"github.com/thingspect/atlas/pkg/test/random"
@@ -113,8 +113,8 @@ func TestList(t *testing.T) {
 
 		// Flip alerts to descending timestamp order.
 		sort.Slice(alerts, func(i, j int) bool {
-			return alerts[i].GetCreatedAt().AsTime().After(
-				alerts[j].GetCreatedAt().AsTime())
+			return alerts[i].GetCreatedAt().AsTime().
+				After(alerts[j].GetCreatedAt().AsTime())
 		})
 
 		ctx, cancel = context.WithTimeout(t.Context(), testTimeout)
@@ -175,7 +175,7 @@ func TestList(t *testing.T) {
 		t.Logf("err: %#v", err)
 		require.NoError(t, err)
 
-		listAlerts, err := globalAleDAO.List(ctx, uuid.NewString(),
+		listAlerts, err := globalAleDAO.List(ctx, uuid.NewV7().String(),
 			alert.GetUniqId(), "", "", "", alert.GetCreatedAt().AsTime(),
 			alert.GetCreatedAt().AsTime().Add(-time.Millisecond))
 		t.Logf("listAlerts, err: %+v, %v", listAlerts, err)
@@ -190,7 +190,7 @@ func TestList(t *testing.T) {
 		defer cancel()
 
 		listAlerts, err := globalAleDAO.List(ctx, random.String(10),
-			uuid.NewString(), "", "", "", time.Now(), time.Now())
+			uuid.NewV7().String(), "", "", "", time.Now(), time.Now())
 		t.Logf("listAlerts, err: %+v, %v", listAlerts, err)
 		require.Nil(t, listAlerts)
 		require.ErrorIs(t, err, dao.ErrInvalidFormat)

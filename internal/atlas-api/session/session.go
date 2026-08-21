@@ -4,8 +4,8 @@ package session
 
 import (
 	"context"
+	"uuid"
 
-	"github.com/google/uuid"
 	"github.com/thingspect/proto/go/api"
 )
 

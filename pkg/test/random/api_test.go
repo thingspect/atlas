@@ -7,8 +7,8 @@ import (
 	"strings"
 	"testing"
 	"time"
+	"uuid"
 
-	"github.com/google/uuid"
 	"github.com/stretchr/testify/require"
 )
 
@@ -44,7 +44,7 @@ func TestDevice(t *testing.T) {
 			t.Parallel()
 
 			prefix := String(10)
-			orgID := uuid.NewString()
+			orgID := uuid.NewV7().String()
 
 			d1 := Device(prefix, orgID)
 			d2 := Device(prefix, orgID)
@@ -69,7 +69,7 @@ func TestRule(t *testing.T) {
 			t.Parallel()
 
 			prefix := String(10)
-			orgID := uuid.NewString()
+			orgID := uuid.NewV7().String()
 
 			r1 := Rule(prefix, orgID)
 			r2 := Rule(prefix, orgID)
@@ -92,7 +92,7 @@ func TestEvent(t *testing.T) {
 			t.Parallel()
 
 			prefix := String(10)
-			orgID := uuid.NewString()
+			orgID := uuid.NewV7().String()
 
 			e1 := Event(prefix, orgID)
 			e2 := Event(prefix, orgID)
@@ -117,8 +117,8 @@ func TestAlarm(t *testing.T) {
 			t.Parallel()
 
 			prefix := String(10)
-			orgID := uuid.NewString()
-			ruleID := uuid.NewString()
+			orgID := uuid.NewV7().String()
+			ruleID := uuid.NewV7().String()
 
 			a1 := Alarm(prefix, orgID, ruleID)
 			a2 := Alarm(prefix, orgID, ruleID)
@@ -143,7 +143,7 @@ func TestAlert(t *testing.T) {
 			t.Parallel()
 
 			prefix := String(10)
-			orgID := uuid.NewString()
+			orgID := uuid.NewV7().String()
 
 			a1 := Alert(prefix, orgID)
 			a2 := Alert(prefix, orgID)
@@ -164,7 +164,7 @@ func TestUser(t *testing.T) {
 			t.Parallel()
 
 			prefix := String(10)
-			orgID := uuid.NewString()
+			orgID := uuid.NewV7().String()
 
 			u1 := User(prefix, orgID)
 			u2 := User(prefix, orgID)
@@ -193,7 +193,7 @@ func TestSMSUser(t *testing.T) {
 			t.Parallel()
 
 			prefix := String(10)
-			orgID := uuid.NewString()
+			orgID := uuid.NewV7().String()
 
 			u1 := SMSUser(prefix, orgID)
 			u2 := SMSUser(prefix, orgID)
@@ -222,7 +222,7 @@ func TestAppUser(t *testing.T) {
 			t.Parallel()
 
 			prefix := String(10)
-			orgID := uuid.NewString()
+			orgID := uuid.NewV7().String()
 
 			u1 := AppUser(prefix, orgID)
 			u2 := AppUser(prefix, orgID)
@@ -251,7 +251,7 @@ func TestKey(t *testing.T) {
 			t.Parallel()
 
 			prefix := String(10)
-			orgID := uuid.NewString()
+			orgID := uuid.NewV7().String()
 
 			k1 := Key(prefix, orgID)
 			k2 := Key(prefix, orgID)

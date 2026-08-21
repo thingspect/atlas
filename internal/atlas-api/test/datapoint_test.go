@@ -7,8 +7,8 @@ import (
 	"sort"
 	"testing"
 	"time"
+	"uuid"
 
-	"github.com/google/uuid"
 	"github.com/stretchr/testify/require"
 	"github.com/thingspect/atlas/pkg/decode"
 	"github.com/thingspect/atlas/pkg/decode/radiobridge"
@@ -154,7 +154,7 @@ func TestListDataPoints(t *testing.T) {
 
 		devCli := api.NewDeviceServiceClient(globalAdminGRPCConn)
 		createDev, err := devCli.CreateDevice(ctx, &api.CreateDeviceRequest{
-			Device: random.Device("api-point", uuid.NewString()),
+			Device: random.Device("api-point", uuid.NewV7().String()),
 		})
 		t.Logf("createDev, err: %+v, %v", createDev, err)
 		require.NoError(t, err)
@@ -163,34 +163,34 @@ func TestListDataPoints(t *testing.T) {
 			{
 				UniqId: createDev.GetUniqId(), Attr: radiobridge.AttrCount,
 				ValOneof: &common.DataPoint_IntVal{IntVal: 123},
-				TraceId:  uuid.NewString(),
+				TraceId:  uuid.NewV7().String(),
 			},
 			{
 				UniqId: createDev.GetUniqId(), Attr: decode.AttrTempC,
 				ValOneof: &common.DataPoint_Fl64Val{Fl64Val: 9.3},
-				TraceId:  uuid.NewString(),
+				TraceId:  uuid.NewV7().String(),
 			},
 			{
 				UniqId: createDev.GetUniqId(), Attr: "power",
 				ValOneof: &common.DataPoint_StrVal{StrVal: "line"},
-				TraceId:  uuid.NewString(),
+				TraceId:  uuid.NewV7().String(),
 			},
 			{
 				UniqId: createDev.GetUniqId(), Attr: "leak",
 				ValOneof: &common.DataPoint_BoolVal{BoolVal: []bool{
 					true, false,
-				}[random.Intn(2)]}, TraceId: uuid.NewString(),
+				}[random.Intn(2)]}, TraceId: uuid.NewV7().String(),
 			},
 			{
 				UniqId: createDev.GetUniqId(), Attr: "raw",
 				ValOneof: &common.DataPoint_BytesVal{
 					BytesVal: random.Bytes(10),
-				}, TraceId: uuid.NewString(),
+				}, TraceId: uuid.NewV7().String(),
 			},
 			{
 				UniqId: createDev.GetUniqId(), Attr: radiobridge.AttrCount,
 				ValOneof: &common.DataPoint_IntVal{IntVal: 321},
-				TraceId:  uuid.NewString(),
+				TraceId:  uuid.NewV7().String(),
 			},
 		}
 
@@ -200,8 +200,8 @@ func TestListDataPoints(t *testing.T) {
 			defer cancel()
 
 			// Set a new in-place timestamp.
-			point.Ts = timestamppb.New(time.Now().UTC().Truncate(
-				time.Millisecond))
+			point.Ts = timestamppb.New(time.Now().UTC().
+				Truncate(time.Millisecond))
 
 			err := globalDPDAO.Create(ctx, point, globalAdminOrgID)
 			t.Logf("err: %v", err)
@@ -276,7 +276,7 @@ func TestListDataPoints(t *testing.T) {
 		point := &common.DataPoint{
 			UniqId: "api-point-" + random.String(16), Attr: radiobridge.AttrCount,
 			ValOneof: &common.DataPoint_IntVal{IntVal: 123},
-			Ts:       timestamppb.Now(), TraceId: uuid.NewString(),
+			Ts:       timestamppb.Now(), TraceId: uuid.NewV7().String(),
 		}
 
 		ctx, cancel := context.WithTimeout(t.Context(), testTimeout)
@@ -308,7 +308,7 @@ func TestListDataPoints(t *testing.T) {
 		dpCli := api.NewDataPointServiceClient(globalAdminGRPCConn)
 		listPoints, err := dpCli.ListDataPoints(ctx, &api.ListDataPointsRequest{
 			IdOneof: &api.ListDataPointsRequest_DeviceId{
-				DeviceId: uuid.NewString(),
+				DeviceId: uuid.NewV7().String(),
 			}, EndTime: timestamppb.Now(),
 			StartTime: timestamppb.New(time.Now().Add(-91 * 24 * time.Hour)),
 		})
@@ -349,7 +349,7 @@ func TestLatestDataPoints(t *testing.T) {
 
 		devCli := api.NewDeviceServiceClient(globalAdminGRPCConn)
 		createDev, err := devCli.CreateDevice(ctx, &api.CreateDeviceRequest{
-			Device: random.Device("api-point", uuid.NewString()),
+			Device: random.Device("api-point", uuid.NewV7().String()),
 		})
 		t.Logf("createDev, err: %+v, %v", createDev, err)
 		require.NoError(t, err)
@@ -361,29 +361,29 @@ func TestLatestDataPoints(t *testing.T) {
 			{
 				UniqId: createDev.GetUniqId(), Attr: radiobridge.AttrCount,
 				ValOneof: &common.DataPoint_IntVal{IntVal: 123},
-				TraceId:  uuid.NewString(),
+				TraceId:  uuid.NewV7().String(),
 			},
 			{
 				UniqId: createDev.GetUniqId(), Attr: decode.AttrTempC,
 				ValOneof: &common.DataPoint_Fl64Val{Fl64Val: 9.3},
-				TraceId:  uuid.NewString(),
+				TraceId:  uuid.NewV7().String(),
 			},
 			{
 				UniqId: createDev.GetUniqId(), Attr: "power",
 				ValOneof: &common.DataPoint_StrVal{StrVal: "line"},
-				TraceId:  uuid.NewString(),
+				TraceId:  uuid.NewV7().String(),
 			},
 			{
 				UniqId: createDev.GetUniqId(), Attr: "leak",
 				ValOneof: &common.DataPoint_BoolVal{BoolVal: []bool{
 					true, false,
-				}[random.Intn(2)]}, TraceId: uuid.NewString(),
+				}[random.Intn(2)]}, TraceId: uuid.NewV7().String(),
 			},
 			{
 				UniqId: createDev.GetUniqId(), Attr: "raw",
 				ValOneof: &common.DataPoint_BytesVal{
 					BytesVal: random.Bytes(10),
-				}, TraceId: uuid.NewString(),
+				}, TraceId: uuid.NewV7().String(),
 			},
 		}
 
@@ -394,8 +394,8 @@ func TestLatestDataPoints(t *testing.T) {
 				defer cancel()
 
 				// Set a new in-place timestamp each pass.
-				point.Ts = timestamppb.New(time.Now().UTC().Truncate(
-					time.Millisecond))
+				point.Ts = timestamppb.New(time.Now().UTC().
+					Truncate(time.Millisecond))
 
 				// Track the first point's latest time.
 				if i == 0 {
@@ -450,7 +450,7 @@ func TestLatestDataPoints(t *testing.T) {
 		point := &common.DataPoint{
 			UniqId: "api-point-" + random.String(16), Attr: radiobridge.AttrCount,
 			ValOneof: &common.DataPoint_IntVal{IntVal: 123},
-			Ts:       timestamppb.Now(), TraceId: uuid.NewString(),
+			Ts:       timestamppb.Now(), TraceId: uuid.NewV7().String(),
 		}
 
 		ctx, cancel := context.WithTimeout(t.Context(), testTimeout)
@@ -486,9 +486,9 @@ func TestLatestDataPoints(t *testing.T) {
 		latPoints, err := dpCli.LatestDataPoints(ctx,
 			&api.LatestDataPointsRequest{
 				IdOneof: &api.LatestDataPointsRequest_DeviceId{
-					DeviceId: uuid.NewString(),
-				}, StartTime: timestamppb.New(
-					time.Now().Add(-91 * 24 * time.Hour)),
+					DeviceId: uuid.NewV7().String(),
+				}, StartTime: timestamppb.New(time.Now().
+					Add(-91 * 24 * time.Hour)),
 			})
 		t.Logf("latPoints, err: %+v, %v", latPoints, err)
 		require.Nil(t, latPoints)

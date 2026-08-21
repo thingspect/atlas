@@ -6,8 +6,8 @@ import (
 	"context"
 	"testing"
 	"time"
+	"uuid"
 
-	"github.com/google/uuid"
 	"github.com/stretchr/testify/require"
 	"github.com/thingspect/atlas/pkg/test/random"
 )
@@ -15,10 +15,10 @@ import (
 func TestNewUserFromContext(t *testing.T) {
 	t.Parallel()
 
-	user := random.User("session", uuid.NewString())
+	user := random.User("session", uuid.NewV7().String())
 	sess := &Session{
 		UserID: user.GetId(), OrgID: user.GetOrgId(), Role: user.GetRole(),
-		TraceID: uuid.New(),
+		TraceID: uuid.NewV7(),
 	}
 	t.Logf("sess: %+v", sess)
 
@@ -35,10 +35,10 @@ func TestNewUserFromContext(t *testing.T) {
 func TestNewKeyFromContext(t *testing.T) {
 	t.Parallel()
 
-	user := random.User("session", uuid.NewString())
+	user := random.User("session", uuid.NewV7().String())
 	sess := &Session{
-		KeyID: uuid.NewString(), OrgID: user.GetOrgId(), Role: user.GetRole(),
-		TraceID: uuid.New(),
+		KeyID: uuid.NewV7().String(), OrgID: user.GetOrgId(), Role: user.GetRole(),
+		TraceID: uuid.NewV7(),
 	}
 	t.Logf("sess: %+v", sess)
 

@@ -3,8 +3,8 @@ package random
 import (
 	"strconv"
 	"time"
+	"uuid"
 
-	"github.com/google/uuid"
 	"github.com/thingspect/proto/go/api"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
@@ -12,7 +12,7 @@ import (
 // Org generates a random org with prefixed identifiers.
 func Org(prefix string) *api.Org {
 	return &api.Org{
-		Id:          uuid.NewString(),
+		Id:          uuid.NewV7().String(),
 		Name:        prefix + "-" + String(10),
 		DisplayName: prefix + "-" + String(10),
 		Email:       prefix + "-" + Email(),
@@ -22,7 +22,7 @@ func Org(prefix string) *api.Org {
 // Device generates a random device with prefixed identifiers.
 func Device(prefix, orgID string) *api.Device {
 	return &api.Device{
-		Id:     uuid.NewString(),
+		Id:     uuid.NewV7().String(),
 		OrgId:  orgID,
 		UniqId: prefix + "-" + String(16),
 		Name:   prefix + "-" + String(10),
@@ -30,7 +30,7 @@ func Device(prefix, orgID string) *api.Device {
 			api.Status_ACTIVE,
 			api.Status_DISABLED,
 		}[Intn(2)],
-		Token: uuid.NewString(),
+		Token: uuid.NewV7().String(),
 		Decoder: []api.Decoder{
 			api.Decoder_RAW,
 			api.Decoder_GATEWAY,
@@ -44,7 +44,7 @@ func Device(prefix, orgID string) *api.Device {
 // Rule generates a random rule with prefixed identifiers.
 func Rule(prefix, orgID string) *api.Rule {
 	return &api.Rule{
-		Id:    uuid.NewString(),
+		Id:    uuid.NewV7().String(),
 		OrgId: orgID,
 		Name:  prefix + "-" + String(10),
 		Status: []api.Status{
@@ -61,16 +61,16 @@ func Event(prefix, orgID string) *api.Event {
 	return &api.Event{
 		OrgId:     orgID,
 		UniqId:    prefix + "-" + String(16),
-		RuleId:    uuid.NewString(),
+		RuleId:    uuid.NewV7().String(),
 		CreatedAt: timestamppb.New(time.Now().UTC().Truncate(time.Millisecond)),
-		TraceId:   uuid.NewString(),
+		TraceId:   uuid.NewV7().String(),
 	}
 }
 
 // Alarm generates a random alarm with prefixed identifiers.
 func Alarm(prefix, orgID, ruleID string) *api.Alarm {
 	return &api.Alarm{
-		Id:     uuid.NewString(),
+		Id:     uuid.NewV7().String(),
 		OrgId:  orgID,
 		RuleId: ruleID,
 		Name:   prefix + "-" + String(10),
@@ -96,21 +96,21 @@ func Alert(prefix, orgID string) *api.Alert {
 	return &api.Alert{
 		OrgId:   orgID,
 		UniqId:  prefix + "-" + String(16),
-		AlarmId: uuid.NewString(),
-		UserId:  uuid.NewString(),
+		AlarmId: uuid.NewV7().String(),
+		UserId:  uuid.NewV7().String(),
 		Status: []api.AlertStatus{
 			api.AlertStatus_SENT,
 			api.AlertStatus_ERROR,
 		}[Intn(2)],
 		Error:   []string{"", prefix + "-" + String(10)}[Intn(2)],
-		TraceId: uuid.NewString(),
+		TraceId: uuid.NewV7().String(),
 	}
 }
 
 // User generates a random user with prefixed identifiers.
 func User(prefix, orgID string) *api.User {
 	return &api.User{
-		Id:    uuid.NewString(),
+		Id:    uuid.NewV7().String(),
 		OrgId: orgID,
 		Name:  prefix + "-" + String(10),
 		Email: prefix + "-" + Email(),
@@ -133,7 +133,7 @@ func User(prefix, orgID string) *api.User {
 // SMSUser generates a random SMS user with prefixed identifiers.
 func SMSUser(prefix, orgID string) *api.User {
 	return &api.User{
-		Id:    uuid.NewString(),
+		Id:    uuid.NewV7().String(),
 		OrgId: orgID,
 		Name:  prefix + "-" + String(10),
 		Email: prefix + "-" + Email(),
@@ -159,7 +159,7 @@ func SMSUser(prefix, orgID string) *api.User {
 // AppUser generates a random mobile application user with prefixed identifiers.
 func AppUser(prefix, orgID string) *api.User {
 	return &api.User{
-		Id:    uuid.NewString(),
+		Id:    uuid.NewV7().String(),
 		OrgId: orgID,
 		Name:  prefix + "-" + String(10),
 		Email: prefix + "-" + Email(),
@@ -183,7 +183,7 @@ func AppUser(prefix, orgID string) *api.User {
 // Key generates a random API key with prefixed identifiers.
 func Key(prefix, orgID string) *api.Key {
 	return &api.Key{
-		Id:    uuid.NewString(),
+		Id:    uuid.NewV7().String(),
 		OrgId: orgID,
 		Name:  prefix + "-" + String(10),
 		Role: []api.Role{

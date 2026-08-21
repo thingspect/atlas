@@ -7,8 +7,8 @@ import (
 	"fmt"
 	"testing"
 	"time"
+	"uuid"
 
-	"github.com/google/uuid"
 	"github.com/stretchr/testify/require"
 	"github.com/thingspect/atlas/internal/atlas-alerter/alerter"
 	"github.com/thingspect/atlas/pkg/test/random"
@@ -63,7 +63,7 @@ func TestAlertMessages(t *testing.T) {
 			dev.Tags = []string{createRule.GetDeviceTag()}
 
 			eOut := &message.EventerOut{
-				Point:  &common.DataPoint{TraceId: uuid.NewString()},
+				Point:  &common.DataPoint{TraceId: uuid.NewV7().String()},
 				Device: dev, Rule: createRule,
 			}
 			bEOut, err := proto.Marshal(eOut)
@@ -146,7 +146,7 @@ func TestAlertMessagesRepeat(t *testing.T) {
 			dev.Tags = []string{rule.GetDeviceTag()}
 
 			eOut := &message.EventerOut{
-				Point:  &common.DataPoint{TraceId: uuid.NewString()},
+				Point:  &common.DataPoint{TraceId: uuid.NewV7().String()},
 				Device: dev, Rule: createRule,
 			}
 			bEOut, err := proto.Marshal(eOut)
@@ -246,39 +246,39 @@ func TestAlertMessagesError(t *testing.T) {
 		inpNotifyErr error
 	}{
 		// Bad payload.
-		{nil, uuid.NewString(), nil},
+		{nil, uuid.NewV7().String(), nil},
 		// Missing data point.
-		{&message.EventerOut{Device: &api.Device{}}, uuid.NewString(), nil},
+		{&message.EventerOut{Device: &api.Device{}}, uuid.NewV7().String(), nil},
 		// Missing device.
 		{
-			&message.EventerOut{Point: &common.DataPoint{}}, uuid.NewString(),
+			&message.EventerOut{Point: &common.DataPoint{}}, uuid.NewV7().String(),
 			nil,
 		},
 		// Missing rule.
 		{
 			&message.EventerOut{
 				Point: &common.DataPoint{}, Device: &api.Device{},
-			}, uuid.NewString(), nil,
+			}, uuid.NewV7().String(), nil,
 		},
 		// Unknown org. If this fails due to msg.Requeue(), remove it.
 		{
 			&message.EventerOut{
-				Point:  &common.DataPoint{TraceId: uuid.NewString()},
-				Device: random.Device("ale", uuid.NewString()),
+				Point:  &common.DataPoint{TraceId: uuid.NewV7().String()},
+				Device: random.Device("ale", uuid.NewV7().String()),
 				Rule:   random.Rule("ale", createOrg.GetId()),
-			}, uuid.NewString(), nil,
+			}, uuid.NewV7().String(), nil,
 		},
 		// Bad alarm subject.
 		{
 			&message.EventerOut{
-				Point:  &common.DataPoint{TraceId: uuid.NewString()},
+				Point:  &common.DataPoint{TraceId: uuid.NewV7().String()},
 				Device: dev, Rule: createBadSubjRule,
 			}, createBadSubjAlarm.GetId(), nil,
 		},
 		// Unspecified alarm type.
 		{
 			&message.EventerOut{
-				Point:  &common.DataPoint{TraceId: uuid.NewString()},
+				Point:  &common.DataPoint{TraceId: uuid.NewV7().String()},
 				Device: dev, Rule: createUnspecTypeRule,
 			}, createUnspecTypeAlarm.GetId(), alerter.ErrUnknownAlarm,
 		},

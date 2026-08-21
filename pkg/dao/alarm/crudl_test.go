@@ -6,8 +6,8 @@ import (
 	"context"
 	"testing"
 	"time"
+	"uuid"
 
-	"github.com/google/uuid"
 	"github.com/stretchr/testify/require"
 	"github.com/thingspect/atlas/pkg/dao"
 	"github.com/thingspect/atlas/pkg/test/random"
@@ -73,7 +73,7 @@ func TestCreate(t *testing.T) {
 		defer cancel()
 
 		createAlarm, err := globalAlarmDAO.Create(ctx, random.Alarm("dao-alarm",
-			createOrg.GetId(), uuid.NewString()))
+			createOrg.GetId(), uuid.NewV7().String()))
 		t.Logf("createAlarm, err: %+v, %v", createAlarm, err)
 		require.Nil(t, createAlarm)
 		require.ErrorIs(t, err, dao.ErrInvalidFormat)
@@ -119,7 +119,7 @@ func TestRead(t *testing.T) {
 		ctx, cancel := context.WithTimeout(t.Context(), testTimeout)
 		defer cancel()
 
-		readAlarm, err := globalAlarmDAO.Read(ctx, uuid.NewString(),
+		readAlarm, err := globalAlarmDAO.Read(ctx, uuid.NewV7().String(),
 			createAlarm.GetOrgId(), createRule.GetId())
 		t.Logf("readAlarm, err: %+v, %v", readAlarm, err)
 		require.Nil(t, readAlarm)
@@ -133,7 +133,7 @@ func TestRead(t *testing.T) {
 		defer cancel()
 
 		readAlarm, err := globalAlarmDAO.Read(ctx, createAlarm.GetId(),
-			createAlarm.GetOrgId(), uuid.NewString())
+			createAlarm.GetOrgId(), uuid.NewV7().String())
 		t.Logf("readAlarm, err: %+v, %v", readAlarm, err)
 		require.Nil(t, readAlarm)
 		require.Equal(t, dao.ErrNotFound, err)
@@ -146,7 +146,7 @@ func TestRead(t *testing.T) {
 		defer cancel()
 
 		readAlarm, err := globalAlarmDAO.Read(ctx, createAlarm.GetId(),
-			uuid.NewString(), createRule.GetId())
+			uuid.NewV7().String(), createRule.GetId())
 		t.Logf("readAlarm, err: %+v, %v", readAlarm, err)
 		require.Nil(t, readAlarm)
 		require.Equal(t, dao.ErrNotFound, err)
@@ -208,7 +208,8 @@ func TestUpdate(t *testing.T) {
 		require.Equal(t, createAlarm.GetType(), updateAlarm.GetType())
 		require.Equal(t, createAlarm.GetUserTags(), updateAlarm.GetUserTags())
 		require.True(t, updateAlarm.GetUpdatedAt().AsTime().After(
-			updateAlarm.GetCreatedAt().AsTime()))
+			updateAlarm.GetCreatedAt().AsTime(),
+		))
 		require.WithinDuration(t, createAlarm.GetCreatedAt().AsTime(),
 			updateAlarm.GetUpdatedAt().AsTime(), 2*time.Second)
 
@@ -244,7 +245,7 @@ func TestUpdate(t *testing.T) {
 		require.NoError(t, err)
 
 		// Update alarm fields.
-		createAlarm.RuleId = uuid.NewString()
+		createAlarm.RuleId = uuid.NewV7().String()
 		updateAlarm, _ := proto.Clone(createAlarm).(*api.Alarm)
 
 		updateAlarm, err = globalAlarmDAO.Update(ctx, updateAlarm)
@@ -265,7 +266,7 @@ func TestUpdate(t *testing.T) {
 		require.NoError(t, err)
 
 		// Update alarm fields.
-		createAlarm.OrgId = uuid.NewString()
+		createAlarm.OrgId = uuid.NewV7().String()
 		createAlarm.Name = "dao-alarm-" + random.String(10)
 
 		updateAlarm, err := globalAlarmDAO.Update(ctx, createAlarm)
@@ -349,8 +350,8 @@ func TestDelete(t *testing.T) {
 		ctx, cancel := context.WithTimeout(t.Context(), testTimeout)
 		defer cancel()
 
-		err := globalAlarmDAO.Delete(ctx, uuid.NewString(), createOrg.GetId(),
-			createRule.GetId())
+		err := globalAlarmDAO.Delete(ctx, uuid.NewV7().String(),
+			createOrg.GetId(), createRule.GetId())
 		t.Logf("err: %v", err)
 		require.Equal(t, dao.ErrNotFound, err)
 	})
@@ -367,7 +368,7 @@ func TestDelete(t *testing.T) {
 		require.NoError(t, err)
 
 		err = globalAlarmDAO.Delete(ctx, createAlarm.GetId(), createOrg.GetId(),
-			uuid.NewString())
+			uuid.NewV7().String())
 		t.Logf("err: %v", err)
 		require.Equal(t, dao.ErrNotFound, err)
 	})
@@ -383,8 +384,8 @@ func TestDelete(t *testing.T) {
 		t.Logf("createAlarm, err: %+v, %v", createAlarm, err)
 		require.NoError(t, err)
 
-		err = globalAlarmDAO.Delete(ctx, createAlarm.GetId(), uuid.NewString(),
-			createRule.GetId())
+		err = globalAlarmDAO.Delete(ctx, createAlarm.GetId(),
+			uuid.NewV7().String(), createRule.GetId())
 		t.Logf("err: %v", err)
 		require.Equal(t, dao.ErrNotFound, err)
 	})
@@ -542,8 +543,8 @@ func TestList(t *testing.T) {
 		ctx, cancel := context.WithTimeout(t.Context(), testTimeout)
 		defer cancel()
 
-		listAlarms, listCount, err := globalAlarmDAO.List(ctx, uuid.NewString(),
-			time.Time{}, "", 0, uuid.NewString())
+		listAlarms, listCount, err := globalAlarmDAO.List(ctx,
+			uuid.NewV7().String(), time.Time{}, "", 0, uuid.NewV7().String())
 		t.Logf("listAlarms, listCount, err: %+v, %v, %v", listAlarms, listCount,
 			err)
 		require.NoError(t, err)
@@ -557,8 +558,8 @@ func TestList(t *testing.T) {
 		ctx, cancel := context.WithTimeout(t.Context(), testTimeout)
 		defer cancel()
 
-		listAlarms, listCount, err := globalAlarmDAO.List(ctx, uuid.NewString(),
-			time.Time{}, "", 0, "")
+		listAlarms, listCount, err := globalAlarmDAO.List(ctx,
+			uuid.NewV7().String(), time.Time{}, "", 0, "")
 		t.Logf("listAlarms, listCount, err: %+v, %v, %v", listAlarms, listCount,
 			err)
 		require.NoError(t, err)

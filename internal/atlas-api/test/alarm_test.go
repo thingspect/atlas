@@ -7,8 +7,8 @@ import (
 	"fmt"
 	"testing"
 	"time"
+	"uuid"
 
-	"github.com/google/uuid"
 	"github.com/stretchr/testify/require"
 	"github.com/thingspect/atlas/pkg/test/random"
 	"github.com/thingspect/proto/go/api"
@@ -29,12 +29,13 @@ func TestCreateAlarm(t *testing.T) {
 
 		raCli := api.NewRuleAlarmServiceClient(globalAdminGRPCConn)
 		createRule, err := raCli.CreateRule(ctx, &api.CreateRuleRequest{
-			Rule: random.Rule("api-alarm", uuid.NewString()),
+			Rule: random.Rule("api-alarm", uuid.NewV7().String()),
 		})
 		t.Logf("createRule, err: %+v, %v", createRule, err)
 		require.NoError(t, err)
 
-		alarm := random.Alarm("api-alarm", uuid.NewString(), createRule.GetId())
+		alarm := random.Alarm("api-alarm", uuid.NewV7().String(),
+			createRule.GetId())
 
 		createAlarm, err := raCli.CreateAlarm(ctx,
 			&api.CreateAlarmRequest{Alarm: alarm})
@@ -55,8 +56,8 @@ func TestCreateAlarm(t *testing.T) {
 
 		raCli := api.NewRuleAlarmServiceClient(secondaryViewerGRPCConn)
 		createAlarm, err := raCli.CreateAlarm(ctx, &api.CreateAlarmRequest{
-			Alarm: random.Alarm("api-alarm", uuid.NewString(),
-				uuid.NewString()),
+			Alarm: random.Alarm("api-alarm", uuid.NewV7().String(),
+				uuid.NewV7().String()),
 		})
 		t.Logf("createAlarm, err: %+v, %v", createAlarm, err)
 		require.Nil(t, createAlarm)
@@ -67,7 +68,8 @@ func TestCreateAlarm(t *testing.T) {
 	t.Run("Create invalid alarm", func(t *testing.T) {
 		t.Parallel()
 
-		alarm := random.Alarm("api-alarm", uuid.NewString(), uuid.NewString())
+		alarm := random.Alarm("api-alarm", uuid.NewV7().String(),
+			uuid.NewV7().String())
 		alarm.Name = "api-alarm-" + random.String(80)
 
 		ctx, cancel := context.WithTimeout(t.Context(), testTimeout)
@@ -87,7 +89,8 @@ func TestCreateAlarm(t *testing.T) {
 	t.Run("Create valid alarm with unknown rule", func(t *testing.T) {
 		t.Parallel()
 
-		alarm := random.Alarm("api-alarm", uuid.NewString(), uuid.NewString())
+		alarm := random.Alarm("api-alarm", uuid.NewV7().String(),
+			uuid.NewV7().String())
 
 		ctx, cancel := context.WithTimeout(t.Context(), testTimeout)
 		defer cancel()
@@ -110,13 +113,13 @@ func TestGetAlarm(t *testing.T) {
 
 	raCli := api.NewRuleAlarmServiceClient(globalAdminGRPCConn)
 	createRule, err := raCli.CreateRule(ctx, &api.CreateRuleRequest{
-		Rule: random.Rule("api-alarm", uuid.NewString()),
+		Rule: random.Rule("api-alarm", uuid.NewV7().String()),
 	})
 	t.Logf("createRule, err: %+v, %v", createRule, err)
 	require.NoError(t, err)
 
 	createAlarm, err := raCli.CreateAlarm(ctx, &api.CreateAlarmRequest{
-		Alarm: random.Alarm("api-alarm", uuid.NewString(), createRule.GetId()),
+		Alarm: random.Alarm("api-alarm", uuid.NewV7().String(), createRule.GetId()),
 	})
 	t.Logf("createAlarm, err: %+v, %v", createAlarm, err)
 	require.NoError(t, err)
@@ -144,7 +147,7 @@ func TestGetAlarm(t *testing.T) {
 
 		raCli := api.NewRuleAlarmServiceClient(globalAdminGRPCConn)
 		getAlarm, err := raCli.GetAlarm(ctx, &api.GetAlarmRequest{
-			Id: uuid.NewString(), RuleId: createRule.GetId(),
+			Id: uuid.NewV7().String(), RuleId: createRule.GetId(),
 		})
 		t.Logf("getAlarm, err: %+v, %v", getAlarm, err)
 		require.Nil(t, getAlarm)
@@ -160,7 +163,7 @@ func TestGetAlarm(t *testing.T) {
 
 		raCli := api.NewRuleAlarmServiceClient(globalAdminGRPCConn)
 		getAlarm, err := raCli.GetAlarm(ctx, &api.GetAlarmRequest{
-			Id: createAlarm.GetId(), RuleId: uuid.NewString(),
+			Id: createAlarm.GetId(), RuleId: uuid.NewV7().String(),
 		})
 		t.Logf("getAlarm, err: %+v, %v", getAlarm, err)
 		require.Nil(t, getAlarm)
@@ -196,13 +199,13 @@ func TestUpdateAlarm(t *testing.T) {
 
 		raCli := api.NewRuleAlarmServiceClient(globalAdminGRPCConn)
 		createRule, err := raCli.CreateRule(ctx, &api.CreateRuleRequest{
-			Rule: random.Rule("api-alarm", uuid.NewString()),
+			Rule: random.Rule("api-alarm", uuid.NewV7().String()),
 		})
 		t.Logf("createRule, err: %+v, %v", createRule, err)
 		require.NoError(t, err)
 
 		createAlarm, err := raCli.CreateAlarm(ctx, &api.CreateAlarmRequest{
-			Alarm: random.Alarm("api-alarm", uuid.NewString(), createRule.GetId()),
+			Alarm: random.Alarm("api-alarm", uuid.NewV7().String(), createRule.GetId()),
 		})
 		t.Logf("createAlarm, err: %+v, %v", createAlarm, err)
 		require.NoError(t, err)
@@ -221,8 +224,8 @@ func TestUpdateAlarm(t *testing.T) {
 		require.Equal(t, createAlarm.GetStatus(), updateAlarm.GetStatus())
 		require.Equal(t, createAlarm.GetType(), updateAlarm.GetType())
 		require.Equal(t, createAlarm.GetUserTags(), updateAlarm.GetUserTags())
-		require.True(t, updateAlarm.GetUpdatedAt().AsTime().After(
-			updateAlarm.GetCreatedAt().AsTime()))
+		require.True(t, updateAlarm.GetUpdatedAt().AsTime().
+			After(updateAlarm.GetCreatedAt().AsTime()))
 		require.WithinDuration(t, createAlarm.GetCreatedAt().AsTime(),
 			updateAlarm.GetUpdatedAt().AsTime(), 2*time.Second)
 
@@ -242,13 +245,13 @@ func TestUpdateAlarm(t *testing.T) {
 
 		raCli := api.NewRuleAlarmServiceClient(globalAdminKeyGRPCConn)
 		createRule, err := raCli.CreateRule(ctx, &api.CreateRuleRequest{
-			Rule: random.Rule("api-alarm", uuid.NewString()),
+			Rule: random.Rule("api-alarm", uuid.NewV7().String()),
 		})
 		t.Logf("createRule, err: %+v, %v", createRule, err)
 		require.NoError(t, err)
 
 		createAlarm, err := raCli.CreateAlarm(ctx, &api.CreateAlarmRequest{
-			Alarm: random.Alarm("api-alarm", uuid.NewString(), createRule.GetId()),
+			Alarm: random.Alarm("api-alarm", uuid.NewV7().String(), createRule.GetId()),
 		})
 		t.Logf("createAlarm, err: %+v, %v", createAlarm, err)
 		require.NoError(t, err)
@@ -271,8 +274,8 @@ func TestUpdateAlarm(t *testing.T) {
 		require.Equal(t, part.GetStatus(), updateAlarm.GetStatus())
 		require.Equal(t, part.GetType(), updateAlarm.GetType())
 		require.Equal(t, part.GetUserTags(), updateAlarm.GetUserTags())
-		require.True(t, updateAlarm.GetUpdatedAt().AsTime().After(
-			updateAlarm.GetCreatedAt().AsTime()))
+		require.True(t, updateAlarm.GetUpdatedAt().AsTime().
+			After(updateAlarm.GetCreatedAt().AsTime()))
 		require.WithinDuration(t, createAlarm.GetCreatedAt().AsTime(),
 			updateAlarm.GetUpdatedAt().AsTime(), 2*time.Second)
 
@@ -321,8 +324,8 @@ func TestUpdateAlarm(t *testing.T) {
 
 		raCli := api.NewRuleAlarmServiceClient(globalAdminGRPCConn)
 		updateAlarm, err := raCli.UpdateAlarm(ctx, &api.UpdateAlarmRequest{
-			Alarm: random.Alarm("api-alarm", uuid.NewString(),
-				uuid.NewString()), UpdateMask: &fieldmaskpb.FieldMask{
+			Alarm: random.Alarm("api-alarm", uuid.NewV7().String(),
+				uuid.NewV7().String()), UpdateMask: &fieldmaskpb.FieldMask{
 				Paths: []string{"aaa"},
 			},
 		})
@@ -340,13 +343,13 @@ func TestUpdateAlarm(t *testing.T) {
 
 		raCli := api.NewRuleAlarmServiceClient(globalAdminGRPCConn)
 		createRule, err := raCli.CreateRule(ctx, &api.CreateRuleRequest{
-			Rule: random.Rule("api-alarm", uuid.NewString()),
+			Rule: random.Rule("api-alarm", uuid.NewV7().String()),
 		})
 		t.Logf("createRule, err: %+v, %v", createRule, err)
 		require.NoError(t, err)
 
 		updateAlarm, err := raCli.UpdateAlarm(ctx, &api.UpdateAlarmRequest{
-			Alarm: random.Alarm("api-alarm", uuid.NewString(),
+			Alarm: random.Alarm("api-alarm", uuid.NewV7().String(),
 				createRule.GetId()), UpdateMask: &fieldmaskpb.FieldMask{
 				Paths: []string{"name", "status"},
 			},
@@ -365,21 +368,21 @@ func TestUpdateAlarm(t *testing.T) {
 
 		raCli := api.NewRuleAlarmServiceClient(globalAdminGRPCConn)
 		createRule, err := raCli.CreateRule(ctx, &api.CreateRuleRequest{
-			Rule: random.Rule("api-alarm", uuid.NewString()),
+			Rule: random.Rule("api-alarm", uuid.NewV7().String()),
 		})
 		t.Logf("createRule, err: %+v, %v", createRule, err)
 		require.NoError(t, err)
 
 		createAlarm, err := raCli.CreateAlarm(ctx, &api.CreateAlarmRequest{
-			Alarm: random.Alarm("api-alarm", uuid.NewString(), createRule.GetId()),
+			Alarm: random.Alarm("api-alarm", uuid.NewV7().String(), createRule.GetId()),
 		})
 		t.Logf("createAlarm, err: %+v, %v", createAlarm, err)
 		require.NoError(t, err)
 
 		// Update alarm fields.
 		part := &api.Alarm{
-			Id: createAlarm.GetId(), RuleId: uuid.NewString(), Name: "api-alarm-" +
-				random.String(10), Status: api.Status_DISABLED,
+			Id: createAlarm.GetId(), RuleId: uuid.NewV7().String(),
+			Name: "api-alarm-" + random.String(10), Status: api.Status_DISABLED,
 		}
 
 		updateAlarm, err := raCli.UpdateAlarm(ctx, &api.UpdateAlarmRequest{
@@ -401,13 +404,13 @@ func TestUpdateAlarm(t *testing.T) {
 
 		raCli := api.NewRuleAlarmServiceClient(globalAdminGRPCConn)
 		createRule, err := raCli.CreateRule(ctx, &api.CreateRuleRequest{
-			Rule: random.Rule("api-alarm", uuid.NewString()),
+			Rule: random.Rule("api-alarm", uuid.NewV7().String()),
 		})
 		t.Logf("createRule, err: %+v, %v", createRule, err)
 		require.NoError(t, err)
 
 		updateAlarm, err := raCli.UpdateAlarm(ctx, &api.UpdateAlarmRequest{
-			Alarm: random.Alarm("api-alarm", uuid.NewString(), createRule.GetId()),
+			Alarm: random.Alarm("api-alarm", uuid.NewV7().String(), createRule.GetId()),
 		})
 		t.Logf("updateAlarm, err: %+v, %v", updateAlarm, err)
 		require.Nil(t, updateAlarm)
@@ -423,19 +426,19 @@ func TestUpdateAlarm(t *testing.T) {
 
 		raCli := api.NewRuleAlarmServiceClient(globalAdminGRPCConn)
 		createRule, err := raCli.CreateRule(ctx, &api.CreateRuleRequest{
-			Rule: random.Rule("api-alarm", uuid.NewString()),
+			Rule: random.Rule("api-alarm", uuid.NewV7().String()),
 		})
 		t.Logf("createRule, err: %+v, %v", createRule, err)
 		require.NoError(t, err)
 
 		createAlarm, err := raCli.CreateAlarm(ctx, &api.CreateAlarmRequest{
-			Alarm: random.Alarm("api-alarm", uuid.NewString(), createRule.GetId()),
+			Alarm: random.Alarm("api-alarm", uuid.NewV7().String(), createRule.GetId()),
 		})
 		t.Logf("createAlarm, err: %+v, %v", createAlarm, err)
 		require.NoError(t, err)
 
 		// Update alarm fields.
-		createAlarm.RuleId = uuid.NewString()
+		createAlarm.RuleId = uuid.NewV7().String()
 		createAlarm.Name = "api-alarm-" + random.String(10)
 		createAlarm.Status = api.Status_DISABLED
 
@@ -455,19 +458,19 @@ func TestUpdateAlarm(t *testing.T) {
 
 		raCli := api.NewRuleAlarmServiceClient(globalAdminGRPCConn)
 		createRule, err := raCli.CreateRule(ctx, &api.CreateRuleRequest{
-			Rule: random.Rule("api-alarm", uuid.NewString()),
+			Rule: random.Rule("api-alarm", uuid.NewV7().String()),
 		})
 		t.Logf("createRule, err: %+v, %v", createRule, err)
 		require.NoError(t, err)
 
 		createAlarm, err := raCli.CreateAlarm(ctx, &api.CreateAlarmRequest{
-			Alarm: random.Alarm("api-alarm", uuid.NewString(), createRule.GetId()),
+			Alarm: random.Alarm("api-alarm", uuid.NewV7().String(), createRule.GetId()),
 		})
 		t.Logf("createAlarm, err: %+v, %v", createAlarm, err)
 		require.NoError(t, err)
 
 		// Update alarm fields.
-		createAlarm.OrgId = uuid.NewString()
+		createAlarm.OrgId = uuid.NewV7().String()
 		createAlarm.Name = "api-alarm-" + random.String(10)
 
 		secCli := api.NewRuleAlarmServiceClient(secondaryAdminGRPCConn)
@@ -487,13 +490,13 @@ func TestUpdateAlarm(t *testing.T) {
 
 		raCli := api.NewRuleAlarmServiceClient(globalAdminGRPCConn)
 		createRule, err := raCli.CreateRule(ctx, &api.CreateRuleRequest{
-			Rule: random.Rule("api-alarm", uuid.NewString()),
+			Rule: random.Rule("api-alarm", uuid.NewV7().String()),
 		})
 		t.Logf("createRule, err: %+v, %v", createRule, err)
 		require.NoError(t, err)
 
 		createAlarm, err := raCli.CreateAlarm(ctx, &api.CreateAlarmRequest{
-			Alarm: random.Alarm("api-alarm", uuid.NewString(), createRule.GetId()),
+			Alarm: random.Alarm("api-alarm", uuid.NewV7().String(), createRule.GetId()),
 		})
 		t.Logf("createAlarm, err: %+v, %v", createAlarm, err)
 		require.NoError(t, err)
@@ -523,13 +526,13 @@ func TestDeleteAlarm(t *testing.T) {
 
 		raCli := api.NewRuleAlarmServiceClient(globalAdminGRPCConn)
 		createRule, err := raCli.CreateRule(ctx, &api.CreateRuleRequest{
-			Rule: random.Rule("api-alarm", uuid.NewString()),
+			Rule: random.Rule("api-alarm", uuid.NewV7().String()),
 		})
 		t.Logf("createRule, err: %+v, %v", createRule, err)
 		require.NoError(t, err)
 
 		createAlarm, err := raCli.CreateAlarm(ctx, &api.CreateAlarmRequest{
-			Alarm: random.Alarm("api-alarm", uuid.NewString(), createRule.GetId()),
+			Alarm: random.Alarm("api-alarm", uuid.NewV7().String(), createRule.GetId()),
 		})
 		t.Logf("createAlarm, err: %+v, %v", createAlarm, err)
 		require.NoError(t, err)
@@ -566,7 +569,7 @@ func TestDeleteAlarm(t *testing.T) {
 
 		raCli := api.NewRuleAlarmServiceClient(secondaryViewerGRPCConn)
 		_, err := raCli.DeleteAlarm(ctx, &api.DeleteAlarmRequest{
-			Id: uuid.NewString(), RuleId: uuid.NewString(),
+			Id: uuid.NewV7().String(), RuleId: uuid.NewV7().String(),
 		})
 		t.Logf("err: %v", err)
 		require.EqualError(t, err, "rpc error: code = PermissionDenied desc = "+
@@ -581,7 +584,7 @@ func TestDeleteAlarm(t *testing.T) {
 
 		raCli := api.NewRuleAlarmServiceClient(globalAdminGRPCConn)
 		_, err := raCli.DeleteAlarm(ctx, &api.DeleteAlarmRequest{
-			Id: uuid.NewString(), RuleId: uuid.NewString(),
+			Id: uuid.NewV7().String(), RuleId: uuid.NewV7().String(),
 		})
 		t.Logf("err: %v", err)
 		require.EqualError(t, err, "rpc error: code = NotFound desc = "+
@@ -596,20 +599,20 @@ func TestDeleteAlarm(t *testing.T) {
 
 		raCli := api.NewRuleAlarmServiceClient(globalAdminGRPCConn)
 		createRule, err := raCli.CreateRule(ctx, &api.CreateRuleRequest{
-			Rule: random.Rule("api-alarm", uuid.NewString()),
+			Rule: random.Rule("api-alarm", uuid.NewV7().String()),
 		})
 		t.Logf("createRule, err: %+v, %v", createRule, err)
 		require.NoError(t, err)
 
 		createAlarm, err := raCli.CreateAlarm(ctx, &api.CreateAlarmRequest{
-			Alarm: random.Alarm("api-alarm", uuid.NewString(),
+			Alarm: random.Alarm("api-alarm", uuid.NewV7().String(),
 				createRule.GetId()),
 		})
 		t.Logf("createAlarm, err: %+v, %v", createAlarm, err)
 		require.NoError(t, err)
 
 		_, err = raCli.DeleteAlarm(ctx, &api.DeleteAlarmRequest{
-			Id: createAlarm.GetId(), RuleId: uuid.NewString(),
+			Id: createAlarm.GetId(), RuleId: uuid.NewV7().String(),
 		})
 		t.Logf("err: %v", err)
 		require.EqualError(t, err, "rpc error: code = NotFound desc = "+
@@ -624,13 +627,13 @@ func TestDeleteAlarm(t *testing.T) {
 
 		raCli := api.NewRuleAlarmServiceClient(globalAdminGRPCConn)
 		createRule, err := raCli.CreateRule(ctx, &api.CreateRuleRequest{
-			Rule: random.Rule("api-alarm", uuid.NewString()),
+			Rule: random.Rule("api-alarm", uuid.NewV7().String()),
 		})
 		t.Logf("createRule, err: %+v, %v", createRule, err)
 		require.NoError(t, err)
 
 		createAlarm, err := raCli.CreateAlarm(ctx, &api.CreateAlarmRequest{
-			Alarm: random.Alarm("api-alarm", uuid.NewString(),
+			Alarm: random.Alarm("api-alarm", uuid.NewV7().String(),
 				createRule.GetId()),
 		})
 		t.Logf("createAlarm, err: %+v, %v", createAlarm, err)
@@ -654,7 +657,7 @@ func TestListAlarms(t *testing.T) {
 
 	raCli := api.NewRuleAlarmServiceClient(globalAdminGRPCConn)
 	createRule, err := raCli.CreateRule(ctx, &api.CreateRuleRequest{
-		Rule: random.Rule("api-alarm", uuid.NewString()),
+		Rule: random.Rule("api-alarm", uuid.NewV7().String()),
 	})
 	t.Logf("createRule, err: %+v, %v", createRule, err)
 	require.NoError(t, err)
@@ -664,7 +667,7 @@ func TestListAlarms(t *testing.T) {
 	alarmStatuses := make([]api.Status, 0, 3)
 	for range 3 {
 		createAlarm, err := raCli.CreateAlarm(ctx, &api.CreateAlarmRequest{
-			Alarm: random.Alarm("api-alarm", uuid.NewString(), createRule.GetId()),
+			Alarm: random.Alarm("api-alarm", uuid.NewV7().String(), createRule.GetId()),
 		})
 		t.Logf("createAlarm, err: %+v, %v", createAlarm, err)
 		require.NoError(t, err)
@@ -783,10 +786,10 @@ func TestTestAlarm(t *testing.T) {
 	t.Run("Test valid and invalid alarms", func(t *testing.T) {
 		t.Parallel()
 
-		rule := random.Rule("api-alarm", uuid.NewString())
+		rule := random.Rule("api-alarm", uuid.NewV7().String())
 		rule.Name = "test rule"
 
-		dev := random.Device("api-alarm", uuid.NewString())
+		dev := random.Device("api-alarm", uuid.NewV7().String())
 		dev.Status = api.Status_ACTIVE
 
 		tests := []struct {
@@ -854,15 +857,15 @@ func TestTestAlarm(t *testing.T) {
 				test.inpPoint.Attr = "api-alarm" + random.String(10)
 
 				if test.inpRule == nil {
-					test.inpRule = random.Rule("api-alarm", uuid.NewString())
+					test.inpRule = random.Rule("api-alarm", uuid.NewV7().String())
 				}
 
 				if test.inpDev == nil {
-					test.inpDev = random.Device("api-alarm", uuid.NewString())
+					test.inpDev = random.Device("api-alarm", uuid.NewV7().String())
 				}
 
-				alarm := random.Alarm("api-alarm", uuid.NewString(),
-					uuid.NewString())
+				alarm := random.Alarm("api-alarm", uuid.NewV7().String(),
+					uuid.NewV7().String())
 				alarm.SubjectTemplate = test.inpTempl
 				alarm.BodyTemplate = test.inpTempl
 
@@ -896,9 +899,9 @@ func TestTestAlarm(t *testing.T) {
 				random.String(10),
 			ValOneof: &common.DataPoint_IntVal{IntVal: 123},
 		}
-		rule := random.Rule("api-alarm", uuid.NewString())
-		dev := random.Device("api-alarm", uuid.NewString())
-		alarm := random.Alarm("api-alarm", uuid.NewString(), uuid.NewString())
+		rule := random.Rule("api-alarm", uuid.NewV7().String())
+		dev := random.Device("api-alarm", uuid.NewV7().String())
+		alarm := random.Alarm("api-alarm", uuid.NewV7().String(), uuid.NewV7().String())
 
 		ctx, cancel := context.WithTimeout(t.Context(), testTimeout)
 		defer cancel()
@@ -921,9 +924,9 @@ func TestTestAlarm(t *testing.T) {
 				random.String(10),
 			ValOneof: &common.DataPoint_IntVal{IntVal: 123},
 		}
-		rule := random.Rule("api-alarm", uuid.NewString())
-		dev := random.Device("api-alarm", uuid.NewString())
-		alarm := random.Alarm("api-alarm", uuid.NewString(), uuid.NewString())
+		rule := random.Rule("api-alarm", uuid.NewV7().String())
+		dev := random.Device("api-alarm", uuid.NewV7().String())
+		alarm := random.Alarm("api-alarm", uuid.NewV7().String(), uuid.NewV7().String())
 		alarm.BodyTemplate = `{{if`
 
 		ctx, cancel := context.WithTimeout(t.Context(), testTimeout)

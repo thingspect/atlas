@@ -7,8 +7,8 @@ import (
 	"sort"
 	"testing"
 	"time"
+	"uuid"
 
-	"github.com/google/uuid"
 	"github.com/stretchr/testify/require"
 	"github.com/thingspect/atlas/pkg/test/random"
 	"github.com/thingspect/proto/go/api"
@@ -26,7 +26,7 @@ func TestListAlerts(t *testing.T) {
 
 		devCli := api.NewDeviceServiceClient(globalAdminGRPCConn)
 		createDev, err := devCli.CreateDevice(ctx, &api.CreateDeviceRequest{
-			Device: random.Device("api-alert", uuid.NewString()),
+			Device: random.Device("api-alert", uuid.NewV7().String()),
 		})
 		t.Logf("createDev, err: %+v, %v", createDev, err)
 		require.NoError(t, err)
@@ -50,8 +50,8 @@ func TestListAlerts(t *testing.T) {
 
 		// Flip alerts to descending timestamp order.
 		sort.Slice(alerts, func(i, j int) bool {
-			return alerts[i].GetCreatedAt().AsTime().After(
-				alerts[j].GetCreatedAt().AsTime())
+			return alerts[i].GetCreatedAt().AsTime().
+				After(alerts[j].GetCreatedAt().AsTime())
 		})
 
 		ctx, cancel = context.WithTimeout(t.Context(), testTimeout)
@@ -61,9 +61,9 @@ func TestListAlerts(t *testing.T) {
 		aleCli := api.NewAlertServiceClient(globalAdminGRPCConn)
 		listAlertsUniqID, err := aleCli.ListAlerts(ctx, &api.ListAlertsRequest{
 			IdOneof: &api.ListAlertsRequest_UniqId{UniqId: createDev.GetUniqId()},
-			EndTime: alerts[0].GetCreatedAt(), StartTime: timestamppb.New(
-				alerts[len(alerts)-1].GetCreatedAt().AsTime().Add(
-					-time.Millisecond)),
+			EndTime: alerts[0].GetCreatedAt(),
+			StartTime: timestamppb.New(alerts[len(alerts)-1].GetCreatedAt().
+				AsTime().Add(-time.Millisecond)),
 		})
 		t.Logf("listAlertsUniqID, err: %+v, %v", listAlertsUniqID, err)
 		require.NoError(t, err)
@@ -133,7 +133,7 @@ func TestListAlerts(t *testing.T) {
 		aleCli := api.NewAlertServiceClient(globalAdminGRPCConn)
 		listAlerts, err := aleCli.ListAlerts(ctx, &api.ListAlertsRequest{
 			IdOneof: &api.ListAlertsRequest_DeviceId{
-				DeviceId: uuid.NewString(),
+				DeviceId: uuid.NewV7().String(),
 			}, EndTime: timestamppb.Now(),
 			StartTime: timestamppb.New(time.Now().Add(-91 * 24 * time.Hour)),
 		})

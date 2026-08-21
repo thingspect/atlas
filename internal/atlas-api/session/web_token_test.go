@@ -8,8 +8,8 @@ import (
 	"fmt"
 	"testing"
 	"time"
+	"uuid"
 
-	"github.com/google/uuid"
 	"github.com/stretchr/testify/require"
 	"github.com/thingspect/atlas/internal/atlas-api/auth"
 	"github.com/thingspect/atlas/pkg/test/random"
@@ -34,19 +34,19 @@ func TestGenerateWebToken(t *testing.T) {
 		err       string
 	}{
 		{
-			key, uuid.NewString(), uuid.NewString(), 90, "",
+			key, uuid.NewV7().String(), uuid.NewV7().String(), 90, "",
 		},
 		{
-			key, random.String(10), uuid.NewString(), 0,
-			"invalid UUID length: 10",
+			key, random.String(10), uuid.NewV7().String(), 0,
+			"invalid uuid",
 		},
 		{
-			key, uuid.NewString(), random.String(10), 0,
-			"invalid UUID length: 10",
+			key, uuid.NewV7().String(), random.String(10), 0,
+			"invalid uuid",
 		},
 		{
 			[]byte{},
-			uuid.NewString(), uuid.NewString(), 0,
+			uuid.NewV7().String(), uuid.NewV7().String(), 0,
 			auth.ErrKeyLength.Error(),
 		},
 	}
@@ -63,7 +63,8 @@ func TestGenerateWebToken(t *testing.T) {
 			require.GreaterOrEqual(t, len(res), test.resMinLen)
 			if exp != nil {
 				require.WithinDuration(t, time.Now().Add(
-					WebTokenExp*time.Second), exp.AsTime(), 2*time.Second)
+					WebTokenExp*time.Second,
+				), exp.AsTime(), 2*time.Second)
 			}
 			if test.err == "" {
 				require.NoError(t, err)
@@ -89,19 +90,19 @@ func TestGenerateKeyToken(t *testing.T) {
 		err       string
 	}{
 		{
-			key, uuid.NewString(), uuid.NewString(), 80, "",
+			key, uuid.NewV7().String(), uuid.NewV7().String(), 80, "",
 		},
 		{
-			key, random.String(10), uuid.NewString(), 0,
-			"invalid UUID length: 10",
+			key, random.String(10), uuid.NewV7().String(), 0,
+			"invalid uuid",
 		},
 		{
-			key, uuid.NewString(), random.String(10), 0,
-			"invalid UUID length: 10",
+			key, uuid.NewV7().String(), random.String(10), 0,
+			"invalid uuid",
 		},
 		{
 			[]byte{},
-			uuid.NewString(), uuid.NewString(), 0,
+			uuid.NewV7().String(), uuid.NewV7().String(), 0,
 			auth.ErrKeyLength.Error(),
 		},
 	}
@@ -168,7 +169,7 @@ func TestValidateWebToken(t *testing.T) {
 		t.Run(fmt.Sprintf("Can validate %+v", test), func(t *testing.T) {
 			t.Parallel()
 
-			user := random.User("webtoken", uuid.NewString())
+			user := random.User("webtoken", uuid.NewV7().String())
 			resGen, exp, err := GenerateWebToken(test.inpKey, user)
 			t.Logf("resGen, exp, err: %v, %v, %v", resGen, exp, err)
 			require.NoError(t, err)
@@ -231,8 +232,8 @@ func TestValidateKeyToken(t *testing.T) {
 		t.Run(fmt.Sprintf("Can validate %+v", test), func(t *testing.T) {
 			t.Parallel()
 
-			keyID := uuid.NewString()
-			user := random.User("keytoken", uuid.NewString())
+			keyID := uuid.NewV7().String()
+			user := random.User("keytoken", uuid.NewV7().String())
 
 			resGen, err := GenerateKeyToken(test.inpKey, keyID, user.GetOrgId(),
 				user.GetRole())

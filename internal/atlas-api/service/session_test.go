@@ -7,8 +7,8 @@ import (
 	"crypto/rand"
 	"testing"
 	"time"
+	"uuid"
 
-	"github.com/google/uuid"
 	"github.com/stretchr/testify/require"
 	"github.com/thingspect/atlas/internal/atlas-api/session"
 	"github.com/thingspect/atlas/pkg/cache"
@@ -51,7 +51,8 @@ func TestLogin(t *testing.T) {
 		require.NoError(t, err)
 		require.Greater(t, len(loginResp.GetToken()), 90)
 		require.WithinDuration(t, time.Now().Add(
-			session.WebTokenExp*time.Second), loginResp.GetExpiresAt().AsTime(),
+			session.WebTokenExp*time.Second,
+		), loginResp.GetExpiresAt().AsTime(),
 			2*time.Second)
 	})
 
@@ -196,7 +197,7 @@ func TestCreateKey(t *testing.T) {
 	t.Run("Create valid key", func(t *testing.T) {
 		t.Parallel()
 
-		key := random.Key("api-key", uuid.NewString())
+		key := random.Key("api-key", uuid.NewV7().String())
 		key.Role = api.Role_ADMIN
 		retKey, _ := proto.Clone(key).(*api.Key)
 
@@ -207,10 +208,9 @@ func TestCreateKey(t *testing.T) {
 		_, err := rand.Read(pwtKey)
 		require.NoError(t, err)
 
-		ctx, cancel := context.WithTimeout(session.NewContext(
-			t.Context(), &session.Session{
-				OrgID: key.GetOrgId(), Role: api.Role_ADMIN,
-			}), testTimeout)
+		ctx, cancel := context.WithTimeout(session.NewContext(t.Context(),
+			&session.Session{OrgID: key.GetOrgId(), Role: api.Role_ADMIN}),
+			testTimeout)
 		defer cancel()
 
 		keySvc := NewSession(nil, keyer, nil, pwtKey)
@@ -240,10 +240,9 @@ func TestCreateKey(t *testing.T) {
 	t.Run("Create key with insufficient role", func(t *testing.T) {
 		t.Parallel()
 
-		ctx, cancel := context.WithTimeout(session.NewContext(
-			t.Context(), &session.Session{
-				OrgID: uuid.NewString(), Role: api.Role_BUILDER,
-			}), testTimeout)
+		ctx, cancel := context.WithTimeout(session.NewContext(t.Context(),
+			&session.Session{OrgID: uuid.NewV7().String(), Role: api.Role_BUILDER}),
+			testTimeout)
 		defer cancel()
 
 		keySvc := NewSession(nil, nil, nil, nil)
@@ -256,13 +255,12 @@ func TestCreateKey(t *testing.T) {
 	t.Run("Create sysadmin key as non-sysadmin", func(t *testing.T) {
 		t.Parallel()
 
-		key := random.Key("api-key", uuid.NewString())
+		key := random.Key("api-key", uuid.NewV7().String())
 		key.Role = api.Role_SYS_ADMIN
 
-		ctx, cancel := context.WithTimeout(session.NewContext(
-			t.Context(), &session.Session{
-				OrgID: uuid.NewString(), Role: api.Role_ADMIN,
-			}), testTimeout)
+		ctx, cancel := context.WithTimeout(session.NewContext(t.Context(),
+			&session.Session{OrgID: uuid.NewV7().String(), Role: api.Role_ADMIN}),
+			testTimeout)
 		defer cancel()
 
 		keySvc := NewSession(nil, nil, nil, nil)
@@ -276,17 +274,16 @@ func TestCreateKey(t *testing.T) {
 	t.Run("Create invalid key", func(t *testing.T) {
 		t.Parallel()
 
-		key := random.Key("api-key", uuid.NewString())
+		key := random.Key("api-key", uuid.NewV7().String())
 		key.Role = api.Role_BUILDER
 
 		keyer := NewMockKeyer(gomock.NewController(t))
 		keyer.EXPECT().Create(gomock.Any(), key).Return(nil,
 			dao.ErrInvalidFormat).Times(1)
 
-		ctx, cancel := context.WithTimeout(session.NewContext(
-			t.Context(), &session.Session{
-				OrgID: key.GetOrgId(), Role: api.Role_ADMIN,
-			}), testTimeout)
+		ctx, cancel := context.WithTimeout(session.NewContext(t.Context(),
+			&session.Session{OrgID: key.GetOrgId(), Role: api.Role_ADMIN}),
+			testTimeout)
 		defer cancel()
 
 		keySvc := NewSession(nil, keyer, nil, nil)
@@ -300,17 +297,16 @@ func TestCreateKey(t *testing.T) {
 	t.Run("Create invalid token", func(t *testing.T) {
 		t.Parallel()
 
-		key := random.Key("api-key", uuid.NewString())
+		key := random.Key("api-key", uuid.NewV7().String())
 		key.Role = api.Role_BUILDER
 		retKey, _ := proto.Clone(key).(*api.Key)
 
 		keyer := NewMockKeyer(gomock.NewController(t))
 		keyer.EXPECT().Create(gomock.Any(), key).Return(retKey, nil).Times(1)
 
-		ctx, cancel := context.WithTimeout(session.NewContext(
-			t.Context(), &session.Session{
-				OrgID: uuid.NewString(), Role: api.Role_ADMIN,
-			}), testTimeout)
+		ctx, cancel := context.WithTimeout(session.NewContext(t.Context(),
+			&session.Session{OrgID: uuid.NewV7().String(), Role: api.Role_ADMIN}),
+			testTimeout)
 		defer cancel()
 
 		keySvc := NewSession(nil, keyer, nil, nil)
@@ -335,15 +331,14 @@ func TestDeleteKey(t *testing.T) {
 		cacher := cache.NewMockCacher[string](ctrl)
 		cacher.EXPECT().Set(gomock.Any(), gomock.Any(), "").Return(nil).Times(1)
 
-		ctx, cancel := context.WithTimeout(session.NewContext(
-			t.Context(), &session.Session{
-				OrgID: uuid.NewString(), Role: api.Role_ADMIN,
-			}), testTimeout)
+		ctx, cancel := context.WithTimeout(session.NewContext(t.Context(),
+			&session.Session{OrgID: uuid.NewV7().String(), Role: api.Role_ADMIN}),
+			testTimeout)
 		defer cancel()
 
 		keySvc := NewSession(nil, keyer, cacher, nil)
 		_, err := keySvc.DeleteKey(ctx,
-			&api.DeleteKeyRequest{Id: uuid.NewString()})
+			&api.DeleteKeyRequest{Id: uuid.NewV7().String()})
 		t.Logf("err: %v", err)
 		require.NoError(t, err)
 	})
@@ -363,10 +358,9 @@ func TestDeleteKey(t *testing.T) {
 	t.Run("Delete key with insufficient role", func(t *testing.T) {
 		t.Parallel()
 
-		ctx, cancel := context.WithTimeout(session.NewContext(
-			t.Context(), &session.Session{
-				OrgID: uuid.NewString(), Role: api.Role_BUILDER,
-			}), testTimeout)
+		ctx, cancel := context.WithTimeout(session.NewContext(t.Context(),
+			&session.Session{OrgID: uuid.NewV7().String(), Role: api.Role_BUILDER}),
+			testTimeout)
 		defer cancel()
 
 		keySvc := NewSession(nil, nil, nil, nil)
@@ -382,15 +376,14 @@ func TestDeleteKey(t *testing.T) {
 		cacher.EXPECT().Set(gomock.Any(), gomock.Any(), "").
 			Return(dao.ErrInvalidFormat).Times(1)
 
-		ctx, cancel := context.WithTimeout(session.NewContext(
-			t.Context(), &session.Session{
-				OrgID: uuid.NewString(), Role: api.Role_ADMIN,
-			}), testTimeout)
+		ctx, cancel := context.WithTimeout(session.NewContext(t.Context(),
+			&session.Session{OrgID: uuid.NewV7().String(), Role: api.Role_ADMIN}),
+			testTimeout)
 		defer cancel()
 
 		keySvc := NewSession(nil, nil, cacher, nil)
 		_, err := keySvc.DeleteKey(ctx,
-			&api.DeleteKeyRequest{Id: uuid.NewString()})
+			&api.DeleteKeyRequest{Id: uuid.NewV7().String()})
 		t.Logf("err: %v", err)
 		require.Equal(t, status.Error(codes.InvalidArgument,
 			"dao: invalid format"), err)
@@ -406,15 +399,14 @@ func TestDeleteKey(t *testing.T) {
 		cacher := cache.NewMockCacher[string](ctrl)
 		cacher.EXPECT().Set(gomock.Any(), gomock.Any(), "").Return(nil).Times(1)
 
-		ctx, cancel := context.WithTimeout(session.NewContext(
-			t.Context(), &session.Session{
-				OrgID: uuid.NewString(), Role: api.Role_ADMIN,
-			}), testTimeout)
+		ctx, cancel := context.WithTimeout(session.NewContext(t.Context(),
+			&session.Session{OrgID: uuid.NewV7().String(), Role: api.Role_ADMIN}),
+			testTimeout)
 		defer cancel()
 
 		keySvc := NewSession(nil, keyer, cacher, nil)
 		_, err := keySvc.DeleteKey(ctx,
-			&api.DeleteKeyRequest{Id: uuid.NewString()})
+			&api.DeleteKeyRequest{Id: uuid.NewV7().String()})
 		t.Logf("err: %v", err)
 		require.Equal(t, status.Error(codes.NotFound, "dao: object not found"),
 			err)
@@ -427,22 +419,20 @@ func TestListKeys(t *testing.T) {
 	t.Run("List keys by valid org ID", func(t *testing.T) {
 		t.Parallel()
 
-		orgID := uuid.NewString()
+		orgID := uuid.NewV7().String()
 
 		keys := []*api.Key{
-			random.Key("api-key", uuid.NewString()),
-			random.Key("api-key", uuid.NewString()),
-			random.Key("api-key", uuid.NewString()),
+			random.Key("api-key", uuid.NewV7().String()),
+			random.Key("api-key", uuid.NewV7().String()),
+			random.Key("api-key", uuid.NewV7().String()),
 		}
 
 		keyer := NewMockKeyer(gomock.NewController(t))
 		keyer.EXPECT().List(gomock.Any(), orgID, time.Time{}, "", int32(51)).
 			Return(keys, int32(3), nil).Times(1)
 
-		ctx, cancel := context.WithTimeout(session.NewContext(
-			t.Context(), &session.Session{
-				OrgID: orgID, Role: api.Role_ADMIN,
-			}), testTimeout)
+		ctx, cancel := context.WithTimeout(session.NewContext(t.Context(),
+			&session.Session{OrgID: orgID, Role: api.Role_ADMIN}), testTimeout)
 		defer cancel()
 
 		keySvc := NewSession(nil, keyer, nil, nil)
@@ -457,12 +447,12 @@ func TestListKeys(t *testing.T) {
 	t.Run("List keys by valid org ID with next page", func(t *testing.T) {
 		t.Parallel()
 
-		orgID := uuid.NewString()
+		orgID := uuid.NewV7().String()
 
 		keys := []*api.Key{
-			random.Key("api-key", uuid.NewString()),
-			random.Key("api-key", uuid.NewString()),
-			random.Key("api-key", uuid.NewString()),
+			random.Key("api-key", uuid.NewV7().String()),
+			random.Key("api-key", uuid.NewV7().String()),
+			random.Key("api-key", uuid.NewV7().String()),
 		}
 
 		next, err := session.GeneratePageToken(keys[1].GetCreatedAt().AsTime(),
@@ -473,10 +463,8 @@ func TestListKeys(t *testing.T) {
 		keyer.EXPECT().List(gomock.Any(), orgID, time.Time{}, "", int32(3)).
 			Return(keys, int32(3), nil).Times(1)
 
-		ctx, cancel := context.WithTimeout(session.NewContext(
-			t.Context(), &session.Session{
-				OrgID: orgID, Role: api.Role_ADMIN,
-			}), testTimeout)
+		ctx, cancel := context.WithTimeout(session.NewContext(t.Context(),
+			&session.Session{OrgID: orgID, Role: api.Role_ADMIN}), testTimeout)
 		defer cancel()
 
 		keySvc := NewSession(nil, keyer, nil, nil)
@@ -505,10 +493,9 @@ func TestListKeys(t *testing.T) {
 	t.Run("List keys by invalid page token", func(t *testing.T) {
 		t.Parallel()
 
-		ctx, cancel := context.WithTimeout(session.NewContext(
-			t.Context(), &session.Session{
-				OrgID: uuid.NewString(), Role: api.Role_ADMIN,
-			}), testTimeout)
+		ctx, cancel := context.WithTimeout(session.NewContext(t.Context(),
+			&session.Session{OrgID: uuid.NewV7().String(), Role: api.Role_ADMIN}),
+			testTimeout)
 		defer cancel()
 
 		keySvc := NewSession(nil, nil, nil, nil)
@@ -528,10 +515,8 @@ func TestListKeys(t *testing.T) {
 			gomock.Any()).Return(nil, int32(0),
 			dao.ErrInvalidFormat).Times(1)
 
-		ctx, cancel := context.WithTimeout(session.NewContext(
-			t.Context(), &session.Session{
-				OrgID: "aaa", Role: api.Role_ADMIN,
-			}), testTimeout)
+		ctx, cancel := context.WithTimeout(session.NewContext(t.Context(),
+			&session.Session{OrgID: "aaa", Role: api.Role_ADMIN}), testTimeout)
 		defer cancel()
 
 		keySvc := NewSession(nil, keyer, nil, nil)
@@ -545,12 +530,12 @@ func TestListKeys(t *testing.T) {
 	t.Run("List keys with generation failure", func(t *testing.T) {
 		t.Parallel()
 
-		orgID := uuid.NewString()
+		orgID := uuid.NewV7().String()
 
 		keys := []*api.Key{
-			random.Key("api-key", uuid.NewString()),
-			random.Key("api-key", uuid.NewString()),
-			random.Key("api-key", uuid.NewString()),
+			random.Key("api-key", uuid.NewV7().String()),
+			random.Key("api-key", uuid.NewV7().String()),
+			random.Key("api-key", uuid.NewV7().String()),
 		}
 		keys[1].Id = badUUID
 
@@ -558,10 +543,8 @@ func TestListKeys(t *testing.T) {
 		keyer.EXPECT().List(gomock.Any(), orgID, time.Time{}, "", int32(3)).
 			Return(keys, int32(3), nil).Times(1)
 
-		ctx, cancel := context.WithTimeout(session.NewContext(
-			t.Context(), &session.Session{
-				OrgID: orgID, Role: api.Role_ADMIN,
-			}), testTimeout)
+		ctx, cancel := context.WithTimeout(session.NewContext(t.Context(),
+			&session.Session{OrgID: orgID, Role: api.Role_ADMIN}), testTimeout)
 		defer cancel()
 
 		keySvc := NewSession(nil, keyer, nil, nil)

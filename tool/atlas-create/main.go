@@ -10,8 +10,8 @@ import (
 	"path/filepath"
 	"strings"
 	"time"
+	"uuid"
 
-	"github.com/google/uuid"
 	"github.com/thingspect/atlas/internal/atlas-api/auth"
 	"github.com/thingspect/atlas/pkg/dao"
 	"github.com/thingspect/atlas/pkg/dao/org"
@@ -66,7 +66,7 @@ func main() {
 	switch flag.Arg(0) {
 	// Generate UUID and return.
 	case "uuid":
-		_, err := fmt.Fprintln(os.Stdout, uuid.NewString())
+		_, err := fmt.Fprintln(os.Stdout, uuid.NewV7().String())
 		checkErr(err)
 
 		return
@@ -85,10 +85,12 @@ func main() {
 		switch *grpcTLS {
 		case false:
 			opts = append(opts, grpc.WithTransportCredentials(
-				insecure.NewCredentials()))
+				insecure.NewCredentials(),
+			))
 		case true:
 			opts = append(opts, grpc.WithTransportCredentials(
-				credentials.NewTLS(&tls.Config{MinVersion: tls.VersionTLS12})))
+				credentials.NewTLS(&tls.Config{MinVersion: tls.VersionTLS12}),
+			))
 		}
 
 		conn, err := grpc.NewClient(*grpcURI, opts...)

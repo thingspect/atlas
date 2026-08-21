@@ -7,8 +7,8 @@ import (
 	"fmt"
 	"testing"
 	"time"
+	"uuid"
 
-	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"github.com/thingspect/atlas/pkg/rule"
@@ -24,7 +24,7 @@ const testTimeout = 12 * time.Second
 
 func TestEventMessages(t *testing.T) {
 	now := timestamppb.New(time.Now().Add(-15 * time.Minute))
-	traceID := uuid.NewString()
+	traceID := uuid.NewV7().String()
 
 	ctx, cancel := context.WithTimeout(t.Context(), testTimeout)
 	defer cancel()
@@ -139,8 +139,8 @@ func TestEventMessages(t *testing.T) {
 				event := &api.Event{
 					OrgId: createOrg.GetId(), RuleId: res.GetRule().GetId(),
 					UniqId: test.inp.GetDevice().GetUniqId(),
-					CreatedAt: timestamppb.New(now.AsTime().Truncate(
-						time.Millisecond)),
+					CreatedAt: timestamppb.New(now.AsTime().
+						Truncate(time.Millisecond)),
 					TraceId: traceID,
 				}
 
@@ -150,8 +150,8 @@ func TestEventMessages(t *testing.T) {
 
 				listEvents, err := globalEvDAO.List(ctx, createOrg.GetId(),
 					test.inp.GetDevice().GetUniqId(), "",
-					res.GetRule().GetId(), now.AsTime(), now.AsTime().Add(
-						-time.Millisecond))
+					res.GetRule().GetId(), now.AsTime(), now.AsTime().
+						Add(-time.Millisecond))
 				t.Logf("listEvents, err: %+v, %v", listEvents, err)
 				assert.NoError(t, err)
 				assert.Len(t, listEvents, 1)
@@ -214,7 +214,7 @@ func TestEventMessagesError(t *testing.T) {
 		{
 			&message.ValidatorOut{
 				Point: &common.DataPoint{
-					Attr: "ev-motion", Ts: now, TraceId: uuid.NewString(),
+					Attr: "ev-motion", Ts: now, TraceId: uuid.NewV7().String(),
 				}, Device: createDev,
 			},
 		},

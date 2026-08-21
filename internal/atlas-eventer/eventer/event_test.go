@@ -6,8 +6,8 @@ import (
 	"fmt"
 	"testing"
 	"time"
+	"uuid"
 
-	"github.com/google/uuid"
 	"github.com/stretchr/testify/require"
 	"github.com/thingspect/atlas/pkg/consterr"
 	"github.com/thingspect/atlas/pkg/dao"
@@ -30,10 +30,10 @@ const errTestProc consterr.Error = "eventer: test processor error"
 func TestEventMessages(t *testing.T) {
 	t.Parallel()
 
-	orgID := uuid.NewString()
+	orgID := uuid.NewV7().String()
 	now := timestamppb.New(time.Now().Add(-15 * time.Minute))
-	traceID := uuid.NewString()
-	ruleID := uuid.NewString()
+	traceID := uuid.NewV7().String()
+	ruleID := uuid.NewV7().String()
 
 	tests := []struct {
 		inpVOut  *message.ValidatorOut
@@ -97,7 +97,7 @@ func TestEventMessages(t *testing.T) {
 		t.Run(fmt.Sprintf("Can event %+v", test), func(t *testing.T) {
 			t.Parallel()
 
-			dev := random.Device("ev", uuid.NewString())
+			dev := random.Device("ev", uuid.NewV7().String())
 			dev.OrgId = orgID
 			test.inpVOut.Device = dev
 

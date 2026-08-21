@@ -5,8 +5,8 @@ package service
 import (
 	"context"
 	"testing"
+	"uuid"
 
-	"github.com/google/uuid"
 	"github.com/stretchr/testify/require"
 	"github.com/thingspect/atlas/internal/atlas-api/session"
 	"github.com/thingspect/atlas/pkg/dao"
@@ -23,16 +23,14 @@ func TestListTags(t *testing.T) {
 	t.Run("List tags by valid org ID", func(t *testing.T) {
 		t.Parallel()
 
-		orgID := uuid.NewString()
+		orgID := uuid.NewV7().String()
 		tags := random.Tags("api-tag", 5)
 
 		tagger := NewMockTagger(gomock.NewController(t))
 		tagger.EXPECT().List(gomock.Any(), orgID).Return(tags, nil).Times(1)
 
-		ctx, cancel := context.WithTimeout(session.NewContext(
-			t.Context(), &session.Session{
-				OrgID: orgID, Role: api.Role_ADMIN,
-			}), testTimeout)
+		ctx, cancel := context.WithTimeout(session.NewContext(t.Context(),
+			&session.Session{OrgID: orgID, Role: api.Role_ADMIN}), testTimeout)
 		defer cancel()
 
 		tagSvc := NewTag(tagger)
@@ -59,10 +57,9 @@ func TestListTags(t *testing.T) {
 	t.Run("List tags with insufficient role", func(t *testing.T) {
 		t.Parallel()
 
-		ctx, cancel := context.WithTimeout(session.NewContext(
-			t.Context(), &session.Session{
-				OrgID: uuid.NewString(), Role: api.Role_CONTACT,
-			}), testTimeout)
+		ctx, cancel := context.WithTimeout(session.NewContext(t.Context(),
+			&session.Session{OrgID: uuid.NewV7().String(), Role: api.Role_CONTACT}),
+			testTimeout)
 		defer cancel()
 
 		tagSvc := NewTag(nil)
@@ -79,10 +76,8 @@ func TestListTags(t *testing.T) {
 		tagger.EXPECT().List(gomock.Any(), "aaa").Return(nil,
 			dao.ErrInvalidFormat).Times(1)
 
-		ctx, cancel := context.WithTimeout(session.NewContext(
-			t.Context(), &session.Session{
-				OrgID: "aaa", Role: api.Role_ADMIN,
-			}), testTimeout)
+		ctx, cancel := context.WithTimeout(session.NewContext(t.Context(),
+			&session.Session{OrgID: "aaa", Role: api.Role_ADMIN}), testTimeout)
 		defer cancel()
 
 		tagSvc := NewTag(tagger)

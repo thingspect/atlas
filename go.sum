@@ -64,8 +64,8 @@ github.com/stretchr/testify v1.3.0/go.mod h1:M5WIy9Dh21IEIfnGCwXGc5bZfKNJtfHm1UV
 github.com/stretchr/testify v1.7.0/go.mod h1:6Fq8oRcR53rry900zMqJjRRixrwX3KX962/h/Wwjteg=
 github.com/stretchr/testify v1.12.1 h1:EuwCh5fleGS7H32xRwO3wRGT7DxrDhLAT6FF8MpWDWE=
 github.com/stretchr/testify v1.12.1/go.mod h1:MDEgiDPPsNp5cuIrHPPCyornHKgEVbtFUmoNlxoYthg=
-github.com/thingspect/proto/go v1.1.20 h1:CCbOzDmyTOORKYknRWK+4fgCTtKwVG354kN0ihI7EEU=
-github.com/thingspect/proto/go v1.1.20/go.mod h1:5lRWMulUx8T0paERfN9FHuir9kLKYFyGQnwqGla+tbM=
+github.com/thingspect/proto/go v1.1.21 h1:gb3VNBVfuE3eKeB43kwbyImvh7sbtuGMaF0pH5TtNcA=
+github.com/thingspect/proto/go v1.1.21/go.mod h1:vKwjasYxjaNUm/FcfUM3TuuV2V3QuEaJ3ZDQ+6WO2zQ=
 github.com/valkey-io/valkey-go v1.0.77 h1:0H5yQ8cOkISr5mU4NDNIgjHvA7bPs2ijgymPjBFNEoc=
 github.com/valkey-io/valkey-go v1.0.77/go.mod h1:gvC/r2m3eW4Hbj0YnjogTzNtFdPSM/D+NCqen+5OABM=
 github.com/zeebo/xxh3 v1.1.0 h1:s7DLGDK45Dyfg7++yxI0khrfwq9661w9EN78eP/UZVs=

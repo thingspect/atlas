@@ -5,8 +5,8 @@ package test
 import (
 	"context"
 	"testing"
+	"uuid"
 
-	"github.com/google/uuid"
 	"github.com/stretchr/testify/require"
 	"github.com/thingspect/atlas/pkg/test/random"
 	"github.com/thingspect/proto/go/api"
@@ -23,7 +23,7 @@ func TestListTags(t *testing.T) {
 	for range 3 {
 		devCli := api.NewDeviceServiceClient(globalAdminGRPCConn)
 		createDev, err := devCli.CreateDevice(ctx, &api.CreateDeviceRequest{
-			Device: random.Device("api-tag", uuid.NewString()),
+			Device: random.Device("api-tag", uuid.NewV7().String()),
 		})
 		t.Logf("createDev, err: %+v, %v", createDev, err)
 		require.NoError(t, err)
@@ -33,7 +33,7 @@ func TestListTags(t *testing.T) {
 	}
 
 	for range 3 {
-		user := random.User("api-user", uuid.NewString())
+		user := random.User("api-user", uuid.NewV7().String())
 		user.Role = api.Role_BUILDER
 
 		userCli := api.NewUserServiceClient(globalAdminGRPCConn)

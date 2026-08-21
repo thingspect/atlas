@@ -7,8 +7,8 @@ import (
 	"sync"
 	"testing"
 	"time"
+	"uuid"
 
-	"github.com/google/uuid"
 	"github.com/stretchr/testify/require"
 	"github.com/thingspect/atlas/pkg/consterr"
 	"github.com/thingspect/atlas/pkg/dao"
@@ -30,7 +30,7 @@ const errTestProc consterr.Error = "accumulator: test processor error"
 func TestAccumulateMessages(t *testing.T) {
 	t.Parallel()
 
-	dev := random.Device("acc", uuid.NewString())
+	dev := random.Device("acc", uuid.NewV7().String())
 
 	tests := []struct {
 		inp *message.ValidatorOut
@@ -40,9 +40,9 @@ func TestAccumulateMessages(t *testing.T) {
 				Point: &common.DataPoint{
 					UniqId: random.String(16), Attr: radiobridge.AttrCount,
 					ValOneof: &common.DataPoint_IntVal{IntVal: 123},
-					Ts: timestamppb.New(time.Now().Add(
-						-15 * time.Minute)), Token: uuid.NewString(),
-					TraceId: uuid.NewString(),
+					Ts:       timestamppb.New(time.Now().Add(-15 * time.Minute)),
+					Token:    uuid.NewV7().String(),
+					TraceId:  uuid.NewV7().String(),
 				}, Device: dev,
 			},
 		},
@@ -51,9 +51,9 @@ func TestAccumulateMessages(t *testing.T) {
 				Point: &common.DataPoint{
 					UniqId: random.String(16), Attr: decode.AttrTempC,
 					ValOneof: &common.DataPoint_Fl64Val{Fl64Val: 9.3},
-					Ts: timestamppb.New(time.Now().Add(
-						-15 * time.Minute)), Token: uuid.NewString(),
-					TraceId: uuid.NewString(),
+					Ts:       timestamppb.New(time.Now().Add(-15 * time.Minute)),
+					Token:    uuid.NewV7().String(),
+					TraceId:  uuid.NewV7().String(),
 				}, Device: dev,
 			},
 		},
@@ -62,9 +62,9 @@ func TestAccumulateMessages(t *testing.T) {
 				Point: &common.DataPoint{
 					UniqId: random.String(16), Attr: "power",
 					ValOneof: &common.DataPoint_StrVal{StrVal: "line"},
-					Ts: timestamppb.New(time.Now().Add(
-						-15 * time.Minute)), Token: uuid.NewString(),
-					TraceId: uuid.NewString(),
+					Ts:       timestamppb.New(time.Now().Add(-15 * time.Minute)),
+					Token:    uuid.NewV7().String(),
+					TraceId:  uuid.NewV7().String(),
 				}, Device: dev,
 			},
 		},
@@ -82,8 +82,9 @@ func TestAccumulateMessages(t *testing.T) {
 			wg.Add(1)
 
 			datapointer := NewMockdatapointer(gomock.NewController(t))
-			datapointer.EXPECT().Create(gomock.Any(), matcher.NewProtoMatcher(
-				test.inp.GetPoint()), test.inp.GetDevice().GetOrgId()).
+			datapointer.EXPECT().Create(gomock.Any(),
+				matcher.NewProtoMatcher(test.inp.GetPoint()),
+				test.inp.GetDevice().GetOrgId()).
 				DoAndReturn(func(_ any, _ any, _ any) error {
 					defer wg.Done()
 

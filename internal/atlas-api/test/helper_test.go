@@ -5,8 +5,8 @@ package test
 import (
 	"context"
 	"time"
+	"uuid"
 
-	"github.com/google/uuid"
 	iapi "github.com/thingspect/atlas/internal/atlas-api/api"
 	"github.com/thingspect/atlas/pkg/test/random"
 	"github.com/thingspect/proto/go/api"
@@ -81,7 +81,7 @@ func authGRPCConn(role api.Role) (string, *grpc.ClientConn, error) {
 func keyGRPCConn(conn *grpc.ClientConn, role api.Role) (
 	*grpc.ClientConn, error,
 ) {
-	key := random.Key("api-key", uuid.NewString())
+	key := random.Key("api-key", uuid.NewV7().String())
 	key.Role = role
 
 	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)

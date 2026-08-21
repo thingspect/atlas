@@ -1,13 +1,12 @@
 module github.com/thingspect/atlas
 
-go 1.26.6
+go 1.27.0
 
 require (
 	github.com/NYTimes/gziphandler v1.1.1
 	github.com/chirpstack/chirpstack/api/go/v4 v4.19.1
 	github.com/eclipse/paho.mqtt.golang v1.5.1
 	github.com/expr-lang/expr v1.17.8
-	github.com/google/uuid v1.6.0
 	github.com/gregdel/pushover v1.4.0
 	github.com/grpc-ecosystem/grpc-gateway/v2 v2.30.0
 	github.com/jackc/pgx/v5 v5.10.0
@@ -18,7 +17,7 @@ require (
 	github.com/redis/go-redis/v9 v9.22.0
 	github.com/smira/go-statsd v1.3.4
 	github.com/stretchr/testify v1.12.1
-	github.com/thingspect/proto/go v1.1.20
+	github.com/thingspect/proto/go v1.1.21
 	github.com/valkey-io/valkey-go v1.0.77
 	go.uber.org/mock v0.6.0
 	golang.org/x/crypto v0.55.0

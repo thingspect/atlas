@@ -6,8 +6,8 @@ import (
 	"fmt"
 	"testing"
 	"time"
+	"uuid"
 
-	"github.com/google/uuid"
 	"github.com/stretchr/testify/require"
 	"github.com/thingspect/atlas/pkg/consterr"
 	"github.com/thingspect/atlas/pkg/dao"
@@ -28,10 +28,10 @@ const errTestProc consterr.Error = "validator: test processor error"
 func TestValidateMessages(t *testing.T) {
 	t.Parallel()
 
-	dev := random.Device("val", uuid.NewString())
+	dev := random.Device("val", uuid.NewV7().String())
 	dev.Status = api.Status_ACTIVE
 	now := timestamppb.New(time.Now().Add(-15 * time.Minute))
-	traceID := uuid.NewString()
+	traceID := uuid.NewV7().String()
 	boolVal := &common.DataPoint_BoolVal{
 		BoolVal: []bool{true, false}[random.Intn(2)],
 	}
@@ -171,7 +171,7 @@ func TestValidateMessages(t *testing.T) {
 func TestValidateMessagesError(t *testing.T) {
 	t.Parallel()
 
-	orgID := uuid.NewString()
+	orgID := uuid.NewV7().String()
 
 	tests := []struct {
 		inpVIn    *message.ValidatorIn

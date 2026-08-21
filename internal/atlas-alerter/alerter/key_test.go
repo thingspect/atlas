@@ -5,8 +5,8 @@ package alerter
 import (
 	"fmt"
 	"testing"
+	"uuid"
 
-	"github.com/google/uuid"
 	"github.com/stretchr/testify/require"
 )
 
@@ -17,10 +17,10 @@ func TestRepeatKey(t *testing.T) {
 		t.Run(fmt.Sprintf("Can key %v", i), func(t *testing.T) {
 			t.Parallel()
 
-			orgID := uuid.NewString()
-			devID := uuid.NewString()
-			alarmID := uuid.NewString()
-			userID := uuid.NewString()
+			orgID := uuid.NewV7().String()
+			devID := uuid.NewV7().String()
+			alarmID := uuid.NewV7().String()
+			userID := uuid.NewV7().String()
 
 			key := repeatKey(orgID, devID, alarmID, userID)
 			t.Logf("key: %v", key)
