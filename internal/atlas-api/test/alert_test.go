@@ -158,7 +158,6 @@ func TestListAlerts(t *testing.T) {
 		t.Logf("listAlerts, err: %+v, %v", listAlerts, err)
 		require.Nil(t, listAlerts)
 		require.EqualError(t, err, "rpc error: code = InvalidArgument desc = "+
-			"invalid ListAlertsRequest.DeviceId: value must be a valid UUID | "+
-			"caused by: invalid uuid format")
+			"validation error: device_id: must be a valid UUID")
 	})
 }

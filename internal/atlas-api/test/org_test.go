@@ -91,9 +91,7 @@ func TestCreateOrg(t *testing.T) {
 		t.Logf("createOrg, err: %+v, %v", createOrg, err)
 		require.Nil(t, createOrg)
 		require.EqualError(t, err, "rpc error: code = InvalidArgument desc = "+
-			"invalid CreateOrgRequest.Org: embedded message failed validation "+
-			"| caused by: invalid Org.Name: value length must be between 5 "+
-			"and 40 runes, inclusive")
+			"validation error: org.name: must be at most 40 characters")
 	})
 }
 
@@ -244,7 +242,7 @@ func TestUpdateOrg(t *testing.T) {
 		t.Logf("updateOrg, err: %+v, %v", updateOrg, err)
 		require.Nil(t, updateOrg)
 		require.EqualError(t, err, "rpc error: code = InvalidArgument desc = "+
-			"invalid UpdateOrgRequest.Org: value is required")
+			"validation error: org: value is required")
 	})
 
 	t.Run("Update different org with insufficient role", func(t *testing.T) {
@@ -333,9 +331,7 @@ func TestUpdateOrg(t *testing.T) {
 		t.Logf("updateOrg, err: %+v, %v", updateOrg, err)
 		require.Nil(t, updateOrg)
 		require.EqualError(t, err, "rpc error: code = InvalidArgument desc = "+
-			"invalid UpdateOrgRequest.Org: embedded message failed validation "+
-			"| caused by: invalid Org.Name: value length must be between 5 "+
-			"and 40 runes, inclusive")
+			"validation error: org.name: must be at most 40 characters")
 	})
 }
 

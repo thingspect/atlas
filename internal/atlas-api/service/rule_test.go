@@ -288,7 +288,7 @@ func TestUpdateRule(t *testing.T) {
 		t.Logf("updateRule, err: %+v, %v", updateRule, err)
 		require.Nil(t, updateRule)
 		require.Equal(t, status.Error(codes.InvalidArgument,
-			"invalid UpdateRuleRequest.Rule: value is required"), err)
+			"validation error: rule: value is required"), err)
 	})
 
 	t.Run("Partial update invalid field mask", func(t *testing.T) {
@@ -356,10 +356,8 @@ func TestUpdateRule(t *testing.T) {
 		})
 		t.Logf("rule, updateRule, err: %+v, %+v, %v", rule, updateRule, err)
 		require.Nil(t, updateRule)
-		require.Equal(t, status.Error(codes.InvalidArgument,
-			"invalid UpdateRuleRequest.Rule: embedded message failed "+
-				"validation | caused by: invalid Rule.Attr: value length must "+
-				"be at most 40 runes"), err)
+		require.Equal(t, status.Error(codes.InvalidArgument, "validation "+
+			"error: rule.attr: must be at most 40 characters"), err)
 	})
 
 	t.Run("Update rule by invalid rule", func(t *testing.T) {

@@ -7,7 +7,7 @@
 package api
 
 import (
-	_ "github.com/envoyproxy/protoc-gen-validate/validate"
+	_ "buf.build/gen/go/bufbuild/protovalidate/protocolbuffers/go/buf/validate"
 	_ "github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-openapiv2/options"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
@@ -777,48 +777,48 @@ var File_api_thingspect_device_proto protoreflect.FileDescriptor
 
 const file_api_thingspect_device_proto_rawDesc = "" +
 	"\n" +
-	"\x1bapi/thingspect_device.proto\x12\x0ethingspect.api\x1a\x1bapi/thingspect_status.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a google/protobuf/field_mask.proto\x1a\x1cgoogle/api/annotations.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a.protoc-gen-openapiv2/options/annotations.proto\x1a\x17validate/validate.proto\"\xb3\x03\n" +
+	"\x1bapi/thingspect_device.proto\x12\x0ethingspect.api\x1a\x1bapi/thingspect_status.proto\x1a\x1bbuf/validate/validate.proto\x1a\x1cgoogle/api/annotations.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a.protoc-gen-openapiv2/options/annotations.proto\"\xb3\x03\n" +
 	"\x06Device\x12\x13\n" +
 	"\x02id\x18\x01 \x01(\tB\x03\xe0A\x03R\x02id\x12\x1a\n" +
 	"\x06org_id\x18\x02 \x01(\tB\x03\xe0A\x03R\x05orgID\x12\"\n" +
-	"\auniq_id\x18\x03 \x01(\tB\t\xfaB\x06r\x04\x10\x05\x18(R\x06uniqID\x12\x1d\n" +
-	"\x04name\x18\x04 \x01(\tB\t\xfaB\x06r\x04\x10\x05\x18PR\x04name\x12:\n" +
+	"\auniq_id\x18\x03 \x01(\tB\t\xbaH\x06r\x04\x10\x05\x18(R\x06uniqID\x12\x1d\n" +
+	"\x04name\x18\x04 \x01(\tB\t\xbaH\x06r\x04\x10\x05\x18PR\x04name\x12:\n" +
 	"\x06status\x18\x05 \x01(\x0e2\x16.thingspect.api.StatusB\n" +
-	"\xfaB\a\x82\x01\x04\x18\x03\x18\x06R\x06status\x12!\n" +
-	"\x05token\x18\x06 \x01(\tB\v\xfaB\br\x06\xd0\x01\x01\xb0\x01\x01R\x05token\x121\n" +
+	"\xbaH\a\x82\x01\x04\x18\x03\x18\x06R\x06status\x12!\n" +
+	"\x05token\x18\x06 \x01(\tB\v\xbaH\b\xd8\x01\x01r\x03\xb0\x01\x01R\x05token\x121\n" +
 	"\adecoder\x18\a \x01(\x0e2\x17.thingspect.api.DecoderR\adecoder\x12#\n" +
-	"\x04tags\x18\b \x03(\tB\x0f\xfaB\f\x92\x01\t\x18\x01\"\x05r\x03\x18\xff\x01R\x04tags\x12>\n" +
+	"\x04tags\x18\b \x03(\tB\x0f\xbaH\f\x92\x01\t\x18\x01\"\x05r\x03\x18\xff\x01R\x04tags\x12>\n" +
 	"\n" +
 	"created_at\x18\t \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\tcreatedAt\x12>\n" +
 	"\n" +
 	"updated_at\x18\n" +
-	" \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\tupdatedAt\"R\n" +
-	"\x13CreateDeviceRequest\x12;\n" +
-	"\x06device\x18\x01 \x01(\v2\x16.thingspect.api.DeviceB\v\xe0A\x02\xfaB\x05\x8a\x01\x02\x10\x01R\x06device\"\x80\x03\n" +
+	" \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\tupdatedAt\"P\n" +
+	"\x13CreateDeviceRequest\x129\n" +
+	"\x06device\x18\x01 \x01(\v2\x16.thingspect.api.DeviceB\t\xe0A\x02\xbaH\x03\xc8\x01\x01R\x06device\"\x82\x03\n" +
 	"\x1aCreateDeviceLoRaWANRequest\x12\x1b\n" +
-	"\x02id\x18\x01 \x01(\tB\v\xe0A\x03\xfaB\x05r\x03\xb0\x01\x01R\x02id\x12q\n" +
+	"\x02id\x18\x01 \x01(\tB\v\xe0A\x03\xbaH\x05r\x03\xb0\x01\x01R\x02id\x12q\n" +
 	"\x14gateway_lorawan_type\x18\x02 \x01(\v2=.thingspect.api.CreateDeviceLoRaWANRequest.GatewayLoRaWANTypeH\x00R\x12gatewayLoRaWANType\x12n\n" +
 	"\x13device_lorawan_type\x18\x03 \x01(\v2<.thingspect.api.CreateDeviceLoRaWANRequest.DeviceLoRaWANTypeH\x00R\x11deviceLoRaWANType\x1a\x14\n" +
 	"\x12GatewayLoRaWANType\x1a9\n" +
 	"\x11DeviceLoRaWANType\x12$\n" +
-	"\aapp_key\x18\x01 \x01(\tB\v\xe0A\x02\xfaB\x05r\x03\x98\x01 R\x06appKeyB\x11\n" +
+	"\aapp_key\x18\x01 \x01(\tB\v\xe0A\x02\xbaH\x05r\x03\x98\x01 R\x06appKeyB\x13\n" +
 	"\n" +
-	"type_oneof\x12\x03\xf8B\x01\"/\n" +
+	"type_oneof\x12\x05\xbaH\x02\b\x01\"/\n" +
 	"\x10GetDeviceRequest\x12\x1b\n" +
-	"\x02id\x18\x01 \x01(\tB\v\xe0A\x02\xfaB\x05r\x03\xb0\x01\x01R\x02id\"\x8f\x01\n" +
-	"\x13UpdateDeviceRequest\x12;\n" +
-	"\x06device\x18\x01 \x01(\v2\x16.thingspect.api.DeviceB\v\xe0A\x02\xfaB\x05\x8a\x01\x02\x10\x01R\x06device\x12;\n" +
+	"\x02id\x18\x01 \x01(\tB\v\xe0A\x02\xbaH\x05r\x03\xb0\x01\x01R\x02id\"\x8d\x01\n" +
+	"\x13UpdateDeviceRequest\x129\n" +
+	"\x06device\x18\x01 \x01(\v2\x16.thingspect.api.DeviceB\t\xe0A\x02\xbaH\x03\xc8\x01\x01R\x06device\x12;\n" +
 	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskR\n" +
 	"updateMask\"9\n" +
 	"\x1aDeleteDeviceLoRaWANRequest\x12\x1b\n" +
-	"\x02id\x18\x01 \x01(\tB\v\xe0A\x02\xfaB\x05r\x03\xb0\x01\x01R\x02id\"2\n" +
+	"\x02id\x18\x01 \x01(\tB\v\xe0A\x02\xbaH\x05r\x03\xb0\x01\x01R\x02id\"2\n" +
 	"\x13DeleteDeviceRequest\x12\x1b\n" +
-	"\x02id\x18\x01 \x01(\tB\v\xe0A\x02\xfaB\x05r\x03\xb0\x01\x01R\x02id\"v\n" +
+	"\x02id\x18\x01 \x01(\tB\v\xe0A\x02\xbaH\x05r\x03\xb0\x01\x01R\x02id\"v\n" +
 	"\x12ListDevicesRequest\x12%\n" +
-	"\tpage_size\x18\x01 \x01(\x05B\b\xfaB\x05\x1a\x03\x18\xfa\x01R\bpageSize\x12\x1d\n" +
+	"\tpage_size\x18\x01 \x01(\x05B\b\xbaH\x05\x1a\x03\x18\xfa\x01R\bpageSize\x12\x1d\n" +
 	"\n" +
 	"page_token\x18\x02 \x01(\tR\tpageToken\x12\x1a\n" +
-	"\x03tag\x18\x03 \x01(\tB\b\xfaB\x05r\x03\x18\xff\x01R\x03tag\"\x8e\x01\n" +
+	"\x03tag\x18\x03 \x01(\tB\b\xbaH\x05r\x03\x18\xff\x01R\x03tag\"\x8e\x01\n" +
 	"\x13ListDevicesResponse\x120\n" +
 	"\adevices\x18\x01 \x03(\v2\x16.thingspect.api.DeviceR\adevices\x12&\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12\x1d\n" +

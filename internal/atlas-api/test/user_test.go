@@ -89,9 +89,7 @@ func TestCreateUser(t *testing.T) {
 		t.Logf("createUser, err: %+v, %v", createUser, err)
 		require.Nil(t, createUser)
 		require.EqualError(t, err, "rpc error: code = InvalidArgument desc = "+
-			"invalid CreateUserRequest.User: embedded message failed "+
-			"validation | caused by: invalid User.Email: value must be a "+
-			"valid email address | caused by: mail: missing '@' or angle-addr")
+			"validation error: user.email: must be a valid email address")
 	})
 
 	t.Run("Create invalid user with invalid phone", func(t *testing.T) {
@@ -308,7 +306,7 @@ func TestUpdateUser(t *testing.T) {
 		t.Logf("updateUser, err: %+v, %v", updateUser, err)
 		require.Nil(t, updateUser)
 		require.EqualError(t, err, "rpc error: code = InvalidArgument desc = "+
-			"invalid UpdateUserRequest.User: value is required")
+			"validation error: user: value is required")
 	})
 
 	t.Run("Update user with insufficient role", func(t *testing.T) {
@@ -506,9 +504,7 @@ func TestUpdateUser(t *testing.T) {
 		t.Logf("updateUser, err: %+v, %v", updateUser, err)
 		require.Nil(t, updateUser)
 		require.EqualError(t, err, "rpc error: code = InvalidArgument desc = "+
-			"invalid UpdateUserRequest.User: embedded message failed "+
-			"validation | caused by: invalid User.Email: value must be a "+
-			"valid email address | caused by: mail: missing '@' or angle-addr")
+			"validation error: user.email: must be a valid email address")
 	})
 
 	t.Run("Update user by invalid user", func(t *testing.T) {

@@ -220,9 +220,7 @@ func TestCreateKey(t *testing.T) {
 		t.Logf("createKey, err: %+v, %v", createKey, err)
 		require.Nil(t, createKey)
 		require.EqualError(t, err, "rpc error: code = InvalidArgument desc = "+
-			"invalid CreateKeyRequest.Key: embedded message failed validation "+
-			"| caused by: invalid Key.Name: value length must be between 5 "+
-			"and 80 runes, inclusive")
+			"validation error: key.name: must be at most 80 characters")
 	})
 }
 

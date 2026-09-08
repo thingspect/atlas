@@ -1,4 +1,5 @@
 syntax = "proto3";
+
 package thingspect.int.message;
 
 import "common/thingspect_datapoint.proto";

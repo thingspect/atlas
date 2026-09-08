@@ -7,7 +7,7 @@
 package api
 
 import (
-	_ "github.com/envoyproxy/protoc-gen-validate/validate"
+	_ "buf.build/gen/go/bufbuild/protovalidate/protocolbuffers/go/buf/validate"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
@@ -359,7 +359,7 @@ var File_api_thingspect_alert_proto protoreflect.FileDescriptor
 
 const file_api_thingspect_alert_proto_rawDesc = "" +
 	"\n" +
-	"\x1aapi/thingspect_alert.proto\x12\x0ethingspect.api\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x1cgoogle/api/annotations.proto\x1a\x17validate/validate.proto\"\x8c\x02\n" +
+	"\x1aapi/thingspect_alert.proto\x12\x0ethingspect.api\x1a\x1bbuf/validate/validate.proto\x1a\x1cgoogle/api/annotations.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\x8c\x02\n" +
 	"\x05Alert\x12\x15\n" +
 	"\x06org_id\x18\x01 \x01(\tR\x05orgID\x12\x17\n" +
 	"\auniq_id\x18\x02 \x01(\tR\x06uniqID\x12\x19\n" +
@@ -372,9 +372,9 @@ const file_api_thingspect_alert_proto_rawDesc = "" +
 	"\btrace_id\x18\b \x01(\tR\atraceId\"\xa6\x02\n" +
 	"\x11ListAlertsRequest\x12\x19\n" +
 	"\auniq_id\x18\x01 \x01(\tH\x00R\x06uniqID\x12*\n" +
-	"\tdevice_id\x18\x02 \x01(\tB\v\xfaB\br\x06\xd0\x01\x01\xb0\x01\x01H\x00R\bdeviceID\x12&\n" +
-	"\balarm_id\x18\x03 \x01(\tB\v\xfaB\br\x06\xd0\x01\x01\xb0\x01\x01R\aalarmID\x12$\n" +
-	"\auser_id\x18\x04 \x01(\tB\v\xfaB\br\x06\xd0\x01\x01\xb0\x01\x01R\x06userID\x125\n" +
+	"\tdevice_id\x18\x02 \x01(\tB\v\xbaH\b\xd8\x01\x01r\x03\xb0\x01\x01H\x00R\bdeviceID\x12&\n" +
+	"\balarm_id\x18\x03 \x01(\tB\v\xbaH\b\xd8\x01\x01r\x03\xb0\x01\x01R\aalarmID\x12$\n" +
+	"\auser_id\x18\x04 \x01(\tB\v\xbaH\b\xd8\x01\x01r\x03\xb0\x01\x01R\x06userID\x125\n" +
 	"\bend_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampR\aendTime\x129\n" +
 	"\n" +
 	"start_time\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampR\tstartTimeB\n" +

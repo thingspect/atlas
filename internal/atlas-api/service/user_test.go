@@ -475,7 +475,7 @@ func TestUpdateUser(t *testing.T) {
 		t.Logf("updateUser, err: %+v, %v", updateUser, err)
 		require.Nil(t, updateUser)
 		require.Equal(t, status.Error(codes.InvalidArgument,
-			"invalid UpdateUserRequest.User: value is required"), err)
+			"validation error: user: value is required"), err)
 	})
 
 	t.Run("Update user with insufficient role", func(t *testing.T) {
@@ -681,10 +681,8 @@ func TestUpdateUser(t *testing.T) {
 			&api.UpdateUserRequest{User: user})
 		t.Logf("user, updateUser, err: %+v, %+v, %v", user, updateUser, err)
 		require.Nil(t, updateUser)
-		require.Equal(t, status.Error(codes.InvalidArgument, "invalid "+
-			"UpdateUserRequest.User: embedded message failed validation | "+
-			"caused by: invalid User.Email: value must be a valid email "+
-			"address | caused by: mail: missing '@' or angle-addr"), err)
+		require.Equal(t, status.Error(codes.InvalidArgument, "validation "+
+			"error: user.email: must be a valid email address"), err)
 	})
 
 	t.Run("Update user by invalid user", func(t *testing.T) {

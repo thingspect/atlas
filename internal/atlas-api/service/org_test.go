@@ -255,7 +255,7 @@ func TestUpdateOrg(t *testing.T) {
 		t.Logf("updateOrg, err: %+v, %v", updateOrg, err)
 		require.Nil(t, updateOrg)
 		require.Equal(t, status.Error(codes.InvalidArgument,
-			"invalid UpdateOrgRequest.Org: value is required"), err)
+			"validation error: org: value is required"), err)
 	})
 
 	t.Run("Update same org with insufficient role", func(t *testing.T) {
@@ -354,10 +354,8 @@ func TestUpdateOrg(t *testing.T) {
 		updateOrg, err := orgSvc.UpdateOrg(ctx, &api.UpdateOrgRequest{Org: org})
 		t.Logf("org, updateOrg, err: %+v, %+v, %v", org, updateOrg, err)
 		require.Nil(t, updateOrg)
-		require.Equal(t, status.Error(codes.InvalidArgument, "invalid "+
-			"UpdateOrgRequest.Org: embedded message failed validation | "+
-			"caused by: invalid Org.Name: value length must be between 5 and "+
-			"40 runes, inclusive"), err)
+		require.Equal(t, status.Error(codes.InvalidArgument, "validation "+
+			"error: org.name: must be at most 40 characters"), err)
 	})
 
 	t.Run("Update org by invalid org", func(t *testing.T) {

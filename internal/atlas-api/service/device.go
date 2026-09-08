@@ -8,6 +8,7 @@ import (
 	"strconv"
 	"time"
 
+	"buf.build/go/protovalidate"
 	"github.com/mennanov/fmutils"
 	"github.com/thingspect/atlas/internal/atlas-api/lora"
 	"github.com/thingspect/atlas/internal/atlas-api/session"
@@ -136,7 +137,7 @@ func (d *Device) UpdateDevice(
 
 	if req.GetDevice() == nil {
 		return nil, status.Error(codes.InvalidArgument,
-			req.Validate().Error())
+			protovalidate.Validate(req).Error())
 	}
 	req.Device.OrgId = sess.OrgID
 
@@ -163,7 +164,7 @@ func (d *Device) UpdateDevice(
 	}
 
 	// Validate after merge to support partial updates.
-	if err := req.Validate(); err != nil {
+	if err := protovalidate.Validate(req); err != nil {
 		return nil, status.Error(codes.InvalidArgument, err.Error())
 	}
 
@@ -271,7 +272,8 @@ func (d *Device) ListDevices(
 
 		if resp.NextPageToken, err = session.GeneratePageToken(
 			devs[len(devs)-2].GetCreatedAt().AsTime(),
-			devs[len(devs)-2].GetId()); err != nil {
+			devs[len(devs)-2].GetId(),
+		); err != nil {
 			// GeneratePageToken should not error based on a DB-derived UUID.
 			// Log the error and include the usable empty token.
 			logger := alog.FromContext(ctx)

@@ -8,6 +8,7 @@ import (
 	"strconv"
 	"time"
 
+	"buf.build/go/protovalidate"
 	"github.com/mennanov/fmutils"
 	"github.com/thingspect/atlas/internal/atlas-api/session"
 	"github.com/thingspect/atlas/pkg/alog"
@@ -96,7 +97,7 @@ func (o *Org) UpdateOrg(ctx context.Context, req *api.UpdateOrgRequest) (
 
 	if req.GetOrg() == nil {
 		return nil, status.Error(codes.InvalidArgument,
-			req.Validate().Error())
+			protovalidate.Validate(req).Error())
 	}
 
 	// Admins can only update their own org, system admins can update any org.
@@ -125,7 +126,7 @@ func (o *Org) UpdateOrg(ctx context.Context, req *api.UpdateOrgRequest) (
 	}
 
 	// Validate after merge to support partial updates.
-	if err := req.Validate(); err != nil {
+	if err := protovalidate.Validate(req); err != nil {
 		return nil, status.Error(codes.InvalidArgument, err.Error())
 	}
 
@@ -204,7 +205,8 @@ func (o *Org) ListOrgs(ctx context.Context, req *api.ListOrgsRequest) (
 
 		if resp.NextPageToken, err = session.GeneratePageToken(
 			orgs[len(orgs)-2].GetCreatedAt().AsTime(),
-			orgs[len(orgs)-2].GetId()); err != nil {
+			orgs[len(orgs)-2].GetId(),
+		); err != nil {
 			// GeneratePageToken should not error based on a DB-derived UUID.
 			// Log the error and include the usable empty token.
 			logger := alog.FromContext(ctx)

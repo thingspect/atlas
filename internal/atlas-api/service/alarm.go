@@ -8,6 +8,7 @@ import (
 	"strconv"
 	"time"
 
+	"buf.build/go/protovalidate"
 	"github.com/mennanov/fmutils"
 	"github.com/thingspect/atlas/internal/atlas-api/session"
 	"github.com/thingspect/atlas/pkg/alog"
@@ -85,7 +86,7 @@ func (ra *RuleAlarm) UpdateAlarm(
 
 	if req.GetAlarm() == nil {
 		return nil, status.Error(codes.InvalidArgument,
-			req.Validate().Error())
+			protovalidate.Validate(req).Error())
 	}
 	req.Alarm.OrgId = sess.OrgID
 
@@ -113,7 +114,7 @@ func (ra *RuleAlarm) UpdateAlarm(
 	}
 
 	// Validate after merge to support partial updates.
-	if err := req.Validate(); err != nil {
+	if err := protovalidate.Validate(req); err != nil {
 		return nil, status.Error(codes.InvalidArgument, err.Error())
 	}
 
@@ -181,7 +182,8 @@ func (ra *RuleAlarm) ListAlarms(
 
 		if resp.NextPageToken, err = session.GeneratePageToken(
 			alarms[len(alarms)-2].GetCreatedAt().AsTime(),
-			alarms[len(alarms)-2].GetId()); err != nil {
+			alarms[len(alarms)-2].GetId(),
+		); err != nil {
 			// GeneratePageToken should not error based on a DB-derived UUID.
 			// Log the error and include the usable empty token.
 			logger := alog.FromContext(ctx)

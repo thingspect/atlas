@@ -7,7 +7,7 @@
 package common
 
 import (
-	_ "github.com/envoyproxy/protoc-gen-validate/validate"
+	_ "buf.build/gen/go/bufbuild/protovalidate/protocolbuffers/go/buf/validate"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
@@ -211,11 +211,11 @@ var File_common_thingspect_datapoint_proto protoreflect.FileDescriptor
 
 const file_common_thingspect_datapoint_proto_rawDesc = "" +
 	"\n" +
-	"!common/thingspect_datapoint.proto\x12\x11thingspect.common\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x17validate/validate.proto\"\xda\x02\n" +
+	"!common/thingspect_datapoint.proto\x12\x11thingspect.common\x1a\x1bbuf/validate/validate.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xdc\x02\n" +
 	"\tDataPoint\x12%\n" +
-	"\auniq_id\x18\x01 \x01(\tB\f\xe0A\x02\xfaB\x06r\x04\x10\x05\x18(R\x06uniqID\x12\x1e\n" +
+	"\auniq_id\x18\x01 \x01(\tB\f\xe0A\x02\xbaH\x06r\x04\x10\x05\x18(R\x06uniqID\x12\x1e\n" +
 	"\x04attr\x18\x02 \x01(\tB\n" +
-	"\xe0A\x02\xfaB\x04r\x02\x18(R\x04attr\x12\x19\n" +
+	"\xe0A\x02\xbaH\x04r\x02\x18(R\x04attr\x12\x19\n" +
 	"\aint_val\x18\x03 \x01(\x11H\x00R\x06intVal\x12\x1b\n" +
 	"\bfl64_val\x18\x04 \x01(\x01H\x00R\afl64Val\x12\x19\n" +
 	"\astr_val\x18\x05 \x01(\tH\x00R\x06strVal\x12\x1b\n" +
@@ -223,8 +223,8 @@ const file_common_thingspect_datapoint_proto_rawDesc = "" +
 	"\tbytes_val\x18\x10 \x01(\fH\x00R\bbytesVal\x12*\n" +
 	"\x02ts\x18\a \x01(\v2\x1a.google.protobuf.TimestampR\x02ts\x12\x19\n" +
 	"\x05token\x18\b \x01(\tB\x03\xe0A\x03R\x05token\x12\x1e\n" +
-	"\btrace_id\x18\t \x01(\tB\x03\xe0A\x03R\atraceIdB\x10\n" +
-	"\tval_oneof\x12\x03\xf8B\x01B'Z%github.com/thingspect/proto/go/commonb\x06proto3"
+	"\btrace_id\x18\t \x01(\tB\x03\xe0A\x03R\atraceIdB\x12\n" +
+	"\tval_oneof\x12\x05\xbaH\x02\b\x01B'Z%github.com/thingspect/proto/go/commonb\x06proto3"
 
 var (
 	file_common_thingspect_datapoint_proto_rawDescOnce sync.Once

@@ -5,7 +5,6 @@ package interceptor
 import (
 	"context"
 	"fmt"
-	"io"
 	"testing"
 
 	"github.com/stretchr/testify/require"
@@ -15,18 +14,13 @@ import (
 	"google.golang.org/grpc/status"
 )
 
-type valPass struct{}
-
-func (v *valPass) Validate() error { return nil }
-
-type valFail struct{}
-
-func (v *valFail) Validate() error { return io.EOF }
-
 func TestValidate(t *testing.T) {
 	t.Parallel()
 
 	skipPath := random.String(10)
+
+	badOrg := random.Org("int-valid")
+	badOrg.Email = random.String(10)
 
 	tests := []struct {
 		err          error
@@ -43,13 +37,14 @@ func TestValidate(t *testing.T) {
 			},
 		},
 		{
-			nil, nil, &valPass{}, &grpc.UnaryServerInfo{
+			nil, nil, random.Org("int-valid"), &grpc.UnaryServerInfo{
 				FullMethod: random.String(10),
 			},
 		},
 		{
-			status.Error(codes.InvalidArgument, io.EOF.Error()), nil,
-			&valFail{}, &grpc.UnaryServerInfo{FullMethod: random.String(10)},
+			status.Error(codes.InvalidArgument, "validation error: email: "+
+				"must be a valid email address"), nil, badOrg,
+			&grpc.UnaryServerInfo{FullMethod: random.String(10)},
 		},
 	}
 

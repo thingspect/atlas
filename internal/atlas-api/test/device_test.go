@@ -95,9 +95,7 @@ func TestCreateDevice(t *testing.T) {
 		t.Logf("createDev, err: %+v, %v", createDev, err)
 		require.Nil(t, createDev)
 		require.EqualError(t, err, "rpc error: code = InvalidArgument desc = "+
-			"invalid CreateDeviceRequest.Device: embedded message failed "+
-			"validation | caused by: invalid Device.UniqId: value length must "+
-			"be between 5 and 40 runes, inclusive")
+			"validation error: device.uniq_id: must be at most 40 characters")
 	})
 }
 
@@ -384,7 +382,7 @@ func TestUpdateDevice(t *testing.T) {
 		t.Logf("updateDev, err: %+v, %v", updateDev, err)
 		require.Nil(t, updateDev)
 		require.EqualError(t, err, "rpc error: code = InvalidArgument desc = "+
-			"invalid UpdateDeviceRequest.Device: value is required")
+			"validation error: device: value is required")
 	})
 
 	t.Run("Partial update invalid field mask", func(t *testing.T) {
@@ -486,9 +484,7 @@ func TestUpdateDevice(t *testing.T) {
 		t.Logf("updateDev, err: %+v, %v", updateDev, err)
 		require.Nil(t, updateDev)
 		require.EqualError(t, err, "rpc error: code = InvalidArgument desc = "+
-			"invalid UpdateDeviceRequest.Device: embedded message failed "+
-			"validation | caused by: invalid Device.UniqId: value length must "+
-			"be between 5 and 40 runes, inclusive")
+			"validation error: device.uniq_id: must be at most 40 characters")
 	})
 
 	t.Run("Update device by invalid device", func(t *testing.T) {
@@ -512,9 +508,7 @@ func TestUpdateDevice(t *testing.T) {
 		t.Logf("updateDev, err: %+v, %v", updateDev, err)
 		require.Nil(t, updateDev)
 		require.EqualError(t, err, "rpc error: code = InvalidArgument desc = "+
-			"invalid UpdateDeviceRequest.Device: embedded message failed "+
-			"validation | caused by: invalid Device.Token: value must be a "+
-			"valid UUID | caused by: invalid uuid format")
+			"validation error: device.token: must be a valid UUID")
 	})
 }
 
