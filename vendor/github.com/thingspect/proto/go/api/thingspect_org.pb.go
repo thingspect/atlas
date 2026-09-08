@@ -7,7 +7,7 @@
 package api
 
 import (
-	_ "github.com/envoyproxy/protoc-gen-validate/validate"
+	_ "buf.build/gen/go/bufbuild/protovalidate/protocolbuffers/go/buf/validate"
 	_ "github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-openapiv2/options"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
@@ -434,28 +434,28 @@ var File_api_thingspect_org_proto protoreflect.FileDescriptor
 
 const file_api_thingspect_org_proto_rawDesc = "" +
 	"\n" +
-	"\x18api/thingspect_org.proto\x12\x0ethingspect.api\x1a\x1bgoogle/protobuf/empty.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a google/protobuf/field_mask.proto\x1a\x1cgoogle/api/annotations.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a.protoc-gen-openapiv2/options/annotations.proto\x1a\x17validate/validate.proto\"\x86\x02\n" +
+	"\x18api/thingspect_org.proto\x12\x0ethingspect.api\x1a\x1bbuf/validate/validate.proto\x1a\x1cgoogle/api/annotations.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a.protoc-gen-openapiv2/options/annotations.proto\"\x86\x02\n" +
 	"\x03Org\x12\x13\n" +
 	"\x02id\x18\x01 \x01(\tB\x03\xe0A\x03R\x02id\x12\x1d\n" +
-	"\x04name\x18\x02 \x01(\tB\t\xfaB\x06r\x04\x10\x05\x18(R\x04name\x12,\n" +
-	"\fdisplay_name\x18\x03 \x01(\tB\t\xfaB\x06r\x04\x10\x05\x18PR\vdisplayName\x12\x1d\n" +
-	"\x05email\x18\x04 \x01(\tB\a\xfaB\x04r\x02`\x01R\x05email\x12>\n" +
+	"\x04name\x18\x02 \x01(\tB\t\xbaH\x06r\x04\x10\x05\x18(R\x04name\x12,\n" +
+	"\fdisplay_name\x18\x03 \x01(\tB\t\xbaH\x06r\x04\x10\x05\x18PR\vdisplayName\x12\x1d\n" +
+	"\x05email\x18\x04 \x01(\tB\a\xbaH\x04r\x02`\x01R\x05email\x12>\n" +
 	"\n" +
 	"created_at\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\tcreatedAt\x12>\n" +
 	"\n" +
-	"updated_at\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\tupdatedAt\"F\n" +
-	"\x10CreateOrgRequest\x122\n" +
-	"\x03org\x18\x01 \x01(\v2\x13.thingspect.api.OrgB\v\xe0A\x02\xfaB\x05\x8a\x01\x02\x10\x01R\x03org\",\n" +
+	"updated_at\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\tupdatedAt\"D\n" +
+	"\x10CreateOrgRequest\x120\n" +
+	"\x03org\x18\x01 \x01(\v2\x13.thingspect.api.OrgB\t\xe0A\x02\xbaH\x03\xc8\x01\x01R\x03org\",\n" +
 	"\rGetOrgRequest\x12\x1b\n" +
-	"\x02id\x18\x01 \x01(\tB\v\xe0A\x02\xfaB\x05r\x03\xb0\x01\x01R\x02id\"\x83\x01\n" +
-	"\x10UpdateOrgRequest\x122\n" +
-	"\x03org\x18\x01 \x01(\v2\x13.thingspect.api.OrgB\v\xe0A\x02\xfaB\x05\x8a\x01\x02\x10\x01R\x03org\x12;\n" +
+	"\x02id\x18\x01 \x01(\tB\v\xe0A\x02\xbaH\x05r\x03\xb0\x01\x01R\x02id\"\x81\x01\n" +
+	"\x10UpdateOrgRequest\x120\n" +
+	"\x03org\x18\x01 \x01(\v2\x13.thingspect.api.OrgB\t\xe0A\x02\xbaH\x03\xc8\x01\x01R\x03org\x12;\n" +
 	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskR\n" +
 	"updateMask\"/\n" +
 	"\x10DeleteOrgRequest\x12\x1b\n" +
-	"\x02id\x18\x01 \x01(\tB\v\xe0A\x02\xfaB\x05r\x03\xb0\x01\x01R\x02id\"W\n" +
+	"\x02id\x18\x01 \x01(\tB\v\xe0A\x02\xbaH\x05r\x03\xb0\x01\x01R\x02id\"W\n" +
 	"\x0fListOrgsRequest\x12%\n" +
-	"\tpage_size\x18\x01 \x01(\x05B\b\xfaB\x05\x1a\x03\x18\xfa\x01R\bpageSize\x12\x1d\n" +
+	"\tpage_size\x18\x01 \x01(\x05B\b\xbaH\x05\x1a\x03\x18\xfa\x01R\bpageSize\x12\x1d\n" +
 	"\n" +
 	"page_token\x18\x02 \x01(\tR\tpageToken\"\x82\x01\n" +
 	"\x10ListOrgsResponse\x12'\n" +

@@ -81,9 +81,7 @@ func TestCreateAlarm(t *testing.T) {
 		t.Logf("createAlarm, err: %+v, %v", createAlarm, err)
 		require.Nil(t, createAlarm)
 		require.EqualError(t, err, "rpc error: code = InvalidArgument desc = "+
-			"invalid CreateAlarmRequest.Alarm: embedded message failed "+
-			"validation | caused by: invalid Alarm.Name: value length must be "+
-			"between 5 and 80 runes, inclusive")
+			"validation error: alarm.name: must be at most 80 characters")
 	})
 
 	t.Run("Create valid alarm with unknown rule", func(t *testing.T) {
@@ -313,7 +311,7 @@ func TestUpdateAlarm(t *testing.T) {
 		t.Logf("updateAlarm, err: %+v, %v", updateAlarm, err)
 		require.Nil(t, updateAlarm)
 		require.EqualError(t, err, "rpc error: code = InvalidArgument desc = "+
-			"invalid UpdateAlarmRequest.Alarm: value is required")
+			"validation error: alarm: value is required")
 	})
 
 	t.Run("Partial update invalid field mask", func(t *testing.T) {
@@ -509,9 +507,7 @@ func TestUpdateAlarm(t *testing.T) {
 		t.Logf("updateAlarm, err: %+v, %v", updateAlarm, err)
 		require.Nil(t, updateAlarm)
 		require.EqualError(t, err, "rpc error: code = InvalidArgument desc = "+
-			"invalid UpdateAlarmRequest.Alarm: embedded message failed "+
-			"validation | caused by: invalid Alarm.Name: value length must be "+
-			"between 5 and 80 runes, inclusive")
+			"validation error: alarm.name: must be at most 80 characters")
 	})
 }
 

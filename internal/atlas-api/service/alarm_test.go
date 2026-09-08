@@ -301,7 +301,7 @@ func TestUpdateAlarm(t *testing.T) {
 		t.Logf("updateAlarm, err: %+v, %v", updateAlarm, err)
 		require.Nil(t, updateAlarm)
 		require.Equal(t, status.Error(codes.InvalidArgument,
-			"invalid UpdateAlarmRequest.Alarm: value is required"), err)
+			"validation error: alarm: value is required"), err)
 	})
 
 	t.Run("Partial update invalid field mask", func(t *testing.T) {
@@ -374,10 +374,8 @@ func TestUpdateAlarm(t *testing.T) {
 		})
 		t.Logf("alarm, updateAlarm, err: %+v, %+v, %v", alarm, updateAlarm, err)
 		require.Nil(t, updateAlarm)
-		require.Equal(t, status.Error(codes.InvalidArgument, "invalid "+
-			"UpdateAlarmRequest.Alarm: embedded message failed validation | "+
-			"caused by: invalid Alarm.Name: value length must be between 5 "+
-			"and 80 runes, inclusive"), err)
+		require.Equal(t, status.Error(codes.InvalidArgument, "validation "+
+			"error: alarm.name: must be at most 80 characters"), err)
 	})
 
 	t.Run("Update alarm by invalid alarm", func(t *testing.T) {

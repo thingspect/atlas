@@ -10,6 +10,7 @@ import (
 	"strings"
 	"time"
 
+	"buf.build/go/protovalidate"
 	"github.com/mennanov/fmutils"
 	"github.com/thingspect/atlas/internal/atlas-api/auth"
 	"github.com/thingspect/atlas/internal/atlas-api/session"
@@ -139,7 +140,7 @@ func (u *User) UpdateUser(ctx context.Context, req *api.UpdateUserRequest) (
 
 	if req.GetUser() == nil {
 		return nil, status.Error(codes.InvalidArgument,
-			req.Validate().Error())
+			protovalidate.Validate(req).Error())
 	}
 	req.User.OrgId = sess.OrgID
 
@@ -199,7 +200,7 @@ func (u *User) UpdateUser(ctx context.Context, req *api.UpdateUserRequest) (
 	}
 
 	// Validate after merge to support partial updates.
-	if err := req.Validate(); err != nil {
+	if err := protovalidate.Validate(req); err != nil {
 		return nil, status.Error(codes.InvalidArgument, err.Error())
 	}
 
@@ -313,7 +314,8 @@ func (u *User) ListUsers(ctx context.Context, req *api.ListUsersRequest) (
 
 		if resp.NextPageToken, err = session.GeneratePageToken(
 			users[len(users)-2].GetCreatedAt().AsTime(),
-			users[len(users)-2].GetId()); err != nil {
+			users[len(users)-2].GetId(),
+		); err != nil {
 			// GeneratePageToken should not error based on a DB-derived UUID.
 			// Log the error and include the usable empty token.
 			logger := alog.FromContext(ctx)

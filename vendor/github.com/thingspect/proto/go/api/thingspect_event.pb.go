@@ -7,7 +7,7 @@
 package api
 
 import (
-	_ "github.com/envoyproxy/protoc-gen-validate/validate"
+	_ "buf.build/gen/go/bufbuild/protovalidate/protocolbuffers/go/buf/validate"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
@@ -362,26 +362,26 @@ var File_api_thingspect_event_proto protoreflect.FileDescriptor
 
 const file_api_thingspect_event_proto_rawDesc = "" +
 	"\n" +
-	"\x1aapi/thingspect_event.proto\x12\x0ethingspect.api\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x1cgoogle/api/annotations.proto\x1a\x17validate/validate.proto\"\xa6\x01\n" +
+	"\x1aapi/thingspect_event.proto\x12\x0ethingspect.api\x1a\x1bbuf/validate/validate.proto\x1a\x1cgoogle/api/annotations.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xa6\x01\n" +
 	"\x05Event\x12\x15\n" +
 	"\x06org_id\x18\x01 \x01(\tR\x05orgID\x12\x17\n" +
 	"\auniq_id\x18\x02 \x01(\tR\x06uniqID\x12\x17\n" +
 	"\arule_id\x18\x03 \x01(\tR\x06ruleID\x129\n" +
 	"\n" +
 	"created_at\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampR\tcreatedAt\x12\x19\n" +
-	"\btrace_id\x18\x05 \x01(\tR\atraceId\"\x83\x02\n" +
+	"\btrace_id\x18\x05 \x01(\tR\atraceId\"\x85\x02\n" +
 	"\x11ListEventsRequest\x12\x19\n" +
 	"\auniq_id\x18\x01 \x01(\tH\x00R\x06uniqID\x12*\n" +
-	"\tdevice_id\x18\x02 \x01(\tB\v\xfaB\br\x06\xd0\x01\x01\xb0\x01\x01H\x00R\bdeviceID\x12$\n" +
-	"\arule_id\x18\x03 \x01(\tB\v\xfaB\br\x06\xd0\x01\x01\xb0\x01\x01R\x06ruleID\x125\n" +
+	"\tdevice_id\x18\x02 \x01(\tB\v\xbaH\b\xd8\x01\x01r\x03\xb0\x01\x01H\x00R\bdeviceID\x12$\n" +
+	"\arule_id\x18\x03 \x01(\tB\v\xbaH\b\xd8\x01\x01r\x03\xb0\x01\x01R\x06ruleID\x125\n" +
 	"\bend_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampR\aendTime\x129\n" +
 	"\n" +
-	"start_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampR\tstartTimeB\x0f\n" +
-	"\bid_oneof\x12\x03\xf8B\x01\"C\n" +
+	"start_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampR\tstartTimeB\x11\n" +
+	"\bid_oneof\x12\x05\xbaH\x02\b\x01\"C\n" +
 	"\x12ListEventsResponse\x12-\n" +
 	"\x06events\x18\x01 \x03(\v2\x15.thingspect.api.EventR\x06events\";\n" +
 	"\x13LatestEventsRequest\x12$\n" +
-	"\arule_id\x18\x01 \x01(\tB\v\xfaB\br\x06\xd0\x01\x01\xb0\x01\x01R\x06ruleID\"E\n" +
+	"\arule_id\x18\x01 \x01(\tB\v\xbaH\b\xd8\x01\x01r\x03\xb0\x01\x01R\x06ruleID\"E\n" +
 	"\x14LatestEventsResponse\x12-\n" +
 	"\x06events\x18\x01 \x03(\v2\x15.thingspect.api.EventR\x06events2\xed\x01\n" +
 	"\fEventService\x12g\n" +

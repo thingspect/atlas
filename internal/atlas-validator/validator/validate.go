@@ -6,6 +6,7 @@ import (
 	"errors"
 	"time"
 
+	"buf.build/go/protovalidate"
 	"github.com/thingspect/atlas/pkg/alog"
 	"github.com/thingspect/atlas/pkg/dao"
 	"github.com/thingspect/atlas/pkg/metric"
@@ -67,7 +68,7 @@ func (val *Validator) validateMessages() {
 		logger = logger.WithField("devID", dev.GetId())
 
 		// Perform validation.
-		switch err := vIn.GetPoint().Validate(); {
+		switch err := protovalidate.Validate(vIn.GetPoint()); {
 		case err != nil:
 			msg.Ack()
 			metric.Incr("invalid",

@@ -435,7 +435,7 @@ func TestUpdateDevice(t *testing.T) {
 		t.Logf("updateDev, err: %+v, %v", updateDev, err)
 		require.Nil(t, updateDev)
 		require.Equal(t, status.Error(codes.InvalidArgument,
-			"invalid UpdateDeviceRequest.Device: value is required"), err)
+			"validation error: device: value is required"), err)
 	})
 
 	t.Run("Partial update invalid field mask", func(t *testing.T) {
@@ -503,10 +503,8 @@ func TestUpdateDevice(t *testing.T) {
 		})
 		t.Logf("dev, updateDev, err: %+v, %+v, %v", dev, updateDev, err)
 		require.Nil(t, updateDev)
-		require.Equal(t, status.Error(codes.InvalidArgument,
-			"invalid UpdateDeviceRequest.Device: embedded message failed "+
-				"validation | caused by: invalid Device.UniqId: value length "+
-				"must be between 5 and 40 runes, inclusive"), err)
+		require.Equal(t, status.Error(codes.InvalidArgument, "validation "+
+			"error: device.uniq_id: must be at most 40 characters"), err)
 	})
 
 	t.Run("Update device by invalid device", func(t *testing.T) {

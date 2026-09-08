@@ -7,7 +7,7 @@
 package api
 
 import (
-	_ "github.com/envoyproxy/protoc-gen-validate/validate"
+	_ "buf.build/gen/go/bufbuild/protovalidate/protocolbuffers/go/buf/validate"
 	_ "github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-openapiv2/options"
 	common "github.com/thingspect/proto/go/common"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
@@ -379,25 +379,25 @@ var File_api_thingspect_datapoint_proto protoreflect.FileDescriptor
 
 const file_api_thingspect_datapoint_proto_rawDesc = "" +
 	"\n" +
-	"\x1eapi/thingspect_datapoint.proto\x12\x0ethingspect.api\x1a!common/thingspect_datapoint.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x1cgoogle/api/annotations.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a.protoc-gen-openapiv2/options/annotations.proto\x1a\x17validate/validate.proto\"]\n" +
+	"\x1eapi/thingspect_datapoint.proto\x12\x0ethingspect.api\x1a\x1bbuf/validate/validate.proto\x1a!common/thingspect_datapoint.proto\x1a\x1cgoogle/api/annotations.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a.protoc-gen-openapiv2/options/annotations.proto\"]\n" +
 	"\x18PublishDataPointsRequest\x12A\n" +
-	"\x06points\x18\x01 \x03(\v2\x1c.thingspect.common.DataPointB\v\xe0A\x02\xfaB\x05\x92\x01\x02\b\x01R\x06points\"\xfe\x01\n" +
+	"\x06points\x18\x01 \x03(\v2\x1c.thingspect.common.DataPointB\v\xe0A\x02\xbaH\x05\x92\x01\x02\b\x01R\x06points\"\x80\x02\n" +
 	"\x15ListDataPointsRequest\x12\x19\n" +
 	"\auniq_id\x18\x01 \x01(\tH\x00R\x06uniqID\x12*\n" +
-	"\tdevice_id\x18\x02 \x01(\tB\v\xfaB\br\x06\xd0\x01\x01\xb0\x01\x01H\x00R\bdeviceID\x12\x1b\n" +
-	"\x04attr\x18\x03 \x01(\tB\a\xfaB\x04r\x02\x18(R\x04attr\x125\n" +
+	"\tdevice_id\x18\x02 \x01(\tB\v\xbaH\b\xd8\x01\x01r\x03\xb0\x01\x01H\x00R\bdeviceID\x12\x1b\n" +
+	"\x04attr\x18\x03 \x01(\tB\a\xbaH\x04r\x02\x18(R\x04attr\x125\n" +
 	"\bend_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampR\aendTime\x129\n" +
 	"\n" +
-	"start_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampR\tstartTimeB\x0f\n" +
-	"\bid_oneof\x12\x03\xf8B\x01\"N\n" +
+	"start_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampR\tstartTimeB\x11\n" +
+	"\bid_oneof\x12\x05\xbaH\x02\b\x01\"N\n" +
 	"\x16ListDataPointsResponse\x124\n" +
-	"\x06points\x18\x01 \x03(\v2\x1c.thingspect.common.DataPointR\x06points\"\xac\x01\n" +
+	"\x06points\x18\x01 \x03(\v2\x1c.thingspect.common.DataPointR\x06points\"\xae\x01\n" +
 	"\x17LatestDataPointsRequest\x12\x19\n" +
 	"\auniq_id\x18\x01 \x01(\tH\x00R\x06uniqID\x12*\n" +
-	"\tdevice_id\x18\x02 \x01(\tB\v\xfaB\br\x06\xd0\x01\x01\xb0\x01\x01H\x00R\bdeviceID\x129\n" +
+	"\tdevice_id\x18\x02 \x01(\tB\v\xbaH\b\xd8\x01\x01r\x03\xb0\x01\x01H\x00R\bdeviceID\x129\n" +
 	"\n" +
-	"start_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampR\tstartTimeB\x0f\n" +
-	"\bid_oneof\x12\x03\xf8B\x01\"P\n" +
+	"start_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampR\tstartTimeB\x11\n" +
+	"\bid_oneof\x12\x05\xbaH\x02\b\x01\"P\n" +
 	"\x18LatestDataPointsResponse\x124\n" +
 	"\x06points\x18\x01 \x03(\v2\x1c.thingspect.common.DataPointR\x06points2\xab\x03\n" +
 	"\x10DataPointService\x12\x96\x01\n" +

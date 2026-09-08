@@ -137,9 +137,8 @@ func TestPublishDataPoints(t *testing.T) {
 		})
 		t.Logf("err: %v", err)
 		require.EqualError(t, err, "rpc error: code = InvalidArgument desc = "+
-			"invalid PublishDataPointsRequest.Points[0]: embedded message "+
-			"failed validation | caused by: invalid DataPoint.UniqId: value "+
-			"length must be between 5 and 40 runes, inclusive")
+			"validation error: points[0].uniq_id: must be at most 40 "+
+			"characters")
 	})
 }
 
@@ -333,8 +332,7 @@ func TestListDataPoints(t *testing.T) {
 		t.Logf("listPoints, err: %+v, %v", listPoints, err)
 		require.Nil(t, listPoints)
 		require.EqualError(t, err, "rpc error: code = InvalidArgument desc = "+
-			"invalid ListDataPointsRequest.DeviceId: value must be a valid "+
-			"UUID | caused by: invalid uuid format")
+			"validation error: device_id: must be a valid UUID")
 	})
 }
 
@@ -512,7 +510,6 @@ func TestLatestDataPoints(t *testing.T) {
 		t.Logf("latPoints, err: %+v, %v", latPoints, err)
 		require.Nil(t, latPoints)
 		require.EqualError(t, err, "rpc error: code = InvalidArgument desc = "+
-			"invalid LatestDataPointsRequest.DeviceId: value must be a valid "+
-			"UUID | caused by: invalid uuid format")
+			"validation error: device_id: must be a valid UUID")
 	})
 }

@@ -74,9 +74,7 @@ func TestCreateRule(t *testing.T) {
 		t.Logf("createRule, err: %+v, %v", createRule, err)
 		require.Nil(t, createRule)
 		require.EqualError(t, err, "rpc error: code = InvalidArgument desc = "+
-			"invalid CreateRuleRequest.Rule: embedded message failed "+
-			"validation | caused by: invalid Rule.Attr: value length must be "+
-			"at most 40 runes")
+			"validation error: rule.attr: must be at most 40 characters")
 	})
 }
 
@@ -240,7 +238,7 @@ func TestUpdateRule(t *testing.T) {
 		t.Logf("updateRule, err: %+v, %v", updateRule, err)
 		require.Nil(t, updateRule)
 		require.EqualError(t, err, "rpc error: code = InvalidArgument desc = "+
-			"invalid UpdateRuleRequest.Rule: value is required")
+			"validation error: rule: value is required")
 	})
 
 	t.Run("Partial update invalid field mask", func(t *testing.T) {
@@ -342,9 +340,7 @@ func TestUpdateRule(t *testing.T) {
 		t.Logf("updateRule, err: %+v, %v", updateRule, err)
 		require.Nil(t, updateRule)
 		require.EqualError(t, err, "rpc error: code = InvalidArgument desc = "+
-			"invalid UpdateRuleRequest.Rule: embedded message failed "+
-			"validation | caused by: invalid Rule.Attr: value length must be "+
-			"at most 40 runes")
+			"validation error: rule.attr: must be at most 40 characters")
 	})
 }
 

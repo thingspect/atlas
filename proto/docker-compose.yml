@@ -3,4 +3,4 @@ services:
     build: ./go
     command: sh -c "cd go && make"
     volumes:
-      - .:/api
+      - .:/proto

@@ -10,7 +10,7 @@ services:
       - POSTGRES_PASSWORD=notasecurepassword
       - POSTGRES_DB=atlas
     volumes:
-      - ./volume/postgres:/var/lib/postgresql/data
+      - ./volume/postgres:/var/lib/postgresql
 
   nsqlookupd:
     image: nsqio/nsq:v1.3.0
@@ -85,5 +85,3 @@ services:
 networks:
   default:
     name: atlas-deps
-    # driver_opts:
-    #   com.docker.network.bridge.host_binding_ipv4: "10.0.0.25"

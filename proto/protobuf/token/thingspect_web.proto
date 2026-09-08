@@ -1,4 +1,5 @@
 syntax = "proto3";
+
 package thingspect.int.token;
 
 import "api/thingspect_role.proto";
