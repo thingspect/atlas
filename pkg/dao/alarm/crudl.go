@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/jackc/pgx/v5/pgtype"
 	"github.com/thingspect/atlas/pkg/alog"
 	"github.com/thingspect/atlas/pkg/dao"
 	"github.com/thingspect/proto/go/api"
@@ -53,11 +52,11 @@ func (d *DAO) Read(ctx context.Context, alarmID, orgID, ruleID string) (
 	var status, alarmType string
 	var createdAt, updatedAt time.Time
 
-	if err := d.ro.QueryRowContext(ctx, readAlarm, alarmID, orgID, ruleID).Scan(
-		&alarm.Id, &alarm.OrgId, &alarm.RuleId, &alarm.Name, &status,
-		&alarmType, pgtype.NewMap().SQLScanner(&alarm.UserTags),
-		&alarm.SubjectTemplate, &alarm.BodyTemplate, &alarm.RepeatInterval,
-		&createdAt, &updatedAt); err != nil {
+	if err := d.ro.QueryRowContext(ctx, readAlarm, alarmID, orgID, ruleID).
+		Scan(&alarm.Id, &alarm.OrgId, &alarm.RuleId, &alarm.Name, &status,
+			&alarmType, &alarm.UserTags, &alarm.SubjectTemplate,
+			&alarm.BodyTemplate, &alarm.RepeatInterval, &createdAt,
+			&updatedAt); err != nil {
 		return nil, dao.DBToSentinel(err)
 	}
 
@@ -170,8 +169,8 @@ func (d *DAO) List(
 
 	// Run count query.
 	var count int32
-	if err := d.ro.QueryRowContext(ctx, cQuery, cArgs...).Scan(
-		&count); err != nil {
+	if err := d.ro.QueryRowContext(ctx, cQuery, cArgs...).
+		Scan(&count); err != nil {
 		return nil, 0, dao.DBToSentinel(err)
 	}
 
@@ -211,16 +210,15 @@ func (d *DAO) List(
 	}()
 
 	var alarms []*api.Alarm
-	pgtmap := pgtype.NewMap()
 	for rows.Next() {
 		alarm := &api.Alarm{}
 		var status, alarmType string
 		var createdAt, updatedAt time.Time
 
 		if err = rows.Scan(&alarm.Id, &alarm.OrgId, &alarm.RuleId, &alarm.Name,
-			&status, &alarmType, pgtmap.SQLScanner(&alarm.UserTags),
-			&alarm.SubjectTemplate, &alarm.BodyTemplate, &alarm.RepeatInterval,
-			&createdAt, &updatedAt); err != nil {
+			&status, &alarmType, &alarm.UserTags, &alarm.SubjectTemplate,
+			&alarm.BodyTemplate, &alarm.RepeatInterval, &createdAt,
+			&updatedAt); err != nil {
 			return nil, 0, dao.DBToSentinel(err)
 		}
 
