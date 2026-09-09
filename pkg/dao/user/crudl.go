@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/jackc/pgx/v5/pgtype"
 	"github.com/thingspect/atlas/pkg/alog"
 	"github.com/thingspect/atlas/pkg/dao"
 	"github.com/thingspect/proto/go/api"
@@ -50,10 +49,10 @@ func (d *DAO) Read(ctx context.Context, userID, orgID string) (
 	var role, status string
 	var createdAt, updatedAt time.Time
 
-	if err := d.ro.QueryRowContext(ctx, readUser, userID, orgID).Scan(&user.Id,
-		&user.OrgId, &user.Name, &user.Email, &user.Phone, &role, &status,
-		pgtype.NewMap().SQLScanner(&user.Tags), &user.AppKey, &createdAt,
-		&updatedAt); err != nil {
+	if err := d.ro.QueryRowContext(ctx, readUser, userID, orgID).
+		Scan(&user.Id, &user.OrgId, &user.Name, &user.Email, &user.Phone, &role,
+			&status, &user.Tags, &user.AppKey, &createdAt,
+			&updatedAt); err != nil {
 		return nil, dao.DBToSentinel(err)
 	}
 
@@ -82,10 +81,10 @@ func (d *DAO) ReadByEmail(ctx context.Context, email, orgName string) (
 	var role, status string
 	var createdAt, updatedAt time.Time
 
-	if err := d.ro.QueryRowContext(ctx, readUserByEmail, email, orgName).Scan(
-		&user.Id, &user.OrgId, &user.Name, &user.Email, &user.Phone, &passHash,
-		&role, &status, pgtype.NewMap().SQLScanner(&user.Tags), &user.AppKey,
-		&createdAt, &updatedAt); err != nil {
+	if err := d.ro.QueryRowContext(ctx, readUserByEmail, email, orgName).
+		Scan(&user.Id, &user.OrgId, &user.Name, &user.Email, &user.Phone,
+			&passHash, &role, &status, &user.Tags, &user.AppKey, &createdAt,
+			&updatedAt); err != nil {
 		return nil, nil, dao.DBToSentinel(err)
 	}
 
@@ -217,8 +216,8 @@ func (d *DAO) List(
 
 	// Run count query.
 	var count int32
-	if err := d.ro.QueryRowContext(ctx, cQuery, cArgs...).Scan(
-		&count); err != nil {
+	if err := d.ro.QueryRowContext(ctx, cQuery, cArgs...).
+		Scan(&count); err != nil {
 		return nil, 0, dao.DBToSentinel(err)
 	}
 
@@ -258,15 +257,14 @@ func (d *DAO) List(
 	}()
 
 	var users []*api.User
-	pgtmap := pgtype.NewMap()
 	for rows.Next() {
 		user := &api.User{}
 		var role, status string
 		var createdAt, updatedAt time.Time
 
 		if err = rows.Scan(&user.Id, &user.OrgId, &user.Name, &user.Email,
-			&user.Phone, &role, &status, pgtmap.SQLScanner(&user.Tags),
-			&user.AppKey, &createdAt, &updatedAt); err != nil {
+			&user.Phone, &role, &status, &user.Tags, &user.AppKey, &createdAt,
+			&updatedAt); err != nil {
 			return nil, 0, dao.DBToSentinel(err)
 		}
 
@@ -312,15 +310,14 @@ func (d *DAO) ListByTags(ctx context.Context, orgID string, tags []string) (
 	}()
 
 	var users []*api.User
-	pgtmap := pgtype.NewMap()
 	for rows.Next() {
 		user := &api.User{}
 		var role, status string
 		var createdAt, updatedAt time.Time
 
 		if err = rows.Scan(&user.Id, &user.OrgId, &user.Name, &user.Email,
-			&user.Phone, &role, &status, pgtmap.SQLScanner(&user.Tags),
-			&user.AppKey, &createdAt, &updatedAt); err != nil {
+			&user.Phone, &role, &status, &user.Tags, &user.AppKey, &createdAt,
+			&updatedAt); err != nil {
 			return nil, dao.DBToSentinel(err)
 		}
 
