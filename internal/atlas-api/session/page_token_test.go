@@ -48,13 +48,16 @@ func TestGeneratePageToken(t *testing.T) {
 func TestParsePageToken(t *testing.T) {
 	t.Parallel()
 
-	prevID := uuid.New()
+	prevID := uuid.NewV7()
 
-	nilTSPT := &token.Page{PrevId: prevID[:]}
+	nilTSPT := &token.Page{}
+	nilTSPT.SetPrevId(prevID[:])
 	bNilTSPT, err := proto.Marshal(nilTSPT)
 	require.NoError(t, err)
 
-	badUUIDPT := &token.Page{BoundTs: timestamppb.Now(), PrevId: []byte("aaa")}
+	badUUIDPT := &token.Page{}
+	badUUIDPT.SetBoundTs(timestamppb.Now())
+	badUUIDPT.SetPrevId([]byte("aaa"))
 	bBadUUIDPT, err := proto.Marshal(badUUIDPT)
 	require.NoError(t, err)
 

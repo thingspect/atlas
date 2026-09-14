@@ -35,106 +35,106 @@ func TestDecodeGateways(t *testing.T) {
 			"lora/us915_0/gateway/" + uniqID + "/event/up", &gw.UplinkFrame{
 				RxInfo: &gw.UplinkRxInfo{Rssi: -74},
 			}, []*message.ValidatorIn{
-				{
+				message.ValidatorIn_builder{
 					Point: &common.DataPoint{
 						UniqId: uniqID, Attr: gateway.AttrRaw,
 						ValOneof: &common.DataPoint_StrVal{
 							StrVal: `{"rxInfo":{"rssi":-74}}`,
 						},
-					}, SkipToken: true,
-				},
-				{
+					}, SkipToken: new(true),
+				}.Build(),
+				message.ValidatorIn_builder{
 					Point: &common.DataPoint{
 						UniqId: uniqID, Attr: "lora_rssi",
 						ValOneof: &common.DataPoint_IntVal{IntVal: -74},
-					}, SkipToken: true,
-				},
-				{
+					}, SkipToken: new(true),
+				}.Build(),
+				message.ValidatorIn_builder{
 					Point: &common.DataPoint{
 						UniqId: uniqID, Attr: "channel",
 						ValOneof: &common.DataPoint_IntVal{IntVal: 0},
-					}, SkipToken: true,
-				},
+					}, SkipToken: new(true),
+				}.Build(),
 			},
 		},
 		{
 			"lora/us915_0/gateway/" + uniqID + "/event/stats", &gw.GatewayStats{
 				RxPacketsReceivedOk: 2,
 			}, []*message.ValidatorIn{
-				{
+				message.ValidatorIn_builder{
 					Point: &common.DataPoint{
 						UniqId: uniqID, Attr: gateway.AttrRaw,
 						ValOneof: &common.DataPoint_StrVal{
 							StrVal: `{"rxPacketsReceivedOk":2}`,
 						},
-					}, SkipToken: true,
-				},
-				{
+					}, SkipToken: new(true),
+				}.Build(),
+				message.ValidatorIn_builder{
 					Point: &common.DataPoint{
 						UniqId: uniqID, Attr: "rx_received_valid",
 						ValOneof: &common.DataPoint_IntVal{IntVal: 2},
-					}, SkipToken: true,
-				},
+					}, SkipToken: new(true),
+				}.Build(),
 			},
 		},
 		{
 			"lora/us915_0/gateway/" + uniqID + "/event/ack", &gw.DownlinkTxAck{
 				Items: []*gw.DownlinkTxAckItem{{Status: gw.TxAckStatus_OK}},
 			}, []*message.ValidatorIn{
-				{
+				message.ValidatorIn_builder{
 					Point: &common.DataPoint{
 						UniqId: uniqID, Attr: gateway.AttrRaw,
 						ValOneof: &common.DataPoint_StrVal{
 							StrVal: `{"items":[{"status":"OK"}]}`,
 						},
-					}, SkipToken: true,
-				},
-				{
+					}, SkipToken: new(true),
+				}.Build(),
+				message.ValidatorIn_builder{
 					Point: &common.DataPoint{
 						UniqId: uniqID, Attr: "ack",
 						ValOneof: &common.DataPoint_StrVal{StrVal: "OK"},
-					}, SkipToken: true,
-				},
+					}, SkipToken: new(true),
+				}.Build(),
 			},
 		},
 		{
 			"lora/us915_0/gateway/" + uniqID + "/event/exec",
 			&gw.GatewayCommandExecResponse{Stdout: []byte("STDOUT")},
 			[]*message.ValidatorIn{
-				{
+				message.ValidatorIn_builder{
 					Point: &common.DataPoint{
 						UniqId: uniqID, Attr: gateway.AttrRaw,
 						ValOneof: &common.DataPoint_StrVal{
 							StrVal: `{"stdout":"U1RET1VU"}`,
 						},
-					}, SkipToken: true,
-				},
-				{
+					}, SkipToken: new(true),
+				}.Build(),
+				message.ValidatorIn_builder{
 					Point: &common.DataPoint{
 						UniqId: uniqID, Attr: "exec_stdout",
 						ValOneof: &common.DataPoint_StrVal{StrVal: "STDOUT"},
-					}, SkipToken: true,
-				},
+					}, SkipToken: new(true),
+				}.Build(),
 			},
 		},
 		{
 			"lora/us915_0/gateway/" + uniqID + "/state/conn", &gw.ConnState{
 				State: gw.ConnState_ONLINE,
 			}, []*message.ValidatorIn{
-				{
+				message.ValidatorIn_builder{
 					Point: &common.DataPoint{
 						UniqId: uniqID, Attr: gateway.AttrRaw,
 						ValOneof: &common.DataPoint_StrVal{
 							StrVal: `{"state":"ONLINE"}`,
 						},
-					}, SkipToken: true,
-				},
-				{
+					}, SkipToken: new(true),
+				}.Build(),
+				message.ValidatorIn_builder{
 					Point: &common.DataPoint{
 						UniqId: uniqID, Attr: "conn",
 						ValOneof: &common.DataPoint_StrVal{StrVal: "ONLINE"},
-					}, SkipToken: true,
-				},
+					}, SkipToken: new(true),
+				}.Build(),
 			},
 		},
 	}
@@ -181,11 +181,11 @@ func TestDecodeGateways(t *testing.T) {
 					t.Logf("vIn: %+v", vIn)
 
 					// Normalize generated trace ID.
-					res.Point.TraceId = vIn.GetPoint().GetTraceId()
+					res.GetPoint().TraceId = vIn.GetPoint().GetTraceId()
 					// Normalize timestamp.
 					require.WithinDuration(t, time.Now(),
 						vIn.GetPoint().GetTs().AsTime(), 2*time.Second)
-					res.Point.Ts = vIn.GetPoint().GetTs()
+					res.GetPoint().Ts = vIn.GetPoint().GetTs()
 
 					require.EqualExportedValues(t, res, vIn)
 				case <-time.After(2 * time.Second):
@@ -268,150 +268,150 @@ func TestDecodeDevices(t *testing.T) {
 			"lora/application/1/device/" + uniqID + "/event/up",
 			&integration.UplinkEvent{Data: bData},
 			[]*message.ValidatorIn{
-				{
+				message.ValidatorIn_builder{
 					Point: &common.DataPoint{
 						UniqId: uniqID, Attr: device.AttrRaw,
 						ValOneof: &common.DataPoint_StrVal{
 							StrVal: fmt.Sprintf(`{"data":"%s"}`, b64Data),
 						},
-					}, SkipToken: true,
-				},
-				{
+					}, SkipToken: new(true),
+				}.Build(),
+				message.ValidatorIn_builder{
 					Point: &common.DataPoint{
 						UniqId: uniqID, Attr: "raw_data",
 						ValOneof: &common.DataPoint_StrVal{
 							StrVal: hex.EncodeToString(bData),
 						},
-					}, SkipToken: true,
-				},
-				{
+					}, SkipToken: new(true),
+				}.Build(),
+				message.ValidatorIn_builder{
 					Point: &common.DataPoint{
 						UniqId: uniqID, Attr: device.AttrADR,
 						ValOneof: &common.DataPoint_BoolVal{BoolVal: false},
-					}, SkipToken: true,
-				},
-				{
+					}, SkipToken: new(true),
+				}.Build(),
+				message.ValidatorIn_builder{
 					Point: &common.DataPoint{
 						UniqId: uniqID, Attr: device.AttrDR,
 						ValOneof: &common.DataPoint_IntVal{IntVal: 0},
-					}, SkipToken: true,
-				},
-				{
+					}, SkipToken: new(true),
+				}.Build(),
+				message.ValidatorIn_builder{
 					Point: &common.DataPoint{
 						UniqId: uniqID, Attr: "confirmed",
 						ValOneof: &common.DataPoint_BoolVal{BoolVal: false},
-					}, SkipToken: true,
-				},
+					}, SkipToken: new(true),
+				}.Build(),
 			},
 		},
 		{
 			"lora/application/2/device/" + uniqID + "/event/join",
 			&integration.JoinEvent{DevAddr: devAddr},
 			[]*message.ValidatorIn{
-				{
+				message.ValidatorIn_builder{
 					Point: &common.DataPoint{
 						UniqId: uniqID, Attr: device.AttrRaw,
 						ValOneof: &common.DataPoint_StrVal{
 							StrVal: fmt.Sprintf(`{"devAddr":"%s"}`, devAddr),
 						},
-					}, SkipToken: true,
-				},
-				{
+					}, SkipToken: new(true),
+				}.Build(),
+				message.ValidatorIn_builder{
 					Point: &common.DataPoint{
 						UniqId: uniqID, Attr: "join",
 						ValOneof: &common.DataPoint_BoolVal{BoolVal: true},
-					}, SkipToken: true,
-				},
-				{
+					}, SkipToken: new(true),
+				}.Build(),
+				message.ValidatorIn_builder{
 					Point: &common.DataPoint{
 						UniqId: uniqID, Attr: "devaddr",
 						ValOneof: &common.DataPoint_StrVal{StrVal: devAddr},
-					}, SkipToken: true,
-				},
+					}, SkipToken: new(true),
+				}.Build(),
 			},
 		},
 		{
 			"lora/application/3/device/" + uniqID + "/event/ack",
 			&integration.AckEvent{Acknowledged: true},
 			[]*message.ValidatorIn{
-				{
+				message.ValidatorIn_builder{
 					Point: &common.DataPoint{
 						UniqId: uniqID, Attr: device.AttrRaw,
 						ValOneof: &common.DataPoint_StrVal{
 							StrVal: `{"acknowledged":true}`,
 						},
-					}, SkipToken: true,
-				},
-				{
+					}, SkipToken: new(true),
+				}.Build(),
+				message.ValidatorIn_builder{
 					Point: &common.DataPoint{
 						UniqId: uniqID, Attr: "ack",
 						ValOneof: &common.DataPoint_StrVal{StrVal: "OK"},
-					}, SkipToken: true,
-				},
+					}, SkipToken: new(true),
+				}.Build(),
 			},
 		},
 		{
 			"lora/application/4/device/" + uniqID + "/event/log",
 			&integration.LogEvent{Code: integration.LogCode_OTAA},
 			[]*message.ValidatorIn{
-				{
+				message.ValidatorIn_builder{
 					Point: &common.DataPoint{
 						UniqId: uniqID, Attr: device.AttrRaw,
 						ValOneof: &common.DataPoint_StrVal{
 							StrVal: `{"code":"OTAA"}`,
 						},
-					}, SkipToken: true,
-				},
-				{
+					}, SkipToken: new(true),
+				}.Build(),
+				message.ValidatorIn_builder{
 					Point: &common.DataPoint{
 						UniqId: uniqID, Attr: "log_level",
 						ValOneof: &common.DataPoint_StrVal{StrVal: "INFO"},
-					}, SkipToken: true,
-				},
-				{
+					}, SkipToken: new(true),
+				}.Build(),
+				message.ValidatorIn_builder{
 					Point: &common.DataPoint{
 						UniqId: uniqID, Attr: "log_code",
 						ValOneof: &common.DataPoint_StrVal{StrVal: "OTAA"},
-					}, SkipToken: true,
-				},
+					}, SkipToken: new(true),
+				}.Build(),
 			},
 		},
 		{
 			"lora/application/5/device/" + uniqID + "/event/txack",
 			&integration.TxAckEvent{},
 			[]*message.ValidatorIn{
-				{
+				message.ValidatorIn_builder{
 					Point: &common.DataPoint{
 						UniqId: uniqID, Attr: device.AttrRaw,
 						ValOneof: &common.DataPoint_StrVal{StrVal: `{}`},
-					}, SkipToken: true,
-				},
-				{
+					}, SkipToken: new(true),
+				}.Build(),
+				message.ValidatorIn_builder{
 					Point: &common.DataPoint{
 						UniqId:   uniqID,
 						Attr:     "tx_queued",
 						ValOneof: &common.DataPoint_BoolVal{BoolVal: true},
-					}, SkipToken: true,
-				},
+					}, SkipToken: new(true),
+				}.Build(),
 			},
 		},
 		{
 			"lora/application/6/device/" + uniqID + "/event/status",
 			&integration.StatusEvent{},
 			[]*message.ValidatorIn{
-				{
+				message.ValidatorIn_builder{
 					Point: &common.DataPoint{
 						UniqId: uniqID, Attr: device.AttrRaw,
 						ValOneof: &common.DataPoint_StrVal{StrVal: `{}`},
-					}, SkipToken: true,
-				},
-				{
+					}, SkipToken: new(true),
+				}.Build(),
+				message.ValidatorIn_builder{
 					Point: &common.DataPoint{
 						UniqId:   uniqID,
 						Attr:     "ext_power",
 						ValOneof: &common.DataPoint_BoolVal{BoolVal: false},
-					}, SkipToken: true,
-				},
+					}, SkipToken: new(true),
+				}.Build(),
 			},
 		},
 	}
@@ -460,11 +460,11 @@ func TestDecodeDevices(t *testing.T) {
 					t.Logf("vIn: %+v", vIn)
 
 					// Normalize generated trace ID.
-					res.Point.TraceId = vIn.GetPoint().GetTraceId()
+					res.GetPoint().TraceId = vIn.GetPoint().GetTraceId()
 					// Normalize timestamp.
 					require.WithinDuration(t, time.Now(),
 						vIn.GetPoint().GetTs().AsTime(), 2*time.Second)
-					res.Point.Ts = vIn.GetPoint().GetTs()
+					res.GetPoint().Ts = vIn.GetPoint().GetTs()
 
 					require.EqualExportedValues(t, res, vIn)
 				case <-time.After(2 * time.Second):

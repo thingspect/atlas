@@ -22,10 +22,9 @@ func GeneratePageToken(boundTS time.Time, prevID string) (string, error) {
 	}
 
 	// Build page token.
-	pt := &token.Page{
-		BoundTs: timestamppb.New(boundTS),
-		PrevId:  lastUUID[:],
-	}
+	pt := &token.Page{}
+	pt.SetBoundTs(timestamppb.New(boundTS))
+	pt.SetPrevId(lastUUID[:])
 
 	bPT, err := proto.Marshal(pt)
 	if err != nil {

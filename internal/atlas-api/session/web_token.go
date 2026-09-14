@@ -18,7 +18,8 @@ const (
 	WebTokenExp = 10 * 60
 
 	// #nosec G101 // False positive for hardcoded credentials.
-	errWebTokenExp consterr.Error = "session: token expired"
+	errWebTokenExp       consterr.Error = "session: token expired"
+	errWebTokenNoUserKey consterr.Error = "session: token no user or key"
 )
 
 // GenerateWebToken generates an encrypted protobuf web token in raw (no
@@ -43,13 +44,11 @@ func GenerateWebToken(pwtKey []byte, user *api.User) (
 	exp.Seconds += WebTokenExp
 	exp.Nanos = 0
 
-	// Build unencrypted PWT.
-	pwt := &token.Web{
-		IdOneof:   &token.Web_UserId{UserId: userUUID[:]},
-		OrgId:     orgUUID[:],
-		Role:      user.GetRole(),
-		ExpiresAt: exp,
-	}
+	pwt := &token.Web{}
+	pwt.SetUserId(userUUID[:])
+	pwt.SetOrgId(orgUUID[:])
+	pwt.SetRole(user.GetRole())
+	pwt.SetExpiresAt(exp)
 
 	bPWT, err := proto.Marshal(pwt)
 	if err != nil {
@@ -82,11 +81,10 @@ func GenerateKeyToken(pwtKey []byte, keyID, orgID string, role api.Role) (
 	}
 
 	// Build unencrypted PWT.
-	pwt := &token.Web{
-		IdOneof: &token.Web_KeyId{KeyId: keyUUID[:]},
-		OrgId:   orgUUID[:],
-		Role:    role,
-	}
+	pwt := &token.Web{}
+	pwt.SetKeyId(keyUUID[:])
+	pwt.SetOrgId(orgUUID[:])
+	pwt.SetRole(role)
 
 	bPWT, err := proto.Marshal(pwt)
 	if err != nil {
@@ -122,7 +120,8 @@ func ValidateWebToken(pwtKey []byte, ciphertoken string) (*Session, error) {
 	}
 
 	// Validate expiration, if present.
-	if pwt.GetExpiresAt() != nil && pwt.GetExpiresAt().AsTime().Before(time.Now()) {
+	if pwt.GetExpiresAt() != nil && pwt.GetExpiresAt().AsTime().
+		Before(time.Now()) {
 		return nil, errWebTokenExp
 	}
 
@@ -134,13 +133,15 @@ func ValidateWebToken(pwtKey []byte, ciphertoken string) (*Session, error) {
 	}
 
 	var idUUID uuid.UUID
-	switch id := pwt.GetIdOneof().(type) {
-	case *token.Web_UserId:
-		_ = copy(idUUID[:], id.UserId)
+	switch pwt.WhichIdOneof() {
+	case token.Web_UserId_case:
+		_ = copy(idUUID[:], pwt.GetUserId())
 		sess.UserID = idUUID.String()
-	case *token.Web_KeyId:
-		_ = copy(idUUID[:], id.KeyId)
+	case token.Web_KeyId_case:
+		_ = copy(idUUID[:], pwt.GetKeyId())
 		sess.KeyID = idUUID.String()
+	case token.Web_IdOneof_not_set_case:
+		return nil, errWebTokenNoUserKey
 	}
 
 	var orgUUID uuid.UUID

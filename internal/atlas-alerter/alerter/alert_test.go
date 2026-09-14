@@ -58,57 +58,57 @@ func TestAlertMessages(t *testing.T) {
 		inpSeedCache  bool
 	}{
 		{
-			&message.EventerOut{
+			message.EventerOut_builder{
 				Point:  &common.DataPoint{},
 				Device: random.Device("ale", org.GetId()),
 				Rule:   random.Rule("ale", org.GetId()),
-			},
+			}.Build(),
 			[]*api.Alarm{appAlarm},
 			[]*api.User{random.User("ale", org.GetId())},
 			1, 1, 0, 0, 1, false,
 		},
 		{
-			&message.EventerOut{
+			message.EventerOut_builder{
 				Point:  &common.DataPoint{},
 				Device: random.Device("ale", org.GetId()),
 				Rule:   random.Rule("ale", org.GetId()),
-			},
+			}.Build(),
 			[]*api.Alarm{smsAlarm},
 			[]*api.User{random.User("ale", org.GetId())},
 			1, 0, 1, 0, 1, false,
 		},
 		{
-			&message.EventerOut{
+			message.EventerOut_builder{
 				Point:  &common.DataPoint{},
 				Device: random.Device("ale", org.GetId()),
 				Rule:   random.Rule("ale", org.GetId()),
-			}, []*api.Alarm{emailAlarm}, []*api.User{
+			}.Build(), []*api.Alarm{emailAlarm}, []*api.User{
 				random.User("ale", org.GetId()),
 			}, 1, 0, 0, 1, 1, false,
 		},
 		{
-			&message.EventerOut{
+			message.EventerOut_builder{
 				Point:  &common.DataPoint{},
 				Device: random.Device("ale", org.GetId()),
 				Rule:   random.Rule("ale", org.GetId()),
-			},
+			}.Build(),
 			[]*api.Alarm{disAlarm},
 			[]*api.User{random.User("ale", org.GetId())},
 			0, 0, 0, 0, 0, false,
 		},
 		{
-			&message.EventerOut{
+			message.EventerOut_builder{
 				Point:  &common.DataPoint{},
 				Device: random.Device("ale", org.GetId()),
 				Rule:   random.Rule("ale", org.GetId()),
-			}, []*api.Alarm{appAlarm}, []*api.User{}, 1, 0, 0, 0, 0, false,
+			}.Build(), []*api.Alarm{appAlarm}, []*api.User{}, 1, 0, 0, 0, 0, false,
 		},
 		{
-			&message.EventerOut{
+			message.EventerOut_builder{
 				Point:  &common.DataPoint{},
 				Device: random.Device("ale", org.GetId()),
 				Rule:   random.Rule("ale", org.GetId()),
-			},
+			}.Build(),
 			[]*api.Alarm{appAlarm},
 			[]*api.User{random.User("ale", org.GetId())},
 			1, 0, 0, 0, 0, true,
@@ -271,100 +271,101 @@ func TestAlertMessagesError(t *testing.T) {
 		},
 		// Missing device.
 		{
-			&message.EventerOut{Point: &common.DataPoint{}}, nil, nil, nil, nil,
-			nil, nil, nil, nil, nil, 0, 0, 0, 0, 0, 0,
+			message.EventerOut_builder{Point: &common.DataPoint{}}.Build(), nil,
+			nil, nil, nil, nil, nil, nil, nil, nil, 0, 0, 0, 0, 0, 0,
 		},
 		// Missing rule.
 		{
-			&message.EventerOut{
+			message.EventerOut_builder{
 				Point: &common.DataPoint{}, Device: &api.Device{},
-			}, nil, nil, nil, nil, nil, nil, nil, nil, nil, 0, 0, 0, 0, 0, 0,
+			}.Build(), nil, nil, nil, nil, nil, nil, nil, nil, nil, 0, 0, 0, 0,
+			0, 0,
 		},
 		// Orger error.
 		{
-			&message.EventerOut{
+			message.EventerOut_builder{
 				Point: &common.DataPoint{}, Device: &api.Device{},
 				Rule: &api.Rule{},
-			}, nil, errTestProc, nil, nil, nil, nil, nil, nil, nil, 1, 0, 0, 0,
-			0, 0,
+			}.Build(), nil, errTestProc, nil, nil, nil, nil, nil, nil, nil, 1,
+			0, 0, 0, 0, 0,
 		},
 		// Alarmer error.
 		{
-			&message.EventerOut{
+			message.EventerOut_builder{
 				Point: &common.DataPoint{}, Device: &api.Device{},
 				Rule: &api.Rule{},
-			}, org, nil, nil, errTestProc, nil, nil, nil, nil, nil, 1, 1, 0, 0,
-			0, 0,
+			}.Build(), org, nil, nil, errTestProc, nil, nil, nil, nil, nil, 1,
+			1, 0, 0, 0, 0,
 		},
 		// Userer error.
 		{
-			&message.EventerOut{
+			message.EventerOut_builder{
 				Point: &common.DataPoint{}, Device: &api.Device{},
 				Rule: &api.Rule{},
-			}, org, nil,
+			}.Build(), org, nil,
 			[]*api.Alarm{appAlarm},
 			nil, nil, errTestProc, nil, nil, nil, 1, 1, 1, 0, 0, 0,
 		},
 		// Bad alarm subject.
 		{
-			&message.EventerOut{
+			message.EventerOut_builder{
 				Point: &common.DataPoint{}, Device: &api.Device{},
 				Rule: &api.Rule{},
-			}, org, nil, []*api.Alarm{badSubj}, nil, []*api.User{
+			}.Build(), org, nil, []*api.Alarm{badSubj}, nil, []*api.User{
 				random.User("ale", uuid.NewV7().String()),
 			}, nil, nil, nil, nil, 1, 1, 1, 0, 0, 0,
 		},
 		// Bad alarm body.
 		{
-			&message.EventerOut{
+			message.EventerOut_builder{
 				Point: &common.DataPoint{}, Device: &api.Device{},
 				Rule: &api.Rule{},
-			}, org, nil, []*api.Alarm{badBody}, nil, []*api.User{
+			}.Build(), org, nil, []*api.Alarm{badBody}, nil, []*api.User{
 				random.User("ale", uuid.NewV7().String()),
 			}, nil, nil, nil, nil, 1, 1, 1, 0, 0, 0,
 		},
 		// Cacher error.
 		{
-			&message.EventerOut{
+			message.EventerOut_builder{
 				Point: &common.DataPoint{}, Device: &api.Device{},
 				Rule: &api.Rule{},
-			}, org, nil, []*api.Alarm{appAlarm}, nil, []*api.User{
+			}.Build(), org, nil, []*api.Alarm{appAlarm}, nil, []*api.User{
 				random.User("ale", uuid.NewV7().String()),
 			}, nil, errTestProc, nil, nil, 1, 1, 1, 1, 0, 0,
 		},
 		// Notifier error.
 		{
-			&message.EventerOut{
+			message.EventerOut_builder{
 				Point: &common.DataPoint{}, Device: &api.Device{},
 				Rule: &api.Rule{},
-			}, org, nil, []*api.Alarm{appAlarm}, nil, []*api.User{
+			}.Build(), org, nil, []*api.Alarm{appAlarm}, nil, []*api.User{
 				random.User("ale", uuid.NewV7().String()),
 			}, nil, nil, errTestProc, nil, 1, 1, 1, 1, 1, 1,
 		},
 		// Unspecified alarm type.
 		{
-			&message.EventerOut{
+			message.EventerOut_builder{
 				Point: &common.DataPoint{}, Device: &api.Device{},
 				Rule: &api.Rule{},
-			}, org, nil, []*api.Alarm{unspecType}, nil, []*api.User{
+			}.Build(), org, nil, []*api.Alarm{unspecType}, nil, []*api.User{
 				random.User("ale", uuid.NewV7().String()),
 			}, nil, nil, nil, nil, 1, 1, 1, 1, 0, 1,
 		},
 		// Unknown alarm type.
 		{
-			&message.EventerOut{
+			message.EventerOut_builder{
 				Point: &common.DataPoint{}, Device: &api.Device{},
 				Rule: &api.Rule{},
-			}, org, nil, []*api.Alarm{unknownType}, nil, []*api.User{
+			}.Build(), org, nil, []*api.Alarm{unknownType}, nil, []*api.User{
 				random.User("ale", uuid.NewV7().String()),
 			}, nil, nil, nil, nil, 1, 1, 1, 1, 0, 1,
 		},
 		// Alerter error.
 		{
-			&message.EventerOut{
+			message.EventerOut_builder{
 				Point: &common.DataPoint{}, Device: &api.Device{},
 				Rule: &api.Rule{},
-			}, org, nil, []*api.Alarm{appAlarm}, nil, []*api.User{
+			}.Build(), org, nil, []*api.Alarm{appAlarm}, nil, []*api.User{
 				random.User("ale", uuid.NewV7().String()),
 			}, nil, nil, nil, errTestProc, 1, 1, 1, 1, 1, 1,
 		},

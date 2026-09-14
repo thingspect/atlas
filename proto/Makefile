@@ -4,7 +4,7 @@
 # filesystem depth
 generate:
 	cp -Rf ../../proto/protobuf/api ../../proto/protobuf/common protobuf/
-	docker compose build --progress=plain --no-cache --pull
+	docker compose --progress=plain build --no-cache --pull
 	docker compose up --menu=false
 	docker compose down
 	rm -rf protobuf/api protobuf/common

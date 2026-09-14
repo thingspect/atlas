@@ -36,7 +36,7 @@ func TestAccumulateMessages(t *testing.T) {
 		inp *message.ValidatorOut
 	}{
 		{
-			&message.ValidatorOut{
+			message.ValidatorOut_builder{
 				Point: &common.DataPoint{
 					UniqId: random.String(16), Attr: radiobridge.AttrCount,
 					ValOneof: &common.DataPoint_IntVal{IntVal: 123},
@@ -44,10 +44,10 @@ func TestAccumulateMessages(t *testing.T) {
 					Token:    uuid.NewV7().String(),
 					TraceId:  uuid.NewV7().String(),
 				}, Device: dev,
-			},
+			}.Build(),
 		},
 		{
-			&message.ValidatorOut{
+			message.ValidatorOut_builder{
 				Point: &common.DataPoint{
 					UniqId: random.String(16), Attr: decode.AttrTempC,
 					ValOneof: &common.DataPoint_Fl64Val{Fl64Val: 9.3},
@@ -55,10 +55,10 @@ func TestAccumulateMessages(t *testing.T) {
 					Token:    uuid.NewV7().String(),
 					TraceId:  uuid.NewV7().String(),
 				}, Device: dev,
-			},
+			}.Build(),
 		},
 		{
-			&message.ValidatorOut{
+			message.ValidatorOut_builder{
 				Point: &common.DataPoint{
 					UniqId: random.String(16), Attr: "power",
 					ValOneof: &common.DataPoint_StrVal{StrVal: "line"},
@@ -66,7 +66,7 @@ func TestAccumulateMessages(t *testing.T) {
 					Token:    uuid.NewV7().String(),
 					TraceId:  uuid.NewV7().String(),
 				}, Device: dev,
-			},
+			}.Build(),
 		},
 	}
 
@@ -122,21 +122,24 @@ func TestAccumulateMessagesError(t *testing.T) {
 		// Bad payload.
 		{nil, nil, 0},
 		// Missing data point.
-		{&message.ValidatorOut{}, nil, 0},
+		{message.ValidatorOut_builder{}.Build(), nil, 0},
 		// Missing device.
-		{&message.ValidatorOut{Point: &common.DataPoint{}}, nil, 0},
+		{
+			message.ValidatorOut_builder{Point: &common.DataPoint{}}.Build(),
+			nil, 0,
+		},
 		// Duplicate data point.
-		{&message.ValidatorOut{
+		{message.ValidatorOut_builder{
 			Point: &common.DataPoint{}, Device: &api.Device{},
-		}, dao.ErrAlreadyExists, 1},
+		}.Build(), dao.ErrAlreadyExists, 1},
 		// Invalid data point.
-		{&message.ValidatorOut{
+		{message.ValidatorOut_builder{
 			Point: &common.DataPoint{}, Device: &api.Device{},
-		}, dao.ErrInvalidFormat, 1},
+		}.Build(), dao.ErrInvalidFormat, 1},
 		// DataPointer error.
-		{&message.ValidatorOut{
+		{message.ValidatorOut_builder{
 			Point: &common.DataPoint{}, Device: &api.Device{},
-		}, errTestProc, 1},
+		}.Build(), errTestProc, 1},
 	}
 
 	for _, test := range tests {

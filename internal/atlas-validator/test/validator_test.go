@@ -45,75 +45,75 @@ func TestValidateMessages(t *testing.T) {
 		res *message.ValidatorOut
 	}{
 		{
-			&message.ValidatorIn{
+			message.ValidatorIn_builder{
 				Point: &common.DataPoint{
 					UniqId: createDev.GetUniqId(), Attr: "val-motion",
 					ValOneof: &common.DataPoint_IntVal{IntVal: 123}, Ts: now,
 					Token: createDev.GetToken(), TraceId: traceID,
-				}, OrgId: createOrg.GetId(),
-			}, &message.ValidatorOut{
+				}, OrgId: &createOrg.Id,
+			}.Build(), message.ValidatorOut_builder{
 				Point: &common.DataPoint{
 					UniqId: createDev.GetUniqId(), Attr: "val-motion",
 					ValOneof: &common.DataPoint_IntVal{IntVal: 123}, Ts: now,
 					Token: createDev.GetToken(), TraceId: traceID,
 				}, Device: dev,
-			},
+			}.Build(),
 		},
 		{
-			&message.ValidatorIn{
+			message.ValidatorIn_builder{
 				Point: &common.DataPoint{
 					UniqId: createDev.GetUniqId(), Attr: "val-temp",
 					ValOneof: &common.DataPoint_Fl64Val{Fl64Val: 9.3}, Ts: now,
 					Token: createDev.GetToken(), TraceId: traceID,
-				}, OrgId: createOrg.GetId(),
-			}, &message.ValidatorOut{
+				}, OrgId: &createOrg.Id,
+			}.Build(), message.ValidatorOut_builder{
 				Point: &common.DataPoint{
 					UniqId: createDev.GetUniqId(), Attr: "val-temp",
 					ValOneof: &common.DataPoint_Fl64Val{Fl64Val: 9.3}, Ts: now,
 					Token: createDev.GetToken(), TraceId: traceID,
 				}, Device: dev,
-			},
+			}.Build(),
 		},
 		{
-			&message.ValidatorIn{
+			message.ValidatorIn_builder{
 				Point: &common.DataPoint{
 					UniqId: createDev.GetUniqId(), Attr: "val-power",
 					ValOneof: &common.DataPoint_StrVal{StrVal: "line"}, Ts: now,
 					Token: createDev.GetToken(), TraceId: traceID,
-				}, OrgId: createOrg.GetId(),
-			}, &message.ValidatorOut{
+				}, OrgId: &createOrg.Id,
+			}.Build(), message.ValidatorOut_builder{
 				Point: &common.DataPoint{
 					UniqId: createDev.GetUniqId(), Attr: "val-power",
 					ValOneof: &common.DataPoint_StrVal{StrVal: "line"}, Ts: now,
 					Token: createDev.GetToken(), TraceId: traceID,
 				}, Device: dev,
-			},
+			}.Build(),
 		},
 		{
-			&message.ValidatorIn{
+			message.ValidatorIn_builder{
 				Point: &common.DataPoint{
 					UniqId: createDev.GetUniqId(), Attr: "val-leak",
 					ValOneof: boolVal, Ts: now, TraceId: traceID,
-				}, OrgId: createOrg.GetId(), SkipToken: true,
-			}, &message.ValidatorOut{
+				}, OrgId: &createOrg.Id, SkipToken: new(true),
+			}.Build(), message.ValidatorOut_builder{
 				Point: &common.DataPoint{
 					UniqId: createDev.GetUniqId(), Attr: "val-leak",
 					ValOneof: boolVal, Ts: now, TraceId: traceID,
 				}, Device: dev,
-			},
+			}.Build(),
 		},
 		{
-			&message.ValidatorIn{
+			message.ValidatorIn_builder{
 				Point: &common.DataPoint{
 					UniqId: createDev.GetUniqId(), Attr: "val-leak",
 					ValOneof: boolVal, Ts: now, TraceId: traceID,
-				}, SkipToken: true,
-			}, &message.ValidatorOut{
+				}, SkipToken: new(true),
+			}.Build(), message.ValidatorOut_builder{
 				Point: &common.DataPoint{
 					UniqId: createDev.GetUniqId(), Attr: "val-leak",
 					ValOneof: boolVal, Ts: now, TraceId: traceID,
 				}, Device: dev,
-			},
+			}.Build(),
 		},
 	}
 
@@ -170,44 +170,44 @@ func TestValidateMessagesError(t *testing.T) {
 		{nil},
 		// Device not found.
 		{
-			&message.ValidatorIn{
+			message.ValidatorIn_builder{
 				Point: &common.DataPoint{UniqId: random.String(16)},
-			},
+			}.Build(),
 		},
 		// Missing value.
 		{
-			&message.ValidatorIn{
+			message.ValidatorIn_builder{
 				Point: &common.DataPoint{
 					UniqId: createDev.GetUniqId(), Attr: random.String(10),
 				},
-			},
+			}.Build(),
 		},
 		// Invalid org ID.
 		{
-			&message.ValidatorIn{
+			message.ValidatorIn_builder{
 				Point: &common.DataPoint{
 					UniqId: createDev.GetUniqId(), Attr: random.String(10),
 					ValOneof: &common.DataPoint_IntVal{},
-				}, OrgId: "val-aaa",
-			},
+				}, OrgId: new("val-aaa"),
+			}.Build(),
 		},
 		// Device disabled.
 		{
-			&message.ValidatorIn{
+			message.ValidatorIn_builder{
 				Point: &common.DataPoint{
 					UniqId: createDisDev.GetUniqId(), Attr: random.String(10),
 					ValOneof: &common.DataPoint_IntVal{},
-				}, OrgId: createOrg.GetId(), SkipToken: true,
-			},
+				}, OrgId: &createOrg.Id, SkipToken: new(true),
+			}.Build(),
 		},
 		// Invalid token.
 		{
-			&message.ValidatorIn{
+			message.ValidatorIn_builder{
 				Point: &common.DataPoint{
 					UniqId: createDev.GetUniqId(), Attr: random.String(10),
 					ValOneof: &common.DataPoint_IntVal{}, Token: "val-aaa",
-				}, OrgId: createOrg.GetId(),
-			},
+				}, OrgId: &createOrg.Id,
+			}.Build(),
 		},
 	}
 

@@ -42,51 +42,49 @@ func TestEventMessages(t *testing.T) {
 		res      []*message.EventerOut
 	}{
 		{
-			&message.ValidatorOut{Point: &common.DataPoint{
+			message.ValidatorOut_builder{Point: &common.DataPoint{
 				Attr: radiobridge.AttrCount, Ts: now,
 				TraceId: traceID,
-			}},
+			}}.Build(),
 			[]*api.Rule{{Id: ruleID, Expr: rule.ExprTrue}},
 			1,
-			[]*message.EventerOut{{Point: &common.DataPoint{
-				Attr: radiobridge.AttrCount,
-				Ts:   now, TraceId: traceID,
-			}, Rule: &api.Rule{
-				Id:   ruleID,
-				Expr: rule.ExprTrue,
-			}}},
+			[]*message.EventerOut{message.EventerOut_builder{
+				Point: &common.DataPoint{
+					Attr: radiobridge.AttrCount, Ts: now, TraceId: traceID,
+				}, Rule: &api.Rule{Id: ruleID, Expr: rule.ExprTrue},
+			}.Build()},
 		},
-		{&message.ValidatorOut{Point: &common.DataPoint{
+		{message.ValidatorOut_builder{Point: &common.DataPoint{
 			Attr: decode.AttrTempC, Ts: now,
 			TraceId: traceID,
-		}}, []*api.Rule{
+		}}.Build(), []*api.Rule{
 			{Id: ruleID, Expr: rule.ExprTrue},
 			{Id: ruleID, Expr: rule.ExprTrue},
 		}, 2, []*message.EventerOut{
-			{
+			message.EventerOut_builder{
 				Point: &common.DataPoint{
 					Attr: decode.AttrTempC,
 					Ts:   now, TraceId: traceID,
 				},
 				Rule: &api.Rule{Id: ruleID, Expr: rule.ExprTrue},
-			},
-			{
+			}.Build(),
+			message.EventerOut_builder{
 				Point: &common.DataPoint{
 					Attr: decode.AttrTempC,
 					Ts:   now, TraceId: traceID,
 				},
 				Rule: &api.Rule{Id: ruleID, Expr: rule.ExprTrue},
-			},
+			}.Build(),
 		}},
-		{&message.ValidatorOut{Point: &common.DataPoint{
+		{message.ValidatorOut_builder{Point: &common.DataPoint{
 			Attr: "power", Ts: now,
 			TraceId: traceID,
-		}}, nil, 0, nil},
+		}}.Build(), nil, 0, nil},
 		{
-			&message.ValidatorOut{Point: &common.DataPoint{
+			message.ValidatorOut_builder{Point: &common.DataPoint{
 				Attr: "leak", Ts: now,
 				TraceId: traceID,
-			}},
+			}}.Build(),
 			[]*api.Rule{{Id: ruleID, Expr: rule.ExprFalse}},
 			0,
 			nil,
@@ -99,7 +97,7 @@ func TestEventMessages(t *testing.T) {
 
 			dev := random.Device("ev", uuid.NewV7().String())
 			dev.OrgId = orgID
-			test.inpVOut.Device = dev
+			test.inpVOut.SetDevice(dev)
 
 			vOutQueue := queue.NewFake()
 			vOutSub, err := vOutQueue.Subscribe("")
@@ -159,7 +157,7 @@ func TestEventMessages(t *testing.T) {
 					t.Logf("eOut: %+v", eOut)
 
 					// Normalize device.
-					res.Device = dev
+					res.SetDevice(dev)
 
 					// Result must be cloned due to its shared Timestamp across
 					// tests.
@@ -200,41 +198,44 @@ func TestEventMessagesError(t *testing.T) {
 		// Bad payload.
 		{nil, nil, 0, nil, nil, 0},
 		// Missing data point.
-		{&message.ValidatorOut{}, nil, 0, nil, nil, 0},
+		{message.ValidatorOut_builder{}.Build(), nil, 0, nil, nil, 0},
 		// Missing device.
 		{
-			&message.ValidatorOut{Point: &common.DataPoint{}}, nil, 0, nil, nil,
-			0,
+			message.ValidatorOut_builder{Point: &common.DataPoint{}}.Build(),
+			nil, 0, nil, nil, 0,
 		},
 		// Ruler error.
-		{&message.ValidatorOut{
+		{message.ValidatorOut_builder{
 			Point:  &common.DataPoint{},
 			Device: &api.Device{},
-		}, errTestProc, 1, nil, nil, 0},
+		}.Build(), errTestProc, 1, nil, nil, 0},
 		// Eval error.
 		{
-			&message.ValidatorOut{
+			message.ValidatorOut_builder{
 				Point:  &common.DataPoint{Ts: now},
 				Device: &api.Device{},
-			}, nil, 1,
+			}.Build(),
+			nil, 1,
 			[]*api.Rule{{Expr: `1 + "aaa"`}},
 			nil, 0,
 		},
 		// Eventer already exists.
 		{
-			&message.ValidatorOut{
+			message.ValidatorOut_builder{
 				Point:  &common.DataPoint{Ts: now},
 				Device: &api.Device{},
-			}, nil, 1,
+			}.Build(),
+			nil, 1,
 			[]*api.Rule{{Expr: rule.ExprTrue}},
 			dao.ErrAlreadyExists, 1,
 		},
 		// Eventer error.
 		{
-			&message.ValidatorOut{
+			message.ValidatorOut_builder{
 				Point:  &common.DataPoint{Ts: now},
 				Device: &api.Device{},
-			}, nil, 1,
+			}.Build(),
+			nil, 1,
 			[]*api.Rule{{Expr: rule.ExprTrue}},
 			errTestProc, 1,
 		},

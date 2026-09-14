@@ -53,9 +53,10 @@ func TestPublishDataPoints(t *testing.T) {
 			// Normalize generated trace ID.
 			point.TraceId = vIn.GetPoint().GetTraceId()
 
-			require.EqualExportedValues(t, &message.ValidatorIn{
-				Point: point, OrgId: globalAdminOrgID, SkipToken: true,
-			}, vIn)
+			require.EqualExportedValues(t, message.ValidatorIn_builder{
+				Point: point, OrgId: &globalAdminOrgID,
+				SkipToken: new(true),
+			}.Build(), vIn)
 		case <-time.After(testTimeout):
 			t.Fatal("Message timed out")
 		}
@@ -94,9 +95,10 @@ func TestPublishDataPoints(t *testing.T) {
 				vIn.GetPoint().GetTs().AsTime(), 5*time.Second)
 			point.Ts = vIn.GetPoint().GetTs()
 
-			require.EqualExportedValues(t, &message.ValidatorIn{
-				Point: point, OrgId: globalAdminOrgID, SkipToken: true,
-			}, vIn)
+			require.EqualExportedValues(t, message.ValidatorIn_builder{
+				Point: point, OrgId: &globalAdminOrgID,
+				SkipToken: new(true),
+			}.Build(), vIn)
 		case <-time.After(testTimeout):
 			t.Fatal("Message timed out")
 		}

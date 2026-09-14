@@ -127,11 +127,11 @@ func (ev *Eventer) evalRules(
 			return
 		}
 
-		eOut := &message.EventerOut{
-			Point:  vOut.GetPoint(),
-			Device: vOut.GetDevice(),
-			Rule:   r,
-		}
+		eOut := &message.EventerOut{}
+		eOut.SetPoint(vOut.GetPoint())
+		eOut.SetDevice(vOut.GetDevice())
+		eOut.SetRule(r)
+
 		bEOut, err := proto.Marshal(eOut)
 		if err != nil {
 			metric.Incr("error", map[string]string{metric.TagFunc: "marshal"})

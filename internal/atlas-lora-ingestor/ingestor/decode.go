@@ -105,7 +105,7 @@ func (ing *Ingestor) decodeDevices() {
 		metric.Incr("received", map[string]string{"type": "device"})
 
 		// Set up logging fields.
-		traceID := uuid.New()
+		traceID := uuid.NewV7()
 		logger := alog.
 			WithField("type", "device").
 			WithField("traceID", traceID.String())
@@ -171,12 +171,11 @@ func (ing *Ingestor) decodeDevices() {
 		// Build and publish DecoderIn messages, if present.
 		if len(data) > 0 {
 			successTarget++
-			pIn := &message.DecoderIn{
-				UniqId:  topicParts[4],
-				Data:    data,
-				Ts:      ts,
-				TraceId: traceID[:],
-			}
+			pIn := &message.DecoderIn{}
+			pIn.SetUniqId(topicParts[4])
+			pIn.SetData(data)
+			pIn.SetTs(ts)
+			pIn.SetTraceId(traceID[:])
 
 			bPIn, err := proto.Marshal(pIn)
 			if err != nil {

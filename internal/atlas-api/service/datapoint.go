@@ -68,16 +68,15 @@ func (d *DataPoint) PublishDataPoints(
 
 	// Build and publish ValidatorIn messages.
 	for _, point := range req.GetPoints() {
-		vIn := &message.ValidatorIn{
-			Point:     point,
-			OrgId:     sess.OrgID,
-			SkipToken: true,
-		}
-		vIn.Point.TraceId = sess.TraceID.String()
+		vIn := &message.ValidatorIn{}
+		vIn.SetPoint(point)
+		vIn.SetOrgId(sess.OrgID)
+		vIn.SetSkipToken(true)
+		vIn.GetPoint().TraceId = sess.TraceID.String()
 
 		// Default to current timestamp if not provided.
 		if vIn.GetPoint().GetTs() == nil {
-			vIn.Point.Ts = timestamppb.Now()
+			vIn.GetPoint().Ts = timestamppb.Now()
 		}
 
 		bVIn, err := proto.Marshal(vIn)
