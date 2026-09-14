@@ -50,21 +50,23 @@ func TestDecodeMessages(t *testing.T) {
 					Token: pointToken,
 				},
 			}, []*message.ValidatorIn{
-				{
+				message.ValidatorIn_builder{
 					Point: &common.DataPoint{
 						UniqId: uniqIDPoint,
-						Attr:   radiobridge.AttrCount, ValOneof: &common.DataPoint_IntVal{
+						Attr:   radiobridge.AttrCount,
+						ValOneof: &common.DataPoint_IntVal{
 							IntVal: 123,
 						}, Ts: now, Token: pointToken,
-					}, OrgId: orgID,
-				}, {
+					}, OrgId: &orgID,
+				}.Build(), message.ValidatorIn_builder{
 					Point: &common.DataPoint{
 						UniqId: uniqIDPoint,
-						Attr:   radiobridge.AttrCount, ValOneof: &common.DataPoint_IntVal{
+						Attr:   radiobridge.AttrCount,
+						ValOneof: &common.DataPoint_IntVal{
 							IntVal: 321,
 						}, Ts: now, Token: pointToken,
-					}, OrgId: orgID,
-				},
+					}, OrgId: &orgID,
+				}.Build(),
 			},
 		},
 		{
@@ -74,13 +76,13 @@ func TestDecodeMessages(t *testing.T) {
 					ValOneof: &common.DataPoint_Fl64Val{Fl64Val: 9.3},
 				},
 			}, []*message.ValidatorIn{
-				{
+				message.ValidatorIn_builder{
 					Point: &common.DataPoint{
 						UniqId: uniqIDTopic, Attr: decode.AttrTempC,
 						ValOneof: &common.DataPoint_Fl64Val{Fl64Val: 9.3},
 						Token:    paylToken,
-					}, OrgId: orgID,
-				},
+					}, OrgId: &orgID,
+				}.Build(),
 			},
 		},
 		{
@@ -93,13 +95,13 @@ func TestDecodeMessages(t *testing.T) {
 				},
 			},
 			[]*message.ValidatorIn{
-				{
+				message.ValidatorIn_builder{
 					Point: &common.DataPoint{
 						UniqId: uniqIDTopic, Attr: "power",
 						ValOneof: &common.DataPoint_StrVal{StrVal: "line"},
 						Token:    paylToken,
-					}, OrgId: orgID,
-				},
+					}, OrgId: &orgID,
+				}.Build(),
 			},
 		},
 	}
@@ -139,12 +141,12 @@ func TestDecodeMessages(t *testing.T) {
 					t.Logf("vIn: %+v", vIn)
 
 					// Normalize generated trace ID.
-					res.Point.TraceId = vIn.GetPoint().GetTraceId()
+					res.GetPoint().TraceId = vIn.GetPoint().GetTraceId()
 					// Normalize timestamp.
 					if test.inpPoints[i].GetTs() == nil {
 						assert.WithinDuration(t, time.Now(),
 							vIn.GetPoint().GetTs().AsTime(), testTimeout)
-						res.Point.Ts = vIn.GetPoint().GetTs()
+						res.GetPoint().Ts = vIn.GetPoint().GetTs()
 					}
 
 					assert.EqualExportedValues(t, res, vIn)

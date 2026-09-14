@@ -54,20 +54,20 @@ func TestDecodeMessages(t *testing.T) {
 				},
 			},
 			[]*message.ValidatorIn{
-				{
+				message.ValidatorIn_builder{
 					Point: &common.DataPoint{
 						UniqId: uniqIDPoint, Attr: radiobridge.AttrCount,
 						ValOneof: &common.DataPoint_IntVal{IntVal: 123},
 						Ts:       now, Token: pointToken,
-					}, OrgId: orgID,
-				},
-				{
+					}, OrgId: &orgID,
+				}.Build(),
+				message.ValidatorIn_builder{
 					Point: &common.DataPoint{
 						UniqId: uniqIDPoint, Attr: radiobridge.AttrCount,
 						ValOneof: &common.DataPoint_IntVal{IntVal: 321},
 						Ts:       now, Token: pointToken,
-					}, OrgId: orgID,
-				},
+					}, OrgId: &orgID,
+				}.Build(),
 			},
 		},
 		{
@@ -80,13 +80,13 @@ func TestDecodeMessages(t *testing.T) {
 				},
 			},
 			[]*message.ValidatorIn{
-				{
+				message.ValidatorIn_builder{
 					Point: &common.DataPoint{
 						UniqId: uniqIDTopic, Attr: decode.AttrTempC,
 						ValOneof: &common.DataPoint_Fl64Val{Fl64Val: 9.3},
 						Token:    paylToken,
-					}, OrgId: orgID,
-				},
+					}, OrgId: &orgID,
+				}.Build(),
 			},
 		},
 		{
@@ -99,13 +99,13 @@ func TestDecodeMessages(t *testing.T) {
 				},
 			},
 			[]*message.ValidatorIn{
-				{
+				message.ValidatorIn_builder{
 					Point: &common.DataPoint{
 						UniqId: uniqIDTopic, Attr: "power",
 						ValOneof: &common.DataPoint_StrVal{StrVal: "line"},
 						Token:    paylToken,
-					}, OrgId: orgID,
-				},
+					}, OrgId: &orgID,
+				}.Build(),
 			},
 		},
 	}
@@ -162,12 +162,12 @@ func TestDecodeMessages(t *testing.T) {
 					t.Logf("vIn: %+v", vIn)
 
 					// Normalize generated trace ID.
-					res.Point.TraceId = vIn.GetPoint().GetTraceId()
+					res.GetPoint().TraceId = vIn.GetPoint().GetTraceId()
 					// Normalize timestamp.
 					if test.inpPoints[i].GetTs() == nil {
 						require.WithinDuration(t, time.Now(),
 							vIn.GetPoint().GetTs().AsTime(), 2*time.Second)
-						res.Point.Ts = vIn.GetPoint().GetTs()
+						res.GetPoint().Ts = vIn.GetPoint().GetTs()
 					}
 
 					require.EqualExportedValues(t, res, vIn)
@@ -257,37 +257,37 @@ func TestDataPointToVIn(t *testing.T) {
 				UniqId: uniqIDPoint, Attr: radiobridge.AttrCount,
 				ValOneof: &common.DataPoint_IntVal{IntVal: 123}, Ts: now,
 				Token: pointToken,
-			}, &message.ValidatorIn{
+			}, message.ValidatorIn_builder{
 				Point: &common.DataPoint{
 					UniqId: uniqIDPoint, Attr: radiobridge.AttrCount,
 					ValOneof: &common.DataPoint_IntVal{IntVal: 123}, Ts: now,
 					Token: pointToken, TraceId: traceID,
-				}, OrgId: orgID,
-			},
+				}, OrgId: &orgID,
+			}.Build(),
 		},
 		{
 			[]string{"v1", orgID, uniqIDTopic}, paylToken, &common.DataPoint{
 				Attr:     decode.AttrTempC,
 				ValOneof: &common.DataPoint_Fl64Val{Fl64Val: 9.3},
-			}, &message.ValidatorIn{
+			}, message.ValidatorIn_builder{
 				Point: &common.DataPoint{
 					UniqId: uniqIDTopic, Attr: decode.AttrTempC,
 					ValOneof: &common.DataPoint_Fl64Val{Fl64Val: 9.3},
 					Token:    paylToken, TraceId: traceID,
-				}, OrgId: orgID,
-			},
+				}, OrgId: &orgID,
+			}.Build(),
 		},
 		{
 			[]string{"v1", orgID, uniqIDTopic}, paylToken, &common.DataPoint{
 				Attr:     "power",
 				ValOneof: &common.DataPoint_StrVal{StrVal: "line"},
-			}, &message.ValidatorIn{
+			}, message.ValidatorIn_builder{
 				Point: &common.DataPoint{
 					UniqId: uniqIDTopic, Attr: "power",
 					ValOneof: &common.DataPoint_StrVal{StrVal: "line"},
 					Token:    paylToken, TraceId: traceID,
-				}, OrgId: orgID,
-			},
+				}, OrgId: &orgID,
+			}.Build(),
 		},
 	}
 
@@ -306,7 +306,7 @@ func TestDataPointToVIn(t *testing.T) {
 			if origTS == nil {
 				require.WithinDuration(t, time.Now(),
 					res.GetPoint().GetTs().AsTime(), 2*time.Second)
-				test.res.Point.Ts = res.GetPoint().GetTs()
+				test.res.GetPoint().Ts = res.GetPoint().GetTs()
 			}
 
 			require.EqualExportedValues(t, test.res, res)

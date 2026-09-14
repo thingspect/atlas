@@ -103,27 +103,26 @@ func (ing *Ingestor) decodeMessages() {
 func dataPointToVIn(
 	traceID, paylToken string, topicParts []string, point *common.DataPoint,
 ) *message.ValidatorIn {
-	vIn := &message.ValidatorIn{
-		Point: point,
-		OrgId: topicParts[1],
-	}
+	vIn := &message.ValidatorIn{}
+	vIn.SetPoint(point)
+	vIn.SetOrgId(topicParts[1])
 
 	// Override trace ID.
-	vIn.Point.TraceId = traceID
+	vIn.GetPoint().TraceId = traceID
 
 	// Override UniqID with topic-based ID, if present.
 	if len(topicParts) == 3 {
-		vIn.Point.UniqId = topicParts[2]
+		vIn.GetPoint().UniqId = topicParts[2]
 	}
 
 	// Default to current timestamp if not provided.
 	if vIn.GetPoint().GetTs() == nil {
-		vIn.Point.Ts = timestamppb.Now()
+		vIn.GetPoint().Ts = timestamppb.Now()
 	}
 
 	// Override Token with payload-based Token, if present.
 	if paylToken != "" {
-		vIn.Point.Token = paylToken
+		vIn.GetPoint().Token = paylToken
 	}
 
 	return vIn

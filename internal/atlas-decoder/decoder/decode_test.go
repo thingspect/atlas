@@ -31,7 +31,7 @@ func TestDecodeMessages(t *testing.T) {
 
 	uniqID := "dec-" + random.String(16)
 	now := timestamppb.New(time.Now().Add(-15 * time.Minute))
-	traceID := uuid.New()
+	traceID := uuid.NewV7()
 
 	tests := []struct {
 		inpDIn     *message.DecoderIn
@@ -39,116 +39,116 @@ func TestDecodeMessages(t *testing.T) {
 		res        []*message.ValidatorIn
 	}{
 		{
-			&message.DecoderIn{
-				UniqId: uniqID, Data: []byte{0x19, 0x03, 0x01}, Ts: now,
+			message.DecoderIn_builder{
+				UniqId: &uniqID, Data: []byte{0x19, 0x03, 0x01}, Ts: now,
 				TraceId: traceID[:],
-			}, api.Decoder_RADIO_BRIDGE_DOOR_V1, []*message.ValidatorIn{
-				{
+			}.Build(), api.Decoder_RADIO_BRIDGE_DOOR_V1, []*message.ValidatorIn{
+				message.ValidatorIn_builder{
 					Point: &common.DataPoint{
 						UniqId: uniqID, Attr: radiobridge.AttrCount,
 						ValOneof: &common.DataPoint_IntVal{IntVal: 9}, Ts: now,
 						TraceId: traceID.String(),
-					}, SkipToken: true,
-				}, {
+					}, SkipToken: new(true),
+				}.Build(), message.ValidatorIn_builder{
 					Point: &common.DataPoint{
 						UniqId: uniqID, Attr: "open",
 						ValOneof: &common.DataPoint_BoolVal{BoolVal: true},
 						Ts:       now, TraceId: traceID.String(),
-					}, SkipToken: true,
-				},
+					}, SkipToken: new(true),
+				}.Build(),
 			},
 		},
 		{
-			&message.DecoderIn{
-				UniqId: uniqID, Data: []byte{0x1a, 0x03, 0x00}, Ts: now,
+			message.DecoderIn_builder{
+				UniqId: &uniqID, Data: []byte{0x1a, 0x03, 0x00}, Ts: now,
 				TraceId: traceID[:],
-			}, api.Decoder_RADIO_BRIDGE_DOOR_V2, []*message.ValidatorIn{
-				{
+			}.Build(), api.Decoder_RADIO_BRIDGE_DOOR_V2, []*message.ValidatorIn{
+				message.ValidatorIn_builder{
 					Point: &common.DataPoint{
 						UniqId: uniqID, Attr: radiobridge.AttrCount,
 						ValOneof: &common.DataPoint_IntVal{IntVal: 10}, Ts: now,
 						TraceId: traceID.String(),
-					}, SkipToken: true,
-				}, {
+					}, SkipToken: new(true),
+				}.Build(), message.ValidatorIn_builder{
 					Point: &common.DataPoint{
 						UniqId: uniqID, Attr: "open",
 						ValOneof: &common.DataPoint_BoolVal{BoolVal: false},
 						Ts:       now, TraceId: traceID.String(),
-					}, SkipToken: true,
-				},
+					}, SkipToken: new(true),
+				}.Build(),
 			},
 		},
 		{
-			&message.DecoderIn{
-				UniqId: uniqID, Data: []byte{
+			message.DecoderIn_builder{
+				UniqId: &uniqID, Data: []byte{
 					0x01, 0x09, 0x61, 0x13, 0x95, 0x02, 0x92,
 				}, Ts: now, TraceId: traceID[:],
-			}, api.Decoder_GLOBALSAT_CO2, []*message.ValidatorIn{
-				{
+			}.Build(), api.Decoder_GLOBALSAT_CO2, []*message.ValidatorIn{
+				message.ValidatorIn_builder{
 					Point: &common.DataPoint{
 						UniqId: uniqID, Attr: decode.AttrTempC,
 						ValOneof: &common.DataPoint_Fl64Val{Fl64Val: 24},
 						Ts:       now, TraceId: traceID.String(),
-					}, SkipToken: true,
-				},
-				{
+					}, SkipToken: new(true),
+				}.Build(),
+				message.ValidatorIn_builder{
 					Point: &common.DataPoint{
 						UniqId: uniqID, Attr: decode.AttrTempF,
 						ValOneof: &common.DataPoint_Fl64Val{Fl64Val: 75.2},
 						Ts:       now, TraceId: traceID.String(),
-					}, SkipToken: true,
-				},
-				{
+					}, SkipToken: new(true),
+				}.Build(),
+				message.ValidatorIn_builder{
 					Point: &common.DataPoint{
 						UniqId: uniqID, Attr: decode.AttrHumPct,
 						ValOneof: &common.DataPoint_Fl64Val{Fl64Val: 50.13},
 						Ts:       now, TraceId: traceID.String(),
-					}, SkipToken: true,
-				},
-				{
+					}, SkipToken: new(true),
+				}.Build(),
+				message.ValidatorIn_builder{
 					Point: &common.DataPoint{
 						UniqId: uniqID, Attr: "co2_ppm",
 						ValOneof: &common.DataPoint_IntVal{IntVal: 658},
 						Ts:       now, TraceId: traceID.String(),
-					}, SkipToken: true,
-				},
+					}, SkipToken: new(true),
+				}.Build(),
 			},
 		},
 		{
-			&message.DecoderIn{
-				UniqId: uniqID, Data: []byte{
+			message.DecoderIn_builder{
+				UniqId: &uniqID, Data: []byte{
 					0x03, 0x67, 0x00, 0xc4, 0x04, 0x68, 0x7f, 0x00, 0xff, 0x01,
 					0x38,
 				}, Ts: now, TraceId: traceID[:],
-			}, api.Decoder_TEKTELIC_HOME, []*message.ValidatorIn{
-				{
+			}.Build(), api.Decoder_TEKTELIC_HOME, []*message.ValidatorIn{
+				message.ValidatorIn_builder{
 					Point: &common.DataPoint{
 						UniqId: uniqID, Attr: decode.AttrTempC,
 						ValOneof: &common.DataPoint_Fl64Val{Fl64Val: 19.6},
 						Ts:       now, TraceId: traceID.String(),
-					}, SkipToken: true,
-				},
-				{
+					}, SkipToken: new(true),
+				}.Build(),
+				message.ValidatorIn_builder{
 					Point: &common.DataPoint{
 						UniqId: uniqID, Attr: decode.AttrTempF,
 						ValOneof: &common.DataPoint_Fl64Val{Fl64Val: 67.3},
 						Ts:       now, TraceId: traceID.String(),
-					}, SkipToken: true,
-				},
-				{
+					}, SkipToken: new(true),
+				}.Build(),
+				message.ValidatorIn_builder{
 					Point: &common.DataPoint{
 						UniqId: uniqID, Attr: decode.AttrHumPct,
 						ValOneof: &common.DataPoint_Fl64Val{Fl64Val: 63.5},
 						Ts:       now, TraceId: traceID.String(),
-					}, SkipToken: true,
-				},
-				{
+					}, SkipToken: new(true),
+				}.Build(),
+				message.ValidatorIn_builder{
 					Point: &common.DataPoint{
 						UniqId: uniqID, Attr: decode.AttrBattV,
 						ValOneof: &common.DataPoint_Fl64Val{Fl64Val: 3.12},
 						Ts:       now, TraceId: traceID.String(),
-					}, SkipToken: true,
-				},
+					}, SkipToken: new(true),
+				}.Build(),
 			},
 		},
 	}

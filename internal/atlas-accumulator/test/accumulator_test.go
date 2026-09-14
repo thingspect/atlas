@@ -40,31 +40,31 @@ func TestAccumulateMessages(t *testing.T) {
 		inp *message.ValidatorOut
 	}{
 		{
-			&message.ValidatorOut{
+			message.ValidatorOut_builder{
 				Point: &common.DataPoint{
 					UniqId: "acc-" + random.String(16), Attr: "acc-motion",
 					ValOneof: &common.DataPoint_IntVal{IntVal: 123}, Ts: now,
 					Token: uuid.NewV7().String(), TraceId: uuid.NewV7().String(),
 				}, Device: createDev,
-			},
+			}.Build(),
 		},
 		{
-			&message.ValidatorOut{
+			message.ValidatorOut_builder{
 				Point: &common.DataPoint{
 					UniqId: "acc-" + random.String(16), Attr: "acc-temp",
 					ValOneof: &common.DataPoint_Fl64Val{Fl64Val: 9.3}, Ts: now,
 					Token: uuid.NewV7().String(), TraceId: uuid.NewV7().String(),
 				}, Device: createDev,
-			},
+			}.Build(),
 		},
 		{
-			&message.ValidatorOut{
+			message.ValidatorOut_builder{
 				Point: &common.DataPoint{
 					UniqId: "acc-" + random.String(16), Attr: "acc-power",
 					ValOneof: &common.DataPoint_StrVal{StrVal: "line"}, Ts: now,
 					Token: uuid.NewV7().String(), TraceId: uuid.NewV7().String(),
 				}, Device: createDev,
-			},
+			}.Build(),
 		},
 	}
 
@@ -96,7 +96,7 @@ func TestAccumulateMessages(t *testing.T) {
 			// Normalize token.
 			listPoints[0].Token = test.inp.GetPoint().GetToken()
 			// Normalize timestamp.
-			test.inp.Point.Ts = timestamppb.New(
+			test.inp.GetPoint().Ts = timestamppb.New(
 				test.inp.GetPoint().GetTs().AsTime().Truncate(time.Millisecond),
 			)
 
@@ -120,14 +120,14 @@ func TestAccumulateMessagesDuplicate(t *testing.T) {
 	t.Logf("createDev, err: %+v, %v", createDev, err)
 	require.NoError(t, err)
 
-	duplicateVOut := &message.ValidatorOut{
+	duplicateVOut := message.ValidatorOut_builder{
 		Point: &common.DataPoint{
 			UniqId: "acc-" + random.String(16), Attr: "acc-motion",
 			ValOneof: &common.DataPoint_IntVal{IntVal: 123},
 			Ts:       timestamppb.New(time.Now().Add(-15 * time.Minute)),
 			Token:    uuid.NewV7().String(), TraceId: uuid.NewV7().String(),
 		}, Device: createDev,
-	}
+	}.Build()
 	require.NoError(t, globalDPDAO.Create(ctx, duplicateVOut.GetPoint(),
 		duplicateVOut.GetDevice().GetOrgId()))
 
@@ -153,7 +153,7 @@ func TestAccumulateMessagesDuplicate(t *testing.T) {
 	// Normalize token.
 	listPoints[0].Token = duplicateVOut.GetPoint().GetToken()
 	// Normalize timestamp.
-	duplicateVOut.Point.Ts = timestamppb.New(
+	duplicateVOut.GetPoint().Ts = timestamppb.New(
 		duplicateVOut.GetPoint().GetTs().AsTime().Truncate(time.Millisecond),
 	)
 
@@ -175,14 +175,14 @@ func TestAccumulateMessagesError(t *testing.T) {
 	t.Logf("createDev, err: %+v, %v", createDev, err)
 	require.NoError(t, err)
 
-	invalidVOut := &message.ValidatorOut{
+	invalidVOut := message.ValidatorOut_builder{
 		Point: &common.DataPoint{
 			UniqId: "acc-" + random.String(16), Attr: "acc-raw",
 			ValOneof: &common.DataPoint_BytesVal{BytesVal: random.Bytes(3000)},
 			Ts:       timestamppb.New(time.Now().Add(-15 * time.Minute)),
 			Token:    uuid.NewV7().String(), TraceId: uuid.NewV7().String(),
 		}, Device: createDev,
-	}
+	}.Build()
 
 	bVOut, err := proto.Marshal(invalidVOut)
 	require.NoError(t, err)

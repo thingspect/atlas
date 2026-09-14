@@ -62,10 +62,10 @@ func TestAlertMessages(t *testing.T) {
 			dev := random.Device("ale", createOrg.GetId())
 			dev.Tags = []string{createRule.GetDeviceTag()}
 
-			eOut := &message.EventerOut{
+			eOut := message.EventerOut_builder{
 				Point:  &common.DataPoint{TraceId: uuid.NewV7().String()},
 				Device: dev, Rule: createRule,
-			}
+			}.Build()
 			bEOut, err := proto.Marshal(eOut)
 			require.NoError(t, err)
 			t.Logf("bEOut: %s", bEOut)
@@ -145,10 +145,10 @@ func TestAlertMessagesRepeat(t *testing.T) {
 			dev := random.Device("ale", createOrg.GetId())
 			dev.Tags = []string{rule.GetDeviceTag()}
 
-			eOut := &message.EventerOut{
+			eOut := message.EventerOut_builder{
 				Point:  &common.DataPoint{TraceId: uuid.NewV7().String()},
 				Device: dev, Rule: createRule,
-			}
+			}.Build()
 			bEOut, err := proto.Marshal(eOut)
 			require.NoError(t, err)
 			t.Logf("bEOut: %s", bEOut)
@@ -248,39 +248,43 @@ func TestAlertMessagesError(t *testing.T) {
 		// Bad payload.
 		{nil, uuid.NewV7().String(), nil},
 		// Missing data point.
-		{&message.EventerOut{Device: &api.Device{}}, uuid.NewV7().String(), nil},
+		{
+			message.EventerOut_builder{Device: &api.Device{}}.Build(),
+			uuid.NewV7().String(), nil,
+		},
 		// Missing device.
 		{
-			&message.EventerOut{Point: &common.DataPoint{}}, uuid.NewV7().String(),
+			message.EventerOut_builder{Point: &common.DataPoint{}}.Build(),
+			uuid.NewV7().String(),
 			nil,
 		},
 		// Missing rule.
 		{
-			&message.EventerOut{
+			message.EventerOut_builder{
 				Point: &common.DataPoint{}, Device: &api.Device{},
-			}, uuid.NewV7().String(), nil,
+			}.Build(), uuid.NewV7().String(), nil,
 		},
 		// Unknown org. If this fails due to msg.Requeue(), remove it.
 		{
-			&message.EventerOut{
+			message.EventerOut_builder{
 				Point:  &common.DataPoint{TraceId: uuid.NewV7().String()},
 				Device: random.Device("ale", uuid.NewV7().String()),
 				Rule:   random.Rule("ale", createOrg.GetId()),
-			}, uuid.NewV7().String(), nil,
+			}.Build(), uuid.NewV7().String(), nil,
 		},
 		// Bad alarm subject.
 		{
-			&message.EventerOut{
+			message.EventerOut_builder{
 				Point:  &common.DataPoint{TraceId: uuid.NewV7().String()},
 				Device: dev, Rule: createBadSubjRule,
-			}, createBadSubjAlarm.GetId(), nil,
+			}.Build(), createBadSubjAlarm.GetId(), nil,
 		},
 		// Unspecified alarm type.
 		{
-			&message.EventerOut{
+			message.EventerOut_builder{
 				Point:  &common.DataPoint{TraceId: uuid.NewV7().String()},
 				Device: dev, Rule: createUnspecTypeRule,
-			}, createUnspecTypeAlarm.GetId(), alerter.ErrUnknownAlarm,
+			}.Build(), createUnspecTypeAlarm.GetId(), alerter.ErrUnknownAlarm,
 		},
 	}
 

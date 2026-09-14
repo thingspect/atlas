@@ -100,10 +100,9 @@ func (val *Validator) validateMessages() {
 		metric.Incr("processed", nil)
 
 		// Build and publish ValidatorOut message.
-		vOut := &message.ValidatorOut{
-			Point:  vIn.GetPoint(),
-			Device: dev,
-		}
+		vOut := &message.ValidatorOut{}
+		vOut.SetPoint(vIn.GetPoint())
+		vOut.SetDevice(dev)
 
 		bVOut, err := proto.Marshal(vOut)
 		if err != nil {

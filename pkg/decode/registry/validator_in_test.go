@@ -31,82 +31,91 @@ func TestPointToVIn(t *testing.T) {
 	}{
 		{
 			&decode.Point{Attr: device.AttrDR, Value: int32(3)},
-			&message.ValidatorIn{
+			message.ValidatorIn_builder{
 				Point: &common.DataPoint{
 					UniqId: uniqID, Attr: device.AttrDR,
 					ValOneof: &common.DataPoint_IntVal{IntVal: 3}, Ts: now,
 					TraceId: traceID,
-				}, SkipToken: true,
-			},
+				}, SkipToken: new(true),
+			}.Build(),
 		},
 		{
-			&decode.Point{Attr: device.AttrDR, Value: 3}, &message.ValidatorIn{
+			&decode.Point{Attr: device.AttrDR, Value: 3},
+			message.ValidatorIn_builder{
 				Point: &common.DataPoint{
 					UniqId: uniqID, Attr: device.AttrDR,
 					ValOneof: &common.DataPoint_IntVal{IntVal: 3}, Ts: now,
 					TraceId: traceID,
-				}, SkipToken: true,
-			},
+				}, SkipToken: new(true),
+			}.Build(),
 		},
 		{
 			&decode.Point{Attr: device.AttrDR, Value: int64(3)},
-			&message.ValidatorIn{
+			message.ValidatorIn_builder{
 				Point: &common.DataPoint{
 					UniqId: uniqID, Attr: device.AttrDR,
 					ValOneof: &common.DataPoint_IntVal{IntVal: 3}, Ts: now,
 					TraceId: traceID,
-				}, SkipToken: true,
-			},
+				}, SkipToken: new(true),
+			}.Build(),
 		},
 		{
-			&decode.Point{Attr: "lora_snr", Value: 7.8}, &message.ValidatorIn{
+			&decode.Point{Attr: "lora_snr", Value: 7.8},
+			message.ValidatorIn_builder{
 				Point: &common.DataPoint{
 					UniqId: uniqID, Attr: "lora_snr",
 					ValOneof: &common.DataPoint_Fl64Val{Fl64Val: 7.8}, Ts: now,
 					TraceId: traceID,
-				}, SkipToken: true,
-			},
+				}, SkipToken: new(true),
+			}.Build(),
 		},
 		{
 			&decode.Point{Attr: "lora_snr", Value: float32(7.0)},
-			&message.ValidatorIn{Point: &common.DataPoint{
-				UniqId: uniqID, Attr: "lora_snr",
-				ValOneof: &common.DataPoint_Fl64Val{Fl64Val: 7.0}, Ts: now,
-				TraceId: traceID,
-			}, SkipToken: true},
+			message.ValidatorIn_builder{
+				Point: &common.DataPoint{
+					UniqId: uniqID, Attr: "lora_snr",
+					ValOneof: &common.DataPoint_Fl64Val{Fl64Val: 7.0}, Ts: now,
+					TraceId: traceID,
+				}, SkipToken: new(true),
+			}.Build(),
 		},
 		{
-			&decode.Point{Attr: "ack", Value: "OK"}, &message.ValidatorIn{
+			&decode.Point{Attr: "ack", Value: "OK"},
+			message.ValidatorIn_builder{
 				Point: &common.DataPoint{
 					UniqId: uniqID, Attr: "ack",
 					ValOneof: &common.DataPoint_StrVal{StrVal: "OK"}, Ts: now,
 					TraceId: traceID,
-				}, SkipToken: true,
-			},
+				}, SkipToken: new(true),
+			}.Build(),
 		},
 		{
-			&decode.Point{Attr: device.AttrADR, Value: false}, &message.ValidatorIn{
+			&decode.Point{Attr: device.AttrADR, Value: false},
+			message.ValidatorIn_builder{
 				Point: &common.DataPoint{
 					UniqId: uniqID, Attr: device.AttrADR,
 					ValOneof: &common.DataPoint_BoolVal{BoolVal: false},
 					Ts:       now, TraceId: traceID,
-				}, SkipToken: true,
-			},
+				}, SkipToken: new(true),
+			}.Build(),
 		},
 		{
 			&decode.Point{Attr: "ack", Value: []byte{0x00}},
-			&message.ValidatorIn{Point: &common.DataPoint{
-				UniqId: uniqID, Attr: "ack",
-				ValOneof: &common.DataPoint_BytesVal{BytesVal: []byte{0x00}},
-				Ts:       now, TraceId: traceID,
-			}, SkipToken: true},
+			message.ValidatorIn_builder{
+				Point: &common.DataPoint{
+					UniqId: uniqID, Attr: "ack",
+					ValOneof: &common.DataPoint_BytesVal{BytesVal: []byte{0x00}},
+					Ts:       now, TraceId: traceID,
+				}, SkipToken: new(true),
+			}.Build(),
 		},
 		{
-			&decode.Point{Attr: "error", Value: io.EOF}, &message.ValidatorIn{
+			&decode.Point{Attr: "error", Value: io.EOF},
+			message.ValidatorIn_builder{
 				Point: &common.DataPoint{
 					UniqId: uniqID, Attr: "error", Ts: now, TraceId: traceID,
-				}, SkipToken: true,
-			},
+				}, SkipToken: new(true),
+			}.Build(),
 		},
 	}
 

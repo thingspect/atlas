@@ -134,11 +134,20 @@ func TestValidateWebToken(t *testing.T) {
 	badCipher, err := auth.Encrypt(key, []byte("aaa"))
 	require.NoError(t, err)
 
-	oldToken := &token.Web{ExpiresAt: timestamppb.New(time.Now().Add(-2 *
-		WebTokenExp * time.Second))}
+	oldToken := &token.Web{}
+	oldToken.SetExpiresAt(timestamppb.New(time.Now().Add(-2 * WebTokenExp *
+		time.Second)))
 	bOldToken, err := proto.Marshal(oldToken)
 	require.NoError(t, err)
 	eOldToken, err := auth.Encrypt(key, bOldToken)
+	require.NoError(t, err)
+
+	missToken := &token.Web{}
+	missToken.SetExpiresAt(timestamppb.New(time.Now().Add(WebTokenExp *
+		time.Second)))
+	bMissToken, err := proto.Marshal(missToken)
+	require.NoError(t, err)
+	eMissToken, err := auth.Encrypt(key, bMissToken)
 	require.NoError(t, err)
 
 	tests := []struct {
@@ -162,6 +171,10 @@ func TestValidateWebToken(t *testing.T) {
 		{
 			key, base64.RawStdEncoding.EncodeToString(eOldToken),
 			errWebTokenExp.Error(),
+		},
+		{
+			key, base64.RawStdEncoding.EncodeToString(eMissToken),
+			errWebTokenNoUserKey.Error(),
 		},
 	}
 

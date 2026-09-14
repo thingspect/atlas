@@ -12,38 +12,37 @@ import (
 func PointToVIn(
 	traceID, uniqID string, point *decode.Point, ts *timestamppb.Timestamp,
 ) *message.ValidatorIn {
-	vIn := &message.ValidatorIn{
-		Point: &common.DataPoint{
-			UniqId:  uniqID,
-			Attr:    point.Attr,
-			Ts:      ts,
-			TraceId: traceID,
-		},
-		SkipToken: true,
-	}
+	vIn := &message.ValidatorIn{}
+	vIn.SetPoint(&common.DataPoint{
+		UniqId:  uniqID,
+		Attr:    point.Attr,
+		Ts:      ts,
+		TraceId: traceID,
+	})
+	vIn.SetSkipToken(true)
 
 	switch v := point.Value.(type) {
 	case int32:
-		vIn.Point.ValOneof = &common.DataPoint_IntVal{IntVal: v}
+		vIn.GetPoint().ValOneof = &common.DataPoint_IntVal{IntVal: v}
 	case int:
 		//nolint:gosec // Safe conversion for limited values.
-		vIn.Point.ValOneof = &common.DataPoint_IntVal{IntVal: int32(v)}
+		vIn.GetPoint().ValOneof = &common.DataPoint_IntVal{IntVal: int32(v)}
 		alog.Errorf("PointToVIn casting from int: %v, %v,", point.Attr, v)
 	case int64:
 		//nolint:gosec // Safe conversion for limited values.
-		vIn.Point.ValOneof = &common.DataPoint_IntVal{IntVal: int32(v)}
+		vIn.GetPoint().ValOneof = &common.DataPoint_IntVal{IntVal: int32(v)}
 		alog.Errorf("PointToVIn casting from int64: %v, %v,", point.Attr, v)
 	case float64:
-		vIn.Point.ValOneof = &common.DataPoint_Fl64Val{Fl64Val: v}
+		vIn.GetPoint().ValOneof = &common.DataPoint_Fl64Val{Fl64Val: v}
 	case float32:
-		vIn.Point.ValOneof = &common.DataPoint_Fl64Val{Fl64Val: float64(v)}
+		vIn.GetPoint().ValOneof = &common.DataPoint_Fl64Val{Fl64Val: float64(v)}
 		alog.Errorf("PointToVIn casting from float32: %v, %v,", point.Attr, v)
 	case string:
-		vIn.Point.ValOneof = &common.DataPoint_StrVal{StrVal: v}
+		vIn.GetPoint().ValOneof = &common.DataPoint_StrVal{StrVal: v}
 	case bool:
-		vIn.Point.ValOneof = &common.DataPoint_BoolVal{BoolVal: v}
+		vIn.GetPoint().ValOneof = &common.DataPoint_BoolVal{BoolVal: v}
 	case []byte:
-		vIn.Point.ValOneof = &common.DataPoint_BytesVal{BytesVal: v}
+		vIn.GetPoint().ValOneof = &common.DataPoint_BytesVal{BytesVal: v}
 	default:
 		alog.Errorf("PointToVIn unknown type: %v, %T, %v,", point.Attr,
 			point.Value, point.Value)

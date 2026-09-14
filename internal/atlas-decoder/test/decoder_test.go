@@ -25,7 +25,7 @@ const testTimeout = 6 * time.Second
 
 func TestDecodeMessages(t *testing.T) {
 	now := timestamppb.New(time.Now().Add(-15 * time.Minute))
-	traceID := uuid.New()
+	traceID := uuid.NewV7()
 
 	ctx, cancel := context.WithTimeout(t.Context(), testTimeout)
 	defer cancel()
@@ -60,116 +60,116 @@ func TestDecodeMessages(t *testing.T) {
 		res []*message.ValidatorIn
 	}{
 		{
-			&message.DecoderIn{
-				UniqId: doorDev.GetUniqId(), Data: []byte{0x19, 0x03, 0x01},
+			message.DecoderIn_builder{
+				UniqId: &doorDev.UniqId, Data: []byte{0x19, 0x03, 0x01},
 				Ts: now, TraceId: traceID[:],
-			}, []*message.ValidatorIn{
-				{
+			}.Build(), []*message.ValidatorIn{
+				message.ValidatorIn_builder{
 					Point: &common.DataPoint{
 						UniqId: doorDev.GetUniqId(), Attr: radiobridge.AttrCount,
 						ValOneof: &common.DataPoint_IntVal{IntVal: 9}, Ts: now,
 						TraceId: traceID.String(),
-					}, SkipToken: true,
-				}, {
+					}, SkipToken: new(true),
+				}.Build(), message.ValidatorIn_builder{
 					Point: &common.DataPoint{
 						UniqId: doorDev.GetUniqId(), Attr: "open",
 						ValOneof: &common.DataPoint_BoolVal{BoolVal: true},
 						Ts:       now, TraceId: traceID.String(),
-					}, SkipToken: true,
-				},
+					}, SkipToken: new(true),
+				}.Build(),
 			},
 		},
 		{
-			&message.DecoderIn{
-				UniqId: doorDev.GetUniqId(), Data: []byte{0x1a, 0x03, 0x00},
+			message.DecoderIn_builder{
+				UniqId: &doorDev.UniqId, Data: []byte{0x1a, 0x03, 0x00},
 				Ts: now, TraceId: traceID[:],
-			}, []*message.ValidatorIn{
-				{
+			}.Build(), []*message.ValidatorIn{
+				message.ValidatorIn_builder{
 					Point: &common.DataPoint{
 						UniqId: doorDev.GetUniqId(), Attr: radiobridge.AttrCount,
 						ValOneof: &common.DataPoint_IntVal{IntVal: 10}, Ts: now,
 						TraceId: traceID.String(),
-					}, SkipToken: true,
-				}, {
+					}, SkipToken: new(true),
+				}.Build(), message.ValidatorIn_builder{
 					Point: &common.DataPoint{
 						UniqId: doorDev.GetUniqId(), Attr: "open",
 						ValOneof: &common.DataPoint_BoolVal{BoolVal: false},
 						Ts:       now, TraceId: traceID.String(),
-					}, SkipToken: true,
-				},
+					}, SkipToken: new(true),
+				}.Build(),
 			},
 		},
 		{
-			&message.DecoderIn{
-				UniqId: co2Dev.GetUniqId(), Data: []byte{
+			message.DecoderIn_builder{
+				UniqId: &co2Dev.UniqId, Data: []byte{
 					0x01, 0x09, 0x61, 0x13, 0x95, 0x02, 0x92,
 				}, Ts: now, TraceId: traceID[:],
-			}, []*message.ValidatorIn{
-				{
+			}.Build(), []*message.ValidatorIn{
+				message.ValidatorIn_builder{
 					Point: &common.DataPoint{
 						UniqId: co2Dev.GetUniqId(), Attr: decode.AttrTempC,
 						ValOneof: &common.DataPoint_Fl64Val{Fl64Val: 24},
 						Ts:       now, TraceId: traceID.String(),
-					}, SkipToken: true,
-				},
-				{
+					}, SkipToken: new(true),
+				}.Build(),
+				message.ValidatorIn_builder{
 					Point: &common.DataPoint{
 						UniqId: co2Dev.GetUniqId(), Attr: decode.AttrTempF,
 						ValOneof: &common.DataPoint_Fl64Val{Fl64Val: 75.2},
 						Ts:       now, TraceId: traceID.String(),
-					}, SkipToken: true,
-				},
-				{
+					}, SkipToken: new(true),
+				}.Build(),
+				message.ValidatorIn_builder{
 					Point: &common.DataPoint{
 						UniqId: co2Dev.GetUniqId(), Attr: decode.AttrHumPct,
 						ValOneof: &common.DataPoint_Fl64Val{Fl64Val: 50.13},
 						Ts:       now, TraceId: traceID.String(),
-					}, SkipToken: true,
-				},
-				{
+					}, SkipToken: new(true),
+				}.Build(),
+				message.ValidatorIn_builder{
 					Point: &common.DataPoint{
 						UniqId: co2Dev.GetUniqId(), Attr: "co2_ppm",
 						ValOneof: &common.DataPoint_IntVal{IntVal: 658},
 						Ts:       now, TraceId: traceID.String(),
-					}, SkipToken: true,
-				},
+					}, SkipToken: new(true),
+				}.Build(),
 			},
 		},
 		{
-			&message.DecoderIn{
-				UniqId: homeDev.GetUniqId(), Data: []byte{
+			message.DecoderIn_builder{
+				UniqId: &homeDev.UniqId, Data: []byte{
 					0x03, 0x67, 0x00, 0xc4, 0x04, 0x68, 0x7f, 0x00, 0xff, 0x01,
 					0x38,
 				}, Ts: now, TraceId: traceID[:],
-			}, []*message.ValidatorIn{
-				{
+			}.Build(), []*message.ValidatorIn{
+				message.ValidatorIn_builder{
 					Point: &common.DataPoint{
 						UniqId: homeDev.GetUniqId(), Attr: decode.AttrTempC,
 						ValOneof: &common.DataPoint_Fl64Val{Fl64Val: 19.6},
 						Ts:       now, TraceId: traceID.String(),
-					}, SkipToken: true,
-				},
-				{
+					}, SkipToken: new(true),
+				}.Build(),
+				message.ValidatorIn_builder{
 					Point: &common.DataPoint{
 						UniqId: homeDev.GetUniqId(), Attr: decode.AttrTempF,
 						ValOneof: &common.DataPoint_Fl64Val{Fl64Val: 67.3},
 						Ts:       now, TraceId: traceID.String(),
-					}, SkipToken: true,
-				},
-				{
+					}, SkipToken: new(true),
+				}.Build(),
+				message.ValidatorIn_builder{
 					Point: &common.DataPoint{
 						UniqId: homeDev.GetUniqId(), Attr: decode.AttrHumPct,
 						ValOneof: &common.DataPoint_Fl64Val{Fl64Val: 63.5},
 						Ts:       now, TraceId: traceID.String(),
-					}, SkipToken: true,
-				},
-				{
+					}, SkipToken: new(true),
+				}.Build(),
+				message.ValidatorIn_builder{
 					Point: &common.DataPoint{
 						UniqId: homeDev.GetUniqId(), Attr: decode.AttrBattV,
 						ValOneof: &common.DataPoint_Fl64Val{Fl64Val: 3.12},
 						Ts:       now, TraceId: traceID.String(),
-					}, SkipToken: true,
-				},
+					}, SkipToken: new(true),
+				}.Build(),
 			},
 		},
 	}
@@ -207,7 +207,7 @@ func TestDecodeMessages(t *testing.T) {
 
 func TestDecodeMessagesError(t *testing.T) {
 	now := timestamppb.New(time.Now().Add(-15 * time.Minute))
-	traceID := uuid.New()
+	traceID := uuid.NewV7()
 
 	ctx, cancel := context.WithTimeout(t.Context(), testTimeout)
 	defer cancel()
@@ -235,23 +235,19 @@ func TestDecodeMessagesError(t *testing.T) {
 	}{
 		// Empty data.
 		{
-			&message.DecoderIn{
-				UniqId: createDev.GetUniqId(), Ts: now, TraceId: traceID[:],
-			},
+			message.DecoderIn_builder{
+				UniqId: &createDev.UniqId, Ts: now, TraceId: traceID[:],
+			}.Build(),
 		},
 		// Bad payload.
 		{nil},
 		// Device not found.
-		{
-			&message.DecoderIn{
-				UniqId: random.String(16), Ts: now, TraceId: traceID[:],
-			},
-		},
+		{message.DecoderIn_builder{Ts: now, TraceId: traceID[:]}.Build()},
 		// Decode error, defaults to Decoder zero value when not in registry.
 		{
-			&message.DecoderIn{
-				UniqId: createInvDev.GetUniqId(), Ts: now, TraceId: traceID[:],
-			},
+			message.DecoderIn_builder{
+				UniqId: &createInvDev.UniqId, Ts: now, TraceId: traceID[:],
+			}.Build(),
 		},
 	}
 

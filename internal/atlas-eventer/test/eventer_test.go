@@ -73,37 +73,36 @@ func TestEventMessages(t *testing.T) {
 		res []*message.EventerOut
 	}{
 		{
-			&message.ValidatorOut{
+			message.ValidatorOut_builder{
 				Point: &common.DataPoint{
 					Attr: "ev-motion", Ts: now, TraceId: traceID,
 				}, Device: singleDev,
-			}, []*message.EventerOut{
-				{Point: &common.DataPoint{
+			}.Build(), []*message.EventerOut{
+				message.EventerOut_builder{Point: &common.DataPoint{
 					Attr: "ev-motion", Ts: now, TraceId: traceID,
-				}, Device: singleDev, Rule: singleRule},
+				}, Device: singleDev, Rule: singleRule}.Build(),
 			},
 		},
 		{
-			&message.ValidatorOut{
+			message.ValidatorOut_builder{
 				Point: &common.DataPoint{
 					Attr: "ev-temp", Ts: now, TraceId: traceID,
 				}, Device: doubleDev,
-			}, []*message.EventerOut{
-				{Point: &common.DataPoint{
+			}.Build(), []*message.EventerOut{
+				message.EventerOut_builder{Point: &common.DataPoint{
 					Attr: "ev-temp", Ts: now, TraceId: traceID,
-				}, Device: doubleDev, Rule: doubleRule1}, {
-					Point: &common.DataPoint{
-						Attr: "ev-temp", Ts: now, TraceId: traceID,
-					}, Device: doubleDev, Rule: doubleRule2,
-				},
+				}, Device: doubleDev, Rule: doubleRule1}.Build(),
+				message.EventerOut_builder{Point: &common.DataPoint{
+					Attr: "ev-temp", Ts: now, TraceId: traceID,
+				}, Device: doubleDev, Rule: doubleRule2}.Build(),
 			},
 		},
 		{
-			&message.ValidatorOut{
+			message.ValidatorOut_builder{
 				Point: &common.DataPoint{
 					Attr: "ev-power", Ts: now, TraceId: traceID,
 				}, Device: singleDev,
-			}, nil,
+			}.Build(), nil,
 		},
 	}
 
@@ -202,21 +201,23 @@ func TestEventMessagesError(t *testing.T) {
 		{nil},
 		// Missing data point.
 		{
-			&message.ValidatorOut{Device: &api.Device{Id: createDev.GetId()}},
+			message.ValidatorOut_builder{
+				Device: &api.Device{Id: createDev.GetId()},
+			}.Build(),
 		},
 		// Missing device.
 		{
-			&message.ValidatorOut{
+			message.ValidatorOut_builder{
 				Point: &common.DataPoint{UniqId: createDev.GetUniqId()},
-			},
+			}.Build(),
 		},
 		// Eval error.
 		{
-			&message.ValidatorOut{
+			message.ValidatorOut_builder{
 				Point: &common.DataPoint{
 					Attr: "ev-motion", Ts: now, TraceId: uuid.NewV7().String(),
 				}, Device: createDev,
-			},
+			}.Build(),
 		},
 	}
 
