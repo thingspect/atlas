@@ -7,8 +7,8 @@
 Install any compliant package of [Docker](https://docs.docker.com/get-started/overview/), [Docker Compose](https://docs.docker.com/compose/), and [Go](https://go.dev/dl/). Consider using [Colima](https://github.com/abiosoft/colima):
 
 ```
-brew install colima docker docker-compose docker-buildx
-colima start --cpu 3 --memory 3 --disk 16 --mount ~/code/go:w --vz-rosetta
+brew install colima docker docker-compose
+colima start -c 3 -m 2 -d 16 -t vz -V ~/code/go:w
 ```
 
 Run the build and tests:

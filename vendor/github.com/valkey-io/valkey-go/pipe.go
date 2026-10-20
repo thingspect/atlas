@@ -21,7 +21,7 @@ import (
 )
 
 const LibName = "valkey"
-const LibVer = "1.0.77"
+const LibVer = "1.0.79"
 
 var (
 	noHello = regexp.MustCompile("unknown command .?(HELLO|hello).?")
@@ -408,10 +408,36 @@ func _newPipe(ctx context.Context, connFn func(context.Context) (net.Conn, error
 }
 
 func (p *pipe) background() {
+	p.startBackground(false)
+}
+
+// backgroundSkipReadWrite starts the background worker for cleanup only, without
+// _backgroundWrite and _backgroundRead. It is for callers that have already marked the pipe
+// as failed and closed the connection, see failSync.
+//
+// The connection can still be readable at that point. If another goroutine, such as the ping
+// timer, is already inside tls.Conn.Close writing close_notify, the caller's own Close returns
+// immediately while the socket is still open. A late reply to the command that has been given
+// up on could then be read by _backgroundRead and be mistaken for a protocol violation.
+func (p *pipe) backgroundSkipReadWrite() {
+	p.startBackground(true)
+}
+
+// failSync is called by the sync paths (syncDo, syncDoMulti, DoStream and DoMultiStream) when
+// they fail to write or read. It marks the pipe as failed, closes the connection and starts the
+// background worker to clean up goroutines. The sync paths must not use p.background() for
+// this, see backgroundSkipReadWrite.
+func (p *pipe) failSync(err error) {
+	p.error.CompareAndSwap(nil, &errs{error: err})
+	p.conn.Close()
+	p.backgroundSkipReadWrite()
+}
+
+func (p *pipe) startBackground(skipReadWrite bool) {
 	if p.queue != nil {
 		atomic.CompareAndSwapInt32(&p.state, 0, 1)
 		if atomic.CompareAndSwapInt32(&p.bgState, 0, 1) {
-			go p._background()
+			go p._background(skipReadWrite)
 		}
 	}
 }
@@ -432,16 +458,21 @@ func disableNoDelay(conn net.Conn) {
 	}
 }
 
-func (p *pipe) _background() {
-	p.conn.SetDeadline(time.Time{})
-	if p.noNoDelay {
-		disableNoDelay(p.conn)
-	}
-	go func() {
-		p._exit(p._backgroundWrite())
+func (p *pipe) _background(skipReadWrite bool) {
+	if skipReadWrite {
+		// the pipe has already failed and the connection is already closed, only run the
+		// exit hook and close p.close, which _backgroundWrite would have done otherwise.
+		p._exit(p.Error())
 		close(p.close)
-	}()
-	{
+	} else {
+		p.conn.SetDeadline(time.Time{})
+		if p.noNoDelay {
+			disableNoDelay(p.conn)
+		}
+		go func() {
+			p._exit(p._backgroundWrite())
+			close(p.close)
+		}()
 		p._exit(p._backgroundRead())
 		select {
 		case <-p.close:
@@ -1124,7 +1155,9 @@ func (p *pipe) Do(ctx context.Context, cmd Completed) (resp ValkeyResult) {
 			goto queue
 		}
 		dl, ok := ctx.Deadline()
-		if p.queue != nil && !ok && ctx.Done() != nil {
+		// a blocking cmd marked with UnblockOnCancel() also goes to the queue if it has a deadline, so that the deadline aborts
+		// the call without closing the conn, leaving the chance to CLIENT UNBLOCK it. See https://github.com/redis/rueidis/issues/897
+		if p.queue != nil && (!ok || (cmd.IsUnblockOnCancel() && cmd.IsBlock())) && ctx.Done() != nil {
 			p.background()
 			goto queue
 		}
@@ -1157,10 +1190,13 @@ queue:
 	p.decrWaitsAndIncrRecvs()
 	return resp
 abort:
-	go func(ch chan ValkeyResult) {
+	go func(ch chan ValkeyResult, block bool) {
 		<-ch
+		if block { // the blocking cmd is finally replied (ex. by CLIENT UNBLOCK), so the pipe is not blocked anymore
+			atomic.AddInt32(&p.blcksig, -1)
+		}
 		p.decrWaitsAndIncrRecvs()
-	}(ch)
+	}(ch, cmd.IsBlock())
 	return NewErrorResult(ctx.Err())
 }
 
@@ -1367,9 +1403,7 @@ func (p *pipe) DoStream(ctx context.Context, pool *pool, cmd Completed) ValkeyRe
 		}
 		_ = writeCmd(p.w, cmd.Commands())
 		if err := p.w.Flush(); err != nil {
-			p.error.CompareAndSwap(nil, &errs{error: err})
-			p.conn.Close()
-			p.background() // start the background worker to clean up goroutines
+			p.failSync(err)
 		} else {
 			return ValkeyResultStream{p: pool, w: p, n: 1}
 		}
@@ -1431,9 +1465,7 @@ func (p *pipe) DoMultiStream(ctx context.Context, pool *pool, multi ...Completed
 			_ = writeCmd(p.w, cmd.Commands())
 		}
 		if err := p.w.Flush(); err != nil {
-			p.error.CompareAndSwap(nil, &errs{error: err})
-			p.conn.Close()
-			p.background() // start the background worker to clean up goroutines
+			p.failSync(err)
 		} else {
 			return ValkeyResultStream{p: pool, w: p, n: len(multi)}
 		}
@@ -1469,9 +1501,7 @@ func (p *pipe) syncDo(dl time.Time, dlOk bool, cmd Completed) (resp ValkeyResult
 		if dlOk && errors.Is(err, os.ErrDeadlineExceeded) {
 			err = context.DeadlineExceeded
 		}
-		p.error.CompareAndSwap(nil, &errs{error: err})
-		p.conn.Close()
-		p.background() // start the background worker to clean up goroutines
+		p.failSync(err)
 	}
 	return NewResult(msg, err)
 }
@@ -1523,9 +1553,7 @@ abort:
 	if dlOk && errors.Is(err, os.ErrDeadlineExceeded) {
 		err = context.DeadlineExceeded
 	}
-	p.error.CompareAndSwap(nil, &errs{error: err})
-	p.conn.Close()
-	p.background() // start the background worker to clean up goroutines
+	p.failSync(err)
 	for i := range resp {
 		resp[i] = NewErrorResult(err)
 	}
@@ -1551,6 +1579,7 @@ func (p *pipe) optInCmd() cmds.Completed {
 
 func (p *pipe) DoCache(ctx context.Context, cmd Cacheable, ttl time.Duration) ValkeyResult {
 	if p.cache == nil {
+		cmds.ClearStaticTTL(&cmd)
 		return p.Do(ctx, Completed(cmd))
 	}
 
@@ -1713,7 +1742,9 @@ func (p *pipe) DoMultiCache(ctx context.Context, multi ...CacheableTTL) *valkeyr
 	if p.cache == nil {
 		commands := make([]Completed, len(multi))
 		for i, ct := range multi {
-			commands[i] = Completed(ct.Cmd)
+			cmd := ct.Cmd
+			cmds.ClearStaticTTL(&cmd)
+			commands[i] = Completed(cmd)
 		}
 		return p.DoMulti(ctx, commands...)
 	}

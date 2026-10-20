@@ -1,6 +1,6 @@
 FROM golang:1-alpine
 
-ARG PROTOC_VERSION=36.1
+ARG PROTOC_VERSION=36.2
 
 RUN apk update && apk upgrade
 RUN apk add --no-cache git make curl unzip

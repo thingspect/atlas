@@ -101,7 +101,7 @@ func local_request_OrgService_GetOrg_0(ctx context.Context, marshaler runtime.Ma
 	return msg, metadata, err
 }
 
-var filter_OrgService_UpdateOrg_0 = &utilities.DoubleArray{Encoding: map[string]int{"org": 0, "id": 1}, Base: []int{1, 2, 1, 0, 0}, Check: []int{0, 1, 2, 3, 2}}
+var filter_OrgService_UpdateOrg_0 = &utilities.DoubleArray{Encoding: map[string]int{"org": 0, "id": 1}, Base: []int{1, 1, 2, 0, 0}, Check: []int{0, 1, 2, 2, 3}}
 
 func request_OrgService_UpdateOrg_0(ctx context.Context, marshaler runtime.Marshaler, client OrgServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
 	var (
@@ -160,7 +160,7 @@ func local_request_OrgService_UpdateOrg_0(ctx context.Context, marshaler runtime
 	return msg, metadata, err
 }
 
-var filter_OrgService_UpdateOrg_1 = &utilities.DoubleArray{Encoding: map[string]int{"org": 0, "id": 1}, Base: []int{1, 2, 1, 0, 0}, Check: []int{0, 1, 2, 3, 2}}
+var filter_OrgService_UpdateOrg_1 = &utilities.DoubleArray{Encoding: map[string]int{"org": 0, "id": 1}, Base: []int{1, 1, 2, 0, 0}, Check: []int{0, 1, 2, 2, 3}}
 
 func request_OrgService_UpdateOrg_1(ctx context.Context, marshaler runtime.Marshaler, client OrgServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
 	var (

@@ -615,6 +615,29 @@ func TestUpdateUserPassword(t *testing.T) {
 			"weak password, see NIST password guidelines")
 	})
 
+	t.Run("Update user password with excessive password", func(t *testing.T) {
+		t.Parallel()
+
+		user := random.User("api-user", uuid.NewV7().String())
+		user.Role = api.Role_BUILDER
+
+		ctx, cancel := context.WithTimeout(t.Context(), testTimeout)
+		defer cancel()
+
+		userCli := api.NewUserServiceClient(globalAdminGRPCConn)
+		createUser, err := userCli.CreateUser(ctx,
+			&api.CreateUserRequest{User: user})
+		t.Logf("createUser, err: %+v, %v", createUser, err)
+		require.NoError(t, err)
+
+		_, err = userCli.UpdateUserPassword(ctx, &api.UpdateUserPasswordRequest{
+			Id: createUser.GetId(), Password: random.String(100),
+		})
+		t.Logf("err: %v", err)
+		require.EqualError(t, err, "rpc error: code = InvalidArgument desc = "+
+			"validation error: password: must be at most 72 characters")
+	})
+
 	t.Run("Update user password by unknown ID", func(t *testing.T) {
 		t.Parallel()
 

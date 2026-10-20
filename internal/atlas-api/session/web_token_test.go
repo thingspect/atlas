@@ -62,9 +62,8 @@ func TestGenerateWebToken(t *testing.T) {
 			t.Logf("res, exp, err: %v, %+v, %#v", res, exp, err)
 			require.GreaterOrEqual(t, len(res), test.resMinLen)
 			if exp != nil {
-				require.WithinDuration(t, time.Now().Add(
-					WebTokenExp*time.Second,
-				), exp.AsTime(), 2*time.Second)
+				require.WithinDuration(t, time.Now().Add(WebTokenExp*time.Second),
+					exp.AsTime(), 2*time.Second)
 			}
 			if test.err == "" {
 				require.NoError(t, err)
@@ -131,7 +130,7 @@ func TestValidateWebToken(t *testing.T) {
 	_, err := rand.Read(key)
 	require.NoError(t, err)
 
-	badCipher, err := auth.Encrypt(key, []byte("aaa"))
+	badCipher, err := auth.Encrypt(key, []byte{0x00})
 	require.NoError(t, err)
 
 	oldToken := &token.Web{}
@@ -218,7 +217,7 @@ func TestValidateKeyToken(t *testing.T) {
 	_, err := rand.Read(key)
 	require.NoError(t, err)
 
-	badCipher, err := auth.Encrypt(key, []byte("aaa"))
+	badCipher, err := auth.Encrypt(key, []byte{0x00})
 	require.NoError(t, err)
 
 	tests := []struct {

@@ -5,7 +5,7 @@ package consterr
 type Error string
 
 // Verify Error implements error.
-var _ error = new(Error)
+var _ error = Error("")
 
 // Error returns the error.
 func (e Error) Error() string { return string(e) }

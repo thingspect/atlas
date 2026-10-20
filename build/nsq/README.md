@@ -11,9 +11,9 @@ production NSQ images and set specific `CMD` values for each service.
 docker login -u thingspect -p XXX ghcr.io
 docker buildx create --use
 
-docker buildx build -f Dockerfile-nsqlookupd -t ghcr.io/thingspect/nsqlookupd:v1.3.0 --platform linux/amd64,linux/arm64 --push .
+docker buildx build --no-cache --progress plain -f Dockerfile-nsqlookupd -t ghcr.io/thingspect/nsqlookupd:v1.3.0 --platform linux/amd64,linux/arm64 --push .
 
-docker buildx build -f Dockerfile-nsqd -t ghcr.io/thingspect/nsqd:v1.3.0 --platform linux/amd64,linux/arm64 --push .
+docker buildx build --no-cache --progress plain -f Dockerfile-nsqd -t ghcr.io/thingspect/nsqd:v1.3.0 --platform linux/amd64,linux/arm64 --push .
 
 docker buildx rm
 docker logout ghcr.io

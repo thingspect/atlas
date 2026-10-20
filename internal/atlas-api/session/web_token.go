@@ -44,6 +44,7 @@ func GenerateWebToken(pwtKey []byte, user *api.User) (
 	exp.Seconds += WebTokenExp
 	exp.Nanos = 0
 
+	// Build unencrypted PWT.
 	pwt := &token.Web{}
 	pwt.SetUserId(userUUID[:])
 	pwt.SetOrgId(orgUUID[:])
