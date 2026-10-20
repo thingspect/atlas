@@ -543,10 +543,10 @@ var File_api_thingspect_user_proto protoreflect.FileDescriptor
 
 const file_api_thingspect_user_proto_rawDesc = "" +
 	"\n" +
-	"\x19api/thingspect_user.proto\x12\x0ethingspect.api\x1a\x19api/thingspect_role.proto\x1a\x1bapi/thingspect_status.proto\x1a\x1bbuf/validate/validate.proto\x1a\x1cgoogle/api/annotations.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a.protoc-gen-openapiv2/options/annotations.proto\"\xd5\x03\n" +
-	"\x04User\x12\x13\n" +
-	"\x02id\x18\x01 \x01(\tB\x03\xe0A\x03R\x02id\x12\x1a\n" +
-	"\x06org_id\x18\x02 \x01(\tB\x03\xe0A\x03R\x05orgID\x12\x1d\n" +
+	"\x19api/thingspect_user.proto\x12\x0ethingspect.api\x1a\x19api/thingspect_role.proto\x1a\x1bapi/thingspect_status.proto\x1a\x1bbuf/validate/validate.proto\x1a\x1cgoogle/api/annotations.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a.protoc-gen-openapiv2/options/annotations.proto\"\xd9\x03\n" +
+	"\x04User\x12\x14\n" +
+	"\x02id\x18\x01 \x01(\tB\x04\xe2A\x01\x03R\x02id\x12\x1b\n" +
+	"\x06org_id\x18\x02 \x01(\tB\x04\xe2A\x01\x03R\x05orgID\x12\x1d\n" +
 	"\x04name\x18\x03 \x01(\tB\t\xbaH\x06r\x04\x10\x05\x18PR\x04name\x12\x1d\n" +
 	"\x05email\x18\x04 \x01(\tB\a\xbaH\x04r\x02`\x01R\x05email\x12\x1d\n" +
 	"\x05phone\x18\x05 \x01(\tB\a\xbaH\x04r\x02\x18\x10R\x05phone\x12<\n" +
@@ -554,26 +554,28 @@ const file_api_thingspect_user_proto_rawDesc = "" +
 	"\x06status\x18\a \x01(\x0e2\x16.thingspect.api.StatusB\n" +
 	"\xbaH\a\x82\x01\x04\x18\x03\x18\x06R\x06status\x12#\n" +
 	"\x04tags\x18\b \x03(\tB\x0f\xbaH\f\x92\x01\t\x18\x01\"\x05r\x03\x18\xff\x01R\x04tags\x12 \n" +
-	"\aapp_key\x18\t \x01(\tB\a\xbaH\x04r\x02\x18-R\x06appKey\x12>\n" +
+	"\aapp_key\x18\t \x01(\tB\a\xbaH\x04r\x02\x18-R\x06appKey\x12?\n" +
 	"\n" +
 	"created_at\x18\n" +
-	" \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\tcreatedAt\x12>\n" +
+	" \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\tcreatedAt\x12?\n" +
 	"\n" +
-	"updated_at\x18\v \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\tupdatedAt\"H\n" +
-	"\x11CreateUserRequest\x123\n" +
-	"\x04user\x18\x01 \x01(\v2\x14.thingspect.api.UserB\t\xe0A\x02\xbaH\x03\xc8\x01\x01R\x04user\"-\n" +
-	"\x0eGetUserRequest\x12\x1b\n" +
-	"\x02id\x18\x01 \x01(\tB\v\xe0A\x02\xbaH\x05r\x03\xb0\x01\x01R\x02id\"\x85\x01\n" +
-	"\x11UpdateUserRequest\x123\n" +
-	"\x04user\x18\x01 \x01(\v2\x14.thingspect.api.UserB\t\xe0A\x02\xbaH\x03\xc8\x01\x01R\x04user\x12;\n" +
+	"updated_at\x18\v \x01(\v2\x1a.google.protobuf.TimestampB\x04\xe2A\x01\x03R\tupdatedAt\"I\n" +
+	"\x11CreateUserRequest\x124\n" +
+	"\x04user\x18\x01 \x01(\v2\x14.thingspect.api.UserB\n" +
+	"\xe2A\x01\x02\xbaH\x03\xc8\x01\x01R\x04user\".\n" +
+	"\x0eGetUserRequest\x12\x1c\n" +
+	"\x02id\x18\x01 \x01(\tB\f\xe2A\x01\x02\xbaH\x05r\x03\xb0\x01\x01R\x02id\"\x86\x01\n" +
+	"\x11UpdateUserRequest\x124\n" +
+	"\x04user\x18\x01 \x01(\v2\x14.thingspect.api.UserB\n" +
+	"\xe2A\x01\x02\xbaH\x03\xc8\x01\x01R\x04user\x12;\n" +
 	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskR\n" +
-	"updateMask\"b\n" +
-	"\x19UpdateUserPasswordRequest\x12\x1b\n" +
-	"\x02id\x18\x01 \x01(\tB\v\xe0A\x03\xbaH\x05r\x03\xb0\x01\x01R\x02id\x12(\n" +
-	"\bpassword\x18\x02 \x01(\tB\f\xe0A\x02\xbaH\x06r\x04\x10\n" +
-	"\x18dR\bpassword\"0\n" +
-	"\x11DeleteUserRequest\x12\x1b\n" +
-	"\x02id\x18\x01 \x01(\tB\v\xe0A\x02\xbaH\x05r\x03\xb0\x01\x01R\x02id\"t\n" +
+	"updateMask\"d\n" +
+	"\x19UpdateUserPasswordRequest\x12\x1c\n" +
+	"\x02id\x18\x01 \x01(\tB\f\xe2A\x01\x03\xbaH\x05r\x03\xb0\x01\x01R\x02id\x12)\n" +
+	"\bpassword\x18\x02 \x01(\tB\r\xe2A\x01\x02\xbaH\x06r\x04\x10\n" +
+	"\x18HR\bpassword\"1\n" +
+	"\x11DeleteUserRequest\x12\x1c\n" +
+	"\x02id\x18\x01 \x01(\tB\f\xe2A\x01\x02\xbaH\x05r\x03\xb0\x01\x01R\x02id\"t\n" +
 	"\x10ListUsersRequest\x12%\n" +
 	"\tpage_size\x18\x01 \x01(\x05B\b\xbaH\x05\x1a\x03\x18\xfa\x01R\bpageSize\x12\x1d\n" +
 	"\n" +

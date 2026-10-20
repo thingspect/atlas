@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"iter"
+	"strconv"
 	"sync/atomic"
 	"time"
 
@@ -89,6 +90,24 @@ func MDel(client Client, ctx context.Context, keys []string) map[string]error {
 	return doMultiSet(client, ctx, cmds)
 }
 
+// MUnlink is a helper that consults the valkey directly with multiple keys by grouping keys within the same slot into UNLINKs
+func MUnlink(client Client, ctx context.Context, keys []string) map[string]error {
+	if len(keys) == 0 {
+		return make(map[string]error)
+	}
+
+	switch client.(type) {
+	case *singleClient, *standalone, *sentinelClient:
+		return clientMUnlink(client, ctx, keys)
+	}
+
+	cmds := mgetcmdsp.Get(len(keys), len(keys))
+	for i, k := range keys {
+		cmds.s[i] = client.B().Unlink().Key(k).Build().Pin()
+	}
+	return doMultiSet(client, ctx, cmds)
+}
+
 // MSetNX is a helper that consults the valkey directly with multiple keys by grouping keys within the same slot into MSETNXs or multiple SETNXs
 func MSetNX(client Client, ctx context.Context, kvs map[string]string) map[string]error {
 	if len(kvs) == 0 {
@@ -103,6 +122,24 @@ func MSetNX(client Client, ctx context.Context, kvs map[string]string) map[strin
 	cmds := mgetcmdsp.Get(0, len(kvs))
 	for k, v := range kvs {
 		cmds.s = append(cmds.s, client.B().Set().Key(k).Value(v).Nx().Build().Pin())
+	}
+	return doMultiSet(client, ctx, cmds)
+}
+
+// MSetEX is a helper that consults the valkey directly with multiple keys by grouping keys within the same slot into MSETEXs or multiple SETs
+func MSetEX(client Client, ctx context.Context, kvs map[string]string, options ...string) map[string]error {
+	if len(kvs) == 0 {
+		return make(map[string]error)
+	}
+
+	switch client.(type) {
+	case *singleClient, *standalone, *sentinelClient:
+		return clientMSetEX(client, ctx, kvs, options, make(map[string]error, len(kvs)))
+	}
+
+	cmds := mgetcmdsp.Get(0, len(kvs))
+	for k, v := range kvs {
+		cmds.s = append(cmds.s, client.B().Arbitrary("SET").Keys(k).Args(v).Args(options...).Build().Pin())
 	}
 	return doMultiSet(client, ctx, cmds)
 }
@@ -196,6 +233,22 @@ func clientMSet(client Client, ctx context.Context, mset string, kvs map[string]
 	return ret
 }
 
+func clientMSetEX(client Client, ctx context.Context, kvs map[string]string, options []string, ret map[string]error) map[string]error {
+	cmd := client.B().Arbitrary("MSETEX", strconv.Itoa(len(kvs)))
+	for k, v := range kvs {
+		cmd = cmd.Args(k, v)
+	}
+	cmd = cmd.Args(options...)
+	ok, err := client.Do(ctx, cmd.Build()).AsBool()
+	if err == nil && !ok {
+		err = ErrMSetEXNotSet
+	}
+	for k := range kvs {
+		ret[k] = err
+	}
+	return ret
+}
+
 func clientJSONMSet(client Client, ctx context.Context, kvs map[string]string, path string, ret map[string]error) map[string]error {
 	cmd := intl.JsonMsetTripletValue(client.B().JsonMset())
 	for k, v := range kvs {
@@ -213,6 +266,15 @@ func clientMDel(client Client, ctx context.Context, keys []string) map[string]er
 	ret := make(map[string]error, len(keys))
 	for _, k := range keys {
 		ret[k] = err
+	}
+	return ret
+}
+
+func clientMUnlink(client Client, ctx context.Context, keys []string) map[string]error {
+	err := client.Do(ctx, client.B().Unlink().Key(keys...).Build()).Error()
+	ret := make(map[string]error, len(keys))
+	for _, key := range keys {
+		ret[key] = err
 	}
 	return ret
 }
@@ -348,6 +410,10 @@ func clusterJsonMGet(client Client, ctx context.Context, keys []string, path str
 // Ref: https://redis.io/commands/msetnx/
 var ErrMSetNXNotSet = errors.New("MSETNX: no key was set")
 
+// ErrMSetEXNotSet is used in the MSetEX helper when the underlying MSETEX response is 0.
+// Ref: https://valkey.io/commands/msetex/
+var ErrMSetEXNotSet = errors.New("MSETEX: no key was set")
+
 type Scanner struct {
 	next func(cursor uint64) (ScanEntry, error)
 	err  error
@@ -391,6 +457,40 @@ func (s *Scanner) Iter2() iter.Seq2[string, string] {
 }
 
 func (s *Scanner) Err() error {
+	return s.err
+}
+
+type ClusterScanner struct {
+	next func(cursor string) (ClusterScanEntry, error)
+	err  error
+}
+
+func NewClusterScanner(next func(cursor string) (ClusterScanEntry, error)) *ClusterScanner {
+	return &ClusterScanner{next: next}
+}
+
+func (s *ClusterScanner) scan() iter.Seq[[]string] {
+	return func(yield func([]string) bool) {
+		var e ClusterScanEntry
+		for e, s.err = s.next("0"); s.err == nil && yield(e.Elements) && e.Cursor != "0"; {
+			e, s.err = s.next(e.Cursor)
+		}
+	}
+}
+
+func (s *ClusterScanner) Iter() iter.Seq[string] {
+	return func(yield func(string) bool) {
+		for vs := range s.scan() {
+			for _, v := range vs {
+				if !yield(v) {
+					return
+				}
+			}
+		}
+	}
+}
+
+func (s *ClusterScanner) Err() error {
 	return s.err
 }
 

@@ -30,6 +30,7 @@ go.work.sum
 .vscode/
 .claude/
 CLAUDE.md
+AGENTS.md
 
 ### macOS ###
 .DS_Store

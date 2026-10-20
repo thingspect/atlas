@@ -784,6 +784,24 @@ func TestUpdateUserPassword(t *testing.T) {
 			auth.ErrWeakPass.Error()), err)
 	})
 
+	t.Run("Update user password with excessive password", func(t *testing.T) {
+		t.Parallel()
+
+		ctx, cancel := context.WithTimeout(session.NewContext(t.Context(),
+			&session.Session{OrgID: uuid.NewV7().String(), Role: api.Role_ADMIN}),
+			testTimeout)
+		defer cancel()
+
+		userSvc := NewUser(nil, nil)
+		_, err := userSvc.UpdateUserPassword(ctx,
+			&api.UpdateUserPasswordRequest{
+				Id: uuid.NewV7().String(), Password: random.String(100),
+			})
+		t.Logf("err: %v", err)
+		require.Equal(t, status.Error(codes.InvalidArgument,
+			auth.ErrWeakPass.Error()), err)
+	})
+
 	t.Run("Update user password by unknown ID", func(t *testing.T) {
 		t.Parallel()
 

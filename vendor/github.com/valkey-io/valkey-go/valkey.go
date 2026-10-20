@@ -337,6 +337,14 @@ type ClusterOption struct {
 
 	// PreferInitAddressRefresh only uses ClientOption.InitAddress nodes during cluster topology refresh.
 	PreferInitAddressRefresh bool
+
+	// PreferClusterShards uses CLUSTER SHARDS instead of CLUSTER SLOTS to refresh the cluster topology
+	// on servers with version >= 7 (by default CLUSTER SHARDS is only used on version >= 8).
+	// CLUSTER SHARDS reports the per-node "health" field, which lets the client drop nodes that are not
+	// online (e.g. LOADING during a failover) instead of routing to them.
+	// Enable this ONLY if your engine's CLUSTER SHARDS is fixed: Valkey >= 7.2.6 or Redis >= 8.0.
+	// Do NOT enable it on Redis 7.x: its CLUSTER SHARDS returns wrong topology after a failover.
+	PreferClusterShards bool
 }
 
 // StandaloneOption is the options for the standalone client.
@@ -552,23 +560,23 @@ func NewClient(option ClientOption) (client Client, err error) {
 	}
 	if option.Sentinel.MasterSet != "" {
 		option.PipelineMultiplex = singleClientMultiplex(option.PipelineMultiplex)
-		return newSentinelClient(&option, makeConn, newRetryer(option.RetryDelay))
+		return toClient(newSentinelClient(&option, makeConn, newRetryer(option.RetryDelay)))
 	}
 
 	if option.Standalone.EnableRedirect {
 		option.PipelineMultiplex = singleClientMultiplex(option.PipelineMultiplex)
-		return newStandaloneClient(&option, makeConn, newRetryer(option.RetryDelay))
+		return toClient(newStandaloneClient(&option, makeConn, newRetryer(option.RetryDelay)))
 	}
 	if len(option.Standalone.ReplicaAddress) > 0 {
 		if option.SendToReplicas == nil {
 			return nil, ErrNoSendToReplicas
 		}
 		option.PipelineMultiplex = singleClientMultiplex(option.PipelineMultiplex)
-		return newStandaloneClient(&option, makeConn, newRetryer(option.RetryDelay))
+		return toClient(newStandaloneClient(&option, makeConn, newRetryer(option.RetryDelay)))
 	}
 	if option.ForceSingleClient {
 		option.PipelineMultiplex = singleClientMultiplex(option.PipelineMultiplex)
-		return newSingleClient(&option, nil, makeConn, newRetryer(option.RetryDelay))
+		return toClient(newSingleClient(&option, nil, makeConn, newRetryer(option.RetryDelay)))
 	}
 	if client, err = newClusterClient(&option, makeConn, newRetryer(option.RetryDelay)); err != nil {
 		if client == (*clusterClient)(nil) {
@@ -576,7 +584,7 @@ func NewClient(option ClientOption) (client Client, err error) {
 		}
 		if len(option.InitAddress) == 1 && (err.Error() == valkeyErrMsgCommandNotAllow || strings.Contains(strings.ToUpper(err.Error()), "CLUSTER")) {
 			option.PipelineMultiplex = singleClientMultiplex(option.PipelineMultiplex)
-			client, err = newSingleClient(&option, client.(*clusterClient).single(), makeConn, newRetryer(option.RetryDelay))
+			client, err = toClient(newSingleClient(&option, client.(*clusterClient).single(), makeConn, newRetryer(option.RetryDelay)))
 		} else {
 			client.Close()
 			return nil, err
@@ -623,3 +631,14 @@ var (
 	// errConnExpired means the wrong connection that ClientOption.ConnLifetime had passed since connecting
 	errConnExpired = errors.New("connection is expired")
 )
+
+// toClient keeps a nil concrete client from escaping as a non-nil Client interface.
+func toClient[P interface {
+	*T
+	Client
+}, T any](c P, err error) (Client, error) {
+	if c == nil {
+		return nil, err
+	}
+	return c, err
+}

@@ -489,7 +489,7 @@ var File_api_relay_proto protoreflect.FileDescriptor
 
 const file_api_relay_proto_rawDesc = "" +
 	"\n" +
-	"\x0fapi/relay.proto\x12\x03api\x1a\x1cgoogle/api/annotations.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x1bgoogle/protobuf/empty.proto\"<\n" +
+	"\x0fapi/relay.proto\x12\x03api\x1a\x1cgoogle/api/annotations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"<\n" +
 	"\rRelayListItem\x12\x17\n" +
 	"\adev_eui\x18\x01 \x01(\tR\x06devEui\x12\x12\n" +
 	"\x04name\x18\x02 \x01(\tR\x04name\"h\n" +
@@ -519,11 +519,11 @@ const file_api_relay_proto_rawDesc = "" +
 	"\x18ListRelayDevicesResponse\x12\x1f\n" +
 	"\vtotal_count\x18\x01 \x01(\rR\n" +
 	"totalCount\x120\n" +
-	"\x06result\x18\x02 \x03(\v2\x18.api.RelayDeviceListItemR\x06result2\xc4\x03\n" +
+	"\x06result\x18\x02 \x03(\v2\x18.api.RelayDeviceListItemR\x06result2\xcc\x03\n" +
 	"\fRelayService\x12L\n" +
 	"\x04List\x12\x16.api.ListRelaysRequest\x1a\x17.api.ListRelaysResponse\"\x13\x82\xd3\xe4\x93\x02\r\x12\v/api/relays\x12o\n" +
-	"\tAddDevice\x12\x1a.api.AddRelayDeviceRequest\x1a\x16.google.protobuf.Empty\".\x82\xd3\xe4\x93\x02(:\x01*\"#/api/relays/{relay_dev_eui}/devices\x12|\n" +
-	"\fRemoveDevice\x12\x1d.api.RemoveRelayDeviceRequest\x1a\x16.google.protobuf.Empty\"5\x82\xd3\xe4\x93\x02/*-/api/relays/{relay_dev_eui}/devices/{dev_eui}\x12w\n" +
+	"\tAddDevice\x12\x1a.api.AddRelayDeviceRequest\x1a\x16.google.protobuf.Empty\".\x82\xd3\xe4\x93\x02(:\x01*\"#/api/relays/{relay_dev_eui}/devices\x12\x83\x01\n" +
+	"\fRemoveDevice\x12\x1d.api.RemoveRelayDeviceRequest\x1a\x16.google.protobuf.Empty\"<\x82\xd3\xe4\x93\x026*4/api/relays/{relay_dev_eui}/devices/{device_dev_eui}\x12w\n" +
 	"\vListDevices\x12\x1c.api.ListRelayDevicesRequest\x1a\x1d.api.ListRelayDevicesResponse\"+\x82\xd3\xe4\x93\x02%\x12#/api/relays/{relay_dev_eui}/devicesB\x90\x01\n" +
 	"\x11io.chirpstack.apiB\n" +
 	"RelayProtoP\x01Z.github.com/chirpstack/chirpstack/api/go/v4/api\xaa\x02\x0eChirpstack.Api\xca\x02\x0eChirpstack\\Api\xe2\x02\x1aGPBMetadata\\Chirpstack\\Apib\x06proto3"

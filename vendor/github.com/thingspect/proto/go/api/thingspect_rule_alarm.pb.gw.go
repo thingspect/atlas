@@ -201,7 +201,7 @@ func local_request_RuleAlarmService_GetAlarm_0(ctx context.Context, marshaler ru
 	return msg, metadata, err
 }
 
-var filter_RuleAlarmService_UpdateRule_0 = &utilities.DoubleArray{Encoding: map[string]int{"rule": 0, "id": 1}, Base: []int{1, 2, 1, 0, 0}, Check: []int{0, 1, 2, 3, 2}}
+var filter_RuleAlarmService_UpdateRule_0 = &utilities.DoubleArray{Encoding: map[string]int{"rule": 0, "id": 1}, Base: []int{1, 1, 2, 0, 0}, Check: []int{0, 1, 2, 2, 3}}
 
 func request_RuleAlarmService_UpdateRule_0(ctx context.Context, marshaler runtime.Marshaler, client RuleAlarmServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
 	var (
@@ -260,7 +260,7 @@ func local_request_RuleAlarmService_UpdateRule_0(ctx context.Context, marshaler 
 	return msg, metadata, err
 }
 
-var filter_RuleAlarmService_UpdateRule_1 = &utilities.DoubleArray{Encoding: map[string]int{"rule": 0, "id": 1}, Base: []int{1, 2, 1, 0, 0}, Check: []int{0, 1, 2, 3, 2}}
+var filter_RuleAlarmService_UpdateRule_1 = &utilities.DoubleArray{Encoding: map[string]int{"rule": 0, "id": 1}, Base: []int{1, 1, 2, 0, 0}, Check: []int{0, 1, 2, 2, 3}}
 
 func request_RuleAlarmService_UpdateRule_1(ctx context.Context, marshaler runtime.Marshaler, client RuleAlarmServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
 	var (
@@ -341,7 +341,7 @@ func local_request_RuleAlarmService_UpdateRule_1(ctx context.Context, marshaler 
 	return msg, metadata, err
 }
 
-var filter_RuleAlarmService_UpdateAlarm_0 = &utilities.DoubleArray{Encoding: map[string]int{"alarm": 0, "rule_id": 1, "id": 2}, Base: []int{1, 3, 1, 2, 0, 0, 0}, Check: []int{0, 1, 2, 2, 3, 4, 2}}
+var filter_RuleAlarmService_UpdateAlarm_0 = &utilities.DoubleArray{Encoding: map[string]int{"alarm": 0, "rule_id": 1, "id": 2}, Base: []int{1, 1, 2, 3, 0, 0, 0}, Check: []int{0, 1, 2, 2, 2, 3, 4}}
 
 func request_RuleAlarmService_UpdateAlarm_0(ctx context.Context, marshaler runtime.Marshaler, client RuleAlarmServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
 	var (
@@ -416,7 +416,7 @@ func local_request_RuleAlarmService_UpdateAlarm_0(ctx context.Context, marshaler
 	return msg, metadata, err
 }
 
-var filter_RuleAlarmService_UpdateAlarm_1 = &utilities.DoubleArray{Encoding: map[string]int{"alarm": 0, "rule_id": 1, "id": 2}, Base: []int{1, 3, 1, 2, 0, 0, 0}, Check: []int{0, 1, 2, 2, 3, 4, 2}}
+var filter_RuleAlarmService_UpdateAlarm_1 = &utilities.DoubleArray{Encoding: map[string]int{"alarm": 0, "rule_id": 1, "id": 2}, Base: []int{1, 1, 2, 3, 0, 0, 0}, Check: []int{0, 1, 2, 2, 2, 3, 4}}
 
 func request_RuleAlarmService_UpdateAlarm_1(ctx context.Context, marshaler runtime.Marshaler, client RuleAlarmServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
 	var (
