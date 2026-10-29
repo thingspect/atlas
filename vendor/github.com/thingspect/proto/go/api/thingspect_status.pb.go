@@ -4,13 +4,14 @@
 // 	protoc        v6.31.1
 // source: api/thingspect_status.proto
 
+//go:build !protoopaque
+
 package api
 
 import (
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	reflect "reflect"
-	sync "sync"
 	unsafe "unsafe"
 )
 
@@ -69,11 +70,6 @@ func (x Status) Number() protoreflect.EnumNumber {
 	return protoreflect.EnumNumber(x)
 }
 
-// Deprecated: Use Status.Descriptor instead.
-func (Status) EnumDescriptor() ([]byte, []int) {
-	return file_api_thingspect_status_proto_rawDescGZIP(), []int{0}
-}
-
 var File_api_thingspect_status_proto protoreflect.FileDescriptor
 
 const file_api_thingspect_status_proto_rawDesc = "" +
@@ -84,18 +80,6 @@ const file_api_thingspect_status_proto_rawDesc = "" +
 	"\n" +
 	"\x06ACTIVE\x10\x03\x12\f\n" +
 	"\bDISABLED\x10\x06B$Z\"github.com/thingspect/proto/go/apib\x06proto3"
-
-var (
-	file_api_thingspect_status_proto_rawDescOnce sync.Once
-	file_api_thingspect_status_proto_rawDescData []byte
-)
-
-func file_api_thingspect_status_proto_rawDescGZIP() []byte {
-	file_api_thingspect_status_proto_rawDescOnce.Do(func() {
-		file_api_thingspect_status_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_api_thingspect_status_proto_rawDesc), len(file_api_thingspect_status_proto_rawDesc)))
-	})
-	return file_api_thingspect_status_proto_rawDescData
-}
 
 var file_api_thingspect_status_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
 var file_api_thingspect_status_proto_goTypes = []any{

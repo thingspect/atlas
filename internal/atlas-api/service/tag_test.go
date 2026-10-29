@@ -37,8 +37,8 @@ func TestListTags(t *testing.T) {
 		listTags, err := tagSvc.ListTags(ctx, &api.ListTagsRequest{})
 		t.Logf("listTags, err: %+v, %v", listTags, err)
 		require.NoError(t, err)
-		require.EqualExportedValues(t, &api.ListTagsResponse{Tags: tags},
-			listTags)
+		require.EqualExportedValues(t,
+			api.ListTagsResponse_builder{Tags: tags}.Build(), listTags)
 	})
 
 	t.Run("List tags with invalid session", func(t *testing.T) {

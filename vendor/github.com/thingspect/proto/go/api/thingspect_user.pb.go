@@ -4,6 +4,8 @@
 // 	protoc        v6.31.1
 // source: api/thingspect_user.proto
 
+//go:build !protoopaque
+
 package api
 
 import (
@@ -16,7 +18,6 @@ import (
 	fieldmaskpb "google.golang.org/protobuf/types/known/fieldmaskpb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
 	reflect "reflect"
-	sync "sync"
 	unsafe "unsafe"
 )
 
@@ -29,7 +30,7 @@ const (
 
 // User represents a user as stored in the database.
 type User struct {
-	state protoimpl.MessageState `protogen:"open.v1"`
+	state protoimpl.MessageState `protogen:"hybrid.v1"`
 	// User ID (UUID).
 	Id string `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
 	// Organization ID (UUID).
@@ -79,11 +80,6 @@ func (x *User) ProtoReflect() protoreflect.Message {
 		return ms
 	}
 	return mi.MessageOf(x)
-}
-
-// Deprecated: Use User.ProtoReflect.Descriptor instead.
-func (*User) Descriptor() ([]byte, []int) {
-	return file_api_thingspect_user_proto_rawDescGZIP(), []int{0}
 }
 
 func (x *User) GetId() string {
@@ -163,9 +159,120 @@ func (x *User) GetUpdatedAt() *timestamppb.Timestamp {
 	return nil
 }
 
+func (x *User) SetId(v string) {
+	x.Id = v
+}
+
+func (x *User) SetOrgId(v string) {
+	x.OrgId = v
+}
+
+func (x *User) SetName(v string) {
+	x.Name = v
+}
+
+func (x *User) SetEmail(v string) {
+	x.Email = v
+}
+
+func (x *User) SetPhone(v string) {
+	x.Phone = v
+}
+
+func (x *User) SetRole(v Role) {
+	x.Role = v
+}
+
+func (x *User) SetStatus(v Status) {
+	x.Status = v
+}
+
+func (x *User) SetTags(v []string) {
+	x.Tags = v
+}
+
+func (x *User) SetAppKey(v string) {
+	x.AppKey = v
+}
+
+func (x *User) SetCreatedAt(v *timestamppb.Timestamp) {
+	x.CreatedAt = v
+}
+
+func (x *User) SetUpdatedAt(v *timestamppb.Timestamp) {
+	x.UpdatedAt = v
+}
+
+func (x *User) HasCreatedAt() bool {
+	if x == nil {
+		return false
+	}
+	return x.CreatedAt != nil
+}
+
+func (x *User) HasUpdatedAt() bool {
+	if x == nil {
+		return false
+	}
+	return x.UpdatedAt != nil
+}
+
+func (x *User) ClearCreatedAt() {
+	x.CreatedAt = nil
+}
+
+func (x *User) ClearUpdatedAt() {
+	x.UpdatedAt = nil
+}
+
+type User_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	// User ID (UUID).
+	Id string
+	// Organization ID (UUID).
+	OrgId string
+	// User name.
+	Name string
+	// User email.
+	Email string
+	// User phone number. If specified, must be in valid [E.164](https://www.twilio.com/docs/glossary/what-e164) format.
+	Phone string
+	// User role.
+	Role Role
+	// User status.
+	Status Status
+	// User tags. Nested tags should be delimited by '/'.
+	Tags []string
+	// Mobile application user key.
+	AppKey string
+	// User creation timestamp.
+	CreatedAt *timestamppb.Timestamp
+	// User modification timestamp.
+	UpdatedAt *timestamppb.Timestamp
+}
+
+func (b0 User_builder) Build() *User {
+	m0 := &User{}
+	b, x := &b0, m0
+	_, _ = b, x
+	x.Id = b.Id
+	x.OrgId = b.OrgId
+	x.Name = b.Name
+	x.Email = b.Email
+	x.Phone = b.Phone
+	x.Role = b.Role
+	x.Status = b.Status
+	x.Tags = b.Tags
+	x.AppKey = b.AppKey
+	x.CreatedAt = b.CreatedAt
+	x.UpdatedAt = b.UpdatedAt
+	return m0
+}
+
 // CreateUserRequest is sent to create a user.
 type CreateUserRequest struct {
-	state protoimpl.MessageState `protogen:"open.v1"`
+	state protoimpl.MessageState `protogen:"hybrid.v1"`
 	// User message to create.
 	User          *User `protobuf:"bytes,1,opt,name=user,proto3" json:"user,omitempty"`
 	unknownFields protoimpl.UnknownFields
@@ -197,11 +304,6 @@ func (x *CreateUserRequest) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use CreateUserRequest.ProtoReflect.Descriptor instead.
-func (*CreateUserRequest) Descriptor() ([]byte, []int) {
-	return file_api_thingspect_user_proto_rawDescGZIP(), []int{1}
-}
-
 func (x *CreateUserRequest) GetUser() *User {
 	if x != nil {
 		return x.User
@@ -209,9 +311,39 @@ func (x *CreateUserRequest) GetUser() *User {
 	return nil
 }
 
+func (x *CreateUserRequest) SetUser(v *User) {
+	x.User = v
+}
+
+func (x *CreateUserRequest) HasUser() bool {
+	if x == nil {
+		return false
+	}
+	return x.User != nil
+}
+
+func (x *CreateUserRequest) ClearUser() {
+	x.User = nil
+}
+
+type CreateUserRequest_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	// User message to create.
+	User *User
+}
+
+func (b0 CreateUserRequest_builder) Build() *CreateUserRequest {
+	m0 := &CreateUserRequest{}
+	b, x := &b0, m0
+	_, _ = b, x
+	x.User = b.User
+	return m0
+}
+
 // GetUserRequest is sent to get a user.
 type GetUserRequest struct {
-	state protoimpl.MessageState `protogen:"open.v1"`
+	state protoimpl.MessageState `protogen:"hybrid.v1"`
 	// User ID (UUID) to get.
 	Id            string `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
 	unknownFields protoimpl.UnknownFields
@@ -243,11 +375,6 @@ func (x *GetUserRequest) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use GetUserRequest.ProtoReflect.Descriptor instead.
-func (*GetUserRequest) Descriptor() ([]byte, []int) {
-	return file_api_thingspect_user_proto_rawDescGZIP(), []int{2}
-}
-
 func (x *GetUserRequest) GetId() string {
 	if x != nil {
 		return x.Id
@@ -255,9 +382,28 @@ func (x *GetUserRequest) GetId() string {
 	return ""
 }
 
+func (x *GetUserRequest) SetId(v string) {
+	x.Id = v
+}
+
+type GetUserRequest_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	// User ID (UUID) to get.
+	Id string
+}
+
+func (b0 GetUserRequest_builder) Build() *GetUserRequest {
+	m0 := &GetUserRequest{}
+	b, x := &b0, m0
+	_, _ = b, x
+	x.Id = b.Id
+	return m0
+}
+
 // UpdateUserRequest is sent to update a user.
 type UpdateUserRequest struct {
-	state protoimpl.MessageState `protogen:"open.v1"`
+	state protoimpl.MessageState `protogen:"hybrid.v1"`
 	// User message to update.
 	User *User `protobuf:"bytes,1,opt,name=user,proto3" json:"user,omitempty"`
 	// Fields to update. Automatically populated by a PATCH request. If not present, a full resource update is performed.
@@ -291,11 +437,6 @@ func (x *UpdateUserRequest) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use UpdateUserRequest.ProtoReflect.Descriptor instead.
-func (*UpdateUserRequest) Descriptor() ([]byte, []int) {
-	return file_api_thingspect_user_proto_rawDescGZIP(), []int{3}
-}
-
 func (x *UpdateUserRequest) GetUser() *User {
 	if x != nil {
 		return x.User
@@ -310,9 +451,57 @@ func (x *UpdateUserRequest) GetUpdateMask() *fieldmaskpb.FieldMask {
 	return nil
 }
 
+func (x *UpdateUserRequest) SetUser(v *User) {
+	x.User = v
+}
+
+func (x *UpdateUserRequest) SetUpdateMask(v *fieldmaskpb.FieldMask) {
+	x.UpdateMask = v
+}
+
+func (x *UpdateUserRequest) HasUser() bool {
+	if x == nil {
+		return false
+	}
+	return x.User != nil
+}
+
+func (x *UpdateUserRequest) HasUpdateMask() bool {
+	if x == nil {
+		return false
+	}
+	return x.UpdateMask != nil
+}
+
+func (x *UpdateUserRequest) ClearUser() {
+	x.User = nil
+}
+
+func (x *UpdateUserRequest) ClearUpdateMask() {
+	x.UpdateMask = nil
+}
+
+type UpdateUserRequest_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	// User message to update.
+	User *User
+	// Fields to update. Automatically populated by a PATCH request. If not present, a full resource update is performed.
+	UpdateMask *fieldmaskpb.FieldMask
+}
+
+func (b0 UpdateUserRequest_builder) Build() *UpdateUserRequest {
+	m0 := &UpdateUserRequest{}
+	b, x := &b0, m0
+	_, _ = b, x
+	x.User = b.User
+	x.UpdateMask = b.UpdateMask
+	return m0
+}
+
 // UpdateUserPasswordRequest is sent to update a user's password.
 type UpdateUserPasswordRequest struct {
-	state protoimpl.MessageState `protogen:"open.v1"`
+	state protoimpl.MessageState `protogen:"hybrid.v1"`
 	// User ID (UUID) to update password.
 	Id string `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
 	// User password to update.
@@ -346,11 +535,6 @@ func (x *UpdateUserPasswordRequest) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use UpdateUserPasswordRequest.ProtoReflect.Descriptor instead.
-func (*UpdateUserPasswordRequest) Descriptor() ([]byte, []int) {
-	return file_api_thingspect_user_proto_rawDescGZIP(), []int{4}
-}
-
 func (x *UpdateUserPasswordRequest) GetId() string {
 	if x != nil {
 		return x.Id
@@ -365,9 +549,35 @@ func (x *UpdateUserPasswordRequest) GetPassword() string {
 	return ""
 }
 
+func (x *UpdateUserPasswordRequest) SetId(v string) {
+	x.Id = v
+}
+
+func (x *UpdateUserPasswordRequest) SetPassword(v string) {
+	x.Password = v
+}
+
+type UpdateUserPasswordRequest_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	// User ID (UUID) to update password.
+	Id string
+	// User password to update.
+	Password string
+}
+
+func (b0 UpdateUserPasswordRequest_builder) Build() *UpdateUserPasswordRequest {
+	m0 := &UpdateUserPasswordRequest{}
+	b, x := &b0, m0
+	_, _ = b, x
+	x.Id = b.Id
+	x.Password = b.Password
+	return m0
+}
+
 // DeleteUserRequest is sent to delete a user.
 type DeleteUserRequest struct {
-	state protoimpl.MessageState `protogen:"open.v1"`
+	state protoimpl.MessageState `protogen:"hybrid.v1"`
 	// User ID (UUID) to delete.
 	Id            string `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
 	unknownFields protoimpl.UnknownFields
@@ -399,11 +609,6 @@ func (x *DeleteUserRequest) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use DeleteUserRequest.ProtoReflect.Descriptor instead.
-func (*DeleteUserRequest) Descriptor() ([]byte, []int) {
-	return file_api_thingspect_user_proto_rawDescGZIP(), []int{5}
-}
-
 func (x *DeleteUserRequest) GetId() string {
 	if x != nil {
 		return x.Id
@@ -411,9 +616,28 @@ func (x *DeleteUserRequest) GetId() string {
 	return ""
 }
 
+func (x *DeleteUserRequest) SetId(v string) {
+	x.Id = v
+}
+
+type DeleteUserRequest_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	// User ID (UUID) to delete.
+	Id string
+}
+
+func (b0 DeleteUserRequest_builder) Build() *DeleteUserRequest {
+	m0 := &DeleteUserRequest{}
+	b, x := &b0, m0
+	_, _ = b, x
+	x.Id = b.Id
+	return m0
+}
+
 // ListUsersRequest is sent to list users.
 type ListUsersRequest struct {
-	state protoimpl.MessageState `protogen:"open.v1"`
+	state protoimpl.MessageState `protogen:"hybrid.v1"`
 	// Number of users to retrieve in a single page. Defaults to 50 if not specified, with a maximum of 250.
 	PageSize int32 `protobuf:"varint,1,opt,name=page_size,json=pageSize,proto3" json:"page_size,omitempty"`
 	// Token of the page to retrieve. If not specified, the first page of results will be returned. To request the next page of results, use next_page_token from the previous response.
@@ -449,11 +673,6 @@ func (x *ListUsersRequest) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use ListUsersRequest.ProtoReflect.Descriptor instead.
-func (*ListUsersRequest) Descriptor() ([]byte, []int) {
-	return file_api_thingspect_user_proto_rawDescGZIP(), []int{6}
-}
-
 func (x *ListUsersRequest) GetPageSize() int32 {
 	if x != nil {
 		return x.PageSize
@@ -475,9 +694,42 @@ func (x *ListUsersRequest) GetTag() string {
 	return ""
 }
 
+func (x *ListUsersRequest) SetPageSize(v int32) {
+	x.PageSize = v
+}
+
+func (x *ListUsersRequest) SetPageToken(v string) {
+	x.PageToken = v
+}
+
+func (x *ListUsersRequest) SetTag(v string) {
+	x.Tag = v
+}
+
+type ListUsersRequest_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	// Number of users to retrieve in a single page. Defaults to 50 if not specified, with a maximum of 250.
+	PageSize int32
+	// Token of the page to retrieve. If not specified, the first page of results will be returned. To request the next page of results, use next_page_token from the previous response.
+	PageToken string
+	// User tag. If not specified, all tags are included.
+	Tag string
+}
+
+func (b0 ListUsersRequest_builder) Build() *ListUsersRequest {
+	m0 := &ListUsersRequest{}
+	b, x := &b0, m0
+	_, _ = b, x
+	x.PageSize = b.PageSize
+	x.PageToken = b.PageToken
+	x.Tag = b.Tag
+	return m0
+}
+
 // ListUsersResponse is sent in response to a user list.
 type ListUsersResponse struct {
-	state protoimpl.MessageState `protogen:"open.v1"`
+	state protoimpl.MessageState `protogen:"hybrid.v1"`
 	// User array, ordered by ascending created_at timestamp. The completeness of the array will depend on whether the request was made by an admin user, non-admin user, or API key.
 	Users []*User `protobuf:"bytes,1,rep,name=users,proto3" json:"users,omitempty"`
 	// Pagination token used to retrieve the next page of results. Not returned for the last page.
@@ -513,11 +765,6 @@ func (x *ListUsersResponse) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use ListUsersResponse.ProtoReflect.Descriptor instead.
-func (*ListUsersResponse) Descriptor() ([]byte, []int) {
-	return file_api_thingspect_user_proto_rawDescGZIP(), []int{7}
-}
-
 func (x *ListUsersResponse) GetUsers() []*User {
 	if x != nil {
 		return x.Users
@@ -537,6 +784,39 @@ func (x *ListUsersResponse) GetTotalSize() int32 {
 		return x.TotalSize
 	}
 	return 0
+}
+
+func (x *ListUsersResponse) SetUsers(v []*User) {
+	x.Users = v
+}
+
+func (x *ListUsersResponse) SetNextPageToken(v string) {
+	x.NextPageToken = v
+}
+
+func (x *ListUsersResponse) SetTotalSize(v int32) {
+	x.TotalSize = v
+}
+
+type ListUsersResponse_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	// User array, ordered by ascending created_at timestamp. The completeness of the array will depend on whether the request was made by an admin user, non-admin user, or API key.
+	Users []*User
+	// Pagination token used to retrieve the next page of results. Not returned for the last page.
+	NextPageToken string
+	// Total number of users available.
+	TotalSize int32
+}
+
+func (b0 ListUsersResponse_builder) Build() *ListUsersResponse {
+	m0 := &ListUsersResponse{}
+	b, x := &b0, m0
+	_, _ = b, x
+	x.Users = b.Users
+	x.NextPageToken = b.NextPageToken
+	x.TotalSize = b.TotalSize
+	return m0
 }
 
 var File_api_thingspect_user_proto protoreflect.FileDescriptor
@@ -601,18 +881,6 @@ const file_api_thingspect_user_proto_rawDesc = "" +
 	"\x03204\x12\x1a\n" +
 	"\x16A successful response.\x12\x00\x82\xd3\xe4\x93\x02\x10*\x0e/v1/users/{id}\x12c\n" +
 	"\tListUsers\x12 .thingspect.api.ListUsersRequest\x1a!.thingspect.api.ListUsersResponse\"\x11\x82\xd3\xe4\x93\x02\v\x12\t/v1/usersB$Z\"github.com/thingspect/proto/go/apib\x06proto3"
-
-var (
-	file_api_thingspect_user_proto_rawDescOnce sync.Once
-	file_api_thingspect_user_proto_rawDescData []byte
-)
-
-func file_api_thingspect_user_proto_rawDescGZIP() []byte {
-	file_api_thingspect_user_proto_rawDescOnce.Do(func() {
-		file_api_thingspect_user_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_api_thingspect_user_proto_rawDesc), len(file_api_thingspect_user_proto_rawDesc)))
-	})
-	return file_api_thingspect_user_proto_rawDescData
-}
 
 var file_api_thingspect_user_proto_msgTypes = make([]protoimpl.MessageInfo, 8)
 var file_api_thingspect_user_proto_goTypes = []any{

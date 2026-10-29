@@ -4,6 +4,8 @@
 // 	protoc        v6.31.1
 // source: api/thingspect_event.proto
 
+//go:build !protoopaque
+
 package api
 
 import (
@@ -13,7 +15,6 @@ import (
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
 	reflect "reflect"
-	sync "sync"
 	unsafe "unsafe"
 )
 
@@ -26,7 +27,7 @@ const (
 
 // Event represents an event as stored in the database.
 type Event struct {
-	state protoimpl.MessageState `protogen:"open.v1"`
+	state protoimpl.MessageState `protogen:"hybrid.v1"`
 	// Organization ID (UUID).
 	OrgId string `protobuf:"bytes,1,opt,name=org_id,json=orgID,proto3" json:"org_id,omitempty"`
 	// Device unique ID.
@@ -66,11 +67,6 @@ func (x *Event) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use Event.ProtoReflect.Descriptor instead.
-func (*Event) Descriptor() ([]byte, []int) {
-	return file_api_thingspect_event_proto_rawDescGZIP(), []int{0}
-}
-
 func (x *Event) GetOrgId() string {
 	if x != nil {
 		return x.OrgId
@@ -106,9 +102,67 @@ func (x *Event) GetTraceId() string {
 	return ""
 }
 
+func (x *Event) SetOrgId(v string) {
+	x.OrgId = v
+}
+
+func (x *Event) SetUniqId(v string) {
+	x.UniqId = v
+}
+
+func (x *Event) SetRuleId(v string) {
+	x.RuleId = v
+}
+
+func (x *Event) SetCreatedAt(v *timestamppb.Timestamp) {
+	x.CreatedAt = v
+}
+
+func (x *Event) SetTraceId(v string) {
+	x.TraceId = v
+}
+
+func (x *Event) HasCreatedAt() bool {
+	if x == nil {
+		return false
+	}
+	return x.CreatedAt != nil
+}
+
+func (x *Event) ClearCreatedAt() {
+	x.CreatedAt = nil
+}
+
+type Event_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	// Organization ID (UUID).
+	OrgId string
+	// Device unique ID.
+	UniqId string
+	// Rule ID (UUID).
+	RuleId string
+	// Event creation timestamp.
+	CreatedAt *timestamppb.Timestamp
+	// Trace ID (UUID).
+	TraceId string
+}
+
+func (b0 Event_builder) Build() *Event {
+	m0 := &Event{}
+	b, x := &b0, m0
+	_, _ = b, x
+	x.OrgId = b.OrgId
+	x.UniqId = b.UniqId
+	x.RuleId = b.RuleId
+	x.CreatedAt = b.CreatedAt
+	x.TraceId = b.TraceId
+	return m0
+}
+
 // ListEventsRequest is sent to list device events in an [end, start) time range, in descending timestamp order.
 type ListEventsRequest struct {
-	state protoimpl.MessageState `protogen:"open.v1"`
+	state protoimpl.MessageState `protogen:"hybrid.v1"`
 	// Device identifier.
 	//
 	// Types that are valid to be assigned to IdOneof:
@@ -149,11 +203,6 @@ func (x *ListEventsRequest) ProtoReflect() protoreflect.Message {
 		return ms
 	}
 	return mi.MessageOf(x)
-}
-
-// Deprecated: Use ListEventsRequest.ProtoReflect.Descriptor instead.
-func (*ListEventsRequest) Descriptor() ([]byte, []int) {
-	return file_api_thingspect_event_proto_rawDescGZIP(), []int{1}
 }
 
 func (x *ListEventsRequest) GetIdOneof() isListEventsRequest_IdOneof {
@@ -202,6 +251,150 @@ func (x *ListEventsRequest) GetStartTime() *timestamppb.Timestamp {
 	return nil
 }
 
+func (x *ListEventsRequest) SetUniqId(v string) {
+	x.IdOneof = &ListEventsRequest_UniqId{v}
+}
+
+func (x *ListEventsRequest) SetDeviceId(v string) {
+	x.IdOneof = &ListEventsRequest_DeviceId{v}
+}
+
+func (x *ListEventsRequest) SetRuleId(v string) {
+	x.RuleId = v
+}
+
+func (x *ListEventsRequest) SetEndTime(v *timestamppb.Timestamp) {
+	x.EndTime = v
+}
+
+func (x *ListEventsRequest) SetStartTime(v *timestamppb.Timestamp) {
+	x.StartTime = v
+}
+
+func (x *ListEventsRequest) HasIdOneof() bool {
+	if x == nil {
+		return false
+	}
+	return x.IdOneof != nil
+}
+
+func (x *ListEventsRequest) HasUniqId() bool {
+	if x == nil {
+		return false
+	}
+	_, ok := x.IdOneof.(*ListEventsRequest_UniqId)
+	return ok
+}
+
+func (x *ListEventsRequest) HasDeviceId() bool {
+	if x == nil {
+		return false
+	}
+	_, ok := x.IdOneof.(*ListEventsRequest_DeviceId)
+	return ok
+}
+
+func (x *ListEventsRequest) HasEndTime() bool {
+	if x == nil {
+		return false
+	}
+	return x.EndTime != nil
+}
+
+func (x *ListEventsRequest) HasStartTime() bool {
+	if x == nil {
+		return false
+	}
+	return x.StartTime != nil
+}
+
+func (x *ListEventsRequest) ClearIdOneof() {
+	x.IdOneof = nil
+}
+
+func (x *ListEventsRequest) ClearUniqId() {
+	if _, ok := x.IdOneof.(*ListEventsRequest_UniqId); ok {
+		x.IdOneof = nil
+	}
+}
+
+func (x *ListEventsRequest) ClearDeviceId() {
+	if _, ok := x.IdOneof.(*ListEventsRequest_DeviceId); ok {
+		x.IdOneof = nil
+	}
+}
+
+func (x *ListEventsRequest) ClearEndTime() {
+	x.EndTime = nil
+}
+
+func (x *ListEventsRequest) ClearStartTime() {
+	x.StartTime = nil
+}
+
+const ListEventsRequest_IdOneof_not_set_case case_ListEventsRequest_IdOneof = 0
+const ListEventsRequest_UniqId_case case_ListEventsRequest_IdOneof = 1
+const ListEventsRequest_DeviceId_case case_ListEventsRequest_IdOneof = 2
+
+func (x *ListEventsRequest) WhichIdOneof() case_ListEventsRequest_IdOneof {
+	if x == nil {
+		return ListEventsRequest_IdOneof_not_set_case
+	}
+	switch x.IdOneof.(type) {
+	case *ListEventsRequest_UniqId:
+		return ListEventsRequest_UniqId_case
+	case *ListEventsRequest_DeviceId:
+		return ListEventsRequest_DeviceId_case
+	default:
+		return ListEventsRequest_IdOneof_not_set_case
+	}
+}
+
+type ListEventsRequest_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	// Device identifier.
+
+	// Fields of oneof IdOneof:
+	// Device unique ID. Either unique ID or device ID must be provided.
+	UniqId *string
+	// Device ID (UUID). Either unique ID or device ID must be provided.
+	DeviceId *string
+	// -- end of IdOneof
+	// Rule ID (UUID). If not specified, all rules are included.
+	RuleId string
+	// Events range end time. Defaults to current time if not specified. Maximum supported time range is 90 days.
+	EndTime *timestamppb.Timestamp
+	// Events range start time. Defaults to end_time - 24 hours if not specified or after end_time. Maximum supported time range is 90 days.
+	StartTime *timestamppb.Timestamp
+}
+
+func (b0 ListEventsRequest_builder) Build() *ListEventsRequest {
+	m0 := &ListEventsRequest{}
+	b, x := &b0, m0
+	_, _ = b, x
+	if b.UniqId != nil {
+		x.IdOneof = &ListEventsRequest_UniqId{*b.UniqId}
+	}
+	if b.DeviceId != nil {
+		x.IdOneof = &ListEventsRequest_DeviceId{*b.DeviceId}
+	}
+	x.RuleId = b.RuleId
+	x.EndTime = b.EndTime
+	x.StartTime = b.StartTime
+	return m0
+}
+
+type case_ListEventsRequest_IdOneof protoreflect.FieldNumber
+
+func (x case_ListEventsRequest_IdOneof) String() string {
+	md := file_api_thingspect_event_proto_msgTypes[1].Descriptor()
+	if x == 0 {
+		return "not set"
+	}
+	return protoimpl.X.MessageFieldStringOf(md, protoreflect.FieldNumber(x))
+}
+
 type isListEventsRequest_IdOneof interface {
 	isListEventsRequest_IdOneof()
 }
@@ -222,7 +415,7 @@ func (*ListEventsRequest_DeviceId) isListEventsRequest_IdOneof() {}
 
 // ListEventsResponse is sent in response to a device events list.
 type ListEventsResponse struct {
-	state protoimpl.MessageState `protogen:"open.v1"`
+	state protoimpl.MessageState `protogen:"hybrid.v1"`
 	// Event array, ordered by descending created_at timestamp.
 	Events        []*Event `protobuf:"bytes,1,rep,name=events,proto3" json:"events,omitempty"`
 	unknownFields protoimpl.UnknownFields
@@ -254,11 +447,6 @@ func (x *ListEventsResponse) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use ListEventsResponse.ProtoReflect.Descriptor instead.
-func (*ListEventsResponse) Descriptor() ([]byte, []int) {
-	return file_api_thingspect_event_proto_rawDescGZIP(), []int{2}
-}
-
 func (x *ListEventsResponse) GetEvents() []*Event {
 	if x != nil {
 		return x.Events
@@ -266,9 +454,28 @@ func (x *ListEventsResponse) GetEvents() []*Event {
 	return nil
 }
 
+func (x *ListEventsResponse) SetEvents(v []*Event) {
+	x.Events = v
+}
+
+type ListEventsResponse_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	// Event array, ordered by descending created_at timestamp.
+	Events []*Event
+}
+
+func (b0 ListEventsResponse_builder) Build() *ListEventsResponse {
+	m0 := &ListEventsResponse{}
+	b, x := &b0, m0
+	_, _ = b, x
+	x.Events = b.Events
+	return m0
+}
+
 // LatestEventsRequest is sent to list latest organization events.
 type LatestEventsRequest struct {
-	state protoimpl.MessageState `protogen:"open.v1"`
+	state protoimpl.MessageState `protogen:"hybrid.v1"`
 	// Rule ID (UUID). If not specified, all rules are included.
 	RuleId        string `protobuf:"bytes,1,opt,name=rule_id,json=ruleID,proto3" json:"rule_id,omitempty"`
 	unknownFields protoimpl.UnknownFields
@@ -300,11 +507,6 @@ func (x *LatestEventsRequest) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use LatestEventsRequest.ProtoReflect.Descriptor instead.
-func (*LatestEventsRequest) Descriptor() ([]byte, []int) {
-	return file_api_thingspect_event_proto_rawDescGZIP(), []int{3}
-}
-
 func (x *LatestEventsRequest) GetRuleId() string {
 	if x != nil {
 		return x.RuleId
@@ -312,9 +514,28 @@ func (x *LatestEventsRequest) GetRuleId() string {
 	return ""
 }
 
+func (x *LatestEventsRequest) SetRuleId(v string) {
+	x.RuleId = v
+}
+
+type LatestEventsRequest_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	// Rule ID (UUID). If not specified, all rules are included.
+	RuleId string
+}
+
+func (b0 LatestEventsRequest_builder) Build() *LatestEventsRequest {
+	m0 := &LatestEventsRequest{}
+	b, x := &b0, m0
+	_, _ = b, x
+	x.RuleId = b.RuleId
+	return m0
+}
+
 // LatestEventsResponse is sent in response to an organization latest list.
 type LatestEventsResponse struct {
-	state protoimpl.MessageState `protogen:"open.v1"`
+	state protoimpl.MessageState `protogen:"hybrid.v1"`
 	// Event array, ordered by descending created_at timestamp.
 	Events        []*Event `protobuf:"bytes,1,rep,name=events,proto3" json:"events,omitempty"`
 	unknownFields protoimpl.UnknownFields
@@ -346,16 +567,30 @@ func (x *LatestEventsResponse) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use LatestEventsResponse.ProtoReflect.Descriptor instead.
-func (*LatestEventsResponse) Descriptor() ([]byte, []int) {
-	return file_api_thingspect_event_proto_rawDescGZIP(), []int{4}
-}
-
 func (x *LatestEventsResponse) GetEvents() []*Event {
 	if x != nil {
 		return x.Events
 	}
 	return nil
+}
+
+func (x *LatestEventsResponse) SetEvents(v []*Event) {
+	x.Events = v
+}
+
+type LatestEventsResponse_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	// Event array, ordered by descending created_at timestamp.
+	Events []*Event
+}
+
+func (b0 LatestEventsResponse_builder) Build() *LatestEventsResponse {
+	m0 := &LatestEventsResponse{}
+	b, x := &b0, m0
+	_, _ = b, x
+	x.Events = b.Events
+	return m0
 }
 
 var File_api_thingspect_event_proto protoreflect.FileDescriptor
@@ -389,18 +624,6 @@ const file_api_thingspect_event_proto_rawDesc = "" +
 	"ListEvents\x12!.thingspect.api.ListEventsRequest\x1a\".thingspect.api.ListEventsResponse\"\x12\x82\xd3\xe4\x93\x02\f\x12\n" +
 	"/v1/events\x12t\n" +
 	"\fLatestEvents\x12#.thingspect.api.LatestEventsRequest\x1a$.thingspect.api.LatestEventsResponse\"\x19\x82\xd3\xe4\x93\x02\x13\x12\x11/v1/events/latestB$Z\"github.com/thingspect/proto/go/apib\x06proto3"
-
-var (
-	file_api_thingspect_event_proto_rawDescOnce sync.Once
-	file_api_thingspect_event_proto_rawDescData []byte
-)
-
-func file_api_thingspect_event_proto_rawDescGZIP() []byte {
-	file_api_thingspect_event_proto_rawDescOnce.Do(func() {
-		file_api_thingspect_event_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_api_thingspect_event_proto_rawDesc), len(file_api_thingspect_event_proto_rawDesc)))
-	})
-	return file_api_thingspect_event_proto_rawDescData
-}
 
 var file_api_thingspect_event_proto_msgTypes = make([]protoimpl.MessageInfo, 5)
 var file_api_thingspect_event_proto_goTypes = []any{

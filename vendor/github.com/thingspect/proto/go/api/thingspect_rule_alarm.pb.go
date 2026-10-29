@@ -4,6 +4,8 @@
 // 	protoc        v6.31.1
 // source: api/thingspect_rule_alarm.proto
 
+//go:build !protoopaque
+
 package api
 
 import (
@@ -17,7 +19,6 @@ import (
 	fieldmaskpb "google.golang.org/protobuf/types/known/fieldmaskpb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
 	reflect "reflect"
-	sync "sync"
 	unsafe "unsafe"
 )
 
@@ -80,14 +81,9 @@ func (x AlarmType) Number() protoreflect.EnumNumber {
 	return protoreflect.EnumNumber(x)
 }
 
-// Deprecated: Use AlarmType.Descriptor instead.
-func (AlarmType) EnumDescriptor() ([]byte, []int) {
-	return file_api_thingspect_rule_alarm_proto_rawDescGZIP(), []int{0}
-}
-
 // Rule represents a rule as stored in the database.
 type Rule struct {
-	state protoimpl.MessageState `protogen:"open.v1"`
+	state protoimpl.MessageState `protogen:"hybrid.v1"`
 	// Rule ID (UUID).
 	Id string `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
 	// Organization ID (UUID).
@@ -133,11 +129,6 @@ func (x *Rule) ProtoReflect() protoreflect.Message {
 		return ms
 	}
 	return mi.MessageOf(x)
-}
-
-// Deprecated: Use Rule.ProtoReflect.Descriptor instead.
-func (*Rule) Descriptor() ([]byte, []int) {
-	return file_api_thingspect_rule_alarm_proto_rawDescGZIP(), []int{0}
 }
 
 func (x *Rule) GetId() string {
@@ -203,9 +194,106 @@ func (x *Rule) GetUpdatedAt() *timestamppb.Timestamp {
 	return nil
 }
 
+func (x *Rule) SetId(v string) {
+	x.Id = v
+}
+
+func (x *Rule) SetOrgId(v string) {
+	x.OrgId = v
+}
+
+func (x *Rule) SetName(v string) {
+	x.Name = v
+}
+
+func (x *Rule) SetStatus(v Status) {
+	x.Status = v
+}
+
+func (x *Rule) SetDeviceTag(v string) {
+	x.DeviceTag = v
+}
+
+func (x *Rule) SetAttr(v string) {
+	x.Attr = v
+}
+
+func (x *Rule) SetExpr(v string) {
+	x.Expr = v
+}
+
+func (x *Rule) SetCreatedAt(v *timestamppb.Timestamp) {
+	x.CreatedAt = v
+}
+
+func (x *Rule) SetUpdatedAt(v *timestamppb.Timestamp) {
+	x.UpdatedAt = v
+}
+
+func (x *Rule) HasCreatedAt() bool {
+	if x == nil {
+		return false
+	}
+	return x.CreatedAt != nil
+}
+
+func (x *Rule) HasUpdatedAt() bool {
+	if x == nil {
+		return false
+	}
+	return x.UpdatedAt != nil
+}
+
+func (x *Rule) ClearCreatedAt() {
+	x.CreatedAt = nil
+}
+
+func (x *Rule) ClearUpdatedAt() {
+	x.UpdatedAt = nil
+}
+
+type Rule_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	// Rule ID (UUID).
+	Id string
+	// Organization ID (UUID).
+	OrgId string
+	// Rule name.
+	Name string
+	// Rule status.
+	Status Status
+	// Device tag to which the rule applies.
+	DeviceTag string
+	// Data point attribute to which the rule applies.
+	Attr string
+	// Rule expression. The rules engine evaluates a boolean expression using the [Expr language](https://expr-lang.org/).
+	Expr string
+	// Rule creation timestamp.
+	CreatedAt *timestamppb.Timestamp
+	// Rule modification timestamp.
+	UpdatedAt *timestamppb.Timestamp
+}
+
+func (b0 Rule_builder) Build() *Rule {
+	m0 := &Rule{}
+	b, x := &b0, m0
+	_, _ = b, x
+	x.Id = b.Id
+	x.OrgId = b.OrgId
+	x.Name = b.Name
+	x.Status = b.Status
+	x.DeviceTag = b.DeviceTag
+	x.Attr = b.Attr
+	x.Expr = b.Expr
+	x.CreatedAt = b.CreatedAt
+	x.UpdatedAt = b.UpdatedAt
+	return m0
+}
+
 // CreateRuleRequest is sent to create a rule.
 type CreateRuleRequest struct {
-	state protoimpl.MessageState `protogen:"open.v1"`
+	state protoimpl.MessageState `protogen:"hybrid.v1"`
 	// Rule message to create.
 	Rule          *Rule `protobuf:"bytes,1,opt,name=rule,proto3" json:"rule,omitempty"`
 	unknownFields protoimpl.UnknownFields
@@ -237,11 +325,6 @@ func (x *CreateRuleRequest) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use CreateRuleRequest.ProtoReflect.Descriptor instead.
-func (*CreateRuleRequest) Descriptor() ([]byte, []int) {
-	return file_api_thingspect_rule_alarm_proto_rawDescGZIP(), []int{1}
-}
-
 func (x *CreateRuleRequest) GetRule() *Rule {
 	if x != nil {
 		return x.Rule
@@ -249,9 +332,39 @@ func (x *CreateRuleRequest) GetRule() *Rule {
 	return nil
 }
 
+func (x *CreateRuleRequest) SetRule(v *Rule) {
+	x.Rule = v
+}
+
+func (x *CreateRuleRequest) HasRule() bool {
+	if x == nil {
+		return false
+	}
+	return x.Rule != nil
+}
+
+func (x *CreateRuleRequest) ClearRule() {
+	x.Rule = nil
+}
+
+type CreateRuleRequest_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	// Rule message to create.
+	Rule *Rule
+}
+
+func (b0 CreateRuleRequest_builder) Build() *CreateRuleRequest {
+	m0 := &CreateRuleRequest{}
+	b, x := &b0, m0
+	_, _ = b, x
+	x.Rule = b.Rule
+	return m0
+}
+
 // GetRuleRequest is sent to get a rule.
 type GetRuleRequest struct {
-	state protoimpl.MessageState `protogen:"open.v1"`
+	state protoimpl.MessageState `protogen:"hybrid.v1"`
 	// Rule ID (UUID) to get.
 	Id            string `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
 	unknownFields protoimpl.UnknownFields
@@ -283,11 +396,6 @@ func (x *GetRuleRequest) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use GetRuleRequest.ProtoReflect.Descriptor instead.
-func (*GetRuleRequest) Descriptor() ([]byte, []int) {
-	return file_api_thingspect_rule_alarm_proto_rawDescGZIP(), []int{2}
-}
-
 func (x *GetRuleRequest) GetId() string {
 	if x != nil {
 		return x.Id
@@ -295,9 +403,28 @@ func (x *GetRuleRequest) GetId() string {
 	return ""
 }
 
+func (x *GetRuleRequest) SetId(v string) {
+	x.Id = v
+}
+
+type GetRuleRequest_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	// Rule ID (UUID) to get.
+	Id string
+}
+
+func (b0 GetRuleRequest_builder) Build() *GetRuleRequest {
+	m0 := &GetRuleRequest{}
+	b, x := &b0, m0
+	_, _ = b, x
+	x.Id = b.Id
+	return m0
+}
+
 // UpdateRuleRequest is sent to update a rule.
 type UpdateRuleRequest struct {
-	state protoimpl.MessageState `protogen:"open.v1"`
+	state protoimpl.MessageState `protogen:"hybrid.v1"`
 	// Rule message to update.
 	Rule *Rule `protobuf:"bytes,1,opt,name=rule,proto3" json:"rule,omitempty"`
 	// Fields to update. Automatically populated by a PATCH request. If not present, a full resource update is performed.
@@ -331,11 +458,6 @@ func (x *UpdateRuleRequest) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use UpdateRuleRequest.ProtoReflect.Descriptor instead.
-func (*UpdateRuleRequest) Descriptor() ([]byte, []int) {
-	return file_api_thingspect_rule_alarm_proto_rawDescGZIP(), []int{3}
-}
-
 func (x *UpdateRuleRequest) GetRule() *Rule {
 	if x != nil {
 		return x.Rule
@@ -350,9 +472,57 @@ func (x *UpdateRuleRequest) GetUpdateMask() *fieldmaskpb.FieldMask {
 	return nil
 }
 
+func (x *UpdateRuleRequest) SetRule(v *Rule) {
+	x.Rule = v
+}
+
+func (x *UpdateRuleRequest) SetUpdateMask(v *fieldmaskpb.FieldMask) {
+	x.UpdateMask = v
+}
+
+func (x *UpdateRuleRequest) HasRule() bool {
+	if x == nil {
+		return false
+	}
+	return x.Rule != nil
+}
+
+func (x *UpdateRuleRequest) HasUpdateMask() bool {
+	if x == nil {
+		return false
+	}
+	return x.UpdateMask != nil
+}
+
+func (x *UpdateRuleRequest) ClearRule() {
+	x.Rule = nil
+}
+
+func (x *UpdateRuleRequest) ClearUpdateMask() {
+	x.UpdateMask = nil
+}
+
+type UpdateRuleRequest_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	// Rule message to update.
+	Rule *Rule
+	// Fields to update. Automatically populated by a PATCH request. If not present, a full resource update is performed.
+	UpdateMask *fieldmaskpb.FieldMask
+}
+
+func (b0 UpdateRuleRequest_builder) Build() *UpdateRuleRequest {
+	m0 := &UpdateRuleRequest{}
+	b, x := &b0, m0
+	_, _ = b, x
+	x.Rule = b.Rule
+	x.UpdateMask = b.UpdateMask
+	return m0
+}
+
 // DeleteRuleRequest is sent to delete a rule.
 type DeleteRuleRequest struct {
-	state protoimpl.MessageState `protogen:"open.v1"`
+	state protoimpl.MessageState `protogen:"hybrid.v1"`
 	// Rule ID (UUID) to delete.
 	Id            string `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
 	unknownFields protoimpl.UnknownFields
@@ -384,11 +554,6 @@ func (x *DeleteRuleRequest) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use DeleteRuleRequest.ProtoReflect.Descriptor instead.
-func (*DeleteRuleRequest) Descriptor() ([]byte, []int) {
-	return file_api_thingspect_rule_alarm_proto_rawDescGZIP(), []int{4}
-}
-
 func (x *DeleteRuleRequest) GetId() string {
 	if x != nil {
 		return x.Id
@@ -396,9 +561,28 @@ func (x *DeleteRuleRequest) GetId() string {
 	return ""
 }
 
+func (x *DeleteRuleRequest) SetId(v string) {
+	x.Id = v
+}
+
+type DeleteRuleRequest_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	// Rule ID (UUID) to delete.
+	Id string
+}
+
+func (b0 DeleteRuleRequest_builder) Build() *DeleteRuleRequest {
+	m0 := &DeleteRuleRequest{}
+	b, x := &b0, m0
+	_, _ = b, x
+	x.Id = b.Id
+	return m0
+}
+
 // ListRulesRequest is sent to list rules.
 type ListRulesRequest struct {
-	state protoimpl.MessageState `protogen:"open.v1"`
+	state protoimpl.MessageState `protogen:"hybrid.v1"`
 	// Number of rules to retrieve in a single page. Defaults to 50 if not specified, with a maximum of 250.
 	PageSize int32 `protobuf:"varint,1,opt,name=page_size,json=pageSize,proto3" json:"page_size,omitempty"`
 	// Token of the page to retrieve. If not specified, the first page of results will be returned. To request the next page of results, use next_page_token from the previous response.
@@ -432,11 +616,6 @@ func (x *ListRulesRequest) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use ListRulesRequest.ProtoReflect.Descriptor instead.
-func (*ListRulesRequest) Descriptor() ([]byte, []int) {
-	return file_api_thingspect_rule_alarm_proto_rawDescGZIP(), []int{5}
-}
-
 func (x *ListRulesRequest) GetPageSize() int32 {
 	if x != nil {
 		return x.PageSize
@@ -451,9 +630,35 @@ func (x *ListRulesRequest) GetPageToken() string {
 	return ""
 }
 
+func (x *ListRulesRequest) SetPageSize(v int32) {
+	x.PageSize = v
+}
+
+func (x *ListRulesRequest) SetPageToken(v string) {
+	x.PageToken = v
+}
+
+type ListRulesRequest_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	// Number of rules to retrieve in a single page. Defaults to 50 if not specified, with a maximum of 250.
+	PageSize int32
+	// Token of the page to retrieve. If not specified, the first page of results will be returned. To request the next page of results, use next_page_token from the previous response.
+	PageToken string
+}
+
+func (b0 ListRulesRequest_builder) Build() *ListRulesRequest {
+	m0 := &ListRulesRequest{}
+	b, x := &b0, m0
+	_, _ = b, x
+	x.PageSize = b.PageSize
+	x.PageToken = b.PageToken
+	return m0
+}
+
 // ListRulesResponse is sent in response to a rule list.
 type ListRulesResponse struct {
-	state protoimpl.MessageState `protogen:"open.v1"`
+	state protoimpl.MessageState `protogen:"hybrid.v1"`
 	// Rule array, ordered by ascending created_at timestamp.
 	Rules []*Rule `protobuf:"bytes,1,rep,name=rules,proto3" json:"rules,omitempty"`
 	// Pagination token used to retrieve the next page of results. Not returned for the last page.
@@ -489,11 +694,6 @@ func (x *ListRulesResponse) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use ListRulesResponse.ProtoReflect.Descriptor instead.
-func (*ListRulesResponse) Descriptor() ([]byte, []int) {
-	return file_api_thingspect_rule_alarm_proto_rawDescGZIP(), []int{6}
-}
-
 func (x *ListRulesResponse) GetRules() []*Rule {
 	if x != nil {
 		return x.Rules
@@ -515,9 +715,42 @@ func (x *ListRulesResponse) GetTotalSize() int32 {
 	return 0
 }
 
+func (x *ListRulesResponse) SetRules(v []*Rule) {
+	x.Rules = v
+}
+
+func (x *ListRulesResponse) SetNextPageToken(v string) {
+	x.NextPageToken = v
+}
+
+func (x *ListRulesResponse) SetTotalSize(v int32) {
+	x.TotalSize = v
+}
+
+type ListRulesResponse_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	// Rule array, ordered by ascending created_at timestamp.
+	Rules []*Rule
+	// Pagination token used to retrieve the next page of results. Not returned for the last page.
+	NextPageToken string
+	// Total number of rules available.
+	TotalSize int32
+}
+
+func (b0 ListRulesResponse_builder) Build() *ListRulesResponse {
+	m0 := &ListRulesResponse{}
+	b, x := &b0, m0
+	_, _ = b, x
+	x.Rules = b.Rules
+	x.NextPageToken = b.NextPageToken
+	x.TotalSize = b.TotalSize
+	return m0
+}
+
 // TestRuleRequest is sent to test a rule.
 type TestRuleRequest struct {
-	state protoimpl.MessageState `protogen:"open.v1"`
+	state protoimpl.MessageState `protogen:"hybrid.v1"`
 	// Data point to test against a rule.
 	Point *common.DataPoint `protobuf:"bytes,1,opt,name=point,proto3" json:"point,omitempty"`
 	// Rule message to test.
@@ -551,11 +784,6 @@ func (x *TestRuleRequest) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use TestRuleRequest.ProtoReflect.Descriptor instead.
-func (*TestRuleRequest) Descriptor() ([]byte, []int) {
-	return file_api_thingspect_rule_alarm_proto_rawDescGZIP(), []int{7}
-}
-
 func (x *TestRuleRequest) GetPoint() *common.DataPoint {
 	if x != nil {
 		return x.Point
@@ -570,9 +798,57 @@ func (x *TestRuleRequest) GetRule() *Rule {
 	return nil
 }
 
+func (x *TestRuleRequest) SetPoint(v *common.DataPoint) {
+	x.Point = v
+}
+
+func (x *TestRuleRequest) SetRule(v *Rule) {
+	x.Rule = v
+}
+
+func (x *TestRuleRequest) HasPoint() bool {
+	if x == nil {
+		return false
+	}
+	return x.Point != nil
+}
+
+func (x *TestRuleRequest) HasRule() bool {
+	if x == nil {
+		return false
+	}
+	return x.Rule != nil
+}
+
+func (x *TestRuleRequest) ClearPoint() {
+	x.Point = nil
+}
+
+func (x *TestRuleRequest) ClearRule() {
+	x.Rule = nil
+}
+
+type TestRuleRequest_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	// Data point to test against a rule.
+	Point *common.DataPoint
+	// Rule message to test.
+	Rule *Rule
+}
+
+func (b0 TestRuleRequest_builder) Build() *TestRuleRequest {
+	m0 := &TestRuleRequest{}
+	b, x := &b0, m0
+	_, _ = b, x
+	x.Point = b.Point
+	x.Rule = b.Rule
+	return m0
+}
+
 // TestRuleResponse is sent in response to a rule test.
 type TestRuleResponse struct {
-	state protoimpl.MessageState `protogen:"open.v1"`
+	state protoimpl.MessageState `protogen:"hybrid.v1"`
 	// Result of the rule evaluation.
 	Result        bool `protobuf:"varint,1,opt,name=result,proto3" json:"result,omitempty"`
 	unknownFields protoimpl.UnknownFields
@@ -604,11 +880,6 @@ func (x *TestRuleResponse) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use TestRuleResponse.ProtoReflect.Descriptor instead.
-func (*TestRuleResponse) Descriptor() ([]byte, []int) {
-	return file_api_thingspect_rule_alarm_proto_rawDescGZIP(), []int{8}
-}
-
 func (x *TestRuleResponse) GetResult() bool {
 	if x != nil {
 		return x.Result
@@ -616,9 +887,28 @@ func (x *TestRuleResponse) GetResult() bool {
 	return false
 }
 
+func (x *TestRuleResponse) SetResult(v bool) {
+	x.Result = v
+}
+
+type TestRuleResponse_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	// Result of the rule evaluation.
+	Result bool
+}
+
+func (b0 TestRuleResponse_builder) Build() *TestRuleResponse {
+	m0 := &TestRuleResponse{}
+	b, x := &b0, m0
+	_, _ = b, x
+	x.Result = b.Result
+	return m0
+}
+
 // Alarm represents an alarm as stored in the database.
 type Alarm struct {
-	state protoimpl.MessageState `protogen:"open.v1"`
+	state protoimpl.MessageState `protogen:"hybrid.v1"`
 	// Alarm ID (UUID).
 	Id string `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
 	// Organization ID (UUID).
@@ -670,11 +960,6 @@ func (x *Alarm) ProtoReflect() protoreflect.Message {
 		return ms
 	}
 	return mi.MessageOf(x)
-}
-
-// Deprecated: Use Alarm.ProtoReflect.Descriptor instead.
-func (*Alarm) Descriptor() ([]byte, []int) {
-	return file_api_thingspect_rule_alarm_proto_rawDescGZIP(), []int{9}
 }
 
 func (x *Alarm) GetId() string {
@@ -761,9 +1046,127 @@ func (x *Alarm) GetUpdatedAt() *timestamppb.Timestamp {
 	return nil
 }
 
+func (x *Alarm) SetId(v string) {
+	x.Id = v
+}
+
+func (x *Alarm) SetOrgId(v string) {
+	x.OrgId = v
+}
+
+func (x *Alarm) SetRuleId(v string) {
+	x.RuleId = v
+}
+
+func (x *Alarm) SetName(v string) {
+	x.Name = v
+}
+
+func (x *Alarm) SetStatus(v Status) {
+	x.Status = v
+}
+
+func (x *Alarm) SetType(v AlarmType) {
+	x.Type = v
+}
+
+func (x *Alarm) SetUserTags(v []string) {
+	x.UserTags = v
+}
+
+func (x *Alarm) SetSubjectTemplate(v string) {
+	x.SubjectTemplate = v
+}
+
+func (x *Alarm) SetBodyTemplate(v string) {
+	x.BodyTemplate = v
+}
+
+func (x *Alarm) SetRepeatInterval(v int32) {
+	x.RepeatInterval = v
+}
+
+func (x *Alarm) SetCreatedAt(v *timestamppb.Timestamp) {
+	x.CreatedAt = v
+}
+
+func (x *Alarm) SetUpdatedAt(v *timestamppb.Timestamp) {
+	x.UpdatedAt = v
+}
+
+func (x *Alarm) HasCreatedAt() bool {
+	if x == nil {
+		return false
+	}
+	return x.CreatedAt != nil
+}
+
+func (x *Alarm) HasUpdatedAt() bool {
+	if x == nil {
+		return false
+	}
+	return x.UpdatedAt != nil
+}
+
+func (x *Alarm) ClearCreatedAt() {
+	x.CreatedAt = nil
+}
+
+func (x *Alarm) ClearUpdatedAt() {
+	x.UpdatedAt = nil
+}
+
+type Alarm_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	// Alarm ID (UUID).
+	Id string
+	// Organization ID (UUID).
+	OrgId string
+	// Rule ID (UUID).
+	RuleId string
+	// Alarm name.
+	Name string
+	// Alarm status.
+	Status Status
+	// Alarm type.
+	Type AlarmType
+	// User tags to whom alerts are sent.
+	UserTags []string
+	// Alarm subject template. Templates generate HTML-safe output using the [Go template engine](https://golang.org/pkg/html/template/).
+	SubjectTemplate string
+	// Alarm body template. Templates generate HTML-safe output using the [Go template engine](https://golang.org/pkg/html/template/).
+	BodyTemplate string
+	// Alarm repeat interval, in minutes, per device. Duration after which a duplicate event will cause an alert to be sent. Minimum is 1 minute, maximum is 14 days.
+	RepeatInterval int32
+	// Alarm creation timestamp.
+	CreatedAt *timestamppb.Timestamp
+	// Alarm modification timestamp.
+	UpdatedAt *timestamppb.Timestamp
+}
+
+func (b0 Alarm_builder) Build() *Alarm {
+	m0 := &Alarm{}
+	b, x := &b0, m0
+	_, _ = b, x
+	x.Id = b.Id
+	x.OrgId = b.OrgId
+	x.RuleId = b.RuleId
+	x.Name = b.Name
+	x.Status = b.Status
+	x.Type = b.Type
+	x.UserTags = b.UserTags
+	x.SubjectTemplate = b.SubjectTemplate
+	x.BodyTemplate = b.BodyTemplate
+	x.RepeatInterval = b.RepeatInterval
+	x.CreatedAt = b.CreatedAt
+	x.UpdatedAt = b.UpdatedAt
+	return m0
+}
+
 // CreateAlarmRequest is sent to create an alarm.
 type CreateAlarmRequest struct {
-	state protoimpl.MessageState `protogen:"open.v1"`
+	state protoimpl.MessageState `protogen:"hybrid.v1"`
 	// Alarm message to create.
 	Alarm         *Alarm `protobuf:"bytes,1,opt,name=alarm,proto3" json:"alarm,omitempty"`
 	unknownFields protoimpl.UnknownFields
@@ -795,11 +1198,6 @@ func (x *CreateAlarmRequest) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use CreateAlarmRequest.ProtoReflect.Descriptor instead.
-func (*CreateAlarmRequest) Descriptor() ([]byte, []int) {
-	return file_api_thingspect_rule_alarm_proto_rawDescGZIP(), []int{10}
-}
-
 func (x *CreateAlarmRequest) GetAlarm() *Alarm {
 	if x != nil {
 		return x.Alarm
@@ -807,9 +1205,39 @@ func (x *CreateAlarmRequest) GetAlarm() *Alarm {
 	return nil
 }
 
+func (x *CreateAlarmRequest) SetAlarm(v *Alarm) {
+	x.Alarm = v
+}
+
+func (x *CreateAlarmRequest) HasAlarm() bool {
+	if x == nil {
+		return false
+	}
+	return x.Alarm != nil
+}
+
+func (x *CreateAlarmRequest) ClearAlarm() {
+	x.Alarm = nil
+}
+
+type CreateAlarmRequest_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	// Alarm message to create.
+	Alarm *Alarm
+}
+
+func (b0 CreateAlarmRequest_builder) Build() *CreateAlarmRequest {
+	m0 := &CreateAlarmRequest{}
+	b, x := &b0, m0
+	_, _ = b, x
+	x.Alarm = b.Alarm
+	return m0
+}
+
 // GetAlarmRequest is sent to get an alarm.
 type GetAlarmRequest struct {
-	state protoimpl.MessageState `protogen:"open.v1"`
+	state protoimpl.MessageState `protogen:"hybrid.v1"`
 	// Alarm ID (UUID) to get.
 	Id string `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
 	// Rule ID (UUID).
@@ -843,11 +1271,6 @@ func (x *GetAlarmRequest) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use GetAlarmRequest.ProtoReflect.Descriptor instead.
-func (*GetAlarmRequest) Descriptor() ([]byte, []int) {
-	return file_api_thingspect_rule_alarm_proto_rawDescGZIP(), []int{11}
-}
-
 func (x *GetAlarmRequest) GetId() string {
 	if x != nil {
 		return x.Id
@@ -862,9 +1285,35 @@ func (x *GetAlarmRequest) GetRuleId() string {
 	return ""
 }
 
+func (x *GetAlarmRequest) SetId(v string) {
+	x.Id = v
+}
+
+func (x *GetAlarmRequest) SetRuleId(v string) {
+	x.RuleId = v
+}
+
+type GetAlarmRequest_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	// Alarm ID (UUID) to get.
+	Id string
+	// Rule ID (UUID).
+	RuleId string
+}
+
+func (b0 GetAlarmRequest_builder) Build() *GetAlarmRequest {
+	m0 := &GetAlarmRequest{}
+	b, x := &b0, m0
+	_, _ = b, x
+	x.Id = b.Id
+	x.RuleId = b.RuleId
+	return m0
+}
+
 // UpdateAlarmRequest is sent to update an alarm.
 type UpdateAlarmRequest struct {
-	state protoimpl.MessageState `protogen:"open.v1"`
+	state protoimpl.MessageState `protogen:"hybrid.v1"`
 	// Alarm message to update.
 	Alarm *Alarm `protobuf:"bytes,1,opt,name=alarm,proto3" json:"alarm,omitempty"`
 	// Fields to update. Automatically populated by a PATCH request. If not present, a full resource update is performed.
@@ -898,11 +1347,6 @@ func (x *UpdateAlarmRequest) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use UpdateAlarmRequest.ProtoReflect.Descriptor instead.
-func (*UpdateAlarmRequest) Descriptor() ([]byte, []int) {
-	return file_api_thingspect_rule_alarm_proto_rawDescGZIP(), []int{12}
-}
-
 func (x *UpdateAlarmRequest) GetAlarm() *Alarm {
 	if x != nil {
 		return x.Alarm
@@ -917,9 +1361,57 @@ func (x *UpdateAlarmRequest) GetUpdateMask() *fieldmaskpb.FieldMask {
 	return nil
 }
 
+func (x *UpdateAlarmRequest) SetAlarm(v *Alarm) {
+	x.Alarm = v
+}
+
+func (x *UpdateAlarmRequest) SetUpdateMask(v *fieldmaskpb.FieldMask) {
+	x.UpdateMask = v
+}
+
+func (x *UpdateAlarmRequest) HasAlarm() bool {
+	if x == nil {
+		return false
+	}
+	return x.Alarm != nil
+}
+
+func (x *UpdateAlarmRequest) HasUpdateMask() bool {
+	if x == nil {
+		return false
+	}
+	return x.UpdateMask != nil
+}
+
+func (x *UpdateAlarmRequest) ClearAlarm() {
+	x.Alarm = nil
+}
+
+func (x *UpdateAlarmRequest) ClearUpdateMask() {
+	x.UpdateMask = nil
+}
+
+type UpdateAlarmRequest_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	// Alarm message to update.
+	Alarm *Alarm
+	// Fields to update. Automatically populated by a PATCH request. If not present, a full resource update is performed.
+	UpdateMask *fieldmaskpb.FieldMask
+}
+
+func (b0 UpdateAlarmRequest_builder) Build() *UpdateAlarmRequest {
+	m0 := &UpdateAlarmRequest{}
+	b, x := &b0, m0
+	_, _ = b, x
+	x.Alarm = b.Alarm
+	x.UpdateMask = b.UpdateMask
+	return m0
+}
+
 // DeleteAlarmRequest is sent to delete an alarm.
 type DeleteAlarmRequest struct {
-	state protoimpl.MessageState `protogen:"open.v1"`
+	state protoimpl.MessageState `protogen:"hybrid.v1"`
 	// Alarm ID (UUID) to delete.
 	Id string `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
 	// Rule ID (UUID).
@@ -953,11 +1445,6 @@ func (x *DeleteAlarmRequest) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use DeleteAlarmRequest.ProtoReflect.Descriptor instead.
-func (*DeleteAlarmRequest) Descriptor() ([]byte, []int) {
-	return file_api_thingspect_rule_alarm_proto_rawDescGZIP(), []int{13}
-}
-
 func (x *DeleteAlarmRequest) GetId() string {
 	if x != nil {
 		return x.Id
@@ -972,9 +1459,35 @@ func (x *DeleteAlarmRequest) GetRuleId() string {
 	return ""
 }
 
+func (x *DeleteAlarmRequest) SetId(v string) {
+	x.Id = v
+}
+
+func (x *DeleteAlarmRequest) SetRuleId(v string) {
+	x.RuleId = v
+}
+
+type DeleteAlarmRequest_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	// Alarm ID (UUID) to delete.
+	Id string
+	// Rule ID (UUID).
+	RuleId string
+}
+
+func (b0 DeleteAlarmRequest_builder) Build() *DeleteAlarmRequest {
+	m0 := &DeleteAlarmRequest{}
+	b, x := &b0, m0
+	_, _ = b, x
+	x.Id = b.Id
+	x.RuleId = b.RuleId
+	return m0
+}
+
 // ListAlarmsRequest is sent to list alarms.
 type ListAlarmsRequest struct {
-	state protoimpl.MessageState `protogen:"open.v1"`
+	state protoimpl.MessageState `protogen:"hybrid.v1"`
 	// Number of alarms to retrieve in a single page. Defaults to 50 if not specified, with a maximum of 250.
 	PageSize int32 `protobuf:"varint,1,opt,name=page_size,json=pageSize,proto3" json:"page_size,omitempty"`
 	// Token of the page to retrieve. If not specified, the first page of results will be returned. To request the next page of results, use next_page_token from the previous response.
@@ -1010,11 +1523,6 @@ func (x *ListAlarmsRequest) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use ListAlarmsRequest.ProtoReflect.Descriptor instead.
-func (*ListAlarmsRequest) Descriptor() ([]byte, []int) {
-	return file_api_thingspect_rule_alarm_proto_rawDescGZIP(), []int{14}
-}
-
 func (x *ListAlarmsRequest) GetPageSize() int32 {
 	if x != nil {
 		return x.PageSize
@@ -1036,9 +1544,42 @@ func (x *ListAlarmsRequest) GetRuleId() string {
 	return ""
 }
 
+func (x *ListAlarmsRequest) SetPageSize(v int32) {
+	x.PageSize = v
+}
+
+func (x *ListAlarmsRequest) SetPageToken(v string) {
+	x.PageToken = v
+}
+
+func (x *ListAlarmsRequest) SetRuleId(v string) {
+	x.RuleId = v
+}
+
+type ListAlarmsRequest_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	// Number of alarms to retrieve in a single page. Defaults to 50 if not specified, with a maximum of 250.
+	PageSize int32
+	// Token of the page to retrieve. If not specified, the first page of results will be returned. To request the next page of results, use next_page_token from the previous response.
+	PageToken string
+	// Rule ID (UUID). If not specified, all rules are included.
+	RuleId string
+}
+
+func (b0 ListAlarmsRequest_builder) Build() *ListAlarmsRequest {
+	m0 := &ListAlarmsRequest{}
+	b, x := &b0, m0
+	_, _ = b, x
+	x.PageSize = b.PageSize
+	x.PageToken = b.PageToken
+	x.RuleId = b.RuleId
+	return m0
+}
+
 // ListAlarmsResponse is sent in response to an alarm list.
 type ListAlarmsResponse struct {
-	state protoimpl.MessageState `protogen:"open.v1"`
+	state protoimpl.MessageState `protogen:"hybrid.v1"`
 	// Alarm array, ordered by ascending created_at timestamp.
 	Alarms []*Alarm `protobuf:"bytes,1,rep,name=alarms,proto3" json:"alarms,omitempty"`
 	// Pagination token used to retrieve the next page of results. Not returned for the last page.
@@ -1074,11 +1615,6 @@ func (x *ListAlarmsResponse) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use ListAlarmsResponse.ProtoReflect.Descriptor instead.
-func (*ListAlarmsResponse) Descriptor() ([]byte, []int) {
-	return file_api_thingspect_rule_alarm_proto_rawDescGZIP(), []int{15}
-}
-
 func (x *ListAlarmsResponse) GetAlarms() []*Alarm {
 	if x != nil {
 		return x.Alarms
@@ -1100,9 +1636,42 @@ func (x *ListAlarmsResponse) GetTotalSize() int32 {
 	return 0
 }
 
+func (x *ListAlarmsResponse) SetAlarms(v []*Alarm) {
+	x.Alarms = v
+}
+
+func (x *ListAlarmsResponse) SetNextPageToken(v string) {
+	x.NextPageToken = v
+}
+
+func (x *ListAlarmsResponse) SetTotalSize(v int32) {
+	x.TotalSize = v
+}
+
+type ListAlarmsResponse_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	// Alarm array, ordered by ascending created_at timestamp.
+	Alarms []*Alarm
+	// Pagination token used to retrieve the next page of results. Not returned for the last page.
+	NextPageToken string
+	// Total number of alarms available.
+	TotalSize int32
+}
+
+func (b0 ListAlarmsResponse_builder) Build() *ListAlarmsResponse {
+	m0 := &ListAlarmsResponse{}
+	b, x := &b0, m0
+	_, _ = b, x
+	x.Alarms = b.Alarms
+	x.NextPageToken = b.NextPageToken
+	x.TotalSize = b.TotalSize
+	return m0
+}
+
 // TestAlarmRequest is sent to test an alarm.
 type TestAlarmRequest struct {
-	state protoimpl.MessageState `protogen:"open.v1"`
+	state protoimpl.MessageState `protogen:"hybrid.v1"`
 	// Data point to test against an alarm.
 	Point *common.DataPoint `protobuf:"bytes,1,opt,name=point,proto3" json:"point,omitempty"`
 	// Rule to test against an alarm.
@@ -1140,11 +1709,6 @@ func (x *TestAlarmRequest) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use TestAlarmRequest.ProtoReflect.Descriptor instead.
-func (*TestAlarmRequest) Descriptor() ([]byte, []int) {
-	return file_api_thingspect_rule_alarm_proto_rawDescGZIP(), []int{16}
-}
-
 func (x *TestAlarmRequest) GetPoint() *common.DataPoint {
 	if x != nil {
 		return x.Point
@@ -1173,9 +1737,93 @@ func (x *TestAlarmRequest) GetAlarm() *Alarm {
 	return nil
 }
 
+func (x *TestAlarmRequest) SetPoint(v *common.DataPoint) {
+	x.Point = v
+}
+
+func (x *TestAlarmRequest) SetRule(v *Rule) {
+	x.Rule = v
+}
+
+func (x *TestAlarmRequest) SetDevice(v *Device) {
+	x.Device = v
+}
+
+func (x *TestAlarmRequest) SetAlarm(v *Alarm) {
+	x.Alarm = v
+}
+
+func (x *TestAlarmRequest) HasPoint() bool {
+	if x == nil {
+		return false
+	}
+	return x.Point != nil
+}
+
+func (x *TestAlarmRequest) HasRule() bool {
+	if x == nil {
+		return false
+	}
+	return x.Rule != nil
+}
+
+func (x *TestAlarmRequest) HasDevice() bool {
+	if x == nil {
+		return false
+	}
+	return x.Device != nil
+}
+
+func (x *TestAlarmRequest) HasAlarm() bool {
+	if x == nil {
+		return false
+	}
+	return x.Alarm != nil
+}
+
+func (x *TestAlarmRequest) ClearPoint() {
+	x.Point = nil
+}
+
+func (x *TestAlarmRequest) ClearRule() {
+	x.Rule = nil
+}
+
+func (x *TestAlarmRequest) ClearDevice() {
+	x.Device = nil
+}
+
+func (x *TestAlarmRequest) ClearAlarm() {
+	x.Alarm = nil
+}
+
+type TestAlarmRequest_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	// Data point to test against an alarm.
+	Point *common.DataPoint
+	// Rule to test against an alarm.
+	Rule *Rule
+	// Device to test against an alarm.
+	Device *Device
+	// Alarm message to test.
+	Alarm *Alarm
+}
+
+func (b0 TestAlarmRequest_builder) Build() *TestAlarmRequest {
+	m0 := &TestAlarmRequest{}
+	b, x := &b0, m0
+	_, _ = b, x
+	x.Point = b.Point
+	x.Rule = b.Rule
+	x.Device = b.Device
+	x.Alarm = b.Alarm
+	return m0
+}
+
 // TestAlarmResponse is sent in response to an alarm test.
 type TestAlarmResponse struct {
-	state protoimpl.MessageState `protogen:"open.v1"`
+	state protoimpl.MessageState `protogen:"hybrid.v1"`
 	// Result of the alarm generation. Subjects and bodies will be concatenated with ' - '.
 	Result        string `protobuf:"bytes,1,opt,name=result,proto3" json:"result,omitempty"`
 	unknownFields protoimpl.UnknownFields
@@ -1207,16 +1855,30 @@ func (x *TestAlarmResponse) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use TestAlarmResponse.ProtoReflect.Descriptor instead.
-func (*TestAlarmResponse) Descriptor() ([]byte, []int) {
-	return file_api_thingspect_rule_alarm_proto_rawDescGZIP(), []int{17}
-}
-
 func (x *TestAlarmResponse) GetResult() string {
 	if x != nil {
 		return x.Result
 	}
 	return ""
+}
+
+func (x *TestAlarmResponse) SetResult(v string) {
+	x.Result = v
+}
+
+type TestAlarmResponse_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	// Result of the alarm generation. Subjects and bodies will be concatenated with ' - '.
+	Result string
+}
+
+func (b0 TestAlarmResponse_builder) Build() *TestAlarmResponse {
+	m0 := &TestAlarmResponse{}
+	b, x := &b0, m0
+	_, _ = b, x
+	x.Result = b.Result
+	return m0
 }
 
 var File_api_thingspect_rule_alarm_proto protoreflect.FileDescriptor
@@ -1350,18 +2012,6 @@ const file_api_thingspect_rule_alarm_proto_rawDesc = "" +
 	"ListAlarms\x12!.thingspect.api.ListAlarmsRequest\x1a\".thingspect.api.ListAlarmsResponse\"6\x82\xd3\xe4\x93\x020Z\x12\x12\x10/v1/rules/alarms\x12\x1a/v1/rules/{rule_id}/alarms\x12h\n" +
 	"\bTestRule\x12\x1f.thingspect.api.TestRuleRequest\x1a .thingspect.api.TestRuleResponse\"\x19\x82\xd3\xe4\x93\x02\x13:\x01*\"\x0e/v1/rules/test\x12r\n" +
 	"\tTestAlarm\x12 .thingspect.api.TestAlarmRequest\x1a!.thingspect.api.TestAlarmResponse\" \x82\xd3\xe4\x93\x02\x1a:\x01*\"\x15/v1/rules/alarms/testB$Z\"github.com/thingspect/proto/go/apib\x06proto3"
-
-var (
-	file_api_thingspect_rule_alarm_proto_rawDescOnce sync.Once
-	file_api_thingspect_rule_alarm_proto_rawDescData []byte
-)
-
-func file_api_thingspect_rule_alarm_proto_rawDescGZIP() []byte {
-	file_api_thingspect_rule_alarm_proto_rawDescOnce.Do(func() {
-		file_api_thingspect_rule_alarm_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_api_thingspect_rule_alarm_proto_rawDesc), len(file_api_thingspect_rule_alarm_proto_rawDesc)))
-	})
-	return file_api_thingspect_rule_alarm_proto_rawDescData
-}
 
 var file_api_thingspect_rule_alarm_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
 var file_api_thingspect_rule_alarm_proto_msgTypes = make([]protoimpl.MessageInfo, 18)

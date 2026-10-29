@@ -4,6 +4,8 @@
 // 	protoc        v6.31.1
 // source: common/thingspect_datapoint.proto
 
+//go:build !protoopaque
+
 package common
 
 import (
@@ -13,7 +15,6 @@ import (
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
 	reflect "reflect"
-	sync "sync"
 	unsafe "unsafe"
 )
 
@@ -26,7 +27,7 @@ const (
 
 // DataPoint represents a data point as stored in the database.
 type DataPoint struct {
-	state protoimpl.MessageState `protogen:"open.v1"`
+	state protoimpl.MessageState `protogen:"hybrid.v1"`
 	// Device unique ID. Ignored during MQTT ingest if provided as part of the topic. Required for API publish.
 	UniqId string `protobuf:"bytes,1,opt,name=uniq_id,json=uniqID,proto3" json:"uniq_id,omitempty"`
 	// Device attribute.
@@ -74,11 +75,6 @@ func (x *DataPoint) ProtoReflect() protoreflect.Message {
 		return ms
 	}
 	return mi.MessageOf(x)
-}
-
-// Deprecated: Use DataPoint.ProtoReflect.Descriptor instead.
-func (*DataPoint) Descriptor() ([]byte, []int) {
-	return file_common_thingspect_datapoint_proto_rawDescGZIP(), []int{0}
 }
 
 func (x *DataPoint) GetUniqId() string {
@@ -168,6 +164,234 @@ func (x *DataPoint) GetTraceId() string {
 	return ""
 }
 
+func (x *DataPoint) SetUniqId(v string) {
+	x.UniqId = v
+}
+
+func (x *DataPoint) SetAttr(v string) {
+	x.Attr = v
+}
+
+func (x *DataPoint) SetIntVal(v int32) {
+	x.ValOneof = &DataPoint_IntVal{v}
+}
+
+func (x *DataPoint) SetFl64Val(v float64) {
+	x.ValOneof = &DataPoint_Fl64Val{v}
+}
+
+func (x *DataPoint) SetStrVal(v string) {
+	x.ValOneof = &DataPoint_StrVal{v}
+}
+
+func (x *DataPoint) SetBoolVal(v bool) {
+	x.ValOneof = &DataPoint_BoolVal{v}
+}
+
+func (x *DataPoint) SetBytesVal(v []byte) {
+	if v == nil {
+		v = []byte{}
+	}
+	x.ValOneof = &DataPoint_BytesVal{v}
+}
+
+func (x *DataPoint) SetTs(v *timestamppb.Timestamp) {
+	x.Ts = v
+}
+
+func (x *DataPoint) SetToken(v string) {
+	x.Token = v
+}
+
+func (x *DataPoint) SetTraceId(v string) {
+	x.TraceId = v
+}
+
+func (x *DataPoint) HasValOneof() bool {
+	if x == nil {
+		return false
+	}
+	return x.ValOneof != nil
+}
+
+func (x *DataPoint) HasIntVal() bool {
+	if x == nil {
+		return false
+	}
+	_, ok := x.ValOneof.(*DataPoint_IntVal)
+	return ok
+}
+
+func (x *DataPoint) HasFl64Val() bool {
+	if x == nil {
+		return false
+	}
+	_, ok := x.ValOneof.(*DataPoint_Fl64Val)
+	return ok
+}
+
+func (x *DataPoint) HasStrVal() bool {
+	if x == nil {
+		return false
+	}
+	_, ok := x.ValOneof.(*DataPoint_StrVal)
+	return ok
+}
+
+func (x *DataPoint) HasBoolVal() bool {
+	if x == nil {
+		return false
+	}
+	_, ok := x.ValOneof.(*DataPoint_BoolVal)
+	return ok
+}
+
+func (x *DataPoint) HasBytesVal() bool {
+	if x == nil {
+		return false
+	}
+	_, ok := x.ValOneof.(*DataPoint_BytesVal)
+	return ok
+}
+
+func (x *DataPoint) HasTs() bool {
+	if x == nil {
+		return false
+	}
+	return x.Ts != nil
+}
+
+func (x *DataPoint) ClearValOneof() {
+	x.ValOneof = nil
+}
+
+func (x *DataPoint) ClearIntVal() {
+	if _, ok := x.ValOneof.(*DataPoint_IntVal); ok {
+		x.ValOneof = nil
+	}
+}
+
+func (x *DataPoint) ClearFl64Val() {
+	if _, ok := x.ValOneof.(*DataPoint_Fl64Val); ok {
+		x.ValOneof = nil
+	}
+}
+
+func (x *DataPoint) ClearStrVal() {
+	if _, ok := x.ValOneof.(*DataPoint_StrVal); ok {
+		x.ValOneof = nil
+	}
+}
+
+func (x *DataPoint) ClearBoolVal() {
+	if _, ok := x.ValOneof.(*DataPoint_BoolVal); ok {
+		x.ValOneof = nil
+	}
+}
+
+func (x *DataPoint) ClearBytesVal() {
+	if _, ok := x.ValOneof.(*DataPoint_BytesVal); ok {
+		x.ValOneof = nil
+	}
+}
+
+func (x *DataPoint) ClearTs() {
+	x.Ts = nil
+}
+
+const DataPoint_ValOneof_not_set_case case_DataPoint_ValOneof = 0
+const DataPoint_IntVal_case case_DataPoint_ValOneof = 3
+const DataPoint_Fl64Val_case case_DataPoint_ValOneof = 4
+const DataPoint_StrVal_case case_DataPoint_ValOneof = 5
+const DataPoint_BoolVal_case case_DataPoint_ValOneof = 6
+const DataPoint_BytesVal_case case_DataPoint_ValOneof = 16
+
+func (x *DataPoint) WhichValOneof() case_DataPoint_ValOneof {
+	if x == nil {
+		return DataPoint_ValOneof_not_set_case
+	}
+	switch x.ValOneof.(type) {
+	case *DataPoint_IntVal:
+		return DataPoint_IntVal_case
+	case *DataPoint_Fl64Val:
+		return DataPoint_Fl64Val_case
+	case *DataPoint_StrVal:
+		return DataPoint_StrVal_case
+	case *DataPoint_BoolVal:
+		return DataPoint_BoolVal_case
+	case *DataPoint_BytesVal:
+		return DataPoint_BytesVal_case
+	default:
+		return DataPoint_ValOneof_not_set_case
+	}
+}
+
+type DataPoint_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	// Device unique ID. Ignored during MQTT ingest if provided as part of the topic. Required for API publish.
+	UniqId string
+	// Device attribute.
+	Attr string
+	// Attribute value.
+
+	// Fields of oneof ValOneof:
+	// Integer value, 32-bit.
+	IntVal *int32
+	// Float value, 64-bit.
+	Fl64Val *float64
+	// String value.
+	StrVal *string
+	// Boolean value.
+	BoolVal *bool
+	// Bytes value. When used in JSON, the value will be represented as a base64 string.
+	BytesVal []byte
+	// -- end of ValOneof
+	// Timestamp. If not present during MQTT ingest or API publish, the current time will be used.
+	Ts *timestamppb.Timestamp
+	// Authentication token (UUID). Only used during MQTT ingest. Will be ignored if provided as part of the Payload message.
+	Token string
+	// Trace ID (UUID). Assigned by the platform, will be ignored if provided during MQTT ingest or API publish.
+	TraceId string
+}
+
+func (b0 DataPoint_builder) Build() *DataPoint {
+	m0 := &DataPoint{}
+	b, x := &b0, m0
+	_, _ = b, x
+	x.UniqId = b.UniqId
+	x.Attr = b.Attr
+	if b.IntVal != nil {
+		x.ValOneof = &DataPoint_IntVal{*b.IntVal}
+	}
+	if b.Fl64Val != nil {
+		x.ValOneof = &DataPoint_Fl64Val{*b.Fl64Val}
+	}
+	if b.StrVal != nil {
+		x.ValOneof = &DataPoint_StrVal{*b.StrVal}
+	}
+	if b.BoolVal != nil {
+		x.ValOneof = &DataPoint_BoolVal{*b.BoolVal}
+	}
+	if b.BytesVal != nil {
+		x.ValOneof = &DataPoint_BytesVal{b.BytesVal}
+	}
+	x.Ts = b.Ts
+	x.Token = b.Token
+	x.TraceId = b.TraceId
+	return m0
+}
+
+type case_DataPoint_ValOneof protoreflect.FieldNumber
+
+func (x case_DataPoint_ValOneof) String() string {
+	md := file_common_thingspect_datapoint_proto_msgTypes[0].Descriptor()
+	if x == 0 {
+		return "not set"
+	}
+	return protoimpl.X.MessageFieldStringOf(md, protoreflect.FieldNumber(x))
+}
+
 type isDataPoint_ValOneof interface {
 	isDataPoint_ValOneof()
 }
@@ -224,18 +448,6 @@ const file_common_thingspect_datapoint_proto_rawDesc = "" +
 	"\x05token\x18\b \x01(\tB\x04\xe2A\x01\x03R\x05token\x12\x1f\n" +
 	"\btrace_id\x18\t \x01(\tB\x04\xe2A\x01\x03R\atraceIdB\x12\n" +
 	"\tval_oneof\x12\x05\xbaH\x02\b\x01B'Z%github.com/thingspect/proto/go/commonb\x06proto3"
-
-var (
-	file_common_thingspect_datapoint_proto_rawDescOnce sync.Once
-	file_common_thingspect_datapoint_proto_rawDescData []byte
-)
-
-func file_common_thingspect_datapoint_proto_rawDescGZIP() []byte {
-	file_common_thingspect_datapoint_proto_rawDescOnce.Do(func() {
-		file_common_thingspect_datapoint_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_common_thingspect_datapoint_proto_rawDesc), len(file_common_thingspect_datapoint_proto_rawDesc)))
-	})
-	return file_common_thingspect_datapoint_proto_rawDescData
-}
 
 var file_common_thingspect_datapoint_proto_msgTypes = make([]protoimpl.MessageInfo, 1)
 var file_common_thingspect_datapoint_proto_goTypes = []any{

@@ -4,6 +4,8 @@
 // 	protoc        v6.31.1
 // source: api/thingspect_device.proto
 
+//go:build !protoopaque
+
 package api
 
 import (
@@ -16,7 +18,6 @@ import (
 	fieldmaskpb "google.golang.org/protobuf/types/known/fieldmaskpb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
 	reflect "reflect"
-	sync "sync"
 	unsafe "unsafe"
 )
 
@@ -95,14 +96,9 @@ func (x Decoder) Number() protoreflect.EnumNumber {
 	return protoreflect.EnumNumber(x)
 }
 
-// Deprecated: Use Decoder.Descriptor instead.
-func (Decoder) EnumDescriptor() ([]byte, []int) {
-	return file_api_thingspect_device_proto_rawDescGZIP(), []int{0}
-}
-
 // Device represents a device as stored in the database.
 type Device struct {
-	state protoimpl.MessageState `protogen:"open.v1"`
+	state protoimpl.MessageState `protogen:"hybrid.v1"`
 	// Device ID (UUID).
 	Id string `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
 	// Organization ID (UUID).
@@ -150,11 +146,6 @@ func (x *Device) ProtoReflect() protoreflect.Message {
 		return ms
 	}
 	return mi.MessageOf(x)
-}
-
-// Deprecated: Use Device.ProtoReflect.Descriptor instead.
-func (*Device) Descriptor() ([]byte, []int) {
-	return file_api_thingspect_device_proto_rawDescGZIP(), []int{0}
 }
 
 func (x *Device) GetId() string {
@@ -227,9 +218,113 @@ func (x *Device) GetUpdatedAt() *timestamppb.Timestamp {
 	return nil
 }
 
+func (x *Device) SetId(v string) {
+	x.Id = v
+}
+
+func (x *Device) SetOrgId(v string) {
+	x.OrgId = v
+}
+
+func (x *Device) SetUniqId(v string) {
+	x.UniqId = v
+}
+
+func (x *Device) SetName(v string) {
+	x.Name = v
+}
+
+func (x *Device) SetStatus(v Status) {
+	x.Status = v
+}
+
+func (x *Device) SetToken(v string) {
+	x.Token = v
+}
+
+func (x *Device) SetDecoder(v Decoder) {
+	x.Decoder = v
+}
+
+func (x *Device) SetTags(v []string) {
+	x.Tags = v
+}
+
+func (x *Device) SetCreatedAt(v *timestamppb.Timestamp) {
+	x.CreatedAt = v
+}
+
+func (x *Device) SetUpdatedAt(v *timestamppb.Timestamp) {
+	x.UpdatedAt = v
+}
+
+func (x *Device) HasCreatedAt() bool {
+	if x == nil {
+		return false
+	}
+	return x.CreatedAt != nil
+}
+
+func (x *Device) HasUpdatedAt() bool {
+	if x == nil {
+		return false
+	}
+	return x.UpdatedAt != nil
+}
+
+func (x *Device) ClearCreatedAt() {
+	x.CreatedAt = nil
+}
+
+func (x *Device) ClearUpdatedAt() {
+	x.UpdatedAt = nil
+}
+
+type Device_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	// Device ID (UUID).
+	Id string
+	// Organization ID (UUID).
+	OrgId string
+	// Device unique ID.
+	UniqId string
+	// Device name.
+	Name string
+	// Device status.
+	Status Status
+	// Authentication token (UUID). Will be generated at creation time, but can be updated afterward.
+	Token string
+	// Device data payload decoder.
+	Decoder Decoder
+	// Device tags. Nested tags should be delimited by '/'.
+	Tags []string
+	// Device creation timestamp.
+	CreatedAt *timestamppb.Timestamp
+	// Device modification timestamp.
+	UpdatedAt *timestamppb.Timestamp
+}
+
+func (b0 Device_builder) Build() *Device {
+	m0 := &Device{}
+	b, x := &b0, m0
+	_, _ = b, x
+	x.Id = b.Id
+	x.OrgId = b.OrgId
+	x.UniqId = b.UniqId
+	x.Name = b.Name
+	x.Status = b.Status
+	x.Token = b.Token
+	x.Decoder = b.Decoder
+	x.Tags = b.Tags
+	x.CreatedAt = b.CreatedAt
+	x.UpdatedAt = b.UpdatedAt
+	return m0
+}
+
 // CreateDeviceRequest is sent to create a device.
 type CreateDeviceRequest struct {
-	state protoimpl.MessageState `protogen:"open.v1"`
+	state protoimpl.MessageState `protogen:"hybrid.v1"`
 	// Device message to create.
 	Device        *Device `protobuf:"bytes,1,opt,name=device,proto3" json:"device,omitempty"`
 	unknownFields protoimpl.UnknownFields
@@ -261,11 +356,6 @@ func (x *CreateDeviceRequest) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use CreateDeviceRequest.ProtoReflect.Descriptor instead.
-func (*CreateDeviceRequest) Descriptor() ([]byte, []int) {
-	return file_api_thingspect_device_proto_rawDescGZIP(), []int{1}
-}
-
 func (x *CreateDeviceRequest) GetDevice() *Device {
 	if x != nil {
 		return x.Device
@@ -273,9 +363,39 @@ func (x *CreateDeviceRequest) GetDevice() *Device {
 	return nil
 }
 
+func (x *CreateDeviceRequest) SetDevice(v *Device) {
+	x.Device = v
+}
+
+func (x *CreateDeviceRequest) HasDevice() bool {
+	if x == nil {
+		return false
+	}
+	return x.Device != nil
+}
+
+func (x *CreateDeviceRequest) ClearDevice() {
+	x.Device = nil
+}
+
+type CreateDeviceRequest_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	// Device message to create.
+	Device *Device
+}
+
+func (b0 CreateDeviceRequest_builder) Build() *CreateDeviceRequest {
+	m0 := &CreateDeviceRequest{}
+	b, x := &b0, m0
+	_, _ = b, x
+	x.Device = b.Device
+	return m0
+}
+
 // CreateDeviceLoRaWANRequest is sent to add LoRaWAN configuration to a device.
 type CreateDeviceLoRaWANRequest struct {
-	state protoimpl.MessageState `protogen:"open.v1"`
+	state protoimpl.MessageState `protogen:"hybrid.v1"`
 	// Device ID (UUID) to add LoRaWAN configuration.
 	Id string `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
 	// LoRaWAN configuration type.
@@ -314,11 +434,6 @@ func (x *CreateDeviceLoRaWANRequest) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use CreateDeviceLoRaWANRequest.ProtoReflect.Descriptor instead.
-func (*CreateDeviceLoRaWANRequest) Descriptor() ([]byte, []int) {
-	return file_api_thingspect_device_proto_rawDescGZIP(), []int{2}
-}
-
 func (x *CreateDeviceLoRaWANRequest) GetId() string {
 	if x != nil {
 		return x.Id
@@ -351,6 +466,122 @@ func (x *CreateDeviceLoRaWANRequest) GetDeviceLorawanType() *CreateDeviceLoRaWAN
 	return nil
 }
 
+func (x *CreateDeviceLoRaWANRequest) SetId(v string) {
+	x.Id = v
+}
+
+func (x *CreateDeviceLoRaWANRequest) SetGatewayLorawanType(v *CreateDeviceLoRaWANRequest_GatewayLoRaWANType) {
+	if v == nil {
+		x.TypeOneof = nil
+		return
+	}
+	x.TypeOneof = &CreateDeviceLoRaWANRequest_GatewayLorawanType{v}
+}
+
+func (x *CreateDeviceLoRaWANRequest) SetDeviceLorawanType(v *CreateDeviceLoRaWANRequest_DeviceLoRaWANType) {
+	if v == nil {
+		x.TypeOneof = nil
+		return
+	}
+	x.TypeOneof = &CreateDeviceLoRaWANRequest_DeviceLorawanType{v}
+}
+
+func (x *CreateDeviceLoRaWANRequest) HasTypeOneof() bool {
+	if x == nil {
+		return false
+	}
+	return x.TypeOneof != nil
+}
+
+func (x *CreateDeviceLoRaWANRequest) HasGatewayLorawanType() bool {
+	if x == nil {
+		return false
+	}
+	_, ok := x.TypeOneof.(*CreateDeviceLoRaWANRequest_GatewayLorawanType)
+	return ok
+}
+
+func (x *CreateDeviceLoRaWANRequest) HasDeviceLorawanType() bool {
+	if x == nil {
+		return false
+	}
+	_, ok := x.TypeOneof.(*CreateDeviceLoRaWANRequest_DeviceLorawanType)
+	return ok
+}
+
+func (x *CreateDeviceLoRaWANRequest) ClearTypeOneof() {
+	x.TypeOneof = nil
+}
+
+func (x *CreateDeviceLoRaWANRequest) ClearGatewayLorawanType() {
+	if _, ok := x.TypeOneof.(*CreateDeviceLoRaWANRequest_GatewayLorawanType); ok {
+		x.TypeOneof = nil
+	}
+}
+
+func (x *CreateDeviceLoRaWANRequest) ClearDeviceLorawanType() {
+	if _, ok := x.TypeOneof.(*CreateDeviceLoRaWANRequest_DeviceLorawanType); ok {
+		x.TypeOneof = nil
+	}
+}
+
+const CreateDeviceLoRaWANRequest_TypeOneof_not_set_case case_CreateDeviceLoRaWANRequest_TypeOneof = 0
+const CreateDeviceLoRaWANRequest_GatewayLorawanType_case case_CreateDeviceLoRaWANRequest_TypeOneof = 2
+const CreateDeviceLoRaWANRequest_DeviceLorawanType_case case_CreateDeviceLoRaWANRequest_TypeOneof = 3
+
+func (x *CreateDeviceLoRaWANRequest) WhichTypeOneof() case_CreateDeviceLoRaWANRequest_TypeOneof {
+	if x == nil {
+		return CreateDeviceLoRaWANRequest_TypeOneof_not_set_case
+	}
+	switch x.TypeOneof.(type) {
+	case *CreateDeviceLoRaWANRequest_GatewayLorawanType:
+		return CreateDeviceLoRaWANRequest_GatewayLorawanType_case
+	case *CreateDeviceLoRaWANRequest_DeviceLorawanType:
+		return CreateDeviceLoRaWANRequest_DeviceLorawanType_case
+	default:
+		return CreateDeviceLoRaWANRequest_TypeOneof_not_set_case
+	}
+}
+
+type CreateDeviceLoRaWANRequest_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	// Device ID (UUID) to add LoRaWAN configuration.
+	Id string
+	// LoRaWAN configuration type.
+
+	// Fields of oneof TypeOneof:
+	// Gateway LoRaWAN configuration type.
+	GatewayLorawanType *CreateDeviceLoRaWANRequest_GatewayLoRaWANType
+	// Device LoRaWAN configuration type.
+	DeviceLorawanType *CreateDeviceLoRaWANRequest_DeviceLoRaWANType
+	// -- end of TypeOneof
+}
+
+func (b0 CreateDeviceLoRaWANRequest_builder) Build() *CreateDeviceLoRaWANRequest {
+	m0 := &CreateDeviceLoRaWANRequest{}
+	b, x := &b0, m0
+	_, _ = b, x
+	x.Id = b.Id
+	if b.GatewayLorawanType != nil {
+		x.TypeOneof = &CreateDeviceLoRaWANRequest_GatewayLorawanType{b.GatewayLorawanType}
+	}
+	if b.DeviceLorawanType != nil {
+		x.TypeOneof = &CreateDeviceLoRaWANRequest_DeviceLorawanType{b.DeviceLorawanType}
+	}
+	return m0
+}
+
+type case_CreateDeviceLoRaWANRequest_TypeOneof protoreflect.FieldNumber
+
+func (x case_CreateDeviceLoRaWANRequest_TypeOneof) String() string {
+	md := file_api_thingspect_device_proto_msgTypes[2].Descriptor()
+	if x == 0 {
+		return "not set"
+	}
+	return protoimpl.X.MessageFieldStringOf(md, protoreflect.FieldNumber(x))
+}
+
 type isCreateDeviceLoRaWANRequest_TypeOneof interface {
 	isCreateDeviceLoRaWANRequest_TypeOneof()
 }
@@ -371,7 +602,7 @@ func (*CreateDeviceLoRaWANRequest_DeviceLorawanType) isCreateDeviceLoRaWANReques
 
 // GetDeviceRequest is sent to get a device.
 type GetDeviceRequest struct {
-	state protoimpl.MessageState `protogen:"open.v1"`
+	state protoimpl.MessageState `protogen:"hybrid.v1"`
 	// Device ID (UUID) to get.
 	Id            string `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
 	unknownFields protoimpl.UnknownFields
@@ -403,11 +634,6 @@ func (x *GetDeviceRequest) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use GetDeviceRequest.ProtoReflect.Descriptor instead.
-func (*GetDeviceRequest) Descriptor() ([]byte, []int) {
-	return file_api_thingspect_device_proto_rawDescGZIP(), []int{3}
-}
-
 func (x *GetDeviceRequest) GetId() string {
 	if x != nil {
 		return x.Id
@@ -415,9 +641,28 @@ func (x *GetDeviceRequest) GetId() string {
 	return ""
 }
 
+func (x *GetDeviceRequest) SetId(v string) {
+	x.Id = v
+}
+
+type GetDeviceRequest_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	// Device ID (UUID) to get.
+	Id string
+}
+
+func (b0 GetDeviceRequest_builder) Build() *GetDeviceRequest {
+	m0 := &GetDeviceRequest{}
+	b, x := &b0, m0
+	_, _ = b, x
+	x.Id = b.Id
+	return m0
+}
+
 // UpdateDeviceRequest is sent to update a device.
 type UpdateDeviceRequest struct {
-	state protoimpl.MessageState `protogen:"open.v1"`
+	state protoimpl.MessageState `protogen:"hybrid.v1"`
 	// Device message to update.
 	Device *Device `protobuf:"bytes,1,opt,name=device,proto3" json:"device,omitempty"`
 	// Fields to update. Automatically populated by a PATCH request. If not present, a full resource update is performed.
@@ -451,11 +696,6 @@ func (x *UpdateDeviceRequest) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use UpdateDeviceRequest.ProtoReflect.Descriptor instead.
-func (*UpdateDeviceRequest) Descriptor() ([]byte, []int) {
-	return file_api_thingspect_device_proto_rawDescGZIP(), []int{4}
-}
-
 func (x *UpdateDeviceRequest) GetDevice() *Device {
 	if x != nil {
 		return x.Device
@@ -470,9 +710,57 @@ func (x *UpdateDeviceRequest) GetUpdateMask() *fieldmaskpb.FieldMask {
 	return nil
 }
 
+func (x *UpdateDeviceRequest) SetDevice(v *Device) {
+	x.Device = v
+}
+
+func (x *UpdateDeviceRequest) SetUpdateMask(v *fieldmaskpb.FieldMask) {
+	x.UpdateMask = v
+}
+
+func (x *UpdateDeviceRequest) HasDevice() bool {
+	if x == nil {
+		return false
+	}
+	return x.Device != nil
+}
+
+func (x *UpdateDeviceRequest) HasUpdateMask() bool {
+	if x == nil {
+		return false
+	}
+	return x.UpdateMask != nil
+}
+
+func (x *UpdateDeviceRequest) ClearDevice() {
+	x.Device = nil
+}
+
+func (x *UpdateDeviceRequest) ClearUpdateMask() {
+	x.UpdateMask = nil
+}
+
+type UpdateDeviceRequest_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	// Device message to update.
+	Device *Device
+	// Fields to update. Automatically populated by a PATCH request. If not present, a full resource update is performed.
+	UpdateMask *fieldmaskpb.FieldMask
+}
+
+func (b0 UpdateDeviceRequest_builder) Build() *UpdateDeviceRequest {
+	m0 := &UpdateDeviceRequest{}
+	b, x := &b0, m0
+	_, _ = b, x
+	x.Device = b.Device
+	x.UpdateMask = b.UpdateMask
+	return m0
+}
+
 // DeleteDeviceLoRaWANRequest is sent to remove LoRaWAN configuration from a device.
 type DeleteDeviceLoRaWANRequest struct {
-	state protoimpl.MessageState `protogen:"open.v1"`
+	state protoimpl.MessageState `protogen:"hybrid.v1"`
 	// Device ID (UUID) to remove LoRaWAN configuration.
 	Id            string `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
 	unknownFields protoimpl.UnknownFields
@@ -504,11 +792,6 @@ func (x *DeleteDeviceLoRaWANRequest) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use DeleteDeviceLoRaWANRequest.ProtoReflect.Descriptor instead.
-func (*DeleteDeviceLoRaWANRequest) Descriptor() ([]byte, []int) {
-	return file_api_thingspect_device_proto_rawDescGZIP(), []int{5}
-}
-
 func (x *DeleteDeviceLoRaWANRequest) GetId() string {
 	if x != nil {
 		return x.Id
@@ -516,9 +799,28 @@ func (x *DeleteDeviceLoRaWANRequest) GetId() string {
 	return ""
 }
 
+func (x *DeleteDeviceLoRaWANRequest) SetId(v string) {
+	x.Id = v
+}
+
+type DeleteDeviceLoRaWANRequest_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	// Device ID (UUID) to remove LoRaWAN configuration.
+	Id string
+}
+
+func (b0 DeleteDeviceLoRaWANRequest_builder) Build() *DeleteDeviceLoRaWANRequest {
+	m0 := &DeleteDeviceLoRaWANRequest{}
+	b, x := &b0, m0
+	_, _ = b, x
+	x.Id = b.Id
+	return m0
+}
+
 // DeleteDeviceRequest is sent to delete a device.
 type DeleteDeviceRequest struct {
-	state protoimpl.MessageState `protogen:"open.v1"`
+	state protoimpl.MessageState `protogen:"hybrid.v1"`
 	// Device ID (UUID) to delete.
 	Id            string `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
 	unknownFields protoimpl.UnknownFields
@@ -550,11 +852,6 @@ func (x *DeleteDeviceRequest) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use DeleteDeviceRequest.ProtoReflect.Descriptor instead.
-func (*DeleteDeviceRequest) Descriptor() ([]byte, []int) {
-	return file_api_thingspect_device_proto_rawDescGZIP(), []int{6}
-}
-
 func (x *DeleteDeviceRequest) GetId() string {
 	if x != nil {
 		return x.Id
@@ -562,9 +859,28 @@ func (x *DeleteDeviceRequest) GetId() string {
 	return ""
 }
 
+func (x *DeleteDeviceRequest) SetId(v string) {
+	x.Id = v
+}
+
+type DeleteDeviceRequest_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	// Device ID (UUID) to delete.
+	Id string
+}
+
+func (b0 DeleteDeviceRequest_builder) Build() *DeleteDeviceRequest {
+	m0 := &DeleteDeviceRequest{}
+	b, x := &b0, m0
+	_, _ = b, x
+	x.Id = b.Id
+	return m0
+}
+
 // ListDevicesRequest is sent to list devices.
 type ListDevicesRequest struct {
-	state protoimpl.MessageState `protogen:"open.v1"`
+	state protoimpl.MessageState `protogen:"hybrid.v1"`
 	// Number of devices to retrieve in a single page. Defaults to 50 if not specified, with a maximum of 250.
 	PageSize int32 `protobuf:"varint,1,opt,name=page_size,json=pageSize,proto3" json:"page_size,omitempty"`
 	// Token of the page to retrieve. If not specified, the first page of results will be returned. To request the next page of results, use next_page_token from the previous response.
@@ -600,11 +916,6 @@ func (x *ListDevicesRequest) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use ListDevicesRequest.ProtoReflect.Descriptor instead.
-func (*ListDevicesRequest) Descriptor() ([]byte, []int) {
-	return file_api_thingspect_device_proto_rawDescGZIP(), []int{7}
-}
-
 func (x *ListDevicesRequest) GetPageSize() int32 {
 	if x != nil {
 		return x.PageSize
@@ -626,9 +937,42 @@ func (x *ListDevicesRequest) GetTag() string {
 	return ""
 }
 
+func (x *ListDevicesRequest) SetPageSize(v int32) {
+	x.PageSize = v
+}
+
+func (x *ListDevicesRequest) SetPageToken(v string) {
+	x.PageToken = v
+}
+
+func (x *ListDevicesRequest) SetTag(v string) {
+	x.Tag = v
+}
+
+type ListDevicesRequest_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	// Number of devices to retrieve in a single page. Defaults to 50 if not specified, with a maximum of 250.
+	PageSize int32
+	// Token of the page to retrieve. If not specified, the first page of results will be returned. To request the next page of results, use next_page_token from the previous response.
+	PageToken string
+	// Device tag. If not specified, all tags are included.
+	Tag string
+}
+
+func (b0 ListDevicesRequest_builder) Build() *ListDevicesRequest {
+	m0 := &ListDevicesRequest{}
+	b, x := &b0, m0
+	_, _ = b, x
+	x.PageSize = b.PageSize
+	x.PageToken = b.PageToken
+	x.Tag = b.Tag
+	return m0
+}
+
 // ListDevicesResponse is sent in response to a device list.
 type ListDevicesResponse struct {
-	state protoimpl.MessageState `protogen:"open.v1"`
+	state protoimpl.MessageState `protogen:"hybrid.v1"`
 	// Device array, ordered by ascending created_at timestamp.
 	Devices []*Device `protobuf:"bytes,1,rep,name=devices,proto3" json:"devices,omitempty"`
 	// Pagination token used to retrieve the next page of results. Not returned for the last page.
@@ -664,11 +1008,6 @@ func (x *ListDevicesResponse) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use ListDevicesResponse.ProtoReflect.Descriptor instead.
-func (*ListDevicesResponse) Descriptor() ([]byte, []int) {
-	return file_api_thingspect_device_proto_rawDescGZIP(), []int{8}
-}
-
 func (x *ListDevicesResponse) GetDevices() []*Device {
 	if x != nil {
 		return x.Devices
@@ -690,9 +1029,42 @@ func (x *ListDevicesResponse) GetTotalSize() int32 {
 	return 0
 }
 
+func (x *ListDevicesResponse) SetDevices(v []*Device) {
+	x.Devices = v
+}
+
+func (x *ListDevicesResponse) SetNextPageToken(v string) {
+	x.NextPageToken = v
+}
+
+func (x *ListDevicesResponse) SetTotalSize(v int32) {
+	x.TotalSize = v
+}
+
+type ListDevicesResponse_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	// Device array, ordered by ascending created_at timestamp.
+	Devices []*Device
+	// Pagination token used to retrieve the next page of results. Not returned for the last page.
+	NextPageToken string
+	// Total number of devices available.
+	TotalSize int32
+}
+
+func (b0 ListDevicesResponse_builder) Build() *ListDevicesResponse {
+	m0 := &ListDevicesResponse{}
+	b, x := &b0, m0
+	_, _ = b, x
+	x.Devices = b.Devices
+	x.NextPageToken = b.NextPageToken
+	x.TotalSize = b.TotalSize
+	return m0
+}
+
 // GatewayLoRaWANType is sent to add LoRaWAN gateway configuration.
 type CreateDeviceLoRaWANRequest_GatewayLoRaWANType struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
+	state         protoimpl.MessageState `protogen:"hybrid.v1"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -722,14 +1094,21 @@ func (x *CreateDeviceLoRaWANRequest_GatewayLoRaWANType) ProtoReflect() protorefl
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use CreateDeviceLoRaWANRequest_GatewayLoRaWANType.ProtoReflect.Descriptor instead.
-func (*CreateDeviceLoRaWANRequest_GatewayLoRaWANType) Descriptor() ([]byte, []int) {
-	return file_api_thingspect_device_proto_rawDescGZIP(), []int{2, 0}
+type CreateDeviceLoRaWANRequest_GatewayLoRaWANType_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+}
+
+func (b0 CreateDeviceLoRaWANRequest_GatewayLoRaWANType_builder) Build() *CreateDeviceLoRaWANRequest_GatewayLoRaWANType {
+	m0 := &CreateDeviceLoRaWANRequest_GatewayLoRaWANType{}
+	b, x := &b0, m0
+	_, _ = b, x
+	return m0
 }
 
 // DeviceLoRaWANType is sent to add LoRaWAN device configuration.
 type CreateDeviceLoRaWANRequest_DeviceLoRaWANType struct {
-	state protoimpl.MessageState `protogen:"open.v1"`
+	state protoimpl.MessageState `protogen:"hybrid.v1"`
 	// Device LoRaWAN 1.0.x application key.
 	AppKey        string `protobuf:"bytes,1,opt,name=app_key,json=appKey,proto3" json:"app_key,omitempty"`
 	unknownFields protoimpl.UnknownFields
@@ -761,16 +1140,30 @@ func (x *CreateDeviceLoRaWANRequest_DeviceLoRaWANType) ProtoReflect() protorefle
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use CreateDeviceLoRaWANRequest_DeviceLoRaWANType.ProtoReflect.Descriptor instead.
-func (*CreateDeviceLoRaWANRequest_DeviceLoRaWANType) Descriptor() ([]byte, []int) {
-	return file_api_thingspect_device_proto_rawDescGZIP(), []int{2, 1}
-}
-
 func (x *CreateDeviceLoRaWANRequest_DeviceLoRaWANType) GetAppKey() string {
 	if x != nil {
 		return x.AppKey
 	}
 	return ""
+}
+
+func (x *CreateDeviceLoRaWANRequest_DeviceLoRaWANType) SetAppKey(v string) {
+	x.AppKey = v
+}
+
+type CreateDeviceLoRaWANRequest_DeviceLoRaWANType_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	// Device LoRaWAN 1.0.x application key.
+	AppKey string
+}
+
+func (b0 CreateDeviceLoRaWANRequest_DeviceLoRaWANType_builder) Build() *CreateDeviceLoRaWANRequest_DeviceLoRaWANType {
+	m0 := &CreateDeviceLoRaWANRequest_DeviceLoRaWANType{}
+	b, x := &b0, m0
+	_, _ = b, x
+	x.AppKey = b.AppKey
+	return m0
 }
 
 var File_api_thingspect_device_proto protoreflect.FileDescriptor
@@ -852,18 +1245,6 @@ const file_api_thingspect_device_proto_rawDesc = "" +
 	"\x03204\x12\x1a\n" +
 	"\x16A successful response.\x12\x00\x82\xd3\xe4\x93\x02\x12*\x10/v1/devices/{id}\x12k\n" +
 	"\vListDevices\x12\".thingspect.api.ListDevicesRequest\x1a#.thingspect.api.ListDevicesResponse\"\x13\x82\xd3\xe4\x93\x02\r\x12\v/v1/devicesB$Z\"github.com/thingspect/proto/go/apib\x06proto3"
-
-var (
-	file_api_thingspect_device_proto_rawDescOnce sync.Once
-	file_api_thingspect_device_proto_rawDescData []byte
-)
-
-func file_api_thingspect_device_proto_rawDescGZIP() []byte {
-	file_api_thingspect_device_proto_rawDescOnce.Do(func() {
-		file_api_thingspect_device_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_api_thingspect_device_proto_rawDesc), len(file_api_thingspect_device_proto_rawDesc)))
-	})
-	return file_api_thingspect_device_proto_rawDescData
-}
 
 var file_api_thingspect_device_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
 var file_api_thingspect_device_proto_msgTypes = make([]protoimpl.MessageInfo, 11)

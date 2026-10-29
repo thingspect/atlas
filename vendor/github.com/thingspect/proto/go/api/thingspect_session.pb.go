@@ -4,6 +4,8 @@
 // 	protoc        v6.31.1
 // source: api/thingspect_session.proto
 
+//go:build !protoopaque
+
 package api
 
 import (
@@ -15,7 +17,6 @@ import (
 	emptypb "google.golang.org/protobuf/types/known/emptypb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
 	reflect "reflect"
-	sync "sync"
 	unsafe "unsafe"
 )
 
@@ -28,7 +29,7 @@ const (
 
 // LoginRequest is sent to log in a user.
 type LoginRequest struct {
-	state protoimpl.MessageState `protogen:"open.v1"`
+	state protoimpl.MessageState `protogen:"hybrid.v1"`
 	// Email of the user to log in.
 	Email string `protobuf:"bytes,1,opt,name=email,proto3" json:"email,omitempty"`
 	// Organization name of the user to log in.
@@ -64,11 +65,6 @@ func (x *LoginRequest) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use LoginRequest.ProtoReflect.Descriptor instead.
-func (*LoginRequest) Descriptor() ([]byte, []int) {
-	return file_api_thingspect_session_proto_rawDescGZIP(), []int{0}
-}
-
 func (x *LoginRequest) GetEmail() string {
 	if x != nil {
 		return x.Email
@@ -90,9 +86,42 @@ func (x *LoginRequest) GetPassword() string {
 	return ""
 }
 
+func (x *LoginRequest) SetEmail(v string) {
+	x.Email = v
+}
+
+func (x *LoginRequest) SetOrgName(v string) {
+	x.OrgName = v
+}
+
+func (x *LoginRequest) SetPassword(v string) {
+	x.Password = v
+}
+
+type LoginRequest_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	// Email of the user to log in.
+	Email string
+	// Organization name of the user to log in.
+	OrgName string
+	// Password of the user to log in.
+	Password string
+}
+
+func (b0 LoginRequest_builder) Build() *LoginRequest {
+	m0 := &LoginRequest{}
+	b, x := &b0, m0
+	_, _ = b, x
+	x.Email = b.Email
+	x.OrgName = b.OrgName
+	x.Password = b.Password
+	return m0
+}
+
 // LoginResponse is sent in response to a user login.
 type LoginResponse struct {
-	state protoimpl.MessageState `protogen:"open.v1"`
+	state protoimpl.MessageState `protogen:"hybrid.v1"`
 	// Token to be used for subsequent non-login calls.
 	Token string `protobuf:"bytes,1,opt,name=token,proto3" json:"token,omitempty"`
 	// Token expiration timestamp.
@@ -126,11 +155,6 @@ func (x *LoginResponse) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use LoginResponse.ProtoReflect.Descriptor instead.
-func (*LoginResponse) Descriptor() ([]byte, []int) {
-	return file_api_thingspect_session_proto_rawDescGZIP(), []int{1}
-}
-
 func (x *LoginResponse) GetToken() string {
 	if x != nil {
 		return x.Token
@@ -145,9 +169,46 @@ func (x *LoginResponse) GetExpiresAt() *timestamppb.Timestamp {
 	return nil
 }
 
+func (x *LoginResponse) SetToken(v string) {
+	x.Token = v
+}
+
+func (x *LoginResponse) SetExpiresAt(v *timestamppb.Timestamp) {
+	x.ExpiresAt = v
+}
+
+func (x *LoginResponse) HasExpiresAt() bool {
+	if x == nil {
+		return false
+	}
+	return x.ExpiresAt != nil
+}
+
+func (x *LoginResponse) ClearExpiresAt() {
+	x.ExpiresAt = nil
+}
+
+type LoginResponse_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	// Token to be used for subsequent non-login calls.
+	Token string
+	// Token expiration timestamp.
+	ExpiresAt *timestamppb.Timestamp
+}
+
+func (b0 LoginResponse_builder) Build() *LoginResponse {
+	m0 := &LoginResponse{}
+	b, x := &b0, m0
+	_, _ = b, x
+	x.Token = b.Token
+	x.ExpiresAt = b.ExpiresAt
+	return m0
+}
+
 // Key represents an API key as stored in the database. API keys are not tied to a specific user.
 type Key struct {
-	state protoimpl.MessageState `protogen:"open.v1"`
+	state protoimpl.MessageState `protogen:"hybrid.v1"`
 	// Key ID (UUID).
 	Id string `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
 	// Organization ID (UUID).
@@ -187,11 +248,6 @@ func (x *Key) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use Key.ProtoReflect.Descriptor instead.
-func (*Key) Descriptor() ([]byte, []int) {
-	return file_api_thingspect_session_proto_rawDescGZIP(), []int{2}
-}
-
 func (x *Key) GetId() string {
 	if x != nil {
 		return x.Id
@@ -227,9 +283,67 @@ func (x *Key) GetCreatedAt() *timestamppb.Timestamp {
 	return nil
 }
 
+func (x *Key) SetId(v string) {
+	x.Id = v
+}
+
+func (x *Key) SetOrgId(v string) {
+	x.OrgId = v
+}
+
+func (x *Key) SetName(v string) {
+	x.Name = v
+}
+
+func (x *Key) SetRole(v Role) {
+	x.Role = v
+}
+
+func (x *Key) SetCreatedAt(v *timestamppb.Timestamp) {
+	x.CreatedAt = v
+}
+
+func (x *Key) HasCreatedAt() bool {
+	if x == nil {
+		return false
+	}
+	return x.CreatedAt != nil
+}
+
+func (x *Key) ClearCreatedAt() {
+	x.CreatedAt = nil
+}
+
+type Key_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	// Key ID (UUID).
+	Id string
+	// Organization ID (UUID).
+	OrgId string
+	// Key name.
+	Name string
+	// Key role.
+	Role Role
+	// Key creation timestamp.
+	CreatedAt *timestamppb.Timestamp
+}
+
+func (b0 Key_builder) Build() *Key {
+	m0 := &Key{}
+	b, x := &b0, m0
+	_, _ = b, x
+	x.Id = b.Id
+	x.OrgId = b.OrgId
+	x.Name = b.Name
+	x.Role = b.Role
+	x.CreatedAt = b.CreatedAt
+	return m0
+}
+
 // CreateKeyRequest is sent to create an API key.
 type CreateKeyRequest struct {
-	state protoimpl.MessageState `protogen:"open.v1"`
+	state protoimpl.MessageState `protogen:"hybrid.v1"`
 	// Key message to create.
 	Key           *Key `protobuf:"bytes,1,opt,name=key,proto3" json:"key,omitempty"`
 	unknownFields protoimpl.UnknownFields
@@ -261,11 +375,6 @@ func (x *CreateKeyRequest) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use CreateKeyRequest.ProtoReflect.Descriptor instead.
-func (*CreateKeyRequest) Descriptor() ([]byte, []int) {
-	return file_api_thingspect_session_proto_rawDescGZIP(), []int{3}
-}
-
 func (x *CreateKeyRequest) GetKey() *Key {
 	if x != nil {
 		return x.Key
@@ -273,9 +382,39 @@ func (x *CreateKeyRequest) GetKey() *Key {
 	return nil
 }
 
+func (x *CreateKeyRequest) SetKey(v *Key) {
+	x.Key = v
+}
+
+func (x *CreateKeyRequest) HasKey() bool {
+	if x == nil {
+		return false
+	}
+	return x.Key != nil
+}
+
+func (x *CreateKeyRequest) ClearKey() {
+	x.Key = nil
+}
+
+type CreateKeyRequest_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	// Key message to create.
+	Key *Key
+}
+
+func (b0 CreateKeyRequest_builder) Build() *CreateKeyRequest {
+	m0 := &CreateKeyRequest{}
+	b, x := &b0, m0
+	_, _ = b, x
+	x.Key = b.Key
+	return m0
+}
+
 // CreateKeyResponse is sent in response to an API key creation.
 type CreateKeyResponse struct {
-	state protoimpl.MessageState `protogen:"open.v1"`
+	state protoimpl.MessageState `protogen:"hybrid.v1"`
 	// Key message created.
 	Key *Key `protobuf:"bytes,1,opt,name=key,proto3" json:"key,omitempty"`
 	// Token to be used for subsequent calls. Only returned once, upon key creation.
@@ -309,11 +448,6 @@ func (x *CreateKeyResponse) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use CreateKeyResponse.ProtoReflect.Descriptor instead.
-func (*CreateKeyResponse) Descriptor() ([]byte, []int) {
-	return file_api_thingspect_session_proto_rawDescGZIP(), []int{4}
-}
-
 func (x *CreateKeyResponse) GetKey() *Key {
 	if x != nil {
 		return x.Key
@@ -328,9 +462,46 @@ func (x *CreateKeyResponse) GetToken() string {
 	return ""
 }
 
+func (x *CreateKeyResponse) SetKey(v *Key) {
+	x.Key = v
+}
+
+func (x *CreateKeyResponse) SetToken(v string) {
+	x.Token = v
+}
+
+func (x *CreateKeyResponse) HasKey() bool {
+	if x == nil {
+		return false
+	}
+	return x.Key != nil
+}
+
+func (x *CreateKeyResponse) ClearKey() {
+	x.Key = nil
+}
+
+type CreateKeyResponse_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	// Key message created.
+	Key *Key
+	// Token to be used for subsequent calls. Only returned once, upon key creation.
+	Token string
+}
+
+func (b0 CreateKeyResponse_builder) Build() *CreateKeyResponse {
+	m0 := &CreateKeyResponse{}
+	b, x := &b0, m0
+	_, _ = b, x
+	x.Key = b.Key
+	x.Token = b.Token
+	return m0
+}
+
 // DeleteKeyRequest is sent to delete an API key.
 type DeleteKeyRequest struct {
-	state protoimpl.MessageState `protogen:"open.v1"`
+	state protoimpl.MessageState `protogen:"hybrid.v1"`
 	// Key ID (UUID) to delete.
 	Id            string `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
 	unknownFields protoimpl.UnknownFields
@@ -362,11 +533,6 @@ func (x *DeleteKeyRequest) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use DeleteKeyRequest.ProtoReflect.Descriptor instead.
-func (*DeleteKeyRequest) Descriptor() ([]byte, []int) {
-	return file_api_thingspect_session_proto_rawDescGZIP(), []int{5}
-}
-
 func (x *DeleteKeyRequest) GetId() string {
 	if x != nil {
 		return x.Id
@@ -374,9 +540,28 @@ func (x *DeleteKeyRequest) GetId() string {
 	return ""
 }
 
+func (x *DeleteKeyRequest) SetId(v string) {
+	x.Id = v
+}
+
+type DeleteKeyRequest_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	// Key ID (UUID) to delete.
+	Id string
+}
+
+func (b0 DeleteKeyRequest_builder) Build() *DeleteKeyRequest {
+	m0 := &DeleteKeyRequest{}
+	b, x := &b0, m0
+	_, _ = b, x
+	x.Id = b.Id
+	return m0
+}
+
 // ListKeysRequest is sent to list API keys.
 type ListKeysRequest struct {
-	state protoimpl.MessageState `protogen:"open.v1"`
+	state protoimpl.MessageState `protogen:"hybrid.v1"`
 	// Number of API keys to retrieve in a single page. Defaults to 50 if not specified, with a maximum of 250.
 	PageSize int32 `protobuf:"varint,1,opt,name=page_size,json=pageSize,proto3" json:"page_size,omitempty"`
 	// Token of the page to retrieve. If not specified, the first page of results will be returned. To request the next page of results, use next_page_token from the previous response.
@@ -410,11 +595,6 @@ func (x *ListKeysRequest) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use ListKeysRequest.ProtoReflect.Descriptor instead.
-func (*ListKeysRequest) Descriptor() ([]byte, []int) {
-	return file_api_thingspect_session_proto_rawDescGZIP(), []int{6}
-}
-
 func (x *ListKeysRequest) GetPageSize() int32 {
 	if x != nil {
 		return x.PageSize
@@ -429,9 +609,35 @@ func (x *ListKeysRequest) GetPageToken() string {
 	return ""
 }
 
+func (x *ListKeysRequest) SetPageSize(v int32) {
+	x.PageSize = v
+}
+
+func (x *ListKeysRequest) SetPageToken(v string) {
+	x.PageToken = v
+}
+
+type ListKeysRequest_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	// Number of API keys to retrieve in a single page. Defaults to 50 if not specified, with a maximum of 250.
+	PageSize int32
+	// Token of the page to retrieve. If not specified, the first page of results will be returned. To request the next page of results, use next_page_token from the previous response.
+	PageToken string
+}
+
+func (b0 ListKeysRequest_builder) Build() *ListKeysRequest {
+	m0 := &ListKeysRequest{}
+	b, x := &b0, m0
+	_, _ = b, x
+	x.PageSize = b.PageSize
+	x.PageToken = b.PageToken
+	return m0
+}
+
 // ListKeysResponse is sent in response to an API key list.
 type ListKeysResponse struct {
-	state protoimpl.MessageState `protogen:"open.v1"`
+	state protoimpl.MessageState `protogen:"hybrid.v1"`
 	// Key array, ordered by ascending created_at timestamp.
 	Keys []*Key `protobuf:"bytes,1,rep,name=keys,proto3" json:"keys,omitempty"`
 	// Pagination token used to retrieve the next page of results. Not returned for the last page.
@@ -467,11 +673,6 @@ func (x *ListKeysResponse) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use ListKeysResponse.ProtoReflect.Descriptor instead.
-func (*ListKeysResponse) Descriptor() ([]byte, []int) {
-	return file_api_thingspect_session_proto_rawDescGZIP(), []int{7}
-}
-
 func (x *ListKeysResponse) GetKeys() []*Key {
 	if x != nil {
 		return x.Keys
@@ -491,6 +692,39 @@ func (x *ListKeysResponse) GetTotalSize() int32 {
 		return x.TotalSize
 	}
 	return 0
+}
+
+func (x *ListKeysResponse) SetKeys(v []*Key) {
+	x.Keys = v
+}
+
+func (x *ListKeysResponse) SetNextPageToken(v string) {
+	x.NextPageToken = v
+}
+
+func (x *ListKeysResponse) SetTotalSize(v int32) {
+	x.TotalSize = v
+}
+
+type ListKeysResponse_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	// Key array, ordered by ascending created_at timestamp.
+	Keys []*Key
+	// Pagination token used to retrieve the next page of results. Not returned for the last page.
+	NextPageToken string
+	// Total number of API keys available.
+	TotalSize int32
+}
+
+func (b0 ListKeysResponse_builder) Build() *ListKeysResponse {
+	m0 := &ListKeysResponse{}
+	b, x := &b0, m0
+	_, _ = b, x
+	x.Keys = b.Keys
+	x.NextPageToken = b.NextPageToken
+	x.TotalSize = b.TotalSize
+	return m0
 }
 
 var File_api_thingspect_session_proto protoreflect.FileDescriptor
@@ -540,18 +774,6 @@ const file_api_thingspect_session_proto_rawDesc = "" +
 	"\x03204\x12\x1a\n" +
 	"\x16A successful response.\x12\x00\x82\xd3\xe4\x93\x02\x18*\x16/v1/sessions/keys/{id}\x12h\n" +
 	"\bListKeys\x12\x1f.thingspect.api.ListKeysRequest\x1a .thingspect.api.ListKeysResponse\"\x19\x82\xd3\xe4\x93\x02\x13\x12\x11/v1/sessions/keysB$Z\"github.com/thingspect/proto/go/apib\x06proto3"
-
-var (
-	file_api_thingspect_session_proto_rawDescOnce sync.Once
-	file_api_thingspect_session_proto_rawDescData []byte
-)
-
-func file_api_thingspect_session_proto_rawDescGZIP() []byte {
-	file_api_thingspect_session_proto_rawDescOnce.Do(func() {
-		file_api_thingspect_session_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_api_thingspect_session_proto_rawDesc), len(file_api_thingspect_session_proto_rawDesc)))
-	})
-	return file_api_thingspect_session_proto_rawDescData
-}
 
 var file_api_thingspect_session_proto_msgTypes = make([]protoimpl.MessageInfo, 8)
 var file_api_thingspect_session_proto_goTypes = []any{

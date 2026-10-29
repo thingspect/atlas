@@ -4,6 +4,8 @@
 // 	protoc        v6.31.1
 // source: api/thingspect_org.proto
 
+//go:build !protoopaque
+
 package api
 
 import (
@@ -16,7 +18,6 @@ import (
 	fieldmaskpb "google.golang.org/protobuf/types/known/fieldmaskpb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
 	reflect "reflect"
-	sync "sync"
 	unsafe "unsafe"
 )
 
@@ -29,7 +30,7 @@ const (
 
 // Org represents an organization as stored in the database.
 type Org struct {
-	state protoimpl.MessageState `protogen:"open.v1"`
+	state protoimpl.MessageState `protogen:"hybrid.v1"`
 	// Organization ID (UUID).
 	Id string `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
 	// Organization name.
@@ -69,11 +70,6 @@ func (x *Org) ProtoReflect() protoreflect.Message {
 		return ms
 	}
 	return mi.MessageOf(x)
-}
-
-// Deprecated: Use Org.ProtoReflect.Descriptor instead.
-func (*Org) Descriptor() ([]byte, []int) {
-	return file_api_thingspect_org_proto_rawDescGZIP(), []int{0}
 }
 
 func (x *Org) GetId() string {
@@ -118,9 +114,85 @@ func (x *Org) GetUpdatedAt() *timestamppb.Timestamp {
 	return nil
 }
 
+func (x *Org) SetId(v string) {
+	x.Id = v
+}
+
+func (x *Org) SetName(v string) {
+	x.Name = v
+}
+
+func (x *Org) SetDisplayName(v string) {
+	x.DisplayName = v
+}
+
+func (x *Org) SetEmail(v string) {
+	x.Email = v
+}
+
+func (x *Org) SetCreatedAt(v *timestamppb.Timestamp) {
+	x.CreatedAt = v
+}
+
+func (x *Org) SetUpdatedAt(v *timestamppb.Timestamp) {
+	x.UpdatedAt = v
+}
+
+func (x *Org) HasCreatedAt() bool {
+	if x == nil {
+		return false
+	}
+	return x.CreatedAt != nil
+}
+
+func (x *Org) HasUpdatedAt() bool {
+	if x == nil {
+		return false
+	}
+	return x.UpdatedAt != nil
+}
+
+func (x *Org) ClearCreatedAt() {
+	x.CreatedAt = nil
+}
+
+func (x *Org) ClearUpdatedAt() {
+	x.UpdatedAt = nil
+}
+
+type Org_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	// Organization ID (UUID).
+	Id string
+	// Organization name.
+	Name string
+	// Organization display name. Used anywhere the organization is shown to a user, including web sites and alert sender fields.
+	DisplayName string
+	// Organization email. Used as the 'From' address in email alerts.
+	Email string
+	// Organization creation timestamp.
+	CreatedAt *timestamppb.Timestamp
+	// Organization modification timestamp.
+	UpdatedAt *timestamppb.Timestamp
+}
+
+func (b0 Org_builder) Build() *Org {
+	m0 := &Org{}
+	b, x := &b0, m0
+	_, _ = b, x
+	x.Id = b.Id
+	x.Name = b.Name
+	x.DisplayName = b.DisplayName
+	x.Email = b.Email
+	x.CreatedAt = b.CreatedAt
+	x.UpdatedAt = b.UpdatedAt
+	return m0
+}
+
 // CreateOrgRequest is sent to create an organization.
 type CreateOrgRequest struct {
-	state protoimpl.MessageState `protogen:"open.v1"`
+	state protoimpl.MessageState `protogen:"hybrid.v1"`
 	// Org message to create.
 	Org           *Org `protobuf:"bytes,1,opt,name=org,proto3" json:"org,omitempty"`
 	unknownFields protoimpl.UnknownFields
@@ -152,11 +224,6 @@ func (x *CreateOrgRequest) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use CreateOrgRequest.ProtoReflect.Descriptor instead.
-func (*CreateOrgRequest) Descriptor() ([]byte, []int) {
-	return file_api_thingspect_org_proto_rawDescGZIP(), []int{1}
-}
-
 func (x *CreateOrgRequest) GetOrg() *Org {
 	if x != nil {
 		return x.Org
@@ -164,9 +231,39 @@ func (x *CreateOrgRequest) GetOrg() *Org {
 	return nil
 }
 
+func (x *CreateOrgRequest) SetOrg(v *Org) {
+	x.Org = v
+}
+
+func (x *CreateOrgRequest) HasOrg() bool {
+	if x == nil {
+		return false
+	}
+	return x.Org != nil
+}
+
+func (x *CreateOrgRequest) ClearOrg() {
+	x.Org = nil
+}
+
+type CreateOrgRequest_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	// Org message to create.
+	Org *Org
+}
+
+func (b0 CreateOrgRequest_builder) Build() *CreateOrgRequest {
+	m0 := &CreateOrgRequest{}
+	b, x := &b0, m0
+	_, _ = b, x
+	x.Org = b.Org
+	return m0
+}
+
 // GetOrgRequest is sent to get an organization.
 type GetOrgRequest struct {
-	state protoimpl.MessageState `protogen:"open.v1"`
+	state protoimpl.MessageState `protogen:"hybrid.v1"`
 	// Organization ID (UUID) to get.
 	Id            string `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
 	unknownFields protoimpl.UnknownFields
@@ -198,11 +295,6 @@ func (x *GetOrgRequest) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use GetOrgRequest.ProtoReflect.Descriptor instead.
-func (*GetOrgRequest) Descriptor() ([]byte, []int) {
-	return file_api_thingspect_org_proto_rawDescGZIP(), []int{2}
-}
-
 func (x *GetOrgRequest) GetId() string {
 	if x != nil {
 		return x.Id
@@ -210,9 +302,28 @@ func (x *GetOrgRequest) GetId() string {
 	return ""
 }
 
+func (x *GetOrgRequest) SetId(v string) {
+	x.Id = v
+}
+
+type GetOrgRequest_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	// Organization ID (UUID) to get.
+	Id string
+}
+
+func (b0 GetOrgRequest_builder) Build() *GetOrgRequest {
+	m0 := &GetOrgRequest{}
+	b, x := &b0, m0
+	_, _ = b, x
+	x.Id = b.Id
+	return m0
+}
+
 // UpdateOrgRequest is sent to update an organization.
 type UpdateOrgRequest struct {
-	state protoimpl.MessageState `protogen:"open.v1"`
+	state protoimpl.MessageState `protogen:"hybrid.v1"`
 	// Org message to update.
 	Org *Org `protobuf:"bytes,1,opt,name=org,proto3" json:"org,omitempty"`
 	// Fields to update. Automatically populated by a PATCH request. If not present, a full resource update is performed.
@@ -246,11 +357,6 @@ func (x *UpdateOrgRequest) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use UpdateOrgRequest.ProtoReflect.Descriptor instead.
-func (*UpdateOrgRequest) Descriptor() ([]byte, []int) {
-	return file_api_thingspect_org_proto_rawDescGZIP(), []int{3}
-}
-
 func (x *UpdateOrgRequest) GetOrg() *Org {
 	if x != nil {
 		return x.Org
@@ -265,9 +371,57 @@ func (x *UpdateOrgRequest) GetUpdateMask() *fieldmaskpb.FieldMask {
 	return nil
 }
 
+func (x *UpdateOrgRequest) SetOrg(v *Org) {
+	x.Org = v
+}
+
+func (x *UpdateOrgRequest) SetUpdateMask(v *fieldmaskpb.FieldMask) {
+	x.UpdateMask = v
+}
+
+func (x *UpdateOrgRequest) HasOrg() bool {
+	if x == nil {
+		return false
+	}
+	return x.Org != nil
+}
+
+func (x *UpdateOrgRequest) HasUpdateMask() bool {
+	if x == nil {
+		return false
+	}
+	return x.UpdateMask != nil
+}
+
+func (x *UpdateOrgRequest) ClearOrg() {
+	x.Org = nil
+}
+
+func (x *UpdateOrgRequest) ClearUpdateMask() {
+	x.UpdateMask = nil
+}
+
+type UpdateOrgRequest_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	// Org message to update.
+	Org *Org
+	// Fields to update. Automatically populated by a PATCH request. If not present, a full resource update is performed.
+	UpdateMask *fieldmaskpb.FieldMask
+}
+
+func (b0 UpdateOrgRequest_builder) Build() *UpdateOrgRequest {
+	m0 := &UpdateOrgRequest{}
+	b, x := &b0, m0
+	_, _ = b, x
+	x.Org = b.Org
+	x.UpdateMask = b.UpdateMask
+	return m0
+}
+
 // DeleteOrgRequest is sent to delete an organization.
 type DeleteOrgRequest struct {
-	state protoimpl.MessageState `protogen:"open.v1"`
+	state protoimpl.MessageState `protogen:"hybrid.v1"`
 	// Organization ID (UUID) to delete.
 	Id            string `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
 	unknownFields protoimpl.UnknownFields
@@ -299,11 +453,6 @@ func (x *DeleteOrgRequest) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use DeleteOrgRequest.ProtoReflect.Descriptor instead.
-func (*DeleteOrgRequest) Descriptor() ([]byte, []int) {
-	return file_api_thingspect_org_proto_rawDescGZIP(), []int{4}
-}
-
 func (x *DeleteOrgRequest) GetId() string {
 	if x != nil {
 		return x.Id
@@ -311,9 +460,28 @@ func (x *DeleteOrgRequest) GetId() string {
 	return ""
 }
 
+func (x *DeleteOrgRequest) SetId(v string) {
+	x.Id = v
+}
+
+type DeleteOrgRequest_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	// Organization ID (UUID) to delete.
+	Id string
+}
+
+func (b0 DeleteOrgRequest_builder) Build() *DeleteOrgRequest {
+	m0 := &DeleteOrgRequest{}
+	b, x := &b0, m0
+	_, _ = b, x
+	x.Id = b.Id
+	return m0
+}
+
 // ListOrgsRequest is sent to list organizations.
 type ListOrgsRequest struct {
-	state protoimpl.MessageState `protogen:"open.v1"`
+	state protoimpl.MessageState `protogen:"hybrid.v1"`
 	// Number of organizations to retrieve in a single page. Defaults to 50 if not specified, with a maximum of 250.
 	PageSize int32 `protobuf:"varint,1,opt,name=page_size,json=pageSize,proto3" json:"page_size,omitempty"`
 	// Token of the page to retrieve. If not specified, the first page of results will be returned. To request the next page of results, use next_page_token from the previous response.
@@ -347,11 +515,6 @@ func (x *ListOrgsRequest) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use ListOrgsRequest.ProtoReflect.Descriptor instead.
-func (*ListOrgsRequest) Descriptor() ([]byte, []int) {
-	return file_api_thingspect_org_proto_rawDescGZIP(), []int{5}
-}
-
 func (x *ListOrgsRequest) GetPageSize() int32 {
 	if x != nil {
 		return x.PageSize
@@ -366,9 +529,35 @@ func (x *ListOrgsRequest) GetPageToken() string {
 	return ""
 }
 
+func (x *ListOrgsRequest) SetPageSize(v int32) {
+	x.PageSize = v
+}
+
+func (x *ListOrgsRequest) SetPageToken(v string) {
+	x.PageToken = v
+}
+
+type ListOrgsRequest_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	// Number of organizations to retrieve in a single page. Defaults to 50 if not specified, with a maximum of 250.
+	PageSize int32
+	// Token of the page to retrieve. If not specified, the first page of results will be returned. To request the next page of results, use next_page_token from the previous response.
+	PageToken string
+}
+
+func (b0 ListOrgsRequest_builder) Build() *ListOrgsRequest {
+	m0 := &ListOrgsRequest{}
+	b, x := &b0, m0
+	_, _ = b, x
+	x.PageSize = b.PageSize
+	x.PageToken = b.PageToken
+	return m0
+}
+
 // ListOrgsResponse is sent in response to an organization list.
 type ListOrgsResponse struct {
-	state protoimpl.MessageState `protogen:"open.v1"`
+	state protoimpl.MessageState `protogen:"hybrid.v1"`
 	// Org array, ordered by ascending created_at timestamp.
 	Orgs []*Org `protobuf:"bytes,1,rep,name=orgs,proto3" json:"orgs,omitempty"`
 	// Pagination token used to retrieve the next page of results. Not returned for the last page.
@@ -404,11 +593,6 @@ func (x *ListOrgsResponse) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use ListOrgsResponse.ProtoReflect.Descriptor instead.
-func (*ListOrgsResponse) Descriptor() ([]byte, []int) {
-	return file_api_thingspect_org_proto_rawDescGZIP(), []int{6}
-}
-
 func (x *ListOrgsResponse) GetOrgs() []*Org {
 	if x != nil {
 		return x.Orgs
@@ -428,6 +612,39 @@ func (x *ListOrgsResponse) GetTotalSize() int32 {
 		return x.TotalSize
 	}
 	return 0
+}
+
+func (x *ListOrgsResponse) SetOrgs(v []*Org) {
+	x.Orgs = v
+}
+
+func (x *ListOrgsResponse) SetNextPageToken(v string) {
+	x.NextPageToken = v
+}
+
+func (x *ListOrgsResponse) SetTotalSize(v int32) {
+	x.TotalSize = v
+}
+
+type ListOrgsResponse_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	// Org array, ordered by ascending created_at timestamp.
+	Orgs []*Org
+	// Pagination token used to retrieve the next page of results. Not returned for the last page.
+	NextPageToken string
+	// Total number of organizations available.
+	TotalSize int32
+}
+
+func (b0 ListOrgsResponse_builder) Build() *ListOrgsResponse {
+	m0 := &ListOrgsResponse{}
+	b, x := &b0, m0
+	_, _ = b, x
+	x.Orgs = b.Orgs
+	x.NextPageToken = b.NextPageToken
+	x.TotalSize = b.TotalSize
+	return m0
 }
 
 var File_api_thingspect_org_proto protoreflect.FileDescriptor
@@ -477,18 +694,6 @@ const file_api_thingspect_org_proto_rawDesc = "" +
 	"\x03204\x12\x1a\n" +
 	"\x16A successful response.\x12\x00\x82\xd3\xe4\x93\x02\x18*\x16/v1/organizations/{id}\x12h\n" +
 	"\bListOrgs\x12\x1f.thingspect.api.ListOrgsRequest\x1a .thingspect.api.ListOrgsResponse\"\x19\x82\xd3\xe4\x93\x02\x13\x12\x11/v1/organizationsB$Z\"github.com/thingspect/proto/go/apib\x06proto3"
-
-var (
-	file_api_thingspect_org_proto_rawDescOnce sync.Once
-	file_api_thingspect_org_proto_rawDescData []byte
-)
-
-func file_api_thingspect_org_proto_rawDescGZIP() []byte {
-	file_api_thingspect_org_proto_rawDescOnce.Do(func() {
-		file_api_thingspect_org_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_api_thingspect_org_proto_rawDesc), len(file_api_thingspect_org_proto_rawDesc)))
-	})
-	return file_api_thingspect_org_proto_rawDescData
-}
 
 var file_api_thingspect_org_proto_msgTypes = make([]protoimpl.MessageInfo, 7)
 var file_api_thingspect_org_proto_goTypes = []any{

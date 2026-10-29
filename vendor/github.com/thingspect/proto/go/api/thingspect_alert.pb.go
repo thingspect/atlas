@@ -4,6 +4,8 @@
 // 	protoc        v6.31.1
 // source: api/thingspect_alert.proto
 
+//go:build !protoopaque
+
 package api
 
 import (
@@ -13,7 +15,6 @@ import (
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
 	reflect "reflect"
-	sync "sync"
 	unsafe "unsafe"
 )
 
@@ -72,14 +73,9 @@ func (x AlertStatus) Number() protoreflect.EnumNumber {
 	return protoreflect.EnumNumber(x)
 }
 
-// Deprecated: Use AlertStatus.Descriptor instead.
-func (AlertStatus) EnumDescriptor() ([]byte, []int) {
-	return file_api_thingspect_alert_proto_rawDescGZIP(), []int{0}
-}
-
 // Alert represents an alert as stored in the database.
 type Alert struct {
-	state protoimpl.MessageState `protogen:"open.v1"`
+	state protoimpl.MessageState `protogen:"hybrid.v1"`
 	// Organization ID (UUID).
 	OrgId string `protobuf:"bytes,1,opt,name=org_id,json=orgID,proto3" json:"org_id,omitempty"`
 	// Device unique ID.
@@ -123,11 +119,6 @@ func (x *Alert) ProtoReflect() protoreflect.Message {
 		return ms
 	}
 	return mi.MessageOf(x)
-}
-
-// Deprecated: Use Alert.ProtoReflect.Descriptor instead.
-func (*Alert) Descriptor() ([]byte, []int) {
-	return file_api_thingspect_alert_proto_rawDescGZIP(), []int{0}
 }
 
 func (x *Alert) GetOrgId() string {
@@ -186,9 +177,88 @@ func (x *Alert) GetTraceId() string {
 	return ""
 }
 
+func (x *Alert) SetOrgId(v string) {
+	x.OrgId = v
+}
+
+func (x *Alert) SetUniqId(v string) {
+	x.UniqId = v
+}
+
+func (x *Alert) SetAlarmId(v string) {
+	x.AlarmId = v
+}
+
+func (x *Alert) SetUserId(v string) {
+	x.UserId = v
+}
+
+func (x *Alert) SetStatus(v AlertStatus) {
+	x.Status = v
+}
+
+func (x *Alert) SetError(v string) {
+	x.Error = v
+}
+
+func (x *Alert) SetCreatedAt(v *timestamppb.Timestamp) {
+	x.CreatedAt = v
+}
+
+func (x *Alert) SetTraceId(v string) {
+	x.TraceId = v
+}
+
+func (x *Alert) HasCreatedAt() bool {
+	if x == nil {
+		return false
+	}
+	return x.CreatedAt != nil
+}
+
+func (x *Alert) ClearCreatedAt() {
+	x.CreatedAt = nil
+}
+
+type Alert_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	// Organization ID (UUID).
+	OrgId string
+	// Device unique ID.
+	UniqId string
+	// Alarm ID (UUID).
+	AlarmId string
+	// User ID (UUID).
+	UserId string
+	// Alert status.
+	Status AlertStatus
+	// Error message. This field will be empty if no error was encountered.
+	Error string
+	// Alert creation timestamp.
+	CreatedAt *timestamppb.Timestamp
+	// Trace ID (UUID).
+	TraceId string
+}
+
+func (b0 Alert_builder) Build() *Alert {
+	m0 := &Alert{}
+	b, x := &b0, m0
+	_, _ = b, x
+	x.OrgId = b.OrgId
+	x.UniqId = b.UniqId
+	x.AlarmId = b.AlarmId
+	x.UserId = b.UserId
+	x.Status = b.Status
+	x.Error = b.Error
+	x.CreatedAt = b.CreatedAt
+	x.TraceId = b.TraceId
+	return m0
+}
+
 // ListAlertsRequest is sent to list device, alarm, and/or user alerts in an [end, start) time range, in descending timestamp order.
 type ListAlertsRequest struct {
-	state protoimpl.MessageState `protogen:"open.v1"`
+	state protoimpl.MessageState `protogen:"hybrid.v1"`
 	// Device identifier.
 	//
 	// Types that are valid to be assigned to IdOneof:
@@ -231,11 +301,6 @@ func (x *ListAlertsRequest) ProtoReflect() protoreflect.Message {
 		return ms
 	}
 	return mi.MessageOf(x)
-}
-
-// Deprecated: Use ListAlertsRequest.ProtoReflect.Descriptor instead.
-func (*ListAlertsRequest) Descriptor() ([]byte, []int) {
-	return file_api_thingspect_alert_proto_rawDescGZIP(), []int{1}
 }
 
 func (x *ListAlertsRequest) GetIdOneof() isListAlertsRequest_IdOneof {
@@ -291,6 +356,157 @@ func (x *ListAlertsRequest) GetStartTime() *timestamppb.Timestamp {
 	return nil
 }
 
+func (x *ListAlertsRequest) SetUniqId(v string) {
+	x.IdOneof = &ListAlertsRequest_UniqId{v}
+}
+
+func (x *ListAlertsRequest) SetDeviceId(v string) {
+	x.IdOneof = &ListAlertsRequest_DeviceId{v}
+}
+
+func (x *ListAlertsRequest) SetAlarmId(v string) {
+	x.AlarmId = v
+}
+
+func (x *ListAlertsRequest) SetUserId(v string) {
+	x.UserId = v
+}
+
+func (x *ListAlertsRequest) SetEndTime(v *timestamppb.Timestamp) {
+	x.EndTime = v
+}
+
+func (x *ListAlertsRequest) SetStartTime(v *timestamppb.Timestamp) {
+	x.StartTime = v
+}
+
+func (x *ListAlertsRequest) HasIdOneof() bool {
+	if x == nil {
+		return false
+	}
+	return x.IdOneof != nil
+}
+
+func (x *ListAlertsRequest) HasUniqId() bool {
+	if x == nil {
+		return false
+	}
+	_, ok := x.IdOneof.(*ListAlertsRequest_UniqId)
+	return ok
+}
+
+func (x *ListAlertsRequest) HasDeviceId() bool {
+	if x == nil {
+		return false
+	}
+	_, ok := x.IdOneof.(*ListAlertsRequest_DeviceId)
+	return ok
+}
+
+func (x *ListAlertsRequest) HasEndTime() bool {
+	if x == nil {
+		return false
+	}
+	return x.EndTime != nil
+}
+
+func (x *ListAlertsRequest) HasStartTime() bool {
+	if x == nil {
+		return false
+	}
+	return x.StartTime != nil
+}
+
+func (x *ListAlertsRequest) ClearIdOneof() {
+	x.IdOneof = nil
+}
+
+func (x *ListAlertsRequest) ClearUniqId() {
+	if _, ok := x.IdOneof.(*ListAlertsRequest_UniqId); ok {
+		x.IdOneof = nil
+	}
+}
+
+func (x *ListAlertsRequest) ClearDeviceId() {
+	if _, ok := x.IdOneof.(*ListAlertsRequest_DeviceId); ok {
+		x.IdOneof = nil
+	}
+}
+
+func (x *ListAlertsRequest) ClearEndTime() {
+	x.EndTime = nil
+}
+
+func (x *ListAlertsRequest) ClearStartTime() {
+	x.StartTime = nil
+}
+
+const ListAlertsRequest_IdOneof_not_set_case case_ListAlertsRequest_IdOneof = 0
+const ListAlertsRequest_UniqId_case case_ListAlertsRequest_IdOneof = 1
+const ListAlertsRequest_DeviceId_case case_ListAlertsRequest_IdOneof = 2
+
+func (x *ListAlertsRequest) WhichIdOneof() case_ListAlertsRequest_IdOneof {
+	if x == nil {
+		return ListAlertsRequest_IdOneof_not_set_case
+	}
+	switch x.IdOneof.(type) {
+	case *ListAlertsRequest_UniqId:
+		return ListAlertsRequest_UniqId_case
+	case *ListAlertsRequest_DeviceId:
+		return ListAlertsRequest_DeviceId_case
+	default:
+		return ListAlertsRequest_IdOneof_not_set_case
+	}
+}
+
+type ListAlertsRequest_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	// Device identifier.
+
+	// Fields of oneof IdOneof:
+	// Device unique ID. If neither unique ID nor device ID are specified, all devices are included.
+	UniqId *string
+	// Device ID (UUID). If neither unique ID nor device ID are specified, all devices are included.
+	DeviceId *string
+	// -- end of IdOneof
+	// Alarm ID (UUID). If not specified, all alarms are included.
+	AlarmId string
+	// User ID (UUID). If not specified, all users are included.
+	UserId string
+	// Alerts range end time. Defaults to current time if not specified. Maximum supported time range is 90 days.
+	EndTime *timestamppb.Timestamp
+	// Alerts range start time. Defaults to end_time - 24 hours if not specified or after end_time. Maximum supported time range is 90 days.
+	StartTime *timestamppb.Timestamp
+}
+
+func (b0 ListAlertsRequest_builder) Build() *ListAlertsRequest {
+	m0 := &ListAlertsRequest{}
+	b, x := &b0, m0
+	_, _ = b, x
+	if b.UniqId != nil {
+		x.IdOneof = &ListAlertsRequest_UniqId{*b.UniqId}
+	}
+	if b.DeviceId != nil {
+		x.IdOneof = &ListAlertsRequest_DeviceId{*b.DeviceId}
+	}
+	x.AlarmId = b.AlarmId
+	x.UserId = b.UserId
+	x.EndTime = b.EndTime
+	x.StartTime = b.StartTime
+	return m0
+}
+
+type case_ListAlertsRequest_IdOneof protoreflect.FieldNumber
+
+func (x case_ListAlertsRequest_IdOneof) String() string {
+	md := file_api_thingspect_alert_proto_msgTypes[1].Descriptor()
+	if x == 0 {
+		return "not set"
+	}
+	return protoimpl.X.MessageFieldStringOf(md, protoreflect.FieldNumber(x))
+}
+
 type isListAlertsRequest_IdOneof interface {
 	isListAlertsRequest_IdOneof()
 }
@@ -311,7 +527,7 @@ func (*ListAlertsRequest_DeviceId) isListAlertsRequest_IdOneof() {}
 
 // ListAlertsResponse is sent in response to a device alerts list.
 type ListAlertsResponse struct {
-	state protoimpl.MessageState `protogen:"open.v1"`
+	state protoimpl.MessageState `protogen:"hybrid.v1"`
 	// Alert array, ordered by descending created_at timestamp.
 	Alerts        []*Alert `protobuf:"bytes,1,rep,name=alerts,proto3" json:"alerts,omitempty"`
 	unknownFields protoimpl.UnknownFields
@@ -343,16 +559,30 @@ func (x *ListAlertsResponse) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use ListAlertsResponse.ProtoReflect.Descriptor instead.
-func (*ListAlertsResponse) Descriptor() ([]byte, []int) {
-	return file_api_thingspect_alert_proto_rawDescGZIP(), []int{2}
-}
-
 func (x *ListAlertsResponse) GetAlerts() []*Alert {
 	if x != nil {
 		return x.Alerts
 	}
 	return nil
+}
+
+func (x *ListAlertsResponse) SetAlerts(v []*Alert) {
+	x.Alerts = v
+}
+
+type ListAlertsResponse_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	// Alert array, ordered by descending created_at timestamp.
+	Alerts []*Alert
+}
+
+func (b0 ListAlertsResponse_builder) Build() *ListAlertsResponse {
+	m0 := &ListAlertsResponse{}
+	b, x := &b0, m0
+	_, _ = b, x
+	x.Alerts = b.Alerts
+	return m0
 }
 
 var File_api_thingspect_alert_proto protoreflect.FileDescriptor
@@ -390,18 +620,6 @@ const file_api_thingspect_alert_proto_rawDesc = "" +
 	"\n" +
 	"ListAlerts\x12!.thingspect.api.ListAlertsRequest\x1a\".thingspect.api.ListAlertsResponse\"\x12\x82\xd3\xe4\x93\x02\f\x12\n" +
 	"/v1/alertsB$Z\"github.com/thingspect/proto/go/apib\x06proto3"
-
-var (
-	file_api_thingspect_alert_proto_rawDescOnce sync.Once
-	file_api_thingspect_alert_proto_rawDescData []byte
-)
-
-func file_api_thingspect_alert_proto_rawDescGZIP() []byte {
-	file_api_thingspect_alert_proto_rawDescOnce.Do(func() {
-		file_api_thingspect_alert_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_api_thingspect_alert_proto_rawDesc), len(file_api_thingspect_alert_proto_rawDesc)))
-	})
-	return file_api_thingspect_alert_proto_rawDescData
-}
 
 var file_api_thingspect_alert_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
 var file_api_thingspect_alert_proto_msgTypes = make([]protoimpl.MessageInfo, 3)

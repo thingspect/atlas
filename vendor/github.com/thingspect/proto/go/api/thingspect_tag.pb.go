@@ -4,6 +4,8 @@
 // 	protoc        v6.31.1
 // source: api/thingspect_tag.proto
 
+//go:build !protoopaque
+
 package api
 
 import (
@@ -11,7 +13,6 @@ import (
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	reflect "reflect"
-	sync "sync"
 	unsafe "unsafe"
 )
 
@@ -24,7 +25,7 @@ const (
 
 // ListTagsRequest is sent to list tags.
 type ListTagsRequest struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
+	state         protoimpl.MessageState `protogen:"hybrid.v1"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -54,14 +55,21 @@ func (x *ListTagsRequest) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use ListTagsRequest.ProtoReflect.Descriptor instead.
-func (*ListTagsRequest) Descriptor() ([]byte, []int) {
-	return file_api_thingspect_tag_proto_rawDescGZIP(), []int{0}
+type ListTagsRequest_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+}
+
+func (b0 ListTagsRequest_builder) Build() *ListTagsRequest {
+	m0 := &ListTagsRequest{}
+	b, x := &b0, m0
+	_, _ = b, x
+	return m0
 }
 
 // ListTagsResponse is sent in response to a tag list.
 type ListTagsResponse struct {
-	state protoimpl.MessageState `protogen:"open.v1"`
+	state protoimpl.MessageState `protogen:"hybrid.v1"`
 	// Tag array, ordered by ascending name.
 	Tags          []string `protobuf:"bytes,1,rep,name=tags,proto3" json:"tags,omitempty"`
 	unknownFields protoimpl.UnknownFields
@@ -93,16 +101,30 @@ func (x *ListTagsResponse) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use ListTagsResponse.ProtoReflect.Descriptor instead.
-func (*ListTagsResponse) Descriptor() ([]byte, []int) {
-	return file_api_thingspect_tag_proto_rawDescGZIP(), []int{1}
-}
-
 func (x *ListTagsResponse) GetTags() []string {
 	if x != nil {
 		return x.Tags
 	}
 	return nil
+}
+
+func (x *ListTagsResponse) SetTags(v []string) {
+	x.Tags = v
+}
+
+type ListTagsResponse_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	// Tag array, ordered by ascending name.
+	Tags []string
+}
+
+func (b0 ListTagsResponse_builder) Build() *ListTagsResponse {
+	m0 := &ListTagsResponse{}
+	b, x := &b0, m0
+	_, _ = b, x
+	x.Tags = b.Tags
+	return m0
 }
 
 var File_api_thingspect_tag_proto protoreflect.FileDescriptor
@@ -117,18 +139,6 @@ const file_api_thingspect_tag_proto_rawDesc = "" +
 	"TagService\x12_\n" +
 	"\bListTags\x12\x1f.thingspect.api.ListTagsRequest\x1a .thingspect.api.ListTagsResponse\"\x10\x82\xd3\xe4\x93\x02\n" +
 	"\x12\b/v1/tagsB$Z\"github.com/thingspect/proto/go/apib\x06proto3"
-
-var (
-	file_api_thingspect_tag_proto_rawDescOnce sync.Once
-	file_api_thingspect_tag_proto_rawDescData []byte
-)
-
-func file_api_thingspect_tag_proto_rawDescGZIP() []byte {
-	file_api_thingspect_tag_proto_rawDescOnce.Do(func() {
-		file_api_thingspect_tag_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_api_thingspect_tag_proto_rawDesc), len(file_api_thingspect_tag_proto_rawDesc)))
-	})
-	return file_api_thingspect_tag_proto_rawDescData
-}
 
 var file_api_thingspect_tag_proto_msgTypes = make([]protoimpl.MessageInfo, 2)
 var file_api_thingspect_tag_proto_goTypes = []any{

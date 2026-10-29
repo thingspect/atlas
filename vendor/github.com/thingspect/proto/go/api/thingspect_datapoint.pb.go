@@ -4,6 +4,8 @@
 // 	protoc        v6.31.1
 // source: api/thingspect_datapoint.proto
 
+//go:build !protoopaque
+
 package api
 
 import (
@@ -16,7 +18,6 @@ import (
 	emptypb "google.golang.org/protobuf/types/known/emptypb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
 	reflect "reflect"
-	sync "sync"
 	unsafe "unsafe"
 )
 
@@ -29,7 +30,7 @@ const (
 
 // PublishDataPointsRequest is sent to publish data points. The publisher role is recommended for programmatic use of this endpoint.
 type PublishDataPointsRequest struct {
-	state protoimpl.MessageState `protogen:"open.v1"`
+	state protoimpl.MessageState `protogen:"hybrid.v1"`
 	// Data point array to publish.
 	Points        []*common.DataPoint `protobuf:"bytes,1,rep,name=points,proto3" json:"points,omitempty"`
 	unknownFields protoimpl.UnknownFields
@@ -61,11 +62,6 @@ func (x *PublishDataPointsRequest) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use PublishDataPointsRequest.ProtoReflect.Descriptor instead.
-func (*PublishDataPointsRequest) Descriptor() ([]byte, []int) {
-	return file_api_thingspect_datapoint_proto_rawDescGZIP(), []int{0}
-}
-
 func (x *PublishDataPointsRequest) GetPoints() []*common.DataPoint {
 	if x != nil {
 		return x.Points
@@ -73,9 +69,28 @@ func (x *PublishDataPointsRequest) GetPoints() []*common.DataPoint {
 	return nil
 }
 
+func (x *PublishDataPointsRequest) SetPoints(v []*common.DataPoint) {
+	x.Points = v
+}
+
+type PublishDataPointsRequest_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	// Data point array to publish.
+	Points []*common.DataPoint
+}
+
+func (b0 PublishDataPointsRequest_builder) Build() *PublishDataPointsRequest {
+	m0 := &PublishDataPointsRequest{}
+	b, x := &b0, m0
+	_, _ = b, x
+	x.Points = b.Points
+	return m0
+}
+
 // ListDataPointsRequest is sent to list device data points in an [end, start) time range, in descending timestamp order.
 type ListDataPointsRequest struct {
-	state protoimpl.MessageState `protogen:"open.v1"`
+	state protoimpl.MessageState `protogen:"hybrid.v1"`
 	// Device identifier.
 	//
 	// Types that are valid to be assigned to IdOneof:
@@ -116,11 +131,6 @@ func (x *ListDataPointsRequest) ProtoReflect() protoreflect.Message {
 		return ms
 	}
 	return mi.MessageOf(x)
-}
-
-// Deprecated: Use ListDataPointsRequest.ProtoReflect.Descriptor instead.
-func (*ListDataPointsRequest) Descriptor() ([]byte, []int) {
-	return file_api_thingspect_datapoint_proto_rawDescGZIP(), []int{1}
 }
 
 func (x *ListDataPointsRequest) GetIdOneof() isListDataPointsRequest_IdOneof {
@@ -169,6 +179,150 @@ func (x *ListDataPointsRequest) GetStartTime() *timestamppb.Timestamp {
 	return nil
 }
 
+func (x *ListDataPointsRequest) SetUniqId(v string) {
+	x.IdOneof = &ListDataPointsRequest_UniqId{v}
+}
+
+func (x *ListDataPointsRequest) SetDeviceId(v string) {
+	x.IdOneof = &ListDataPointsRequest_DeviceId{v}
+}
+
+func (x *ListDataPointsRequest) SetAttr(v string) {
+	x.Attr = v
+}
+
+func (x *ListDataPointsRequest) SetEndTime(v *timestamppb.Timestamp) {
+	x.EndTime = v
+}
+
+func (x *ListDataPointsRequest) SetStartTime(v *timestamppb.Timestamp) {
+	x.StartTime = v
+}
+
+func (x *ListDataPointsRequest) HasIdOneof() bool {
+	if x == nil {
+		return false
+	}
+	return x.IdOneof != nil
+}
+
+func (x *ListDataPointsRequest) HasUniqId() bool {
+	if x == nil {
+		return false
+	}
+	_, ok := x.IdOneof.(*ListDataPointsRequest_UniqId)
+	return ok
+}
+
+func (x *ListDataPointsRequest) HasDeviceId() bool {
+	if x == nil {
+		return false
+	}
+	_, ok := x.IdOneof.(*ListDataPointsRequest_DeviceId)
+	return ok
+}
+
+func (x *ListDataPointsRequest) HasEndTime() bool {
+	if x == nil {
+		return false
+	}
+	return x.EndTime != nil
+}
+
+func (x *ListDataPointsRequest) HasStartTime() bool {
+	if x == nil {
+		return false
+	}
+	return x.StartTime != nil
+}
+
+func (x *ListDataPointsRequest) ClearIdOneof() {
+	x.IdOneof = nil
+}
+
+func (x *ListDataPointsRequest) ClearUniqId() {
+	if _, ok := x.IdOneof.(*ListDataPointsRequest_UniqId); ok {
+		x.IdOneof = nil
+	}
+}
+
+func (x *ListDataPointsRequest) ClearDeviceId() {
+	if _, ok := x.IdOneof.(*ListDataPointsRequest_DeviceId); ok {
+		x.IdOneof = nil
+	}
+}
+
+func (x *ListDataPointsRequest) ClearEndTime() {
+	x.EndTime = nil
+}
+
+func (x *ListDataPointsRequest) ClearStartTime() {
+	x.StartTime = nil
+}
+
+const ListDataPointsRequest_IdOneof_not_set_case case_ListDataPointsRequest_IdOneof = 0
+const ListDataPointsRequest_UniqId_case case_ListDataPointsRequest_IdOneof = 1
+const ListDataPointsRequest_DeviceId_case case_ListDataPointsRequest_IdOneof = 2
+
+func (x *ListDataPointsRequest) WhichIdOneof() case_ListDataPointsRequest_IdOneof {
+	if x == nil {
+		return ListDataPointsRequest_IdOneof_not_set_case
+	}
+	switch x.IdOneof.(type) {
+	case *ListDataPointsRequest_UniqId:
+		return ListDataPointsRequest_UniqId_case
+	case *ListDataPointsRequest_DeviceId:
+		return ListDataPointsRequest_DeviceId_case
+	default:
+		return ListDataPointsRequest_IdOneof_not_set_case
+	}
+}
+
+type ListDataPointsRequest_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	// Device identifier.
+
+	// Fields of oneof IdOneof:
+	// Device unique ID. Either unique ID or device ID must be provided.
+	UniqId *string
+	// Device ID (UUID). Either unique ID or device ID must be provided.
+	DeviceId *string
+	// -- end of IdOneof
+	// Device attribute. If not specified, all attributes are included.
+	Attr string
+	// Data points range end time. Defaults to current time if not specified. Maximum supported time range is 90 days.
+	EndTime *timestamppb.Timestamp
+	// Data points range start time. Defaults to end_time - 24 hours if not specified or after end_time. Maximum supported time range is 90 days.
+	StartTime *timestamppb.Timestamp
+}
+
+func (b0 ListDataPointsRequest_builder) Build() *ListDataPointsRequest {
+	m0 := &ListDataPointsRequest{}
+	b, x := &b0, m0
+	_, _ = b, x
+	if b.UniqId != nil {
+		x.IdOneof = &ListDataPointsRequest_UniqId{*b.UniqId}
+	}
+	if b.DeviceId != nil {
+		x.IdOneof = &ListDataPointsRequest_DeviceId{*b.DeviceId}
+	}
+	x.Attr = b.Attr
+	x.EndTime = b.EndTime
+	x.StartTime = b.StartTime
+	return m0
+}
+
+type case_ListDataPointsRequest_IdOneof protoreflect.FieldNumber
+
+func (x case_ListDataPointsRequest_IdOneof) String() string {
+	md := file_api_thingspect_datapoint_proto_msgTypes[1].Descriptor()
+	if x == 0 {
+		return "not set"
+	}
+	return protoimpl.X.MessageFieldStringOf(md, protoreflect.FieldNumber(x))
+}
+
 type isListDataPointsRequest_IdOneof interface {
 	isListDataPointsRequest_IdOneof()
 }
@@ -189,7 +343,7 @@ func (*ListDataPointsRequest_DeviceId) isListDataPointsRequest_IdOneof() {}
 
 // ListDataPointsResponse is sent in response to a device data points list.
 type ListDataPointsResponse struct {
-	state protoimpl.MessageState `protogen:"open.v1"`
+	state protoimpl.MessageState `protogen:"hybrid.v1"`
 	// Data point array, ordered by descending created_at timestamp.
 	Points        []*common.DataPoint `protobuf:"bytes,1,rep,name=points,proto3" json:"points,omitempty"`
 	unknownFields protoimpl.UnknownFields
@@ -221,11 +375,6 @@ func (x *ListDataPointsResponse) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use ListDataPointsResponse.ProtoReflect.Descriptor instead.
-func (*ListDataPointsResponse) Descriptor() ([]byte, []int) {
-	return file_api_thingspect_datapoint_proto_rawDescGZIP(), []int{2}
-}
-
 func (x *ListDataPointsResponse) GetPoints() []*common.DataPoint {
 	if x != nil {
 		return x.Points
@@ -233,9 +382,28 @@ func (x *ListDataPointsResponse) GetPoints() []*common.DataPoint {
 	return nil
 }
 
+func (x *ListDataPointsResponse) SetPoints(v []*common.DataPoint) {
+	x.Points = v
+}
+
+type ListDataPointsResponse_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	// Data point array, ordered by descending created_at timestamp.
+	Points []*common.DataPoint
+}
+
+func (b0 ListDataPointsResponse_builder) Build() *ListDataPointsResponse {
+	m0 := &ListDataPointsResponse{}
+	b, x := &b0, m0
+	_, _ = b, x
+	x.Points = b.Points
+	return m0
+}
+
 // LatestDataPointsRequest is sent to list latest device data points in a [now, start) time range.
 type LatestDataPointsRequest struct {
-	state protoimpl.MessageState `protogen:"open.v1"`
+	state protoimpl.MessageState `protogen:"hybrid.v1"`
 	// Device identifier.
 	//
 	// Types that are valid to be assigned to IdOneof:
@@ -274,11 +442,6 @@ func (x *LatestDataPointsRequest) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use LatestDataPointsRequest.ProtoReflect.Descriptor instead.
-func (*LatestDataPointsRequest) Descriptor() ([]byte, []int) {
-	return file_api_thingspect_datapoint_proto_rawDescGZIP(), []int{3}
-}
-
 func (x *LatestDataPointsRequest) GetIdOneof() isLatestDataPointsRequest_IdOneof {
 	if x != nil {
 		return x.IdOneof
@@ -311,6 +474,125 @@ func (x *LatestDataPointsRequest) GetStartTime() *timestamppb.Timestamp {
 	return nil
 }
 
+func (x *LatestDataPointsRequest) SetUniqId(v string) {
+	x.IdOneof = &LatestDataPointsRequest_UniqId{v}
+}
+
+func (x *LatestDataPointsRequest) SetDeviceId(v string) {
+	x.IdOneof = &LatestDataPointsRequest_DeviceId{v}
+}
+
+func (x *LatestDataPointsRequest) SetStartTime(v *timestamppb.Timestamp) {
+	x.StartTime = v
+}
+
+func (x *LatestDataPointsRequest) HasIdOneof() bool {
+	if x == nil {
+		return false
+	}
+	return x.IdOneof != nil
+}
+
+func (x *LatestDataPointsRequest) HasUniqId() bool {
+	if x == nil {
+		return false
+	}
+	_, ok := x.IdOneof.(*LatestDataPointsRequest_UniqId)
+	return ok
+}
+
+func (x *LatestDataPointsRequest) HasDeviceId() bool {
+	if x == nil {
+		return false
+	}
+	_, ok := x.IdOneof.(*LatestDataPointsRequest_DeviceId)
+	return ok
+}
+
+func (x *LatestDataPointsRequest) HasStartTime() bool {
+	if x == nil {
+		return false
+	}
+	return x.StartTime != nil
+}
+
+func (x *LatestDataPointsRequest) ClearIdOneof() {
+	x.IdOneof = nil
+}
+
+func (x *LatestDataPointsRequest) ClearUniqId() {
+	if _, ok := x.IdOneof.(*LatestDataPointsRequest_UniqId); ok {
+		x.IdOneof = nil
+	}
+}
+
+func (x *LatestDataPointsRequest) ClearDeviceId() {
+	if _, ok := x.IdOneof.(*LatestDataPointsRequest_DeviceId); ok {
+		x.IdOneof = nil
+	}
+}
+
+func (x *LatestDataPointsRequest) ClearStartTime() {
+	x.StartTime = nil
+}
+
+const LatestDataPointsRequest_IdOneof_not_set_case case_LatestDataPointsRequest_IdOneof = 0
+const LatestDataPointsRequest_UniqId_case case_LatestDataPointsRequest_IdOneof = 1
+const LatestDataPointsRequest_DeviceId_case case_LatestDataPointsRequest_IdOneof = 2
+
+func (x *LatestDataPointsRequest) WhichIdOneof() case_LatestDataPointsRequest_IdOneof {
+	if x == nil {
+		return LatestDataPointsRequest_IdOneof_not_set_case
+	}
+	switch x.IdOneof.(type) {
+	case *LatestDataPointsRequest_UniqId:
+		return LatestDataPointsRequest_UniqId_case
+	case *LatestDataPointsRequest_DeviceId:
+		return LatestDataPointsRequest_DeviceId_case
+	default:
+		return LatestDataPointsRequest_IdOneof_not_set_case
+	}
+}
+
+type LatestDataPointsRequest_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	// Device identifier.
+
+	// Fields of oneof IdOneof:
+	// Device unique ID. Either unique ID or device ID must be provided.
+	UniqId *string
+	// Device ID (UUID). Either unique ID or device ID must be provided.
+	DeviceId *string
+	// -- end of IdOneof
+	// Data points range start time. Defaults to now - 30 days if not specified. Maximum supported time range is 90 days.
+	StartTime *timestamppb.Timestamp
+}
+
+func (b0 LatestDataPointsRequest_builder) Build() *LatestDataPointsRequest {
+	m0 := &LatestDataPointsRequest{}
+	b, x := &b0, m0
+	_, _ = b, x
+	if b.UniqId != nil {
+		x.IdOneof = &LatestDataPointsRequest_UniqId{*b.UniqId}
+	}
+	if b.DeviceId != nil {
+		x.IdOneof = &LatestDataPointsRequest_DeviceId{*b.DeviceId}
+	}
+	x.StartTime = b.StartTime
+	return m0
+}
+
+type case_LatestDataPointsRequest_IdOneof protoreflect.FieldNumber
+
+func (x case_LatestDataPointsRequest_IdOneof) String() string {
+	md := file_api_thingspect_datapoint_proto_msgTypes[3].Descriptor()
+	if x == 0 {
+		return "not set"
+	}
+	return protoimpl.X.MessageFieldStringOf(md, protoreflect.FieldNumber(x))
+}
+
 type isLatestDataPointsRequest_IdOneof interface {
 	isLatestDataPointsRequest_IdOneof()
 }
@@ -331,7 +613,7 @@ func (*LatestDataPointsRequest_DeviceId) isLatestDataPointsRequest_IdOneof() {}
 
 // LatestDataPointsResponse is sent in response to a device latest list.
 type LatestDataPointsResponse struct {
-	state protoimpl.MessageState `protogen:"open.v1"`
+	state protoimpl.MessageState `protogen:"hybrid.v1"`
 	// Data point array, ordered by ascending attribute name.
 	Points        []*common.DataPoint `protobuf:"bytes,1,rep,name=points,proto3" json:"points,omitempty"`
 	unknownFields protoimpl.UnknownFields
@@ -363,16 +645,30 @@ func (x *LatestDataPointsResponse) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use LatestDataPointsResponse.ProtoReflect.Descriptor instead.
-func (*LatestDataPointsResponse) Descriptor() ([]byte, []int) {
-	return file_api_thingspect_datapoint_proto_rawDescGZIP(), []int{4}
-}
-
 func (x *LatestDataPointsResponse) GetPoints() []*common.DataPoint {
 	if x != nil {
 		return x.Points
 	}
 	return nil
+}
+
+func (x *LatestDataPointsResponse) SetPoints(v []*common.DataPoint) {
+	x.Points = v
+}
+
+type LatestDataPointsResponse_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	// Data point array, ordered by ascending attribute name.
+	Points []*common.DataPoint
+}
+
+func (b0 LatestDataPointsResponse_builder) Build() *LatestDataPointsResponse {
+	m0 := &LatestDataPointsResponse{}
+	b, x := &b0, m0
+	_, _ = b, x
+	x.Points = b.Points
+	return m0
 }
 
 var File_api_thingspect_datapoint_proto protoreflect.FileDescriptor
@@ -406,18 +702,6 @@ const file_api_thingspect_datapoint_proto_rawDesc = "" +
 	"\x16A successful response.\x12\x00\x82\xd3\xe4\x93\x02\x13:\x01*\"\x0e/v1/datapoints\x12w\n" +
 	"\x0eListDataPoints\x12%.thingspect.api.ListDataPointsRequest\x1a&.thingspect.api.ListDataPointsResponse\"\x16\x82\xd3\xe4\x93\x02\x10\x12\x0e/v1/datapoints\x12\x84\x01\n" +
 	"\x10LatestDataPoints\x12'.thingspect.api.LatestDataPointsRequest\x1a(.thingspect.api.LatestDataPointsResponse\"\x1d\x82\xd3\xe4\x93\x02\x17\x12\x15/v1/datapoints/latestB$Z\"github.com/thingspect/proto/go/apib\x06proto3"
-
-var (
-	file_api_thingspect_datapoint_proto_rawDescOnce sync.Once
-	file_api_thingspect_datapoint_proto_rawDescData []byte
-)
-
-func file_api_thingspect_datapoint_proto_rawDescGZIP() []byte {
-	file_api_thingspect_datapoint_proto_rawDescOnce.Do(func() {
-		file_api_thingspect_datapoint_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_api_thingspect_datapoint_proto_rawDesc), len(file_api_thingspect_datapoint_proto_rawDesc)))
-	})
-	return file_api_thingspect_datapoint_proto_rawDescData
-}
 
 var file_api_thingspect_datapoint_proto_msgTypes = make([]protoimpl.MessageInfo, 5)
 var file_api_thingspect_datapoint_proto_goTypes = []any{

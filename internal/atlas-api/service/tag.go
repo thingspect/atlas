@@ -42,5 +42,8 @@ func (t *Tag) ListTags(ctx context.Context, _ *api.ListTagsRequest) (
 		return nil, errToStatus(err)
 	}
 
-	return &api.ListTagsResponse{Tags: tags}, nil
+	resp := &api.ListTagsResponse{}
+	resp.SetTags(tags)
+
+	return resp, nil
 }

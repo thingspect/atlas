@@ -4,6 +4,8 @@
 // 	protoc        v6.31.1
 // source: mqtt/thingspect_payload.proto
 
+//go:build !protoopaque
+
 package mqtt
 
 import (
@@ -11,7 +13,6 @@ import (
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	reflect "reflect"
-	sync "sync"
 	unsafe "unsafe"
 )
 
@@ -24,7 +25,7 @@ const (
 
 // Payload represents an array of one or more data points and an authentication token.
 type Payload struct {
-	state protoimpl.MessageState `protogen:"open.v1"`
+	state protoimpl.MessageState `protogen:"hybrid.v1"`
 	// Data point array.
 	Points []*common.DataPoint `protobuf:"bytes,1,rep,name=points,proto3" json:"points,omitempty"`
 	// Authentication token (UUID). If all data points pertain to the same UniqID, the token can be provided a single time here.
@@ -58,11 +59,6 @@ func (x *Payload) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use Payload.ProtoReflect.Descriptor instead.
-func (*Payload) Descriptor() ([]byte, []int) {
-	return file_mqtt_thingspect_payload_proto_rawDescGZIP(), []int{0}
-}
-
 func (x *Payload) GetPoints() []*common.DataPoint {
 	if x != nil {
 		return x.Points
@@ -77,6 +73,32 @@ func (x *Payload) GetToken() string {
 	return ""
 }
 
+func (x *Payload) SetPoints(v []*common.DataPoint) {
+	x.Points = v
+}
+
+func (x *Payload) SetToken(v string) {
+	x.Token = v
+}
+
+type Payload_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	// Data point array.
+	Points []*common.DataPoint
+	// Authentication token (UUID). If all data points pertain to the same UniqID, the token can be provided a single time here.
+	Token string
+}
+
+func (b0 Payload_builder) Build() *Payload {
+	m0 := &Payload{}
+	b, x := &b0, m0
+	_, _ = b, x
+	x.Points = b.Points
+	x.Token = b.Token
+	return m0
+}
+
 var File_mqtt_thingspect_payload_proto protoreflect.FileDescriptor
 
 const file_mqtt_thingspect_payload_proto_rawDesc = "" +
@@ -85,18 +107,6 @@ const file_mqtt_thingspect_payload_proto_rawDesc = "" +
 	"\aPayload\x124\n" +
 	"\x06points\x18\x01 \x03(\v2\x1c.thingspect.common.DataPointR\x06points\x12\x14\n" +
 	"\x05token\x18\x02 \x01(\tR\x05tokenB%Z#github.com/thingspect/proto/go/mqttb\x06proto3"
-
-var (
-	file_mqtt_thingspect_payload_proto_rawDescOnce sync.Once
-	file_mqtt_thingspect_payload_proto_rawDescData []byte
-)
-
-func file_mqtt_thingspect_payload_proto_rawDescGZIP() []byte {
-	file_mqtt_thingspect_payload_proto_rawDescOnce.Do(func() {
-		file_mqtt_thingspect_payload_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_mqtt_thingspect_payload_proto_rawDesc), len(file_mqtt_thingspect_payload_proto_rawDesc)))
-	})
-	return file_mqtt_thingspect_payload_proto_rawDescData
-}
 
 var file_mqtt_thingspect_payload_proto_msgTypes = make([]protoimpl.MessageInfo, 1)
 var file_mqtt_thingspect_payload_proto_goTypes = []any{
